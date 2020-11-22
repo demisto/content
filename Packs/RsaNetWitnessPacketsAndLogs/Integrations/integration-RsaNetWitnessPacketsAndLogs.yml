@@ -5,18 +5,14 @@ name: RSA NetWitness Packets and Logs
 display: RSA NetWitness Packets and Logs
 category: Analytics & SIEM
 image: data:image/png;base64,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
-description: RSA NetWitness Logs and Packets decoders are responsible for the real-time
-  collection of network data. The decode captures data in real time and can normalize
-  and reconstruct data for full session analysis. In addition, the decoder can collect
-  flow and endpoint data.
+description: RSA NetWitness Logs and Packets decoders are responsible for the real-time collection of network data. The decode captures data in real time and can normalize and reconstruct data for full session analysis. In addition, the decoder can collect flow and endpoint data.
 configuration:
 - display: Server URL (e.g. http(s)://192.168.0.1)
   name: url
   defaultvalue: ""
   type: 0
   required: true
-- display: Appliance Port - Logs(50102) / Packets(50104) / Concentrator (50105) /
-    Broker (50103)
+- display: Appliance Port - Logs(50102) / Packets(50104) / Concentrator (50105) / Broker (50103)
   name: port
   defaultvalue: ""
   type: 0
@@ -47,7 +43,7 @@ configuration:
   type: 0
   required: false
 script:
-  script: |-
+  script: >-
     var RESPONSE_TYPES = {
         'json': 'application/json',
         'html': 'text/html',
@@ -55,13 +51,21 @@ script:
         'xml': 'text/xml',
         'octet-stream': 'application/octet-stream'
     };
+
     var SSL_PORT = '56105';
+
     var NON_SSL_PORT = '50105';
+
     var LAST_HOURS = 'lastHours';
+
     var LAST_MINUTES = 'lastMinutes';
+
     var QUERY = 'query';
+
     var USER_NAME = params.username;
+
     var PASSWORD = params.password;
+
 
     function fixUrl(base) {
         var url = base.trim();
@@ -74,9 +78,12 @@ script:
         return url;
     }
 
+
     var BASE_URL = getUrl(fixUrl(params.url) + ':' + params.port);
 
+
     // Check if concentrator IP and/or port were provided, if yes, then the url will be changed to the assigned concentrator.
+
     function getUrl(currentUrl){
         var urlToReturn;
         if(args && args.concentratorIP){
@@ -109,6 +116,7 @@ script:
         return urlToReturn;
     }
 
+
     function isObjectEmpty(obj) {
         for(var key in obj) {
             if(obj.hasOwnProperty(key))
@@ -116,6 +124,7 @@ script:
         }
         return true;
     }
+
 
     /* Example transformation:
      {
@@ -175,7 +184,9 @@ script:
         "id2": 3938
     }
 
+
     To:
+
 
     {
         sessionid: 13,
@@ -184,7 +195,9 @@ script:
         time: 1372882420
     }
 
+
     */
+
 
     function mapQueryResults(fields, queryResults) {
         var TYPE  = 'type';
@@ -226,8 +239,11 @@ script:
         }
     }
 
+
     /*
+
     Example transformation:
+
     {
         "fields": [
             {
@@ -275,7 +291,9 @@ script:
         "id2": 0
     }
 
+
     To:
+
 
     [
         {
@@ -291,7 +309,9 @@ script:
             client: e1e8d428-5bf1-4323-8808-d138a039102f
         }
     ]
+
     */
+
 
     function mapArrayResults(fields, arrayResults){
         var TYPE  = 'type';
@@ -310,6 +330,7 @@ script:
         }
     }
 
+
     function extractFromData(data, mapper, results){
         if (Array.isArray(data)) {
             data.forEach(function (element) {
@@ -321,6 +342,7 @@ script:
             mapper(fields, results);
         }
     }
+
 
     function buildQueryMdAndContext(response) {
         var data = parseResponse(response);
@@ -348,6 +370,7 @@ script:
         }
     }
 
+
     function buildMSearchMdAndContext(response) {
         var data = parseResponse(response);
 
@@ -373,6 +396,7 @@ script:
             return "No results found.";
         }
     }
+
 
     function buildValuesMdAndContext(response) {
         var data = parseResponse(response);
@@ -423,6 +447,7 @@ script:
         }
     }
 
+
     function buildTimelineMdAndContext(response) {
         var data = parseResponse(response);
 
@@ -444,6 +469,7 @@ script:
             return "No results found.";
         }
     }
+
     function buildNodeMdAndContext(response){
         var data = parseResponse(response);
         var nodes = data.nodes ? data.nodes : [data.node];
@@ -460,6 +486,7 @@ script:
         };
     }
 
+
     function buildStringMdAndContext(response){
         var data = parseResponse(response);
         var string = data.string;
@@ -472,6 +499,7 @@ script:
         };
     }
 
+
     function buildParamsMd(response){
         var data = parseResponse(response);
         var resultParams= data.params;
@@ -483,6 +511,7 @@ script:
             HumanReadable: tableToMarkdown(command, resultParams)
         };
     }
+
 
     function buildDatabaseMetaMdContext(response){
         var data = parseResponse(response);
@@ -517,6 +546,7 @@ script:
         };
     }
 
+
     function parseResponse(resp, isXml) {
         if (resp.StatusCode === 200) {
             try {
@@ -539,6 +569,7 @@ script:
         }
     }
 
+
     function createFileEntry(data, extension){
         var currentTime = new Date();
         var fileName = command + '_at_' + currentTime.getTime();
@@ -553,6 +584,7 @@ script:
             Contents: fileName
         };
     }
+
 
     function parseDownloadResponse(resp) {
         if (resp.StatusCode === 200) {
@@ -573,6 +605,7 @@ script:
             throw err;
         }
     }
+
 
     function handleTimeFilter(args) {
         if(LAST_HOURS in args || LAST_MINUTES in args) {
@@ -606,6 +639,7 @@ script:
         }
     }
 
+
     function encodeParams(p) {
         var q = '';
         if (p) {
@@ -629,6 +663,7 @@ script:
         }
         return q;
     }
+
 
     function doReq(method, path, args, responseType, body) {
         var parametersUrl = encodeParams(args);
@@ -661,6 +696,7 @@ script:
         return res;
     }
 
+
     function decoderImport(path) {
         var fileParam = args.entryID ? args.entryID : args.fileID;
         var fullUrl = BASE_URL + path;
@@ -689,6 +725,7 @@ script:
         };
 
     }
+
 
     var commandToPath = {
         'netwitness-msearch': '/sdk?msg=msearch',
@@ -840,7 +877,9 @@ script:
     };
 
 
+
     // The command input arg holds the command sent from the user.
+
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
@@ -904,25 +943,17 @@ script:
       description: <string> The packet ID ranges to search
     - name: search
       required: true
-      description: '<string> The search string to use. Example: "select hit, pretext,
-        posttext where keyword=’netwitness’ sp ci ds". sp = Search Packets ci = Case
-        Insensitive ds = Decode Sessions (e.g., convert email attachments before searching).
-        For regular expressions, change “keyword” to “regex” '
+      description: '<string> The search string to use. Example: "select hit, pretext, posttext where keyword=’netwitness’ sp ci ds". sp = Search Packets ci = Case Insensitive ds = Decode Sessions (e.g., convert email attachments before searching). For regular expressions, change “keyword” to “regex” '
     - name: where
-      description: <string> The where clause used to identify sessions to consider
-        for the search
+      description: <string> The where clause used to identify sessions to consider for the search
     - name: limit
       description: <uint64> The maximum number of sessions to traverse for this search
     - name: flags
-      description: <string> Flags to use for search.  This is a comma separated list
-        of one or more of the flag values regex, sp(scan raw packet data), sm(scan
-        all metadata), si(index lookup for all search parametes before scanning meta),
-        ci(case insensitive)
+      description: <string> Flags to use for search.  This is a comma separated list of one or more of the flag values regex, sp(scan raw packet data), sm(scan all metadata), si(index lookup for all search parametes before scanning meta), ci(case insensitive)
     - name: concentratorIP
       description: <string> Use the instance that is mapped to this concentrator IP
     - name: concentratorPort
-      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and
-        56105 for SSL
+      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and 56105 for SSL
     outputs:
     - contextPath: NetWitness.SearchHits.hit
       description: all search hits in netwitness
@@ -942,8 +973,7 @@ script:
     - name: concentratorIP
       description: <string> Use the instance that is mapped to this concentrator address
     - name: concentratorPort
-      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and
-        56105 for SSL
+      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and 56105 for SSL
     outputs:
     - contextPath: NetWitness.SearchHits
       description: all search hits in netwitness
@@ -951,22 +981,17 @@ script:
   - name: netwitness-query
     arguments:
     - name: id1
-      description: <uint64> The starting meta id (to run the query from most recent
-        to oldest meta, make id1 larger than id2)
+      description: <uint64> The starting meta id (to run the query from most recent to oldest meta, make id1 larger than id2)
     - name: id2
       description: <uint64> The ending meta id
     - name: size
-      description: <uint32> The max number of entries to return, or just stream back
-        all results if zero
+      description: <uint32> The max number of entries to return, or just stream back all results if zero
     - name: query
       description: <string> The query string to use
     - name: flags
-      description: <string> The flags to use for query.  Can be a number (bitwise
-        mask) or comma separated values like query-log.
+      description: <string> The flags to use for query.  Can be a number (bitwise mask) or comma separated values like query-log.
     - name: threshold
-      description: <uint64> Query optimization to stop processing results after the
-        threshold is reached (useful with select aggregate functions).  Zero means
-        no threshold (the default).
+      description: <uint64> Query optimization to stop processing results after the threshold is reached (useful with select aggregate functions).  Zero means no threshold (the default).
     - name: lastHours
       description: <uint64> Filter by last hours
     - name: lastMinutes
@@ -974,8 +999,7 @@ script:
     - name: concentratorIP
       description: <string> Use the instance that is mapped to this concentrator address
     - name: concentratorPort
-      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and
-        56105 for SSL
+      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and 56105 for SSL
     outputs:
     - contextPath: NetWitness.Events.ipSrc
       description: Source IP
@@ -990,17 +1014,13 @@ script:
     - contextPath: NetWitness.Events.userDst
       description: Destination user
     - contextPath: NetWitness.Events.username
-      description: Field includes any username meta available – both source and destination
-        – as defined by the user. This is an optional field that will only appear
-        if configured by the end user.
+      description: Field includes any username meta available – both source and destination – as defined by the user. This is an optional field that will only appear if configured by the end user.
     - contextPath: NetWitness.Events.service
       description: Field describes the service that created the session (if available)
     - contextPath: NetWitness.Events.sessionid
-      description: NW Specific field that contains a NW specific ‘serial number’ of
-        the Session. Allows a user to specify a session to retrieve from a Concentrator.
+      description: NW Specific field that contains a NW specific ‘serial number’ of the Session. Allows a user to specify a session to retrieve from a Concentrator.
     - contextPath: NetWitness.Events.deviceType
-      description: Field describes the type of system that generated a log message
-        (ex. SQUID / Windows / rhlinux)
+      description: Field describes the type of system that generated a log message (ex. SQUID / Windows / rhlinux)
     - contextPath: NetWitness.Events.direction
       description: 'Traffic flow direction (e.g. Inbound/outbound) '
     - contextPath: NetWitness.Events.did
@@ -1016,34 +1036,26 @@ script:
       - start
       - cancel
       - processed
-      description: <string, {enum-one:start|cancel|processed}> The operation to perform
-        (start, cancel, processed)
+      description: <string, {enum-one:start|cancel|processed}> The operation to perform (start, cancel, processed)
     - name: sessions
       required: true
-      description: <string> A comma separated list of session ids or session id ranges
-        (#-#) whose packets will be streamed back.
+      description: <string> A comma separated list of session ids or session id ranges (#-#) whose packets will be streamed back.
     - name: packets
-      description: <string> A comma separated list of packet ids or session/packet
-        ids (#&#) that will be streamed back.
+      description: <string> A comma separated list of packet ids or session/packet ids (#&#) that will be streamed back.
     - name: where
-      description: <string> Where clause which will be evaluated to determine which
-        sessions to stream back
+      description: <string> Where clause which will be evaluated to determine which sessions to stream back
     - name: time1
-      description: <date-time> A starting time range (UTC) where matching packets
-        will be streamed back ("2010-Apr-20 09:00:00")
+      description: <date-time> A starting time range (UTC) where matching packets will be streamed back ("2010-Apr-20 09:00:00")
     - name: time2
-      description: <date-time> An ending time range (UTC) where matching packets will
-        be streamed back ("2010-Apr-20 10:00:00")
+      description: <date-time> An ending time range (UTC) where matching packets will be streamed back ("2010-Apr-20 10:00:00")
     - name: flags
       description: <uint32> Additional flags as defined by the NwPackets SDK function
     - name: concentratorIP
       description: <string> Use the instance that is mapped to this concentrator address
     - name: concentratorPort
-      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and
-        56105 for SSL
+      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and 56105 for SSL
     - name: render
-      description: <string> The render type - pcap, logs, logs (csv), logs (xml) or
-        logs (json)
+      description: <string> The render type - pcap, logs, logs (csv), logs (xml) or logs (json)
     description: Stream packets back based on the input parameters provided
   - name: nw-sdk-session
     arguments:
@@ -1056,16 +1068,14 @@ script:
     - name: concentratorIP
       description: <string> Use the instance that is mapped to this concentrator IP
     - name: concentratorPort
-      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and
-        56105 for SSL
+      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and 56105 for SSL
     description: Retrieves the meta id range for the session range
   - name: nw-sdk-content
     arguments:
     - name: concentratorIP
       description: <string> Use the instance that is mapped to this concentrator IP
     - name: concentratorPort
-      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and
-        56105 for SSL
+      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and 56105 for SSL
     - name: session
       required: true
       description: <uint64> The session id that will be returned in the response.
@@ -1085,52 +1095,38 @@ script:
       - files
       - pcap
       - filelist
-      description: '<string> The render type (defined in NwSDK.h) for content or one
-        of the following render types: text, hex, packets, web, mail, raw, rtp, voip,
-        meta, im, files or pcap'
+      description: '<string> The render type (defined in NwSDK.h) for content or one of the following render types: text, hex, packets, web, mail, raw, rtp, voip, meta, im, files or pcap'
     - name: maxSize
-      description: <uint64> The maximum size of the session returned (bytes), zero
-        is unlimited. Default is zero.
+      description: <uint64> The maximum size of the session returned (bytes), zero is unlimited. Default is zero.
     - name: base64
-      description: <binary> If 1, encode the multipart/mixed response as base64. Otherwise
-        binary is the default.
+      description: <binary> If 1, encode the multipart/mixed response as base64. Otherwise binary is the default.
     - name: flags
-      description: <string> Optional flags for content rendering, see the SDK header
-        file NwContent flags parameter for more info.
+      description: <string> Optional flags for content rendering, see the SDK header file NwContent flags parameter for more info.
     - name: includeFileTypes
-      description: <string> Semicolon separated list of file extensions that will
-        be extracted (e.g. .ext1;.ext2).
+      description: <string> Semicolon separated list of file extensions that will be extracted (e.g. .ext1;.ext2).
     - name: excludeFileTypes
-      description: <string> Semicolon separated list of file extensions that will
-        be excluded (e.g. .ext1;.ext2).
+      description: <string> Semicolon separated list of file extensions that will be excluded (e.g. .ext1;.ext2).
     - name: renameFileTypes
-      description: '<string> Used to rename certain files from one or more extensions
-        to another. For example: renameFileTypes=.download|.octet-stream|.program|.exe;.jpeg|.jpg'
+      description: '<string> Used to rename certain files from one or more extensions to another. For example: renameFileTypes=.download|.octet-stream|.program|.exe;.jpeg|.jpg'
     - name: fileExt
       description: <string> Extension of the file (e.g. .zip, .exe etc.)
     - name: where
-      description: <string> Where clause which will be evaluated to determine which
-        sessions to stream back
+      description: <string> Where clause which will be evaluated to determine which sessions to stream back
     - name: subdirFileTypes
-      description: <string> Group these files into the specified directory, e.g. documents=.doc;.xls;.pdf;
-        images=.png;.gif;.jpg;.jpeg;
+      description: <string> Group these files into the specified directory, e.g. documents=.doc;.xls;.pdf; images=.png;.gif;.jpg;.jpeg;
     - name: maxDirSize
-      description: <uint32> Once the toplevel directory exceeds this size, the oldest
-        files will get cleaned up.
+      description: <uint32> Once the toplevel directory exceeds this size, the oldest files will get cleaned up.
     - name: renderFlags
-      description: ' <uint32> Bitwise mask to control options, (see NwContentFlags
-        in NwSDK.h)'
+      description: ' <uint32> Bitwise mask to control options, (see NwContentFlags in NwSDK.h)'
     description: Returns the packet content for a session
   - name: nw-sdk-summary
     arguments:
     - name: flags
-      description: <string> Optional SDK flags.  Can be a number (bitwise mask) or
-        comma separated values like default or ignore-cache.
+      description: <string> Optional SDK flags.  Can be a number (bitwise mask) or comma separated values like default or ignore-cache.
     - name: concentratorIP
       description: <string> Use the instance that is mapped to this concentrator IP
     - name: concentratorPort
-      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and
-        56105 for SSL
+      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and 56105 for SSL
     description: Retrieves summary information from the databases
   - name: nw-sdk-values
     arguments:
@@ -1139,14 +1135,10 @@ script:
     - name: id2
       description: <uint64> The ending meta id
     - name: size
-      description: <uint32, {range:1 to 1677721}> The max number of entries to return,
-        default 100
+      description: <uint32, {range:1 to 1677721}> The max number of entries to return, default 100
       defaultValue: "100"
     - name: flags
-      description: <string> The flags to use for values.  Can be a number (bitwise
-        mask) or comma separated values like sessions, size, packets, aggregate, sort-total,
-        sort-value, order-ascending, order-descending, ignore-cache, clear-cache,
-        query-log or database-scan.
+      description: <string> The flags to use for values.  Can be a number (bitwise mask) or comma separated values like sessions, size, packets, aggregate, sort-total, sort-value, order-ascending, order-descending, ignore-cache, clear-cache, query-log or database-scan.
     - name: threshold
       description: <uint64> Query optimization to stop processing large session counts
     - name: fieldName
@@ -1155,21 +1147,17 @@ script:
     - name: where
       description: <string> The filter criteria for the values
     - name: aggregateFunction
-      description: <string, {enum-one:count|sum}> The aggregate operation to be applied
-        where the aggregate flag is set
+      description: <string, {enum-one:count|sum}> The aggregate operation to be applied where the aggregate flag is set
     - name: aggregateFieldName
       description: <string> The meta field to aggregate in the aggregateFunction
     - name: min
-      description: <string> The lower limit of values to return.  Only values greater
-        than this value will be returned.
+      description: <string> The lower limit of values to return.  Only values greater than this value will be returned.
     - name: max
-      description: <string> The upper limit of values to return.  Only values less
-        than this value will be returned.
+      description: <string> The upper limit of values to return.  Only values less than this value will be returned.
     - name: concentratorIP
       description: <string> Use the instance that is mapped to this concentrator IP
     - name: concentratorPort
-      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and
-        56105 for SSL
+      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and 56105 for SSL
     outputs:
     - contextPath: NetWitness.Values.ipSrc
       description: Source IP
@@ -1184,25 +1172,20 @@ script:
     - contextPath: NetWitness.Values.userDst
       description: Destination user
     - contextPath: NetWitness.Values.username
-      description: Field includes any username meta available – both source and destination
-        – as defined by the user. This is an optional field that will only appear
-        if configured by the end user.
+      description: Field includes any username meta available – both source and destination – as defined by the user. This is an optional field that will only appear if configured by the end user.
     - contextPath: NetWitness.Values.service
       description: Field describes the service that created the session (if available)
     - contextPath: NetWitness.Values.sessionid
-      description: NW Specific field that contains a NW specific ‘serial number’ of
-        the Session. Allows a user to specify a session to retrieve from a Concentrator.
+      description: NW Specific field that contains a NW specific ‘serial number’ of the Session. Allows a user to specify a session to retrieve from a Concentrator.
     - contextPath: NetWitness.Values.deviceType
-      description: Field describes the type of system that generated a log message
-        (ex. SQUID / Windows / rhlinux)
+      description: Field describes the type of system that generated a log message (ex. SQUID / Windows / rhlinux)
     - contextPath: NetWitness.Values.direction
       description: 'Traffic flow direction (e.g. Inbound/outbound) '
     - contextPath: NetWitness.Values.did
       description: Specific Decoder a session was captured on
     - contextPath: NetWitness.Values.ioc
       description: Endpoint specific meta that describes malware on an endpoint.
-    description: Performs a value count query and returns the matching values for
-      a report
+    description: Performs a value count query and returns the matching values for a report
   - name: nw-database-dump
     arguments:
     - name: session
@@ -1211,18 +1194,15 @@ script:
     - name: type
       description: <string, {enum-one:db|nwd}> The dump type
     - name: source
-      description: <string, {enum-any:s|m|p}> The types of data to dump, default is
-        m
+      description: <string, {enum-any:s|m|p}> The types of data to dump, default is m
       defaultValue: m
     - name: verbose
       description: <bool> If true (default is false), dumps more information
     - name: file
-      description: <string> Optional filename to use for NWD type, otherwise filename
-        is assumed to be _sessionid_.nwd
+      description: <string> Optional filename to use for NWD type, otherwise filename is assumed to be _sessionid_.nwd
     - name: concentratorIP
       description: <string> Use the instance that is mapped to this concentrator IP
     - name: concentratorPort
-      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and
-        56105 for SSL
+      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and 56105 for SSL
     description: Dumps information out of the database in nwd formatted files
-fromversion: 3.5.0
+fromversion: 5.0.0

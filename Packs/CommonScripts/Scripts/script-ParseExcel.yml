@@ -2,19 +2,27 @@ commonfields:
   id: ParseExcel
   version: -1
 name: ParseExcel
-script: |-
+script: >-
   import xlrd
+
 
   fileEntryID = demisto.args()['entryId']
 
+
   res = demisto.executeCommand('getFilePath', {'id': fileEntryID})
+
 
   filePath = res[0]['Contents']['path']
 
+
   workbook = xlrd.open_workbook(filePath, on_demand = True)
+
   sheet_names = workbook.sheet_names()
+
   sheets = []
+
   context = {}
+
 
   for sheetnum in range(workbook.nsheets):
       worksheet = workbook.sheet_by_index(sheetnum)
@@ -53,3 +61,4 @@ runonce: false
 dockerimage: demisto/xlrd
 tests:
 - ParseExcel-test
+fromversion: 5.0.0

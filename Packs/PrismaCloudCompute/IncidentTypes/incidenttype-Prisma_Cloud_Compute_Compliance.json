@@ -20,5 +20,6 @@
 	"version": -1,
 	"fromVersion": "5.0.0",
 	"weeks": 0,
-	"weeksR": 0
+	"weeksR": 0,
+	"layout": "Prisma Cloud Compute Compliance"
 }

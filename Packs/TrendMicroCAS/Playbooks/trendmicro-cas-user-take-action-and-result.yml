@@ -1,0 +1,244 @@
+id: Trend Micro CAS - Take Action On User Accounts
+version: -1
+name: Trend Micro CAS - Take Action On User Accounts
+description: This playbook runs various actions on a user's account, such as disabling accounts, requesting multi-factor authentication, and requesting a password, using the "trendmicro-cas-user-take-action" command and returns the result using the "trendmicro-cas-user-action-result-query" command.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fd8c8502-b3a9-48dd-867e-82ee195f1bb9
+    type: start
+    task:
+      id: fd8c8502-b3a9-48dd-867e-82ee195f1bb9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 51051907-e34f-4745-84f0-c938b3f6520b
+    type: regular
+    task:
+      id: 51051907-e34f-4745-84f0-c938b3f6520b
+      version: -1
+      name: user-take-action
+      description: |-
+        Takes actions on a batch of specified user accounts, including disabling a user's account, requesting multi-factor authentication (MFA) for a user's account, and requesting to reset password for a user's account.
+        Relevant for office365 - exchange only.
+      script: TrendMicro Cloud App Security|||trendmicro-cas-user-take-action
+      type: regular
+      iscommand: true
+      brand: TrendMicro Cloud App Security
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      account_user_email:
+        simple: ${inputs.account_user_email}
+      action_type:
+        simple: ${inputs.action_type}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 68238499-7810-4a27-88fa-1f349b973f01
+    type: playbook
+    task:
+      id: 68238499-7810-4a27-88fa-1f349b973f01
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: TrendMicroCAS
+          accessor: UserTakeAction.batch_id
+          transformers:
+          - operator: LastArrayElement
+      Interval:
+        simple: ${inputs.Interval}
+      PollingCommandArgName:
+        simple: batch_id
+      PollingCommandName:
+        simple: trendmicro-cas-user-action-result-query
+      Timeout:
+        simple: ${inputs.Timeout}
+      dt:
+        simple: TrendMicroCAS.UserActionResult(val.status!=='Success'&&val.status!=='Failed'&&val.status!=='Skipped').batch_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 31fe4042-2370-4726-8fbb-d93ad3223e00
+    type: regular
+    task:
+      id: 31fe4042-2370-4726-8fbb-d93ad3223e00
+      version: -1
+      name: user-take-action-result
+      description: Queries the results of actions on user accounts.
+      script: '|||trendmicro-cas-user-action-result-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      batch_id:
+        complex:
+          root: TrendMicroCAS
+          accessor: UserTakeAction.batch_id
+          transformers:
+          - operator: LastArrayElement
+      end: {}
+      limit: {}
+      start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 575,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: action_type
+  value: {}
+  required: true
+  description: |-
+    Action to take on an email message. Options include:
+    MAIL_DELETE: deletes an email message
+    MAIL_QUARANTINE: quarantines an email message
+  playbookInputQuery:
+- key: account_user_email
+  value: {}
+  required: true
+  description: The account user email for which to take action.
+  playbookInputQuery:
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs:
+- contextPath: TrendMicroCAS.UserActionResult.account_provider
+  description: The provider of the protected service.
+  type: String
+- contextPath: TrendMicroCAS.UserActionResult.account_user_email
+  description: The email address used to create the user account on which an action was
+    taken.
+  type: String
+- contextPath: TrendMicroCAS.UserActionResult.action_executed_at
+  description: The time and date when the action was processed.
+  type: Date
+- contextPath: TrendMicroCAS.UserActionResult.action_id
+  description: The unique ID of a threat mitigation task.
+  type: String
+- contextPath: TrendMicroCAS.UserActionResult.action_requested_at
+  description: The time and date when the API request containing the action was received.
+  type: Date
+- contextPath: TrendMicroCAS.UserActionResult.action_type
+  description: The action taken on a user's account.
+  type: String
+- contextPath: TrendMicroCAS.UserActionResult.batch_id
+  description: The unique ID of a Threat Mitigation API request.
+  type: String
+- contextPath: TrendMicroCAS.UserActionResult.error_code
+  description: The result code of the action.
+  type: Number
+- contextPath: TrendMicroCAS.UserActionResult.error_message
+  description: The string describing the result code.
+  type: String
+- contextPath: TrendMicroCAS.UserActionResult.service
+  description: The name of the protected service.
+  type: String
+- contextPath: TrendMicroCAS.UserActionResult.status
+  description: 'Status of the action taken. Can be: "Created": The API request
+    containing the action is received. "Executing": The action is executing. "Success":
+    The action was successful. "Skipped": The action was skipped.
+    "Failed": The action failed.'
+  type: String
+fromversion: 5.0.0
+tests:
+- playbook_TrendmicroCAS_Test

@@ -2,17 +2,22 @@ commonfields:
   id: GenerateSummaryReports
   version: -1
 name: GenerateSummaryReports
-fromversion: 4.1.0
-script: |
+fromversion: 5.0.0
+script: >
   var res = [];
+
   var ids = argToList(args.ids);
+
   if(!Array.isArray(ids)) {
       ids = [ids]; //single element case
   }
+
   ids = ids.filter(function(value, index, self) { // make sure array is unique
       return self.indexOf(value) === index;
   });
+
   var ec = {SummaryReports: []};
+
   ids.forEach(function(id) {
       var reportEntries =  executeCommand("generateSummaryReport", {name: args.name, type: args.type, incidentId: id});
       res = res.concat(reportEntries);
@@ -21,6 +26,7 @@ script: |
       }
       wait(1); //required to avoid generated file name conflicts
   });
+
   if(ec.SummaryReports.length > 0) {
       res.push({
           Type: entryTypes.note,
@@ -30,6 +36,7 @@ script: |
           EntryContext: ec
       });
   }
+
   return res;
 type: javascript
 tags:
@@ -38,7 +45,7 @@ comment: Generate report summaries for the passed incidents.
 enabled: true
 args:
 - name: name
-  description: Name of the report to generate.
+  description: Template name of the generated report in the incident.
   defaultValue: Investigation Summary
 - name: type
   description: Report type to generate.
@@ -64,4 +71,4 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 tests:
-  - Send Investigation Summary Reports - Test
+- Send Investigation Summary Reports - Test

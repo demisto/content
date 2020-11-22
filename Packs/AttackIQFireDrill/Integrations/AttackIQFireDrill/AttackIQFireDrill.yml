@@ -19,8 +19,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: An attack simulation platform that provides validations for security
-  controls, responses, and remediation exercises.
+description: An attack simulation platform that provides validations for security controls, responses, and remediation exercises.
 display: AttackIQ Platform
 name: AttackIQFireDrill
 script:
@@ -113,8 +112,7 @@ script:
       description: The total number of assessments.
       type: Number
     - contextPath: AttackIQ.Assessment.RemainingPages
-      description: The number of remaining pages to return. For example, if the total
-        number of pages is 6, and the last fetch was page 5, the value is 1.
+      description: The number of remaining pages to return. For example, if the total number of pages is 6, and the last fetch was page 5, the value is 1.
       type: Number
   - arguments:
     - default: false
@@ -227,9 +225,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Runs only on-demand tests in the assessment. If true, executes tests
-        in the assessment that are not scheduled to run. If false, executes all tests
-        in the assessment including scheduled tests. Default is false.
+      description: Runs only on-demand tests in the assessment. If true, executes tests in the assessment that are not scheduled to run. If false, executes all tests in the assessment including scheduled tests. Default is false.
       isArray: false
       name: on_demand_only
       predefined:
@@ -249,8 +245,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns an assessment execution status when running an on-demand
-      execution only.
+    description: Returns an assessment execution status when running an on-demand execution only.
     execution: false
     name: attackiq-get-assessment-execution-status
     outputs:
@@ -382,8 +377,7 @@ script:
       description: Whether the test uses the default schedule.
       type: Boolean
     - contextPath: AttackIQTest.RemainingPages
-      description: The number of remaining pages to return. For example, if the total
-        number of pages is 6, and the last fetch was page 5, the value is 1.
+      description: The number of remaining pages to return. For example, if the total number of pages is 6, and the last fetch was page 5, the value is 1.
       type: Number
     - contextPath: AttackIQTest.Count
       description: The total number of tests.
@@ -421,8 +415,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Filters results according to user choice. If set to Passed, will
-        return only passed tests. If set to Failed, will return only failed tests.
+      description: Filters results according to user choice. If set to Passed, will return only passed tests. If set to Failed, will return only failed tests.
       isArray: false
       name: outcome_filter
       predefined:
@@ -484,8 +477,7 @@ script:
       description: The result outcome of the test.
       type: String
     - contextPath: AttackIQTestResult.RemainingPages
-      description: The number of remaining pages to return. For example, if the total
-        number pages is 6, and the last fetch was page 5, the value is 1.
+      description: The number of remaining pages to return. For example, if the total number pages is 6, and the last fetch was page 5, the value is 1.
       type: Number
     - contextPath: AttackIQTestResult.Count
       description: The total number of tests.
@@ -651,8 +643,7 @@ script:
       description: The total number of assessments.
       type: Number
     - contextPath: AttackIQ.Assessment.RemainingPages
-      description: The number of remaining pages to return. For example, if the total
-        number of pages is 6, and the last fetch was page 5, the value is 1.
+      description: The number of remaining pages to return. For example, if the total number of pages is 6, and the last fetch was page 5, the value is 1.
       type: Number
   - arguments:
     - default: false
@@ -688,7 +679,7 @@ script:
     description: Deletes an assessment.
     execution: false
     name: attackiq-delete-assessment
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.8.3.9324
   isfetch: false
   runonce: false
   script: '-'
@@ -696,3 +687,4 @@ script:
   subtype: python3
 tests:
 - AttackIQ - Test
+fromversion: 5.0.0

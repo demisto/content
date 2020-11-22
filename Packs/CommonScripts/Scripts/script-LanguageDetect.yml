@@ -2,13 +2,17 @@ commonfields:
   id: LanguageDetect
   version: -1
 name: LanguageDetect
-script: |
+script: >
   from langdetect import detect_langs
+
 
   res = detect_langs(demisto.args()["text"])
 
+
   md = "### Detected languages (probability):\n"
+
   langs = []
+
 
   for line in res:
       lang = str(line).split(':')[0]
@@ -35,3 +39,4 @@ outputs:
   description: Probability of language detection
 scripttarget: 0
 dockerimage: demisto/langdetect
+fromversion: 5.0.0

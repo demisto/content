@@ -1,8 +1,7 @@
 id: Test Playbook TrendMicroDDA
 version: -1
 name: Test Playbook TrendMicroDDA
-description: Test playbook for Trend Micro DDA integration, including the detonate
-  File/URL playbooks.
+description: Test playbook for Trend Micro DDA integration, including the detonate File/URL playbooks.
 starttaskid: "0"
 tasks:
   "0":
@@ -124,8 +123,7 @@ tasks:
       id: 2e89f1f0-ccde-416f-8175-1b25c774f6a3
       version: -1
       name: get-report AreValuesEqual
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -482,3 +480,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

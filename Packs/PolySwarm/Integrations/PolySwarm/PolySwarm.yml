@@ -51,15 +51,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The value of the file hash for which to retrieve the reputation information. The hash type can be: "SHA256",
-        "SHA1", or "MD5".'
+      description: 'The value of the file hash for which to retrieve the reputation information. The hash type can be: "SHA256", "SHA1", or "MD5".'
       isArray: false
       name: hash
       required: false
       secret: false
     - default: true
-      description: 'The type of the file hash for which to retrieve the reputation information. The hash type can be: "SHA256",
-        "SHA1", or "MD5".'
+      description: 'The type of the file hash for which to retrieve the reputation information. The hash type can be: "SHA256", "SHA1", or "MD5".'
       isArray: false
       name: file
       required: false
@@ -299,3 +297,4 @@ script:
   script: '-'
   subtype: python2
   type: python
+fromversion: 5.0.0

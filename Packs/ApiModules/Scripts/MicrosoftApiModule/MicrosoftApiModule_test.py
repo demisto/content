@@ -58,7 +58,8 @@ def self_deployed_client():
                            resource=resource, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
 
-def test_error_parser():
+def test_error_parser(mocker):
+    mocker.patch.object(demisto, 'error')
     err = Response()
     err.status_code = 401
     err._content = b'{"error":{"code":"code","message":"message"}}'
@@ -200,7 +201,8 @@ def test_oproxy_request(mocker, requests_mock, client, enc_content, tokens, res)
     body = {
         'app_name': APP_NAME,
         'registration_id': AUTH_ID,
-        'encrypted_token': enc_content + ENC_KEY
+        'encrypted_token': enc_content + ENC_KEY,
+        'scope': None
     }
     mocker.patch.object(client, '_add_info_headers')
     mocker.patch.object(client, 'get_encrypted', side_effect=get_encrypted)

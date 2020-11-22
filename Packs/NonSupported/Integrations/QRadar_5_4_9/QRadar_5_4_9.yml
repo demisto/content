@@ -59,11 +59,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'If used, will filter all fields except for the specified ones.
-        Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not named are excluded. Specify subfields in brackets
-        and multiple fields in the same object are separated by commas. The filter
-        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html'
+      description: 'If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html'
       isArray: false
       name: fields
       required: false
@@ -75,8 +71,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+      description: Table headers to use the human readable output (if none provided, will show all table headers)
       isArray: false
       name: headers
       required: false
@@ -99,16 +94,10 @@ script:
       description: The source addresses that are associated with the offense.
       type: Unknown
     - contextPath: QRadar.Offense.DestinationAddress
-      description: The local destination addresses that are associated with the offense.
-        If your offense has a remote destination, you will need to use QRadarFullSearch
-        playbook with the following query - SELECT destinationip FROM events WHERE
-        inOffense(<offenseID>) GROUP BY destinationip
+      description: The local destination addresses that are associated with the offense. If your offense has a remote destination, you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
       type: Unknown
     - contextPath: QRadar.Offense.RemoteDestinationCount
-      description: The remote destination that are associated with the offesne. If
-        this value is greater than 0 that means your offense has a remote destination,
-        you will need to use QRadarFullSearch playbook with the following query -
-        SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
+      description: The remote destination that are associated with the offesne. If this value is greater than 0 that means your offense has a remote destination, you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
       type: Unknown
     - contextPath: QRadar.Offense.StartTime
       description: The time (ISO) when the offense was started.
@@ -123,8 +112,7 @@ script:
       description: The time (ISO) when the offense was last updated.
       type: date
     - contextPath: QRadar.Offense.OffenseType
-      description: The offense type (due to API limitations if username and password
-        were not provided, this value will be the id of offense type)
+      description: The offense type (due to API limitations if username and password were not provided, this value will be the id of offense type)
       type: string
   - arguments:
     - default: true
@@ -140,18 +128,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'If used, will filter all fields except for the specified ones.
-        Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not named are excluded. Specify subfields in brackets
-        and multiple fields in the same object are separated by commas. The filter
-        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html'
+      description: 'If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html'
       isArray: false
       name: fields
       required: false
       secret: false
     - default: false
-      description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+      description: Table headers to use the human readable output (if none provided, will show all table headers)
       isArray: false
       name: headers
       required: false
@@ -174,16 +157,10 @@ script:
       description: The source addresses that are associated with the offense.
       type: Unknown
     - contextPath: QRadar.Offense.DestinationAddress
-      description: The local destination addresses that are associated with the offense.
-        If your offense has a remote destination, you will need to use QRadarFullSearch
-        playbook with the following query - SELECT destinationip FROM events WHERE
-        inOffense(<offenseID>) GROUP BY destinationip
+      description: The local destination addresses that are associated with the offense. If your offense has a remote destination, you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
       type: Unknown
     - contextPath: QRadar.Offense.RemoteDestinationCount
-      description: The remote destination that are associated with the offesne. If
-        this value is greater than 0 that means your offense has a remote destination,
-        you will need to use QRadarFullSearch playbook with the following query -
-        SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
+      description: The remote destination that are associated with the offesne. If this value is greater than 0 that means your offense has a remote destination, you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
       type: Unknown
     - contextPath: QRadar.Offense.AssignedTo
       description: The user the offense is assigned to.
@@ -241,23 +218,19 @@ script:
       type: boolean
   - arguments:
     - default: true
-      description: The query expressions in AQL (for more information about Ariel
-        Query Language please review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html")
+      description: The query expressions in AQL (for more information about Ariel Query Language please review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html")
       isArray: false
       name: query_expression
       required: true
       secret: false
     - default: false
-      description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+      description: Table headers to use the human readable output (if none provided, will show all table headers)
       isArray: false
       name: headers
       required: false
       secret: false
     deprecated: false
-    description: Searches in QRadar using AQL. It is highly recommended to use the
-      playbook 'QRadarFullSearch' instead of this command - it will execute the search,
-      and will return the result.
+    description: Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRadarFullSearch' instead of this command - it will execute the search, and will return the result.
     execution: false
     name: qradar-searches
     outputs:
@@ -275,8 +248,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+      description: Table headers to use the human readable output (if none provided, will show all table headers)
       isArray: false
       name: headers
       required: false
@@ -306,16 +278,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+      description: Table headers to use the human readable output (if none provided, will show all table headers)
       isArray: false
       name: headers
       required: false
       secret: false
     - default: false
-      description: Replaces the default context output path for the query result (QRadar.Search.Result).
-        e.g. for output_path=QRadar.Correlations the result will be under the key
-        "QRadar.Correlations" in the context data.
+      description: Replaces the default context output path for the query result (QRadar.Search.Result). e.g. for output_path=QRadar.Correlations the result will be under the key "QRadar.Correlations" in the context data.
       isArray: false
       name: output_path
       required: false
@@ -367,17 +336,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The id of a closing reason. You must provide a valid closing_reason_name
-        when you close an offense. The default  closing_reasons are: (1) False-Positive,
-        Tuned (2) Non-Issues (3) Policy Violation'
+      description: 'The id of a closing reason. You must provide a valid closing_reason_name when you close an offense. The default  closing_reasons are: (1) False-Positive, Tuned (2) Non-Issues (3) Policy Violation'
       isArray: false
       name: closing_reason_id
       required: false
       secret: false
     - default: false
-      description: 'The name of a closing reason. You must provide a valid closing_reason_name
-        when you close an offense. The default  closing_reasons are: (1) False-Positive,
-        Tuned (2) Non-Issues (3) Policy Violation'
+      description: 'The name of a closing reason. You must provide a valid closing_reason_name when you close an offense. The default  closing_reasons are: (1) False-Positive, Tuned (2) Non-Issues (3) Policy Violation'
       isArray: false
       name: closing_reason_name
       required: false
@@ -395,10 +360,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Use this parameter to specify which fields you would like to get
-        back in the response. Fields that are not named are excluded. Specify subfields
-        in brackets and multiple fields in the same object are separated by commas.
-        Please consult - https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-POST.html
+      description: Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. Please consult - https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-POST.html
       isArray: false
       name: fields
       required: false
@@ -485,11 +447,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'If used, will filter all fields except for the specified ones.
-        Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not named are excluded. Specify subfields in brackets
-        and multiple fields in the same object are separated by commas. The filter
-        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--asset_model-assets-GET.html'
+      description: 'If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--asset_model-assets-GET.html'
       isArray: false
       name: fields
       required: false
@@ -501,8 +459,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+      description: Table headers to use the human readable output (if none provided, will show all table headers)
       isArray: false
       name: headers
       required: false
@@ -625,8 +582,7 @@ script:
       type: string
   - arguments:
     - default: true
-      description: The query expressions in AQL (for more information about Ariel
-        Query Language please review https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html)
+      description: The query expressions in AQL (for more information about Ariel Query Language please review https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html)
       isArray: false
       name: query_expression
       required: true
@@ -701,8 +657,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The ID of a closing reason. You must provide a valid closing_reason_id
-        when you close an offense
+      description: The ID of a closing reason. You must provide a valid closing_reason_id when you close an offense
       isArray: false
       name: closing_reason_id
       required: false
@@ -745,9 +700,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The name of a closing reason. You must provide a valid closing_reason_name
-        when you close an offense. The default  closing_reasons are: (1) False-Positive,
-        Tuned (2) Non-Issues (3) Policy Violation'
+      description: 'The name of a closing reason. You must provide a valid closing_reason_name when you close an offense. The default  closing_reasons are: (1) False-Positive, Tuned (2) Non-Issues (3) Policy Violation'
       isArray: false
       name: closing_reason_name
       required: false
@@ -765,9 +718,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Use this parameter to specify which fields you would like to get
-        back in the response. Fields that are not named are excluded. Specify subfields
-        in brackets and multiple fields in the same object are separated by commas
+      description: Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas
       isArray: false
       name: fields
       required: false
@@ -969,11 +920,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'If used, will filter all fields except for the specified ones.
-        Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not named are excluded. Specify subfields in brackets
-        and multiple fields in the same object are separated by commas. The filter
-        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offense_closing_reasons-GET.html'
+      description: 'If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offense_closing_reasons-GET.html'
       isArray: false
       name: fields
       required: false
@@ -1009,18 +956,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'If used, will filter all fields except for the specified ones.
-        Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not named are excluded. Specify subfields in brackets
-        and multiple fields in the same object are separated by commas. The filter
-        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html'
+      description: 'If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html'
       isArray: false
       name: fields
       required: false
       secret: false
     - default: false
-      description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+      description: Table headers to use the human readable output (if none provided, will show all table headers)
       isArray: false
       name: headers
       required: false
@@ -1056,18 +998,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'If used, will filter all fields except for the specified ones.
-        Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not named are excluded. Specify subfields in brackets
-        and multiple fields in the same object are separated by commas. The filter
-        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
+      description: 'If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
       isArray: false
       name: fields
       required: false
       secret: false
     - default: false
-      description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+      description: Table headers to use the human readable output (if none provided, will show all table headers)
       isArray: false
       name: headers
       required: false
@@ -1097,8 +1034,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+      description: Table headers to use the human readable output (if none provided, will show all table headers)
       isArray: false
       name: headers
       required: false
@@ -1106,8 +1042,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: If set to true will try to convert the data values to ISO-8601
-        string.
+      description: If set to true will try to convert the data values to ISO-8601 string.
       isArray: false
       name: date_value
       predefined:
@@ -1116,9 +1051,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Information about the reference set that had data added or updated.
-      This returns information set but not the contained data. This feature is supported
-      from version 8.1 and upward.
+    description: Information about the reference set that had data added or updated. This returns information set but not the contained data. This feature is supported from version 8.1 and upward.
     execution: false
     name: qradar-get-reference-by-name
     outputs:
@@ -1152,11 +1085,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The element type for the values allowed in the reference set.
-        The allowed values are: ALN (alphanumeric), ALNIC (alphanumeric ignore case),
-        IP (IP address), NUM (numeric), PORT (port number) or DATE. Note that date
-        values need to be represented in milliseconds since the Unix Epoch January
-        1st 1970.'
+      description: 'The element type for the values allowed in the reference set. The allowed values are: ALN (alphanumeric), ALNIC (alphanumeric ignore case), IP (IP address), NUM (numeric), PORT (port number) or DATE. Note that date values need to be represented in milliseconds since the Unix Epoch January 1st 1970.'
       isArray: false
       name: element_type
       predefined:
@@ -1170,8 +1099,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The allowed values are "FIRST_SEEN", LAST_SEEN and UNKNOWN. The
-        default value is UNKNOWN.
+      description: The allowed values are "FIRST_SEEN", LAST_SEEN and UNKNOWN. The default value is UNKNOWN.
       isArray: false
       name: timeout_type
       predefined:
@@ -1187,8 +1115,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates a new reference set. If the provided name is already in use,
-      this command will fail
+    description: Creates a new reference set. If the provided name is already in use, this command will fail
     execution: false
     name: qradar-create-reference-set
     outputs:
@@ -1196,9 +1123,7 @@ script:
       description: Creation time of the reference set.
       type: date
     - contextPath: QRadar.Reference.ElementType
-      description: 'The element type for the values allowed in the reference set.
-        The allowed values are: ALN (alphanumeric), ALNIC (alphanumeric ignore case),
-        IP (IP address), NUM (numeric), PORT (port number) or DATE.'
+      description: 'The element type for the values allowed in the reference set. The allowed values are: ALN (alphanumeric), ALNIC (alphanumeric ignore case), IP (IP address), NUM (numeric), PORT (port number) or DATE.'
       type: string
     - contextPath: QRadar.Reference.Name
       description: Name of the reference set.
@@ -1207,8 +1132,7 @@ script:
       description: Number of elements in the created reference set.
       type: number
     - contextPath: QRadar.Reference.TimeoutType
-      description: Timeout type of the reference. The allowed values are FIRST_SEEN,
-        LAST_SEEN and UNKNOWN.
+      description: Timeout type of the reference. The allowed values are FIRST_SEEN, LAST_SEEN and UNKNOWN.
       type: string
   - arguments:
     - default: true
@@ -1229,18 +1153,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The value/s to add or update in the reference set. Note: Date
-        values must be represented in epoch in reference sets (milliseconds since
-        the Unix Epoch January 1st 1970). If ''date_value'' is set to ''True'', then
-        the argument will be converted from date in format: ''%Y-%m-%dT%H:%M:%S.%f000Z''
-        (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      description: 'The value/s to add or update in the reference set. Note: Date values must be represented in epoch in reference sets (milliseconds since the Unix Epoch January 1st 1970). If ''date_value'' is set to ''True'', then the argument will be converted from date in format: ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
       isArray: true
       name: value
       required: true
       secret: false
     - default: false
-      description: An indication of where the data originated. The default value is
-        'reference data api'.
+      description: An indication of where the data originated. The default value is 'reference data api'.
       isArray: false
       name: source
       required: false
@@ -1248,8 +1167,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: 'If set to True will convert ''value'' argument from date in format:
-        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      description: 'If set to True will convert ''value'' argument from date in format: ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
       isArray: false
       name: date_value
       predefined:
@@ -1285,16 +1203,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: ' A comma-separated list of values to add or update in the reference set. Date
-        values must be represented in milliseconds since the Unix Epoch January 1st
-        1970.'
+      description: ' A comma-separated list of values to add or update in the reference set. Date values must be represented in milliseconds since the Unix Epoch January 1st 1970.'
       isArray: true
       name: value
       required: true
       secret: false
     - default: false
-      description: An indication of where the data originated. The default value is
-        'reference data api'.
+      description: An indication of where the data originated. The default value is 'reference data api'.
       isArray: false
       name: source
       required: false
@@ -1302,8 +1217,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: 'If set to True will convert ''value'' argument from date in format:
-        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      description: 'If set to True will convert ''value'' argument from date in format: ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
       isArray: false
       name: date_value
       predefined:
@@ -1347,8 +1261,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: 'If set to True will convert ''value'' argument from date in format:
-        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      description: 'If set to True will convert ''value'' argument from date in format: ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
       isArray: false
       name: date_value
       predefined:
@@ -1378,11 +1291,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: 'If used, will filter all fields except for the specified ones.
-        Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not named are excluded. Specify subfields in brackets
-        and multiple fields in the same object are separated by commas. The filter
-        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
+      description: 'If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
       isArray: false
       name: fields
       required: false
@@ -1451,11 +1360,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'If used, will filter all fields except for the specified ones.
-        Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not named are excluded. Specify subfields in brackets
-        and multiple fields in the same object are separated by commas. The filter
-        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
+      description: 'If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
       isArray: false
       name: fields
       required: false
@@ -1515,3 +1420,4 @@ script:
 tests:
 - test_Qradar
 toversion: 5.4.9
+fromversion: 5.0.0

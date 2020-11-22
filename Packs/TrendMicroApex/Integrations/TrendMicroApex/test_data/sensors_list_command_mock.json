@@ -1,0 +1,66 @@
+{
+    "Data": {
+        "Code": 0,
+        "CodeType": 1,
+        "Message": "OK",
+        "Data": {
+            "taskId": "",
+            "lastContentId": "",
+            "hasMore": false,
+            "serverGuid": "",
+            "serverName": "",
+            "content": [
+                {
+                    "statusCode": 0,
+                    "message": "Success",
+                    "content": {
+                        "agentEntity": [
+                            {
+                                "agentGuid": "b59e624c-2cf0-4180-83d7-e08abbf9ad54",
+                                "serverGuid": "B220EB61-6240-44B4-9B94-4AC3F22E6A62",
+                                "machineName": "TRENDMICROAPEX-",
+                                "isImportant": false,
+                                "isOnline": false,
+                                "ip": "8.8.8.8",
+                                "machineGuid": "3C8DFD21-6175-4AE6-8D51-6DB3186732B2",
+                                "machineType": "Server",
+                                "machineLabels": null,
+                                "machineOS": "Windows Server 2019",
+                                "isolateStatus": 0,
+                                "isEnable": true,
+                                "userName": "TRENDMICROAPEX-\\admin",
+                                "userGuid": "DC15EA904-03CC-E3A2-9CC0-BA57D814772",
+                                "productType": 15
+                            }
+                        ],
+                        "pagination": {
+                            "offset": 0,
+                            "limit": 50,
+                            "total": 1
+                        },
+                        "agentQueryStatus": {
+                            "hasFullRbac": true,
+                            "hasFullAgents": true
+                        }
+                    }
+                }
+            ]
+        },
+        "TimeZone": -7
+    },
+    "Meta": {
+        "result": 1,
+        "errorCode": 0,
+        "errorMessgae": "Success"
+    },
+    "PermissionCtrl": {
+        "permission": "255",
+        "elements": null
+    },
+    "FeatureCtrl": {
+        "mode": "0"
+    },
+    "SystemCtrl": {
+        "TmcmSoDist_Role": "none"
+    }
+}

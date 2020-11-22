@@ -11,7 +11,7 @@ configuration:
   name: useProxy
   required: false
   type: 8
-description: Analyzes suspicious domains and IP addresses
+description: Deprecated. Analyzes suspicious domains and IP addresses
 display: Cymon (Deprecated)
 deprecated: true
 name: Cymon
@@ -27,8 +27,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Returns all results, of which there can be hundreds. We recommend
-        that you do not use this argument in playbooks. Default is false.
+      description: Returns all results, of which there can be hundreds. We recommend that you do not use this argument in playbooks. Default is false.
       isArray: false
       name: fullResponse
       predefined:
@@ -111,3 +110,6 @@ script:
   script: ''
   type: python
   subtype: python2
+tests:
+- No tests
+fromversion: 5.0.0

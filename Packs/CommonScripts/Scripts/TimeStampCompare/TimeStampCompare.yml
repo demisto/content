@@ -40,3 +40,4 @@ tags: []
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.8.3.8715
+fromversion: 5.0.0

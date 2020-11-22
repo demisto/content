@@ -15,7 +15,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "1"
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -42,7 +42,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "2"
+      - "2"
     scriptarguments:
       all:
         simple: "yes"
@@ -69,15 +69,14 @@ tasks:
       id: a257482d-46e7-4842-8ff8-52a564408e76
       version: -1
       name: Get disk type
-      description: Returns the specified disk type. Gets a list of available disk
-        types by making a list() request.
+      description: Returns the specified disk type. Gets a list of available disk types by making a list() request.
       script: Google Cloud Compute|||gcp-compute-get-disk-type
       type: regular
       iscommand: true
       brand: Google Cloud Compute
     nexttasks:
       '#none#':
-        - "3"
+      - "3"
     scriptarguments:
       disktype:
         simple: pd-ssd
@@ -102,15 +101,14 @@ tasks:
       id: a1b6beb7-61fd-457b-85bb-d91a1d718dcd
       version: -1
       name: Get Image from family
-      description: Returns the latest image that is part of an image family and is
-        not deprecated.
+      description: Returns the latest image that is part of an image family and is not deprecated.
       script: Google Cloud Compute|||gcp-compute-get-image-from-family
       type: regular
       iscommand: true
       brand: Google Cloud Compute
     nexttasks:
       '#none#':
-        - "4"
+      - "4"
     scriptarguments:
       family:
         simple: debian-9
@@ -167,9 +165,10 @@ view: |-
     }
   }
 inputs:
-  - key: zone
-    value:
-      simple: us-east1-b
-    required: false
-    description: ""
+- key: zone
+  value:
+    simple: us-east1-b
+  required: false
+  description: ""
 outputs: []
+fromversion: 5.0.0

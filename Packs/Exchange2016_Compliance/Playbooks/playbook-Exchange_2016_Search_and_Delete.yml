@@ -95,8 +95,7 @@ tasks:
       Timeout:
         simple: "10080"
       dt:
-        simple: EWS.ComplianceSearch(val.Status === 'InProgress' || val.Status ===
-          'Starting').Name
+        simple: EWS.ComplianceSearch(val.Status === 'InProgress' || val.Status === 'Starting').Name
     separatecontext: true
     loop:
       iscommand: false
@@ -357,7 +356,7 @@ inputs:
   required: true
   description: Query for finding mail messages
 outputs: []
-fromversion: '4.1.0'
+fromversion: '5.0.0'
 tests:
-  - No test
+- No test
 

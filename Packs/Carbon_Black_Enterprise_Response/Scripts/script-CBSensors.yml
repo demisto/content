@@ -2,11 +2,15 @@ commonfields:
   id: CBSensors
   version: -1
 name: CBSensors
-script: |-
+script: >-
   //Show a list of carbon black sensors.
+
   var sensors = executeCommand("cb-list-sensors",{})
+
   var output = sensors[0];
+
   output.ContentsFormat = formats.table;
+
   return output;
 type: javascript
 tags:
@@ -19,3 +23,4 @@ dependson:
   must:
   - cb-list-sensors
 timeout: 0s
+fromversion: 5.0.0

@@ -19,16 +19,14 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The Exabeam Security Management Platform provides end-to-end detection,
-  User Event Behavioral Analytics, and SOAR.
+description: The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
 display: Exabeam
 name: Exabeam
 script:
   commands:
   - arguments:
     - default: false
-      description: The time period for which to fetch notable users, such as 3 months,
-        2 days, 4 hours, 1 year, and so on.
+      description: The time period for which to fetch notable users, such as 3 months, 2 days, 4 hours, 1 year, and so on.
       isArray: true
       name: time_period
       required: true
@@ -83,8 +81,7 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: The time period for which to fetch notable users, such as 3 months,
-        2 days, 4 hours, 1 year, and so on.
+      description: The time period for which to fetch notable users, such as 3 months, 2 days, 4 hours, 1 year, and so on.
       isArray: true
       name: time_period
       required: true
@@ -443,3 +440,4 @@ script:
   type: python
 tests:
 - Exabeam - Test
+fromversion: 5.0.0

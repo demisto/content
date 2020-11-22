@@ -2,9 +2,10 @@ commonfields:
   id: QrSearches
   version: -1
 name: QrSearches
-script: |2
+script: >2
 
   resp = demisto.executeCommand("qr-searches", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -20,7 +21,7 @@ type: python
 subtype: python2
 tags:
 - QRadar
-comment: Searches in QRadar
+comment: Deprecated. Searches in QRadar
 system: true
 deprecated: true
 args:
@@ -36,3 +37,4 @@ dependson:
   must:
   - qr-searches
 
+fromversion: 5.0.0

@@ -13,7 +13,6 @@ import requests
 import warnings
 from dateutil.parser import parse
 
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message='.*using SSL with verify_certs=False is insecure.')
@@ -25,6 +24,7 @@ PASSWORD = demisto.params().get('credentials', {}).get('password')
 API_KEY_ID = USERNAME[len(API_KEY_PREFIX):] if USERNAME and USERNAME.startswith(API_KEY_PREFIX) else None
 if API_KEY_ID:
     USERNAME = None
+    API_KEY = (API_KEY_ID, PASSWORD)
 PROXY = demisto.params().get('proxy')
 HTTP_ERRORS = {
     400: '400 Bad Request - Incorrect or invalid parameters',
@@ -36,7 +36,6 @@ HTTP_ERRORS = {
     500: '500 Internal Server Error - Internal error',
     503: '503 Service Unavailable'
 }
-
 
 '''VARIABLES FOR FETCH INCIDENTS'''
 TIME_FIELD = demisto.params().get('fetch_time_field', '')
@@ -89,32 +88,34 @@ def timestamp_to_date(timestamp_string):
     return datetime.utcfromtimestamp(timestamp_number)
 
 
-def elasticsearch_builder():
+def get_api_key_header_val(api_key):
+    """
+    Check the type of the passed api_key and return the correct header value
+    for the `API Key authentication
+    <https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html>`
+    :arg api_key, either a tuple or a base64 encoded string
+    """
+    if isinstance(api_key, (tuple, list)):
+        s = "{0}:{1}".format(api_key[0], api_key[1]).encode('utf-8')
+        return "ApiKey " + base64.b64encode(s).decode('utf-8')
+    return "ApiKey " + api_key
+
+
+def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
     if API_KEY_ID:
-        if PROXY:
-            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                                 api_key=(API_KEY_ID, PASSWORD), verify_certs=INSECURE, proxies=handle_proxy())
-
-        else:
-            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                                 api_key=(API_KEY_ID, PASSWORD), verify_certs=INSECURE)
-
-    elif USERNAME:
-        if PROXY:
-            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                                 http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE, proxies=handle_proxy())
-
-        else:
-            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                                 http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
+        es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE,
+                           api_key=API_KEY, proxies=proxies)
+        # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
+        if hasattr(es, 'transport'):
+            es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(API_KEY)
+        return es
+    if USERNAME:
+        return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE,
+                             http_auth=(USERNAME, PASSWORD), proxies=proxies)
     else:
-        if PROXY:
-            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                                 verify_certs=INSECURE, proxies=handle_proxy())
-
-        else:
-            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE)
+        return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE,
+                             proxies=proxies)
 
 
 def get_hit_table(hit):
@@ -209,7 +210,7 @@ def get_total_results(response_dict):
     return total_dict, total_results
 
 
-def search_command():
+def search_command(proxies):
     """Performs a search in Elasticsearch."""
     index = demisto.args().get('index')
     query = demisto.args().get('query')
@@ -220,7 +221,7 @@ def search_command():
     sort_field = demisto.args().get('sort-field')
     sort_order = demisto.args().get('sort-order')
 
-    es = elasticsearch_builder()
+    es = elasticsearch_builder(proxies)
 
     que = QueryString(query=query)
     search = Search(using=es, index=index).query(que)[base_page:base_page + size]
@@ -267,7 +268,7 @@ def fetch_params_check():
         return_error("Got the following errors in test:\nFetches incidents is enabled.\n" + '\n'.join(str_error))
 
 
-def test_general_query(es):
+def test_query_to_fetch_incident_index(es):
     """Test executing query in fetch index.
 
     Notes:
@@ -285,6 +286,23 @@ def test_general_query(es):
 
     except NotFoundError as e:
         return_error("Fetch incidents test failed.\nError message: {}.".format(str(e).split(',')[2][2:-1]))
+
+
+def test_general_query(es):
+    """Test executing query to all available indexes.
+
+    Args:
+        es(Elasticsearch): an Elasticsearch object to which we run the test.
+    """
+    try:
+        query = QueryString(query='*')
+        search = Search(using=es, index='*').query(query)[0:1]
+        response = search.execute().to_dict()
+        get_total_results(response)
+
+    except NotFoundError as e:
+        return_error("Failed executing general search command - please check the Server URL and port number "
+                     "and the supplied credentials.\nError message: {}.".format(str(e)))
 
 
 def test_time_field_query(es):
@@ -363,10 +381,12 @@ def test_timestamp_format(timestamp):
             return_error(f"Fetched timestamp is not in milliseconds since epoch.\nFetched: {timestamp}")
 
 
-def test_func():
+def test_func(proxies):
     headers = {
         'Content-Type': "application/json"
     }
+    if API_KEY_ID:
+        headers['authorization'] = get_api_key_header_val(API_KEY)
 
     try:
         if USERNAME:
@@ -392,16 +412,17 @@ def test_func():
     except requests.exceptions.RequestException as e:
         return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
 
+    # build general Elasticsearch class
+    es = elasticsearch_builder(proxies)
+
     if demisto.params().get('isFetch'):
         # check the existence of all necessary fields for fetch
         fetch_params_check()
 
         try:
-            # build general Elasticsearch class
-            es = elasticsearch_builder()
 
             # test if FETCH_INDEX exists
-            test_general_query(es)
+            test_query_to_fetch_incident_index(es)
 
             # test if TIME_FIELD in index exists
             response = test_time_field_query(es)
@@ -425,6 +446,10 @@ def test_func():
 
         except ValueError as e:
             return_error("Inserted time format is incorrect.\n" + str(e) + '\n' + TIME_FIELD + ' fetched: ' + hit_date)
+
+    else:
+        # check that we can reach any indexes in the supplied server URL
+        test_general_query(es)
 
     demisto.results('ok')
 
@@ -540,13 +565,14 @@ def format_to_iso(date_string):
     return date_string
 
 
-def fetch_incidents():
+def fetch_incidents(proxies):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
 
     # handle first time fetch
     if last_fetch is None:
-        last_fetch, _ = parse_date_range(date_range=FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%S.%f', utc=False, to_timestamp=False)
+        last_fetch, _ = parse_date_range(date_range=FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%S.%f', utc=False,
+                                         to_timestamp=False)
         last_fetch = parse(str(last_fetch))
         last_fetch_timestamp = int(last_fetch.timestamp() * 1000)
 
@@ -564,7 +590,7 @@ def fetch_incidents():
     else:
         last_fetch_timestamp = last_fetch
 
-    es = elasticsearch_builder()
+    es = elasticsearch_builder(proxies)
 
     query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
     # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
@@ -588,15 +614,49 @@ def fetch_incidents():
     demisto.incidents(incidents)
 
 
+def parse_subtree(my_map):
+    """
+    param: my_map - tree element for the schema
+    return: tree elements under each branch
+    """
+    # Recursive search in order to retrieve the elements under the branches in the schema
+    res = {}
+    for k in my_map:
+        if 'properties' in my_map[k]:
+            res[k] = parse_subtree(my_map[k]['properties'])
+        else:
+            res[k] = "type: " + my_map[k].get('type', "")
+    return res
+
+
+def get_mapping_fields_command():
+    """
+    Maps a schema from a given index
+    return: Elasticsearch schema structure
+    """
+    indexes = FETCH_INDEX.split(',')
+    elastic_mapping = {}
+    for index in indexes:
+        res = requests.get(SERVER + '/' + index + '/_mapping', auth=(USERNAME, PASSWORD), verify=INSECURE)
+        my_map = res.json()[index]['mappings']['properties']
+        elastic_mapping[index] = {"_id": "doc_id", "_index": index}
+        elastic_mapping[index]["_source"] = parse_subtree(my_map)
+    demisto.results(elastic_mapping)
+
+
 def main():
+    proxies = handle_proxy()
+    proxies = proxies if proxies else None
     try:
         LOG('command is %s' % (demisto.command(),))
         if demisto.command() == 'test-module':
-            test_func()
+            test_func(proxies)
         elif demisto.command() == 'fetch-incidents':
-            fetch_incidents()
+            fetch_incidents(proxies)
         elif demisto.command() in ['search', 'es-search']:
-            search_command()
+            search_command(proxies)
+        elif demisto.command() == 'get-mapping-fields':
+            get_mapping_fields_command()
     except Exception as e:
         return_error("Failed executing {}.\nError message: {}".format(demisto.command(), str(e)), error=e)
 

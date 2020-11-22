@@ -1,6 +1,7 @@
 import pytest
 import demistomock as demisto
 import copy
+from random import randrange
 
 
 @pytest.fixture(autouse=True)
@@ -277,6 +278,51 @@ def test_upload_indicators_command_no_indicators_found(mocker):
     mocker.patch.object(qradar, 'get_indicators_list', return_value=([], []))
     res, _, _ = qradar.upload_indicators_command()
     assert res == "No indicators found, Reference set test_ref_set didn't change"
+
+
+def test_fetch_incidents(mocker):
+    """
+    Given:
+        - There are 3 fetchable offenses in the system with random gaps between them
+        - Last run is empty
+        - The first fetch is unsuccessful
+    When:
+        - fetch-incidents is called
+
+    Then:
+        - The integration will try to fetch until it fetches the first available offense
+        - The integration will set the last run to be GTE to the last fetched offense
+    """
+    import QRadar as qradar
+    # init
+    offenses_num = 3
+    gap_between_offenses = randrange(5)
+    get_offenses_results = []
+    first_offense_id = None
+    # set offenses_per_call for fetch
+    qradar.OFFENSES_PER_CALL = 1
+
+    # prepare offenses with gaps between them
+    for i in range(offenses_num - 1):
+        for j in range(gap_between_offenses):
+            get_offenses_results.append([])
+        offense = copy.deepcopy(OFFENSE_RAW_RESULT[0])
+        offense['id'] = len(get_offenses_results)
+        if first_offense_id is None:
+            first_offense_id = offense['id']
+        get_offenses_results.append([offense])
+
+    # empty result should be fetched first - triggers look for limit
+    get_offenses_results.insert(0, [])
+    # last offense should be fetched 2nd - sets limit
+    get_offenses_results.insert(1, get_offenses_results[-1])
+
+    mocker.patch.object(demisto, 'params', return_value={'full_enrich': False})
+    mocker.patch.object(qradar, 'get_offenses', side_effect=get_offenses_results)
+    set_last_run_mock = mocker.patch.object(demisto, 'setLastRun')
+
+    qradar.fetch_incidents()
+    assert first_offense_id <= set_last_run_mock.call_args[0][0]['id']
 
 
 """ CONSTANTS """

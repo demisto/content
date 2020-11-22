@@ -781,7 +781,7 @@ def pull_messages_command(
     if "receivedMessages" in raw_msgs:
         acknowledges, msgs = extract_acks_and_msgs(raw_msgs)
         ec = {
-            f"GoogleCloudPubSubPulledMessages(val && val.messageId === obj.messageId)": msgs
+            "GoogleCloudPubSubPulledMessages(val && val.messageId === obj.messageId)": msgs
         }
         if ack == "true":
             client.ack_messages(full_subscription_name, acknowledges)
@@ -868,7 +868,7 @@ def subscriptions_list_command(
     :param topic_id: topic name
     :return: list of subscriptions
     """
-    title = f"Subscriptions"
+    title = "Subscriptions"
     if topic_id:
         full_topic_name = GoogleNameParser.get_topic_name(project_id, topic_id)
         raw_response = client.list_topic_subs(full_topic_name, page_size, page_token)
@@ -894,7 +894,7 @@ def subscriptions_list_command(
             headers=["name", "topic", "ackDeadlineSeconds", "labels"],
             headerTransform=pascalToSpace,
         )
-    outputs = {f"GoogleCloudPubSubSubscriptions(val && val.name === obj.name)": subs}
+    outputs = {"GoogleCloudPubSubSubscriptions(val && val.name === obj.name)": subs}
     if next_page_token:
         outputs["GoogleCloudPubSubSubscriptions.nextPageToken"] = next_page_token
         readable_output += f"**Next Page Token: {next_page_token}**"
@@ -924,7 +924,7 @@ def get_subscription_command(
     sub["deliveryType"] = "Push" if sub.get("pushConfig") else "Pull"
     title = f"Subscription {subscription_id}"
     readable_output = tableToMarkdown(title, sub, headerTransform=pascalToSpace)
-    outputs = {f"GoogleCloudPubSubSubscriptions(val && val.name === obj.name)": sub}
+    outputs = {"GoogleCloudPubSubSubscriptions(val && val.name === obj.name)": sub}
     return readable_output, outputs, sub
 
 
@@ -984,7 +984,7 @@ def create_subscription_command(
     sub["projectName"] = project_id
     sub["subscriptionName"] = subscription_id
     sub["deliveryType"] = "Push" if sub.get("pushConfig") else "Pull"
-    outputs = {f"GoogleCloudPubSubSubscriptions": sub}
+    outputs = {"GoogleCloudPubSubSubscriptions": sub}
     return readable_output, outputs, raw_sub
 
 
@@ -1047,7 +1047,7 @@ def update_subscription_command(
     sub["projectName"] = project_id
     sub["subscriptionName"] = subscription_id
     sub["deliveryType"] = "Push" if sub.get("pushConfig") else "Pull"
-    outputs = {f"GoogleCloudPubSubSubscriptions(val && val.name === obj.name)": sub}
+    outputs = {"GoogleCloudPubSubSubscriptions(val && val.name === obj.name)": sub}
     return readable_output, outputs, raw_sub
 
 
@@ -1077,7 +1077,7 @@ def create_topic_command(
     )
     title = f"Topic **{topic_id}** was created successfully"
     readable_output = tableToMarkdown(title, raw_topic, headerTransform=pascalToSpace)
-    outputs = {f"GoogleCloudPubSubTopics": raw_topic}
+    outputs = {"GoogleCloudPubSubTopics": raw_topic}
     return readable_output, outputs, raw_topic
 
 
@@ -1125,7 +1125,7 @@ def update_topic_command(
     )
     title = f"Topic {topic_id} was updated successfully"
     readable_output = tableToMarkdown(title, raw_topic, headerTransform=pascalToSpace)
-    outputs = {f"GoogleCloudPubSubTopics(val && val.name === obj.name)": raw_topic}
+    outputs = {"GoogleCloudPubSubTopics(val && val.name === obj.name)": raw_topic}
     return readable_output, outputs, raw_topic
 
 
@@ -1234,7 +1234,7 @@ def snapshot_create_command(
     readable_output = tableToMarkdown(
         title, raw_snapshot, headerTransform=pascalToSpace
     )
-    outputs = {f"GoogleCloudPubSubSnapshots": raw_snapshot}
+    outputs = {"GoogleCloudPubSubSnapshots": raw_snapshot}
     return readable_output, outputs, raw_snapshot
 
 
@@ -1274,7 +1274,7 @@ def snapshot_update_command(
         title, raw_snapshot, headerTransform=pascalToSpace
     )
     outputs = {
-        f"GoogleCloudPubSubSnapshots(val && val.name === obj.name)": raw_snapshot
+        "GoogleCloudPubSubSnapshots(val && val.name === obj.name)": raw_snapshot
     }
     return readable_output, outputs, raw_snapshot
 

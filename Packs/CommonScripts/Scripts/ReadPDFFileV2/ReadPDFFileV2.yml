@@ -110,8 +110,7 @@ outputs:
   description: MD5 hash of the file.
   type: String
 - contextPath: File.UserProperties
-  description: Indicating the presence of structure elements that contain user properties
-    attributes.
+  description: Indicating the presence of structure elements that contain user properties attributes.
   type: String
 - contextPath: File.Extension
   description: The file's extension.
@@ -127,10 +126,10 @@ tags:
 - ingestion
 timeout: '0'
 type: python
-dockerimage: demisto/readpdf:1.0.0.299
+dockerimage: demisto/readpdf:1.0.0.8854
 runas: DBotWeakRole
 runonce: false
 tests:
 - Extract Indicators From File - Generic v2 - Test
 - ReadPDFFileV2-Test
-fromversion: 4.1.0
+fromversion: 5.0.0

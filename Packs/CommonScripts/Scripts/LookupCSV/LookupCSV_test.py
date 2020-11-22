@@ -153,3 +153,14 @@ class TestLookupCSV:
         with pytest.raises(SystemExit):
             # Raises using return_error due to invalid file spec (.txt, not .csv)
             main()
+
+    def test_main_csv_comma_separator(self, mocker):
+        # Test when csv values contains comma separator
+        from LookupCSV import main
+        with open("./TestData/comma_separator_results.json") as f:
+            expected = json.load(f)
+
+        self.mock_demisto(mocker, file_obj=self.create_file_object("./TestData/comma_separator.csv"))
+        main()
+        result = self.get_demisto_results()
+        assert expected == result

@@ -134,3 +134,22 @@ def test_fetch_indicators_command(mocker):
         return_value=[{'Name': '192.168.1.1'}]
     )
     fetch_indicators_command(client, indicator_type)
+
+
+@pytest.mark.parametrize('tags', (['tag1', 'tag2'], []))
+def test_feed_tags(mocker, tags):
+    """
+    Given:
+    - tags parameters
+    When:
+    - Executing any command on feed
+    Then:
+    - Validate the tags supplied exists in the indicators
+    """
+    client = Client(indicator_type='ip', api_token='dummytoken', services='fusion', tags=tags)
+    mocker.patch(
+        'FeedRecordedFuture.Client.build_iterator',
+        return_value=[{'Name': '192.168.1.1'}]
+    )
+    indicators = fetch_indicators_command(client, 'ip')
+    assert tags == indicators[0]['fields']['tags']

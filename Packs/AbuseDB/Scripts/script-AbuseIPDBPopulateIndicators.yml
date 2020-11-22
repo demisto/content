@@ -2,18 +2,22 @@ commonfields:
   id: AbuseIPDBPopulateIndicators
   version: -1
 name: AbuseIPDBPopulateIndicators
-script: |-
+script: >-
   BLACKLISTED = "Bad"
+
   res = demisto.executeCommand("abuseipdb-get-blacklist", {
       "days" : demisto.args().get("days"),
       "limit" : demisto.args().get("limit")
   })
+
   ips = res[0]['Contents']
+
 
   if not ips or "Too many requests" in ips:
       return_error("No Indicators were created (possibly bad API key)")
 
   # Extract IPs into new Indicators
+
   for ip in ips:
       demisto.executeCommand("createNewIndicator", {
           "type" : 'ip',
@@ -28,8 +32,7 @@ script: |-
 type: python
 subtype: python2
 tags: []
-comment: Extracts blacklisted IP addresses from AbuseIPDB, and Populates Indicators
-  accordingly.
+comment: Extracts blacklisted IP addresses from AbuseIPDB, and Populates Indicators accordingly.
 enabled: true
 args:
 - name: days
@@ -47,4 +50,5 @@ timeout: 900ns
 runonce: false
 runas: DBotWeakRole
 tests:
-  - AbuseIPDB PopulateIndicators Test
+- AbuseIPDB PopulateIndicators Test
+fromversion: 5.0.0

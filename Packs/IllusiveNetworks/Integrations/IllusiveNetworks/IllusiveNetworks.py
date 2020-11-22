@@ -7,8 +7,11 @@ from typing import Tuple, Dict, Any
 import json
 import requests
 import dateparser
+import zipfile
+import io
 
 # Disable insecure warnings
+
 requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
@@ -105,6 +108,22 @@ class Client(BaseClient):
 
     def test_configuration(self):
         url_suffix = '/api/v1/incidents?limit=10&offset=0'
+        return self._http_request("GET", url_suffix=url_suffix, ok_codes=(200,))
+
+    def get_incident_events(self, incident_id, limit, offset):
+        url_suffix = '/api/v1/incidents/events?incident_id={}&limit={}&offset={}'.format(incident_id, limit, offset)
+        return self._http_request("GET", url_suffix=url_suffix)
+
+    def get_forensics_artifacts(self, event_id, artifact_type):
+        url_suffix = '/api/v1/forensics/artifacts?event_id={}&artifacts_type={}'.format(event_id, artifact_type)
+        return self._http_request("GET", url_suffix=url_suffix, resp_type="content")
+
+    def get_forensics_analyzers(self, event_id):
+        url_suffix = '/api/v1/forensics/analyzers?event_id={}'.format(event_id)
+        return self._http_request("GET", url_suffix=url_suffix)
+
+    def get_forensics_triggering_process_info(self, event_id):
+        url_suffix = '/api/v1/forensics/triggering_process_info?event_id={}'.format(event_id)
         return self._http_request("GET", url_suffix=url_suffix, ok_codes=(200,))
 
 
@@ -363,6 +382,8 @@ def get_forensics_timeline_command(client: Client, args: dict) -> Tuple:
 
     try:
         result = client.get_forensics_timeline(incident_id, start_date, end_date)
+        for evidence in result:
+            evidence['date'] = evidence.get('details').get('date')
         readable_output = tableToMarkdown('Illusive Forensics Timeline', result)
         outputs = {
             'Illusive.Forensics(val.IncidentId == obj.IncidentId)': {
@@ -482,7 +503,7 @@ def is_deceptive_user_command(client: Client, args: dict) -> Tuple:
     return (
         readable_output,
         outputs,
-        result  # raw response - the original response
+        None  # raw response - the original response
     )
 
 
@@ -501,7 +522,7 @@ def is_deceptive_server_command(client: Client, args: dict) -> Tuple:
     return (
         readable_output,
         outputs,
-        result  # raw response - the original response
+        None  # raw response - the original response
     )
 
 
@@ -528,7 +549,7 @@ def delete_deceptive_users_command(client: Client, args: dict) -> Tuple:
     return (
         readable_output,
         outputs,
-        result  # raw response - the original response
+        None  # raw response - the original response
     )
 
 
@@ -556,7 +577,7 @@ def delete_deceptive_servers_command(client: Client, args: dict) -> Tuple:
     return (
         readable_output,
         outputs,
-        result  # raw response - the original response
+        None  # raw response - the original response
     )
 
 
@@ -595,13 +616,13 @@ def get_incidents_command(client: Client, args: dict) -> Tuple:
 
 
 def get_event_incident_id_command(client: Client, args: dict) -> Tuple:
-    event_id = argToList(args.get("event_id"))
+    event_id = int(args.get("event_id", None))
     status = "Done"
     try:
-        incident = client.get_event_incident_id(event_id[0])
+        incident = client.get_event_incident_id(event_id)
     except DemistoException as e:
         if "404" in e.args[0]:
-            raise DemistoException("Event id {} doesn't not exist".format(event_id[0]))
+            raise DemistoException("Event id {} doesn't not exist".format(event_id))
         elif "202" in e.args[0]:
             incident = "-"
             status = "InProgress"
@@ -612,7 +633,7 @@ def get_event_incident_id_command(client: Client, args: dict) -> Tuple:
         else:
             raise DemistoException("{}".format(e.args[0]))
     result = [{
-        'eventId': event_id[0],
+        'eventId': event_id,
         'incidentId': incident,
         'status': status
     }]
@@ -624,8 +645,160 @@ def get_event_incident_id_command(client: Client, args: dict) -> Tuple:
     return (
         readable_output,
         outputs,
+        None  # raw response - the original response
+    )
+
+
+def get_incident_events_command(client: Client, args: dict) -> Tuple:
+    incident_id = args.get("incident_id", 0)
+    limit = args.get("limit", 100)
+    limit = "1000" if int(limit) > 1000 else limit
+    offset = args.get("offset", 0)
+    try:
+        events = client.get_incident_events(incident_id, limit, offset)
+    except DemistoException as e:
+        if "429" in e.args[0]:
+            raise DemistoException(
+                "The allowed amount of API calls per minute in Illusive Attack Management has exceeded. In case this"
+                " message repeats, please contact Illusive Networks support")
+        else:
+            raise DemistoException("{}".format(e.args[0]))
+
+    readable_output = tableToMarkdown('Illusive get incident\'s events', events, metadata="Number of events {}"
+                                      .format(len(events)))
+
+    outputs = {
+        'Illusive.Incident(val.incidentId == obj.incidentId)': {
+            'eventsNumber': len(events),
+            'incidentId': int(incident_id),
+            'Event': events
+        }
+    }
+    return (
+        readable_output,
+        outputs,
+        events  # raw response - the original response
+    )
+
+
+def get_forensics_analyzers_command(client: Client, args: dict) -> Tuple:
+    event_id = args.get("event_id", 0)
+    try:
+        analyzers = client.get_forensics_analyzers(event_id)
+        incident = client.get_event_incident_id(event_id)
+    except DemistoException as e:
+        if "404" in e.args[0]:
+            raise DemistoException("Event id {} doesn't not exist".format(event_id))
+        elif "429" in e.args[0]:
+            raise DemistoException(
+                "The allowed amount of API calls per minute in Illusive Attack Management has exceeded. In case this"
+                " message repeats, please contact Illusive Networks support")
+        else:
+            raise DemistoException("{}".format(e.args[0]))
+
+    outputs = {
+        'Illusive.Event(val.eventId == obj.eventId)': {
+            'eventId': int(event_id),
+            'incidentId': int(incident),
+            'ForensicsAnalyzers': analyzers
+        }
+    }
+
+    readable_output = tableToMarkdown('Illusive Forensics Analyzers', analyzers)
+
+    return (
+        readable_output,
+        outputs,
         incident  # raw response - the original response
     )
+
+
+def get_forensics_triggering_process_info_command(client: Client, args: dict) -> Tuple:
+    event_id = args.get("event_id")
+    try:
+        processes = client.get_forensics_triggering_process_info(event_id)
+    except DemistoException as e:
+        if "404" in e.args[0]:
+            raise DemistoException("failed to get forensics for Event id {}".format(event_id))
+        elif "429" in e.args[0]:
+            raise DemistoException(
+                "The allowed amount of API calls per minute in Illusive Attack Management has exceeded. In case this"
+                " message repeats, please contact Illusive Networks support")
+        else:
+            raise DemistoException("{}".format(e.args[0]))
+
+    readable_output = tableToMarkdown('Illusive Triggering Processes Info', processes.get('processes'))
+    outputs = {
+        'Illusive.Event(val.eventId == obj.eventId)': {
+            'eventId': event_id,
+            'ForensicsTriggeringProcess': processes.get('processes')
+        }
+    }
+
+    return (
+        readable_output,
+        outputs,
+        readable_output  # raw response - the original response
+    )
+
+
+def get_forensics_artifacts_command(client: Client, args: dict) -> Tuple:
+    event_id = args.get("event_id")
+    artifact_type = args.get("artifact_type", "DESKTOP_SCREENSHOT")
+    try:
+        client.get_event_incident_id(event_id)  # this request is for checking the event exists
+        artifact = client.get_forensics_artifacts(event_id, artifact_type)
+    except DemistoException as e:
+        if "404" in e.args[0]:
+            raise DemistoException("failed to get forensics for Event id {}".format(event_id))
+        elif "429" in e.args[0]:
+            raise DemistoException(
+                "The allowed amount of API calls per minute in Illusive Attack Management has exceeded. In case this"
+                " message repeats, please contact Illusive Networks support")
+        else:
+            raise DemistoException("{}".format(e.args[0]))
+
+    if len(artifact) == 0:
+        return [], []
+
+    zip_file = zipfile.ZipFile(io.BytesIO(artifact))
+    file_results = []
+    file_names = []
+    i = 0
+    for info in zip_file.infolist():
+        i = i + 1
+        file_results.append(fileResult(
+            filename=f'eventId_{event_id}_{artifact_type}_{i}.jpg',
+            data=zip_file.read(info.filename),
+            file_type=entryTypes["image"]
+        ))
+        file_names.append(f'eventId_{event_id}_{artifact_type}_{i}.jpg')
+    return file_results, file_names
+
+
+def link_forensics_artifacts_name_command(file_names, client: Client, args: dict) -> CommandResults:
+    event_id = args.get("event_id", 0)
+
+    if len(file_names) > 0:
+        outputs = {
+            'eventId': int(event_id),
+            'Artifacts': file_names
+        }
+
+        return CommandResults(
+            outputs_prefix='Illusive.Event',
+            outputs_key_field='eventId',
+            outputs=outputs
+        )
+    else:
+        readable_output = f'### event id {event_id} has no artifacts'
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='Illusive.Event',
+            outputs_key_field='eventId',
+            outputs={'eventId': int(event_id)}
+        )
 
 
 def main():
@@ -719,6 +892,23 @@ def main():
 
         elif demisto.command() == 'illusive-run-forensics-on-demand':
             return_outputs(*run_forensics_on_demand_command(client, demisto.args()))
+
+        elif demisto.command() == 'illusive-get-forensics-artifacts':
+            try:
+                file_results, file_names = get_forensics_artifacts_command(client, demisto.args())
+                return_results(file_results)
+                return_results(link_forensics_artifacts_name_command(file_names, client, demisto.args()))
+            except ValueError:
+                return_results(link_forensics_artifacts_name_command([], client, demisto.args()))
+
+        elif demisto.command() == 'illusive-get-forensics-triggering-process-info':
+            return_outputs(*get_forensics_triggering_process_info_command(client, demisto.args()))
+
+        elif demisto.command() == 'illusive-get-forensics-analyzers':
+            return_outputs(*get_forensics_analyzers_command(client, demisto.args()))
+
+        elif demisto.command() == 'illusive-get-incident-events':
+            return_outputs(*get_incident_events_command(client, demisto.args()))
 
     # Log exceptions
     except Exception as e:

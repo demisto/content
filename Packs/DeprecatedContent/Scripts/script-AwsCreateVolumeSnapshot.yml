@@ -2,9 +2,10 @@ commonfields:
   id: AwsCreateVolumeSnapshot
   version: -1
 name: AwsCreateVolumeSnapshot
-script: |2
+script: >2
 
   resp = demisto.executeCommand("create-volume-snapshot", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -19,7 +20,7 @@ script: |2
 type: python
 tags:
 - Amazon Web Services
-comment: This script is deprecated. Use the AWS-EC2 integration instead.
+comment: Deprecated. This script is deprecated. Use the AWS-EC2 integration instead.
 system: true
 args:
 - default: true
@@ -34,3 +35,4 @@ deprecated: true
 dependson:
   must:
   - create-volume-snapshot
+fromversion: 5.0.0

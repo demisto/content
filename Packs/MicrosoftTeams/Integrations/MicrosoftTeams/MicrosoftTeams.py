@@ -35,6 +35,7 @@ ENTITLEMENT_REGEX: str = \
     r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
 MENTION_REGEX = r'^@([^@;]+);| @([^@;]+);'
 ENTRY_FOOTER: str = 'From Microsoft Teams'
+INCIDENT_NOTIFICATIONS_CHANNEL = 'incidentNotificationChannel'
 
 MESSAGE_TYPES: dict = {
     'mirror_entry': 'mirrorEntry',
@@ -87,6 +88,7 @@ def translate_severity(severity: str) -> int:
     :return: Demisto integer severity
     """
     severity_dictionary = {
+        'Unknown': 0,
         'Low': 1,
         'Medium': 2,
         'High': 3,
@@ -436,7 +438,8 @@ def get_graph_access_token() -> str:
     tenant_id: str = integration_context.get('tenant_id', '')
     if not tenant_id:
         raise ValueError(
-            'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.'
+            'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
+            'See https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting for more information'
         )
     url: str = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
     data: dict = {
@@ -472,16 +475,20 @@ def get_graph_access_token() -> str:
 
 
 def http_request(
-        method: str, url: str = '', json_: dict = None, api: str = 'graph'
+        method: str, url: str = '', json_: dict = None, api: str = 'graph', params: Optional[Dict] = None
 ) -> Union[dict, list]:
-    """
-    A wrapper for requests lib to send our requests and handle requests and responses better
+    """A wrapper for requests lib to send our requests and handle requests and responses better
     Headers to be sent in requests
-    :param method: any restful method
-    :param url: URL to query
-    :param json_: HTTP JSON body
-    :param api: API to query (graph/bot)
-    :return: requests.json()
+
+    Args:
+        method (str): any restful method
+        url (str): URL to query
+        json_ (dict): HTTP JSON body
+        api (str): API to query (graph/bot)
+        params (dict): Object of key-value URL query parameters
+
+    Returns:
+        Union[dict, list]: The response in list or dict format.
     """
     if api == 'graph':
         access_token = get_graph_access_token()
@@ -499,7 +506,8 @@ def http_request(
             url,
             headers=headers,
             json=json_,
-            verify=USE_SSL
+            verify=USE_SSL,
+            params=params,
         )
 
         if not response.ok:
@@ -709,13 +717,21 @@ def get_team_aad_id(team_name: str) -> str:
 #     http_request('POST', url, json_=requestjson_)
 
 
-def get_users() -> list:
-    """
-    Retrieves list of AAD users
-    :return: List of AAD users
+def get_user(user: str) -> list:
+    """Retrieves the AAD ID of requested user
+
+    Args:
+        user (str): Display name/mail/UPN of user to get ID of.
+
+    Return:
+        list: List containing the requsted user object
     """
     url: str = f'{GRAPH_BASE_URL}/v1.0/users'
-    users: dict = cast(Dict[Any, Any], http_request('GET', url))
+    params = {
+        '$filter': f"displayName eq '{user}' or mail eq '{user}' or userPrincipalName eq '{user}'",
+        '$select': 'id'
+    }
+    users = cast(Dict[Any, Any], http_request('GET', url, params=params))
     return users.get('value', [])
 
 
@@ -739,20 +755,13 @@ def add_user_to_channel_command():
     channel_name: str = demisto.args().get('channel', '')
     team_name: str = demisto.args().get('team', '')
     member = demisto.args().get('member', '')
-    users: list = get_users()
-    user_id: str = str()
-    found_member: bool = False
-    for user in users:
-        if member in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
-            found_member = True
-            user_id = user.get('id', '')
-            break
-    if not found_member:
+    user: list = get_user(member)
+    if not (user and user[0].get('id')):
         raise ValueError(f'User {member} was not found')
 
     team_aad_id = get_team_aad_id(team_name)
     channel_id = get_channel_id(channel_name, team_aad_id, investigation_id=None)
-    add_user_to_channel(team_aad_id, channel_id, user_id)
+    add_user_to_channel(team_aad_id, channel_id, user[0].get('id'))
 
     demisto.results(f'The User "{member}" has been added to channel "{channel_name}" successfully.')
 
@@ -1064,7 +1073,8 @@ def send_message():
         return
     channel_name: str = demisto.args().get('channel', '')
 
-    if not channel_name and message_type in {MESSAGE_TYPES['status_changed'], MESSAGE_TYPES['incident_opened']}:
+    if (not channel_name and message_type in {MESSAGE_TYPES['status_changed'], MESSAGE_TYPES['incident_opened']}) \
+            or channel_name == INCIDENT_NOTIFICATIONS_CHANNEL:
         # Got a notification from server
         channel_name = demisto.params().get('incident_notifications_channel', 'General')
         severity: int = int(demisto.args().get('severity'))
@@ -1072,7 +1082,7 @@ def send_message():
         if severity < severity_threshold:
             return
 
-    team_member: str = demisto.args().get('team_member', '')
+    team_member: str = demisto.args().get('team_member', '') or demisto.args().get('to', '')
 
     if not (team_member or channel_name):
         raise ValueError('No channel or team member to send message were provided.')
@@ -1216,8 +1226,8 @@ def channel_mirror_loop():
     """
     while True:
         found_channel_to_mirror: bool = False
+        integration_context = demisto.getIntegrationContext()
         try:
-            integration_context = demisto.getIntegrationContext()
             teams: list = json.loads(integration_context.get('teams', '[]'))
             for team in teams:
                 mirrored_channels = team.get('mirrored_channels', [])
@@ -1528,17 +1538,13 @@ def ring_user():
     tenant_id: str = integration_context.get('tenant_id', '')
     if not tenant_id:
         raise ValueError(
-            'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.'
+            'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
+            'See https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting for more information'
         )
     # get user to call name and id
     username_to_call = demisto.args().get('username')
-    users: list = get_users()
-    user_id: str = str()
-    for user in users:
-        if username_to_call in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
-            user_id = user.get('id', '')
-            break
-    if not user_id:
+    user: list = get_user(username_to_call)
+    if not (user and user[0].get('id')):
         raise ValueError(f'User {username_to_call} was not found')
 
     call_request_data = {
@@ -1563,7 +1569,7 @@ def ring_user():
                     "user": {
                         "@odata.type": "#microsoft.graph.identity",
                         "displayName": username_to_call,
-                        "id": user_id
+                        "id": user[0].get('id')
                     }
                 }
             }
@@ -1627,10 +1633,11 @@ def long_running_loop():
                 demisto.info('Starting HTTP Server')
 
             server = WSGIServer(('0.0.0.0', port), APP, **ssl_args)
+            demisto.updateModuleHealth('')
             server.serve_forever()
         except Exception as e:
             error_message = str(e)
-            demisto.error(f'An error occurred in long running loop: {error_message}')
+            demisto.error(f'An error occurred in long running loop: {error_message} - {format_exc()}')
             demisto.updateModuleHealth(f'An error occurred: {error_message}')
         finally:
             if certificate_path:

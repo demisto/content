@@ -237,8 +237,7 @@ tasks:
       id: f68d9bce-5aeb-4a7f-87b7-04b0278d0e9a
       version: -1
       name: okta-update-user
-      description: Update user with a given login, all fields are optional, fields
-        which are not set will not be overriden
+      description: Update user with a given login, all fields are optional, fields which are not set will not be overriden
       script: '|||okta-update-user'
       type: regular
       iscommand: true
@@ -304,8 +303,7 @@ tasks:
       id: 8a3616b5-5822-4f2d-8e74-825d7bc6d61c
       version: -1
       name: okta-get-failed-logins
-      description: Get events for when Okta issued a session to a user who is authenticating
-        and the user failed to log-in
+      description: Get events for when Okta issued a session to a user who is authenticating and the user failed to log-in
       script: '|||okta-get-failed-logins'
       type: regular
       iscommand: true
@@ -338,8 +336,7 @@ tasks:
       id: 6abfad4e-be1f-4424-85ef-aaef5f220ffa
       version: -1
       name: okta-get-application-authentication
-      description: Get events for when a user attempted to SSO to an application managed
-        in Okta
+      description: Get events for when a user attempted to SSO to an application managed in Okta
       script: '|||okta-get-application-authentication'
       type: regular
       iscommand: true
@@ -473,8 +470,7 @@ tasks:
       id: 33adffc5-95a9-4d73-897d-e138f246fdfd
       version: -1
       name: okta-list-groups
-      description: Enumerates groups in your organization. A subset of groups can
-        be returned that match a supported filter expression or query.
+      description: Enumerates groups in your organization. A subset of groups can be returned that match a supported filter expression or query.
       script: '|||okta-list-groups'
       type: regular
       iscommand: true
@@ -570,9 +566,7 @@ tasks:
       id: e99e591b-1c45-4ffb-8efe-6d3adb5262c6
       version: -1
       name: okta-suspend-user
-      description: Suspends a user.  This operation can only be performed on users
-        with an ACTIVE status. The user has a status of SUSPENDED when the process
-        is complete.
+      description: Suspends a user.  This operation can only be performed on users with an ACTIVE status. The user has a status of SUSPENDED when the process is complete.
       script: '|||okta-suspend-user'
       type: regular
       iscommand: true
@@ -602,8 +596,7 @@ tasks:
       id: a0a73ef9-29f3-4308-8df1-675fa37623ba
       version: -1
       name: okta-unsuspend-user
-      description: Unsuspends a user and returns them to the ACTIVE state.  This operation
-        can only be performed on users that have a SUSPENDED status.
+      description: Unsuspends a user and returns them to the ACTIVE state.  This operation can only be performed on users that have a SUSPENDED status.
       script: '|||okta-unsuspend-user'
       type: regular
       iscommand: true
@@ -721,8 +714,7 @@ tasks:
       id: b473a2b2-bb72-4cbb-8a61-7ecf085bf050
       version: -1
       name: okta-get-user
-      description: Fetches a specific user given you know the user’s login, please
-        note that one of the parameters bellow is mandatory.
+      description: Fetches a specific user given you know the user’s login, please note that one of the parameters bellow is mandatory.
       script: '|||okta-get-user'
       type: regular
       iscommand: true
@@ -884,3 +876,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

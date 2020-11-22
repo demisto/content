@@ -28,7 +28,11 @@ def main():
             return_error(get_error(res))
 
         items = res[0]['Contents']
-        path_to_mails[folder] = [convert_mail_to_json(i, folder) for i in items]
+        if isinstance(items, str) and items == 'There is no output results':
+            mails_at_folder = []
+        else:
+            mails_at_folder = [convert_mail_to_json(i, folder) for i in items]
+        path_to_mails[folder] = mails_at_folder
     mails_from_all_folders_list = [mail_json for folder_mails in path_to_mails.values() for mail_json in folder_mails]
     return fileResult("all_mails.json", json.dumps(mails_from_all_folders_list))
 

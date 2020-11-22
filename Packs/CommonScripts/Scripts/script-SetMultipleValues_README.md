@@ -1,4 +1,4 @@
-Sets multiple keys/values to the context.
+Sets multiple key/value pairs to the context under a common parent key. 
 
 ## Script Data
 ---
@@ -21,3 +21,14 @@ Sets multiple keys/values to the context.
 ## Outputs
 ---
 There are no outputs for this script.
+
+## Example
+---
+### Command
+```
+!SetMultipleValues parent=test_parent keys=key1,key2,key3 values=val1,valu2,val3
+```
+
+### Context Result
+![Example Output](https://user-images.githubusercontent.com/25312145/88423600-dd54b900-cda0-11ea-89f4-83981367659a.png)
+

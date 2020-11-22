@@ -1,9 +1,8 @@
 id: Calculate Severity By Email Authenticity
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 name: Calculate Severity By Email Authenticity
-description: Calculates a severity according to the verdict coming from the
- CheckEmailAuthenticity script.
+description: Calculates a severity according to the verdict coming from the CheckEmailAuthenticity script.
 starttaskid: "0"
 tasks:
   "0":
@@ -62,9 +61,7 @@ tasks:
       id: 75107f50-55da-459d-8ee1-cc86e21b0cdb
       version: -1
       name: Is there an email authenticity verdict?
-      description: Checks the playbook inputs for a verdict regarding the authenticity of the
-        investigated email. The verdict comes from the CheckEmailAuthenticity
-        script.
+      description: Checks the playbook inputs for a verdict regarding the authenticity of the investigated email. The verdict comes from the CheckEmailAuthenticity script.
       type: condition
       iscommand: false
       brand: ""
@@ -125,9 +122,8 @@ tasks:
     task:
       id: 8a89986f-7d9c-4fd0-8d44-8cd692b436d1
       version: -1
-      name: Evaluate score 
-      description: Evaluates the severity score for this playbook, according to the
-        verdict returned from CheckEmailAuthenticity.
+      name: Evaluate score
+      description: Evaluates the severity score for this playbook, according to the verdict returned from CheckEmailAuthenticity.
       type: condition
       iscommand: false
       brand: ""
@@ -386,12 +382,10 @@ inputs:
       root: Email
       accessor: AuthenticityCheck
   required: false
-  description: The verdict regarding the authenticity of the investigated email. Returned
-    from CheckEmailAuthenticity script.
+  description: The verdict regarding the authenticity of the investigated email. Returned from CheckEmailAuthenticity script.
 outputs:
 - contextPath: Severities.EmailAuthenticitySeverity
-  description: The maliciousness score evaluated by the Calculate Severity - Email
-    Authenticity playbook.
+  description: The maliciousness score evaluated by the Calculate Severity - Email Authenticity playbook.
   type: number
 tests:
-  - Calculate Severity - Generic v2 - Test
+- Calculate Severity - Generic v2 - Test

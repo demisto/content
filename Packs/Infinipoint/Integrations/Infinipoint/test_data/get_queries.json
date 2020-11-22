@@ -1,0 +1,13 @@
+[
+  {
+    "aggregation": true,
+    "createdOn": "2020-02-02T09:28:00.500226Z",
+    "description": "Retrieves version FROM the current kernel.",
+    "format": 2,
+    "id": "09c78b53-f9e4-410a-b1f3-db45f1cbb609",
+    "interp": 0,
+    "module": 4,
+    "name": "Kernel version",
+    "osType": 7
+  }
+]

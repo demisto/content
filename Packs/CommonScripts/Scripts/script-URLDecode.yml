@@ -2,11 +2,14 @@ commonfields:
   id: URLDecode
   version: -1
 name: URLDecode
-script: |-
+script: >-
   from urllib.parse import unquote
 
+
   value = demisto.args()["value"]
+
   processed_value = unquote(value)
+
 
   eContext = {
       'DecodedURL': processed_value
@@ -42,4 +45,5 @@ scripttarget: 0
 runonce: false
 dockerimage: python:3
 tests:
-  - URLDecode-Test
+- URLDecode-Test
+fromversion: 5.0.0

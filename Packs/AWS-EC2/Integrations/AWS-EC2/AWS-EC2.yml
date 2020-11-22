@@ -3557,13 +3557,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: The start of port range for the TCP and UDP protocols.
+      description: The start of port range for the TCP and UDP protocols. In case
+        ipProtocol is specified, this argument will be ignored.
       isArray: false
       name: fromPort
       required: false
       secret: false
     - default: false
-      description: The end of port range for the TCP and UDP protocols.
+      description: The end of port range for the TCP and UDP protocols. In case ipProtocol
+        is specified, this argument will be ignored.
       isArray: false
       name: toPort
       required: false
@@ -3744,13 +3746,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: The start of port range for the TCP and UDP protocols.
+      description: The start of port range for the TCP and UDP protocols. In case
+        ipProtocol is specified, this argument will be ignored.
       isArray: false
       name: fromPort
       required: false
       secret: false
     - default: false
-      description: The end of port range for the TCP and UDP protocols.
+      description: The end of port range for the TCP and UDP protocols. In case ipProtocol
+        is specified, this argument will be ignored.
       isArray: false
       name: toPort
       required: false
@@ -3762,7 +3766,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The IP protocol name (tcp , udp , icmp) or number.  Use -1 to specify
+      description: The IP protocol name (tcp , udp , icmp) or number. Use -1 to specify
         all protocols.
       isArray: false
       name: ipProtocol
@@ -4633,7 +4637,7 @@ script:
       secret: false
     - default: false
       description: The IPv6 network range to allow or deny, in CIDR notation (for
-        example 2001:db8:1234:1a00::/64 ).  # disable-secrets-detection
+        example 2001:db8:1234:1a00::/64 ).                                                                           # disable-secrets-detection
       isArray: false
       name: Ipv6CidrBlock
       required: false
@@ -6470,7 +6474,7 @@ script:
       description: Unique, case-sensitive identifier that you provide to ensure the
         idempotency of the request.
       type: String
-  dockerimage: demisto/boto3:1.9.55
+  dockerimage: demisto/boto3:2.0.0.13188
   isfetch: false
   longRunning: false
   longRunningPort: false
@@ -6479,4 +6483,5 @@ script:
   type: python
   subtype: python2
 tests:
-- 2142f8de-29d5-4288-8426-0db39abe988b
+- AWS - EC2 Test Playbook
+fromversion: 5.0.0

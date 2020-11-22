@@ -256,8 +256,7 @@ tasks:
     task:
       id: b3be5003-cce1-4d66-8050-cba6b9c36072
       version: -1
-      name: Query Demisto DB - allow large results, use legacy sql and destination
-        table
+      name: Query Demisto DB - allow large results, use legacy sql and destination table
       description: Perform a query on BigQuery
       script: '|||bigquery-query'
       type: regular
@@ -836,8 +835,7 @@ tasks:
       location: {}
       priority: {}
       query:
-        simple: SELECT status_change_date FROM `bigquery-public-data.austin_311.311_service_requests`
-          LIMIT 1000
+        simple: SELECT status_change_date FROM `bigquery-public-data.austin_311.311_service_requests` LIMIT 1000
       use_legacy_sql: {}
       use_query_cache: {}
       write_disposition: {}
@@ -866,3 +864,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

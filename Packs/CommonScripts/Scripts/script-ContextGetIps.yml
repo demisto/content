@@ -2,16 +2,23 @@ commonfields:
   id: ContextGetIps
   version: -1
 name: ContextGetIps
-script: |+
+script: >+
   var excludedIps;
+
   if (args.excludedIps) {
       excludedIps = args.excludedIps.split(',');
   }
+
   var flat = {};
+
   var res = [];
+
   var currentValue;
+
   flattenFields(invContext,undefined,flat);
+
   keysArr = Object.keys(flat);
+
   for (var i = 0; i < keysArr.length; i++) {
       currentValue=flat[keysArr[i]];
       if (ipRegex.test(currentValue) && res.indexOf(currentValue) === -1) {
@@ -25,10 +32,13 @@ script: |+
       }
   }
 
+
   var md = '### IP addresses in context\n';
+
   for (var i = 0; i<res.length; i++) {
       md += '- ' + res[i] + '\n';
   }
+
   return {
           Type: entryTypes.note,
           Contents: res,
@@ -44,3 +54,4 @@ args:
 - name: excludedIps
   description: IP addresses to exclude (separated by commas)
 scripttarget: 0
+fromversion: 5.0.0

@@ -2,7 +2,7 @@ id: Traps Retrieve And Download Files
 version: -1
 name: Traps Retrieve And Download Files
 description: Use this playbook to retrieve and download files.
-fromversion: ""
+fromversion: "5.0.0"
 starttaskid: "0"
 tasks:
   "0":
@@ -100,8 +100,7 @@ tasks:
       Timeout:
         simple: "5"
       dt:
-        simple: Traps.FileRetrieveResult(val.Status == 'pending' || val.Status ==
-          'in progress').OperationID
+        simple: Traps.FileRetrieveResult(val.Status == 'pending' || val.Status == 'in progress').OperationID
     separatecontext: true
     loop:
       iscommand: false
@@ -201,4 +200,4 @@ inputs:
   description: The ID of the Event.
 outputs: []
 tests:
-  - No test - Is be tested in Traps test playbook
+- No test - Is be tested in Traps test playbook

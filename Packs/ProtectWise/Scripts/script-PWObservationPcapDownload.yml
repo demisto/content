@@ -2,19 +2,31 @@ commonfields:
   id: PWObservationPcapDownload
   version: -1
 name: PWObservationPcapDownload
-script: |
+script: >
   from time import sleep
+
   res = []
+
   dArgs = demisto.args()
+
   burstSize = demisto.get(dArgs, 'burstsize')
+
   burstSize = int(burstSize) if burstSize else 10
+
   remaining = burstSize
+
   waitSeconds = demisto.get(dArgs, 'waitms')
+
   waitSeconds = float(waitSeconds) / 1000.0 if waitSeconds else 1.0
+
   dArgs["using-brand"] = "ProtectWise"
+
   obIDs = argToList(demisto.get(dArgs, 'id'))
+
   sensorIDs = demisto.get(dArgs, 'sensorId')
+
   sensorList = [sensorIDs] if isinstance(sensorIDs, int) else argToList(sensorIDs)
+
   for sensorId in sensorList:
       dArgs['sensorId'] = sensorId
       for oid in obIDs:
@@ -49,11 +61,9 @@ args:
 - name: filename
   description: Optionally provide a filename for the download
 - name: burstsize
-  description: Download <burstsize> files every time, and wait <waitms> milliseconds
-    each time. Defaults are 10 files and 1 second.
+  description: Download <burstsize> files every time, and wait <waitms> milliseconds each time. Defaults are 10 files and 1 second.
 - name: waitms
-  description: Download <burstsize> files every time, and wait <waitms> milliseconds
-    each time. Defaults are 10 files and 1 second.
+  description: Download <burstsize> files every time, and wait <waitms> milliseconds each time. Defaults are 10 files and 1 second.
 scripttarget: 0
 dependson:
   must:
@@ -61,3 +71,4 @@ dependson:
 timeout: 3.6µs
 tests:
 - Protectwise-Test
+fromversion: 5.0.0

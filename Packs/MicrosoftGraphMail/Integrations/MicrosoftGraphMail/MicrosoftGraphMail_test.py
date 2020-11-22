@@ -1,6 +1,7 @@
 import pytest
 from CommonServerPython import *
-from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, add_second_to_str_date
+from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
+    add_second_to_str_date, list_mails_command
 import demistomock as demisto
 
 
@@ -11,7 +12,7 @@ def test_build_mail_object():
         mail = json.load(mail_json)
         res = build_mail_object(mail, user_id=user_id, get_body=True)
         assert isinstance(res, list)
-        assert len(mail) == len(res)
+        assert len(mail[0].get('value')) == len(res)
         assert res[0]['Created'] == '2019-04-16T19:40:00Z'
         assert res[0]['UserID'] == user_id
         assert res[0]['Body']
@@ -69,6 +70,68 @@ def self_deployed_client():
                          base_url=base_url, use_ssl=True, proxy=False, ok_codes=ok_codes, app_name='',
                          mailbox_to_fetch=mailbox_to_fetch, folder_to_fetch=folder_to_fetch,
                          first_fetch_interval=first_fetch_interval, emails_fetch_limit=emails_fetch_limit)
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_pages_puller(mocker, client):
+    """Unit test
+    Given
+    - pages_puller function
+    - different number of pages to pull
+    When
+    - mock the requests response.
+    Then
+    - run the pages_puller command using the Client
+    Validate that the number of returned pages is according to the number of pages to pull
+    """
+    first_response = {
+        '@odata.context': 'response_context',
+        '@odata.nextLink': 'link_1',
+        'value': ['email1', 'email2']
+    }
+    second_response = {
+        '@odata.context': 'response_context',
+        '@odata.nextLink': 'link_2',
+        'value': ['email3', 'email4']
+    }
+    responses = client.pages_puller(first_response, 1)
+    assert len(responses) == 1
+    mocker.patch.object(client.ms_client, 'http_request', return_value=second_response)
+    responses = client.pages_puller(first_response, 2)
+    assert len(responses) == 2
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_list_mails_command(mocker, client):
+    """Unit test
+    Given
+    - list_mails command
+    - different number of mails that are returned in the response
+    When
+    - mock the client.list_mails function
+    Then
+    - run the list_mails_command using the Client
+    Validate that the human readable output, indicating the number of returned mails is correct
+    """
+    args = {'user_id': 'test id'}
+
+    # call list mails with two emails
+    with open('test_data/mails') as mail_json:
+        mail = json.load(mail_json)
+        mocker.patch.object(client, 'list_mails', return_value=mail)
+        mocker.patch.object(demisto, 'results')
+        list_mails_command(client, args)
+        hr = demisto.results.call_args[0][0].get('HumanReadable')
+        assert '### Total of 2 mails received' in hr
+
+    # call list mails with no emails
+    with open('test_data/no_mails') as mail_json:
+        mail = json.load(mail_json)
+        mocker.patch.object(client, 'list_mails', return_value=mail)
+        mocker.patch.object(demisto, 'results')
+        list_mails_command(client, args)
+        hr = demisto.results.call_args[0][0].get('HumanReadable')
+        assert '### No mails were found' in hr
 
 
 @pytest.fixture()

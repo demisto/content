@@ -1,0 +1,74 @@
+commonfields:
+  id: Genians
+  version: -1
+name: Genians
+display: Genians
+category: Network Security
+description: Use the Genian NAC integration to block IP addresses using the assign tag.
+detaileddescription:
+configuration:
+- display: Server IP (e.g. 172.29.62.26)
+  name: server_ip
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key (e.g. 912fae69-b454-4608-bf4b-fa142353b463)
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Tag Name (e.g. THREAT, GUEST)
+  name: tag_name
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Fetch indicators
+  name: feed
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  commands:
+  - name: genians-assign-ip-tag
+    arguments:
+    - name: ip
+      required: true
+      description: Threat IP Address (e.g. 192.168.100.87)
+    outputs:
+    - contextPath: genians.tag.nodeId
+      description: nodeid of IP
+      type: string
+    - contextPath: genians.tag.Name
+      description: Tag name
+      type: string
+    description: Assigns a tag to the Node specified.
+  - name: genians-unassign-ip-tag
+    arguments:
+    - name: ip
+      required: true
+      description: IP Address (e.g. 192.168.100.87)
+    outputs:
+    - contextPath: genians.tag.nodeId
+      description: nodeid of IP
+      type: string
+    - contextPath: genians.tag.Name
+      description: Tag name
+      type: string
+    description: Removes the tag(s) from the Node specified.
+  dockerimage: demisto/python3:3.8.6.12176
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.5.0
+tests:
+- No tests- test in NonCircleTests

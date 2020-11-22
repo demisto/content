@@ -53,11 +53,11 @@ def main():
                     else:
                         hours_per_user[username] = role_on_call_hours
 
-        data = [
-            {'name': user, 'data': [number_of_hours], 'groups': [{'name': user, 'data': [number_of_hours]}]}
-            for user, number_of_hours in hours_per_user.items()
-        ]
-        demisto.results(json.dumps(data))
+        bar_widget = BarColumnPieWidget()
+        for user, number_of_hours in hours_per_user.items():
+            bar_widget.add_category(name=user, number=number_of_hours)
+
+        return_results(bar_widget)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

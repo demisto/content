@@ -1,8 +1,7 @@
 id: DBot Create Phishing Classifier V2 Job
 version: -1
 name: DBot Create Phishing Classifier V2 Job
-description: 'Train the phishing machine learning model. This playbook should be used
-  as job, to run repeatedly, for example every week. '
+description: 'Train the phishing machine learning model. This playbook should be used as job, to run repeatedly, for example every week. '
 starttaskid: "0"
 tasks:
   "0":
@@ -61,8 +60,7 @@ tasks:
       id: a0577456-3576-460d-8ede-15c6569f611a
       version: -1
       name: Close incident
-      description: Close the investigation - we want to close the incident if the
-        playbook successfully finished.
+      description: Close the investigation - we want to close the incident if the playbook successfully finished.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -161,6 +159,6 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: "4.5.0"
+fromversion: "5.0.0"
 tests:
-  - Create Phishing Classifier V2 ML Test
+- Create Phishing Classifier V2 ML Test

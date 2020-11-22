@@ -40,29 +40,41 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: 'Required severity levels for alerts separated by comma, from [Information,Warning,Threat,Severe,Critical].
-    For ex.: Warning, Threat'
+- display: 'Required severity levels for alerts separated by comma, from [Information,Warning,Threat,Severe,Critical]. For ex.: Warning, Threat'
   name: AlertSeverity
   defaultvalue: Information,Warning,Threat,Severe,Critical
   type: 12
   required: true
 script:
-  script: |+
+  script: >+
     ''' IMPORTS '''
+
     import requests
+
     import json
+
     import sys
+
     from datetime import datetime, timedelta
+
     # disable insecure warnings
+
     requests.packages.urllib3.disable_warnings()
 
+
     ''' GLOBAL VARS '''
+
     API_URL= demisto.params()['APIUrl'].rstrip('/') + '/externalApi'
+
     API_KEY=demisto.params()['APIKey']
+
     API_SECRET=demisto.params()['APISecret']
+
     ALERT_SEVERITY = demisto.params()['AlertSeverity']
 
+
     USE_SSL = not demisto.params().get('insecure', False)
+
 
     if not demisto.params().get('proxy', False):
         del os.environ['HTTP_PROXY']
@@ -78,6 +90,7 @@ script:
     }
 
 
+
     SCADAFENCE_ALERT_SEVERITY_LEVEL = {
         'Information': 0,
         'Warning': 1,
@@ -86,11 +99,14 @@ script:
         'Critical': 4
     }
 
+
     ''' HELPER FUNCTIONS '''
+
 
     INCIDENT_TYPES = {
         "IP conflict detected": "SCADAfence IP conlict"
     }
+
 
     def get_alert_severity():
         """
@@ -312,6 +328,7 @@ script:
         return ret
 
     # The command demisto.command() holds the command sent from the user.
+
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         get_alerts('Critical', None, None)
@@ -678,4 +695,5 @@ script:
   isfetch: true
   runonce: false
 tests:
-  - SCADAfence_test
+- SCADAfence_test
+fromversion: 5.0.0

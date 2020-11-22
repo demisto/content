@@ -41,8 +41,7 @@ script:
       description: A description for the space.
     - name: key
       required: true
-      description: Space key, which will be used as input when creating or updating
-        child components from a space.
+      description: Space key, which will be used as input when creating or updating child components from a space.
     outputs:
     - contextPath: Confluence.Space.ID
       description: Space ID.
@@ -196,19 +195,16 @@ script:
     arguments:
     - name: cql
       required: true
-      description: 'A CQL query string to use to locate content, for example: "space = DEV
-        order by created".'
+      description: 'A CQL query string to use to locate content, for example: "space = DEV order by created".'
     - name: cqlcontext
-      description: The context in which to execute a CQL search. The context is the JSON serialized
-        form of SearchContext.
+      description: The context in which to execute a CQL search. The context is the JSON serialized form of SearchContext.
     - name: expand
       description: A CSV list of properties to expand on the content.
       defaultValue: version
     - name: start
       description: The start point of the collection to return.
     - name: limit
-      description: Maximum number of items to return. This can be restricted
-        by fixed system limits. Default is 25.
+      description: Maximum number of items to return. This can be restricted by fixed system limits. Default is 25.
       defaultValue: "25"
     outputs:
     - contextPath: Confluence.Content.ID
@@ -223,8 +219,8 @@ script:
     - contextPath: Confluence.Content.Version
       description: Content version.
       type: String
-    description: 'Fetches a list of content using the Confluence Query Language (CQL).
-      For more information about CQL syntax, see https://developer.atlassian.com/server/confluence/advanced-searching-using-cql/'
+    description: 'Fetches a list of content using the Confluence Query Language (CQL). For more information about CQL syntax, see https://developer.atlassian.com/server/confluence/advanced-searching-using-cql/'
   runonce: false
 tests:
-  - No test - the test requires personal credentials to the confluence account
+- No test - the test requires personal credentials to the confluence account
+fromversion: 5.0.0

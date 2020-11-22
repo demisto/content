@@ -499,8 +499,7 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: Expected `SEPM.PoliciesList.AssignedLocations` to have length of 20
-          but got ${SEPM.PoliciesList.AssignedLocations}
+        simple: Expected `SEPM.PoliciesList.AssignedLocations` to have length of 20 but got ${SEPM.PoliciesList.AssignedLocations}
     separatecontext: false
     view: |-
       {
@@ -1276,8 +1275,7 @@ tasks:
       id: b867ca0b-173b-4378-802c-a65de64bca44
       version: -1
       name: sep-identify-old-clients
-      description: Get endpoints with a running version that isnt the same as the
-        target version or isn't consistent with the desired version (if specified).
+      description: Get endpoints with a running version that isnt the same as the target version or isn't consistent with the desired version (if specified).
       script: '|||sep-identify-old-clients'
       type: regular
       iscommand: true
@@ -1320,3 +1318,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

@@ -9,22 +9,18 @@ description: Malware dynamic analysis sandboxing
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
-  defaultvalue: ""
   type: 0
   required: false
 - display: Username (Only if your cuckoo service requires HTTP auth)
   name: authentication
-  defaultvalue: ""
   type: 9
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -68,8 +64,25 @@ script:
             added_on :          'AddedOn',
             completed_on :      'CompletedOn',
             score :             'Score',
-            monitor :           'Monitor'
+            monitor :           'Monitor',
+            FileInfo :          'FileInfo'
+
+        },
+        FileInfo: {
+            yara :              'yara',
+            sha1 :              'sha1',
+            name :              'name',
+            type :              'type',
+            sha256 :            'sha256',
+            urls :              'urls',
+            crc32 :             'crc32',
+            path :              'path',
+            ssdeep :            'ssdeep',
+            size :              'size',
+            sha512 :            'sha512',
+            md5 :               'md5'
         }
+
     };
 
     var undrscrToCamelCase = function(string){
@@ -268,7 +281,11 @@ script:
         var md;
         var context = {};
 
-        context['Cuckoo.Task(val.ID && val.ID == obj.ID)'] = jsonToEntity(result.info, entityMap.Task);
+
+        context = jsonToEntity(result.info, entityMap.Task);
+        if ('file' in result.target) {
+            context[0]['FileInfo'] = jsonToEntity(result.target.file, entityMap.FileInfo)[0];
+        }
         md = tblToMdWithTransform('Task Target', result.target, undrscrToCamelCase);
         md += tblToMdWithTransform('Task Info', result.info, undrscrToCamelCase);
         md += tblToMdWithTransform('Task Metadata', result.metadata, undrscrToCamelCase);
@@ -276,12 +293,14 @@ script:
         if(result.signatures && result.signatures.length > 0){
             md += tblToMdWithTransform('Task Signatures', result.signatures, undrscrToCamelCase);
         }
+
         return {
             Type: entryTypes.note,
             Contents: result,
             ContentsFormat: formats.json,
             HumanReadable: md,
-            EntryContext: context
+            EntryContext: {'Cuckoo.Task(val.ID && val.ID == obj.ID)': context}
+
         };
     };
     var viewTasks = function(args, params){
@@ -575,6 +594,28 @@ script:
       description: Reported score of the the task
     - contextPath: Cuckoo.Task.Monitor
       description: Monitor of the reported task
+    - contextPath: Cuckoo.Task.FileInfo.sha1
+      description: The SHA1 hash of the file.
+    - contextPath: Cuckoo.Task.FileInfo.name
+      description: The file name.
+    - contextPath: Cuckoo.Task.FileInfo.type
+      description: The file type.
+    - contextPath: Cuckoo.Task.FileInfo.sha256
+      description: The SHA256 hash of the file.
+    - contextPath: Cuckoo.Task.FileInfo.urls
+      description: Related URLs of the file.
+    - contextPath: Cuckoo.Task.FileInfo.crc32
+      description: The CRC32 of the file.
+    - contextPath: Cuckoo.Task.FileInfo.path
+      description: The file path.
+    - contextPath: Cuckoo.Task.FileInfo.ssdeep
+      description: The ssdeep of the file.
+    - contextPath: Cuckoo.Task.FileInfo.size
+      description: The size of the file.
+    - contextPath: Cuckoo.Task.FileInfo.sha512
+      description: The SHA512 hash of the file.
+    - contextPath: Cuckoo.Task.FileInfo.md5
+      description: The MD5 hash file.
     description: commands.server.ckReport.description
   - name: ck-list
     deprecated: true
@@ -983,7 +1024,7 @@ script:
       description: Machine tags
     description: Returns details on the analysis machine associated with the given
       name.
-hidden: false
-fromversion: 3.5.0
+  runonce: false
+fromversion: 5.0.0
 tests:
-  - CuckooTest
+- CuckooTest

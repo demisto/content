@@ -1,9 +1,7 @@
 id: search_and_delete_emails_-_generic
 version: -1
 name: Search And Delete Emails - Generic
-fromversion: 3.6.0
-description: This playbook searches and delete emails with similar attributes of a
-  malicious email.
+description: This playbook searches and delete emails with similar attributes of a malicious email.
 starttaskid: "0"
 tasks:
   "0":
@@ -14,9 +12,9 @@ tasks:
       id: 808e9cce-8112-49d4-8624-907a6fbeb394
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -28,16 +26,20 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: f2699240-6fe1-40ae-8da6-8017aabf41ff
+    taskid: 2c636e7e-8de1-4535-8c36-454b2c36cc75
     type: playbook
     task:
-      id: f2699240-6fe1-40ae-8da6-8017aabf41ff
+      id: 2c636e7e-8de1-4535-8c36-454b2c36cc75
       version: -1
       name: Search And Delete Emails - EWS
-      description: This playbook searches EWS to identify and delete emails with similar
-        attributes of a malicious email.
+      description: This playbook searches EWS to identify and delete emails with similar attributes of a malicious email.
       playbookName: Search And Delete Emails - EWS
       type: playbook
       iscommand: false
@@ -66,6 +68,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -73,6 +76,11 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "2":
     id: "2"
     taskid: 88c58e53-8fe7-4ca2-8697-0ed3f67191fe
@@ -81,10 +89,10 @@ tasks:
       id: 88c58e53-8fe7-4ca2-8697-0ed3f67191fe
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -93,6 +101,11 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -113,6 +126,7 @@ inputs:
       accessor: emailfrom
   required: false
   description: The value of the malicious email's "From" attribute.
+  playbookInputQuery:
 - key: Subject
   value:
     complex:
@@ -120,6 +134,7 @@ inputs:
       accessor: emailsubject
   required: false
   description: The value of the malicious email's "Subject" attribute.
+  playbookInputQuery:
 - key: AttachmentName
   value:
     complex:
@@ -127,6 +142,8 @@ inputs:
       accessor: attachmentname
   required: false
   description: The value of the malicious email's "AttachmentName" attribute.
+  playbookInputQuery:
 outputs: []
+fromversion: 5.0.0
 tests:
 - No test

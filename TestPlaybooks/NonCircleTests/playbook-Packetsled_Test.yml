@@ -1,7 +1,7 @@
 id: TestPacketsled
 version: -1
 name: TestPacketsled
-fromversion: ""
+fromversion: 5.0.0
 description: Enumerate the packetsled entities with incidents, and query each entity
   for artifacts (metadata, extracted files, and packet capture) that are then delivered
   into the demisto War Room.

@@ -1,4 +1,4 @@
-Returns to the War Room, a file sample, correlating from a file hash using one or more products.
+DEPRECATED. Use "Get File Sample By Hash - Generic v2" playbook instead. Returns to the War Room, a file sample, correlating from a file hash using one or more products.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

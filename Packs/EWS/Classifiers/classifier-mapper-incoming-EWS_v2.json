@@ -1,6 +1,6 @@
 {
 	"id": "EWS v2-mapper",
-    "name": "EWS v2 - Incoming Mapper",
+    "name": "EWS - Incoming Mapper",
     "type": "mapping-incoming",
     "description": "Maps incoming EWS phishing email message fields.",
 	"version": -1,

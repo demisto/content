@@ -12,7 +12,7 @@
 <ul>
 <li><strong>Name</strong>: a textual name for the integration instance</li>
 <li><strong>Server URL</strong></li>
-<li><strong>Credentials</strong></li>
+<li><strong>Credentials (either username and password or API key ID and API key secret, see <a href="https://www.ibm.com/support/knowledgecenter/SSBRUQ_35.0.0/com.ibm.resilient.doc/admin/API_accounts.htm">here</a> for more details about API key ID and secret)</strong></li>
 <li><strong>Organization name</strong></li>
 <li><strong>Do not validate server certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>

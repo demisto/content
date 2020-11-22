@@ -1,0 +1,28 @@
+commonfields:
+  id: RiskIQPassiveTotalSSLScript
+  version: -1
+name: RiskIQPassiveTotalSSLScript
+script: ''
+type: python
+tags:
+- enhancement
+comment: Enhancement script to enrich SSL information for Email, File SHA-1 and RiskIQSerialNumber
+  type of indicators.
+enabled: true
+args:
+- name: indicator_value
+  required: true
+  default: true
+  description: Email, File SHA-1 and RiskIQSerialNumber indicator value that need
+    to enrich
+scripttarget: 0
+subtype: python3
+dependson:
+  must:
+  - '|||pt-ssl-cert-search'
+runonce: false
+dockerimage: demisto/python3:3.8.6.12176
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

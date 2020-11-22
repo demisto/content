@@ -2,15 +2,20 @@ commonfields:
   id: CuckooDisplayReport
   version: -1
 name: CuckooDisplayReport
-script: |
+script: >
   #ALL_SECTIONS = ["info","statistics","network","dropped","suricata","debug","procmemory","signatures","decompression","malfamily","behavior","target","malscore","static","feeds","strings","virustotal"]
+
   res = []
+
   if 'reportentryid' not in demisto.args() and 'reportfilepath' not in demisto.args()  and 'reportdata' not in demisto.args():
       demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'You must provide reportdata, reportentryid or reportfilepath. '})
       sys.exit()
   showAllSections = False
+
   BASIC_SECTIONS = ["info", "target", "signatures", "malscore", "strings", "static"]
+
   showSections = demisto.get(demisto.args(), 'sections')
+
   if showSections and showSections.lower() != 'all':
       showSections = argToList(showSections) if showSections else BASIC_SECTIONS
   else:
@@ -114,9 +119,7 @@ args:
   default: true
   description: ID of the war room entry containing the report file
 - name: sections
-  description: Sections to show (comma-separated). Sections are "info", "statistics",
-    "network", "dropped", "suricata", "debug", "procmemory", "signatures", "decompression",
-    "malfamily", "behavior", "target", "malscore", "static", "feeds", "strings", "virustotal"
+  description: Sections to show (comma-separated). Sections are "info", "statistics", "network", "dropped", "suricata", "debug", "procmemory", "signatures", "decompression", "malfamily", "behavior", "target", "malscore", "static", "feeds", "strings", "virustotal"
 - name: reportfilepath
   description: Local file path to the report file
 - name: reportdata
@@ -126,3 +129,4 @@ dependson:
   must:
   - ck-report
 timeout: 0s
+fromversion: 5.0.0

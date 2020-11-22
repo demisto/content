@@ -5,7 +5,7 @@ description: |-
   This playbook blocks IP addresses using Custom Block Rules in Palo Alto Networks Panorama or Firewall.
   The playbook receives malicious IP addresses as inputs, creates a custom bi-directional rule to block them, and commits the configuration.
 starttaskid: "0"
-fromversion: 4.0.0
+fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
@@ -473,4 +473,4 @@ inputs:
     No - Commit manually.
 outputs: []
 tests:
-  - PAN-OS - Block IP - Custom Block Rule Test
+- PAN-OS - Block IP - Custom Block Rule Test

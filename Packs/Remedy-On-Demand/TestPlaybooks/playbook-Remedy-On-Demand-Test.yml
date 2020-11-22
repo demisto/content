@@ -310,10 +310,7 @@ tasks:
       - "3"
     scriptarguments:
       expectedValue:
-        simple: "{\n\t\"Description\": \"new description\",\n\t\"ID\": \"${TicketID2}\",\n\t\"Impact\":
-          \"3-Moderate/Limited\",\n\t\"Source\": \"Web\",\n\t\"Status\": \"Cancelled\",\n\t\"Submitter\":
-          \"appadmin\",\n\t\"Type\": \"User Service Restoration\",\n\t\"Urgency\":
-          \"4-Low\"\n}"
+        simple: "{\n\t\"Description\": \"new description\",\n\t\"ID\": \"${TicketID2}\",\n\t\"Impact\": \"3-Moderate/Limited\",\n\t\"Source\": \"Web\",\n\t\"Status\": \"Cancelled\",\n\t\"Submitter\": \"appadmin\",\n\t\"Type\": \"User Service Restoration\",\n\t\"Urgency\": \"4-Low\"\n}"
       fields:
         simple: ID,Status,Description,Source,Impact,Urgency,Type,Submitter
       path:
@@ -513,3 +510,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

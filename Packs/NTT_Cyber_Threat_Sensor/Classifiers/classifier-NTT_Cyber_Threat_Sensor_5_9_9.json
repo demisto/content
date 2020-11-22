@@ -1,0 +1,114 @@
+{
+ "brandName": "NTT Cyber Threat Sensor",
+ "custom": true,
+ "defaultIncidentType": "TD Incident",
+ "id": "d949c227-bc57-46c1-8643-4a6b4a68d992",
+ "keyTypeMap": {
+  "TD": "TD Incident"
+ },
+ "mapping": {
+  "TD Incident": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Event ID": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "sha",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Graph Plot": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "graphPlotImage",
+      "transformers": [
+       {
+        "args": {
+         "prefix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "<img src=\""
+          }
+         },
+         "suffix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "\" alt=\"Red dot\" width=\"720\"\/>"
+          }
+         }
+        },
+        "operator": "concat"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "FAERE Description": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "longdesc",
+      "transformers": [
+       {
+        "args": {
+         "regex": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "font-size:\\s+(\\d+)px"
+          }
+         },
+         "replaceWith": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "font-size: 12px"
+          }
+         }
+        },
+        "operator": "replaceMatch"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "severity": {
+     "complex": null,
+     "simple": "faereseverity"
+    },
+    "shortdesc": {
+     "complex": null,
+     "simple": "FAERE Description"
+    },
+    "sourceBrand": {
+     "complex": null,
+     "simple": "CTS"
+    },
+    "sourceInstance": {
+     "complex": null,
+     "simple": "devicephysical"
+    }
+   }
+  }
+ },
+ "transformer": {
+  "complex": null,
+  "simple": "event_type"
+ },
+ "version": -1,
+ "toVersion": "5.9.9",
+ "fromVersion": "5.0.0"
+}

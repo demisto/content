@@ -2,16 +2,25 @@ commonfields:
   id: ExchangeSearch
   version: -1
 name: ExchangeSearch
-script: |-
+script: >-
   # defaults
+
   mailboxs=[]
+
   sender=''
+
   attachmentname=''
+
   subject=''
+
   query =''
+
   resultText = ''
+
   found = {}
+
   parts = []
+
 
   if demisto.args().has_key('mailbox'):
       mailboxes = argToList(demisto.args()['mailbox'])
@@ -86,7 +95,7 @@ script: |-
       demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'No mailbox specified. Cannot continue.' } )
 type: python
 subtype: python2
-comment: Search mails in Exchange Web Server
+comment: Deprecated. Search mails in Exchange Web Server
 tags:
 - ews
 - exchange
@@ -112,3 +121,4 @@ dependson:
   - ews-search-mailbox
 timeout: 86.4µs
 deprecated: true
+fromversion: 5.0.0

@@ -1,8 +1,7 @@
 id: Active Directory - Get User Manager Details
 version: -1
 name: Active Directory - Get User Manager Details
-description: Takes an email address or a username of a user account in Active Directory,
-  and returns the email address of the user's manager.
+description: Takes an email address or a username of a user account in Active Directory, and returns the email address of the user's manager.
 starttaskid: '0'
 tasks:
   '0':
@@ -92,9 +91,7 @@ tasks:
       id: c1c98615-ba19-44ef-8aa0-1d50a1ee1c3c
       version: -1
       name: By which attribute should the user be searched?
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
       type: condition
       iscommand: false
       brand: Active Directory Query v2
@@ -145,8 +142,7 @@ tasks:
       id: 89d7467d-51c7-4391-8b8d-db68c2612e9f
       version: -1
       name: Get user details by username
-      description: Retrieves detailed information about a user account based on their
-        username.
+      description: Retrieves detailed information about a user account based on their username.
       script: Active Directory Query v2|||ad-get-user
       type: regular
       iscommand: true
@@ -188,8 +184,7 @@ tasks:
       id: 1e68e108-228b-4f26-835b-663eaca70ad2
       version: -1
       name: Get user details by email
-      description: Retrieves detailed information about a user account based on their
-        email address.
+      description: Retrieves detailed information about a user account based on their email address.
       script: Active Directory Query v2|||ad-get-user
       type: regular
       iscommand: true
@@ -269,8 +264,7 @@ tasks:
       id: 65cf888f-15a2-4f6a-8b3f-72dff44acae4
       version: -1
       name: Get manager details by user email or username
-      description: Retrieves detailed information about the user's manager based on
-        their email or username.
+      description: Retrieves detailed information about the user's manager based on their email or username.
       tags:
       - active_directory_manager_details
       script: Active Directory Query v2|||ad-get-user
@@ -407,9 +401,7 @@ tasks:
       id: 9cc15f6c-83c4-4d92-8612-574c2dcd76ba
       version: -1
       name: Set manager email to outputs
-      description: Sets the email of the manager to the output context key of the
-        playbook. It finds the manager by looking in the context for a user who's
-        email is not the same as the playbook input email.
+      description: Sets the email of the manager to the output context key of the playbook. It finds the manager by looking in the context for a user who's email is not the same as the playbook input email.
       scriptName: Set
       type: regular
       iscommand: false
@@ -506,9 +498,7 @@ tasks:
       id: 94fc4ab3-e1a5-494a-88d8-56981e17b47a
       version: -1
       name: Set manager email to outputs
-      description: Sets the email of the manager to the output context key of the
-        playbook. It finds the manager by looking in the context for a user who's
-        username is not the same as the playbook input username.
+      description: Sets the email of the manager to the output context key of the playbook. It finds the manager by looking in the context for a user who's username is not the same as the playbook input username.
       scriptName: Set
       type: regular
       iscommand: false
@@ -594,8 +584,7 @@ tasks:
       id: bdbd9a09-17a8-4393-80b0-c188cc65f777
       version: -1
       name: Set manager display name to outputs
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+      description: Checks if the specified value exists in context. If the value exists, it will be set in context, otherwise no value will be set in context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -685,6 +674,6 @@ outputs:
 - contextPath: UserManagerDisplayName
   description: The display name of the user's manager.
   type: unknown
-fromversion: 4.5.0
+fromversion: 5.0.0
 tests:
-  - Active Directory - Get User Manager Details - Test
+- Active Directory - Get User Manager Details - Test

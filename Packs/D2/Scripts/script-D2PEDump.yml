@@ -2,8 +2,9 @@ commonfields:
   id: D2PEDump
   version: -1
 name: D2PEDump
-script: |-
+script: >-
   var files = files('/tmp', true, false, args.file);
+
   if (files && files.length > 0) {
       packOutput('pedump ' + files[0].Path);
   }
@@ -11,8 +12,7 @@ type: javascript
 tags:
 - executable
 - agent
-comment: Execute PE Dump on a file that is under /tmp somewhere. Used internally by
-  StaticAnalyze
+comment: Execute PE Dump on a file that is under /tmp somewhere. Used internally by StaticAnalyze
 system: true
 args:
 - name: file
@@ -22,3 +22,4 @@ args:
 scripttarget: 1
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

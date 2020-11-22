@@ -27,8 +27,7 @@ configuration:
   name: document_root
   required: false
   type: 0
-description: This integration enables you to manage and edit files located on a remote
-  web server via SSH using integration context as Single Source of Truth.
+description: This integration enables you to manage and edit files located on a remote web server via SSH using integration context as Single Source of Truth.
 display: Palo Alto Networks PAN-OS EDL Management
 name: palo_alto_networks_pan_os_edl_management
 script:
@@ -41,8 +40,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Displays the contents of the specified remote file located in the
-      War Room.
+    description: Displays the contents of the specified remote file located in the War Room.
     execution: false
     name: pan-os-edl-get-external-file
   - arguments:
@@ -64,8 +62,7 @@ script:
     name: pan-os-edl-search-external-file
   - arguments:
     - default: false
-      description: List from the instance context with which to override the remote
-        file.
+      description: List from the instance context with which to override the remote file.
       isArray: false
       name: list_name
       required: true
@@ -105,8 +102,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Updates the instance context with the specified list name and list
-      items, and then overrides the path of the remote file with the internal list.
+    description: Updates the instance context with the specified list name and list items, and then overrides the path of the remote file with the internal list.
     execution: true
     name: pan-os-edl-update
   - arguments:
@@ -125,8 +121,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: merge
-      description: Update type. "Merge" adds non-duplicate values, "Override" deletes
-        existing data in the internal list. Default is "merge".
+      description: Update type. "Merge" adds non-duplicate values, "Override" deletes existing data in the internal list. Default is "merge".
       isArray: false
       name: type
       predefined:
@@ -190,8 +185,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Dumps (copies) instance context to either the incident context or
-      a file.
+    description: Dumps (copies) instance context to either the incident context or a file.
     execution: false
     name: pan-os-edl-dump-internal-list
     outputs:
@@ -299,8 +293,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Updates the instance context with the specified list name and list
-      items.
+    description: Updates the instance context with the specified list name and list items.
     execution: false
     name: pan-os-edl-update-internal-list
   - arguments:
@@ -341,3 +334,4 @@ script:
   subtype: python3
 tests:
 - PAN OS EDL Management - Test
+fromversion: 5.0.0

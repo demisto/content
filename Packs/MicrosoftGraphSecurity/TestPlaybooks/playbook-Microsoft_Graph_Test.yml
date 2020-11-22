@@ -1,14 +1,14 @@
-id: Microsoft Graph Test
+id: Microsoft Graph Security Test
 version: -1
-name: Microsoft Graph Test
+name: Microsoft Graph Security Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 36ae70b3-d522-46f7-8edd-edad6bed20d3
+    taskid: 3865ebdd-d653-462b-8740-7c834c048ec1
     type: start
     task:
-      id: 36ae70b3-d522-46f7-8edd-edad6bed20d3
+      id: 3865ebdd-d653-462b-8740-7c834c048ec1
       version: -1
       name: ""
       iscommand: false
@@ -27,16 +27,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: fa16dd51-f1bd-422e-8efd-93e2c5cb3ce6
+    taskid: 55be4870-4d67-4777-8192-3684e32fb7e6
     type: regular
     task:
-      id: fa16dd51-f1bd-422e-8efd-93e2c5cb3ce6
+      id: 55be4870-4d67-4777-8192-3684e32fb7e6
       version: -1
       name: msg-search-alerts
-      description: List alerts (security issues) within a customer's tenant that Microsoft
-        or partner security solutions have identified.
+      description: List alerts (security issues) within a customer's tenant that Microsoft or partner security solutions have identified.
       script: '|||msg-search-alerts'
       type: regular
       iscommand: true
@@ -62,12 +63,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 21200bbe-54c3-4d33-8e8e-dfd463b3fcd7
+    taskid: 102ba941-173c-481e-88bb-b7cc01bdf9c6
     type: regular
     task:
-      id: 21200bbe-54c3-4d33-8e8e-dfd463b3fcd7
+      id: 102ba941-173c-481e-88bb-b7cc01bdf9c6
       version: -1
       name: msg-get-alert-details
       description: Get details for a specific alert.
@@ -101,24 +104,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 32f4ef88-29cd-4b99-867b-7a8302f499ab
+    taskid: 3b5084ce-e28c-4a99-8b7c-f1aa40fcebfe
     type: regular
     task:
-      id: 32f4ef88-29cd-4b99-867b-7a8302f499ab
+      id: 3b5084ce-e28c-4a99-8b7c-f1aa40fcebfe
       version: -1
       name: msg-update-alert
-      description: Update an editable alert property within any integrated solution
-        to keep alert status and assignments in sync across solutions using its reference
-        ID.
+      description: Update an editable alert property within any integrated solution to keep alert status and assignments in sync across solutions using its reference ID.
       script: '|||msg-update-alert'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "10"
     scriptarguments:
       alert_id:
         complex:
@@ -168,12 +171,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 194f6263-ef14-4a71-8893-44f08fd98579
+    taskid: 830e04a0-9e00-4e5e-8785-2713775c44f2
     type: title
     task:
-      id: 194f6263-ef14-4a71-8893-44f08fd98579
+      id: 830e04a0-9e00-4e5e-8785-2713775c44f2
       version: -1
       name: Done
       type: title
@@ -184,18 +189,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 24a65117-5c3a-4f45-8b38-977dc051a253
+    taskid: 932bc8cd-90c3-4ec8-84e6-70e23e5bb15d
     type: condition
     task:
-      id: 24a65117-5c3a-4f45-8b38-977dc051a253
+      id: 932bc8cd-90c3-4ec8-84e6-70e23e5bb15d
       version: -1
       name: Verify msg-search-alerts output
       type: condition
@@ -225,12 +232,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: f2dad29f-bff3-4ad3-8d19-58bbabd54b0c
+    taskid: 7b385756-6141-424e-8c8e-458733f0d29a
     type: regular
     task:
-      id: f2dad29f-bff3-4ad3-8d19-58bbabd54b0c
+      id: 7b385756-6141-424e-8c8e-458733f0d29a
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -259,22 +268,27 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "8":
-    id: "8"
-    taskid: d1da2962-1337-4a67-83d7-3b3d5403421a
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 1135286e-e678-41ba-8f35-fe89152840db
     type: regular
     task:
-      id: d1da2962-1337-4a67-83d7-3b3d5403421a
+      id: 1135286e-e678-41ba-8f35-fe89152840db
       version: -1
-      name: msg-get-users
-      description: Retrieve a list of user objects.
-      script: '|||msg-get-users'
+      name: Sleep for 30 seconds
+      description: Sleep for X seconds
+      scriptName: Sleep
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "5"
+    scriptarguments:
+      seconds:
+        simple: "30"
     separatecontext: false
     view: |-
       {
@@ -286,56 +300,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "9":
-    id: "9"
-    taskid: c39a2080-bd13-433b-807e-9c49e8916e53
-    type: regular
-    task:
-      id: c39a2080-bd13-433b-807e-9c49e8916e53
-      version: -1
-      name: msg-get-user
-      description: Retrieve the properties and relationships of user object.
-      script: '|||msg-get-user'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      user_id:
-        complex:
-          root: MsGraph
-          accessor: User
-          transformers:
-          - operator: WhereFieldEquals
-            args:
-              equalTo:
-                value:
-                  simple: avishai@demistodev.onmicrosoft.com
-              field:
-                value:
-                  simple: Email
-              getField:
-                value:
-                  simple: ID
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 1260,
         "width": 380,
         "x": 50,
         "y": 50
@@ -344,3 +316,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

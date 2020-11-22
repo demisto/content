@@ -12,8 +12,7 @@ configuration:
   name: auth_id
   required: true
   type: 4
-- display: Token (received from the admin consent - see Detailed Instructions (?)
-    section)
+- display: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
   required: true
   type: 4
@@ -30,15 +29,12 @@ configuration:
   required: false
   type: 13
 - defaultvalue: New
-  display: 'Status to filter out alerts for fetching as incidents. The property values
-    are: New,InProgress,Resolved (Comma separated values supported, e.g. New,Resolved)'
+  display: 'Status to filter out alerts for fetching as incidents. The property values are: New,InProgress,Resolved (Comma separated values supported, e.g. New,Resolved)'
   name: fetch_status
   required: false
   type: 0
 - defaultvalue: Informational,Low,Medium,High
-  display: 'Severity to filter out alerts for fetching as incidents. The property
-    values are: Informational,Low,Medium,High (Comma separated values supported, e.g.
-    Medium,High)'
+  display: 'Severity to filter out alerts for fetching as incidents. The property values are: Informational,Low,Medium,High (Comma separated values supported, e.g. Medium,High)'
   name: fetch_severity
   required: false
   type: 0
@@ -50,9 +46,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Deprected - use Microsoft Defender Advanced Threat Protection instead.
-  Windows Defender Advanced Threat Protection (ATP) is a unified platform for preventative protection,
-  post-breach detection, automated investigation, and response.
+description: Deprecated. use Microsoft Defender Advanced Threat Protection instead. Windows Defender Advanced Threat Protection (ATP) is a unified platform for preventative protection, post-breach detection, automated investigation, and response.
 display: Windows Defender Advanced Threat Protection (Deprecated)
 name: Windows Defender Advanced Threat Protection
 script:
@@ -72,8 +66,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Full isolation or selective isolation (Restrict only limited set
-        of applications from accessing the network)
+      description: Full isolation or selective isolation (Restrict only limited set of applications from accessing the network)
       isArray: false
       name: isolation_type
       predefined:
@@ -81,7 +74,7 @@ script:
       - Selective
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Isolates a machine from accessing external network.
     execution: true
     name: microsoft-atp-isolate-machine
@@ -111,7 +104,7 @@ script:
       name: comment
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Undo an isolation of a machine
     execution: false
     name: microsoft-atp-unisolate-machine
@@ -159,9 +152,8 @@ script:
       - Inactive
       required: false
       secret: false
-    deprecated: false
-    description: Retrieves a collection of machines that have communicated with WDATP
-      cloud on the last 30 days
+    deprecated: true
+    description: Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
     execution: false
     name: microsoft-atp-get-machines
     outputs:
@@ -235,7 +227,7 @@ script:
       name: file
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Get a collection of machines related to a given file hash.
     execution: false
     name: microsoft-atp-get-file-related-machines
@@ -313,7 +305,7 @@ script:
       name: machine_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Get a machine details by its identity.
     execution: false
     name: microsoft-atp-get-machine-details
@@ -404,7 +396,7 @@ script:
       - Full
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Initiate Windows Defender Antivirus scan on a machine
     execution: false
     name: microsoft-atp-run-antivirus-scan
@@ -432,7 +424,7 @@ script:
       - Resolved
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Get a list of alerts present on the system.
     execution: false
     name: microsoft-atp-list-alerts
@@ -526,7 +518,7 @@ script:
       - Other
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Update the properties of an alert entity
     execution: false
     name: microsoft-atp-update-alert
@@ -550,12 +542,8 @@ script:
       name: query
       required: true
       secret: false
-    deprecated: false
-    description: 'Allows you to run programmatic queries like in Windows Defender
-      ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can
-      only run a query on data from the last 30 days, The results will include a maximum
-      of 10,000 rows, The number of executions is limited (up to 15 calls per minute,
-      15 minutes of running time every hour and 4 hours of running time a day)'
+    deprecated: true
+    description: 'Allows you to run programmatic queries like in Windows Defender ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can only run a query on data from the last 30 days, The results will include a maximum of 10,000 rows, The number of executions is limited (up to 15 calls per minute, 15 minutes of running time every hour and 4 hours of running time a day)'
     execution: false
     name: microsoft-atp-advanced-hunting
     outputs:
@@ -593,8 +581,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Action that is recommended to be taken by security officer when
-        analyzing the alert.
+      description: Action that is recommended to be taken by security officer when analyzing the alert.
       isArray: false
       name: recommended_action
       required: true
@@ -651,9 +638,8 @@ script:
       - General
       required: false
       secret: false
-    deprecated: false
-    description: Create a new alert entity using event data, as obtained from the
-      Advanced Hunting.
+    deprecated: true
+    description: Create a new alert entity using event data, as obtained from the Advanced Hunting.
     execution: false
     name: microsoft-atp-create-alert
     outputs:
@@ -694,7 +680,7 @@ script:
       name: id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Retrieves the user associated to a specific alert.
     execution: false
     name: microsoft-atp-get-alert-related-user
@@ -721,14 +707,12 @@ script:
       description: Log on machine count.
       type: string
     - contextPath: MicrosoftATP.User.DomainAdmin
-      description: Flag for user domain admin - set to true if related user is domain
-        admin.
+      description: Flag for user domain admin - set to true if related user is domain admin.
       type: boolean
     - contextPath: MicrosoftATP.User.NetworkUser
-      description: Flag for network user only - set to true if related user is only
-        network user.
+      description: Flag for network user only - set to true if related user is only network user.
       type: boolean
-  dockerimage: demisto/crypto:1.0.0.303
+  dockerimage: demisto/crypto:1.0.0.11287
   isfetch: true
   runonce: false
   script: '-'
@@ -738,3 +722,4 @@ deprecated: true
 tests:
 - No Tests - Deprected (Test - Windows Defender Advanced Threat Protection is in NonCircleTests directory)
 
+fromversion: 5.0.0

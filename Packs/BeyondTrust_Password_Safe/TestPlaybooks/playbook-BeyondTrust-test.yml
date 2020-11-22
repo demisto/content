@@ -70,8 +70,7 @@ tasks:
       id: 050f980b-5f3a-4fdc-88f3-76f7011e8f40
       version: -1
       name: Get Managed Accounts
-      description: Returns a list of managed accounts that the current user has permissions
-        to request.
+      description: Returns a list of managed accounts that the current user has permissions to request.
       script: '|||beyondtrust-get-managed-accounts'
       type: regular
       iscommand: true
@@ -194,3 +193,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

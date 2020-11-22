@@ -61,8 +61,7 @@ tasks:
       id: 8ed60626-10d4-4c78-8efa-b1bba0c6f287
       version: -1
       name: lock-get
-      description: Get lock. If the lock is already in use - will wait until it is
-        released or until timeout is reached
+      description: Get lock. If the lock is already in use - will wait until it is released or until timeout is reached
       script: Demisto Lock|||demisto-lock-get
       type: regular
       iscommand: true
@@ -92,8 +91,7 @@ tasks:
       id: 3406d919-6735-4067-8b3e-3f9b6ab65521
       version: -1
       name: lock-get
-      description: Get lock. If the lock is already in use - will wait until it is
-        released or until timeout is reached
+      description: Get lock. If the lock is already in use - will wait until it is released or until timeout is reached
       script: Demisto Lock|||demisto-lock-get
       type: regular
       iscommand: true
@@ -575,8 +573,7 @@ tasks:
       id: 2162752d-a4c6-43a8-8c81-61230cb89eb0
       version: -1
       name: lock-get
-      description: Get lock. If the lock is already in use - will wait until it is
-        released or until timeout is reached
+      description: Get lock. If the lock is already in use - will wait until it is released or until timeout is reached
       script: Demisto Lock|||demisto-lock-get
       type: regular
       iscommand: true
@@ -605,8 +602,7 @@ tasks:
       id: 7941f44f-9cdd-453b-8138-9443541f3f6e
       version: -1
       name: lock-get
-      description: Get lock. If the lock is already in use - will wait until it is
-        released or until timeout is reached
+      description: Get lock. If the lock is already in use - will wait until it is released or until timeout is reached
       script: Demisto Lock|||demisto-lock-get
       type: regular
       iscommand: true
@@ -959,3 +955,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

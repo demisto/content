@@ -1,0 +1,5 @@
+!dehashed-search asset_type=all_fields operation=contains value=or-gal@gmail.com results_to=4 results_from=0
+!dehashed-search asset_type=email operation=is value=or-gal@gmail.com page=1
+!dehashed-search asset_type=name operation=contains value=gal,gil,test1 results_from=2 results_to=30 page=3
+!dehashed-search asset_type=name operation=regex value=joh?n(ath[oa]n)
+!email email=or-gal@gamil.com

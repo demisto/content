@@ -28,15 +28,23 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     var host = params.url;
+
     var insecure = params.insecure;
+
     var proxy = params.proxy;
+
     var username = params.username.identifier;
+
     var password = params.username.password;
+
     var loginArgs = { username : username, password : password };
+
     var headers = { 'Content-Type': ['application/json'] };
+
     var token = params.token;
+
 
     var makeArray = function(obj){
         if(obj && !Array.isArray(obj))
@@ -44,13 +52,16 @@ script:
         else return obj;
     };
 
+
     var headerTransform = function(dict){
         return function(obj){
             return dict[obj];
         };
     };
 
+
     //returns single object withing entity (i.e. File[0])
+
     var jsonToEntityObject = function(origObj, keyTransform){
         var ret = {};
         for(var key in origObj){
@@ -61,7 +72,9 @@ script:
         return ret;
     };
 
+
     //returns entire entity array (i.e. File)
+
     var jsonToEntity = function(origObj, keyTransform){
         var j;
         if(!Array.isArray(origObj)){
@@ -75,6 +88,7 @@ script:
             return ret;
         }
     };
+
 
     var commandToResult = {
         'endgame-deploy' : [{
@@ -171,6 +185,7 @@ script:
         }]
     };
 
+
     var sendRequest = function(url, method, queryParams, data, isLogout) {
         if (url[url.length - 1] === '/') {
             url = url.substring(0, url.length - 1);
@@ -206,13 +221,16 @@ script:
 
     };
 
+
     var get = function(url, queryParams, isLogout){
         return sendRequest(url, 'GET', queryParams, undefined, isLogout);
     };
 
+
     var post = function(url, queryParams, data){
         return sendRequest(url, 'POST', queryParams, data);
     };
+
 
     var login = function(){
         if (!token) {
@@ -226,30 +244,38 @@ script:
         }
     };
 
+
     var logout = function(){
         return get('/api/v1/auth/logout/', undefined, true);
     };
 
+
     /**** Get Commands ****/
+
     var getDeploymentProfiles = function(){
         return get('/api/v1/deployment-profiles/').data;
     };
+
 
     var getUnmanagedEndpoints = function(){
         return get('/api/v1/endpoints/', {'core_os' : 'windows', 'status':'not-installed'});
     };
 
+
     var getUsers = function(){
         return get('/api/v1/users');
     };
+
 
     var getInvestigations = function(){
         return get('/api/v1/investigations?archived=false').data;
     };
 
+
     var getSensor = function(sensor_id){
         return get('/api/v1/deployment-profiles/'+sensor_id).data;
     };
+
 
     var getUserID = function(name){
         res = getUsers().data;
@@ -260,6 +286,7 @@ script:
             }
         return -1;
     };
+
 
     var getSensorIDs = function(endpoints){
         var ret= [];
@@ -277,12 +304,14 @@ script:
         return ret;
     };
 
+
     var getEndpointStatus = function(args){
         if(!args.ip_address && !args.name && !args.machine_id)
             throw 'Missing arguments. Must have one of the following: ip, name, uuid';
         var res = get('/api/v1/endpoints', args);
         return res.data[0];
     };
+
 
     var getInvestigationStatus = function(inv_id){
         var task_completion = get('/api/v1/investigations/'+inv_id+'/').data.task_completion;
@@ -307,6 +336,7 @@ script:
             HumanReadable: md
         };
     };
+
 
     var getInvestigationResults = function(inv_id){
         var task_types = {'user_sessions':'Usernames', 'file_list':'Files', 'processes':'Processes', 'connections':'Networks', 'values':'Registries'};
@@ -336,7 +366,9 @@ script:
         };
     }
 
+
     /**** Create / Set Commands ****/
+
     var createSensorProfile = function(name, receiver, sensor_version, sensor_directory, api_key){
         reqBody = {
             'name' : name,
@@ -368,6 +400,7 @@ script:
         return res;
     }
 
+
     var createInvestigation = function(name, assignee, sensors, endpoints, args){
             var taskDescriptions = get('/api/v1/task-descriptions/').data;
             var iocTaskId = '35b6f686-dece-545f-8314-56936abec6ba';
@@ -390,6 +423,7 @@ script:
             reqBody.tasks[iocTaskId] = {'task_list' : createTask(args)}
             return post(url, undefined, reqBody).data;
     };
+
 
     var deploy = function(domain, username, password, api_key, endpoint_transaction, deployment_order, endpoint_ips, endpoint_ids){
         url = '/api/v1/deploy';
@@ -418,6 +452,7 @@ script:
         res = post(url, undefined, requestBody);
         return res.data;
     };
+
 
     var createTask = function(args){
         task = [];
@@ -477,6 +512,7 @@ script:
         return task;
     };
 
+
     var resToEntry = function(results){
         currentCommand = commandToResult[command];
         var entries = [];
@@ -496,8 +532,11 @@ script:
         return entries;
     }
 
+
     var results;
+
     login();
+
     switch (command) {
         case 'test-module':
             return 'ok';
@@ -541,7 +580,9 @@ script:
             }
             break;
     }
+
     logout();
+
     return resToEntry(results);
   type: javascript
   commands:
@@ -794,4 +835,5 @@ script:
       description: Endgame investigation status
     description: Returns the current investigation status
 tests:
-  - No test - no instance
+- No test - no instance
+fromversion: 5.0.0

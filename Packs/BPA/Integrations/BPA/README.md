@@ -263,6 +263,9 @@ Submitted BPA job ID: 2b0c40d6-73a8-4d23-9bd8-27548b28beb5
       <th>
         <strong>Required</strong>
       </th>
+      <th>
+        <strong>Default Value</strong>
+      </th>
     </tr>
   </thead>
   <tbody>
@@ -270,6 +273,13 @@ Submitted BPA job ID: 2b0c40d6-73a8-4d23-9bd8-27548b28beb5
       <td>task_id</td>
       <td>The job id to get results from</td>
       <td>Required</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>exclude_passed_checks</td>
+      <td>Whether to exclude passed checks or not.</td>
+      <td>Not Required</td>
+      <td>false</td>
     </tr>
   </tbody>
 </table>

@@ -1,0 +1,31 @@
+args:
+- default: false
+  description: The number of CVEs.
+  isArray: false
+  name: CvesCount
+  required: false
+  secret: false
+- default: false
+  description: The number of trending CVEs.
+  isArray: false
+  name: TrendingCvesCount
+  required: false
+  secret: false
+comment: 'Display bar chart based on cves count and trending cves count with the different
+  colors. '
+commonfields:
+  id: DisplayCVEChartScript
+  version: -1
+enabled: false
+name: DisplayCVEChartScript
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+tags:
+- RiskSense
+dockerimage: demisto/python3:3.8.3.9324
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

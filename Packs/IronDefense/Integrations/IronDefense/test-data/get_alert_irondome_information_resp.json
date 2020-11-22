@@ -1,0 +1,81 @@
+{
+  "correlations": [
+    {
+      "dome_tag": "redskins",
+      "correlations": [
+        {
+          "ip": "1.1.1.1",
+          "enterprise_correlations": 1,
+          "community_correlations": 2
+        },
+        {
+          "domain": "bad.com",
+          "enterprise_correlations": 3,
+          "community_correlations": 4
+        },
+        {
+          "behavior": true,
+          "enterprise_correlations": 5,
+          "community_correlations": 6
+        }
+      ]
+    }
+  ],
+  "correlation_participation": [
+    {
+      "dome_tag": "redskins",
+      "behavior": null,
+      "domain": {
+        "malicious_count": 1,
+        "suspicious_count": 2,
+        "benign_count": 3,
+        "whitelisted_count": 4,
+        "comments_count": 5,
+        "activity_count": 6,
+        "resource_owner": false,
+        "first_seen": "2020-01-08T10:40:00.000Z",
+        "last_seen": "2020-01-08T10:40:00.000Z"
+      },
+      "ip": {
+        "malicious_count": 7,
+        "suspicious_count": 8,
+        "benign_count": 9,
+        "whitelisted_count": 10,
+        "comments_count": 11,
+        "activity_count": 12,
+        "resource_owner": false,
+        "first_seen": "2020-01-08T10:40:00.000Z",
+        "last_seen": "2020-02-07T19:22:56.000Z"
+      }
+    }
+  ],
+  "community_comments": [
+    {
+      "created": "2020-04-15T18:57:16.000Z",
+      "comment": "BrandonTest2 - Share irondome",
+      "dome_tags": [
+        "demo",
+        "brandon_test",
+        "BrandonNEWTEST",
+        "Energy",
+        "redskins"
+      ],
+      "enterprise": true,
+      "self": true
+    }
+  ],
+  "cognitive_system_score": 42,
+  "dome_notifications": [
+    {
+      "id": 576225,
+      "category": "DNC_JOINED_HIGH_RISK",
+      "created": "2020-04-15T09:27:20.000Z",
+      "dome_tags": [
+        "redskins"
+      ],
+      "alert_ids": [
+        "04f94226-60f7-4f1b-9569-15d7ddc01b7a"
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 id: Sentinel One - Endpoint data collection
 version: -1
 name: Sentinel One - Endpoint data collection
-fromversion: ""
+fromversion: "5.0.0"
 description: |-
   # Collect endpoint information based on SentinelOne commands.
 
@@ -283,4 +283,4 @@ inputs:
   description: The Hostname of the device to run on
 outputs: []
 tests:
-  - No test
+- No test

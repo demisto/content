@@ -46,10 +46,10 @@ Demisto is designed for an automatic response, so make sure to define conditions
 # Configure ArcSight ESM on Demisto
 1. Navigate to Settings>Integrations>Servers & Services.
 2. Search for ArcSight ESM.
-3. Click Add instance to create and configure a new integration instance.
+3. Click **Add instance** to create and configure a new integration instance.
     - **Name**: a textual name for the integration instance.
     - **Server URL (e.g. https://192.168.0.1:8443)**: The hostname or IP address of the appliance being used, for example, `https://your_arcsight_esm:port`.
-    - **Credentials and Password**: Use the username and password used to access the ArcSight ESM account.
+    - **Credentials and Password**: Use the username and password used to access the ArcSight ESM account. By default, a user with the admin role will have all the necessary permissions to run all integration commands. For more granular authorization, refer to the ESM documentation on how to create custom roles.
     - **Fetch Events as incidents via Query Viewer ID**: Must have Start Time and Event ID fields.
     - **Fetch Cases as incidents via Query Viewer ID**: Must have Create Time and ID fields.
     - **The maximum number of unique IDs expected to be fetched**: If unique IDs exceeds the maximum, duplicates will be fetched.
@@ -57,8 +57,9 @@ Demisto is designed for an automatic response, so make sure to define conditions
     - **Use system proxy settings**: Select whether to communicate via the system proxy server or not.
     - **Fetch incidents**: Mark the Fetch incidents checkbox to automatically create Demisto incidents from this integration instance.
     - **Incident type**: Select the incident type to trigger.
+    - **Use REST Endpoints**: Mark this checkbox to use REST endpoints for the commands related to 'entries' instead of the default legacy SOAP endpoints.
 4. Click **Test** to validate the URLs, token, and connection.
-    If you are experiencing issues with the service configuration, please contact Demisto support at support@demisto.com.
+    If you are experiencing issues with the service configuration, please contact Demisto support at support@paloaltonetworks.com.
 5. After completing the test successfully, press the ‘Done’ button.
 
 ## Use-Cases
@@ -72,6 +73,7 @@ The integration can fetch events and cases.
 
 - When first turned on, the integration fetches all events/cases from the query viewer.
 - The fetched incidents are later filtered by timestamp (start time/create time).
+- In case of slowness, timeouts or crashes try reducing the max fetch parameter.
 
 ## Commands
 You can execute these commands from the Demisto CLI, as part of automation, or in a playbook.
@@ -458,6 +460,9 @@ There is no context output for this command.
 ***
 Returns all entries in the Active List
 
+
+### Limitations
+Returns up to 2000 entries.
 
 #### Base Command
 

@@ -1,0 +1,131 @@
+{
+  "is_op_single": {
+    "value": "testgamil.co",
+    "operation": "is",
+    "asset_type": "all_fields"
+  },
+    "contains_op_single": {
+    "value": "testgamil.co",
+    "operation": "contains",
+    "asset_type": "all_fields"
+  },
+    "regex_op_single": {
+    "value": "joh?n(ath[oa]n)",
+    "operation": "regex",
+    "asset_type": "all_fields"
+  },
+    "is_op_multi": {
+    "value": "testgamil.co,test1gmail.com",
+    "operation": "is",
+    "asset_type": "email"
+  },
+    "contains_op_multi": {
+    "value": "test1,test2",
+    "operation": "contains",
+    "asset_type": "name"
+  },
+    "regex_op_multi": {
+    "value": "joh?n(ath[oa]n),joh?n11(ath[oa]n)",
+    "operation": "regex",
+    "asset_type": "vin"
+  },
+
+  "regex_op_multi_range": {
+    "value": "joh?n(ath[oa]n),joh?n11(ath[oa]n)",
+    "operation": "regex",
+    "asset_type": "vin",
+    "results_from": "1",
+    "results_to": "1"
+  },
+  "email_command": {
+    "email": "testgamil.com"
+  },
+  "api_response": {
+    "balance": 4955,
+    "entries":     [
+              {
+            "id": "123",
+            "email": "testgamil.com",
+            "username": null,
+            "password": "test",
+            "hashed_password": null,
+            "name": null,
+            "vin": null,
+            "address": null,
+            "ip_address": null,
+            "phone": null,
+            "obtained_from": "SGB.net"
+        },
+        {
+            "id": "123",
+            "email": "testgamil.com",
+            "username": null,
+            "password": "test",
+            "hashed_password": null,
+            "name": null,
+            "vin": null,
+            "address": null,
+            "ip_address": null,
+            "phone": null,
+            "obtained_from": "Collections"
+        }
+    ],
+    "success": true,
+    "took": "25µs",
+    "total": 2
+  },
+  "expected_results": {
+    "full_results":
+      [
+              {
+            "Id": "123",
+            "Email": "testgamil.com",
+            "Username": null,
+            "Password": "test",
+            "HashedPassword": null,
+            "Name": null,
+            "Vin": null,
+            "Address": null,
+            "IpAddress": null,
+            "Phone": null,
+            "ObtainedFrom": "SGB.net"
+        },
+        {
+            "Id": "123",
+            "Email": "testgamil.com",
+            "Username": null,
+            "Password": "test",
+            "HashedPassword": null,
+            "Name": null,
+            "Vin": null,
+            "Address": null,
+            "IpAddress": null,
+            "Phone": null,
+            "ObtainedFrom": "Collections"
+        }
+    ]
+
+
+  },
+    "expected_results_range": {
+    "full_results":
+      [
+              {
+            "Id": "123",
+            "Email": "testgamil.com",
+            "Username": null,
+            "Password": "test",
+            "HashedPassword": null,
+            "Name": null,
+            "Vin": null,
+            "Address": null,
+            "IpAddress": null,
+            "Phone": null,
+            "ObtainedFrom": "SGB.net"
+        }
+    ]
+
+
+  }
+
+}

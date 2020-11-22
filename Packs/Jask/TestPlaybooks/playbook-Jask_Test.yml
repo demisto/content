@@ -1,7 +1,7 @@
 id: Jask_Test
 version: -1
 name: Jask Test
-fromversion: 4.1.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -149,10 +149,7 @@ tasks:
       id: b539dcf6-b35c-4230-8870-c4a065742ce4
       version: -1
       name: Get details for the first one
-      description: Get Insight details for a specific Insight ID. Insight details
-        command references SmartAlerts, which are the highest level abstractions in
-        JASK SIEM consisting of multiple signals, and records and relating to one
-        or more assets.
+      description: Get Insight details for a specific Insight ID. Insight details command references SmartAlerts, which are the highest level abstractions in JASK SIEM consisting of multiple signals, and records and relating to one or more assets.
       script: '|||jask-get-insight-details'
       type: regular
       iscommand: true
@@ -215,9 +212,7 @@ tasks:
       id: 2246ad22-6d23-4e3b-8fcd-534b71493035
       version: -1
       name: Get signal details for first related signal
-      description: Get Signal details for a specific Signal ID. Signal details command
-        references signals in JASK which are created when records exhibit suspicious
-        properties and mate with patterns or other detection logic.
+      description: Get Signal details for a specific Signal ID. Signal details command references signals in JASK which are created when records exhibit suspicious properties and mate with patterns or other detection logic.
       script: '|||jask-get-signal-details'
       type: regular
       iscommand: true
@@ -512,8 +507,7 @@ tasks:
       id: 58a64c77-f800-4968-81e7-29d3a3b58b94
       version: -1
       name: jask-get-insight-comments
-      description: Get comments for a specific Insight ID. (Users can post and update
-        comments on the JASK SIEM portal for any Insight ID.)
+      description: Get comments for a specific Insight ID. (Users can post and update comments on the JASK SIEM portal for any Insight ID.)
       script: '|||jask-get-insight-comments'
       type: regular
       iscommand: true

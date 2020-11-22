@@ -85,9 +85,7 @@ tasks:
       dest: {}
       destntdomain: {}
       details:
-        simple: fdslkjflks sldkfj lsdfklsd flsdkfj sldkfjlsdfj lskdfj lsd flksd fsdlkfj
-          sdlfj slkdfj lsdkfjlsdf sdlkfjsldfj sldkfj sldf sdlkfjsldfjslkdf sldkfjlsdkfj
-          lsdfjlksdf jlsdfj lsdkfj dlskf jldskfjdskldlskf jsdlkfjsd lfskdf
+        simple: fdslkjflks sldkfj lsdfklsd flsdkfj sldkfjlsdfj lskdfj lsd flksd fsdlkfj sdlfj slkdfj lsdkfjlsdf sdlkfjsldfj sldkfj sldf sdlkfjsldfjslkdf sldkfjlsdkfj lsdfjlksdf jlsdfj lsdkfj dlskf jldskfjdskldlskf jsdlkfjsd lfskdf
       duration: {}
       emailbcc: {}
       emailbody: {}
@@ -444,8 +442,7 @@ tasks:
     task:
       id: 7c35460b-47d2-4359-8ac8-c6bc27d3dcb5
       version: -1
-      name: Ensure there are no similar incident, similar incidents should be closed
-        (dedup)
+      name: Ensure there are no similar incident, similar incidents should be closed (dedup)
       type: condition
       iscommand: false
       brand: ""
@@ -544,3 +541,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

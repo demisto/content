@@ -39,14 +39,20 @@ configuration:
   type: 13
   required: false
 script:
-  script: |2+
+  script: >2+
 
     var username = params.credentials.identifier;
+
     var password = params.credentials.password;
+
     var server = params.server.replace(/[\/]+$/, '');
+
     var insecure = params.insecure;
+
     var proxy = params.proxy;
+
     var url = server + '/webservice/Manager';
+
 
 
     var responseDict = {
@@ -63,6 +69,7 @@ script:
 
 
 
+
     var commandToMethod = {
         'trendmicro-host-antimalware-scan': 'hostAntiMalwareScan',
         'trendmicro-host-retrieve-all': 'hostRetrieveAll',
@@ -73,7 +80,9 @@ script:
         'trendmicro-security-profile-assign-to-host': 'securityProfileAssignToHost'
     };
 
+
     var sessionData = '<urn:sID>%sessionId%</urn:sID>';
+
 
     var methodDict = {
             'authenticate': '<urn:authenticate><urn:username>%username%</urn:username><urn:password>%password%</urn:password></urn:authenticate>',
@@ -87,12 +96,14 @@ script:
             'securityProfileAssignToHost':'<urn:securityProfileAssignToHost><urn:securityProfileID>%securityProfileID%</urn:securityProfileID>%hostIDs%' + sessionData + '</urn:securityProfileAssignToHost>'
     };
 
+
     var filterDict = {
         'timeFilter': '<urn:timeFilter>%timeFilter%</urn:timeFilter>',
         'hostFilter': '<urn:hostFilter>%hostFilter%</urn:hostFilter>',
         'eventIdFilter': '<urn:eventIdFilter>%eventIdFilter%</urn:eventIdFilter>'
 
     };
+
 
 
 
@@ -104,6 +115,7 @@ script:
 
     };
 
+
     var timeFilterDict = {
       'rangeFrom': '<urn:rangeFrom>%rangeFrom%</urn:rangeFrom>',
       'rangeTo': '<urn:rangeTo>%rangeTo%</urn:rangeTo>',
@@ -111,10 +123,12 @@ script:
       'timeFilterType': '<urn:type>%timeFilterType%</urn:type>'
     };
 
+
     var eventIdFilterDict = {
       'eventID': '<urn:id>%eventID%</urn:id>',
       'eventFilterOperator': '<urn:operator>%eventFilterOperator%</urn:operator>'
     };
+
 
     var filterContentDict = {
         'hostFilter': hostFilterDict,
@@ -122,10 +136,13 @@ script:
         'eventIdFilter': eventIdFilterDict
     };
 
+
     // Wrap host IDs array if exists
+
     if ('hostIDs' in args) {
             args.hostIDs = '<urn:hostIDs>' + args.hostIDs.split(',').join('</urn:hostIDs><urn:hostIDs>') + '</urn:hostIDs>';
     }
+
 
     function getFilterContent(filterName, args) {
         var filterContent = '';
@@ -145,7 +162,9 @@ script:
         return replaceInTemplates(filterDict[filterName], filterContents);
     }
 
+
     // In requests with optional filters, the command arguemnts will determine which filters to add
+
     function AddFiltersIfNeeded(reqTemplate, args) {
         var filtersForRequest = {};
         var filterNames = Object.keys(filterDict);
@@ -159,6 +178,7 @@ script:
         return  replaceInTemplates(reqTemplate, filtersForRequest);
     }
 
+
     function createSOAPRequest(methodName, args) {
         var request = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:Manager"><soapenv:Header/><soapenv:Body>%content%</soapenv:Body></soapenv:Envelope>';
         var bodyWithFilters = AddFiltersIfNeeded(methodDict[methodName], args);
@@ -166,6 +186,7 @@ script:
         request = replaceInTemplates(request, args); // fill arguemnts
         return request;
     }
+
 
     function sendSOAPRequest(methodName, args) {
         var req = createSOAPRequest(methodName, args);
@@ -187,6 +208,7 @@ script:
         return res.Body;
     }
 
+
     function sendAndParse(method, args) {
         var responseXML = sendSOAPRequest(method, args);
         var match = responseDict[method].exec(responseXML);
@@ -195,6 +217,7 @@ script:
         }
         throw method +' failed';
     }
+
 
 
     function createIncidentFromAlert(singleAlert) {
@@ -211,6 +234,7 @@ script:
                 "rawJSON": JSON.stringify(singleAlert)
             }
     }
+
 
     function fetchIncidents() {
         var lastRun = getLastRun();
@@ -234,6 +258,7 @@ script:
         setLastRun({startTime: maxTime});
         return JSON.stringify(incidents);
     }
+
 
     switch (command) {
         case 'test-module':
@@ -298,7 +323,7 @@ script:
       - EQUAL
       description: event ID operator
     - name: includeNonHostEvents
-      description: Include non-host hevents in filter 
+      description: Include non-host hevents in filter
       required: true
       auto: PREDEFINED
       predefined:
@@ -376,4 +401,5 @@ script:
     description: Get anti malware events
   isfetch: true
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

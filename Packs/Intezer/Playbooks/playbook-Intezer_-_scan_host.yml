@@ -1,6 +1,6 @@
 id: Intezer - scan host
 version: -1
-fromversion: 4.0.0
+fromversion: 5.0.0
 name: Intezer - scan host
 description: |-
   Uses Demisto D2 agent to scan a host using Intezer scanner.
@@ -121,8 +121,7 @@ tasks:
       id: 33071f86-45fc-4c71-8fa3-ad933acbe3a8
       version: -1
       name: Does 'Host' input exist?
-      description: Checks if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Checks if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -369,8 +368,7 @@ inputs:
   value:
     simple: Admin
   required: false
-  description: 'Name of the credential set. Credentials are located in Demisto: Settings
-    > Integrations > Credentials.'
+  description: 'Name of the credential set. Credentials are located in Demisto: Settings > Integrations > Credentials.'
 outputs: []
 tests:
-  - No Tests
+- No Tests

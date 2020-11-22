@@ -1,0 +1,24 @@
+{
+  "totalSize": 2,
+  "done": true,
+  "records": [
+    {
+      "attributes": {
+        "type": "Group",
+        "url": "url"
+      },
+      "Id": "id",
+      "Name": "name",
+      "Email": "email"
+    },
+    {
+      "attributes": {
+        "type": "Group",
+        "url": "url"
+      },
+      "Id": "id",
+      "Name": "name",
+      "Email": null
+    }
+  ]
+}

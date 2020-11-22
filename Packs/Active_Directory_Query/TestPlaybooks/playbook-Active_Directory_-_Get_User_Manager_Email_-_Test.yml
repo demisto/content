@@ -1,6 +1,6 @@
 id: Active Directory - Get User Manager Details - Test
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 name: Active Directory - Get User Manager Details - Test
 description: A test playbook for the Active Directory - Get User Manager Email playbook.
 starttaskid: "0"
@@ -37,8 +37,7 @@ tasks:
       id: 8ecfaffd-55cd-45e2-8667-f5cf68a029cf
       version: -1
       name: Active Directory - Get User Manager Email
-      description: Takes an email address or a username of a user account in Active
-        Directory, and returns the email address of his or her manager.
+      description: Takes an email address or a username of a user account in Active Directory, and returns the email address of his or her manager.
       playbookName: Active Directory - Get User Manager Details
       type: playbook
       iscommand: false
@@ -145,9 +144,7 @@ tasks:
       - "3"
     scriptarguments:
       message:
-        simple: The manager was not found. Check the demisto.local Active Directory
-          instance. There should be a Remove Me user, and Donald Trump should
-          be his manager. Trump should also have a specific email address configured.
+        simple: The manager was not found. Check the demisto.local Active Directory instance. There should be a Remove Me user, and Donald Trump should be his manager. Trump should also have a specific email address configured.
     reputationcalc: 1
     separatecontext: false
     view: |-

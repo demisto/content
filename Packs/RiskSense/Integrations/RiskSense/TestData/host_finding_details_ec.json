@@ -123,7 +123,8 @@
           "Integrity": "Partial",
           "AvailabilityImpact": "Partial",
           "Trending": false,
-          "VulnLastTrendingOn": null
+          "VulnLastTrendingOn": null,
+          "Description": "description"
         }
       ],
       "ThreatCount": 0,
@@ -181,7 +182,8 @@
           "Category": "catgory name",
           "Created": "2019-04-24T21:35:12",
           "Updated": "2019-06-19T19:23:08",
-          "Color": "#dd8361"
+          "Color": "#dd8361",
+          "Description": ""
         },
         {
           "ID": 215554,
@@ -189,7 +191,8 @@
           "Category": "category name",
           "Created": "2019-04-24T21:39:59",
           "Updated": "2019-04-24T21:39:59",
-          "Color": "#78a19b"
+          "Color": "#78a19b",
+          "Description": ""
         }
       ],
       "Output": "output",
@@ -229,7 +232,9 @@
       "Note": [],
       "Assignment": [],
       "Services": "service1",
-      "Ticket": []
+      "Ticket": [],
+      "GroupID": 7990,
+      "GroupName": "Group name"
     }
   ],
   "Host(val.ID == obj.ID)": [

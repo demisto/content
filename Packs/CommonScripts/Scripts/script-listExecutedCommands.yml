@@ -2,15 +2,19 @@ commonfields:
   id: listExecutedCommands
   version: -1
 name: listExecutedCommands
-script: |-
+script: >-
   var fixDate = function(date) {
       return date.Format('2006-01-02 15:04:05');
   };
 
+
   var entries = executeCommand('getEntries', {});
 
+
   dbotCommands = [];
+
   userCommands = [];
+
   for (var i = 0; i < entries.length; i++) {
       if (typeof entries[i].Contents == 'string' && entries[i].Contents.indexOf('!') === 0 && entries[i].Contents.indexOf('!listExecutedCommands') !== 0) {
           if (entries[i].Metadata.User) {
@@ -35,16 +39,21 @@ script: |-
       }
   }
 
+
   var md = '';
+
   if (dbotCommands.length > 0) {
       md += tableToMarkdown('DBot Executed Commands', dbotCommands, ['Time', 'Entry ID', 'Playbook (Task)', 'Command']) + '\n';
   }
+
   if (userCommands.length > 0) {
       md += tableToMarkdown('User Executed Commands', userCommands, ['Time', 'Entry ID', 'User', 'Command']) + '\n';
   }
+
   if (md === '') {
       md = 'No commands found\n';
   }
+
   return {ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md};
 type: javascript
 tags:
@@ -62,3 +71,4 @@ args:
   description: Source of commands to list - user, playbook or both
   defaultValue: All
 scripttarget: 0
+fromversion: 5.0.0

@@ -1,6 +1,6 @@
 id: Google-Vault-Display-Results
 version: -1
-fromversion: 4.0.0
+fromversion: 5.0.0
 name: Google Vault - Display Results
 description: 'This is a playbook for queuing and displaying vault search result'
 starttaskid: "0"
@@ -65,8 +65,7 @@ tasks:
         complex:
           root: inputs.pollTimeout
       dt:
-        simple: GoogleVault.Matter.Export(val.Status != 'COMPLETED')=val.MatterID
-          + '#' + val.ExportID
+        simple: GoogleVault.Matter.Export(val.Status != 'COMPLETED')=val.MatterID + '#' + val.ExportID
     separatecontext: true
     loop:
       iscommand: false
@@ -305,10 +304,7 @@ tasks:
       - "5"
     scriptarguments:
       message:
-        simple: 'Polling time out: Your search is taking a bit more time. To see your
-          results please run this integration once more with a grater ''PollIntarval''
-          and ''PollTimeout'' using this ExportID: ${GoogleVault.Matter.Export.ExportID}
-          and MatterID: ${GoogleVault.Matter.Export.MatterID}'
+        simple: 'Polling time out: Your search is taking a bit more time. To see your results please run this integration once more with a grater ''PollIntarval'' and ''PollTimeout'' using this ExportID: ${GoogleVault.Matter.Export.ExportID} and MatterID: ${GoogleVault.Matter.Export.MatterID}'
     separatecontext: false
     view: |-
       {
@@ -523,8 +519,7 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: If set to true the export file created will be downloaded into the
-    War Room
+  description: If set to true the export file created will be downloaded into the War Room
 - key: ExportID
   value: {}
   required: true
@@ -587,4 +582,4 @@ outputs:
   description: Export object
   type: unknown
 tests:
-  - Google_Vault-Search_And_Display_Results_test
+- Google_Vault-Search_And_Display_Results_test

@@ -61,12 +61,13 @@ def return_error_without_exit(message):
 def run_shell_command(command, *args):
     """Runs shell command and returns the result if not encountered an error"""
     cmd = [command] + list(args)
-    completed_process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    completed_process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if completed_process.returncode != 0:
         raise ShellException(f'Failed with the following error code: {completed_process.returncode}.'
-                             f' Error: {completed_process.stderr}')
+                             f' Error: {completed_process.stderr.decode("utf8")}')
     elif completed_process.stderr:
-        demisto.debug(f'ReadPDFFilev2: exec of [{cmd}] completed with warnings: {completed_process.stderr}')
+        demisto.debug(f'ReadPDFFilev2: exec of [{cmd}] completed with warnings: '
+                      f'{completed_process.stderr.decode("utf8")}')
     return completed_process.stdout
 
 
@@ -97,9 +98,10 @@ def get_pdf_metadata(file_path):
     if user_password:
         metadata_txt = run_shell_command('pdfinfo', '-upw', user_password, file_path)
     else:
-        metadata_txt = run_shell_command('pdfinfo', file_path)
+        metadata_txt = run_shell_command('pdfinfo', '-enc', 'UTF-8', file_path)
     metadata = {}
-    for line in metadata_txt.split('\n'):
+    metadata_str = metadata_txt.decode('utf8', 'replace')
+    for line in metadata_str.split('\n'):
         # split to [key, value...]
         line_arr = line.split(':')
         if len(line_arr) > 1:
@@ -149,7 +151,7 @@ def get_pdf_htmls_content(pdf_path, output_folder):
     for file_name in html_file_names:
         with open(file_name, 'rb') as f:
             for line in f:
-                html_content += line.decode('utf-8')
+                html_content += str(line)
     return html_content
 
 
@@ -268,7 +270,6 @@ def main():
             except OSError as e:
                 if e.errno != errno.EEXIST:
                     raise e
-                pass
             try:
                 folders_to_remove.append(output_folder)
                 cpy_file_path = f'{output_folder}/ReadPDF.pdf'

@@ -1,4 +1,4 @@
-Gets a list of Demisto users through the REST API, and alerts you if any non-SAML user accounts are found.
+DEPRECATED. Gets a list of Demisto users through the REST API, and alerts you if any non-SAML user accounts are found.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

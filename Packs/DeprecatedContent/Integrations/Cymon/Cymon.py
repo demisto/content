@@ -460,5 +460,5 @@ try:
     elif command == 'domain':
         cymon_says()
 
-except Exception, e:
+except Exception as e:
     raise

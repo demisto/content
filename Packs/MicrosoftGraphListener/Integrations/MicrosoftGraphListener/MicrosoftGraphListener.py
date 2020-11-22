@@ -124,13 +124,17 @@ def prepare_args(command, args):
     :rtype: ``dict``
     """
     if command in ['msgraph-mail-create-draft', 'send-mail']:
+        if args.get('htmlBody', None):
+            email_body = args.get('htmlBody')
+        else:
+            email_body = args.get('body', '')
         return {
             'to_recipients': argToList(args.get('to')),
             'cc_recipients': argToList(args.get('cc')),
             'bcc_recipients': argToList(args.get('bcc')),
             'subject': args.get('subject', ''),
-            'body': args.get('body', ''),
-            'body_type': args.get('body_type', 'text'),
+            'body': email_body,
+            'body_type': args.get('body_type', 'html'),
             'flag': args.get('flag', 'notFlagged'),
             'importance': args.get('importance', 'Low'),
             'internet_message_headers': argToList(args.get('headers')),
@@ -163,10 +167,13 @@ class MsGraphClient:
     CONTEXT_SENT_EMAIL_PATH = 'MicrosoftGraph.Email'
 
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
-                 ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit):
+                 ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit,
+                 auth_code, redirect_uri):
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
-                                         proxy=proxy, ok_codes=ok_codes, refresh_token=refresh_token)
+                                         proxy=proxy, ok_codes=ok_codes, refresh_token=refresh_token,
+                                         auth_code=auth_code, redirect_uri=redirect_uri,
+                                         grant_type=AUTHORIZATION_CODE)
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
         self._first_fetch_interval = first_fetch_interval
@@ -303,10 +310,17 @@ class MsGraphClient:
         :rtype: ``list`` and ``list``
         """
         target_modified_time = add_second_to_str_date(last_fetch)  # workaround to Graph API bug
-        suffix_endpoint = (f"users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
-                           f"?$filter=lastModifiedDateTime ge {target_modified_time}"
-                           f"&$orderby=lastModifiedDateTime &$top={self._emails_fetch_limit}&select=*")
-        fetched_emails = self.ms_client.http_request('GET', suffix_endpoint).get('value', [])[:self._emails_fetch_limit]
+        suffix_endpoint = f"/users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
+        params = {
+            "$filter": f"receivedDateTime gt {target_modified_time}",
+            "$orderby": "receivedDateTime asc",
+            "$select": "*",
+            "$top": self._emails_fetch_limit
+        }
+
+        fetched_emails = self.ms_client.http_request(
+            'GET', suffix_endpoint, params=params
+        ).get('value', [])[:self._emails_fetch_limit]
 
         if exclude_ids:  # removing emails in order to prevent duplicate incidents
             fetched_emails = [email for email in fetched_emails if email.get('id') not in exclude_ids]
@@ -317,10 +331,10 @@ class MsGraphClient:
     @staticmethod
     def _get_next_run_time(fetched_emails, start_time):
         """
-        Returns modified time of last email if exist, else utc time that was passed as start_time.
+        Returns received time of last email if exist, else utc time that was passed as start_time.
 
         The elements in fetched emails are ordered by modified time in ascending order,
-        meaning the last element has the latest modified time.
+        meaning the last element has the latest received time.
 
         :type fetched_emails: ``list``
         :param fetched_emails: List of fetched emails
@@ -331,7 +345,7 @@ class MsGraphClient:
         :return: Returns str date of format Y-m-dTH:M:SZ
         :rtype: `str`
         """
-        next_run_time = fetched_emails[-1].get('lastModifiedDateTime') if fetched_emails else start_time
+        next_run_time = fetched_emails[-1].get('receivedDateTime') if fetched_emails else start_time
 
         return next_run_time
 
@@ -719,7 +733,7 @@ class MsGraphClient:
 
         message_content.pop('attachments', None)
         message_content.pop('internet_message_headers', None)
-        human_readable = tableToMarkdown(f'Email was sent successfully.', message_content)
+        human_readable = tableToMarkdown('Email was sent successfully.', message_content)
         ec = {self.CONTEXT_SENT_EMAIL_PATH: message_content}
 
         return human_readable, ec
@@ -809,7 +823,8 @@ def main():
 
     client = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
                            ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
-                           emails_fetch_limit)
+                           emails_fetch_limit, auth_code=params.get('auth_code', ''),
+                           redirect_uri=params.get('redirect_uri', ''))
     try:
         command = demisto.command()
         args = prepare_args(command, demisto.args())
@@ -841,7 +856,6 @@ def main():
 
 
 from MicrosoftApiModule import *  # noqa: E402
-
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()

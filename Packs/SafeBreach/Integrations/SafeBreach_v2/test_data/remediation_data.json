@@ -10,5 +10,12 @@
         ]
       }
     }
-  }
+  },
+  "mitigationVendors": [
+    {
+      "id": "splunk",
+      "fileExport": false,
+      "searchQuery": "(file_hash IN (1d02e38505684c59f7e72b690c39409c8b7a62c2fffe097febf857d99814470e)"
+    }
+  ]
 }

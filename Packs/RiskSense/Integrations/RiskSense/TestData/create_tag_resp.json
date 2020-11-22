@@ -1,0 +1,178 @@
+{
+  "id": 243375,
+  "tag": [
+    {
+      "uid": "RS3_DELTA",
+      "value": "",
+      "legacyLink": ""
+    },
+    {
+      "uid": "START_DATE",
+      "value": "",
+      "legacyLink": ""
+    },
+    {
+      "uid": "SCHEDULE_PERFORMANCE_INDEX",
+      "value": "1.0",
+      "legacyLink": ""
+    },
+    {
+      "uid": "NAME",
+      "value": "MyNewTag",
+      "legacyLink": ""
+    },
+    {
+      "uid": "DESCRIPTION",
+      "value": "Just for me",
+      "legacyLink": ""
+    },
+    {
+      "uid": "HOST_FINDING_COUNT",
+      "value": "0",
+      "legacyLink": "link"
+    },
+    {
+      "uid": "LOCKED",
+      "value": "false",
+      "legacyLink": ""
+    },
+    {
+      "uid": "ASSIGNED_FINDING_COUNT",
+      "value": "0",
+      "legacyLink": ""
+    },
+    {
+      "uid": "SCHEDULE_EARNED_VALUE",
+      "value": "0",
+      "legacyLink": ""
+    },
+    {
+      "uid": "DATA_REFRESH_DATE_TIME",
+      "value": "2020-04-29T10:13:21.256",
+      "legacyLink": ""
+    },
+    {
+      "uid": "COLOR",
+      "value": "#648d9f",
+      "legacyLink": ""
+    },
+    {
+      "uid": "PROPAGATE_TO_ALL_FINDINGS",
+      "value": "true",
+      "legacyLink": ""
+    },
+    {
+      "uid": "SCHEDULE_VARIANCE",
+      "value": "0",
+      "legacyLink": ""
+    },
+    {
+      "uid": "TOTAL_FINDING_COUNT",
+      "value": "0",
+      "legacyLink": ""
+    },
+    {
+      "uid": "FALSE_POSITIVE_FINDING_COUNT",
+      "value": "0",
+      "legacyLink": ""
+    },
+    {
+      "uid": "ATTACHMENTS",
+      "value": "",
+      "legacyLink": ""
+    },
+    {
+      "uid": "DAYS_REMAINING",
+      "value": "0",
+      "legacyLink": ""
+    },
+    {
+      "uid": "TAG_TYPE",
+      "value": "CUSTOM",
+      "legacyLink": ""
+    },
+    {
+      "uid": "UPDATED",
+      "value": "2020-04-29T10:13:21",
+      "legacyLink": ""
+    },
+    {
+      "uid": "OPEN_FINDING_COUNT",
+      "value": "0",
+      "legacyLink": ""
+    },
+    {
+      "uid": "SCHEDULE_PLANNED_VALUE",
+      "value": "0",
+      "legacyLink": ""
+    },
+    {
+      "uid": "PCI",
+      "value": "",
+      "legacyLink": ""
+    },
+    {
+      "uid": "DUE_DATE",
+      "value": "",
+      "legacyLink": ""
+    },
+    {
+      "uid": "ATTACHMENT_COUNT",
+      "value": "0",
+      "legacyLink": ""
+    },
+    {
+      "uid": "SYSTEM_LOCKED",
+      "value": "false",
+      "legacyLink": ""
+    },
+    {
+      "uid": "ACCEPTED_FINDING_COUNT",
+      "value": "0",
+      "legacyLink": ""
+    },
+    {
+      "uid": "ASSIGNED_USERS",
+      "value": [],
+      "legacyLink": ""
+    },
+    {
+      "uid": "CREATED",
+      "value": "2020-04-29T10:13:21",
+      "legacyLink": ""
+    },
+    {
+      "uid": "OWNER",
+      "value": [
+        "owner"
+      ],
+      "legacyLink": ""
+    },
+    {
+      "uid": "SCHEDULE_PERCENTAGE_COMPLETE",
+      "value": "0.0",
+      "legacyLink": ""
+    },
+    {
+      "uid": "UNASSIGNED_FINDING_COUNT",
+      "value": "0",
+      "legacyLink": ""
+    },
+    {
+      "uid": "READ_ONLY",
+      "value": "false",
+      "legacyLink": ""
+    },
+    {
+      "uid": "PRIORITY",
+      "value": "",
+      "legacyLink": ""
+    },
+    {
+      "uid": "APPLICATION_FINDING_COUNT",
+      "value": "0",
+      "legacyLink": "link"
+    }
+  ],
+  "connectorId": -1
+}

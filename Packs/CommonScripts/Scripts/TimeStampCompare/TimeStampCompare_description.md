@@ -1,1 +1,0 @@
-This script compares a list of timestamps with a singular time to determine when the events took place.

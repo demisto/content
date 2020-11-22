@@ -1,4 +1,3 @@
-import requests
 import requests_mock
 from CSVFeedApiModule import *
 
@@ -156,3 +155,78 @@ def test_date_format_parsing():
 
     formatted_date = date_format_parsing('2020-02-01 12:13:14.11111')
     assert formatted_date == '2020-02-01T12:13:14Z'
+
+
+class TestTagsParam:
+    def test_tags_exists(self):
+        """
+        Given:
+        - tags ['tag1', 'tag2'] params
+
+        When:
+        - Running get indicators/fetch indicators
+
+        Then:
+        - Validating tags key exists with given tags
+        """
+        tags = ['tag1', 'tag2']
+        feed_url_to_config = {
+            'https://ipstack.com': {
+                'fieldnames': ['value'],
+                'indicator_type': 'IP'
+            }
+        }
+
+        with open('test_data/ip_ranges.txt') as ip_ranges_txt:
+            ip_ranges = ip_ranges_txt.read().encode('utf8')
+
+        with requests_mock.Mocker() as m:
+            itype = 'IP'
+            args = {
+                'indicator_type': itype,
+                'limit': 35
+            }
+            m.get('https://ipstack.com', content=ip_ranges)
+            client = Client(
+                url="https://ipstack.com",
+                feed_url_to_config=feed_url_to_config,
+                feedTags=tags
+            )
+            _, _, indicators = get_indicators_command(client, args, tags)
+            assert tags == indicators[0]['fields']['tags']
+
+    def test_tags_not_exists(self):
+        """
+        Given:
+        - No tags param
+
+        When:
+        - Running get indicators/fetch indicators
+
+        Then:
+        - Validating tags key exists with an empty list.
+        """
+        feed_url_to_config = {
+            'https://ipstack.com': {
+                'fieldnames': ['value'],
+                'indicator_type': 'IP'
+            }
+        }
+
+        with open('test_data/ip_ranges.txt') as ip_ranges_txt:
+            ip_ranges = ip_ranges_txt.read().encode('utf8')
+
+        with requests_mock.Mocker() as m:
+            itype = 'IP'
+            args = {
+                'indicator_type': itype,
+                'limit': 35
+            }
+            m.get('https://ipstack.com', content=ip_ranges)
+            client = Client(
+                url="https://ipstack.com",
+                feed_url_to_config=feed_url_to_config,
+                feedTags=[]
+            )
+            _, _, indicators = get_indicators_command(client, args)
+            assert [] == indicators[0]['fields']['tags']

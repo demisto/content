@@ -2,13 +2,16 @@ commonfields:
   id: DeleteIndicators
   version: -1
 name: DeleteIndicators
-script: |
+script: >
   args = {
       'query': demisto.args().get('query'),
       'doNotWhitelist': demisto.args().get('whitelist') == 'false'
   }
+
   # Calling a command - returns a list of one or more entries
+
   res = demisto.executeCommand("deleteIndicators", args)
+
   demisto.results(res)
 type: python
 subtype: python2
@@ -27,4 +30,6 @@ args:
   defaultValue: "false"
 scripttarget: 0
 runonce: false
+comment: ''
 runas: DBotWeakRole
+fromversion: 5.0.0

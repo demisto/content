@@ -80,9 +80,7 @@ script:
     - name: page_size
       description: Page size. Possible values are a positive integer or "all".
     - name: ordering
-      description: Orders records by last timestamp, threat score, and certainty score.
-        The default out sorts threat and certainty score in ascending order. Scores
-        can be sorted in descending order by pre-pending the query with minus symbol (-).
+      description: Orders records by last timestamp, threat score, and certainty score. The default out sorts threat and certainty score in ascending order. Scores can be sorted in descending order by pre-pending the query with minus symbol (-).
     - name: min_id
       description: 'Less than or equal to the specified ID.'
     - name: max_id
@@ -91,10 +89,10 @@ script:
       description: 'Filters by state ("active", "inactive", "ignored" - for all).'
       auto: PREDEFINED
       predefined:
-        - active
-        - inactive
-        - ignored
-        - ignored for all
+      - active
+      - inactive
+      - ignored
+      - ignored for all
     - name: type_vname
       description: Filters by the detection type (verbose name).
     - name: category
@@ -175,8 +173,7 @@ script:
       type: String
     - contextPath: Vectra.Detection.SourceAccount
       description: 'A dictionary with fields that describe the Account from which the detection originates.'
-    description: Returns a list of detection objects, which contain all the information related to security
-      events detected on the network.
+    description: Returns a list of detection objects, which contain all the information related to security events detected on the network.
   - name: vectra-get-hosts
     arguments:
     - name: host_id
@@ -188,19 +185,17 @@ script:
     - name: page_size
       description: Page size. Possible values are a positive integer or "all".
     - name: ordering
-      description: Orders records by last timestamp, threat score, and certainty score.
-        The default out sorts threat and certainty score in ascending order. Scores
-        can sorted in descending order by pre-pending the query with minus symbol (-).
+      description: Orders records by last timestamp, threat score, and certainty score. The default out sorts threat and certainty score in ascending order. Scores can sorted in descending order by pre-pending the query with minus symbol (-).
     - name: name
       description: Filters by name.
     - name: state
       description: 'Filters by state ("active", "inactive", "suspended", "ignored", "ignored" - for all).'
       auto: PREDEFINED
       predefined:
-        - active
-        - inactive
-        - ignored
-        - ignored for all
+      - active
+      - inactive
+      - ignored
+      - ignored for all
     - name: last_source
       description: Filters by the last_source (IP address).
     - name: threat_score
@@ -214,8 +209,7 @@ script:
     - name: last_detection_timestamp
       description: Filters by the last_detection_timestamp.
     - name: tags
-      description: 'Filters by a comma-separated list of tags. Returns hosts
-        that contain any of the tags specified, e.g., tags=baz | tags=foo,bar.'
+      description: 'Filters by a comma-separated list of tags. Returns hosts that contain any of the tags specified, e.g., tags=baz | tags=foo,bar.'
     - name: key_assest
       description: 'Filters by the key asset. Can be "True" or "False".'
     - name: mac_address
@@ -251,8 +245,7 @@ script:
     - contextPath: Vectra.Host.ID
       description: 'ID of the host.'
       type: Number
-    description: Returns host information, which includes data that correlates the host data to detected
-      security events.
+    description: Returns host information, which includes data that correlates the host data to detected security events.
   - name: vectra-triage
     arguments: []
     outputs:
@@ -288,8 +281,7 @@ script:
       description: Kerberos Account.
     - contextPath: Vectra.Rule.Remote.Kerberos.Service
       description: Kerberos Service.
-    description: The rules branch can be used to retrieve a listing of configured
-      Triage rules
+    description: The rules branch can be used to retrieve a listing of configured Triage rules
   - name: vectra-get-host-by-id
     arguments:
     - name: host_id
@@ -366,9 +358,7 @@ script:
     arguments:
     - name: query_string
       required: true
-      description: 'The query to perform, e.g., `host.threat:>=50 and host.certainty:>=50` will
-       find all hosts in the critical quadrant.
-       `host.owner_name:bob` will find hosts with probable owner that contains the phrase “bob” in it.'
+      description: 'The query to perform, e.g., `host.threat:>=50 and host.certainty:>=50` will find all hosts in the critical quadrant. `host.owner_name:bob` will find hosts with probable owner that contains the phrase “bob” in it.'
     - name: search_type
       description: 'The type of search to perform. Can be "Hosts" or "Detections".'
       required: true
@@ -381,6 +371,6 @@ script:
     description: "Runs an advanced search on hosts and detections."
   isfetch: true
   dockerimage: demisto/python3:3.8.2.6981
-  dockerimage45: demisto/python3:3.7.4.2245
 tests:
-  - No test 
+- No test
+fromversion: 5.0.0

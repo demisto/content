@@ -1,0 +1,85 @@
+[
+    {
+        "DescriptionDetailFormatKeys": [],
+        "DescriptionFormatKey": "DnsReconnaissanceSuspiciousActivityDescription",
+        "DestinationComputerIds": [
+            "6b0e48f5-6c63-449c-8b6f-c749e18e28b3"
+        ],
+        "EndTime": "2020-08-09T09:18:22.5496318Z",
+        "EvidenceKeys": [],
+        "ExclusionUniqueEntityId": "18792471-d0be-4edf-b69d-910a97fe9382",
+        "HasDetails": true,
+        "Id": "5f2fbf7283eaed101cf41361",
+        "IsAdditionalDataAvailable": false,
+        "ReasonKey": "DnsReconnaissanceSuspiciousActivityReason",
+        "RelatedActivityCount": 1,
+        "RelatedUniqueEntityIds": [
+            "18792471-d0be-4edf-b69d-910a97fe9382"
+        ],
+        "Severity": "Medium",
+        "SourceComputerId": "18792471-d0be-4edf-b69d-910a97fe9382",
+        "SourceIpAddresses": [
+            "172.31.3.28"
+        ],
+        "StartTime": "2020-08-09T09:18:22.5496318Z",
+        "Status": "Open",
+        "StatusUpdateTime": "2020-08-09T09:18:42.4854901Z",
+        "SystemCreationTime": "2020-08-09T09:18:42.4854901Z",
+        "SystemUpdateTime": "2020-08-09T09:18:42.5063582Z",
+        "TitleKey": "DnsReconnaissanceSuspiciousActivityTitle",
+        "Type": "DnsReconnaissanceSuspiciousActivity",
+        "WindowsEventId": 2007
+    },
+    {
+        "DescriptionDetailFormatKeys": [
+            "HoneytokenActivitySuspiciousActivityDescriptionDetailNtlmUnknownResourcesSuccess"
+        ],
+        "DescriptionFormatKey": "HoneytokenActivitySuspiciousActivityDescription",
+        "DestinationComputerIds": [
+            "6b0e48f5-6c63-449c-8b6f-c749e18e28b3"
+        ],
+        "EndTime": "2020-07-28T08:51:09.7050476Z",
+        "EvidenceKeys": [],
+        "ExclusionUniqueEntityId": null,
+        "HasDetails": true,
+        "HasUnknownLdapResources": false,
+        "HasUnknownNtlmResources": true,
+        "HoneytokenAccountId": "7a58c171-fa19-44f9-bf1e-81b544b318ad",
+        "Id": "5f1fe6b383eaed101ce19b58",
+        "IsAdditionalDataAvailable": false,
+        "KerberosLoginDestinationComputerIds": [],
+        "KerberosLoginSourceComputerIds": [],
+        "KerberosResourceAccessDestinationComputerIds": [],
+        "KerberosResourceAccessResourceIdentifiers": [],
+        "KerberosResourceAccessSourceComputerIds": [],
+        "LdapDestinationComputerIds": [],
+        "LdapResourceIdentifiers": [],
+        "LdapSourceComputerIds": [],
+        "NtlmDestinationComputerIds": [
+            "6b0e48f5-6c63-449c-8b6f-c749e18e28b3"
+        ],
+        "NtlmResourceIdentifiers": [],
+        "NtlmSourceComputerIds": [
+            "computer  ec2-63-35-159-19.eu-west-1.compute.amazonaws.com"
+        ],
+        "ReasonKey": "HoneytokenActivitySuspiciousActivityReason",
+        "RelatedActivityCount": 3,
+        "RelatedUniqueEntityIds": [
+            "7a58c171-fa19-44f9-bf1e-81b544b318ad",
+            "computer  ec2-63-35-159-19.eu-west-1.compute.amazonaws.com"
+        ],
+        "Severity": "Medium",
+        "SourceComputerIds": [
+            "computer  ec2-63-35-159-19.eu-west-1.compute.amazonaws.com"
+        ],
+        "SourceIpAddresses": [],
+        "StartTime": "2020-07-28T08:49:54.1366697Z",
+        "Status": "Open",
+        "StatusUpdateTime": "2020-08-09T05:39:23.4399948Z",
+        "SystemCreationTime": "2020-07-28T08:49:55.3139871Z",
+        "SystemUpdateTime": "2020-08-09T05:39:23.4399948Z",
+        "TitleKey": "HoneytokenActivitySuspiciousActivityTitle",
+        "Type": "HoneytokenActivitySuspiciousActivity",
+        "WindowsEventId": 2014
+    }
+]

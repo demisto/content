@@ -37,8 +37,7 @@ tasks:
       id: 46e3552d-a8d4-4198-8256-51abe41358c2
       version: -1
       name: ExtractIP
-      description: Extract IPs from the given text and place them both as output and
-        in the context of a playbook.
+      description: Extract IPs from the given text and place them both as output and in the context of a playbook.
       script: ExtractIP
       type: regular
       iscommand: false
@@ -103,8 +102,7 @@ tasks:
       id: b7757129-78db-47ed-826b-2f68599500a2
       version: -1
       name: IsMaliciousIndicatorFound
-      description: Checks if the investigation found any Malicious File/URL/IP, if
-        so return yes, otherwise no.
+      description: Checks if the investigation found any Malicious File/URL/IP, if so return yes, otherwise no.
       script: IsMaliciousIndicatorFound
       type: condition
       iscommand: false
@@ -144,8 +142,7 @@ tasks:
       - "9"
     scriptarguments:
       text:
-        simple: ssdsd cb57e263ab51f8e9b40d6f292bb17512cec0aa701bde14df33dfc06c815be54c
-          ddd
+        simple: ssdsd cb57e263ab51f8e9b40d6f292bb17512cec0aa701bde14df33dfc06c815be54c ddd
     separatecontext: false
     view: |-
       {
@@ -323,8 +320,7 @@ tasks:
       id: db54a9bc-2217-429e-861b-0fd06232eba7
       version: -1
       name: ExtractURL
-      description: Extract URLs from the given text and place them both as output
-        and in the context of a playbook. If given an object, will convert to JSON.
+      description: Extract URLs from the given text and place them both as output and in the context of a playbook. If given an object, will convert to JSON.
       script: ExtractURL
       type: regular
       iscommand: false
@@ -557,8 +553,7 @@ tasks:
       id: 8739e206-6a07-4647-83c2-f8c3c796ebbe
       version: -1
       name: ExtractDomain
-      description: Extract Domains from the given text and place them both as output
-        and in the context of a playbook. If given an object, will convert to JSON.
+      description: Extract Domains from the given text and place them both as output and in the context of a playbook. If given an object, will convert to JSON.
       script: ExtractDomain
       type: regular
       iscommand: false
@@ -715,3 +710,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

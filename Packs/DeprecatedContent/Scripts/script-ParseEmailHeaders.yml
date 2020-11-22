@@ -2,8 +2,9 @@ commonfields:
   id: ParseEmailHeader
   version: -1
 name: ParseEmailHeaders
-script: |-
+script: >-
   import json
+
 
 
   def main():
@@ -49,7 +50,7 @@ type: python
 subtype: python2
 tags:
 - email
-comment: Deprecated - use `ParseEmailFiles parse_only_headers=true`. This automation parses headers from an email file.
+comment: Deprecated. use `ParseEmailFiles parse_only_headers=true`. This automation parses headers from an email file.
 enabled: true
 args:
 - name: entryId
@@ -88,3 +89,4 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 deprecated: true
+fromversion: 5.0.0

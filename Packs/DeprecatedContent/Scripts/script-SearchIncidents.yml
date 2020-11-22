@@ -2,7 +2,7 @@ commonfields:
   id: SearchIncidents
   version: -1
 name: SearchIncidents
-script: |-
+script: >-
   function invalideEscape(str) {
       var i;
       var special = ["n", "t", "r", "'", "\"", "7"];
@@ -17,11 +17,17 @@ script: |-
   }
 
 
+
   // Clean all the empty ones
+
   Object.keys(args).forEach(function(a) {if (!args[a]) delete args[a];});
+
   var keys = Object.keys(args);
+
   var i;
+
   var md;
+
   for (i = 0; i < keys.length; i++) {
       temp = invalideEscape(args[keys[i]]);
       if (temp.length != args[keys[i]].length) {
@@ -30,11 +36,14 @@ script: |-
 
       }
   }
+
   if (!!md) {
       return {Type: entryTypes.error, Contents: md, ContentsFormat: formats.markdown, HumanReadable: md};
   }
 
+
   var arrArgs = ['id', 'name', 'status', 'notstatus', 'reason', 'level', 'system', 'owner', 'type'];
+
   for (var i=0; i<arrArgs.length; i++) {
       var tmp = argToList(args[arrArgs[i]]);
       if (tmp && tmp.length > 0) {
@@ -43,7 +52,9 @@ script: |-
   }
 
 
+
   var res = executeCommand('getIncidents', args);
+
   if (isValidRes(res)) {
       var data = res[0].Contents.data;
       var md = tableToMarkdown('Incidents found', data, ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed']);
@@ -98,8 +109,7 @@ args:
   description: Filter by incident type
   isArray: true
 - name: query
-  description: Use free form query (use Lucene syntax) as filter. All other filters
-    will be ignored when this filter is used.
+  description: Use free form query (use Lucene syntax) as filter. All other filters will be ignored when this filter is used.
   isArray: true
 - name: page
   description: Filter by the page number
@@ -132,5 +142,7 @@ outputs:
   description: Phases of the found incidents
 scripttarget: 0
 deprecated: true
+runas: DBotWeakRole
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

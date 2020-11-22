@@ -3,17 +3,25 @@ commonfields:
   version: -1
 name: TaniumDeployAction
 deprecated: true
-script: |-
+script: >-
   // An example script for deploying Tanium action with filter
+
   if (!args.packageName && !args.packageID) {
       return 'Missing parameter: packageName or packageID';
   }
+
   var packageName = args.packageName || '';
+
   var packageID = args.packageID || '';
+
   var packageParams = args.parameters || '';
+
   var comment = args.comment || '';
+
   // targetGroup is the properties of the systems on which the requested package should run
+
   var targetGroup = '\
+
   <target_group>\
     <and_flag>1</and_flag>\
     <deleted_flag>0</deleted_flag>\
@@ -34,6 +42,7 @@ script: |-
     <sub_groups/>\
     <text>Online is \"True\"</text>\
   </target_group>';
+
   var taniumArgs = {
         'package-name': packageName,
         'package-id': packageID,
@@ -42,18 +51,24 @@ script: |-
         'target-group': targetGroup,
       };
   var res = executeCommand('tn-deploy-package', taniumArgs);
+
   if (isError(res[0])) {
       return res;
   }
 
+
   var contents = dq(res[0],'Contents.packageSpec');
+
   var cleanContents = {};
+
   var keys = Object.keys(contents);
+
   for (var i = 0; i < keys.length; i++) {
       if (contents[keys[i]] || contents[keys[i]] === false) {
           cleanContents[keys[i]] = contents[keys[i]];
       }
   }
+
 
   var entry = {
       Type: 1,
@@ -72,21 +87,19 @@ script: |-
       }
   };
 
+
   return entry;
 type: javascript
 tags:
 - tanium
-comment: Execute an action, optionally with parameters, and filtering - based on an
-  existing package. See https://kb.tanium.com/SOAP for more information
+comment: Deprecated. Execute an action, optionally with parameters, and filtering - based on an existing package. See https://kb.tanium.com/SOAP for more information
 args:
 - name: packageName
-  description: Specify the package name. e.g. !TaniumDeployAction packageName="Clean
-    Stale Tanium Client Data"
+  description: Specify the package name. e.g. !TaniumDeployAction packageName="Clean Stale Tanium Client Data"
 - name: packageID
   description: Use the package ID instead of its name
 - name: parameters
-  description: Use parameters with the package. See https://kb.tanium.com/SOAP for
-    more details
+  description: Use parameters with the package. See https://kb.tanium.com/SOAP for more details
 - name: comment
   description: Comment to be added to the action history in the Tanium server
 outputs:
@@ -105,3 +118,4 @@ dependson:
   must:
   - tn-deploy-package
 timeout: 0s
+fromversion: 5.0.0

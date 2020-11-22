@@ -2,9 +2,11 @@ commonfields:
   id: LCMDetectedEntities
   version: -1
 name: LCMDetectedEntities
-script: |
+script: >
   args = demisto.args()
+
   resp = demisto.executeCommand("lcm-entities", args)
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -21,10 +23,11 @@ subtype: python2
 deprecated: true
 tags:
 - lightcyber
-comment: This script is deprecated. LightCyber Magna is no longer available.
+comment: Deprecated. This script is deprecated. LightCyber Magna is no longer available.
 system: true
 scripttarget: 0
 dependson:
   must:
   - lcm-entities
 timeout: 0s
+fromversion: 5.0.0

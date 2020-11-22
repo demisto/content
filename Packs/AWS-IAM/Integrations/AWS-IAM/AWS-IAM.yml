@@ -1334,64 +1334,66 @@ script:
     arguments:
     - name: minimumPasswordLength
       predefined:
-        - ""
+      - ""
       description: The minimum number of characters allowed in an IAM user password.
     - name: requireSymbols
       auto: PREDEFINED
       predefined:
-        - "True"
-        - "False"
+      - "True"
+      - "False"
       description: Specifies whether IAM user passwords must contain at least one
         of the non-alphanumeric characters. Can be "True" or "False".
     - name: requireNumbers
       auto: PREDEFINED
       predefined:
-        - "True"
-        - "False"
+      - "True"
+      - "False"
       description: Specifies whether IAM user passwords must contain at least one
         numeric character (0 to 9). Can be "True" or "False".
     - name: requireUppercaseCharacters
       auto: PREDEFINED
       predefined:
-        - "True"
-        - "False"
+      - "True"
+      - "False"
       description: Specifies whether IAM user passwords must contain at least one
-        uppercase character from the ISO basic Latin alphabet (A to Z). Can be "True" or "False".
+        uppercase character from the ISO basic Latin alphabet (A to Z). Can be "True"
+        or "False".
     - name: requireLowercaseCharacters
       auto: PREDEFINED
       predefined:
-        - "True"
-        - "False"
+      - "True"
+      - "False"
       description: Specifies whether IAM user passwords must contain at least one
-        lowercase character from the ISO basic Latin alphabet (a to z). Can be "True" or "False".
+        lowercase character from the ISO basic Latin alphabet (a to z). Can be "True"
+        or "False".
     - name: allowUsersToChangePassword
       auto: PREDEFINED
       predefined:
-        - "True"
-        - "False"
+      - "True"
+      - "False"
       description: Allows all IAM users in your account to use the AWS Management
         Console to change their own passwords. Can be "True" or "False".
     - name: maxPasswordAge
       predefined:
-        - ""
+      - ""
       description: The number of days that an IAM user password is valid.
     - name: passwordReusePrevention
       predefined:
-        - ""
+      - ""
       description: Specifies the number of previous passwords that IAM users are prevented
         from reusing.
     - name: hardExpiry
       auto: PREDEFINED
       predefined:
-        - "True"
-        - "False"
+      - "True"
+      - "False"
       description: Prevents IAM users from setting a new password after their password
         has expired. Can be "True" or "False".
     description: Create/update password policy
     execution: true
-  dockerimage: demisto/boto3:1.9.55
-  dockerimage45: demisto/boto3
+  dockerimage: demisto/boto3:2.0.0.13188
   runonce: false
   subtype: python2
 tests:
 - d5cb69b1-c81c-4f27-8a40-3106c0cb2620
+fromversion: 5.0.0

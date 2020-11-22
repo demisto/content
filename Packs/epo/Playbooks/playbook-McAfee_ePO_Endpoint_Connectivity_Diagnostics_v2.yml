@@ -1,0 +1,389 @@
+id: McAfee ePO Endpoint Connectivity Diagnostics Playbook v2
+version: -1
+name: McAfee ePO Endpoint Connectivity Diagnostics Playbook v2
+description: Perform a check on ePO endpoints to see if any endpoints are unmanaged
+  or lost connectivity with ePO and take steps to return to a valid state.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0e3fe5d5-d93f-4ce9-8b62-685427fb9e5a
+    type: start
+    task:
+      id: 0e3fe5d5-d93f-4ce9-8b62-685427fb9e5a
+      version: -1
+      name: start_task
+      type: start
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 416,
+          "y": -227
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 9c37c208-6466-4564-87db-2ebcdf47c9ad
+    type: condition
+    task:
+      id: 9c37c208-6466-4564-87db-2ebcdf47c9ad
+      version: -1
+      name: 'Are any endpoints in ePO listed as unmanaged? '
+      description: Place the list of non-communicating endpoints in the 
+        epoUnmanagedEndpoints incident label.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "4"
+      "Yes":
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 416,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 956874f3-ed9f-4e74-850b-4e98a76e2ce7
+    type: regular
+    task:
+      id: 956874f3-ed9f-4e74-850b-4e98a76e2ce7
+      version: -1
+      name: Check if unmanaged endpoints are in special excluded list.
+      description: |-
+        Most organizations have some excluded servers, either legacy OS or being managed by a different security solution, etc.
+        Usually this list is managed in Active Directory and this task is accomplished by checking whether any computers in the unmanaged list are a member of this group.
+
+        Enter a comma-separated list of the system names that need to be addressed.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 731,
+          "y": 94
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 9ad35b01-206f-452c-8a9e-8b66a2a7f368
+    type: regular
+    task:
+      id: 9ad35b01-206f-452c-8a9e-8b66a2a7f368
+      version: -1
+      name: Open ServiceNow ticket for admin to install agents
+      description: |-
+        This script is used to wrap the generic create-record command in ServiceNow.
+        You can add fields that you want to create the record with as script arguments or in the
+        code and work with the records easily.
+      scriptName: ServiceNowCreateIncident
+      type: regular
+      iscommand: false
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      assigned_group: {}
+      assignee: {}
+      description:
+        simple: Unmanaged endpoints - need to install McAfee Agent
+      severity: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 731,
+          "y": 428
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 1d99f9b9-166a-4248-84f6-b90c15951e33
+    type: condition
+    task:
+      id: 1d99f9b9-166a-4248-84f6-b90c15951e33
+      version: -1
+      name: Check if there are agents which haven't communicated with ePO in the past
+        3 days
+      description: Enter a comma-separated list of the system names that need to be addressed.
+
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "11"
+      "no":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 416,
+          "y": 601
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 581bbf42-f8ba-437b-8b9a-56d764e0a51c
+    type: regular
+    task:
+      id: 581bbf42-f8ba-437b-8b9a-56d764e0a51c
+      version: -1
+      name: CloseInvestigation
+      description: Closes the incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 116,
+          "y": 774
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 4a32bb9b-8d01-48f5-8685-c754b5067c09
+    type: regular
+    task:
+      id: 4a32bb9b-8d01-48f5-8685-c754b5067c09
+      version: -1
+      name: Check connectivity for each endpoint using ping
+      scriptName: Ping
+      type: regular
+      iscommand: false
+      brand: ""
+      description: Check connectivity for each endpoint using ping.
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      address:
+        simple: ${epoNonCommunicatingEndpoint}
+      contextKey: {}
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 731,
+          "y": 945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: b5a87844-2303-4da8-8b3f-9824047aa547
+    type: regular
+    task:
+      id: b5a87844-2303-4da8-8b3f-9824047aa547
+      version: -1
+      name: Remotely check that McAfee Agent is installed and running.
+      type: regular
+      iscommand: false
+      brand: ""
+      description: Remotely check that McAfee Agent is installed and running.
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 731,
+          "y": 1134
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 2c6c6764-94f8-4777-836b-649ef7b51b98
+    type: regular
+    task:
+      id: 2c6c6764-94f8-4777-836b-649ef7b51b98
+      version: -1
+      name: Remotely execute cmdagent commandline utility to force communication with
+        ePO.
+      iscommand: false
+      brand: ""
+      description: force communication with ePO
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 731,
+          "y": 1321
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 70cbf053-e249-48eb-823e-10c903391df5
+    type: regular
+    task:
+      id: 70cbf053-e249-48eb-823e-10c903391df5
+      version: -1
+      name: Retrieve McAfee Agent logs from non-communicating endpoints.
+      type: regular
+      iscommand: false
+      brand: ""
+      description: Retrieve McAfee Agent logs from non-communicating endpoints.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 731,
+          "y": 1508
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: b5f717be-a4a8-4ba2-86ca-6f6e4024236c
+    type: regular
+    task:
+      id: b5f717be-a4a8-4ba2-86ca-6f6e4024236c
+      version: -1
+      name: Store a list of unmanaged endpoints to context key epoUnmanagedEndpoint
+      description: Takes the comments of a given entry ID and stores them in the incident
+        context under a provided context key. For accessing the last executed task's
+        comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId
+        input parameter.
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      contextKey:
+        simple: epoUnmanagedEndpoint
+      entryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      listSeperator:
+        simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 731,
+          "y": 271
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 3da5d5ef-6d6a-4099-8d83-d5a33d6ef515
+    type: regular
+    task:
+      id: 3da5d5ef-6d6a-4099-8d83-d5a33d6ef515
+      version: -1
+      name: Store non-communicating endpoints to context key epoNonCommunicatingEndpoint
+      description: Takes the comments of a given entry ID and stores them in the incident
+        context under a provided context key. For accessing the last executed task's
+        comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId
+        input parameter.
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      contextKey:
+        simple: epoNonCommunicatingEndpoint
+      entryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      extend-context: {}
+      listSeperator:
+        simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 731,
+          "y": 774
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1830,
+        "width": 995,
+        "x": 116,
+        "y": -227
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

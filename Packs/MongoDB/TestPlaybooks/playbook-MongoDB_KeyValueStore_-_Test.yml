@@ -73,8 +73,7 @@ tasks:
       id: a1f7c327-baf8-432f-82dc-dc4493be12c7
       version: -1
       name: MongoDB write key/value
-      description: Adds a key/value record for the incident.  If the key exists, any
-        existing value will be overwritten.
+      description: Adds a key/value record for the incident.  If the key exists, any existing value will be overwritten.
       script: '|||mongodb-write-key-value'
       type: regular
       iscommand: true
@@ -296,3 +295,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

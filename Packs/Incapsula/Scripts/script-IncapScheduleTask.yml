@@ -2,15 +2,21 @@ commonfields:
   id: IncapScheduleTask
   version: -1
 name: IncapScheduleTask
-script: |-
+script: >-
   res = []
+
   SCHEDULED_TASK_ID_CTXKEY = "ScheduledTaskID"
 
+
   dArgs = demisto.args()
+
   ssh_server = dArgs.pop("SSHValidationServer")
+
   dArgs['command'] = '!IncapWhitelistCompliance SSHValidationServer={}'.format(ssh_server)
 
+
   res = demisto.executeCommand('scheduleEntry', dArgs)
+
   if isError(res[0]):
       demisto.results(res)
   else:
@@ -41,3 +47,4 @@ dependson:
   - scheduleEntry
   - IncapWhitelistCompliance
 timeout: 0s
+fromversion: 5.0.0

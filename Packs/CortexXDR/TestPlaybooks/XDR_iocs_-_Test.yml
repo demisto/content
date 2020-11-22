@@ -1,0 +1,1037 @@
+id: Cortex XDR - IOC - Test
+version: -1
+name: Cortex XDR - IOC - Test
+starttaskid: "0"
+description: ""
+fromversion: '5.5.0'
+tasks:
+  "0":
+    id: "0"
+    taskid: 69c81cec-92a4-4179-8dbc-805453b0797c
+    type: start
+    task:
+      id: 69c81cec-92a4-4179-8dbc-805453b0797c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 8f8e5cbd-26a2-4713-8114-9a77ab34f6a6
+    type: regular
+    task:
+      id: 8f8e5cbd-26a2-4713-8114-9a77ab34f6a6
+      version: -1
+      name: createNewIndicator (test.com)
+      description: Change the properties of an indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      customFields: {}
+      merge: {}
+      relatedIncidents: {}
+      reputation:
+        simple: Bad
+      seenNow: {}
+      source: {}
+      sourceTimeStamp: {}
+      type:
+        simple: Domain
+      value:
+        simple: test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b88cea3d-99b1-4ec2-840b-d6104dc3e278
+    type: regular
+    task:
+      id: b88cea3d-99b1-4ec2-840b-d6104dc3e278
+      version: -1
+      name: createNewIndicator (88.88.88.88)
+      description: Change the properties of an indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      customFields: {}
+      merge: {}
+      relatedIncidents: {}
+      reputation:
+        simple: Bad
+      seenNow: {}
+      source: {}
+      sourceTimeStamp: {}
+      type:
+        simple: IP
+      value:
+        simple: 88.88.88.88
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 23eab17d-2dc4-46d1-8b90-532852cd4c58
+    type: regular
+    task:
+      id: 23eab17d-2dc4-46d1-8b90-532852cd4c58
+      version: -1
+      name: createNewIndicator (fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e)
+      description: Change the properties of an indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      customFields: {}
+      merge: {}
+      relateToIncident: {}
+      relatedIncidents: {}
+      reputation:
+        simple: Bad
+      seenNow: {}
+      source: {}
+      sourceTimeStamp: {}
+      type:
+        simple: File SHA-256
+      value:
+        simple: fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 10fbdfdb-2588-402d-8221-09ee89816a0d
+    type: regular
+    task:
+      id: 10fbdfdb-2588-402d-8221-09ee89816a0d
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 12c5f3ea-5c81-42ea-8985-69e957165379
+    type: regular
+    task:
+      id: 12c5f3ea-5c81-42ea-8985-69e957165379
+      version: -1
+      name: xdr-iocs-disable (test.com)
+      description: Disable iocs in XDR server
+      script: 'xdr-iocs-disable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      indicator:
+        simple: test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: c2a2117a-b4e6-4e20-8176-712f12172f13
+    type: regular
+    task:
+      id: c2a2117a-b4e6-4e20-8176-712f12172f13
+      version: -1
+      name: xdr-iocs-disable (88.88.88.88)
+      description: Disable iocs in XDR server
+      script: 'xdr-iocs-disable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      indicator:
+        simple: 88.88.88.88
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: ddc92f88-ce5c-4f06-8911-8694c3d6e1bd
+    type: regular
+    task:
+      id: ddc92f88-ce5c-4f06-8911-8694c3d6e1bd
+      version: -1
+      name: xdr-iocs-disable (fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e)
+      description: Disable iocs in XDR server
+      script: 'xdr-iocs-disable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      indicator:
+        simple: fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: c9a9ecd7-afef-46ff-8240-fd4d9af54fed
+    type: regular
+    task:
+      id: c9a9ecd7-afef-46ff-8240-fd4d9af54fed
+      version: -1
+      name: Sleep (360)
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+      - "14"
+      - "15"
+    scriptarguments:
+      seconds:
+        simple: "360"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 61627c36-2353-488d-80ab-5e1c4f4e7db4
+    type: regular
+    task:
+      id: 61627c36-2353-488d-80ab-5e1c4f4e7db4
+      version: -1
+      name: XDR_test_helper (test.com)
+      scriptName: XDR_test_helper
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      indicator:
+        simple: test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 64dd3afa-d557-4f1c-8746-fb59f2cf2014
+    type: regular
+    task:
+      id: 64dd3afa-d557-4f1c-8746-fb59f2cf2014
+      version: -1
+      name: XDR_test_helper (88.88.88.88)
+      scriptName: XDR_test_helper
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      indicator:
+        simple: 88.88.88.88
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 75ccb219-753d-4f55-8551-9bb7f460b1a9
+    type: regular
+    task:
+      id: 75ccb219-753d-4f55-8551-9bb7f460b1a9
+      version: -1
+      name: XDR_test_helper (fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e)
+      scriptName: XDR_test_helper
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      indicator:
+        simple: fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: c5f11087-f68d-4029-81d3-a213138ba86c
+    type: condition
+    task:
+      id: c5f11087-f68d-4029-81d3-a213138ba86c
+      version: -1
+      name: check outputs (88.88.88.88)
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${88_88_88_88}
+            iscontext: true
+          right:
+            value:
+              simple: disabled
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 758a4720-1338-4609-874d-a87497d782ea
+    type: condition
+    task:
+      id: 758a4720-1338-4609-874d-a87497d782ea
+      version: -1
+      name: check outputs (test.com)
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${test_com}
+            iscontext: true
+          right:
+            value:
+              simple: disabled
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 84485a95-a2fc-457a-8e01-2da0a87f7787
+    type: condition
+    task:
+      id: 84485a95-a2fc-457a-8e01-2da0a87f7787
+      version: -1
+      name: check outputs (fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e)
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e}
+            iscontext: true
+          right:
+            value:
+              simple: disabled
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 9982b214-6028-4be2-861e-84c2cbc1790e
+    type: regular
+    task:
+      id: 9982b214-6028-4be2-861e-84c2cbc1790e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+      - "21"
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 030fa5e9-09a9-4a01-816c-1aa154b0d186
+    type: regular
+    task:
+      id: 030fa5e9-09a9-4a01-816c-1aa154b0d186
+      version: -1
+      name: xdr-iocs-enable (test.com)
+      description: Enable iocs in XDR server
+      script: 'xdr-iocs-enable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      indicator:
+        simple: test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 54064545-7bd5-4dd1-87dd-29a5f1a7c3e3
+    type: regular
+    task:
+      id: 54064545-7bd5-4dd1-87dd-29a5f1a7c3e3
+      version: -1
+      name: xdr-iocs-enable (88.88.88.88)
+      description: Enable iocs in XDR server
+      script: 'xdr-iocs-enable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      indicator:
+        simple: 88.88.88.88
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: b22de31d-afad-415c-8153-b355eccee4aa
+    type: regular
+    task:
+      id: b22de31d-afad-415c-8153-b355eccee4aa
+      version: -1
+      name: xdr-iocs-enable (fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e)
+      description: Enable iocs in XDR server
+      script: 'xdr-iocs-enable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      indicator:
+        simple: fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 76bcb0bb-5758-4998-868a-ef00f1817b53
+    type: regular
+    task:
+      id: 76bcb0bb-5758-4998-868a-ef00f1817b53
+      version: -1
+      name: Sleep (360)
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+      - "25"
+      - "26"
+    scriptarguments:
+      seconds:
+        simple: "360"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 07ebe694-9d25-48b8-8814-a031270769c6
+    type: regular
+    task:
+      id: 07ebe694-9d25-48b8-8814-a031270769c6
+      version: -1
+      name: XDR_test_helper (test.com)
+      scriptName: XDR_test_helper
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      indicator:
+        simple: test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 860cac2e-6a6b-4e47-8c27-54e948b91aaa
+    type: regular
+    task:
+      id: 860cac2e-6a6b-4e47-8c27-54e948b91aaa
+      version: -1
+      name: XDR_test_helper (88.88.88.88)
+      scriptName: XDR_test_helper
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      indicator:
+        simple: 88.88.88.88
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 12afc6d2-095f-48ba-8488-24636723b358
+    type: regular
+    task:
+      id: 12afc6d2-095f-48ba-8488-24636723b358
+      version: -1
+      name: XDR_test_helper (fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e)
+      scriptName: XDR_test_helper
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      indicator:
+        simple: fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 2ffa72c7-4b4e-4102-8d2d-3abd9d203acd
+    type: condition
+    task:
+      id: 2ffa72c7-4b4e-4102-8d2d-3abd9d203acd
+      version: -1
+      name: check outputs (fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e)
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${fa66f1e0e318b6d7b595b6cee580dc0d8e4ac38fbc8dbfcac6ad66dbe282832e}
+            iscontext: true
+          right:
+            value:
+              simple: enabled
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 0f4c6181-c671-47d5-83c8-5e761f9c0867
+    type: condition
+    task:
+      id: 0f4c6181-c671-47d5-83c8-5e761f9c0867
+      version: -1
+      name: check outputs (test.com)
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${test_com}
+            iscontext: true
+          right:
+            value:
+              simple: enabled
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 63149da5-0807-49ce-8841-214febdf886a
+    type: condition
+    task:
+      id: 63149da5-0807-49ce-8841-214febdf886a
+      version: -1
+      name: check outputs (88.88.88.88)
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${88_88_88_88}
+            iscontext: true
+          right:
+            value:
+              simple: enabled
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: a71ab95f-e072-4917-85f0-3f7c5396778f
+    type: title
+    task:
+      id: a71ab95f-e072-4917-85f0-3f7c5396778f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: b056afb9-c2cc-40b2-893c-73135cf095f6
+    type: regular
+    task:
+      id: b056afb9-c2cc-40b2-893c-73135cf095f6
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: error
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 2525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: bfcd05f4-9f1e-4493-8389-b55c04795134
+    type: regular
+    task:
+      id: bfcd05f4-9f1e-4493-8389-b55c04795134
+      version: -1
+      name: Sleep (360)
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+      - "10"
+      - "11"
+    scriptarguments:
+      seconds:
+        simple: "360"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2900,
+        "width": 1720,
+        "x": -440,
+        "y": -280
+      }
+    }
+  }
+inputs: []
+outputs: []

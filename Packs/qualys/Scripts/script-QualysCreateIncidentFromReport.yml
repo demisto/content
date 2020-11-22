@@ -2,14 +2,19 @@ commonfields:
   id: QualysCreateIncidentFromReport
   version: -1
 name: QualysCreateIncidentFromReport
-script: |-
+script: >-
   import json
 
+
   incident_type = demisto.args().get("incidentType", "Vulnerability")
+
   max_file_size = int(demisto.args().get("maxFileSize", 1024**2))
+
   min_severity = int(demisto.args().get("minSeverity", 1))
 
+
   file_entry = demisto.getFilePath(demisto.args().get("entryID"))
+
   with open(file_entry['path'], 'r') as f:
       data = f.read(max_file_size).decode('unicode_escape').encode('utf-8')
 
@@ -135,7 +140,11 @@ args:
 - name: incidentType
   description: The incident type to create incidents for. Default is "Vulnerability".
 scripttarget: 0
+runas: DBotWeakRole
 runonce: false
 dependson:
   must:
   - qualys-host-list
+tests:
+- No test
+fromversion: 5.0.0

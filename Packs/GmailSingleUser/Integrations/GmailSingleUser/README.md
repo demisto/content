@@ -1,6 +1,21 @@
-Use Gmail Single User integration to send emails and fetch emails as incidents to demisto.
+Use the Gmail Single User integration to send emails and fetch emails as incidents to Cortex XSOAR.
 
-## Configure Gmail Single User on Demisto
+## Application Authorization Flow
+
+To allow Cortex XSOAR to access Gmail, the user has to approve the Demisto App using an OAuth 2.0 authorization flow. Follow these steps to authorize the Demisto app in Gmail.
+
+1. Create and save an integration instance of the Gmail Single User integration. Do not fill in the *Auth Code* field, this will be obtained in the next steps.
+2. To obtain the **Auth Code** run the following command in the playground: ***!gmail-auth-link***. Access the link you receive to authenticate your Gmail account. 
+3. Complete the authentication process and copy the received code to the **Auth Code** configuration parameter of the integration instance. 
+4. Save the instance.
+5. To verify that authentication was configured correctly, run the ***!gmail-auth-test***.
+
+**NOTE:** The Demisto App is verified through the Google verification process. During the verification process the app is not fully verified, and you may receive from Google an "unverified app" warning in the authorization flow.
+
+**Optional:** You can use your own Google App instead of the default Demisto App. To create your own app, follow the [Google instructions for Desktop Apps](https://developers.google.com/identity/protocols/OAuth2InstalledApp#prerequisites). When creating the OAuth client ID, select **iOS** as the type (this is the type used for Desktop Apps). After you create the app, copy the *client id* to the integration configuration. Proceed with the OAuth 2.0 authorization flow detailed above.
+
+
+## Configure Gmail Single User on Cortex XSOAR
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Gmail Single User.
@@ -32,7 +47,7 @@ Use Gmail Single User integration to send emails and fetch emails as incidents t
 * Email Body Format
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. Send email: send-mail
 2. Get an authentication link: gmail-auth-link
@@ -106,10 +121,10 @@ Sends an email using Gmail.
 }
 ```
 ##### Human Readable Output
-### Email sent:
-|Type|ID|To|From|Subject|Body|Labels|ThreadId|
-|---|---|---|---|---|---|---|---|
-| Gmail | 16f662789d3a2972 | test@demistodev.com | example@demisto.com | this is the subject | this is the body | SENT | 16f662789d3a2972 |
+> ### Email sent:
+> |Type|ID|To|From|Subject|Body|Labels|ThreadId|
+> |---|---|---|---|---|---|---|---|
+> | Gmail | 16f662789d3a2972 | test@demistodev.com | example@demisto.com | this is the subject | this is the body | SENT |  16f662789d3a2972 |
 ### 2. Get an authentication link
 ---
 Returns a link to use to authenticate to Gmail. It starts the OAuth2 process. 
@@ -122,12 +137,12 @@ There is no context output for this command.
 ##### Command Example
 ```!gmail-auth-link```
 ##### Human Readable Output
-## Gmail Auth Link
-Please follow the following **link**.
-After Completing the authentication process, copy the received code
-to the **Auth Code** configuration parameter of the integration instance.
-Save the integration instance and then run *!gmail-auth-test* to test that
-the authentication is properly set.
+> ## Gmail Auth Link
+> Please follow the following **link**.
+> After Completing the authentication process, copy the received code
+>to the **Auth Code** configuration parameter of the integration instance.
+> Save the integration instance and then run *!gmail-auth-test* to test that
+> the authentication is properly set.
     
 ### 3. Test authorization
 ---

@@ -2,10 +2,13 @@ commonfields:
   id: CBSearch
   version: -1
 name: CBSearch
-script: |-
+script: >-
   //Script to query carbon black servers:
+
   //type must be either 'process' or 'binary'
+
   //can provide query & number of rows to return
+
   function formatresults(rows, columns) {
       var table = [];
       for (var index in rows) {
@@ -31,8 +34,11 @@ script: |-
       }
       return table;
   }
+
   var output = [];
+
   var searchType = args.type ? args.type : 'process';
+
   if ((searchType !== 'process') && (searchType !== 'binary')) {
       output.push({ContentsFormat: formats.text, Type: entryTypes.error, Contents: "Error! type must be 'process' or 'binary"});
   } else {
@@ -53,28 +59,25 @@ script: |-
       var table = formatresults(res[0].Contents.results, columns);
       output.push({ContentsFormat: formats.table, Type: entryTypes.note, Contents: table});
   }
+
   return output;
 type: javascript
 tags:
 - carbon-black
 - endpoint
 - enhancement
-comment: Deprecated, use the cb-binary command and cb-get-processes command, instead.
+comment: Deprecated. use the cb-binary command and cb-get-processes command, instead.
 system: true
 args:
 - name: type
-  description: '"process" or "binary" according to the type of search you want to
-    run.'
+  description: '"process" or "binary" according to the type of search you want to run.'
 - name: query
   default: true
   description: Query to be run - in Carbon Black syntax
 - name: rows
-  description: Number of rows to return. If omitted, default is as stated in the Carbon
-    Black API documentation, currently 10.
+  description: Number of rows to return. If omitted, default is as stated in the Carbon Black API documentation, currently 10.
 - name: start
-  description: 'Start at this row #. Allows pagination through large response. If
-    omitted, default is as stated in the Carbon Black API documentation, currently
-    0. '
+  description: 'Start at this row #. Allows pagination through large response. If omitted, default is as stated in the Carbon Black API documentation, currently 0. '
 scripttarget: 0
 dependson:
   must: []
@@ -84,4 +87,5 @@ dependson:
 timeout: 0s
 deprecated: true
 tests:
-  - No tests
+- No tests
+fromversion: 5.0.0

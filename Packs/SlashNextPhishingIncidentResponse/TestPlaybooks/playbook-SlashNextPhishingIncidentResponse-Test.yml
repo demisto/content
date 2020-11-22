@@ -70,8 +70,7 @@ tasks:
       id: 6d27814e-1ae6-44ce-84d1-d5e580e357ed
       version: -1
       name: SlashNext Host Reputation for a FQDN
-      description: Search in SlashNext Cloud database and retrieve reputation of a
-        host.
+      description: Search in SlashNext Cloud database and retrieve reputation of a host.
       script: SlashNext Phishing Incident Response|||slashnext-host-reputation
       type: regular
       iscommand: true
@@ -239,8 +238,7 @@ tasks:
       id: 632fb6f5-cc3e-4992-84fd-18d242433a63
       version: -1
       name: SlashNext Host Reputation for an IPv4
-      description: Search in SlashNext Cloud database and retrieve reputation of a
-        host.
+      description: Search in SlashNext Cloud database and retrieve reputation of a host.
       script: SlashNext Phishing Incident Response|||slashnext-host-reputation
       type: regular
       iscommand: true
@@ -1707,3 +1705,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

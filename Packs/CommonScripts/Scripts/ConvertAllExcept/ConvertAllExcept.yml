@@ -25,4 +25,5 @@ runonce: false
 dockerimage: demisto/python3:3.7.5.4328
 runas: DBotWeakRole
 tests:
-  - No test - used in Prisma Cloud classifier.
+- No test - used in Prisma Cloud classifier.
+fromversion: 5.0.0

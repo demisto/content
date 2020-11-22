@@ -1,0 +1,422 @@
+id: CrowdStrikeMalquery - Search
+version: -1
+name: CrowdStrikeMalquery - Search
+description: |-
+  Use this playbook as a sub-playbook to query the contents of binary files.
+  This playbook implements polling by continuously running the `get-request` command until the operation completes.
+  The remote action should have the following structure:
+
+  1. Initiate the operation - insert the type of search command (hunt or exact-search) and it's additional arguments if necessary.
+  2. Poll to check if the operation completed.
+  3. Get the results of the operation.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: aa8364fc-fb20-4340-8ea3-8c3f9cd42bb3
+    type: start
+    task:
+      id: aa8364fc-fb20-4340-8ea3-8c3f9cd42bb3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 03366a46-2741-4b97-80b1-ea4f8b3af0da
+    type: condition
+    task:
+      id: 03366a46-2741-4b97-80b1-ea4f8b3af0da
+      version: -1
+      name: Check input
+      description: Checks which command to run.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      exact search:
+      - "3"
+      hunt command:
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: hunt command
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.search_command
+            iscontext: true
+          right:
+            value:
+              simple: hunt
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.yara_rule
+            iscontext: true
+    - label: exact search
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.search_command
+            iscontext: true
+          right:
+            value:
+              simple: exact-search
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: c7d866e7-09c1-454f-8e54-2491fbfa4a4f
+    type: regular
+    task:
+      id: c7d866e7-09c1-454f-8e54-2491fbfa4a4f
+      version: -1
+      name: Hunt
+      description: "Use hunt to schedule a YARA-based search for execution. Results\
+        \ can be filtered based on criteria such as file type, file size and first\
+        \ seen date. Using hunt is a two-step process: Schedule a YARA-based\
+        \ search with hunt, which returns a request ID. Provide that request ID to\
+        \ cs-malquery-get-request to retrieve results."
+      script: '|||cs-malquery-hunt'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      filter_filetypes:
+        simple: ${inputs.filter_filetypes}
+      filter_meta:
+        simple: ${inputs.filter_meta}
+      limit:
+        simple: ${inputs.limit}
+      max_date:
+        simple: ${inputs.max_date}
+      max_size:
+        simple: ${inputs.max_size}
+      min_date:
+        simple: ${inputs.min_date}
+      min_size:
+        simple: ${inputs.min_size}
+      yara_rule:
+        simple: ${inputs.yara_rule}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 6130cef9-dd7f-4674-8f47-9d6d9b3549fd
+    type: regular
+    task:
+      id: 6130cef9-dd7f-4674-8f47-9d6d9b3549fd
+      version: -1
+      name: Exact search
+      description: "Use exact-search to search Falcon MalQuery for a combination of\
+        \ hex patterns and strings to identify samples based upon file content\
+        \ at byte level granularity. You can filter results on criteria such as file\
+        \ type, file size, and first seen date. Using exact-search is a two-step process:\
+        \ \0Search MalQuery with exact-search, which returns a request ID. \0Provide\
+        \ that request ID to cs-malquery-get-request to retrieve results."
+      script: '|||cs-malquery-exact-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ascii:
+        simple: ${inputs.ascii}
+      filter_filetypes:
+        simple: ${inputs.filter_filetypes}
+      filter_meta:
+        simple: ${inputs.filter_meta}
+      hex:
+        simple: ${inputs.hex}
+      limit:
+        simple: ${inputs.limit}
+      max_date:
+        simple: ${inputs.max_date}
+      max_size:
+        simple: ${inputs.max_size}
+      min_date:
+        simple: ${inputs.min_date}
+      min_size:
+        simple: ${inputs.min_size}
+      wide:
+        simple: ${inputs.wide_string}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 9fadf24d-0975-40fa-8807-7f492b776133
+    type: playbook
+    task:
+      id: 9fadf24d-0975-40fa-8807-7f492b776133
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${Malquery.Request_ID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: request_id
+      PollingCommandName:
+        simple: cs-malquery-get-request
+      Timeout:
+        simple: "10"
+      dt:
+        simple: Malquery(val.Status == 'inprogress').Request_ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 0a845a62-4e09-4232-8da8-c961e915e7f4
+    type: title
+    task:
+      id: 0a845a62-4e09-4232-8da8-c961e915e7f4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 05ff1310-f8bd-420f-8d57-73a227b9dea2
+    type: regular
+    task:
+      id: 05ff1310-f8bd-420f-8d57-73a227b9dea2
+      version: -1
+      name: Get request data
+      description: Check the status and results of an asynchronous request, such as
+        hunt or exact-search.  Supports a single request id at this time.
+      script: '|||cs-malquery-get-request'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      request_id:
+        simple: ${Malquery.Request_ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: search_command
+  value: {}
+  required: true
+  description: '`hunt` or `exact-search`.'
+  playbookInputQuery:
+- key: yara_rule
+  value: {}
+  required: false
+  description: |
+    A YARA rule that defines your search.
+    Relevant for hunt command.
+  playbookInputQuery:
+- key: hex
+  value: {}
+  required: false
+  description: |-
+    Hex pattern to search. e.g. deadbeef0102 (for bytes de, ad, be,  ef, 01, 02).
+    Relevant for exact-searh command.
+  playbookInputQuery:
+- key: ascii
+  value: {}
+  required: false
+  description: |-
+    ASCII pattern to search. e.g. CrowdStrike.
+    Relevant for exact-searh command.
+  playbookInputQuery:
+- key: wide_string
+  value: {}
+  required: false
+  description: |-
+    Wide string pattern to search. e.g. CrowdStrike.
+    Relevant for exact-searh command.
+  playbookInputQuery:
+- key: limit
+  value: {}
+  required: false
+  description: Maximum number of results to be returned.
+  playbookInputQuery:
+- key: max_size
+  value: {}
+  required: false
+  description: Maximum file size. The value can be specified either in bytes or in
+    multiples of KB/MB/GB. e.g. 128000, 1.3 KB, 8mb.
+  playbookInputQuery:
+- key: min_size
+  value: {}
+  required: false
+  description: Minimum file size. e.g. 128000, 1.3 KB, 8mb.
+  playbookInputQuery:
+- key: max_date
+  value: {}
+  required: false
+  description: Limit results to files first seen before this date. The format is YYYY/MM/DD
+    - 2018/01/31.
+  playbookInputQuery:
+- key: min_date
+  value: {}
+  required: false
+  description: Limit results to files first seen after this date. The format is YYYY/MM/DD
+    - 2018/01/31.
+  playbookInputQuery:
+- key: filter_filetypes
+  value: {}
+  required: false
+  description: Limit results to files of certain types such as EMAIL, PCAP, PDF, PE32.
+    Full list can be found in the documentation. Comma-separated values.
+  playbookInputQuery:
+- key: filter_meta
+  value: {}
+  required: false
+  description: Specify a subset of metadata fields to return in the results. Possible
+    values - sha256, md5, type, size, first_seen, label, family. Comma-separated values.
+  playbookInputQuery:
+outputs:
+- contextPath: Malquery.File.family
+  description: File family.
+  type: string
+- contextPath: Malquery.File.filesize
+  description: File size.
+- contextPath: Malquery.File.filetype
+  description: File type.
+- contextPath: Malquery.File.first_seen
+  description: Date when the file was first seen.
+- contextPath: Malquery.File.label
+  description: File label.
+- contextPath: Malquery.File.md5
+  description: File MD5.
+- contextPath: Malquery.File.sha1
+  description: File SHA1.
+- contextPath: Malquery.File.sha256
+  description: File SHA256.
+tests:
+- No test
+fromversion: 5.0.0

@@ -37,8 +37,7 @@ tasks:
       id: 70ea876b-80a8-4cf9-85a7-82b52ed9282e
       version: -1
       name: googleapps-list-users
-      description: Retrieves a paginated list of either deleted users or all users
-        in a domain
+      description: Retrieves a paginated list of either deleted users or all users in a domain
       script: google|||googleapps-list-users
       type: regular
       iscommand: true
@@ -120,3 +119,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

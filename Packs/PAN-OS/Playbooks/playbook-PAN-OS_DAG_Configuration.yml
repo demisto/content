@@ -1,14 +1,8 @@
 id: PAN-OS DAG Configuration
 version: -1
 name: PAN-OS DAG Configuration
-fromversion: 4.0.0
-description: "This playbook utilizes the Dynamic Address Group (DAG) capability of
-  PAN-OS.\nDAG enables analysts to create a rule one time, where the group is the
-  source/destination, and adds IP addresses dynamically without the need to commit
-  the configuration every time.\n\nThe playbook checks if the given tag already exists.
-  If the tag exists, then the IP address is added to the tag.\n\nIf the tag does not
-  exist, a new address group is created with the given tag and a matching rule, and
-  the configuration is committed. \n"
+fromversion: 5.0.0
+description: "This playbook utilizes the Dynamic Address Group (DAG) capability of PAN-OS.\nDAG enables analysts to create a rule one time, where the group is the source/destination, and adds IP addresses dynamically without the need to commit the configuration every time.\n\nThe playbook checks if the given tag already exists. If the tag exists, then the IP address is added to the tag.\n\nIf the tag does not exist, a new address group is created with the given tag and a matching rule, and the configuration is committed. \n"
 starttaskid: "0"
 tasks:
   "0":
@@ -120,10 +114,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: bede9976-ff25-47e4-8cfa-ba1ae6fca7de
+    taskid: 6523233b-4db1-4691-8ce8-51803456138b
     type: condition
     task:
-      id: bede9976-ff25-47e4-8cfa-ba1ae6fca7de
+      id: 6523233b-4db1-4691-8ce8-51803456138b
       version: -1
       name: Check if tag exists in address groups
       description: Checks if the given tag exists in the address groups.
@@ -139,23 +133,16 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsString
+      - - operator: inList
           left:
+            value:
+              simple: inputs.tag_name
+            iscontext: true
+          right:
             value:
               complex:
                 root: Panorama
                 accessor: AddressGroups.Match
-                transformers:
-                - operator: Stringify
-                - operator: join
-                  args:
-                    separator:
-                      value:
-                        simple: ' '
-            iscontext: true
-          right:
-            value:
-              simple: inputs.tag_name
             iscontext: true
           ignorecase: true
     view: |-
@@ -239,7 +226,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "21"
     scriptarguments:
       addresses: {}
       description: {}
@@ -268,8 +255,7 @@ tasks:
       id: ec9cdad5-afdf-46c8-8255-c3e6091753b5
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. This will be
-        operational if auto-commit is "false".
+      description: Allows the analyst to manually commit the changes. This will be operational if auto-commit is "false".
       type: regular
       iscommand: false
       brand: ""
@@ -295,9 +281,7 @@ tasks:
       id: 26ba4584-16ba-48c3-8566-0a044ed15c60
       version: -1
       name: PAN-OS Commit Configuration
-      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
-        as Panorama, it also pushes the Policies to the specified Device Group in
-        the instance.
+      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as Panorama, it also pushes the Policies to the specified Device Group in the instance.
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -328,8 +312,7 @@ tasks:
       id: 9c646c84-8ba3-4f49-8028-17e466d6f10e
       version: -1
       name: Is auto-commit defined?
-      description: Checks if the values provided in arguments are equal. If either
-        of the arguments are missing, "no" is returned.
+      description: Checks if the values provided in arguments are equal. If either of the arguments are missing, "no" is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -357,12 +340,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "19":
-    id: "19"
-    taskid: e320a1b1-3c5e-421e-8b91-c6c379f3813f
+  "21":
+    id: "21"
+    taskid: 987cb459-479b-4011-85dc-0403306d3eb0
     type: playbook
     task:
-      id: e320a1b1-3c5e-421e-8b91-c6c379f3813f
+      id: 987cb459-479b-4011-85dc-0403306d3eb0
       version: -1
       name: PAN-OS - Create Or Edit Rule
       description: ""
@@ -398,12 +381,6 @@ tasks:
       rule-position:
         complex:
           root: inputs.rule-position
-          transformers:
-          - operator: d8d43bef-f48a-47ad-8502-b191d615158c
-            args:
-              defaultValue:
-                value:
-                  simple: top
       rule_name:
         complex:
           root: inputs.rule_name
@@ -416,7 +393,7 @@ tasks:
       {
         "position": {
           "x": 810,
-          "y": 880
+          "y": 890
         }
       }
     note: false
@@ -444,10 +421,9 @@ inputs:
 - key: tag_name
   value: {}
   required: true
-  description: The name of the tag to add to PAN-OS.
+  description: The name of the tag to add to PAN-OS. This can be a single tag.
 - key: ip_list
-  value:
-    simple: 7.7.7.6
+  value: {}
   required: true
   description: The list of the IP addresses to block.
 - key: address_group_name
@@ -457,8 +433,7 @@ inputs:
 - key: rule_name
   value: {}
   required: false
-  description: The name of the rule to update, or the name of the rule that will be
-    created.
+  description: The name of the rule to update, or the name of the rule that will be created.
 - key: auto_commit
   value: {}
   required: false
@@ -481,8 +456,7 @@ inputs:
 - key: relative-rule-name
   value: {}
   required: false
-  description: If the rule-position that is chosen is before or after, specify the
-    rule name to which it is related.
+  description: If the rule-position that is chosen is before or after, specify the rule name to which it is related.
 - key: inbound-or-outbound-rule
   value: {}
   required: false
@@ -498,12 +472,12 @@ inputs:
 - key: pre-post-rulebase
   value: {}
   required: true
-  description: Determines whether the rule is a pre-rulebase or post-rulebase rule,
-    according to the rule structure. Exists only in panorama!
+  description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama!
 - key: device-group
   value: {}
   required: false
   description: the device group for which to return results. for panorama only!
 outputs: []
 tests:
-  - PAN-OS DAG Configuration Test
+- PAN-OS DAG Configuration Test
+sourceplaybookid: PAN-OS DAG Configuration

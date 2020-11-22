@@ -23,8 +23,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama
-  configurations and compares them to the best practices.
+description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.
 display: Palo Alto Networks BPA
 name: BPA
 script:
@@ -42,13 +41,13 @@ script:
     execution: false
     name: pan-os-bpa-submit-job
     arguments:
-      - name: generate_zip_bundle
-        auto: PREDEFINED
-        predefined:
-          - "false"
-          - "true"
-        description: Whether to download the Panorama report. Can be "true" or "false". Default is "false".
-        defaultValue: "false"
+    - name: generate_zip_bundle
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Whether to download the Panorama report. Can be "true" or "false". Default is "false".
+      defaultValue: "false"
     outputs:
     - contextPath: PAN-OS-BPA.SubmittedJob.JobID
       description: Submitted Job ID, used to query results when job is done.
@@ -60,6 +59,14 @@ script:
       name: task_id
       required: true
       secret: false
+    - default: false
+      name: exclude_passed_checks
+      description: Whether to exclude passed checks. Can be "true" or "false". Default is "false".
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
     deprecated: false
     description: Returns results of BPA job.
     execution: false
@@ -92,7 +99,7 @@ script:
     - contextPath: InfoFile.Extension
       description: File extension
       type: string
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false
   longRunning: false
@@ -103,4 +110,4 @@ script:
   type: python
 tests:
 - Test-BPA
-fromversion: 4.5.0
+fromversion: 5.0.0

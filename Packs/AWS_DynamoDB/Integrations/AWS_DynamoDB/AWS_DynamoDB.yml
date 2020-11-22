@@ -122,7 +122,9 @@ script:
         \ Developer Guide*.  \n "
       name: request_items
     - auto: PREDEFINED
-      description: ''
+      description: 'A value of TOTAL causes consumed capacity information to be returned,
+        and a value of NONE prevents that information from being returned. No other
+        value is valid.'
       name: return_consumed_capacity
       predefined:
       - INDEXES
@@ -247,7 +249,9 @@ script:
         \  \n "
       name: request_items
     - auto: PREDEFINED
-      description: ''
+      description: 'A value of TOTAL causes consumed capacity information to be returned,
+        and a value of NONE prevents that information from being returned. No other
+        value is valid.'
       name: return_consumed_capacity
       predefined:
       - INDEXES
@@ -1269,7 +1273,9 @@ script:
       - ALL_NEW
       - UPDATED_NEW
     - auto: PREDEFINED
-      description: ''
+      description: 'A value of TOTAL causes consumed capacity information to be returned,
+        and a value of NONE prevents that information from being returned. No other
+        value is valid.'
       name: return_consumed_capacity
       predefined:
       - INDEXES
@@ -2799,7 +2805,7 @@ script:
     - contextPath: AWS-DynamoDB.TimeToLiveDescription.AttributeName
       description: ' The name of the TTL attribute for items in the table.'
     - contextPath: AWS-DynamoDB.TimeToLiveDescription
-      description: ''
+      description: 'Time to Live settings on the table when the backup was created.'
   - arguments:
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -2833,7 +2839,9 @@ script:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: ''
+      description: 'A value of TOTAL causes consumed capacity information to be returned,
+        and a value of NONE prevents that information from being returned. No other
+        value is valid.'
       name: return_consumed_capacity
       predefined:
       - INDEXES
@@ -3139,7 +3147,9 @@ script:
       - ALL_NEW
       - UPDATED_NEW
     - auto: PREDEFINED
-      description: ''
+      description: 'A value of TOTAL causes consumed capacity information to be returned,
+        and a value of NONE prevents that information from being returned. No other
+        value is valid.'
       name: return_consumed_capacity
       predefined:
       - INDEXES
@@ -3394,7 +3404,9 @@ script:
         set data types are allowed.
       name: exclusive_start_key
     - auto: PREDEFINED
-      description: ''
+      description: 'A value of TOTAL causes consumed capacity information to be returned,
+        and a value of NONE prevents that information from being returned. No other
+        value is valid.'
       name: return_consumed_capacity
       predefined:
       - INDEXES
@@ -4542,7 +4554,9 @@ script:
         value of LastEvaluatedKey.
       name: exclusive_start_key
     - auto: PREDEFINED
-      description: ''
+      description: 'A value of TOTAL causes consumed capacity information to be returned,
+        and a value of NONE prevents that information from being returned. No other
+        value is valid.'
       name: return_consumed_capacity
       predefined:
       - INDEXES
@@ -4905,7 +4919,9 @@ script:
       - ALL_OLD
       - NONE
     - auto: PREDEFINED
-      description: ''
+      description: 'A value of TOTAL causes consumed capacity information to be returned,
+        and a value of NONE prevents that information from being returned. No other
+        value is valid.'
       name: return_consumed_capacity
       predefined:
       - INDEXES
@@ -4942,36 +4958,36 @@ script:
       \ the same item. For example, you cannot both ConditionCheck and Update the\
       \ same item. The aggregate size of the items in the transaction cannot exceed\
       \ 4 MB. The actions are completed atomically so that either all of them succeed,\
-      \ or all of them fail. They are defined by the following objects:  *   Put \u2014\
+      \ or all of them fail. They are defined by the following objects:  *   Put —\
       \ Initiates a PutItem operation to write a new item. This structure specifies\
       \ the primary key of the item to be written, the name of the table to write\
       \ it in, an optional condition expression that must be satisfied for the write\
       \ to succeed, a list of the item's attributes, and a field indicating whether\
       \ to retrieve the item's attributes if the condition is not met. \n *   Update\
-      \ \u2014 Initiates an UpdateItem operation to update an existing item. This\
-      \ structure specifies the primary key of the item to be updated, the name of\
-      \ the table where it resides, an optional condition expression that must be\
-      \ satisfied for the update to succeed, an expression that defines one or more\
-      \ attributes to be updated, and a field indicating whether to retrieve the item's\
-      \ attributes if the condition is not met. \n *   Delete \u2014 Initiates a DeleteItem\
-      \ operation to delete an existing item. This structure specifies the primary\
-      \ key of the item to be deleted, the name of the table where it resides, an\
-      \ optional condition expression that must be satisfied for the deletion to succeed,\
-      \ and a field indicating whether to retrieve the item's attributes if the condition\
-      \ is not met. \n *   ConditionCheck \u2014 Applies a condition to an item that\
-      \ is not being modified by the transaction. This structure specifies the primary\
-      \ key of the item to be checked, the name of the table where it resides, a condition\
-      \ expression that must be satisfied for the transaction to succeed, and a field\
+      \ — Initiates an UpdateItem operation to update an existing item. This structure\
+      \ specifies the primary key of the item to be updated, the name of the table\
+      \ where it resides, an optional condition expression that must be satisfied\
+      \ for the update to succeed, an expression that defines one or more attributes\
+      \ to be updated, and a field indicating whether to retrieve the item's attributes\
+      \ if the condition is not met. \n *   Delete — Initiates a DeleteItem operation\
+      \ to delete an existing item. This structure specifies the primary key of the\
+      \ item to be deleted, the name of the table where it resides, an optional condition\
+      \ expression that must be satisfied for the deletion to succeed, and a field\
       \ indicating whether to retrieve the item's attributes if the condition is not\
-      \ met. \n  DynamoDB rejects the entire TransactWriteItems request if any of\
-      \ the following is true:  *  A condition in one of the condition expressions\
-      \ is not met. \n *  An ongoing operation is in the process of updating the same\
-      \ item. \n *  There is insufficient provisioned capacity for the transaction\
-      \ to be completed. \n *  An item size becomes too large (bigger than 400 KB),\
-      \ a local secondary index (LSI) becomes too large, or a similar validation error\
-      \ occurs because of changes made by the transaction. \n *  The aggregate size\
-      \ of the items in the transaction exceeds 4 MB. \n *  There is a user error,\
-      \ such as an invalid data format. \n "
+      \ met. \n *   ConditionCheck — Applies a condition to an item that is not being\
+      \ modified by the transaction. This structure specifies the primary key of the\
+      \ item to be checked, the name of the table where it resides, a condition expression\
+      \ that must be satisfied for the transaction to succeed, and a field indicating\
+      \ whether to retrieve the item's attributes if the condition is not met. \n\
+      \  DynamoDB rejects the entire TransactWriteItems request if any of the following\
+      \ is true:  *  A condition in one of the condition expressions is not met. \n\
+      \ *  An ongoing operation is in the process of updating the same item. \n *\
+      \  There is insufficient provisioned capacity for the transaction to be completed.\
+      \ \n *  An item size becomes too large (bigger than 400 KB), a local secondary\
+      \ index (LSI) becomes too large, or a similar validation error occurs because\
+      \ of changes made by the transaction. \n *  The aggregate size of the items\
+      \ in the transaction exceeds 4 MB. \n *  There is a user error, such as an invalid\
+      \ data format. \n "
     name: aws-dynamodb-transact-write-items
     outputs:
     - contextPath: AWS-DynamoDB.TableName
@@ -5492,7 +5508,9 @@ script:
       - ALL_NEW
       - UPDATED_NEW
     - auto: PREDEFINED
-      description: ''
+      description: 'A value of TOTAL causes consumed capacity information to be returned,
+        and a value of NONE prevents that information from being returned. No other
+        value is valid.'
       name: return_consumed_capacity
       predefined:
       - INDEXES
@@ -6209,10 +6227,11 @@ script:
         for items in the table.
     - contextPath: AWS-DynamoDB.TimeToLiveSpecification
       description: Represents the output of an UpdateTimeToLive operation.
-  dockerimage: demisto/boto3py3:1.0.0.1030
+  dockerimage: demisto/boto3py3:1.0.0.13191
   runonce: false
   script: ''
   subtype: python3
   type: python
 tests:
 - AWS_DynamoDB-Test
+fromversion: 5.0.0

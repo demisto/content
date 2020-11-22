@@ -34,7 +34,8 @@
         "IP",
         "IPv6",
         "CIDR",
-        "IPv6CIDR"
+        "IPv6CIDR",
+        "STIX Threat Actor"
     ],
     "systemAssociatedTypes": null,
     "associatedToAll": false,

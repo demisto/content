@@ -53,4 +53,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Process_Email_Generic](https://raw.githubusercontent.com/demisto/content/db1f80d334d03013923c6a9188b1a78fe87f55d4/Packs/Phishing/doc_files/Process_Email_-_Generic.png)
+![Process_Email_Generic](https://raw.githubusercontent.com/demisto/content/82895af983e287954ef4565db548f9ae91d0487a/Packs/Phishing/doc_files/Process_Email_-_Generic.png)

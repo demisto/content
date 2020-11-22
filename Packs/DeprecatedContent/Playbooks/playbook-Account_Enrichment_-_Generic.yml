@@ -1,9 +1,10 @@
 id: account_enrichment_-_generic
 version: -1
 name: Account Enrichment - Generic
-fromversion: "3.5.0"
-description: Enrich Accounts using one or more integrations
+fromversion: "5.0.0"
+description: Deprecated. Use "Account Enrichment - Generic v2.1" playbook instead. Enrich Accounts using one or more integrations
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -268,9 +269,7 @@ tasks:
       id: 35f69528-ad0b-4672-8864-c4e62cb11c4f
       version: -1
       name: Get Account info from Active Directory
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
       script: '|||ad-get-user'
       type: regular
       iscommand: true
@@ -345,4 +344,4 @@ outputs:
   description: The Account's manager
   type: string
 tests:
-  - no test
+- no test

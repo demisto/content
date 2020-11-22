@@ -22,7 +22,8 @@ configuration:
   required: true
 - display: Ignore events below severity
   name: severity
-  defaultvalue: "3"
+  defaultvalue: "4"
+  additionalinfo: "AlphaSOC alert severity: (1) info, (2) low, (3) medium, (4) high, (5) critical"
   type: 0
   required: true
 - display: Include policy violations
@@ -49,17 +50,24 @@ configuration:
   type: 13
   required: false
 script:
-  script: |
+  script: >
     var API_PATH_ALERTS = '/v1/alerts';
 
+
     var SERVER = params.server.replace(/[\/]+$/, '');
+
     var API_KEY = params.APIKey;
 
+
     var INSECURE = params.insecure;
+
     var PROXY = params.proxy;
 
+
     var INCLUDE_POLICY = params.policy;
+
     var SEVERITY = params.severity;
+
 
     function sendRequest(requestUrl) {
         logInfo('Sending HTTP request to: ' + requestUrl);
@@ -89,6 +97,7 @@ script:
         }
     };
 
+
     function validateRequestResponse(requestUrl, response) {
         if (!response) {
             return 'Error: Unexpected HTTP response\n\nRequest URL: ' + requestUrl;
@@ -117,14 +126,17 @@ script:
         return null;
     }
 
+
     function createAlertsURL(follow) {
         return SERVER + API_PATH_ALERTS + '?follow=' + follow + '&threats=all';
     }
+
 
     function parseFollow() {
         var lastRun = getLastRun();
         return lastRun && lastRun.follow ? lastRun.follow : '0';
     }
+
 
     function saveFollow(follow) {
         if (follow) {
@@ -132,10 +144,12 @@ script:
         }
     }
 
+
     function testGetAlerts() {
         var response = sendRequest(createAlertsURL('0'));
         return response && response.alerts ? true : false;
     }
+
 
     function getAlerts(follow) {
         var response = sendRequest(createAlertsURL(follow));
@@ -146,6 +160,7 @@ script:
             threats: response.threats
         }
     }
+
 
     function appendIncidentsFromAlert(incidents, alert, threats) {
         if (!threats || !alert || !alert.threats) {
@@ -177,6 +192,7 @@ script:
         }
     }
 
+
     function getOccurredTs(alert) {
         try {
             return alert.event.ts;
@@ -184,6 +200,7 @@ script:
             return null;
         }
     }
+
 
     function getLabels(alert) {
         var labels = [];
@@ -220,9 +237,11 @@ script:
         return labels;
     }
 
+
     function createLabelEntry(key, value) {
         return { 'type': key, 'value': String(value) };
     }
+
 
     function inScope(severity, policy) {
         var severityThereshold = getSeverityThereshold();
@@ -237,6 +256,7 @@ script:
         return true;
     }
 
+
     function convertSeverity(severity) {
         var demistoSeverity = 0;
 
@@ -248,6 +268,7 @@ script:
 
         return demistoSeverity < 0 || demistoSeverity > 4 ? 0 : demistoSeverity;
     }
+
 
     function getSeverityThereshold() {
         try {
@@ -262,6 +283,7 @@ script:
 
         return severity < 0 ? 0 : severity;
     }
+
 
     switch (command) {
         case 'test-module':
@@ -289,4 +311,5 @@ script:
   isfetch: true
   runonce: false
 tests:
-  - No tests
+- No tests
+fromversion: 5.0.0
