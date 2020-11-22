@@ -115,53 +115,52 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
     :param feedTags: the indicator tags
     """
     indicators = []
-    feeds_results = []
+    feeds_results = {}
     for feed_name, feed in client.feed_name_to_config.items():
         build_iterator_paging = feed.get('build_iterator_paging')
         if build_iterator_paging:
-            feeds_results.append({feed_name: build_iterator_paging(client, feed, **kwargs)})
+            feeds_results[feed_name] = build_iterator_paging(client, feed, **kwargs)
         else:
-            feeds_results.append({feed_name: client.build_iterator(feed, **kwargs)})
+            feeds_results[feed_name] = client.build_iterator(feed, **kwargs)
 
-    for result in feeds_results:
-        for service_name, items in result.items():
-            feed_config = client.feed_name_to_config.get(service_name, {})
-            indicator_field = feed_config.get('indicator') if feed_config.get('indicator') else 'indicator'
-            indicator_type = feed_config.get('indicator_type', indicator_type)
-            for item in items:
-                mapping = feed_config.get('mapping')
-                if isinstance(item, str):
-                    item = {indicator_field: item}
-                indicator_value = item.get(indicator_field)
+    for service_name, items in feeds_results.items():
+        feed_config = client.feed_name_to_config.get(service_name, {})
+        indicator_field = feed_config.get('indicator') if feed_config.get('indicator') else 'indicator'
+        indicator_type = feed_config.get('indicator_type', indicator_type)
+        for item in items:
+            mapping = feed_config.get('mapping')
+            if isinstance(item, str):
+                item = {indicator_field: item}
+            indicator_value = item.get(indicator_field)
 
-                current_indicator_type = determine_indicator_type(indicator_type, auto_detect, indicator_value)
-                if not current_indicator_type:
-                    continue
+            current_indicator_type = determine_indicator_type(indicator_type, auto_detect, indicator_value)
+            if not current_indicator_type:
+                continue
 
-                indicator = {
-                    'value': indicator_value,
-                    'type': current_indicator_type,
-                    'fields': {
-                        'tags': feedTags,
-                    }
+            indicator = {
+                'value': indicator_value,
+                'type': current_indicator_type,
+                'fields': {
+                    'tags': feedTags,
                 }
+            }
 
-                if client.tlp_color:
-                    indicator['fields']['trafficlightprotocol'] = client.tlp_color
+            if client.tlp_color:
+                indicator['fields']['trafficlightprotocol'] = client.tlp_color
 
-                attributes = {'source_name': service_name, 'value': indicator_value,
-                              'type': current_indicator_type}
+            attributes = {'source_name': service_name, 'value': indicator_value,
+                          'type': current_indicator_type}
 
-                attributes.update(extract_all_fields_from_indicator(item, indicator_field))
+            attributes.update(extract_all_fields_from_indicator(item, indicator_field))
 
-                if mapping:
-                    for map_key in mapping:
-                        if map_key in attributes:
-                            indicator['fields'][mapping[map_key]] = attributes.get(map_key)  # type: ignore
+            if mapping:
+                for map_key in mapping:
+                    if map_key in attributes:
+                        indicator['fields'][mapping[map_key]] = attributes.get(map_key)  # type: ignore
 
-                indicator['rawJSON'] = item
+            indicator['rawJSON'] = item
 
-                indicators.append(indicator)
+            indicators.append(indicator)
 
     return indicators
 
@@ -243,7 +242,7 @@ def feed_main(params, feed_name, prefix):
             auto_detect = params.get('auto_detect_type')
             indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect)[:limit]
             hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
-            return_results(hr, {}, indicators)
+            return_results(CommandResults(readable_output=hr, raw_response=indicators))
 
     except Exception as err:
         err_msg = f'Error in {feed_name} integration [{err}]'
