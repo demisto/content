@@ -118,8 +118,7 @@ tasks:
       id: 5dd1b383-635b-4e6f-8834-475e898e27d4
       version: -1
       name: Download file
-      description: Download a file from Cb server in a given session. Use cb-get-file-from-endpoint
-        instead.
+      description: Download a file from Cb server in a given session.
       script: '|||cb-file-get'
       type: regular
       iscommand: true
@@ -183,7 +182,7 @@ tasks:
       id: 4767d80a-3861-4fd5-8d1e-a10db951c394
       version: -1
       name: Close session
-      description: Close the given session
+      description: Close the given session.
       script: '|||cb-session-close'
       type: regular
       iscommand: true
@@ -260,7 +259,7 @@ tasks:
       id: 85ff63bb-eeb6-410e-8e30-0dafed3c1231
       version: -1
       name: Get command info
-      description: Display information on command, Used for getting file ID.
+      description: Display information on command. Used for getting the file ID.
       script: '|||cb-command-info'
       type: regular
       iscommand: true
@@ -311,7 +310,7 @@ inputs:
 - key: Path
   value: {}
   required: true
-  description: File Path to download.
+  description: File path to download.
   playbookInputQuery:
 outputs:
 - contextPath: File.Size
