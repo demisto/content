@@ -1,6 +1,6 @@
-id: Generic retrieve file - Test
+id: Retrieve File from Endpoint - Generic V2 Test
 version: -1
-name: Generic retrieve file - Test
+name: Retrieve File from Endpoint - Generic V2 Test
 description: This is a test playbook for Retrieve File from Endpoint - Generic V2.
 starttaskid: "0"
 tasks:

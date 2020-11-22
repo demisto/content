@@ -225,7 +225,7 @@ outputs:
   description: File MD5.
 - contextPath: CbLiveResponse.File.Extension
   description: File extension.
-tests:
-- Generic retrieve file - Test
 fromversion: 5.0.0
+tests:
+- Retrieve File from Endpoint - Generic V2 Test
 
