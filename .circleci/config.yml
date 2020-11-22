@@ -1138,6 +1138,7 @@ jobs:
           command: |
             echo "export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')" >> $BASH_ENV
             echo "export DEMISTO_BASE_URL=\"https://$(cat env_results.json | jq -r '.[0].InstanceDNS')\"" >> $BASH_ENV
+            cat env_results.json
             echo "Server URL: $DEMISTO_BASE_URL"
       - run:
           name: Install SDK Master
@@ -1167,7 +1168,6 @@ jobs:
           name: Run lint
           command: demisto-sdk lint -i Packs/HelloWorld/
       - *upload_entities_to_cortex_xsoar
-      - *destroy_instances
       - *store_artifacts
       - run:
           name: Slack Notifier
