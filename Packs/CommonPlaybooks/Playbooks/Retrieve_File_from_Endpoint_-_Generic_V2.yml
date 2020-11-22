@@ -245,6 +245,6 @@ tests:
 - test-domain-indicator
 - URL Enrichment - Generic v2 - Test
 - Wait Until Datetime - Test
-fromversion: 5.0.0
-tests:
 - Generic retrieve file - Test
+fromversion: 5.0.0
+
