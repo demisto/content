@@ -963,11 +963,10 @@ jobs:
             - run:
                 name: Validate Premium Packs
                 shell: /bin/bash
-                when: always
+                when:
+                  - condition: << pipeline.parameters.nightly >>
                 command: |
-                    if [ -n $NIGHTLY ]; then
                     ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
-                    fi
             - run:
                 name: Run Tests - Demisto Master
                 shell: /bin/bash
