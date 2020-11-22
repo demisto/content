@@ -95,6 +95,7 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
     if status_code == 200:
         logging.info(f'Got response data {response_data}')
         response = ast.literal_eval(response_data)
+        logging.info(f'Response dict is {response}')
         logging.info('Got premium packs from server.')
         return response["packs"]
 
