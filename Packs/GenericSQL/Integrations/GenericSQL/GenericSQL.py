@@ -243,7 +243,7 @@ def main():
         user = params.get("credentials").get("identifier")
         password = params.get("credentials").get("password")
         host = params.get('host')
-        database = params.get('dbname')
+        database = params.get('dbname', '')
         ssl_connect = params.get('ssl_connect')
         connect_parameters = params.get('connect_parameters')
         use_pool = params.get('use_pool', False)
