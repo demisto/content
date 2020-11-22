@@ -32,6 +32,7 @@ BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
 # ====== PRODUCTION CONFIGURATION ======
 GCS_MARKET_BUCKET="marketplace-dist"
 SOURCE_PATH="content/packs"
+VALIDATE_PREMIUM='true'
 
 echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$PACKS_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
@@ -53,7 +54,7 @@ if [ ! -n "${NIGHTLY}" ] && [ ! -n "${BUCKET_UPLOAD}" ]; then
     fi
   fi
 else
-  if [ -n "${NIGHTLY}" ]; then
+  if [ -n "${NIGHTLY}" ] || [ -n "${VALIDATE_PREMIUM}" ]; then
     echo "Updating all content packs for nightly build..."
     # In content nightly we include test-pbs in the zipped packs, we override all packs and we test all packs in the repo
     REMOVE_PBS=false

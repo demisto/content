@@ -63,7 +63,6 @@ echo "Finished copying successfully."
 MASTER_COMMIT_HASH=$(git ls-remote git://github.com/demisto/content refs/heads/master | cut -f 1)
 echo "Master commit hash was $MASTER_COMMIT_HASH"
 
-ls -la
 if [ ! -f $LOCAL_INDEX_PATH ]; then
   echo "Could not find file $LOCAL_INDEX_PATH"
   exit 1

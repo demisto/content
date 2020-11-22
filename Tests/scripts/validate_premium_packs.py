@@ -77,8 +77,8 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
                 [{
                     'field': 'updated',
                     'asc': False
-                }]  # ,
-            # 'general': ["generalFieldPaid"]
+                }],
+            'general': ["generalFieldPaid"]
         }
 
     logging.info(f'Getting premium packs from server {client.api_client.configuration.host}:\n')
