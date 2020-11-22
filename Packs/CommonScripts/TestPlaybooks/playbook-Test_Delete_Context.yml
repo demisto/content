@@ -1,36 +1,37 @@
 id: test_delete_context
 version: -1
 name: Test Delete Context
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 53cc22db-b75a-49ec-8984-4837b9fb833e
+    taskid: 779d1027-95c7-4dba-8ada-247f7bd3cd2a
     type: start
     task:
-      id: 53cc22db-b75a-49ec-8984-4837b9fb833e
+      id: 779d1027-95c7-4dba-8ada-247f7bd3cd2a
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "34"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 50
+          "y": -320
         }
       }
     note: false
   "1":
     id: "1"
-    taskid: 916ec910-b609-4fea-8b55-8420c23bb774
+    taskid: 6f2d47a8-7419-407c-8a17-99e2620cae1a
     type: regular
     task:
-      id: 916ec910-b609-4fea-8b55-8420c23bb774
+      id: 6f2d47a8-7419-407c-8a17-99e2620cae1a
       version: -1
       name: Set A
       scriptName: Set
@@ -57,10 +58,10 @@ tasks:
     note: false
   "2":
     id: "2"
-    taskid: 78b2c43b-0be5-4fe5-8214-cf356bf5e3aa
+    taskid: 98554087-e691-45d1-8048-4dd872809670
     type: regular
     task:
-      id: 78b2c43b-0be5-4fe5-8214-cf356bf5e3aa
+      id: 98554087-e691-45d1-8048-4dd872809670
       version: -1
       name: Delete A
       scriptName: DeleteContext
@@ -88,10 +89,10 @@ tasks:
     note: false
   "3":
     id: "3"
-    taskid: 18df45e5-31bd-497f-8bd6-63607c7eb666
+    taskid: 4f9f245d-2e7e-4eb8-8527-e3876c11c1b9
     type: condition
     task:
-      id: 18df45e5-31bd-497f-8bd6-63607c7eb666
+      id: 4f9f245d-2e7e-4eb8-8527-e3876c11c1b9
       version: -1
       name: Ensure A doesn't exists
       type: condition
@@ -121,13 +122,13 @@ tasks:
     note: false
   "4":
     id: "4"
-    taskid: d55e99af-190e-4530-8372-df25cf3c7a9c
+    taskid: a128a722-ca99-4ee8-8358-186de814979b
     type: regular
     task:
-      id: d55e99af-190e-4530-8372-df25cf3c7a9c
+      id: a128a722-ca99-4ee8-8358-186de814979b
       version: -1
       name: Fail
-      scriptName: RaiseError
+      script: RaiseError
       type: regular
       iscommand: false
       brand: ""
@@ -150,10 +151,10 @@ tasks:
     note: false
   "5":
     id: "5"
-    taskid: 54307739-fc73-45d0-8252-54ac8c178770
+    taskid: baffa812-7d51-4d66-80c3-7dafe6988817
     type: regular
     task:
-      id: 54307739-fc73-45d0-8252-54ac8c178770
+      id: baffa812-7d51-4d66-80c3-7dafe6988817
       version: -1
       name: Set B
       scriptName: Set
@@ -180,10 +181,10 @@ tasks:
     note: false
   "6":
     id: "6"
-    taskid: f0f57ad4-f116-4b83-8b25-c04317e0b0df
+    taskid: b411a684-fcec-4f66-849b-8a018de0bdfc
     type: regular
     task:
-      id: f0f57ad4-f116-4b83-8b25-c04317e0b0df
+      id: b411a684-fcec-4f66-849b-8a018de0bdfc
       version: -1
       name: Set C
       scriptName: Set
@@ -210,10 +211,10 @@ tasks:
     note: false
   "7":
     id: "7"
-    taskid: fe4f12cc-e859-4e14-8563-c8e655df01f2
+    taskid: b034f05d-6f33-4299-8d75-a751b0d42610
     type: regular
     task:
-      id: fe4f12cc-e859-4e14-8563-c8e655df01f2
+      id: b034f05d-6f33-4299-8d75-a751b0d42610
       version: -1
       name: Delete All Context
       scriptName: DeleteContext
@@ -241,10 +242,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: 34921238-0bac-4ff6-8d96-b597b513efc2
+    taskid: c94e6ce1-41e0-4467-8b61-25394acf6354
     type: condition
     task:
-      id: 34921238-0bac-4ff6-8d96-b597b513efc2
+      id: c94e6ce1-41e0-4467-8b61-25394acf6354
       version: -1
       name: Ensure context is empty
       type: condition
@@ -274,13 +275,13 @@ tasks:
     note: false
   "10":
     id: "10"
-    taskid: 5da8a333-a199-4b3f-8b5b-a38becd5d2d2
+    taskid: 11eec321-e539-4583-8ae3-32e5d4d0cf0a
     type: regular
     task:
-      id: 5da8a333-a199-4b3f-8b5b-a38becd5d2d2
+      id: 11eec321-e539-4583-8ae3-32e5d4d0cf0a
       version: -1
       name: Fail
-      scriptName: RaiseError
+      script: RaiseError
       type: regular
       iscommand: false
       brand: ""
@@ -303,10 +304,10 @@ tasks:
     note: false
   "11":
     id: "11"
-    taskid: 3be2bb2d-216f-4d4f-8e05-9eeadf558690
+    taskid: e24d466b-3771-434b-8dc5-66d4d37bbea8
     type: regular
     task:
-      id: 3be2bb2d-216f-4d4f-8e05-9eeadf558690
+      id: e24d466b-3771-434b-8dc5-66d4d37bbea8
       version: -1
       name: Set B
       scriptName: Set
@@ -333,10 +334,10 @@ tasks:
     note: false
   "12":
     id: "12"
-    taskid: 0ce1c1cb-acee-46fd-8fc0-5e6b8c1d7b2e
+    taskid: 0897cfd8-de88-4f52-874b-7e7e6d7f8da3
     type: regular
     task:
-      id: 0ce1c1cb-acee-46fd-8fc0-5e6b8c1d7b2e
+      id: 0897cfd8-de88-4f52-874b-7e7e6d7f8da3
       version: -1
       name: Set C
       scriptName: Set
@@ -363,10 +364,10 @@ tasks:
     note: false
   "13":
     id: "13"
-    taskid: 0284c785-4b77-4966-8000-c10c7c6ffd72
+    taskid: 32135f0b-1417-4e8c-8ad2-71075512ecd4
     type: regular
     task:
-      id: 0284c785-4b77-4966-8000-c10c7c6ffd72
+      id: 32135f0b-1417-4e8c-8ad2-71075512ecd4
       version: -1
       name: Delete All Context expect B
       scriptName: DeleteContext
@@ -395,10 +396,10 @@ tasks:
     note: false
   "14":
     id: "14"
-    taskid: 7d28c7b3-7525-4c7b-8c6c-826e2f6c22ba
+    taskid: 6251b25c-f81d-4137-8dfb-4054ea3e27c4
     type: condition
     task:
-      id: 7d28c7b3-7525-4c7b-8c6c-826e2f6c22ba
+      id: 6251b25c-f81d-4137-8dfb-4054ea3e27c4
       version: -1
       name: Ensure context is empty expect B
       type: condition
@@ -433,13 +434,13 @@ tasks:
     note: false
   "15":
     id: "15"
-    taskid: dc8e6b46-92eb-4f70-8262-9a36d6b0d521
+    taskid: 4f754e07-c599-41d7-89f9-2068b575860d
     type: regular
     task:
-      id: dc8e6b46-92eb-4f70-8262-9a36d6b0d521
+      id: 4f754e07-c599-41d7-89f9-2068b575860d
       version: -1
       name: Fail
-      scriptName: RaiseError
+      script: RaiseError
       type: regular
       iscommand: false
       brand: ""
@@ -461,10 +462,10 @@ tasks:
     note: false
   "16":
     id: "16"
-    taskid: 32e20439-4b74-42f3-841f-ed68a17112a5
+    taskid: 34c6e6c3-26fd-465d-8395-2b146f41726b
     type: regular
     task:
-      id: 32e20439-4b74-42f3-841f-ed68a17112a5
+      id: 34c6e6c3-26fd-465d-8395-2b146f41726b
       version: -1
       name: Set A 1
       scriptName: Set
@@ -491,10 +492,10 @@ tasks:
     note: false
   "17":
     id: "17"
-    taskid: fcb117d7-7e19-4aa0-8295-2ac05509d5fc
+    taskid: a907f623-897f-4ef0-8eb0-2bd5bcba5707
     type: regular
     task:
-      id: fcb117d7-7e19-4aa0-8295-2ac05509d5fc
+      id: a907f623-897f-4ef0-8eb0-2bd5bcba5707
       version: -1
       name: Set A 2
       scriptName: Set
@@ -522,10 +523,10 @@ tasks:
     note: false
   "18":
     id: "18"
-    taskid: 87216eb2-2074-45e1-8d8f-d73021235db1
+    taskid: 710c5c2e-8ba7-4fee-847f-03dca084296e
     type: regular
     task:
-      id: 87216eb2-2074-45e1-8d8f-d73021235db1
+      id: 710c5c2e-8ba7-4fee-847f-03dca084296e
       version: -1
       name: Delete A at index 1
       scriptName: DeleteContext
@@ -555,10 +556,10 @@ tasks:
     note: false
   "19":
     id: "19"
-    taskid: 113c22af-7834-4d11-814d-cbc09e37996b
+    taskid: 49d9078b-1791-4395-8c5a-9f620f646f15
     type: condition
     task:
-      id: 113c22af-7834-4d11-814d-cbc09e37996b
+      id: 49d9078b-1791-4395-8c5a-9f620f646f15
       version: -1
       name: Ensure A has been updated
       type: condition
@@ -599,13 +600,13 @@ tasks:
     note: false
   "20":
     id: "20"
-    taskid: 3c3af34f-9804-4e08-8638-7c8a2ac9f736
+    taskid: 054596bd-6b53-465d-8bf5-1f6dc3801d58
     type: regular
     task:
-      id: 3c3af34f-9804-4e08-8638-7c8a2ac9f736
+      id: 054596bd-6b53-465d-8bf5-1f6dc3801d58
       version: -1
       name: Fail
-      scriptName: RaiseError
+      script: RaiseError
       type: regular
       iscommand: false
       brand: ""
@@ -627,10 +628,10 @@ tasks:
     note: false
   "21":
     id: "21"
-    taskid: 1fcf3a3e-8400-4ba7-8869-9523e68e1724
+    taskid: c946841e-3d4d-4d3e-8385-a0cda4611322
     type: regular
     task:
-      id: 1fcf3a3e-8400-4ba7-8869-9523e68e1724
+      id: c946841e-3d4d-4d3e-8385-a0cda4611322
       version: -1
       name: Delete A at index 1 - should give error
       scriptName: DeleteContext
@@ -660,10 +661,10 @@ tasks:
     note: false
   "22":
     id: "22"
-    taskid: dc585d40-58ad-4049-8d7a-c2260997098a
+    taskid: 58b7be10-536e-4eb8-8fc8-97418e48fdfb
     type: condition
     task:
-      id: dc585d40-58ad-4049-8d7a-c2260997098a
+      id: 58b7be10-536e-4eb8-8fc8-97418e48fdfb
       version: -1
       name: Ensure error occurred
       scriptName: isError
@@ -689,13 +690,13 @@ tasks:
     note: false
   "24":
     id: "24"
-    taskid: ab4ebfbb-9ded-4dc0-8157-913d33c960bc
+    taskid: 004fb87d-646e-4a5c-8031-ad0a8c6da35f
     type: regular
     task:
-      id: ab4ebfbb-9ded-4dc0-8157-913d33c960bc
+      id: 004fb87d-646e-4a5c-8031-ad0a8c6da35f
       version: -1
       name: Fail
-      scriptName: RaiseError
+      script: RaiseError
       type: regular
       iscommand: false
       brand: ""
@@ -717,10 +718,10 @@ tasks:
     note: false
   "25":
     id: "25"
-    taskid: ccff542e-9b2c-47b9-8456-d2d70cc1c5e6
+    taskid: c222d937-8592-4d1d-8744-5eb3b4820add
     type: regular
     task:
-      id: ccff542e-9b2c-47b9-8456-d2d70cc1c5e6
+      id: c222d937-8592-4d1d-8744-5eb3b4820add
       version: -1
       name: Delete A at index 0
       scriptName: DeleteContext
@@ -750,10 +751,10 @@ tasks:
     note: false
   "26":
     id: "26"
-    taskid: 351a5146-0e55-4986-8c99-136db876390e
+    taskid: c0819e9f-2f1b-4d14-8d3c-770ea1ebc83a
     type: condition
     task:
-      id: 351a5146-0e55-4986-8c99-136db876390e
+      id: c0819e9f-2f1b-4d14-8d3c-770ea1ebc83a
       version: -1
       name: Ensure A doesn't exists
       type: condition
@@ -783,13 +784,13 @@ tasks:
     note: false
   "27":
     id: "27"
-    taskid: 8b332636-8189-43e4-86f2-7551eacdc7db
+    taskid: 9b2b77b1-c664-4657-82a8-695c1d06a670
     type: regular
     task:
-      id: 8b332636-8189-43e4-86f2-7551eacdc7db
+      id: 9b2b77b1-c664-4657-82a8-695c1d06a670
       version: -1
       name: Fail
-      scriptName: RaiseError
+      script: RaiseError
       type: regular
       iscommand: false
       brand: ""
@@ -811,10 +812,10 @@ tasks:
     note: false
   "28":
     id: "28"
-    taskid: f598dcab-093b-4e32-8353-a9f88b9ccd74
+    taskid: 80519db2-dacf-45ef-8dd6-32d444cd54ec
     type: title
     task:
-      id: f598dcab-093b-4e32-8353-a9f88b9ccd74
+      id: 80519db2-dacf-45ef-8dd6-32d444cd54ec
       version: -1
       name: Done
       type: title
@@ -831,10 +832,10 @@ tasks:
     note: false
   "29":
     id: "29"
-    taskid: bbb26e00-a88c-411b-86de-a753eed247b0
+    taskid: 5b3200d2-b717-4d4b-8f10-63109520a3e5
     type: regular
     task:
-      id: bbb26e00-a88c-411b-86de-a753eed247b0
+      id: 5b3200d2-b717-4d4b-8f10-63109520a3e5
       version: -1
       name: Set D.E
       scriptName: Set
@@ -861,10 +862,10 @@ tasks:
     note: false
   "30":
     id: "30"
-    taskid: 3a531066-f796-42b5-8803-75577fcadf7e
+    taskid: 75a665e8-98d5-4b81-839a-bf88a84f8725
     type: regular
     task:
-      id: 3a531066-f796-42b5-8803-75577fcadf7e
+      id: 75a665e8-98d5-4b81-839a-bf88a84f8725
       version: -1
       name: Delete All Context expect D.E.d1 (tests trim as well)
       scriptName: DeleteContext
@@ -893,10 +894,10 @@ tasks:
     note: false
   "31":
     id: "31"
-    taskid: 50b65b8c-faa0-4db4-8e8e-f19b799fb0b3
+    taskid: 608c9c2e-abac-4f28-8dc0-51b940564844
     type: condition
     task:
-      id: 50b65b8c-faa0-4db4-8e8e-f19b799fb0b3
+      id: 608c9c2e-abac-4f28-8dc0-51b940564844
       version: -1
       name: Ensure D.E.d2 doesn't exists and D.E.d1 equals e1
       type: condition
@@ -934,13 +935,13 @@ tasks:
     note: false
   "32":
     id: "32"
-    taskid: b3b77d3c-ff6b-4cc5-82f4-b80dee795903
+    taskid: 83562c99-b14c-4146-8922-f229df7cc026
     type: regular
     task:
-      id: b3b77d3c-ff6b-4cc5-82f4-b80dee795903
+      id: 83562c99-b14c-4146-8922-f229df7cc026
       version: -1
       name: Fail
-      scriptName: RaiseError
+      script: RaiseError
       type: regular
       iscommand: false
       brand: ""
@@ -960,18 +961,73 @@ tasks:
         }
       }
     note: false
+  "34":
+    id: "34"
+    taskid: d529c442-f6fb-4638-8cc7-d1990c27bd4a
+    type: regular
+    task:
+      id: d529c442-f6fb-4638-8cc7-d1990c27bd4a
+      version: -1
+      name: Clear context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -170
+        }
+      }
+    note: false
+  "35":
+    id: "35"
+    taskid: 57a6390e-50bf-4bb1-850f-501ee00c3c51
+    type: playbook
+    task:
+      id: 57a6390e-50bf-4bb1-850f-501ee00c3c51
+      version: -1
+      name: Delete Context Subplaybook Test
+      playbookName: Delete Context Subplaybook Test
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 10
+        }
+      }
+    note: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4090,
+        "height": 4460,
         "width": 2100,
         "x": 50,
-        "y": 50
+        "y": -320
       }
     }
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
