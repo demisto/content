@@ -40,7 +40,7 @@ This command returns mitigations recommended by Cymptom
 | --- | --- | --- |
 | Cymptom.Mitigations.SeverityType | String | The severity of the mitigation | 
 | Cymptom.Mitigations.Name | String | The name of the mitigation | 
-| Cymptom.Mitigations.AttackVectorsUsedPercentage | String | The percentege of attack vectors used that can be mitigated | 
+| Cymptom.Mitigations.AttackVectorsUsedPercentage | String | The percentage of attack vectors used that can be mitigated | 
 | Cymptom.Mitigations.ID | String | The mitigation's ID | 
 | Cymptom.Mitigations.AttackVectorsCount | number | The attack vectors counts that can be mitigated | 
 | Cymptom.Mitigations.Procedures | unknown | Procedures relevant for this mitigation | 

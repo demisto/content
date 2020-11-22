@@ -1,8 +1,10 @@
-# type: ignore
-# flake8: noqa
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+# type: ignore
+# flake8: noqa
+# mypy: ignore-errors
+
+
 # Imports
 
 from enum import Enum
@@ -40,10 +42,10 @@ class Client(BaseClient):
 
         return results
 
-    def get_mitigations(self, timeout=60, mitigations_state="open") -> Dict[str, str]:
+    def get_mitigations(self, timeout=60, mitigations_state=MitigationsState.open.value):
         data = {mitigations_state: mitigations_state.lower()}
 
-        if mitigations_state == "all":
+        if mitigations_state == MitigationsState.all.value:
             data.pop(mitigations_state)
 
         return self._http_request(
@@ -54,15 +56,15 @@ class Client(BaseClient):
 
         )
 
-    def get_mitigation_by_id(self, mitigation_id: int, timeout=60) -> Dict[str, str]:
+    def get_mitigation_by_id(self, mitigation_id, timeout=60):
         return self._http_request(
             method='GET',
-            url_suffix=f"mitigations/mitigation",
+            url_suffix="mitigations/mitigation",
             params={"id": str(mitigation_id)},
             timeout=timeout
         )
 
-    def get_mitigations_subtechnique_procedure_by_id(self, sub_tech_proc_id, timeout=60) -> Dict[str, str]:
+    def get_mitigations_subtechnique_procedure_by_id(self, sub_tech_proc_id, timeout=60):
         return self._http_request(
             method='GET',
             url_suffix=f"mitigations/subtechnique-procedures/{str(sub_tech_proc_id)}",
