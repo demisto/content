@@ -1,5 +1,5 @@
-id: 91e56c2a-257c-4a50-8430-a0cf09b29168
-version: 53
+id: Get File Sample From Path - Generic V2
+version: -1
 name: Get File Sample From Path - Generic V2
 description: |
   This playbook returns a file sample correlating to a path into the war-room using the following sub-playbooks:
@@ -18,6 +18,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -91,6 +92,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -162,6 +164,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -185,12 +188,13 @@ tasks:
     task:
       id: 931591d2-1338-45bf-8083-0a91db928068
       version: -1
-      name: Get File Sample From Path - VMware Carbon Black EDR (Live Response API)
+      name: Get File Sample From Path - VMware Carbon Black EDR - Live Response API
       playbookName: Get File Sample From Path - VMware Carbon Black EDR - Live Response
         API
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -238,23 +242,23 @@ inputs:
   description: |-
     Determines whether a D2 agent will be used to retrieve the file.
     Default is no.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Hostname
   value: {}
   required: false
   description: Hostname of the machine on which the file is located.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Path
   value: {}
   required: false
   description: File path.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Sensor_ID
   value: {}
   required: false
   description: Carbon Black sensor ID. Provided the sensor ID to run the command with
     a new session. The session will be created and closed automatically.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: File
   description: The file to sample.
@@ -279,4 +283,24 @@ outputs:
   description: File MD5.
 - contextPath: CbLiveResponse.File.Extension
   description: File extension.
-sourceplaybookid: get_file_sample_from_path_-_generic
+tests:
+- Account Enrichment - Generic v2.1 - Test
+- Calculate Severity - Generic v2 - Test
+- Calculate Severity - Standard - Test
+- Test Convert file hash to corresponding hashes
+- Dedup - Generic v2 - Test
+- Detonate File - Generic Test
+- Detonate File - No Files test
+- Detonate URL - Generic Test
+- Domain Enrichment - Generic v2 - Test
+- Email Address Enrichment - Generic v2.1 - Test
+- Endpoint Enrichment - Generic v2.1 - Test
+- Extract Indicators From File - Generic v2 - Test
+- Field polling test
+- File Enrichment - Generic v2 - Test
+- IP Enrichment - Generic v2 - Test
+- Send Investigation Summary Reports - Test
+- test-domain-indicator
+- URL Enrichment - Generic v2 - Test
+- Wait Until Datetime - Test
+fromversion: 5.0.0
