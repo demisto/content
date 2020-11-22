@@ -292,6 +292,10 @@
             "mandatory": false,
             "display_name": "FortiGate"
         },
+        "Carbon_Black_Enterprise_Live_Response": {
+            "mandatory": false,
+            "display_name": "Carbon Black Enterprise Live Response"
+        },
         "CrowdStrikeFalconX": {
             "mandatory": false,
             "display_name": "CrowdStrike Falcon X"
