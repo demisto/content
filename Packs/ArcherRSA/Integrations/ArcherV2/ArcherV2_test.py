@@ -1,6 +1,7 @@
 import pytest
-from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value
+
 import demistomock as demisto
+from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value
 
 BASE_URL = 'https://test.com/'
 

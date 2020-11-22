@@ -1066,6 +1066,7 @@ def fetch_incidents(
         incident, incident_created_time = client.record_to_incident(item, app_id, date_field)
 
         incidents.append(incident)
+        demisto.debug(f'New created incident time: {incident_created_time}')
         if incident_created_time > last_fetch:
             last_fetch = incident_created_time
 
