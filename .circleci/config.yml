@@ -1182,7 +1182,12 @@ jobs:
       - *attach_workspace
       - *add_ssh_keys
       - *prepare_environment
-      - *wait_until_server_ready
+      - run:
+          name: Wait until server ready
+          shell: /bin/bash
+          when: always
+          command: |
+            python3 ./Tests/scripts/wait_until_server_ready.py "Demisto 6.0"
       - run:
           name: Install Packs
           shell: /bin/bash
