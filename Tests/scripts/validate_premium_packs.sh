@@ -42,6 +42,7 @@ LOCAL_INDEX_PATH="./index.zip"
 
 GCS_MARKET_TESTING_BUCKET="marketplace-dist-dev"
 INDEX_TESTING_PATH="dev/content/packs/index.zip"
+MASTER_HISTORY_PATH="master_history.txt"
 
 if [ -f $LOCAL_INDEX_PATH ]; then
   echo "Removing file $LOCAL_INDEX_PATH"
@@ -53,6 +54,9 @@ gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$INDEX_PATH" "$LOCAL_INDEX_PATH" > "$CI
 echo "Finished copying successfully."
 
 MASTER_COMMIT_HASH=$(git ls-remote git://github.com/demisto/content refs/heads/master | cut -f 1)
+touch $MASTER_HISTORY_PATH
+git log master --pretty="%H" > $MASTER_HISTORY_PATH
+
 echo "Master commit hash was $MASTER_COMMIT_HASH"
 
 if [ ! -f $LOCAL_INDEX_PATH ]; then
@@ -60,7 +64,7 @@ if [ ! -f $LOCAL_INDEX_PATH ]; then
   exit 1
 else
   echo "Testing premium packs in against index file $LOCAL_INDEX_PATH"
-  python3 ./Tests/scripts/validate_premium_packs.py --index_path "$LOCAL_INDEX_PATH" -s "$SECRET_CONF_PATH" --ami_env "$1" --commit_hash "$MASTER_COMMIT_HASH"
+  python3 ./Tests/scripts/validate_premium_packs.py --index_path "$LOCAL_INDEX_PATH" -s "$SECRET_CONF_PATH" --ami_env "$1" --master_history "$MASTER_HISTORY_PATH"
 fi
 
 rm $LOCAL_INDEX_PATH
