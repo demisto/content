@@ -6,13 +6,13 @@ name: Cortex XDR incident handling v3
 description: "This playbook is triggered by fetching a Palo Alto Networks Cortex XDR\
   \ incident.\nThe playbook syncs and updates new XDR alerts that construct the incident\
   \ and triggers a sub-playbook to handle each alert by type.\nThen, the playbook\
-  \ performs enrichment on the incident's indicators and hunting for related IOCs.\n\
+  \ performs enrichment on the incident's indicators and hunts for related IOCs.\n\
   Based on the severity, it lets the analyst decide whether to continue to the remediation\
   \ stage or close the investigation as a false positive. \nAfter the remediation,\
   \ if there are no new alerts, the playbook stops the alert sync and closes the XDR\
   \ incident and investigation. For performing the bidirectional sync, the playbook\
   \ uses the incoming and outgoing mirroring feature added in XSOAR version 6.0.0.\
-  \ After the `Calculate Severity - Generic v2` sub-playbook’s run Cortex XSOAR will\
+  \ After the **Calculate Severity - Generic v2** sub-playbook’s run, Cortex XSOAR will\
   \ be treated as the single source of truth for the severity field, and it will sync\
   \ only from Cortex XSOAR to XDR, so manual changes for the severity field in XDR\
   \ will not update in the XSOAR incident."
@@ -1504,14 +1504,14 @@ tasks:
       id: c49060c1-f9ea-46bd-8882-334aa7e68f99
       version: -1
       name: Palo Alto Networks - Hunting And Threat Detection
-      description: "This is a multipurpose playbook used for hunting and threat detection.\
+      description: This is a multipurpose playbook used for hunting and threat detection.\
         \ The playbook receives inputs based on hashes, IP addresses, or domain names\
         \ provided manually or from outputs by other playbooks. \nWith the received\
         \ indicators, the playbook leverages data received by PANW products including,\
-        \ Cortex Data Lake, Autofocus and Pan-OS to search for IP addresses, host\
-        \ names and users related to the provided indicators.\nThe output provided\
+        \ Cortex Data Lake, Autofocus, and Pan-OS to search for IP addresses, host\
+        \ names, and users related to the provided indicators.\nThe output provided\
         \ by the playbook facilitates pivoting searches for possibly affected IP addresses\
-        \ or users."
+        \ or users.
       playbookName: Palo Alto Networks - Hunting And Threat Detection
       type: playbook
       iscommand: false
