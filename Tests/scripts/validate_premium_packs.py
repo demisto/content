@@ -73,7 +73,7 @@ def check_and_return_index_data(index_file_path):
     logging.info("Found index data in index file. Checking...")
     logging.debug(f"Index data is:\n {index_data}")
 
-    assert len(index_data["packs"]) != 0
+    assert len(index_data["packs"]) != 0, "Found 0 packs in index file."
     for pack in index_data["packs"]:
         assert pack["id"] != "", "There is a missing pack id."
         assert pack["price"] > 0, f"The price on the pack {pack['id']} is 0 or less"
@@ -119,9 +119,9 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
                                                                         _request_timeout=request_timeout)
 
     if status_code == 200:
-        logging.info(f'Got response data {response_data}')
+        logging.debug(f'Got response data {response_data}')
         response = ast.literal_eval(response_data)
-        logging.info(f'Response dict is {response}')
+        logging.debug(f'Response dict is {response}')
         logging.info('Got premium packs from server.')
         return response["packs"]
 
