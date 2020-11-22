@@ -1,5 +1,5 @@
-id: 6c09379f-9f1e-4137-8a90-318dff5b4593
-version: 30
+id: Get binary file from Carbon Black by MD5 hash
+version: -1
 name: Get binary file from Carbon Black by MD5 hash
 description: 'This playbook retrieve binary file by MD5 hash from Carbon Black telemetry
   data.   '
@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -79,6 +80,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -188,7 +190,7 @@ inputs:
       accessor: MD5
   required: false
   description: 'MD5 of the binary file to be retrieved '
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: File.InternalName
   description: The internal name.
@@ -216,3 +218,6 @@ outputs:
   description: The MD5 hash of the binary.
 - contextPath: File.Company
   description: Name of the company that released a binary.
+tests:
+- Carbon Black Response Test
+fromversion: 5.0.0
