@@ -15,7 +15,6 @@
 <li>Carbon Black Live Response - Wait until command complete</li>
 <li>Carbon Black Live Response - Create active session</li>
 <li>Carbon Black Live Response - Download file</li>
-<li></li>
 </ul>
 <h2>Prerequisites</h2>
 <p>This integration can be used on either VMware Carbon Black EDR (formerly known as Carbon Black Response) or VMware Carbon Black Endpoint Standard (formerly known as Carbon Black Defense)<strong>.</strong></p>
