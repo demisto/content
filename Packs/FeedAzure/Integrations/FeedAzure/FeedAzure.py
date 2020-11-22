@@ -283,6 +283,7 @@ def fetch_indicators_command(client: Client, feedTags: list, tlp_color: Optional
             'type': indicator['type'],
             'fields': {
                 'region': indicator.get('azure_region'),
+                'service': indicator.get('azure_system_service'),
                 'tags': feedTags,
             },
             'rawJSON': indicator
