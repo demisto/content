@@ -66,7 +66,7 @@ if [ ! -f $LOCAL_INDEX_PATH ]; then
   exit 1
 else
   echo "Testing premium packs in against index file $LOCAL_INDEX_PATH"
-  python3 ./Tests/scripts/validate_premium_packs.py --index_path "$LOCAL_INDEX_PATH" -s "$SECRET_CONF_PATH" --ami_env "$1" --commit_hash "$CIRCLE_SHA1"
+  python3 ./Tests/scripts/validate_premium_packs.py --index_path "$LOCAL_INDEX_PATH" -s "$SECRET_CONF_PATH" --ami_env "$1" --commit_hash "$MASTER_COMMIT_HASH"
 fi
 
 rm $LOCAL_INDEX_PATH

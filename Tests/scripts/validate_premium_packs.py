@@ -1,3 +1,10 @@
+"""Validate premium packs.
+
+Check index.json file inside the index.zip archive in the cloud.
+Validate no missing ids are found and that all packs have a positive price.
+Check the server configured on master.
+Validate the pack id's in the index file are present on the server and the prices match.
+"""
 import demisto_client
 import argparse
 import logging
@@ -41,6 +48,13 @@ def update_expectations_from_git(index_data):
 
 
 def unzip_index_and_return_index_file(index_zip_path):
+    """Unzip index.zip and return the extracted index.json path
+
+    Args:
+        index_zip_path: The path to the index.zip file.
+
+    Returns: The extracted index.json path
+    """
     logging.info('Unzipping')
     with zipfile.ZipFile(index_zip_path, 'r') as zip_obj:
         extracted_path = zip_obj.extract(member=f"index/{INDEX_FILE_PATH}", path="./extracted-index")
@@ -53,11 +67,22 @@ def unzip_index_and_return_index_file(index_zip_path):
 
 
 def check_and_return_index_data(index_file_path, commit_hash):
+    """Check index.json file inside the index.zip archive in the cloud.
+
+    Validate no missing ids are found and that all packs have a positive price.
+    Validate commit hash in index.json file.
+
+    Args:
+        index_file_path: The path to the index.json.
+        commit_hash: The commit hash to compare to.
+
+    Returns: Dict with the index data.
+
+    """
     with open(index_file_path, 'r') as index_file:
         index_data = json.load(index_file)
 
     logging.info(f"Found index data:\n {index_data} \n\n Checking...")
-    # TODO: check commit hash with master
     assert index_data["commit"] == commit_hash, f"Commit in index file {index_data['commit']} is not {commit_hash}"
     assert len(index_data["packs"]) != 0
     for pack in index_data["packs"]:
@@ -69,7 +94,19 @@ def check_and_return_index_data(index_file_path, commit_hash):
 
 
 def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
+    """Get premium packs from client.
 
+    Trigger an API request to demisto server.
+    Request is identical to checking the premium box through the marketplace GUI.
+
+    Args:
+        client: The demisto client to preform request on.
+        request_timeout: Timeout of API request
+
+    Returns:
+        Dict of premium packs as found in the server.
+        Return None if no premium packs were found.
+    """
     request_data = \
         {
             'page': 0,
@@ -106,7 +143,14 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
 
 
 def verify_server_paid_packs_by_index(server_paid_packs, index_data_packs):
+    """Compare two pack dictionaries and assert id's and prices are identical.
 
+    Raise AssertionError if the lists differ.
+
+    Args:
+        server_paid_packs: Dictionary of packs to check.
+        index_data_packs: Dictionary of packs to compare to.
+    """
     # Sorting both lists by id
     sorted_server_packs = sorted(server_paid_packs, key=lambda i: i['id'])
     sorted_index_packs = sorted(index_data_packs, key=lambda i: i['id'])
