@@ -963,7 +963,7 @@ jobs:
             - run:
                 name: Validate Premium Packs
                 shell: /bin/bash
-                when: always
+                when: << pipeline.parameters.nightly >>
                 command: |
                   ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
             - run:
