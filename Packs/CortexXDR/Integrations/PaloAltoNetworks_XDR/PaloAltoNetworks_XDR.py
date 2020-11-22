@@ -1857,7 +1857,8 @@ def get_remote_data_command(client, args):
     incident_data = {}
     try:
         incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
-                                                                 "alerts_limit": 1000})
+                                                                 "alerts_limit": 1000,
+                                                                 "return_only_updated_incident": True})
         if incident_data:
             demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
 
