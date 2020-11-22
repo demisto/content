@@ -29,7 +29,7 @@ try:
     from urllib3.util import Retry
     from typing import Optional, List, Any
     import dateparser
-    from datetime import timezone
+    import timezone
 except Exception:
     if sys.version_info[0] < 3:
         # in python 2 an exception in the imports might still be raised even though it is caught.
@@ -2751,8 +2751,7 @@ class IndicatorsTimeline:
         self.indicators_timeline = timelines
 
 
-
-def arg_to_number(arg, arg_name, required = False):
+def arg_to_number(arg, arg_name, required=False):
     # type: (Any, str, bool) -> Optional[int]
 
     """Converts an XSOAR argument to a Python int
@@ -2792,7 +2791,7 @@ def arg_to_number(arg, arg_name, required = False):
     raise ValueError('Invalid number: "{}"'.format(arg_name))
 
 
-def arg_to_datetime(arg, arg_name, is_utc=True, required = False, settings=None):
+def arg_to_datetime(arg, arg_name, is_utc=True, required=False, settings=None):
     # type: (Any, str, bool, bool, dict) -> Optional[datetime]
 
     """Converts an XSOAR argument to a datetime
