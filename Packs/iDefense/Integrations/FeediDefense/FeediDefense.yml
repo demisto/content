@@ -15,7 +15,7 @@ configuration:
   type: 4
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
-  defaultvalue: feedInstanceReputationNotSet
+  defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -76,8 +76,8 @@ configuration:
   - URL
   required: false
   type: 16
-- additionalinfo: Severity of the indicator.  Which value to fetch.
-  defaultvalue: '0'
+- additionalinfo: Severity of the indicator. From which value to fetch indicators.
+  defaultvalue: '1'
   display: Indicator Severity
   hidden: false
   name: severity
@@ -89,32 +89,25 @@ configuration:
   - '5'
   required: false
   type: 15
-- additionalinfo: '?'
+- additionalinfo: 'Threat Type denotes the type of threats the indicator has been associated with.'
   display: Threat Type
   hidden: false
   name: threat_type
   options:
-  - Vulnerability
-  - ' Cyber Crime'
-  - ' Cyber Espionage'
-  - ' Hacktivism'
+  - 'Vulnerability'
+  - 'Cyber Crime'
+  - 'Cyber Espionage'
+  - 'Hacktivism'
   required: false
   type: 16
 - additionalinfo: Confidence about the indicator detailes. Choose from which value
-    of confidence to fetch between 0-100
-  display: Confidence from
+    of confidence to fetch. The value between 0-100
+  display: Confidence
   hidden: false
   name: confidence_from
   required: false
   type: 0
-- additionalinfo: Confidence about the indicator detailes. Choose the highest confidence
-    value to fetch between 0-100
-  display: confidence to
-  hidden: false
-  name: confidence_to
-  required: false
-  type: 0
-- additionalinfo: '?'
+- additionalinfo: 'A malware family is a classification of malicious files and tools based on certain behaviors and static properties'
   display: Malware Family
   hidden: false
   name: malware_family
@@ -168,5 +161,5 @@ script:
   subtype: python3
   type: python
 tests:
-- JSON_Feed_Test
+- No tests
 fromversion: 5.5.0

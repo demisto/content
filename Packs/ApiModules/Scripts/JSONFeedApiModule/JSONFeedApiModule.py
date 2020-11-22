@@ -103,8 +103,7 @@ def test_module(client: Client) -> str:
             build_iterator_paging(client, feed)
         else:
             client.build_iterator(feed)
-        return 'ok'
-    return ''
+    return 'ok'
 
 
 def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool, **kwargs) \
@@ -230,7 +229,7 @@ def feed_main(params, feed_name, prefix):
         demisto.info(f'Command being called is {demisto.command()}')
     try:
         if command == 'test-module':
-            return_outputs(test_module(client))
+            return_results(test_module(client))
 
         elif command == 'fetch-indicators':
             indicators = fetch_indicators_command(client, indicator_type, feedTags,
@@ -243,9 +242,8 @@ def feed_main(params, feed_name, prefix):
             limit = int(demisto.args().get('limit', 10))
             auto_detect = params.get('auto_detect_type')
             indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect)[:limit]
-            demisto.debug(f"tal indicators len in feed main {len(indicators)}")
             hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
-            return_outputs(hr, {}, indicators)
+            return_results(hr, {}, indicators)
 
     except Exception as err:
         err_msg = f'Error in {feed_name} integration [{err}]'

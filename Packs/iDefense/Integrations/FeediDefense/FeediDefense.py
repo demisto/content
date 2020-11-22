@@ -1,15 +1,11 @@
 from typing import Dict, Union
-
-import demistomock as demisto
 from CommonServerPython import *
-# from Packs.ApiModules.Scripts.JSONFeedApiModule.JSONFeedApiModule import *
-
 from JSONFeedApiModule import *  # noqa: E402
 
 
-def build_iterator(client: Client, feed: Dict, **kwargs) -> List:
+def custom_build_iterator(client: Client, feed: Dict, **kwargs) -> List:
     params: dict = feed.get('filters', {})
-    fetch_indicators_limit = 100000
+    fetch_indicators_limit = 50000
     current_indicator_type = feed.get('indicator_type')
     integration_context = get_integration_context()
     page_number = integration_context.get(f'{current_indicator_type}_page', 1)
@@ -76,7 +72,7 @@ def create_fetch_configuration(indicators_type: list, filters: dict, params: dic
     common_conf = {'extractor': 'results',
                    'indicator': 'display_text',
                    'insecure': params.get('insecure', False),
-                   'build_iterator_paging': build_iterator,
+                   'build_iterator_paging': custom_build_iterator,
                    'filters': filters}
 
     indicators_configuration = {}
@@ -92,10 +88,8 @@ def create_fetch_configuration(indicators_type: list, filters: dict, params: dic
 
 def build_feed_filters(params: dict) -> Dict[str, Optional[Union[str, list]]]:
     filters = {'severity.from': params.get('severity'),
-               'severity.to': params.get('severity'),
                'threat_types.values': params.get('threat_type'),
                'confidence.from': params.get('confidence_from'),
-               'confidence.to': params.get('confidence_to'),
                'malware_family.values': params.get('malware_family', '').split(',')
                if params.get('malware_family') else None}
 
