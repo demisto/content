@@ -39,7 +39,7 @@ tasks:
       id: 2634dc8a-846d-421d-886f-3ea11b43a821
       version: -1
       name: Carbon Black Live Response - Create active session
-      description: Create an active sessio.
+      description: Create an active session.
       playbookName: Carbon Black Live Response - Create active session
       type: playbook
       iscommand: false
