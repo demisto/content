@@ -1,5 +1,5 @@
-id: 4f09ce60-fadc-45e1-887a-17f7a6c87d19
-version: 5
+id: Generic retrieve file - Test
+version: -1
 name: Generic retrieve file - Test
 description: This is a test playbook for Retrieve File from Endpoint - Generic V2.
 starttaskid: "0"
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -42,6 +43,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       Hostname:
         complex:
@@ -90,3 +92,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
