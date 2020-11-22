@@ -743,7 +743,6 @@ jobs:
             - run:
                 name: Install Content And Configure Integrations On Server
                 shell: /bin/bash
-                when: always
                 command: |
                   if [ -z $INSTANCE_WAS_CREATED ];
                     then
@@ -754,7 +753,6 @@ jobs:
             - run:
                 name: Run Tests - Server 5.0
                 shell: /bin/bash
-                when: always
                 command: |
                   if [ -z $INSTANCE_WAS_CREATED ];
                     then
@@ -823,7 +821,6 @@ jobs:
             - run:
                 name: Install Content And Configure Integrations On Server
                 shell: /bin/bash
-                when: always
                 command: |
                   if [ -z $INSTANCE_WAS_CREATED ];
                     then
@@ -834,7 +831,6 @@ jobs:
             - run:
                 name: Run Tests - 5.5
                 shell: /bin/bash
-                when: always
                 command: |
                   if [ -z $INSTANCE_WAS_CREATED ];
                     then
@@ -1013,7 +1009,6 @@ jobs:
             python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb $GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BATH_PATH}"
             rm $GCS_PATH
           when: on_success
-      - *destroy_instances
       - *store_artifacts
 
   Upload Packs To Marketplace:
@@ -1055,7 +1050,6 @@ jobs:
               ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
             fi
           when: always
-      - *destroy_instances
       - *store_artifacts
 
   Instance Test:
@@ -1136,7 +1130,6 @@ jobs:
       - *create_instance
       - run:
           name: Wait until server ready
-          when: always
           command: |
             python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
       - run:
@@ -1189,7 +1182,12 @@ jobs:
       - *attach_workspace
       - *add_ssh_keys
       - *prepare_environment
-      - *wait_until_server_ready
+      - run:
+          name: Wait until server ready
+          shell: /bin/bash
+          when: always
+          command: |
+            python3 ./Tests/scripts/wait_until_server_ready.py "Demisto 6.0"
       - run:
           name: Install Packs
           shell: /bin/bash
@@ -1209,6 +1207,8 @@ jobs:
             fi
           when: always
       - *persist_to_workspace
+      - *destroy_instances
+      - *store_artifacts
 
   Install Packs in Demisto Marketplace - Master:
     <<: *container_config
@@ -1237,6 +1237,8 @@ jobs:
               ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
             fi
           when: always
+      - *destroy_instances
+      - *store_artifacts
 
 workflows:
   version: 2
