@@ -226,25 +226,6 @@ outputs:
 - contextPath: CbLiveResponse.File.Extension
   description: File extension.
 tests:
-- Account Enrichment - Generic v2.1 - Test
-- Calculate Severity - Generic v2 - Test
-- Calculate Severity - Standard - Test
-- Test Convert file hash to corresponding hashes
-- Dedup - Generic v2 - Test
-- Detonate File - Generic Test
-- Detonate File - No Files test
-- Detonate URL - Generic Test
-- Domain Enrichment - Generic v2 - Test
-- Email Address Enrichment - Generic v2.1 - Test
-- Endpoint Enrichment - Generic v2.1 - Test
-- Extract Indicators From File - Generic v2 - Test
-- Field polling test
-- File Enrichment - Generic v2 - Test
-- IP Enrichment - Generic v2 - Test
-- Send Investigation Summary Reports - Test
-- test-domain-indicator
-- URL Enrichment - Generic v2 - Test
-- Wait Until Datetime - Test
 - Generic retrieve file - Test
 fromversion: 5.0.0
 
