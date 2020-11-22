@@ -7,7 +7,6 @@ SECRET_CONF_PATH=$(cat secret_conf_path)
 CONF_PATH="./Tests/conf.json"
 
 [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-IS_NIGHTLY=true
 
 PREVIOUS_JOB_NUMBER=`cat create_instances_build_num.txt`
 
@@ -15,5 +14,3 @@ python3 ./Tests/configure_and_test_integration_instances.py -u "$USERNAME" -p "$
 if [ -f ./Tests/test_pack.zip ]; then
   cp ./Tests/test_pack.zip $CIRCLE_ARTIFACTS
 fi
-
-[ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
