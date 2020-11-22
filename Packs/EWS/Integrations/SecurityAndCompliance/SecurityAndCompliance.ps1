@@ -1388,6 +1388,10 @@ function Main {
     $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
+    <#
+        Proxy currently isn't supported by PWSH New-Pssession, However partly implmentation of proxy feature still function (OAuth2.0 and redirect),
+        leaving this parameter for feature development if required.
+    #>
     $proxy = $false
     $insecure = (ConvertTo-Boolean $integration_params.insecure)
 

@@ -1,6 +1,6 @@
 # O365 - Security And Compliance - Content Search
 
-This integration is administrative interface that enables you to manage the features that are available in the Security & Compliance Center from the XSOAR.
+This integration enables you to manage the features that are available in the Security & Compliance Center from XSOAR.
 
 Supported authentication methods:
 
