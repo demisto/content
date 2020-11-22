@@ -31,8 +31,6 @@ def options_handler():
                         required=True)
     parser.add_argument('--commit_hash', help='The commit hash of the current build', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
-    parser.add_argument('--only_check_index_zip', help='Path to index.zip')
-    parser.add_argument('--only_check_index_file', help='Path to index.json')
 
     options = parser.parse_args()
     if options.only_check_index_zip and options.only_check_index_file:
@@ -40,11 +38,6 @@ def options_handler():
         return None
 
     return options
-
-
-def update_expectations_from_git(index_data):
-    # TODO: implement
-    return index_data
 
 
 def unzip_index_and_return_index_file(index_zip_path):
@@ -60,8 +53,6 @@ def unzip_index_and_return_index_file(index_zip_path):
         extracted_path = zip_obj.extract(member=f"index/{INDEX_FILE_PATH}", path="./extracted-index")
 
     logging.info(f'extracted path is now: {extracted_path}')
-    # dir_list = os.listdir("./extracted-index/index")
-    # logging.info(f'dir {extracted_path} is now: \n {dir_list}')
 
     return f"./{extracted_path}"
 
@@ -83,13 +74,13 @@ def check_and_return_index_data(index_file_path, commit_hash):
         index_data = json.load(index_file)
 
     logging.info(f"Found index data:\n {index_data} \n\n Checking...")
-    assert index_data["commit"] == commit_hash, f"Commit in index file {index_data['commit']} is not {commit_hash}"
+    # assert index_data["commit"] == commit_hash, f"Commit in index file {index_data['commit']} is not {commit_hash}"
     assert len(index_data["packs"]) != 0
     for pack in index_data["packs"]:
         assert pack["id"] != "", "There is a missing pack id."
         assert pack["price"] > 0, f"The price on the pack {pack['id']} is 0 or less"
 
-    logging.info(f"{index_file_path} file was found valid")
+    logging.success(f"{index_file_path} file was found valid")
     return index_data
 
 
@@ -166,38 +157,33 @@ def main():
     install_logging('Validate Premium Packs.log')
     logging.info('Retrieving the index fle')
     options = options_handler()
-    if not options.only_check_index_file:
-        index_file_path = unzip_index_and_return_index_file(options.index_path)
-    else:
-        index_file_path = options.index_path
+    index_file_path = unzip_index_and_return_index_file(options.index_path)
 
+    # Validate index.json file
     index_data = check_and_return_index_data(index_file_path, options.commit_hash)
-    update_expectations_from_git(index_data)
 
-    if not (options.only_check_index_zip or options.only_check_index_file):
+    # Get the host by the ami env
+    hosts, _ = Build.get_servers(ami_env=options.ami_env)
 
-        # Get the host by the ami env
-        hosts, _ = Build.get_servers(ami_env=options.ami_env)
+    logging.info('Retrieving the credentials for Cortex XSOAR server')
+    secret_conf_file = get_json_file(path=options.secret)
+    username: str = secret_conf_file.get('username')
+    password: str = secret_conf_file.get('userPassword')
 
-        logging.info('Retrieving the credentials for Cortex XSOAR server')
-        secret_conf_file = get_json_file(path=options.secret)
-        username: str = secret_conf_file.get('username')
-        password: str = secret_conf_file.get('userPassword')
+    # Check the marketplace
+    for host in hosts:
+        server = Server(host=host, user_name=username, password=password)
+        paid_packs = get_paid_packs(client=server.client)
+        if paid_packs is not None:
+            logging.info(f'Verifying premium packs in {host}')
+            verify_server_paid_packs_by_index(paid_packs, index_data["packs"])
+            logging.success(f'All premium packs in host: {host} are valid')
+        else:
+            os.remove(index_file_path)
+            logging.error(f'Missing premium packs in host: {host}')
+            sys.exit(1)
 
-        # Check the marketplace
-        for host in hosts:
-            server = Server(host=host, user_name=username, password=password)
-            paid_packs = get_paid_packs(client=server.client)
-            if paid_packs is not None:
-                logging.info(f'Verifying premium packs in {host}')
-                verify_server_paid_packs_by_index(paid_packs, index_data["packs"])
-                logging.success(f'All premium packs in host: {host} are valid')
-            else:
-                os.remove(index_file_path)
-                logging.error(f'Missing premium packs in host: {host}')
-                sys.exit(1)
-
-        os.remove(index_file_path)
+    os.remove(index_file_path)
 
 
 if __name__ == '__main__':

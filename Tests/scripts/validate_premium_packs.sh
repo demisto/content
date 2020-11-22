@@ -48,14 +48,8 @@ if [ -f $LOCAL_INDEX_PATH ]; then
   rm $LOCAL_INDEX_PATH
 fi
 
-
-if [ ! -n "${BUCKET_UPLOAD}" ]; then
-  echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$INDEX_PATH to target path: $LOCAL_INDEX_PATH ..."
-  gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$INDEX_PATH" "$LOCAL_INDEX_PATH" > "$CIRCLE_ARTIFACTS/Validate Premium Packs.log" 2>&1
-else
-  echo "Copying testing files at: gs://$GCS_MARKET_TESTING_BUCKET/$INDEX_TESTING_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
-  gsutil -m cp -r "gs://$GCS_MARKET_TESTING_BUCKET/$INDEX_TESTING_PATH" "gs://$INDEX_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/Validate Premium Packs.log" 2>&1
-fi
+echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$INDEX_PATH to target path: $LOCAL_INDEX_PATH ..."
+gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$INDEX_PATH" "$LOCAL_INDEX_PATH" > "$CIRCLE_ARTIFACTS/Validate Premium Packs.log" 2>&1
 echo "Finished copying successfully."
 
 MASTER_COMMIT_HASH=$(git ls-remote git://github.com/demisto/content refs/heads/master | cut -f 1)
