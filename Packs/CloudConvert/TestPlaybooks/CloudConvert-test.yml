@@ -1138,12 +1138,12 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: a27dd8e2-7176-4719-8807-f2b5f32a7a61
+    taskid: ca73c053-fece-445e-8923-59df50a720d4
     type: regular
     task:
-      id: a27dd8e2-7176-4719-8807-f2b5f32a7a61
+      id: ca73c053-fece-445e-8923-59df50a720d4
       version: -1
-      name: cloudconvert-check-status
+      name: Create War Room Entry
       description: Checks the status of an operation. Use the create_war_room_entry
         argument to also create a War Room entry of the file when checking on an export
         operation.
@@ -1169,14 +1169,6 @@ tasks:
               right:
                 value:
                   simple: export
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: CloudConvert.Task.status
-                iscontext: true
-              right:
-                value:
-                  simple: finished
           accessor: id
     separatecontext: false
     view: |-
