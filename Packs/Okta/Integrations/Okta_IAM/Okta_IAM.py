@@ -113,13 +113,15 @@ class Client(BaseClient):
 
         return okta_fields
 
-    def get_assigned_user_for_app(self, application_id, user_id):
+    def get_app_user_assignment(self, application_id, user_id):
         uri = f'/apps/{application_id}/users/{user_id}'
         res = self._http_request(
             method='GET',
-            url_suffix=uri
+            url_suffix=uri,
+            resp_type='response',
+            ok_codes=(200, 404)
         )
-        return res
+        return res.status_code == 200  # True if user is assigned to app, false otherwise
 
     def get_logs(self, query_filter, last_run_time=None, time_now=None):
         logs = []
@@ -427,20 +429,22 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
     return user_profile
 
 
-def get_assigned_user_for_app_command(client, args):
+def get_app_user_assignment_command(client, args):
     user_id = args.get('user_id')
     application_id = args.get('application_id')
 
-    res = client.get_assigned_user_for_app(application_id, user_id)
+    is_user_assigned_to_app = client.get_app_user_assignment(application_id, user_id)
 
-    headers = ['id', 'profile', 'created', 'credentials', 'externalId', 'status']
-    readable_output = tableToMarkdown('Okta User App Assignment', res, headers, removeNull=True)
+    outputs = {
+        'UserID': user_id,
+        'AppID': application_id,
+        'IsAssigned': is_user_assigned_to_app
+    }
 
     return CommandResults(
-        outputs=res,
-        outputs_prefix='Okta.UserAppAssignment',
-        outputs_key_field='id',
-        readable_output=readable_output
+        outputs=outputs,
+        outputs_prefix='Okta.AppUserAssignment',
+        outputs_key_field=['UserID', 'AppID']
     )
 
 
@@ -550,8 +554,8 @@ def main():
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command(client))
 
-        elif command == 'okta-get-assigned-user-for-app':
-            return_results(get_assigned_user_for_app_command(client, args))
+        elif command == 'okta-get-app-user-assignment':
+            return_results(get_app_user_assignment_command(client, args))
 
         elif command == 'fetch-incidents':
             last_run = demisto.getLastRun()

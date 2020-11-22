@@ -305,7 +305,7 @@ script:
       Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  - name: okta-get-assigned-user-for-app
+  - name: okta-get-app-user-assignment
     arguments:
     - name: user_id
       required: true
@@ -314,27 +314,16 @@ script:
       required: true
       description: ID of the application for which to get information.
     outputs:
-    - contextPath: Okta.UserAppAssignment.profile
-      description: App-specific profile for the user.
-      type: unknown
-    - contextPath: Okta.UserAppAssignment.created
-      description: Timestamp when app user was created.
-      type: date
-    - contextPath: Okta.UserAppAssignment.externalId
-      description: ID of user in target app.
+    - contextPath: Okta.AppUserAssignment.UserID
+      description: ID of the user.
       type: string
-    - contextPath: Okta.UserAppAssignment.id
-      description: Unique ID of the user.
+    - contextPath: Okta.AppUserAssignment.AppID
+      description: ID of the application.
       type: string
-    - contextPath: Okta.UserAppAssignment.status
-      description: Status of app user.
-      type: string
-    - contextPath: Okta.UserAppAssignment.credentials
-      description: Credentials for assigned app.
-    - contextPath: Okta.UserAppAssignment.credentials.userName
-      description: Username of the user.
-      type: string
-    description: Gets a specific user assignment for an application by id.
+    - contextPath: Okta.AppUserAssignment.IsAssigned
+      description: True if the user is assigned to the application, false otherwise.
+      type: boolean
+    description: Returns information about application's user assignment.
   dockerimage: demisto/python3:3.8.6.13358
   isfetch: true
   longRunning: false

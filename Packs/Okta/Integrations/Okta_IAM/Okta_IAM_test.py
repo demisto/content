@@ -1,6 +1,6 @@
 from requests import Response, Session
 from Okta_IAM import Client, get_user_command, create_user_command, update_user_command, enable_user_command, \
-    disable_user_command, get_mapping_fields_command, get_assigned_user_for_app_command, fetch_incidents
+    disable_user_command, get_mapping_fields_command, get_app_user_assignment_command, fetch_incidents
 from CommonServerPython import IAMErrors, IAMUserProfile, IAMActions, EntryType
 
 
@@ -351,7 +351,7 @@ def test_get_mapping_fields_command(mocker):
     assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field2') == 'description2'
 
 
-def test_get_assigned_user_for_app_command(mocker):
+def test_get_app_user_assignment_command(mocker):
     """
     Given:
         - An Okta IAM client object
@@ -380,11 +380,11 @@ def test_get_assigned_user_for_app_command(mocker):
 
     mocker.patch.object(Session, 'request', return_value=get_assignment_response)
 
-    command_result = get_assigned_user_for_app_command(client, args)
+    command_result = get_app_user_assignment_command(client, args)
 
-    assert command_result.outputs.get('id') == 'mock_user_id'
-    assert command_result.outputs.get('credentials').get('userName') == 'mock_username'
-    assert 'Okta User App Assignment' in command_result.readable_output
+    assert command_result.outputs.get('UserID') == 'mock_user_id'
+    assert command_result.outputs.get('application_id') == 'mock_app_id'
+    assert command_result.outputs.get('IsAssigned') is True
 
 
 def test_fetch_incidents__two_logs_batches(mocker):
