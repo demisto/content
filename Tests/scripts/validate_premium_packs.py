@@ -105,11 +105,11 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
     return None
 
 
-def verify_server_paid_packs_by_index(server_paid_packs, index_data):
+def verify_server_paid_packs_by_index(server_paid_packs, index_data_packs):
 
     # Sorting both lists by id
     sorted_server_packs = sorted(server_paid_packs, key=lambda i: i['id'])
-    sorted_index_packs = sorted(index_data, key=lambda i: i['id'])
+    sorted_index_packs = sorted(index_data_packs, key=lambda i: i['id'])
 
     # Checking lists are the same.
     for (server_pack, index_pack) in zip(sorted_server_packs, sorted_index_packs):
@@ -146,7 +146,7 @@ def main():
             paid_packs = get_paid_packs(client=server.client)
             if paid_packs is not None:
                 logging.info(f'Verifying premium packs in {host}')
-                verify_server_paid_packs_by_index(paid_packs, index_data)
+                verify_server_paid_packs_by_index(paid_packs, index_data["packs"])
                 logging.success(f'All premium packs in host: {host} are valid')
             else:
                 os.remove(index_file_path)
