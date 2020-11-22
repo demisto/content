@@ -45,8 +45,8 @@ def unzip_index_and_return_index_file(index_zip_path):
         extracted_path = zip_obj.extract(member=f"index/{INDEX_FILE_PATH}", path="./extracted-index")
 
     logging.info(f'extracted path is now: {extracted_path}')
-    dir_list = os.listdir("./extracted-index/index")
-    logging.info(f'dir {extracted_path} is now: \n {dir_list}')
+    # dir_list = os.listdir("./extracted-index/index")
+    # logging.info(f'dir {extracted_path} is now: \n {dir_list}')
 
     return f"./{extracted_path}"
 
@@ -77,8 +77,8 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
                 [{
                     'field': 'updated',
                     'asc': False
-                }],
-            'general': ["generalFieldPaid"]
+                }]  # ,
+            # 'general': ["generalFieldPaid"]
         }
 
     logging.info(f'Getting premium packs from server {client.api_client.configuration.host}:\n')
@@ -93,8 +93,8 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
 
     if status_code == 200:
         logging.info(f'Got response data {response_data}')
-        response = json.loads(response_data)
-        logging.info('Got premium packs from server')
+        response = ast.literal_eval(response_data)
+        logging.info('Got premium packs from server.')
         return response["packs"]
 
     result_object = ast.literal_eval(response_data)
