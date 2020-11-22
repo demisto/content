@@ -961,15 +961,15 @@ jobs:
                 command: |
                   ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
             - steps:
-                - when:
-                    condition: << pipeline.parameters.nightly >>
-                    steps:
-                      - run:
-                          name: Validate Premium Packs
-                          shell: /bin/bash
-                          when: always
-                          command: |
-                            ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
+                when:
+                  condition: << pipeline.parameters.nightly >>
+                  steps:
+                    - run:
+                        name: Validate Premium Packs
+                        shell: /bin/bash
+                        when: always
+                        command: |
+                          ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
             - run:
                 name: Run Tests - Demisto Master
                 shell: /bin/bash
