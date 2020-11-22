@@ -12,7 +12,7 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Recommended by Cortex XSOAR"
+        "Incident Mirroring"
     ],
     "useCases": [
         "Malware"

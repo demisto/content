@@ -32,6 +32,8 @@ args:
   - appends
   - 'base64: decode'
   - 'base64: encode'
+  - collects keys
+  - collects values
   - contains
   - contains any caseless line of
   - contains any caseless line of
@@ -66,6 +68,8 @@ args:
   - equals
   - finds
   - finds caseless
+  - flattens with keys
+  - flattens with values
   - greater or equal
   - greater than
   - if-then-else
@@ -114,6 +118,7 @@ args:
   - 'regex: matches caseless'
   - starts with
   - starts with caseless
+  - switch-case
   - value is filtered with
   - value matches conditions of
   - value matches expressions of
@@ -176,7 +181,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.8.6.12176
+dockerimage: demisto/python3:3.8.6.13358
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
