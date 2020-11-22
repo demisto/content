@@ -3,7 +3,7 @@ commonfields:
   id: GraphQL
   version: -1
 configuration:
-- display: GraphQL Server URL (e.g. https://countries.trevorblades.com)
+- display: GraphQL Server URL (e.g., https://countries.trevorblades.com)
   name: url
   required: true
   type: 0
@@ -13,7 +13,7 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: 'JSON of HTTP Headers to send in the request, for example {"Authorization":
+- additionalinfo: 'JSON of HTTP headers to send in the request, for example {"Authorization":
     "Token"}'
   display: HTTP Headers
   hidden: false
@@ -28,7 +28,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Generic GraphQL client to interact with any GraphQL server API.
+description: The Generic GraphQL client can interact with any GraphQL server API.
 display: GraphQL
 name: GraphQL
 script:
@@ -41,14 +41,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: Primary key field in the response to unique the object in the context
+      description: Primary key field in the response to provide a unique object in the context
         data.
       isArray: false
       name: outputs_key_field
       required: false
       secret: false
     deprecated: false
-    description: Execute a query request to the GraphQL server.
+    description: Executes a query request to the GraphQL server.
     execution: false
     name: graphql-query
   dockerimage: demisto/graphql:1.0.0.13458
