@@ -1,3 +1,6 @@
+# pylint: disable=no-member
+# pylint: disable=no-name-in-module
+
 import ssl
 import sys
 from datetime import datetime
