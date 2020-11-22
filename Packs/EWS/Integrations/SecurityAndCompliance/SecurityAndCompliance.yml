@@ -18,22 +18,22 @@ configuration:
   required: false
   type: 8
 description: This integration allow to manage and interuct with microsoft security and compliance content search.
-display: O365 - Security And Compliance - Content Search
+display: O365 - Security And Compliance
 name: SecurityAndCompliance
 script:
   commands:
   - deprecated: false
-    description: Start authorization.
+    description: OAuth2.0 - Start authorization.
     execution: false
-    name: o365-sc-start-auth
+    name: o365-sc-auth-start
   - deprecated: false
-    description: Complete authorization.
+    description: OAuth2.0 - Complete authorization.
     execution: false
-    name: o365-sc-complete-auth
+    name: o365-sc-auth-complete
   - deprecated: false
-    description: Test authorization.
+    description: OAuth2.0 - Test authorization.
     execution: false
-    name: o365-sc-test
+    name: o365-sc-auth-test
   - arguments:
     - default: false
       description: The name of the compliance search.
@@ -399,6 +399,35 @@ script:
       name: search_name
       required: true
       secret: false
+    - default: false
+      description:  The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+      defaultValue: 100
+    - default: false
+      description: Whether to include mailboxes which have no results in results entry context.
+      isArray: false
+      name: all_results
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+        - 'true'
+        - 'false'
+    - default: false
+      description: Whether to export search results as json file to war-room.
+      isArray: false
+      name: export
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+        - 'true'
+        - 'false'
     - default: false
       description: Show search statistics.
       isArray: false
@@ -779,6 +808,24 @@ script:
       name: search_action_name
       required: true
       secret: false
+    - default: false
+      description: The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+      defaultValue: 100
+    - default: false
+      description: Whether to export search results as json file to war-room.
+      isArray: false
+      name: export
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+        - 'true'
+        - 'false'
     - default: false
       description: Print results into war-room.
       isArray: false

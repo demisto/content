@@ -163,20 +163,34 @@ function CreateNewSession {
     #>
 }
 
-function ParseSuccessResults([string]$success_results) {
+function ParseSuccessResults([string]$success_results, [int]$limit, [bool]$all_results) {
     $parsed_success_results = New-Object System.Collections.Generic.List[System.Object]
     if ($success_results) {
         $lines = $success_results.Split([Environment]::NewLine)
-        foreach ($line in $lines)
-        {
-            if ($line -match 'Location: (\S+), Item count: (\d+), Total size: (\d+)')
+
+        if ($limit -ne -1) {
+            $limit_min = ($limit, $lines.Count | Measure-Object -Minimum).Minimum
+        } else {
+            $limit = $lines.Count - 1
+        }
+
+        # Results limit
+        $results_count = 0
+        # Lines iterator
+        $lines_scanned = 0
+        while ($results_count -lt $limit_min -and $lines_scanned -lt $lines.Count) {
+            if ($lines[$lines_scanned] -match 'Location: (\S+), Item count: (\d+), Total size: (\d+)')
             {
-                $parsed_success_results.Add(@{
-                    "Location" = $matches[1]
-                    "ItemsCount" = $matches[2]
-                    "Size" = $matches[3]
-                })
+                if ($matches[2] -ne 0 -or $all_results){
+                    $parsed_success_results.Add(@{
+                        "Location" = $matches[1]
+                        "ItemsCount" = $matches[2]
+                        "Size" = $matches[3]
+                    })
+                    $results_count += 1
+                }
             }
+            $lines_scanned += 1
         }
     }
 
@@ -196,10 +210,14 @@ function ParseSuccessResults([string]$success_results) {
     #>
 }
 
-function ParseResults([string]$results) {
+function ParseResults([string]$results, [int]$limit) {
     $parsed_results = New-Object System.Collections.Generic.List[System.Object]
-    if ($results) {
+    if ($limit -ne 0) {
         $lines = $results.Split(",")
+        if ($limit -ne -1) {
+            $limit = ($limit, $lines.Count | Measure-Object -Minimum).Minimum
+            $lines = $lines
+        }
         foreach ($line in $lines)
         {
             if ($line -match "Location: (\S+); Sender: ([\S ]+); Subject: ([\S ]+); Type: (\S+); Size: (\d+); Received Time: ([\S\d ]+); Data Link: ([^\}]+)")
@@ -233,7 +251,7 @@ function ParseResults([string]$results) {
     #>
 }
 
-function ParseSearchToEntryContext([psobject]$search) {
+function ParseSearchToEntryContext([psobject]$search, [int]$limit = 0, [bool]$all_results = $false) {
     return @{
         "AllowNotFoundExchangeLocationsEnabled" = $search.AllowNotFoundExchangeLocationsEnabled
         "AzureBatchFrameworkEnabled" = $search.AzureBatchFrameworkEnabled
@@ -266,7 +284,7 @@ function ParseSearchToEntryContext([psobject]$search) {
         "SharePointLocationExclusion" = $search.SharePointLocationExclusion
         "Size" = $search.Size
         "Status" = $search.Status
-        "SuccessResults" = ParseSuccessResults $search.SuccessResults
+        "SuccessResults" = ParseSuccessResults $search.SuccessResults $limit $all_results
         "TenantId" = $search.TenantId
     }
     <#
@@ -288,7 +306,7 @@ function ParseSearchToEntryContext([psobject]$search) {
     #>
 }
 
-function ParseSearchActionToEntryContext([psobject]$search_action) {
+function ParseSearchActionToEntryContext([psobject]$search_action, [int]$limit = 0) {
     return @{
         "Action" = $search_action.Action
         "AllowNotFoundExchangeLocationsEnabled" = $search_action.AllowNotFoundExchangeLocationsEnabled
@@ -321,7 +339,7 @@ function ParseSearchActionToEntryContext([psobject]$search_action) {
         "SearchName" = $search_action.SearchName
         "Status" = $search_action.Status
         "TenantId" = $search_action.TenantId
-        "Results" = ParseResults $search_action.Results
+        "Results" = ParseResults $search_action.Results $limit
     }
     <#
         .DESCRIPTION
@@ -439,10 +457,6 @@ class OAuth2DeviceCodeClient {
         $this.device_code = $null
         $this.device_code_expires_in = $null
         $this.device_code_creation_time = $null
-        $this.access_token = $null
-        $this.refresh_token = $null
-        $this.access_token_expires_in = $null
-        $this.access_token_creation_time = $null
         # Get device-code and user-code
         $params = @{
             "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/devicecode"
@@ -930,13 +944,17 @@ class SecurityAndComplianceClient {
         #>
 	}
 
-	[psobject]GetSearch([string]$search_name) {
+	[psobject]GetSearch([string]$search_name, [int]$limit) {
         try{
             # Establish session to remote
             $this.CreateSession()
             # Import and Execute command
             Import-PSSession -Session $this.session -CommandName Get-ComplianceSearch -AllowClobber
-            $response = Get-ComplianceSearch -Identity $search_name
+            if ($limit -eq -1) {
+                $limit = "unlimited"
+            }
+            $response = Get-ComplianceSearch -Identity $search_name -ResultSize $limit
+
             return $response
         }
         finally {
@@ -946,6 +964,12 @@ class SecurityAndComplianceClient {
         <#
             .DESCRIPTION
             Get compliance search by name from the Security & Compliance Center.
+
+            .PARAMETER search_name
+            The name of the compliance search.
+
+            .PARAMETER limit
+            Results limit (-1 is unlimited).
 
             .EXAMPLE
             $client.GetSearch("new-search")
@@ -974,6 +998,9 @@ class SecurityAndComplianceClient {
             .DESCRIPTION
             Start stopped, completed or not started compliance search in the Security & Compliance Center.
 
+            .PARAMETER search_name
+            The name of the compliance search.
+
             .EXAMPLE
             $client.StartSearch("new-search")
 
@@ -997,6 +1024,9 @@ class SecurityAndComplianceClient {
         <#
             .DESCRIPTION
             Stop compliance search by name in the Security & Compliance Center.
+ 
+            .PARAMETER search_name
+            The name of the compliance search.
 
             .EXAMPLE
             $client.StopSearch("new-search")
@@ -1112,13 +1142,16 @@ class SecurityAndComplianceClient {
         #>
 	}
 
-    [psobject]GetSearchAction([string]$search_action_name) {
+    [psobject]GetSearchAction([string]$search_action_name, [int]$limit) {
         try{
             # Establish session to remote
             $this.CreateSession()
             # Import and Execute command
             Import-PSSession -Session $this.session -CommandName Get-ComplianceSearchAction -AllowClobber
-            $response = Get-ComplianceSearchAction -Identity $search_action_name
+            if ($limit -eq -1) {
+                $limit = "unlimited"
+            }
+            $response = Get-ComplianceSearchAction -Identity $search_action_name -ResultSize $limit
 
             return $response
         }
@@ -1129,6 +1162,12 @@ class SecurityAndComplianceClient {
         <#
             .DESCRIPTION
             Get compliance search action in the Security & Compliance Center.
+
+            .PARAMETER search_action_name
+            The name of the compliance search action.
+
+            .PARAMETER limit
+            Results limit (-1 is unlimited).
 
             .EXAMPLE
             $client.GetSearchAction("search-name")
@@ -1273,11 +1312,13 @@ function ListSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwa
 function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Command arguemnts parsing
     $statistics = ConvertTo-Boolean $kwargs.statistics
+    $all_results = ConvertTo-Boolean $kwargs.all_results
+    $export = ConvertTo-Boolean $kwargs.export
     # Raw response
-    $raw_response = $client.GetSearch($kwargs.search_name)
+    $raw_response = $client.GetSearch($kwargs.search_name, $kwargs.limit)
     # Entry context
     $entry_context = @{
-        $script:SEARCH_ENTRY_CONTEXT = ParseSearchToEntryContext $raw_response
+        $script:SEARCH_ENTRY_CONTEXT = ParseSearchToEntryContext $raw_response $kwargs.limit $all_results
     }
     # Human readable - Basic info
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, RunBy
@@ -1287,8 +1328,14 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     if ($parsed_results -and $statistics) {
         $human_readable += TableToMarkdown $parsed_results "Search statistics"
     }
+    # Results file export
+    if ($export -and $parsed_results) {
+        if ($parsed_results.Count -ne 0){
+            $file_entry = FileResult "$($kwargs.search_name)_search.json" $($parsed_results | ConvertTo-Json)
+        }
+    }
 
-	return $human_readable, $entry_context, $raw_response
+	return $human_readable, $entry_context, $raw_response, $file_entry
 }
 
 function StartSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
@@ -1347,11 +1394,12 @@ function RemoveSearchActionCommand([SecurityAndComplianceClient]$client, [hashta
 function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Command arguemnts parsing
     $results = ConvertTo-Boolean $kwargs.results
+    $export = ConvertTo-Boolean $kwargs.export
     # Raw response
-    $raw_response = $client.GetSearchAction($kwargs.search_action_name)
+    $raw_response = $client.GetSearchAction($kwargs.search_action_name, $kwargs.limit)
     # Entry context
     $entry_context = @{
-        $script:SEARCH_ACTION_ENTRY_CONTEXT = ParseSearchActionToEntryContext $raw_response
+        $script:SEARCH_ACTION_ENTRY_CONTEXT = ParseSearchActionToEntryContext $raw_response $kwargs.limit
     }
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, SearchName, Action, LastModifiedTime, RunBy, JobEndTime, Status
@@ -1361,14 +1409,21 @@ function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
     if ($parsed_results -and $results) {
         $human_readable += TableToMarkdown $parsed_results "Search action results"
     }
+    # Results file export
+    if ($export -and $parsed_results) {
+        if ($parsed_results.Count -ne 0){
+            $file_entry = FileResult "$($kwargs.search_action_name)_search_action.json" $($parsed_results | ConvertTo-Json)
+        }
+    }
 
 
-	return $human_readable, $entry_context, $raw_response
+	return $human_readable, $entry_context, $raw_response, $file_entry
 }
 
 function ListSearchActionsCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Raw response
     $raw_response = $client.ListSearchActions()
+
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, SearchName, Action, LastModifiedTime, RunBy, JobEndTime, Status
     $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - search actions"
@@ -1409,13 +1464,13 @@ function Main {
             "test-module" {
                 ($human_readable, $entry_context, $raw_response) = TestModuleCommand $oauth2_client $cs_client
 			}
-            "$script:COMMAND_PREFIX-start-auth" {
+            "$script:COMMAND_PREFIX-auth-start" {
                 ($human_readable, $entry_context, $raw_response) = StartAuthCommand $oauth2_client
             }
-            "$script:COMMAND_PREFIX-complete-auth" {
+            "$script:COMMAND_PREFIX-auth-complete" {
                 ($human_readable, $entry_context, $raw_response) = CompleteAuthCommand $oauth2_client
             }
-            "$script:COMMAND_PREFIX-test" {
+            "$script:COMMAND_PREFIX-auth-test" {
                 ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $cs_client
             }
 			"$script:COMMAND_PREFIX-new-search" {
@@ -1431,7 +1486,7 @@ function Main {
 				($human_readable, $entry_context, $raw_response) = ListSearchCommand $cs_client $command_arguments
 			}
 			"$script:COMMAND_PREFIX-get-search" {
-				($human_readable, $entry_context, $raw_response) = GetSearchCommand $cs_client $command_arguments
+				($human_readable, $entry_context, $raw_response, $file_entry) = GetSearchCommand $cs_client $command_arguments
 			}
             "$script:COMMAND_PREFIX-start-search" {
 				($human_readable, $entry_context, $raw_response) = StartSearchCommand $cs_client $command_arguments
@@ -1449,13 +1504,16 @@ function Main {
 				($human_readable, $entry_context, $raw_response) = ListSearchActionsCommand $cs_client $command_arguments
 			}
             "$script:COMMAND_PREFIX-get-search-action" {
-				($human_readable, $entry_context, $raw_response) = GetSearchActionCommand $cs_client $command_arguments
+				($human_readable, $entry_context, $raw_response, $file_entry) = GetSearchActionCommand $cs_client $command_arguments
 			}
         }
         # Updating integration context if access token changed
         UpdateIntegrationContext $oauth2_client
         # Return results to Demisto Server
         ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
+        if ($file_entry) {
+            $Demisto.results($file_entry)
+        }
     }
     catch {
         $Demisto.debug("Integration: $script:INTEGRATION_NAME

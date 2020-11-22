@@ -588,3 +588,19 @@ function ConvertTo-Boolean
     0 { return $false; }
   }
 }
+
+function FileResult([string]$file_name, [string]$data, [string]$file_type) {
+    if (!$file_type) {
+        $file_type = [EntryTypes]::file
+    }
+    $temp = $demisto.UniqueFile()
+    Out-File -FilePath "$($demisto.Investigation().id)_$temp" -Encoding "utf8" -InputObject $data
+
+    return @{
+        "Contents" = ''
+        "ContentsFormat" = [EntryFormats]::text.ToString()
+        "Type" = 3
+        "File" = $file_name
+        "FileID" = $temp
+    }
+}
