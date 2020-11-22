@@ -2855,7 +2855,9 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "TestCymptomPlaybook"
+            "integrations": "Cymptom",
+            "playbookID": "TestCymptomPlaybook",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
