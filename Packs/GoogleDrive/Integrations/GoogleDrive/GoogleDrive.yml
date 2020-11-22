@@ -13,7 +13,7 @@ configuration:
   type: 4
 - display: User ID
   name: user_id
-  additionalinfo: The Primary Email of the user to fetch the incident(s).
+  additionalinfo: The primary email address of the user to fetch the incident(s).
   required: false
   type: 0
 - display: Action Detail Case Include
@@ -33,8 +33,8 @@ configuration:
 - display: Drive Item Search Field
   name: drive_item_search_field
   required: false
-  additionalinfo: The options itemName- Fetch activities for this Drive item. The format is "items/ITEM_ID".
-    ancestorName- Fetch activities for this Drive folder and all children and descendants.
+  additionalinfo: The options itemName - Fetch activities for this Drive item. The format is "items/ITEM_ID".
+    folderName- Fetch activities for this Drive folder and all children and descendants.
     The format is "items/ITEM_ID".
   type: 15
   options:
@@ -42,20 +42,20 @@ configuration:
   - folderName
 - display: Drive Item Search Value
   name: drive_item_search_value
-  additionalinfo: Item Name or Ancestor Name for fetching the incident.
+  additionalinfo: itemName or folderName for fetching the incident.
   required: false
   type: 0
 - display: Max Incidents
   name: max_fetch
-  additionalinfo: The Maximum number of incidents to fetch every time.
+  additionalinfo: The maximum number of incidents to fetch each time.
   required: false
   type: 0
   defaultvalue: 50
 - display: First Fetch Time Interval
   name: first_fetch
   type: 0
-  additionalinfo: The time range to consider for initial data fetch.(<number> <unit>,
-    e.g. 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours).
+  additionalinfo: The time range to consider for the initial data fetch in the format <number> <unit> 
+    e.g., 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours).
   required: false
   defaultvalue: '10 minutes'
 - display: Incident type
@@ -70,7 +70,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Google Drive allows users to store files on their servers, synchronize files across devices, and share files. This integration helps you to create a new drive, query past activity and view change logs performed by the users.
+description: Google Drive allows users to store files on their servers, synchronize files across devices, and share files. This integration helps you to create a new drive, query past activity, and view change logs performed by the users.
 display: Google Drive
 name: GoogleDrive
 script:
@@ -90,7 +90,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the shared drive is hidden from default view.
+      description: Whether the shared drive is hidden from the default view.
       isArray: false
       name: hidden
       predefined:
@@ -109,11 +109,11 @@ script:
       description: Identifies what kind of resource this is.
       type: String
     - contextPath: GoogleDrive.Drive.id
-      description: The ID of this shared drive which is also the ID of the top level
-        folder of this shared drive.
+      description: The ID of the shared drive which is also the ID of the top level
+        folder of the shared drive.
       type: String
     - contextPath: GoogleDrive.Drive.name
-      description: The name of this shared drive.
+      description: The name of the shared drive.
       type: String
     - contextPath: GoogleDrive.Drive.hidden
       description: Whether the shared drive is hidden from default view.
@@ -143,7 +143,7 @@ script:
       description: Whether changes should include the file resource if the file is
         still accessible by the user at the time of the request, even when a file
         was removed from the list of changes and there will be no further change entries
-        for this file.
+        for this file. Default is "false".
       isArray: false
       name: include_corpus_removals
       predefined:
@@ -155,7 +155,7 @@ script:
       default: false
       defaultValue: 'false'
       description: Whether both My Drive and shared drive items should be included
-        in results.
+        in the results. Default is "false".
       isArray: false
       name: include_items_from_all_drives
       predefined:
@@ -174,7 +174,7 @@ script:
       default: false
       defaultValue: 'true'
       description: Whether to include changes indicating that items have been removed
-        from the list of changes, for example by deletion or loss of access.
+        from the list of changes, for example by deletion or loss of access. Default is "true".
       isArray: false
       name: include_removed
       predefined:
@@ -185,7 +185,7 @@ script:
     - default: false
       defaultValue: 100
       description: The maximum number of changes to return per page. Acceptable values
-        are 1 to 1000, inclusive.
+        are 1 to 1000, inclusive. Default is "100".
       isArray: false
       name: page_size
       required: false
@@ -195,7 +195,7 @@ script:
       defaultValue: 'false'
       description: Whether to restrict the results to changes inside the My Drive
         hierarchy. This omits changes to files such as those in the Application Data
-        folder or shared files which have not been added to My Drive.
+        folder or shared files which have not been added to My Drive. Default is "false".
       isArray: false
       name: restrict_to_my_drive
       predefined:
@@ -205,7 +205,7 @@ script:
       secret: false
     - default: false
       description: A comma-separated list of spaces to query within the user corpus.
-        Supported values are 'drive', 'appDataFolder' and 'photos'.
+        Possible values are 'drive', 'appDataFolder', and 'photos'.
       isArray: false
       name: spaces
       required: false
@@ -214,7 +214,7 @@ script:
       default: false
       defaultValue: 'false'
       description: Whether the requesting application supports both My Drives and
-        shared drives.
+        shared drives. Default is "false".
       isArray: false
       name: supports_all_drives
       predefined:
@@ -225,7 +225,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: basic
-      description: The paths of the fields you want to be included in the response. Option basic will consider a response that includes a default set of fields, specific to this method. While in advance option, special value * will be used which returns all the fields.
+      description: 'The paths of the fields you want to include in the response. Possible values are: "basic" (the response will include a default set of fields specific to this method) and "advance" (you can use the value * to return all the fields). Default is "basic".'
       isArray: false
       name: fields
       predefined:
@@ -239,7 +239,7 @@ script:
     name: google-drive-changes-list
     outputs:
     - contextPath: GoogleDrive.PageToken.DriveChange.nextPageToken
-      description: The page token for the next page of changes.
+      description: The page token for the next page of changes. 
       type: String
     - contextPath: GoogleDrive.PageToken.DriveChange.newStartPageToken
       description: The starting page token for future changes.
@@ -257,7 +257,7 @@ script:
       description: Identifies what kind of resource this is.
       type: String
     - contextPath: GoogleDrive.DriveChange.changeType
-      description: The type of the change. Possible values are file and drive.
+      description: The type of the change. Possible values are "file" and "drive".
       type: String
     - contextPath: GoogleDrive.DriveChange.time
       description: The time of this change (RFC 3339 date-time).
@@ -335,7 +335,7 @@ script:
     - contextPath: GoogleDrive.DriveChange.file.spaces
       description: The list of spaces which contain the file. The currently supported
         values are 'drive', 'appDataFolder' and 'photos'.
-      type: Unknows
+      type: Unknown
     - contextPath: GoogleDrive.DriveChange.file.version
       description: A monotonically increasing version number for the file. This reflects
         every change made to the file on the server, even those not visible to the
@@ -377,7 +377,7 @@ script:
       description: The last time the file was modified by the user (RFC 3339 date-time).
       type: Date
     - contextPath: GoogleDrive.DriveChange.file.modifiedByMe
-      description: Whether the file has been modified by this user.
+      description: Whether the file has been modified by the user.
       type: Boolean
     - contextPath: GoogleDrive.DriveChange.file.sharedWithMeTime
       description: The time at which the file was shared with the user, if applicable
@@ -396,7 +396,7 @@ script:
       description: Whether this user is the requesting user.
       type: Boolean
     - contextPath: GoogleDrive.DriveChange.file.sharingUser.permissionId
-      description: The user's ID as visible in Permission resources.
+      description: The user's ID as visible in the Permission resources.
       type: String
     - contextPath: GoogleDrive.DriveChange.file.sharingUser.emailAddress
       description: The email address of the user. This may not be present in certain
@@ -415,7 +415,7 @@ script:
       description: Whether this user is the requesting user.
       type: Boolean
     - contextPath: GoogleDrive.DriveChange.file.owners.permissionId
-      description: The user's ID as visible in Permission resources.
+      description: The user's ID as visible in the Permission resources.
       type: String
     - contextPath: GoogleDrive.DriveChange.file.owners.emailAddress
       description: The email address of the user. This may not be present in certain
@@ -913,14 +913,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Return activities for this Drive folder and all children and descendants.
+      description: Return activities for this drive folder and all children and descendants.
         The format is "items/ITEM_ID".
       isArray: false
       name: folder_name
       required: false
       secret: false
     - default: false
-      description: Return activities for this Drive item. The format is "items/ITEM_ID".
+      description: Return activities for this drive item. The format is "items/ITEM_ID".
       isArray: false
       name: item_name
       required: false
@@ -954,7 +954,7 @@ script:
       secret: false
     - default: false
       description: "A singular value or a list of allowed action types enclosed in\
-        \ parentheses. Which filters based on given actions. Examples: \nRENAME \n\
+        \ parentheses. The filters are based on given actions. For example: \nRENAME \n\
         (CREATE EDIT)\nThis argument will override if the filter argument is given."
       isArray: false
       name: action_detail_case_include
@@ -962,7 +962,7 @@ script:
       secret: false
     - default: false
       description: "A singular value or a list of allowed action types enclosed in\
-        \ parentheses. Which filters based on given actions Examples:\nRENAME \n(CREATE\
+        \ parentheses. The filters are based on given actions. For example:\nRENAME \n(CREATE\
         \ EDIT)\nThis argument will override if the filter argument is given."
       isArray: false
       name: action_detail_case_remove
@@ -1064,7 +1064,7 @@ script:
       description: Indicates the Google Drive permissions role.
       type: String
     - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.allowDiscovery
-      description: If true, the item can be discovered (e.g. in the user's "Shared with me" collection) without needing a link to the item.
+      description: If true, the item can be discovered (e.g., in the user's "Shared with me" collection) without needing a link to the item.
       type: Boolean
     - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.user.knownUser.personName
       description: The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID".
@@ -1085,7 +1085,7 @@ script:
       description: The title of the group.
       type: String
     - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.domain.name
-      description: The name of the domain, e.g. "google.com".
+      description: The name of the domain, e.g., "google.com".
       type: String
     - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.domain.legacyId
       description: An opaque string used to identify this domain.
@@ -1097,7 +1097,7 @@ script:
       description: Indicates the Google Drive permissions role.
       type: String
     - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.allowDiscovery
-      description: If true, the item can be discovered (e.g. in the user's "Shared with me" collection) without needing a link to the item.
+      description: If true, the item can be discovered (e.g., in the user's "Shared with me" collection) without needing a link to the item.
       type: Boolean
     - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.user.knownUser.personName
       description: The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID".
@@ -1118,7 +1118,7 @@ script:
       description: The title of the group.
       type: String
     - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.domain.name
-      description: The name of the domain, e.g. "google.com".
+      description: The name of the domain, e.g., "google.com".
       type: String
     - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.domain.legacyId
       description: An opaque string used to identify this domain.
@@ -1193,10 +1193,10 @@ script:
       description: True if this is the user making the request.
       type: Boolean
     - contextPath: GoogleDrive.DriveActivity.actors.impersonation.impersonatedUser.deletedUser
-      description: If true, A user whose account has since been deleted.
+      description: If true, a user whose account has since been deleted.
       type: Boolean
     - contextPath: GoogleDrive.DriveActivity.actors.impersonation.impersonatedUser.unknownUser
-      description: If true, A user about whom nothing is currently known.
+      description: If true, a user about whom nothing is currently known.
       type: Boolean
     - contextPath: GoogleDrive.DriveActivity.actors.system.type
       description: The type of the system event that may triggered activity.
@@ -1283,7 +1283,7 @@ script:
       description: Indicates the Google Drive permissions role.
       type: String
     - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.allowDiscovery
-      description: If true, the item can be discovered (e.g. in the user's "Shared with me" collection) without needing a link to the item.
+      description: If true, the item can be discovered (e.g., in the user's "Shared with me" collection) without needing a link to the item.
       type: Boolean
     - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.user.knownUser.personName
       description: The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID".
@@ -1304,7 +1304,7 @@ script:
       description: The title of the group.
       type: String
     - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.domain.name
-      description: The name of the domain, e.g. "google.com".
+      description: The name of the domain, e.g., "google.com".
       type: String
     - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.domain.legacyId
       description: An opaque string used to identify this domain.
@@ -1316,7 +1316,7 @@ script:
       description: Indicates the Google Drive permissions role.
       type: String
     - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.allowDiscovery
-      description: If true, the item can be discovered (e.g. in the user's "Shared with me" collection) without needing a link to the item.
+      description: If true, the item can be discovered (e.g., in the user's "Shared with me" collection) without needing a link to the item.
       type: Boolean
     - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.user.knownUser.personName
       description: The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID".
@@ -1337,7 +1337,7 @@ script:
       description: The title of the group.
       type: String
     - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.domain.name
-      description: The name of the domain, e.g. "google.com".
+      description: The name of the domain, e.g., "google.com".
       type: String
     - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.domain.legacyId
       description: An opaque string used to identify this domain.
@@ -1435,7 +1435,7 @@ script:
       description: The MIME type of the Drive item.
       type: String
     - contextPath: GoogleDrive.DriveActivity.actions.target.driveItem.owner.domain.name
-      description: The name of the domain, e.g. "google.com".
+      description: The name of the domain, e.g., "google.com".
       type: String
     - contextPath: GoogleDrive.DriveActivity.actions.target.driveItem.owner.domain.legacyId
       description: An opaque string used to identify this domain.
@@ -1481,7 +1481,7 @@ script:
       description: The MIME type of the Drive item.
       type: String
     - contextPath: GoogleDrive.DriveActivity.actions.target.drive.root.owner.domain.name
-      description: The name of the domain, e.g. "google.com".
+      description: The name of the domain, e.g., "google.com".
       type: String
     - contextPath: GoogleDrive.DriveActivity.actions.target.drive.root.owner.domain.legacyId
       description: An opaque string used to identify this domain.
@@ -1531,7 +1531,7 @@ script:
       description: The MIME type of the Drive item.
       type: String
     - contextPath: GoogleDrive.DriveActivity.actions.target.fileComment.parent.owner.domain.name
-      description: The name of the domain, e.g. "google.com".
+      description: The name of the domain, e.g., "google.com".
       type: String
     - contextPath: GoogleDrive.DriveActivity.actions.target.fileComment.parent.owner.domain.legacyId
       description: An opaque string used to identify this domain.
@@ -1580,7 +1580,7 @@ script:
       description: The MIME type of the Drive item.
       type: String
     - contextPath: GoogleDrive.DriveActivity.targets.driveItem.owner.domain.name
-      description: The name of the domain, e.g. "google.com".
+      description: The name of the domain, e.g., "google.com".
       type: String
     - contextPath: GoogleDrive.DriveActivity.targets.driveItem.owner.domain.legacyId
       description: An opaque string used to identify this domain.
@@ -1626,7 +1626,7 @@ script:
       description: The MIME type of the Drive item.
       type: String
     - contextPath: GoogleDrive.DriveActivity.targets.drive.root.owner.domain.name
-      description: The name of the domain, e.g. "google.com".
+      description: The name of the domain, e.g., "google.com".
       type: String
     - contextPath: GoogleDrive.DriveActivity.targets.drive.root.owner.domain.legacyId
       description: An opaque string used to identify this domain.
@@ -1675,7 +1675,7 @@ script:
       description: The MIME type of the Drive item.
       type: String
     - contextPath: GoogleDrive.DriveActivity.targets.fileComment.parent.owner.domain.name
-      description: The name of the domain, e.g. "google.com".
+      description: The name of the domain, e.g., "google.com".
       type: String
     - contextPath: GoogleDrive.DriveActivity.targets.fileComment.parent.owner.domain.legacyId
       description: An opaque string used to identify this domain.
