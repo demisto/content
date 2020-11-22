@@ -33,9 +33,6 @@ def options_handler():
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
 
     options = parser.parse_args()
-    if options.only_check_index_zip and options.only_check_index_file:
-        logging.info('Options only_check_index_zip and only_check_index_file cannot be true together.')
-        return None
 
     return options
 
