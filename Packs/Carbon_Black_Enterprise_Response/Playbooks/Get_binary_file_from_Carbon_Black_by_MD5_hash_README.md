@@ -43,4 +43,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Get binary file from Carbon Black by MD5 hash](Insert the link to your image here)
+![Get binary file from Carbon Black by MD5 hash](https://raw.githubusercontent.com/demisto/content/8eb0c6e3e592d9eedbcf72b025c403d44a5ba395/Packs/Carbon_Black_Enterprise_Response/doc_files/Get_binary_file_from_Carbon_Black_by_MD5_hash.png)

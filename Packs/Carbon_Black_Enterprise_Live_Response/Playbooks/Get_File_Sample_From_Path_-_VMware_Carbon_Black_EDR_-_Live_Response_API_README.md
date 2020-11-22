@@ -47,4 +47,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Get File Sample From Path - VMware Carbon Black EDR - Live Response API](Insert the link to your image here)
+![Get File Sample From Path - VMware Carbon Black EDR - Live Response API](https://raw.githubusercontent.com/demisto/content/8eb0c6e3e592d9eedbcf72b025c403d44a5ba395/Packs/Carbon_Black_Enterprise_Live_Response/doc_files/Get_File_Sample_From_Path_-_VMware_Carbon_Black_EDR_(Live_Response_API).png)

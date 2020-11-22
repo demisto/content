@@ -49,4 +49,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Retrieve File from Endpoint - Generic V2](Insert the link to your image here)
+![Retrieve File from Endpoint - Generic V2](https://raw.githubusercontent.com/demisto/content/8eb0c6e3e592d9eedbcf72b025c403d44a5ba395/Packs/CommonPlaybooks/doc_files/Retrieve_File_from_Endpoint_-_Generic_V2.png)

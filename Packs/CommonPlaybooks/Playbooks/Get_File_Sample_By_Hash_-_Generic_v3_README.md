@@ -35,4 +35,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Get File Sample By Hash - Generic v3](Insert the link to your image here)
+![Get File Sample By Hash - Generic v3](https://raw.githubusercontent.com/demisto/content/8eb0c6e3e592d9eedbcf72b025c403d44a5ba395/Packs/CommonPlaybooks/doc_files/Get_File_Sample_By_Hash_-_Generic_v3.png)
