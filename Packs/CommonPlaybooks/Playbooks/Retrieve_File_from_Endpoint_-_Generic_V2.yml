@@ -1,5 +1,5 @@
-id: 567dd29e-b361-46b9-8a60-a8553a4a6a6e
-version: 19
+id: Retrieve File from Endpoint - Generic V2
+version: -1
 name: Retrieve File from Endpoint - Generic V2
 description: |-
   This playbook retrieves a file sample from an endpoint using the following playbooks:
@@ -17,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -45,6 +46,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -170,35 +172,35 @@ inputs:
   value: {}
   required: false
   description: Get file sample from MD5 input.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SHA256
   value: {}
   required: false
   description: Get file sample from SHA256 input.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Hostname
   value: {}
   required: false
   description: Hostname of the machine on which the file is located.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Path
   value: {}
   required: false
   description: File path.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: UseD2
   value: {}
   required: false
   description: |-
     Determines whether a D2 agent will be used to retrieve the file.
     Default is no.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Sensor ID
   value: {}
   required: false
   description: The sensor ID. Provided the sensor ID to run the command with a new
     session. The session will be created and closed automatically.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: File
   description: File sample object
@@ -223,4 +225,24 @@ outputs:
   description: File MD5.
 - contextPath: CbLiveResponse.File.Extension
   description: File extension.
-sourceplaybookid: Retrieve File from Endpoint - Generic
+tests:
+- Account Enrichment - Generic v2.1 - Test
+- Calculate Severity - Generic v2 - Test
+- Calculate Severity - Standard - Test
+- Test Convert file hash to corresponding hashes
+- Dedup - Generic v2 - Test
+- Detonate File - Generic Test
+- Detonate File - No Files test
+- Detonate URL - Generic Test
+- Domain Enrichment - Generic v2 - Test
+- Email Address Enrichment - Generic v2.1 - Test
+- Endpoint Enrichment - Generic v2.1 - Test
+- Extract Indicators From File - Generic v2 - Test
+- Field polling test
+- File Enrichment - Generic v2 - Test
+- IP Enrichment - Generic v2 - Test
+- Send Investigation Summary Reports - Test
+- test-domain-indicator
+- URL Enrichment - Generic v2 - Test
+- Wait Until Datetime - Test
+fromversion: 5.0.0
