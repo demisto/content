@@ -135,7 +135,7 @@ inputs:
 - key: CommnadId
   value: {}
   required: true
-  description: Command Id to poll until completed.
+  description: Command ID to poll until completed.
   playbookInputQuery:
 - key: SessionId
   value: {}
