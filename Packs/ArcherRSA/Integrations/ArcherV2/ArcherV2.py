@@ -1031,7 +1031,7 @@ def print_cache_command(client: Client, args: Dict[str, str]):
 
 
 def fetch_incidents(
-        client: Client, last_run: dict, first_fetch_time: str, params: dict
+        client: Client, last_run: dict, first_fetch_time: str, params: dict, is_test: bool = False
 ) -> Tuple[dict, list]:
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
@@ -1061,16 +1061,19 @@ def fetch_incidents(
     )
 
     incidents = []
-
     for item in records:
         incident, incident_created_time = client.record_to_incident(item, app_id, date_field)
-
         incidents.append(incident)
         demisto.debug(f'New created incident time: {incident_created_time}')
         if incident_created_time > last_fetch:
             last_fetch = incident_created_time
 
     next_run = {'last_fetch': last_fetch.strftime('%Y-%m-%dT%H:%M:%SZ')}
+    if is_test:
+        incidents = {
+            'incidents': incidents,
+            'records': records
+        }
     return next_run, incidents
 
 
@@ -1115,19 +1118,23 @@ def main():
 
     command = demisto.command()
     LOG(f'Command being called is {command}')
-
     try:
-        if command == 'fetch-incidents':
+        if command in ('fetch-incidents', 'archer-fetch-test'):
             # Set and define the fetch incidents command to run after activated via integration settings.
+            is_test = 'archer-fetch-test' == command
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
-                params=params
+                params=params,
+                is_test=is_test
             )
             demisto.debug(f'Setting next run to {next_run}')
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
+            if is_test:
+                demisto.results(fileResult('archer-fetch-test.json', json.dumps(incidents, indent=4)))
+            else:
+                demisto.setLastRun(next_run)
+                demisto.incidents(incidents)
         elif command == 'test-module':
             demisto.results(test_module(client, params))
         elif command in commands:

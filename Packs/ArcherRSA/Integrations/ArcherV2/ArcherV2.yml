@@ -34,7 +34,7 @@ configuration:
   name: applicationId
   required: true
   type: 0
-- defaultvalue: Date/Time Occurred
+- defaultvalue: Date Created
   display: Application date field for fetch
   hidden: false
   name: applicationDateField
@@ -336,16 +336,25 @@ script:
       name: entryId
       required: true
       secret: false
-    - name: applicationId
-      required: false
+    - default: false
       description: ID of the application which we want to upload the file to.
-    - name: contentId
+      isArray: false
+      name: applicationId
       required: false
+      secret: false
+    - default: false
       description: The Content (record) ID to update.
-    - name: associatedField
+      isArray: false
+      name: contentId
       required: false
-      description: Archer field name to associate the file with.
+      secret: false
+    - default: false
       defaultValue: Supporting Documentation
+      description: Archer field name to associate the file with.
+      isArray: false
+      name: associatedField
+      required: false
+      secret: false
     deprecated: false
     description: Uploads a file to Archer.
     execution: false
@@ -513,6 +522,10 @@ script:
     description: prints Archer's integration cache.
     execution: false
     name: archer-print-cache
+  - deprecated: false
+    description: Test fetch incidents.
+    execution: false
+    name: archer-fetch-test
   dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: true
