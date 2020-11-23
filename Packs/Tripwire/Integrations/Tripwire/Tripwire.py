@@ -386,33 +386,23 @@ def fetch_incidents(client: Client, max_results: int, last_fetch: str, fetch_fil
     last_fetched_ids = demisto.getLastRun().get('fetched_ids', [])
     alerts = client.get_versions(fetch_filter)
     alerts = alerts[:int(max_results)]
-    demisto.info('in fetch')
     fetched_ids = []
-    demisto.info(f'alerts are {str(alerts)}')
     for alert in alerts:
         incident_created_time = datetime.strptime(alert.get('timeDetected'), '%Y-%m-%dT%H:%M:%S.000Z')
-        demisto.info(f'last fetch {str(last_fetch)} and incident creates is {str(incident_created_time)}')
 
         if incident_created_time < last_fetch:
             continue
 
         incident_name = alert.get('id')
 
-        demisto.info(f'incidnet name {str(incident_name)}')
-        demisto.info(f'last fetched id {str(last_fetched_ids)}')
-        demisto.info(f'incident_name  {str(incident_name)}')
-
         if incident_name in last_fetched_ids:
-            demisto.info('in if')
             continue
-        demisto.info('before created incidnet')
 
         incident = {
             'name': incident_name,
             'occurred': incident_created_time.strftime(DATE_FORMAT),
             'rawJSON': json.dumps(alert),
         }
-        demisto.info('created incidnet')
         incidents.append(incident)
         last_fetch = incident_created_time
         fetched_ids.extend([alert.get('id')])
