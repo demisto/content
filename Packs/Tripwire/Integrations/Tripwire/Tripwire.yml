@@ -138,10 +138,6 @@ script:
           name: start
           required: false
           secret: false
-        - default: false
-          isArray: false
-          required: false
-          secret: false
       deprecated: false
       description: Returns all Element Versions that meet the search critiera.
       execution: false

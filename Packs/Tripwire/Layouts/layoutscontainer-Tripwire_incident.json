@@ -1,9 +1,11 @@
 {
-	"close": null,
+  	"id": "Tripwire incident",
+	"group": "incident",
+	"name": "Tripwire incident",
 	"description": "",
-	"details": null,
+	"version": -1,
+	"fromVersion": "6.0.0",
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -418,24 +420,5 @@
 				"type": "canvas"
 			}
 		]
-	},
-	"edit": null,
-	"fromServerVersion": "",
-	"group": "incident",
-	"id": "0d68f85e-22cb-45fa-8406-b129d9c73e8c",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "",
-	"locked": false,
-	"mobile": null,
-	"name": "Tripwire incident",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"quickView": null,
-	"sortValues": null,
-	"system": false,
-	"toServerVersion": "",
-	"version": -1
+	}
 }
