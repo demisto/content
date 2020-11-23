@@ -80,6 +80,9 @@ references:
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
+        environment:
+          MAX_HEAP_SIZE: 2048m
+          HEAP_NEWSIZE: 512m
 
   workspace_root: &workspace_root
     /home/circleci/
