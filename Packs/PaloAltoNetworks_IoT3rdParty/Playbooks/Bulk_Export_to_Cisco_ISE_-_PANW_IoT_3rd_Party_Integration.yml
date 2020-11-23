@@ -46,7 +46,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       brandname:
-        simple: Cisco ISE Copy
+        simple: Cisco ISE
       using:
         simple: PANW IoT 3rd Party ISE Integration Active Instance,PANW IoT 3rd Party
           ISE Integration Standby Instance
