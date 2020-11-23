@@ -41,12 +41,12 @@ configuration:
   name: timeout
   required: false
   type: 0
-- defaultvalue: '10'
+- additionalinfo: The maximum number of incidents per fetch cannot exceed 100.
+  defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
   type: 0
-  additionalinfo: The maximum number of incidents per fetch cannot exceed 100.
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
@@ -259,7 +259,7 @@ script:
       defaultValue: 'False'
       description: Return data only if the incident was changed since the last time
         it was mirrored in to XSOAR.  This flag should be used only from inside an
-        XDR incident
+        XDR incident.
       isArray: false
       name: return_only_updated_incident
       required: false
@@ -1690,7 +1690,7 @@ script:
       will not update the current incident, it's here for debugging purposes.
     execution: false
     name: get-remote-data
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: true
   longRunning: false
@@ -1699,9 +1699,9 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- Test XDR Playbook
 defaultmapperin: Cortex XDR - IR-mapper
 defaultclassifier: Cortex XDR - IR
 defaultmapperout: Cortex XDR - IR-out-mapper
 fromversion: 5.0.0
-tests:
-- Test XDR Playbook

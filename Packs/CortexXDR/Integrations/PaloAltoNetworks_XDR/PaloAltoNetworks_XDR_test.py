@@ -868,7 +868,7 @@ def test_get_mapping_fields_command():
     assert expected_mapping == res.extract_mapping()
 
 
-def test_get_remote_data_command_should_update(requests_mock):
+def test_get_remote_data_command_should_update(requests_mock, mocker):
     """
     Given:
         -  an XDR client
@@ -898,6 +898,9 @@ def test_get_remote_data_command_should_update(requests_mock):
     expected_modified_incident['assigned_user_pretty_name'] = ''
     expected_modified_incident['in_mirror_error'] = ''
     del expected_modified_incident['creation_time']
+
+    # make sure get-extra-data is returning an incident
+    mocker.patch('PaloAltoNetworks_XDR.check_if_incident_was_modified_in_xdr', return_value=True)
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
     response = get_remote_data_command(client, args)
@@ -936,7 +939,7 @@ def test_get_remote_data_command_with_rate_limit_exception(mocker):
     assert demisto.results.call_args[0][0].get('Contents') == "API rate limit"
 
 
-def test_get_remote_data_command_should_not_update(requests_mock):
+def test_get_remote_data_command_should_not_update(requests_mock, mocker):
     """
     Given:
         -  an XDR client
@@ -956,16 +959,14 @@ def test_get_remote_data_command_should_not_update(requests_mock):
         'lastUpdate': '2020-07-31T00:00:00Z'
     }
     raw_incident = load_test_data('./test_data/get_incident_extra_data.json')
-    expected_modified_incident = raw_incident['reply']['incident'].copy()
-    expected_modified_incident['alerts'] = raw_incident['reply'].get('alerts').get('data')
-    expected_modified_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
-    expected_modified_incident['file_artifacts'] = raw_incident['reply'].get('file_artifacts').get('data')
-    expected_modified_incident['id'] = expected_modified_incident.get('incident_id')
-    expected_modified_incident['assigned_user_mail'] = ''
-    expected_modified_incident['assigned_user_pretty_name'] = ''
-    expected_modified_incident['in_mirror_error'] = ''
-    del expected_modified_incident['creation_time']
+    expected_modified_incident = {
+        'id': 1,
+        'in_mirror_error': ''
+    }
     sort_all_list_incident_fields(expected_modified_incident)
+
+    # make sure get-extra-data is returning an incident
+    mocker.patch('PaloAltoNetworks_XDR.check_if_incident_was_modified_in_xdr', return_value=False)
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
 
@@ -974,7 +975,7 @@ def test_get_remote_data_command_should_not_update(requests_mock):
     assert response.entries == []
 
 
-def test_get_remote_data_command_should_close_issue(requests_mock):
+def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
     """
     Given:
         -  an XDR client
@@ -1019,6 +1020,9 @@ def test_get_remote_data_command_should_close_issue(requests_mock):
         },
         'ContentsFormat': 'json'
     }
+
+    # make sure get-extra-data is returning an incident
+    mocker.patch('PaloAltoNetworks_XDR.check_if_incident_was_modified_in_xdr', return_value=True)
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
 
@@ -1065,6 +1069,9 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
     expected_modified_incident['owner'] = 'username'
     expected_modified_incident['in_mirror_error'] = ''
     del expected_modified_incident['creation_time']
+
+    # make sure get-extra-data is returning an incident
+    mocker.patch('PaloAltoNetworks_XDR.check_if_incident_was_modified_in_xdr', return_value=True)
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
     response = get_remote_data_command(client, args)

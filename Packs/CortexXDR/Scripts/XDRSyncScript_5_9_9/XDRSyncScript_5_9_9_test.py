@@ -328,11 +328,11 @@ def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_
     """
     fields_mapping = {
         "status": "xdrstatus",
-        "severity": "severity"
+        "manual_severity": "severity"
     }
 
     incident_in_xdr_latest = copy.deepcopy(INCIDENT_FROM_XDR)
-    incident_in_xdr_latest["severity"] = "medium"
+    incident_in_xdr_latest["manual_severity"] = "medium"
     incident_in_xdr_latest["modification_time"] += 100
 
     incident_from_xdr_in_context = copy.deepcopy(INCIDENT_FROM_XDR)

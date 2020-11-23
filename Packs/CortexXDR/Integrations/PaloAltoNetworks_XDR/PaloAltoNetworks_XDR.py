@@ -1859,7 +1859,7 @@ def get_remote_data_command(client, args):
         incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
                                                                  "alerts_limit": 1000,
                                                                  "return_only_updated_incident": True})
-        if incident_data:
+        if 'The incident was not modified' not in incident_data[0]:
             demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
 
             incident_data = incident_data[2].get('incident')
@@ -2022,7 +2022,8 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
 
             sort_all_list_incident_fields(incident_data)
 
-            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'), None)
+            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
+                                                                     None)
             incident_data['mirror_instance'] = integration_instance
             incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
 

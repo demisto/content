@@ -54,6 +54,12 @@ XDR_INCIDENT_FIELDS = [
     MODIFICATION_TIME_XDR_FIELD
 ]
 
+SEVERITY_MAPPING = {
+    "low": 1,
+    "medium": 2,
+    "high": 3
+}
+
 
 def compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident_in_context, incident_id, fields_mapping):
     modified_in_demisto = parser.parse(incident_in_demisto.get("modified")).timestamp() * 1000
@@ -167,22 +173,9 @@ def compare_incident_in_xdr_vs_previous_xdr_in_context(latest_incident_in_xdr, x
                     pass
 
                 if field_in_xdr == 'severity':
-                    severity_mapping = {
-                        "low": 1,
-                        "medium": 2,
-                        "high": 3,
-                    }
+                    current_value = SEVERITY_MAPPING[current_value]
 
-                    if severity_mapping[current_value] != previous_value:
-                        incident_in_xdr_was_modified = True
-                        field_name_in_demisto = fields_mapping[field_in_xdr]
-
-                        if current_value is None:
-                            demisto_update_args[field_name_in_demisto] = ""
-                        else:
-                            demisto_update_args[field_name_in_demisto] = current_value
-
-                elif current_value != previous_value:
+                if current_value != previous_value:
                     incident_in_xdr_was_modified = True
                     field_name_in_demisto = fields_mapping[field_in_xdr]
 
@@ -230,7 +223,6 @@ def get_latest_incident_from_xdr(incident_id, return_only_updated=False):
     latest_incident_in_xdr = latest_incident_in_xdr_result[0]["Contents"].get("incident")
     # no need to pass the whole incident with extra data - it will be too big json to pass
     # just the basic incident details
-
     if 'alerts' in latest_incident_in_xdr:
         del latest_incident_in_xdr['alerts']
     if 'file_artifacts' in latest_incident_in_xdr:
@@ -279,7 +271,7 @@ def create_incident_from_saved_data(field_mapping, incident_result=False):
 
 
 def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_run, first_run, xdr_alerts_field,
-                      xdr_file_artifacts_field, xdr_network_artifacts_field, incident_in_demisto, playbook_to_run,
+                      xdr_file_artifacts_field, xdr_network_artifacts_field, incident_in_demisto,
                       verbose=True):
 
     if first_run:
@@ -301,7 +293,6 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
         # update xdr and finish the script
         demisto.debug("the incident in demisto was modified, updating the incident in xdr accordingly. ")
         demisto.debug("xdr_update_args: {}".format(json.dumps(xdr_update_args, indent=4)))
-
         res = demisto.executeCommand("xdr-update-incident", xdr_update_args)
         if is_error(res):
             raise ValueError(get_error(res))
@@ -319,13 +310,8 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
                                                                        '_', '')
         update_incident['lastmirroredintime'] = datetime.now().isoformat() + 'Z'  # update the last mirrored-in time
 
-        severity_mapping = {
-            "low": 1,
-            "medium": 2,
-            "high": 3,
-        }
         if latest_incident_in_xdr.get('severity'):
-            latest_incident_in_xdr['severity'] = severity_mapping[latest_incident_in_xdr.get('severity')]
+            latest_incident_in_xdr['severity'] = SEVERITY_MAPPING[latest_incident_in_xdr.get('severity')]
 
         res = demisto.executeCommand("setIncident", update_incident)
         if is_error(res):
@@ -374,19 +360,15 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
                 "Incident in XDR was modified, updating incident in Demisto accordingly.\n\n{}".format(
                     demisto_update_args), None)
 
-        if playbook_to_run:
-            demisto.executeCommand("setPlaybook", {"name": playbook_to_run})
-        else:
-            # rerun the playbook the current playbook
-            demisto.executeCommand("setPlaybook", {})
+        # if playbook_to_run:
+        #     demisto.executeCommand("setPlaybook", {"name": playbook_to_run})
+        # else:
+
+        # rerun the current playbook
+        demisto.executeCommand("setPlaybook", {})
 
         if latest_incident_in_xdr.get('severity'):
-            severity_mapping = {
-                "low": 1,
-                "medium": 2,
-                "high": 3,
-            }
-            latest_incident_in_xdr['severity'] = severity_mapping[latest_incident_in_xdr.get('severity')]
+            latest_incident_in_xdr['severity'] = SEVERITY_MAPPING[latest_incident_in_xdr.get('severity')]
         return latest_incident_in_xdr
 
     if first_run:
@@ -427,12 +409,12 @@ def main(args):
     xdr_file_artifacts_field = args.get('xdr_file_artifacts')
     xdr_network_artifacts_field = args.get('xdr_network_artifacts')
     verbose = args.get('verbose') == 'true'
-    playbook_to_run = args.get('playbook_to_run')
+    # playbook_to_run = args.get('playbook_to_run')
 
     # get current running incident
     incident_in_demisto = demisto.incident()
     if not incident_in_demisto:
-        raise ValueError("Error - demisto.incidents()[0] expected to return current incident "
+        raise ValueError("Error - demisto.incident() expected to return current incident "
                          "from context but returned None")
 
     xdr_incident_markdown_field = args.get('xdr_incident_markdown_field')  # deprecated
@@ -455,15 +437,14 @@ def main(args):
     try:
         latest_incident_in_xdr = xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_run,
                                                    first_run, xdr_alerts_field, xdr_file_artifacts_field,
-                                                   xdr_network_artifacts_field, incident_in_demisto, playbook_to_run,
-                                                   verbose)
+                                                   xdr_network_artifacts_field, incident_in_demisto, verbose)
 
-    except Exception as e:
+    except Exception as ex:
         if verbose:
             raise
 
         demisto.error(traceback.format_exc())
-        return_error(str(e), e)
+        return_error(str(ex), ex)
     finally:
         # even if error occurred keep trigger sync
         if latest_incident_in_xdr is None:
