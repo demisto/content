@@ -36,8 +36,6 @@
 <li><a href="#h_a62bd46e-8b18-4f75-9215-2c1305374a47" target="_self">Create an ANC policy: cisco-ise-create-policy</a></li>
 <li><a href="#h_19abc45f-7827-416c-bbc4-2f2be27c6453" target="_self">Assign an ANC policy to an endpoint: cisco-ise-assign-policy</a></li>
 <li><a href="#h_f60063f9-8c7f-4198-945e-829c34c16fcb" target="_self">Get all blacklisted endpoints: cisco-ise-get-blacklist-endpoints</a></li>
-<li><a href="h_4bf25414-e9b3-41fe-a855-1bf7de70d143" target="_self">Get an endpoint ID by Name: cisco-ise-get-endpoint-id-by-name</a></li>
-<li><a href="h_9bf25414-e9b3-41fe-a855-1bf7de70d143" target="_self">Create new endpoint: cisco-ise-create-endpoint</a></li>
 </ol>
 <h3 id="h_5bf25414-e9b3-41fe-a855-1bf7de70d143">1. Get an endpoint ID</h3>
 <hr>
@@ -1294,6 +1292,6 @@
 </table>
 <p>&nbsp;</p>
 <h5>Command Example</h5>
-<pre>!cisco-ise-create-endpoint mac_address=01:02:01:02:ab:ab attributes_map={\"zb_profie\":\"iphone\",\"zb_category\":\"phone\"}</pre>
+<pre>!cisco-ise-create-endpoint mac_address=01:02:01:02:AB:AB attributes_map={\"zb_profie\":\"iphone\",\"zb_category\":\"phone\"}</pre>
 <h5>Human Readable Output</h5>
-<h3>Endpoint "01:02:01:02:ab:ab" has been created successfully</h3>
+<h3>Endpoint "01:02:01:02:AB:AB" has been created successfully</h3>
