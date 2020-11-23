@@ -1,12 +1,12 @@
 description: |-
   Find a Public Cloud resource of the following types:
-   - Compute Instance
+  - Compute Instance
   - Load Balancer
 
   on: AWS, Azure, GCP
 
   using Prisma Cloud inventory
-id: Prisma Cloud - Find Public Cloud Compute Resource by Public IP
+id: Prisma Cloud - Find Public Cloud Resource by Public IP
 inputs:
 - description: Public IP Address to look up
   key: PublicIPAddress
@@ -18,10 +18,11 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-name: Prisma Cloud - Find Public Cloud Compute Resource by Public IP
+name: Prisma Cloud - Find Public Cloud Resource by Public IP
 outputs:
 - contextPath: PrismaCloud.Attribution
   type: unknown
+  description: Prisma Cloud attributed asset information.
 starttaskid: "0"
 tasks:
   "0":
@@ -98,6 +99,7 @@ tasks:
       script: '|||redlock-search-config'
       type: regular
       version: -1
+      description: Search EC2 instances in Prisma Cloud
     taskid: 74461e84-8932-440b-8ae9-23747e55d17e
     timertriggers: []
     type: regular
@@ -165,6 +167,7 @@ tasks:
       name: What Cloud Provider?
       type: condition
       version: -1
+      description: Branch based on Cloud Provider
     taskid: ab985172-80ca-4640-888a-8ed88d1d26a8
     timertriggers: []
     type: condition
@@ -365,6 +368,7 @@ tasks:
       script: '|||redlock-search-config'
       type: regular
       version: -1
+      description: Search GCE instances in Prisma Cloud
     taskid: 2b522430-8f71-4522-898f-4317fc4c2a17
     timertriggers: []
     type: regular
@@ -423,6 +427,7 @@ tasks:
       script: '|||redlock-search-config'
       type: regular
       version: -1
+      description: Search EC2 Elastic Load Balancers in Prisma Cloud
     taskid: a41301a8-714e-44f7-83a6-df2921ab98f7
     timertriggers: []
     type: regular
@@ -481,6 +486,7 @@ tasks:
       script: '|||redlock-search-config'
       type: regular
       version: -1
+      description: Search Azure VM instances in Prisma Cloud
     taskid: b9e88586-6717-4794-8bff-cb6097d00808
     timertriggers: []
     type: regular
@@ -520,6 +526,7 @@ tasks:
       name: Are Results Found?
       type: condition
       version: -1
+      description: Check whether results are found.
     taskid: 12ad7b0d-b6b7-4d76-877a-5ad77bc5a0fc
     timertriggers: []
     type: condition
@@ -663,6 +670,7 @@ tasks:
       name: Is Prisma Cloud enabled?
       type: condition
       version: -1
+      description: Check whether Prisma Cloud integration is enabled.
     taskid: 35296a39-35c9-4212-8b25-9f381f61b698
     timertriggers: []
     type: condition

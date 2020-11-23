@@ -9,7 +9,7 @@ comment: Prisma Cloud Attribution
 commonfields:
   id: PrismaCloudAttribution
   version: -1
-dockerimage: demisto/python3:3.8.6.12176
+dockerimage: demisto/python3:3.8.6.13358
 enabled: true
 name: PrismaCloudAttribution
 outputs:

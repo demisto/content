@@ -115,6 +115,7 @@ tasks:
       name: Are there Expanse Asset Tags for this incident?
       type: condition
       version: -1
+      description: Check whether Expanse Asset tags are present in this incident.
     taskid: 45f02621-d6a4-430b-8ec8-f48af14abbe4
     timertriggers: []
     type: condition
@@ -313,6 +314,7 @@ tasks:
       name: Is Incident Priority Above AutoRemediation Threshold?
       type: condition
       version: -1
+      description: Check whether incident priority is above autoremediation threshold.
     taskid: f99f654b-2634-4ef6-8318-c9d4acf9f1a8
     timertriggers: []
     type: condition
@@ -411,6 +413,7 @@ tasks:
       name: Is Issue AutoRemediable with PAN-OS? (On-Prem and has IP:Port)
       type: condition
       version: -1
+      description: Check whether the issue can be auto-remediated with PAN-OS (on-prem and ip/port found)
     taskid: b7b6aebf-bdb3-4a5f-8189-530e60b1a382
     timertriggers: []
     type: condition
@@ -441,6 +444,7 @@ tasks:
         on ${PanOSDeviceGroups} ?
       type: condition
       version: -1
+      description: Ask the user confirmation on whether blocking the service.
     taskid: 329b6e95-45d7-436a-82d3-1fa10bf8c65c
     timertriggers: []
     type: condition
@@ -601,6 +605,7 @@ tasks:
       name: Manual Block on Network
       type: regular
       version: -1
+      description: Perform manual block on the network
     taskid: 8a6751fd-3b71-4116-8698-f483ef5f821d
     timertriggers: []
     type: regular
@@ -667,6 +672,7 @@ tasks:
       name: Device Groups found?
       type: condition
       version: -1
+      description: Check whether a target device group is found
     taskid: 6c7bccc6-6de9-4d33-8fc4-c7a7c8aa6a00
     timertriggers: []
     type: condition
@@ -741,6 +747,7 @@ tasks:
       name: Choose Device Group to enforce policy
       type: collection
       version: -1
+      description: Ask the user on which Device Group to enforce the policy change.
     taskid: 8f8da62c-0473-459b-83db-c93251bf0a17
     timertriggers: []
     type: collection
@@ -860,8 +867,8 @@ tasks:
         by creating a rule on a specific Device Group
       id: f45fed1b-6819-41bf-802c-a1822e895791
       iscommand: false
-      name: 2343f573-f72e-44ab-8fa7-3e1ff27a6fe2
-      playbookId: 2343f573-f72e-44ab-8fa7-3e1ff27a6fe2
+      name: PAN-OS - Block Destination Service
+      playbookId: PAN-OS - Block Destination Service
       type: playbook
       version: -1
     taskid: f45fed1b-6819-41bf-802c-a1822e895791
@@ -966,6 +973,7 @@ tasks:
       name: Firewall or Panorama?
       type: condition
       version: -1
+      description: Check whether target device is a Firewall or Panorama
     taskid: 95c91fc0-fc7c-453d-8722-4992809f1b95
     timertriggers: []
     type: condition
@@ -1024,8 +1032,8 @@ tasks:
       brand: ""
       id: 2bd40b15-6240-49a3-8d02-75f6aedda6cf
       iscommand: false
-      name: 2343f573-f72e-44ab-8fa7-3e1ff27a6fe2
-      playbookId: 2343f573-f72e-44ab-8fa7-3e1ff27a6fe2
+      name: PAN-OS - Block Destination Service
+      playbookId: PAN-OS - Block Destination Service
       type: playbook
       version: -1
       description: ''
@@ -1204,8 +1212,8 @@ tasks:
         \ Notes"
       id: 9a6818d9-3ace-4534-8571-af2c88f3ac08
       iscommand: false
-      name: 1a8bd8bd-9e41-465b-81e3-e3a9c51402d5
-      playbookId: 1a8bd8bd-9e41-465b-81e3-e3a9c51402d5
+      name: Expanse Attribution Subplaybook
+      playbookId: Expanse Attribution Subplaybook
       type: playbook
       version: -1
     taskid: 9a6818d9-3ace-4534-8571-af2c88f3ac08
@@ -1251,6 +1259,7 @@ tasks:
       name: Is Issue Related To Cloud Asset?
       type: condition
       version: -1
+      description: Check whether the asset is on prem or cloud.
     taskid: 1241ad4f-aff1-4283-8c5c-7d596a0a0258
     timertriggers: []
     type: condition
@@ -1410,6 +1419,7 @@ tasks:
       name: 'Ask: What Is The Organization Unit?'
       type: collection
       version: -1
+      description: Ask the user to perform attribution.
     taskid: 018db405-95bb-49bf-81af-cb520d34b50f
     timertriggers: []
     type: collection
@@ -1804,6 +1814,7 @@ tasks:
       name: Setup Vulnerability Assessment Tool To Scan The Asset
       type: regular
       version: -1
+      description: Add this discovered asset to Vulnerability Management tools.
     taskid: bcdd7d70-f62f-4760-87ce-3202cec3f116
     timertriggers: []
     type: regular
@@ -1835,6 +1846,7 @@ tasks:
 
         Is this protected?
       type: condition
+      description: Check if this system is scanned by Vulnerability Management systems.
       version: -1
     taskid: 52afb204-38f6-4cae-85e1-74c38c7ef38c
     timertriggers: []
@@ -1913,6 +1925,7 @@ tasks:
       name: Is Asset Organization Unit Known?
       type: condition
       version: -1
+      description: Check the attributed Organization Unit.
     taskid: e2e59b31-0bc6-49af-8d45-dba22b1d9b5d
     timertriggers: []
     type: condition
@@ -2022,6 +2035,7 @@ tasks:
       name: Check for Possible Shadow IT?
       type: condition
       version: -1
+      description: Check if the incident is a possible Shadow IT one.
     taskid: ee9d4e40-eb81-4e91-85d6-3e31063e5c00
     timertriggers: []
     type: condition
@@ -2390,6 +2404,7 @@ tasks:
       name: Is this shadow IT?
       type: condition
       version: -1
+      description: Check if the incident is marked as Shadow IT.
     taskid: 761cc3ca-351f-434f-8e76-a85bc2872a95
     timertriggers: []
     type: condition
@@ -2850,6 +2865,7 @@ tasks:
       name: Close Investigation?
       type: condition
       version: -1
+      description: Ask the user whether to close the investigation.
     taskid: a6416f01-09ef-47fc-893b-4c1ab7d87930
     timertriggers: []
     type: condition
@@ -3121,6 +3137,7 @@ tasks:
       name: Should Add New OU?
       type: condition
       version: -1
+      description: Determine if a new OU has to be added.
     taskid: 3752d545-238e-4d2b-8874-2c430c22159f
     timertriggers: []
     type: condition
@@ -3226,6 +3243,7 @@ tasks:
       name: Add New OU
       type: collection
       version: -1
+      description: Collect new OU details from the user.
     taskid: 980d214e-ed07-4dbc-82a0-455678d9bb9a
     timertriggers: []
     type: collection
@@ -3790,6 +3808,7 @@ tasks:
       name: Do We Have Tag To Use?
       type: condition
       version: -1
+      description: Branch depending on the OU.
     taskid: a573e752-0707-45e3-8cdb-7fece0dafff4
     timertriggers: []
     type: condition
@@ -3833,6 +3852,8 @@ tasks:
       script: '|||expanse-assign-tags-to-asset'
       type: regular
       version: -1
+
+      
     taskid: 1de4b346-29d6-49c8-8c40-8d4d6b0296aa
     timertriggers: []
     type: regular
@@ -4102,6 +4123,7 @@ tasks:
       name: Are assets in Prisma Cloud found?
       type: condition
       version: -1
+      description: Check whether assets are found in Prisma Cloud
     taskid: b2a7f94d-5abb-429e-859d-e5521a09b66d
     timertriggers: []
     type: condition
@@ -4321,6 +4343,7 @@ tasks:
       name: Determine Target
       type: condition
       version: -1
+      description: Determine the target Device Group
     taskid: 3ee5d1cc-7086-4dbb-8a44-96d36046cf62
     timertriggers: []
     type: condition
@@ -4401,6 +4424,7 @@ tasks:
       name: Insert Device Group name and tag
       type: collection
       version: -1
+      description: Collect Device Group information from user.
     taskid: 171e23a1-3724-456a-8af6-9605ae5c02b4
     timertriggers: []
     type: collection
@@ -5035,6 +5059,7 @@ tasks:
       iscommand: false
       name: Did User reply to the Shadow IT question?
       type: condition
+      description: Check whether user answered to the Shadow IT question.
       version: -1
     taskid: 5195bd32-4758-4a1c-8f5d-ff251f249a87
     timertriggers: []
@@ -5554,6 +5579,7 @@ tasks:
       name: On-prem with high confidence?
       type: condition
       version: -1
+      description: Check whether the asset is market as on prem with a high degree of confidence.
     taskid: 023fdf49-8863-47b1-889b-576b550258a5
     timertriggers: []
     type: condition
@@ -5859,6 +5885,7 @@ tasks:
       name: Are we writing to Expanse?
       type: condition
       version: -1
+      description: Determine whether playbook should write data back to Expanse.
     taskid: ad76e2ab-c4f0-4ee5-8989-a3b81cf363e7
     timertriggers: []
     type: condition
@@ -5901,6 +5928,7 @@ tasks:
       name: Are we writing to Expanse?
       type: condition
       version: -1
+      description: Determine whether playbook should write data back to Expanse.
     taskid: 2a587bee-453b-4d2c-886f-57b52f2bd279
     timertriggers: []
     type: condition
@@ -5997,11 +6025,11 @@ tasks:
       brand: ""
       id: 2f062839-f8bd-470f-8f84-62ed86d152c4
       iscommand: false
-      name: 99cbf362-c488-4c58-8dfd-1d42474bc108
-      playbookId: 99cbf362-c488-4c58-8dfd-1d42474bc108
+      name: Extract Expanse Indicators
+      playbookId: Extract Expanse Indicators
       type: playbook
       version: -1
-      description: ''
+      description: Extracts and Enriches Expanse from Indicator Assets
     taskid: 2f062839-f8bd-470f-8f84-62ed86d152c4
     timertriggers: []
     type: playbook
@@ -6044,6 +6072,7 @@ tasks:
       name: Are we writing to Expanse?
       type: condition
       version: -1
+      description: Determine whether playbook should write data back to Expanse.
     taskid: 3ea60347-930a-4a4f-8f58-9cf7521b3df5
     timertriggers: []
     type: condition
@@ -6086,6 +6115,7 @@ tasks:
       name: Are we writing to Expanse?
       type: condition
       version: -1
+      description: Determine whether playbook should write data back to Expanse.
     taskid: 86f8a2f0-08d7-4c01-8e51-0f36b0c2d9a2
     timertriggers: []
     type: condition
@@ -6136,8 +6166,8 @@ tasks:
       brand: ""
       id: d94a9a3f-4d4e-44c3-88c5-aa4f508b1544
       iscommand: false
-      name: 546435de-1945-42a7-8178-ccb4dc80de6f
-      playbookId: 546435de-1945-42a7-8178-ccb4dc80de6f
+      name: Find Cloud IP Address Region and Service
+      playbookId: Find Cloud IP Address Region and Service
       type: playbook
       version: -1
       description: ''
@@ -6177,8 +6207,8 @@ tasks:
       brand: ""
       id: a6ceed46-7a4d-47b5-8a2f-fd8f462c6aef
       iscommand: false
-      name: b6867d6a-1dfa-41f4-8d8a-004ddca9256b
-      playbookId: b6867d6a-1dfa-41f4-8d8a-004ddca9256b
+      name: Prisma Cloud Correlate Alerts
+      playbookId: Prisma Cloud Correlate Alerts
       type: playbook
       version: -1
       description: ''

@@ -1,10 +1,9 @@
-id: 1a8bd8bd-9e41-465b-81e3-e3a9c51402d5
-version: 175
-vcShouldKeepItemLegacyProdMachine: false
+id: Expanse Attribution Subplaybook
+version: -1
 name: Expanse Attribution Subplaybook
-description: "Given an Ember Asset, Issue IP, Issue Provider, Issue Domain, Issue
-  Port and Issue Protocol hunts for internal activity on the detected service. \nReturns
-  a list of potential owner BUs, owner Users, Device and Notes"
+description: "Given an Ember Asset, Issue IP, Issue Provider, Issue Domain, Issue\
+  \ Port and Issue Protocol hunts for internal activity on the detected service. \n\
+  Returns a list of potential owner BUs, owner Users, Device and Notes"
 starttaskid: "0"
 tasks:
   "0":
@@ -17,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -46,6 +46,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -73,6 +74,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -338,6 +340,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -598,6 +601,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -673,7 +677,7 @@ tasks:
     task:
       id: 5480051f-8589-437f-8430-00b2dc65af61
       version: -1
-      name: Panorama Query Logs - Src IPs
+      name: Panorama Query Logs - Extended
       description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
         and wildfire.'
       playbookName: Panorama Query Logs - Extended
@@ -764,7 +768,7 @@ tasks:
     task:
       id: 444dcd86-5078-4bce-8f6c-174050757bc5
       version: -1
-      name: Panorama Query Logs - Users
+      name: Panorama Query Logs - Extended
       description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
         and wildfire.'
       playbookName: Panorama Query Logs - Extended
@@ -930,6 +934,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1104,6 +1109,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1128,6 +1134,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1152,6 +1159,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1213,6 +1221,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "39"
@@ -1411,6 +1420,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "48"
@@ -1438,6 +1448,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "48"
@@ -1465,6 +1476,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "48"
@@ -1492,6 +1504,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "49"
@@ -1697,37 +1710,37 @@ inputs:
     simple: ${incident.labels.assets[0]}
   required: false
   description: Ember Asset
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: IP
   value:
     simple: ${incident.labels.ip}
   required: true
   description: Ember Issue IP
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Domain
   value:
     simple: ${incident.labels.domain}
   required: false
   description: Ember Issue Domain
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Provider
   value:
     simple: ${incident.labels.providers[0].name}
   required: false
   description: Ember Issue Provider
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Port
   value:
     simple: ${incident.labels.portNumber}
   required: false
   description: Ember Issue Port
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Protocol
   value:
     simple: ${incident.labels.portProtocol}
   required: false
   description: Ember Issue Protocol
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: InternalIPRange
   value: {}
   required: false
@@ -1736,13 +1749,13 @@ inputs:
     ranges could be: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16. If a list of IP ranges
     is not provided, the list provided in the IsIPInRanges script (the known IPv4
     private address ranges) is used by default.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: NumberOfDaysInThePast
   value:
     simple: "7"
   required: false
   description: Number of days to look back to for logs.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Expanse.AttributionIP
   description: IP addresses
@@ -1753,3 +1766,6 @@ outputs:
 - contextPath: Expanse.AttributionUser
   description: Users
   type: string
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
