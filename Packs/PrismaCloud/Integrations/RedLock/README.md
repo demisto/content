@@ -185,7 +185,7 @@ Gets the details of an alert based on alert ID
 >### Alert
 >|ID|Status|FirstSeen|LastSeen|AlertTime|PolicyID|PolicyName|PolicyType|PolicySystemDefault|PolicyLabels|PolicyDescription|PolicySeverity|PolicyRecommendation|PolicyDeleted|PolicyRemediable|PolicyLastModifiedOn|PolicyLastModifiedBy|RiskScore|RiskRating|ResourceName|ResourceRRN|ResourceID|ResourceAccount|ResourceAccountID|ResourceType|ResourceRegionID|ResourceApiName|ResourceUrl|ResourceData|ResourceAccessKeyAge|ResourceInactiveSinceTs|ResourceCloudType|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| P-214016 | open | 05/28/2020 01:17:31 | 05/29/2020 14:16:42 | 05/29/2020 14:16:15 |  |  | config | false |  |  |  |  |  | false |  |  | 170 | F | demo-98787654432 |  | sg-98vc98sd76sd | testAWS | 9876654321 | SECURITY_GROUP | us-west-2 | aws-ec2-describe-security-groups |  | vpcId: vpc-0824920b6d19bc4f1<br/>description: EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.<br/>tags: {u'value': u'demo-98787654432', u'key': u'Name'},<br/>{u'value': u'cn-demo', u'key': u'aws:eks:cluster-name'},<br/>{u'value': u'owned', u'key': u'kubernetes.io/cluster/cn-demo'}<br/>ipPermissions: {u'ipv4Ranges': [{u'description': u'kubernetes.io/rule/nlb/mtu=a7d568916a1b411ea83260a614b2e8ec', u'cidrIp': u'0.0.0.0/0'}], u'prefixListIds': [], u'fromPort': 3, u'ipRanges': [u'0.0.0.0/0'], u'toPort': 4, u'ipProtocol': u'icmp', u'userIdGroupPairs': [], u'ipv6Ranges': []},<br/>{u'ipv4Ranges': [{u'description': u'kubernetes.io/rule/nlb/client=a7d568916a1b411ea83260a614b2e8ec', u'cidrIp': u'0.0.0.0/0'}, {u'description': u'kubernetes.io/rule/nlb/health=a7d568916a1b411ea83260a614b2e8ec', u'cidrIp': u'192.168.0.0/16'}], u'prefixListIds': [], u'fromPort': 30463, u'ipRanges': [u'0.0.0.0/0', u'192.168.0.0/16'], u'toPort': 30463, u'ipProtocol': u'tcp', u'userIdGroupPairs': [], u'ipv6Ranges': []},<br/>{u'prefixListIds': [], u'ipv4Ranges': [{u'cidrIp': u'192.168.1.1/16'}], u'ipRanges': [u'192.168.1.1/16'], u'ipProtocol': u'-1', u'userIdGroupPairs': [{u'userId': u'9876654321', u'groupId': u'sg-0ce26260850e500d4', u'description': u'Allow unmanaged nodes to communicate with control plane (all ports)'}, {u'userId': u'9876654321', u'groupId': u'sg-98vc98sd76sd'}], u'ipv6Ranges': []}<br/>groupName: demo-98787654432<br/>ipPermissionsEgress: {u'prefixListIds': [], u'ipv4Ranges': [{u'cidrIp': u'0.0.0.0/0'}], u'ipRanges': [u'0.0.0.0/0'], u'ipProtocol': u'-1', u'userIdGroupPairs': [], u'ipv6Ranges': []}<br/>ownerId: 9876654321<br/>groupId: sg-98vc98sd76sd |  |  | aws |
+>| P-214016 | open | 05/28/2020 01:17:31 | 05/29/2020 14:16:42 | 05/29/2020 14:16:15 |  |  | config | false |  |  |  |  |  | false |  |  | 170 | F | demo-98787654432 |  | sg-98vc98sd76sd | testAWS | 9876654321 | SECURITY_GROUP | us-west-2 | aws-ec2-describe-security-groups |  | vpcId: vpc-0824920b6d19bc<br/>description: EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.<br/>tags: {u'value': u'demo-98787654432', u'key': u'Name'},<br/>{u'value': u'cn-demo', u'key': u'aws:eks:cluster-name'},<br/>{u'value': u'owned', u'key': u'kubernetes.io/cluster/cn-demo'}<br/>ipPermissions: {u'ipv4Ranges': [{u'description': u'kubernetes.io/rule/nlb/mtu=a7d568916a1b411ea83260a614b2e8ec', u'cidrIp': u'0.0.0.0/0'}], u'prefixListIds': [], u'fromPort': 3, u'ipRanges': [u'0.0.0.0/0'], u'toPort': 4, u'ipProtocol': u'icmp', u'userIdGroupPairs': [], u'ipv6Ranges': []},<br/>{u'ipv4Ranges': [{u'description': u'kubernetes.io/rule/nlb/client=a7d568916a1b411ea83260a614b2e8ec', u'cidrIp': u'0.0.0.0/0'}, {u'description': u'kubernetes.io/rule/nlb/health=a7d568916a1b411ea83260a614b2e8ec', u'cidrIp': u'192.168.0.0/16'}], u'prefixListIds': [], u'fromPort': 30463, u'ipRanges': [u'0.0.0.0/0', u'192.168.0.0/16'], u'toPort': 30463, u'ipProtocol': u'tcp', u'userIdGroupPairs': [], u'ipv6Ranges': []},<br/>{u'prefixListIds': [], u'ipv4Ranges': [{u'cidrIp': u'192.168.1.1/16'}], u'ipRanges': [u'192.168.1.1/16'], u'ipProtocol': u'-1', u'userIdGroupPairs': [{u'userId': u'9876654321', u'groupId': u'sg-0ce26260850e500d4', u'description': u'Allow unmanaged nodes to communicate with control plane (all ports)'}, {u'userId': u'9876654321', u'groupId': u'sg-98vc98sd76sd'}], u'ipv6Ranges': []}<br/>groupName: demo-98787654432<br/>ipPermissionsEgress: {u'prefixListIds': [], u'ipv4Ranges': [{u'cidrIp': u'0.0.0.0/0'}], u'ipRanges': [u'0.0.0.0/0'], u'ipProtocol': u'-1', u'userIdGroupPairs': [], u'ipv6Ranges': []}<br/>ownerId: 9876654321<br/>groupId: sg-98vc98sd76sd |  |  | aws |
 
 
 ### redlock-dismiss-alerts
@@ -464,6 +464,7 @@ Run RQL query on Prisma Cloud
 #### Command Example
 ```!redlock-get-rql-response rql="config where api.name = 'aws-ec2-describe-instances' as X; config where api.name = 'aws-ec2-describe-security-groups' as Y; config where api.name = 'aws-ec2-describe-vpcs' as Z; filter 'not _Set.intersection($.X.vpcId,$.Y.vpcId) intersects (vpc-5b9a3c33,vpc-b8ba2dd0,vpc-b8ba2dd01)'; show X;"```
 
+
 #### Context Example
 ```json
 {
@@ -472,135 +473,297 @@ Run RQL query on Prisma Cloud
             "Query": "config where api.name = 'aws-ec2-describe-instances' as X; config where api.name = 'aws-ec2-describe-security-groups' as Y; config where api.name = 'aws-ec2-describe-vpcs' as Z; filter 'not _Set.intersection($.X.vpcId,$.Y.vpcId) intersects (vpc-5b9a3c33,vpc-b8ba2dd0,vpc-b8ba2dd01)'; show X; limit search records to 1",
             "Response": [
                 {
-                    "AccountId": "12345676889",
-                    "AccountName": "AWS - pan-lab",
+                    "AccountId": "1234567890",
+                    "AccountName": "AWS PAN RBC",
                     "AllowDrillDown": true,
                     "CloudType": "aws",
                     "Data": {
-                        "amiLaunchIndex": 0,
-                        "architecture": "x86_64",
-                        "blockDeviceMappings": [
+                        "AmiLaunchIndex": 0,
+                        "Architecture": "x86_64",
+                        "BlockDeviceMappings": [
                             {
-                                "deviceName": "/dev/sda1",
-                                "ebs": {
-                                    "attachTime": "2020-10-21T09:38:41.000Z",
-                                    "deleteOnTermination": true,
-                                    "status": "attached",
-                                    "volumeId": "vol-12345678"
+                                "DeviceName": "/dev/xvda",
+                                "Ebs": {
+                                    "AttachTime": "2020-11-22T09:16:37.000Z",
+                                    "DeleteOnTermination": true,
+                                    "Status": "attached",
+                                    "VolumeId": "vol"
+                                }
+                            },
+                            {
+                                "DeviceName": "/dev/xvdbg",
+                                "Ebs": {
+                                    "AttachTime": "2020-11-23T15:33:52.000Z",
+                                    "DeleteOnTermination": false,
+                                    "Status": "attached",
+                                    "VolumeId": "vol"
+                                }
+                            },
+                            {
+                                "DeviceName": "/dev/xvdcp",
+                                "Ebs": {
+                                    "AttachTime": "2020-11-23T15:33:52.000Z",
+                                    "DeleteOnTermination": false,
+                                    "Status": "attached",
+                                    "VolumeId": "vol"
                                 }
                             }
                         ],
-                        "capacityReservationSpecification": {
-                            "capacityReservationPreference": "open"
+                        "CapacityReservationSpecification": {
+                            "CapacityReservationPreference": "open"
                         },
-                        "clientToken": "",
-                        "cpuOptions": {
-                            "coreCount": 2,
-                            "threadsPerCore": 1
+                        "ClientToken": "fleet",
+                        "CpuOptions": {
+                            "CoreCount": 1,
+                            "ThreadsPerCore": 2
                         },
-                        "ebsOptimized": false,
-                        "elasticGpuAssociations": [],
-                        "elasticInferenceAcceleratorAssociations": [],
-                        "enaSupport": true,
-                        "hibernationOptions": {
-                            "configured": false
+                        "EbsOptimized": false,
+                        "ElasticGpuAssociations": [],
+                        "ElasticInferenceAcceleratorAssociations": [],
+                        "EnaSupport": true,
+                        "HibernationOptions": {
+                            "Configured": false
                         },
-                        "hypervisor": "xen",
-                        "imageId": "ami-0817d428a6fb68645",
-                        "instanceId": "i-xsssasdfsdfa627afe0",
-                        "instanceType": "t2.medium",
-                        "keyName": "AWS-NVirginia-Key",
-                        "launchTime": "2020-10-21T09:38:40.000Z",
-                        "licenses": [],
-                        "metadataOptions": {
-                            "httpEndpoint": "enabled",
-                            "httpPutResponseHopLimit": 1,
-                            "httpTokens": "optional",
-                            "state": "applied"
+                        "Hypervisor": "xen",
+                        "IamInstanceProfile": {
+                            "Arn": "arn",
+                            "Id": "AIPARLTR3KMHTT67AZ27N"
                         },
-                        "monitoring": {
-                            "state": "disabled"
+                        "ImageId": "ami-008ad23b7f9a160e5",
+                        "InstanceId": "i-123456789",
+                        "InstanceType": "t3.medium",
+                        "KeyName": "kubernetes",
+                        "LaunchTime": "2020-11-22T09:16:36.000Z",
+                        "Licenses": [],
+                        "MetadataOptions": {
+                            "HttpEndpoint": "enabled",
+                            "HttpPutResponseHopLimit": 2,
+                            "HttpTokens": "optional",
+                            "State": "applied"
                         },
-                        "networkInterfaces": [
+                        "Monitoring": {
+                            "State": "disabled"
+                        },
+                        "NetworkInterfaces": [
                             {
-                                "association": {
-                                    "ipOwnerId": "amazon",
-                                    "publicDnsName": "ec2-x.x.x.x.compute-1.amazonaws.com",
-                                    "publicIp": "x.x.x.x"
+                                "Association": {
+                                    "IpOwnerId": "amazon",
+                                    "PublicDnsName": "ec2-x-x-x-x.eu-west-1.compute.amazonaws.com",
+                                    "PublicIp": "123.123.123.123"
                                 },
-                                "attachment": {
-                                    "attachTime": "2020-10-21T09:38:40.000Z",
-                                    "attachmentId": "eni-attach-0cb419bb3cabbf969",
-                                    "deleteOnTermination": true,
-                                    "deviceIndex": 0,
-                                    "status": "attached"
+                                "Attachment": {
+                                    "AttachTime": "2020-11-22T09:16:36.000Z",
+                                    "AttachmentId": "eni-attach-0146b63374e77b227",
+                                    "DeleteOnTermination": true,
+                                    "DeviceIndex": 0,
+                                    "Status": "attached"
                                 },
-                                "description": "Primary network interface",
-                                "groups": [
+                                "Description": "",
+                                "Groups": [
                                     {
-                                        "groupId": "sg-abc",
-                                        "groupName": "group"
+                                        "GroupId": "sg-13456789987654",
+                                        "GroupName": "test"
+                                    },
+                                    {
+                                        "GroupId": "sg-1234567898765",
+                                        "GroupName": "test"
                                     }
                                 ],
-                                "interfaceType": "interface",
-                                "ipv6Addresses": [],
-                                "macAddress": "12:49:30:d2:36:8b",
-                                "networkInterfaceId": "eni-0aad6d8e4251f4f8b",
-                                "ownerId": "146688260519",
-                                "privateDnsName": "ip-y.y.y.y.ec2.internal",
-                                "privateIpAddress": "y.y.y.y",
-                                "privateIpAddresses": [
+                                "InterfaceType": "interface",
+                                "Ipv6Addresses": [],
+                                "MacAddress": "02:94:a1:55:69:43",
+                                "NetworkInterfaceId": "eni-0a5537731ce0b7fa2",
+                                "OwnerId": "1234567890",
+                                "PrivateDnsName": "ip-192.168.1.1.eu-west-1.compute.internal",
+                                "PrivateIpAddress": "192.168.1.1",
+                                "PrivateIpAddresses": [
                                     {
-                                        "association": {
-                                            "ipOwnerId": "amazon",
-                                            "publicDnsName": "ec2-x.x.x.x.compute-1.amazonaws.com",
-                                            "publicIp": "x.x.x.x"
+                                        "Association": {
+                                            "IpOwnerId": "amazon",
+                                            "PublicDnsName": "ec2-x-x-x-x.eu-west-1.compute.amazonaws.com",
+                                            "PublicIp": "123.123.123.123"
                                         },
-                                        "primary": true,
-                                        "privateDnsName": "ip-y.y.y.y.ec2.internal",
-                                        "privateIpAddress": "y.y.y.y"
+                                        "Primary": true,
+                                        "PrivateDnsName": "ip-192.168.1.1.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "192.168.1.1"
+                                    },
+                                    {
+                                        "Primary": false,
+                                        "PrivateDnsName": "ip-192-168-10-234.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "192.168.10.234"
+                                    },
+                                    {
+                                        "Primary": false,
+                                        "PrivateDnsName": "ip-192-168-15-54.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "192.168.15.54"
+                                    },
+                                    {
+                                        "Primary": false,
+                                        "PrivateDnsName": "ip-192-168-18-172.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "192.168.18.172"
+                                    },
+                                    {
+                                        "Primary": false,
+                                        "PrivateDnsName": "ip-192-168-27-226.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "192.168.27.226"
+                                    },
+                                    {
+                                        "Primary": false,
+                                        "PrivateDnsName": "ip-192-168-27-234.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "192.168.27.234"
                                     }
                                 ],
-                                "sourceDestCheck": true,
-                                "status": "in-use",
-                                "subnetId": "subnet-abc",
-                                "vpcId": "vpc-abc"
-                            }
-                        ],
-                        "placement": {
-                            "availabilityZone": "us-east-1d",
-                            "groupName": "",
-                            "tenancy": "default"
-                        },
-                        "privateDnsName": "ip-y.y.y.y.ec2.internal",
-                        "privateIpAddress": "y.y.y.y",
-                        "productCodes": [],
-                        "publicDnsName": "ec2-x.x.x.x.compute-1.amazonaws.com",
-                        "publicIpAddress": "x.x.x.x",
-                        "rootDeviceName": "/dev/sda1",
-                        "rootDeviceType": "ebs",
-                        "securityGroups": [
+                                "SourceDestCheck": true,
+                                "Status": "in-use",
+                                "SubnetId": "subnet-123456789",
+                                "VpcId": "vpc-123456789"
+                            },
                             {
-                                "groupId": "sg-abc",
-                                "groupName": "group"
+                                "Attachment": {
+                                    "AttachTime": "2020-11-23T15:34:00.000Z",
+                                    "AttachmentId": "eni-attach-0251b661bb021effe",
+                                    "DeleteOnTermination": true,
+                                    "DeviceIndex": 1,
+                                    "Status": "attached"
+                                },
+                                "Description": "aws-K8S-i-123456789",
+                                "Groups": [
+                                    {
+                                        "GroupId": "sg-13456789987654",
+                                        "GroupName": "test"
+                                    },
+                                    {
+                                        "GroupId": "sg-1234567898765",
+                                        "GroupName": "test"
+                                    }
+                                ],
+                                "InterfaceType": "interface",
+                                "Ipv6Addresses": [],
+                                "MacAddress": "x:z:d",
+                                "NetworkInterfaceId": "eni-xyz",
+                                "OwnerId": "1234567890",
+                                "PrivateDnsName": "ip-192.168.1.1.eu-west-1.compute.internal",
+                                "PrivateIpAddress": "192.168.1.1",
+                                "PrivateIpAddresses": [
+                                    {
+                                        "Primary": false,
+                                        "PrivateDnsName": "ip-192.168.1.1.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "192.168.1.1"
+                                    },
+                                    {
+                                        "Primary": false,
+                                        "PrivateDnsName": "ip-192-168-15-191.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "192.168.15.191"
+                                    },
+                                    {
+                                        "Primary": false,
+                                        "PrivateDnsName": "ip-192.168.1.1.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "192.168.1.1"
+                                    },
+                                    {
+                                        "Primary": false,
+                                        "PrivateDnsName": "ip-192.168.1.1.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "192.168.1.1"
+                                    },
+                                    {
+                                        "Primary": false,
+                                        "PrivateDnsName": "ip-192.168.1.1.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "192.168.1.1"
+                                    },
+                                    {
+                                        "Primary": true,
+                                        "PrivateDnsName": "ip-192.168.1.1.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "192.168.1.1"
+                                    }
+                                ],
+                                "SourceDestCheck": true,
+                                "Status": "in-use",
+                                "SubnetId": "subnet-123456789",
+                                "VpcId": "vpc-123456789"
                             }
                         ],
-                        "sourceDestCheck": true,
-                        "state": {
-                            "code": 16,
-                            "name": "running"
+                        "Placement": {
+                            "AvailabilityZone": "eu-west-1c",
+                            "GroupName": "",
+                            "Tenancy": "default"
                         },
-                        "stateTransitionReason": "",
-                        "statusEvents": [],
-                        "subnetId": "subnet-abc",
-                        "tags": [
+                        "PrivateDnsName": "ip-192.168.1.1.eu-west-1.compute.internal",
+                        "PrivateIpAddress": "192.168.1.1",
+                        "ProductCodes": [],
+                        "PublicDnsName": "ec2-x-x-x-x.eu-west-1.compute.amazonaws.com",
+                        "PublicIpAddress": "123.123.123.123",
+                        "RootDeviceName": "/dev/xvda",
+                        "RootDeviceType": "ebs",
+                        "SecurityGroups": [
                             {
-                                "key": "Name",
-                                "value": "tl-console"
+                                "GroupId": "sg-13456789987654",
+                                "GroupName": "test"
+                            },
+                            {
+                                "GroupId": "sg-1234567898765",
+                                "GroupName": "test"
                             }
                         ],
-                        "virtualizationType": "hvm",
-                        "vpcId": "vpc-abc"
+                        "SourceDestCheck": true,
+                        "State": {
+                            "Code": 16,
+                            "Name": "running"
+                        },
+                        "StateTransitionReason": "",
+                        "StatusEvents": [],
+                        "SubnetId": "subnet-123456789",
+                        "Tags": [
+                            {
+                                "Key": "Name",
+                                "Value": "cluster-ng-11111111-Node"
+                            },
+                            {
+                                "Key": "test.com/nodegroup-name",
+                                "Value": "ng-a143ec42"
+                            },
+                            {
+                                "Key": "test.com/nodegroup-type",
+                                "Value": "managed"
+                            },
+                            {
+                                "Key": "aws:autoscaling:groupName",
+                                "Value": "eks-123456789"
+                            },
+                            {
+                                "Key": "aws:ec2:fleet-id",
+                                "Value": "fleet-0987654321"
+                            },
+                            {
+                                "Key": "aws:ec2launchtemplate:id",
+                                "Value": "lt-123456789"
+                            },
+                            {
+                                "Key": "aws:ec2launchtemplate:version",
+                                "Value": "1"
+                            },
+                            {
+                                "Key": "eks:cluster-name",
+                                "Value": "cluster"
+                            },
+                            {
+                                "Key": "eks:nodegroup-name",
+                                "Value": "ng-a143ec42"
+                            },
+                            {
+                                "Key": "test.com/cluster-autoscaler/cluster",
+                                "Value": "owned"
+                            },
+                            {
+                                "Key": "test.com/cluster-autoscaler/enabled",
+                                "Value": "true"
+                            },
+                            {
+                                "Key": "kubernetes.io/cluster/cluster",
+                                "Value": "owned"
+                            }
+                        ],
+                        "VirtualizationType": "hvm",
+                        "VpcId": "vpc-123456789"
                     },
                     "Deleted": false,
                     "HasAlert": false,
@@ -608,17 +771,229 @@ Run RQL query on Prisma Cloud
                     "HasExternalFinding": false,
                     "HasExternalIntegration": false,
                     "HasNetwork": false,
-                    "Id": "i-060256784a627afe0",
-                    "InsertTs": 1604380187389,
-                    "Name": "tl-console",
-                    "RegionId": "us-east-1",
-                    "RegionName": "AWS Virginia",
+                    "Id": "i-123456789",
+                    "InsertTs": 1234567876543,
+                    "Name": "cluster-ng-11111111-Node",
+                    "RegionId": "eu-west-1",
+                    "RegionName": "AWS Ireland",
                     "ResourceType": "Instance",
-                    "Rrn": "rrn:randomstring",
+                    "Rrn": "rrn:somthing"
                     "Service": "Amazon EC2",
-                    "StateId": "6853ae0b28aaaa7a61f86f9b879765c"
+                    "StateId": "asdfghjklkjhgfdssaa"
                 }
             ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### RQL Output:
+>|Account|Deleted|Region|Resource Name|Service|
+>|---|---|---|---|---|
+>| AWS PAN | false | AWS Ireland | cluster-ng-11111111-Node | Amazon EC2 |
+
+
+### redlock-search-config
+***
+Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL language
+
+
+#### Base Command
+
+`redlock-search-config`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| time-range-date-from | Start time for search in the following string format -  MM/DD/YYYY. | Optional | 
+| time-range-date-to | End time for search in the following format -  MM/DD/YYYY. | Optional | 
+| time-range-value | The number of units to go back in time for the search. | Optional | 
+| time-range-unit | The search unit. Possible values are: "hour", "day", "week", "month", "year", "login", and "epoch". The login and epoch values are only available if the time-range-value argument is not provided. | Optional | 
+| query | Query to run in Prisma Cloud config API (use RQL). | Required | 
+|limit |The maximum number of entries to return. Default is 100. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redlock.Asset.accountId | Date | Cloud Account ID. | 
+| Redlock.Asset.accountName | String | Cloud account Name | 
+| Redlock.Asset.allowDrillDown | Boolean |  | 
+| Redlock.Asset.cloudType | String | Cloud type. | 
+| Redlock.Asset.deleted | Boolean | Whether the asset was delete. | 
+| Redlock.Asset.hasAlert | Boolean | Whether the asset has a Prisma Cloud alert. | 
+| Redlock.Asset.hasExtFindingRiskFactors | Boolean | Whether the asset has external finding risk factors. | 
+| Redlock.Asset.hasExternalFinding | Boolean | Whether the asset has an external finding. | 
+| Redlock.Asset.hasExternalIntegration | Boolean | Whether the asset has an external integration. | 
+| Redlock.Asset.hasNetwork | Boolean |Whether the asset has a network. | 
+| Redlock.Asset.id | String | The Redlock asset ID. | 
+| Redlock.Asset.data | Unknown | The Redlock asset specific data. |
+| Redlock.Asset.insertTs | Date | The asset insert TS. | 
+| Redlock.Asset.name | String | The asset name. | 
+| Redlock.Asset.regionId | String | The cloud region ID of the asset. | 
+| Redlock.Asset.regionName | String | The cloud region name of the asset. | 
+| Redlock.Asset.resourceType | String | The cloud resource type of the asset. | 
+| Redlock.Asset.rrn | String | The cloud RRN of the asset. | 
+| Redlock.Asset.service | String | The state ID of the asset. | 
+| Redlock.Asset.stateId | String | State ID | 
+
+
+#### Command Example
+```!redlock-search-config query=`config where cloud.type = "aws" and cloud.service = "Amazon EC2" and api.name = "aws-ec2-describe-instances" and cloud.region="AWS Paris"````
+
+#### Context Example
+```json
+{
+    "Redlock": {
+        "Asset": {
+            "accountId": "1234568717",
+            "accountName": "cloud-account-test",
+            "allowDrillDown": true,
+            "cloudType": "aws",
+            "data": {
+                "amiLaunchIndex": 0,
+                "architecture": "x86_64",
+                "blockDeviceMappings": [
+                    {
+                        "deviceName": "/dev/sda1",
+                        "ebs": {
+                            "attachTime": "2019-10-24T19:21:26.000Z",
+                            "deleteOnTermination": true,
+                            "status": "attached",
+                            "volumeId": "vol-0d76d5536e9900a9d"
+                        }
+                    }
+                ],
+                "capacityReservationSpecification": {
+                    "capacityReservationPreference": "open"
+                },
+                "clientToken": "",
+                "cpuOptions": {
+                    "coreCount": 1,
+                    "threadsPerCore": 1
+                },
+                "ebsOptimized": false,
+                "elasticGpuAssociations": [],
+                "elasticInferenceAcceleratorAssociations": [],
+                "enaSupport": true,
+                "hibernationOptions": {
+                    "configured": false
+                },
+                "hypervisor": "xen",
+                "imageId": "ami-0bb607148d8cf36fb",
+                "instanceId": "i-0b12b0f4ed4b78e0b",
+                "instanceType": "t2.micro",
+                "keyName": "server1",
+                "launchTime": "2019-10-24T19:21:25.000Z",
+                "licenses": [],
+                "metadataOptions": {
+                    "httpEndpoint": "enabled",
+                    "httpPutResponseHopLimit": 1,
+                    "httpTokens": "optional",
+                    "state": "applied"
+                },
+                "monitoring": {
+                    "state": "disabled"
+                },
+                "networkInterfaces": [
+                    {
+                        "association": {
+                            "ipOwnerId": "amazon",
+                            "publicDnsName": "ec2-35-180-1-1.eu-west-3.compute.amazonaws.com",
+                            "publicIp": "35.180.1.1"
+                        },
+                        "attachment": {
+                            "attachTime": "2019-10-24T19:21:25.000Z",
+                            "attachmentId": "eni-attach-0f8b6f1a9db5563d8",
+                            "deleteOnTermination": true,
+                            "deviceIndex": 0,
+                            "status": "attached"
+                        },
+                        "description": "",
+                        "groups": [
+                            {
+                                "groupId": "sg-0528d34b26dc81",
+                                "groupName": "SSH-HTTPS-IPSec"
+                            }
+                        ],
+                        "interfaceType": "interface",
+                        "ipv6Addresses": [],
+                        "macAddress": "0e:da:ad:84:82:7e",
+                        "networkInterfaceId": "eni-09e89a2e7923d7",
+                        "ownerId": "1234",
+                        "privateDnsName": "ip-172-31-34-235.eu-west-3.compute.internal",
+                        "privateIpAddress": "172.31.34.235",
+                        "privateIpAddresses": [
+                            {
+                                "association": {
+                                    "ipOwnerId": "amazon",
+                                    "publicDnsName": "ec2-35-180-1-1.eu-west-3.compute.amazonaws.com",
+                                    "publicIp": "35.180.1.1"
+                                },
+                                "primary": true,
+                                "privateDnsName": "ip-172-31-34-235.eu-west-3.compute.internal",
+                                "privateIpAddress": "172.31.34.235"
+                            }
+                        ],
+                        "sourceDestCheck": true,
+                        "status": "in-use",
+                        "subnetId": "subnet-89c025c4",
+                        "vpcId": "vpc-079b3111"
+                    }
+                ],
+                "placement": {
+                    "availabilityZone": "eu-west-3c",
+                    "groupName": "",
+                    "tenancy": "default"
+                },
+                "privateDnsName": "ip-172-31-34-235.eu-west-3.compute.internal",
+                "privateIpAddress": "172.31.34.235",
+                "productCodes": [],
+                "publicDnsName": "ec2-35-180-1-1.eu-west-3.compute.amazonaws.com",
+                "publicIpAddress": "35.180.1.1",
+                "rootDeviceName": "/dev/sda1",
+                "rootDeviceType": "ebs",
+                "securityGroups": [
+                    {
+                        "groupId": "sg-0528d34b26dc81415",
+                        "groupName": "SSH-HTTPS-IPSec"
+                    }
+                ],
+                "sourceDestCheck": true,
+                "state": {
+                    "code": 16,
+                    "name": "running"
+                },
+                "stateTransitionReason": "",
+                "statusEvents": [],
+                "subnetId": "subnet-89c025c4",
+                "tags": [
+                    {
+                        "key": "Name",
+                        "value": "server1"
+                    }
+                ],
+                "virtualizationType": "hvm",
+                "vpcId": "vpc-079b3111"
+            },
+            "deleted": false,
+            "hasAlert": false,
+            "hasExtFindingRiskFactors": false,
+            "hasExternalFinding": false,
+            "hasExternalIntegration": false,
+            "hasNetwork": false,
+            "id": "i-0b12baaaaa4b78e0b",
+            "insertTs": 1603440806825,
+            "name": "server1",
+            "regionId": "eu-west-3",
+            "regionName": "AWS Paris",
+            "resourceType": "Instance",
+            "rrn": "rrn::instance:eu-west-3:12345:9db2db5fdba47606863c8da86d3ae594fb5aee2b:i-0b12b0f4ed4b78e0b",
+            "service": "Amazon EC2",
+            "stateId": "5e79fd1aaab84a26abbf5641d4a115edfb8f7353"
         }
     }
 }
