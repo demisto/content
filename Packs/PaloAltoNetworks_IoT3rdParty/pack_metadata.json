@@ -1,7 +1,7 @@
 {
     "name": "Palo Alto Networks IoT 3rd Party Integrations",
     "description": "Palo Alto Networks IoT 3rd Party Integrations",
-    "support": "developer",
+    "support": "xsoar",
     "currentVersion": "6.0.0",
     "author": "ZingboxTeam",
     "url": "https://www.paloaltonetworks.com/network-security/iot-security",
