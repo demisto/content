@@ -127,6 +127,7 @@ tasks:
       name: Palo Alto Networks PAN-OS enabled?
       type: condition
       version: -1
+      description: Check whether PAN-OS integration is enabled.
     taskid: 957428b9-9a0c-4ae3-8917-83ae0a83de43
     timertriggers: []
     type: condition
@@ -356,6 +357,7 @@ tasks:
       name: AutoCommit defined?
       type: condition
       version: -1
+      description: Check whether auto-commit is enabled.
     taskid: 4d41a27f-1818-4f90-8bba-39b3881a4af3
     timertriggers: []
     type: condition
@@ -383,6 +385,7 @@ tasks:
       name: Commit PAN-OS Instance manually
       type: regular
       version: -1
+      description: Commit manually on PAN-OS.
     taskid: 5df6d93f-8c45-4a3b-840f-cd0a24cc7ae6
     timertriggers: []
     type: regular
@@ -410,6 +413,7 @@ tasks:
       name: Commit PAN-OS Instance manually
       type: regular
       version: -1
+      description: Commit manually on PAN-OS.
     taskid: a1caf43e-5771-4591-8b0f-1653b0fd201a
     timertriggers: []
     type: regular
@@ -460,6 +464,7 @@ tasks:
       name: Is there an IP/Service/Port to block?
       type: condition
       version: -1
+      description: Check whether there is an IP/Service/Port to block.
     taskid: af5fde24-508e-474c-82fe-edc727b82ebc
     timertriggers: []
     type: condition
@@ -604,6 +609,7 @@ tasks:
       name: Is there an existing Service?
       type: condition
       version: -1
+      description: Check whether the service exists in PAN-OS.
     taskid: 19e455ad-0129-4304-89e1-f4650a6301c3
     timertriggers: []
     type: condition

@@ -17,7 +17,7 @@ args:
 commonfields:
   id: ExpanseGenerateIssueMap
   version: -1
-dockerimage: demisto/chromium:1.0.0.13181
+dockerimage: demisto/chromium:1.0.0.13616
 enabled: true
 name: ExpanseGenerateIssueMap
 runas: DBotWeakRole

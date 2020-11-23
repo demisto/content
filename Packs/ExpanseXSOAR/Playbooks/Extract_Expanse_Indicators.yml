@@ -145,6 +145,7 @@ tasks:
       id: bf7ad01f-8415-4226-815c-92ecda78e386
       iscommand: false
       name: Are there Certificates to enrich?
+      description: Check if there are Expanse Certificates in the inputs.
       type: condition
       version: -1
     taskid: bf7ad01f-8415-4226-815c-92ecda78e386
@@ -506,6 +507,7 @@ tasks:
       name: Are there Domains to enrich?
       type: condition
       version: -1
+      description: Check if there are Expanse Domains in the inputs.
     taskid: 952402a0-5d10-4c85-8c80-42245aa27955
     timertriggers: []
     type: condition
@@ -560,6 +562,7 @@ tasks:
       name: Are there IP Ranges to enrich?
       type: condition
       version: -1
+      description: Check if there are Expanse IP Ranges in the inputs.
     taskid: aff37567-6d54-482c-8767-598fd04528b7
     timertriggers: []
     type: condition
@@ -1155,6 +1158,7 @@ tasks:
       name: Create Indicators?
       type: condition
       version: -1
+      description: Check whether the playbook should create new indicators.
     taskid: 60de1375-77c9-4c2f-841b-f694bf822943
     timertriggers: []
     type: condition
@@ -1197,6 +1201,7 @@ tasks:
       name: Create Indicators?
       type: condition
       version: -1
+      description: Check whether the playbook should create new indicators.
     taskid: de299d21-d25c-4895-82fc-89b882f6406e
     timertriggers: []
     type: condition
@@ -1302,6 +1307,7 @@ tasks:
       iscommand: false
       name: Are there DomainGlobs to enrich?
       type: condition
+      description: Check if there are Expanse Domain Globs in the inputs.
       version: -1
     taskid: e8297287-0165-42a2-8048-7f23d6c3b1e6
     timertriggers: []
@@ -1373,6 +1379,7 @@ tasks:
       name: Create Indicators?
       type: condition
       version: -1
+      description: Check whether the playbook should create new indicators.
     taskid: a2665b65-4a67-4840-8e1d-ffb9a7fc505d
     timertriggers: []
     type: condition
@@ -1771,6 +1778,7 @@ tasks:
       name: Is there an IP to enrich?
       type: condition
       version: -1
+      description: Check if there are Expanse Certificates in the inputs.
     taskid: 5059cc4e-dd79-41e4-898b-c84efc2d8b6f
     timertriggers: []
     type: condition
