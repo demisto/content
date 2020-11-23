@@ -1295,3 +1295,59 @@
 <pre>!cisco-ise-create-endpoint mac_address=01:02:01:02:AB:AB attributes_map={\"zb_profie\":\"iphone\",\"zb_category\":\"phone\"}</pre>
 <h5>Human Readable Output</h5>
 <h3>Endpoint "01:02:01:02:AB:AB" has been created successfully</h3>
+<h3 id="h_9bf25414-e9b3-41fe-a855-1bf7de70d143">15. Get all deployment nodes</h3>
+<hr />
+<p>Returns data for all Cisco ISE nodes in the deployment.</p>
+<h5>Base Command</h5>
+<p><code>cisco-ise-get-nodes</code></p>
+<h5>Input</h5>
+<p>There are no arguments for this command.</p>
+<h5>Context Output</h5>
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 324px;"><strong>Path</strong></th>
+<th style="width: 80px;"><strong>Type</strong></th>
+<th style="width: 336px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 324px;">CiscoISE.NodesData</td>
+<td style="width: 80px;">string</td>
+<td style="width: 336px;">Details of all deployment ISE nodes.</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<pre>!cisco-ise-get-nodes</pre>
+<h5>Human Readable Output</h5>
+<h3>CiscoISE deployment nodes</h3>
+<table border="2">
+<thead>
+<tr>
+<th>Name </th>
+<th>inDeployment </th>
+<th>ip </th>
+<th>isLocalIstance </th>
+<th>primaryPapNode </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ise24primary </td>
+<td>true </td>
+<td>10.6.72.113</td>
+<td>false</td>
+<td>false </td>
+</tr>
+  <tr>
+<td>ise24secondary </td>
+<td>true </td>
+<td>10.6.72.74</td>
+<td>true</td>
+<td>true </td>
+</tr>
+</tbody>
+</table>
