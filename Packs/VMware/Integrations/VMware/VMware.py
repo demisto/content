@@ -2,15 +2,14 @@
 # pylint: disable=no-name-in-module
 
 import ssl
-import sys
-from datetime import datetime
-
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 from cStringIO import StringIO
+
 from pyVim.connect import Disconnect, SmartConnect
 from pyVim.task import WaitForTask
 from pyVmomi import vim, vmodl
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 FULL_URL = demisto.params()['url'].split(':')
 URL = FULL_URL[0]
