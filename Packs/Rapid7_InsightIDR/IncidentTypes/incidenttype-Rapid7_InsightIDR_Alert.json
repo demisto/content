@@ -1,7 +1,6 @@
 {
 	"id": "Rapid7 InsightIDR Alert",
 	"version": -1,
-	"modified": "2020-11-23T08:40:01.566113113+02:00",
 	"sortValues": null,
 	"fromVersion": "5.0.0",
 	"vcShouldIgnore": false,
