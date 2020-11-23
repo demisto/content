@@ -1,16 +1,10 @@
 {
 	"id": "Rapid7 InsightIDR Alert",
-	"version": 1,
+	"version": -1,
 	"modified": "2020-11-23T08:40:01.566113113+02:00",
 	"sortValues": null,
-	"packID": "",
-	"itemVersion": "",
-	"fromServerVersion": "",
-	"toServerVersion": "",
+	"fromVersion": "5.0.0",
 	"vcShouldIgnore": false,
-	"vcShouldKeepItemLegacyProdMachine": false,
-	"commitMessage": "",
-	"shouldCommit": false,
 	"locked": false,
 	"name": "Rapid7 InsightIDR Alert",
 	"prevName": "Rapid7 InsightIDR Alert",
@@ -29,5 +23,5 @@
 	"closureScript": "",
 	"disabled": false,
 	"reputationCalc": 0,
-	"layout": "128c1d5e-0ef3-48e4-871f-c056103398cb"
+	"layout": "Rapid7 InsightIDR - Layout"
 }

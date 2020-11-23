@@ -1,4 +1,3 @@
-"""Rapid7 InsightIDR Investigation for Cortex XSOAR."""
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -17,7 +16,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 INVESTIGATIONS_FIELDS = ['title', 'id', 'status', 'created_time', 'source', 'assignee', 'alerts']
 THREATS_FIELDS = ['name', 'note', 'indicator_count', 'published']
 LOGS_FIELDS = ['name', 'id']
-
 EVENTS_FIELDS = ['log_id', 'message', 'timestamp']
 
 
@@ -724,9 +722,10 @@ def fetch_incidents(client: Client,
     incidents = []
     next_run = last_fetch
 
-    size = int(max_fetch) if max_fetch else max_fetch
+    size = int(max_fetch)
     params = {'start_time': last_fetch.strftime(DATE_FORMAT),
               'size': size}
+
     investigations = client.list_investigations(remove_empty_elements(params))
     for investigation in investigations.get('data', []):
         investigation_created_time = investigation.get('created_time')
@@ -755,7 +754,7 @@ def main():
     params = demisto.params()
     region = params.get('region', {})
     api_key = params.get('apiKey', {})
-    max_fetch = params.get('max_fetch', None)
+    max_fetch = params.get('max_fetch', '50')
 
     base_url = f'https://{region}.api.insight.rapid7.com/'
 
