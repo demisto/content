@@ -1,4 +1,4 @@
-This scripts retrieves all devices from PANW IoT cloud and exports them as Endpoints with custom attributes in Cisco ISE
+This scripts retrieves all devices from PANW IoT cloud and exports them as Endpoints with custom attributes to Cisco ISE
 ## Script Data
 ---
 
@@ -8,10 +8,21 @@ This scripts retrieves all devices from PANW IoT cloud and exports them as Endpo
 | Tags | PANW IoT 3rd Party Integration, Cisco ISE |
 | Demisto Version | 6.0.0 |
 
-This Scripts uses the following commands:
-'panw-iot-3rd-party-get-asset-list' - Retrieves all devices from PANW IoT Cloud
-'cisco-ise-get-endpoint-id' or 'cisco-ise-get-endpoint-id-by-name' - Gets an ID for an endpoint
-'cisco-ise-update-endpoint-custom-attribute' - For updating an endpoints custom attributes
+## Used In
+---
+This script is used in the following playbooks and scripts.
+* Bulk Export to Cisco ISE - PANW IoT 3rd Party Integration
+
+## Dependencies
+---
+This script uses the following commands and scripts.
+* panw-iot-3rd-party-get-asset-list
+* panw-iot-3rd-party-report-status-to-panw
+* cisco-ise-get-endpoint-id
+* cisco-ise-get-endpoint-id-by-name
+* cisco-ise-create-endpoint
+* cisco-ise-update-endpoint-custom-attribute
+* GetCiscoISEActiveInstance
 
 ## Inputs
 ---

@@ -1,4 +1,4 @@
-Playbook to handle incident triggered from PANW Iot (Zingbox) UI to send Alert to SIEM.
+Playbook to handle incident triggered from PANW Iot (Zingbox) UI to un-quarantine a device in ISE.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,18 +7,18 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Syslog Sender
+* Cisco ISE
 * Palo Alto Networks IoT 3rd Party
 
 ### Scripts
+* GetCiscoISEActiveInstance
 * IsIntegrationAvailable
 * isError
 
 ### Commands
 * panw-iot-3rd-party-report-status-to-panw
-* panw-iot-3rd-party-convert-assets-to-external-format
-* panw-iot-3rd-party-get-single-asset
-* send-syslog
+* cisco-ise-get-endpoint-id
+* cisco-ise-update-custom-attribute 
 * closeInvestigation
 
 ## Playbook Inputs
@@ -26,7 +26,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| incident | This playbook is invoked via the incident type "PANW IoT 3rd Party SIEM Integration - Alert". | | yes |
+| incident | This playbook is invoked via the incident type "PANW IoT 3rd Party SIEM Integration - Vulnerability". | | yes |
 
 ## Playbook Outputs
 ---

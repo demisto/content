@@ -3,7 +3,11 @@ description: Playbook to handle incident triggered from PANW Iot (Zingbox) UI to
 id: Un-quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
 inputs: []
 name: Un-quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
-outputs: []
+outputs:
+- contextPath: incident
+  description: This playbook is invoked via the incident type "PANW IoT 3rd Party
+    Cisco ISE Un-quarantine"
+  type: unknown
 starttaskid: "0"
 tasks:
   "0":
