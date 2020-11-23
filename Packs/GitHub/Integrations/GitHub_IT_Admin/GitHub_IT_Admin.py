@@ -17,7 +17,7 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, base_url, token, org, headers, ok_codes, verify=True, proxy=False):
+    def __init__(self, base_url, token, org, headers, ok_codes=None, verify=True, proxy=False):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers)
         self.token = token
         self.org = org
@@ -93,6 +93,26 @@ class Client(BaseClient):
         return user_id
 
 
+def github_handle_error(e):
+    try:
+        resp = e.res
+        error_code = resp.get('errorCode', '')
+        error_message = resp.get('errorCauses', str(e))
+        if isinstance(error_message, list):
+            error_list = []
+            for error in error_message:
+                if isinstance(error, dict):
+                    for key, value in error.items():
+                        error_list.append(f'{key}: {value}')
+                error_message = str('\n '.join(error_list))
+        return error_code, error_message
+
+    except Exception as e:
+        error_code = e.res.status_code
+        error_message = str(e)
+        return error_code, error_message
+
+
 def test_module(client, args):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
@@ -129,7 +149,7 @@ def get_user_command(client, args, mapper_in):
     try:
         user_profile = args.get("user-profile")
         iam_user_profile = IAMUserProfile(user_profile=user_profile)
-        email = user_profile.get_attribute('email')
+        email = iam_user_profile.get_attribute('email')
 
         if not email:
             raise Exception('You must provide a valid email')
@@ -138,10 +158,11 @@ def get_user_command(client, args, mapper_in):
 
         if res.get('totalResults', 0) == 0:
             # check the error message
+            error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
             iam_user_profile.set_result(success=False,
                                         email=email,
-                                        error_message='error_message',
-                                        error_code=404,
+                                        error_message=error_message,
+                                        error_code=error_code,
                                         action=IAMActions.GET_USER)
 
         else:
@@ -159,8 +180,10 @@ def get_user_command(client, args, mapper_in):
         return iam_user_profile
 
     except Exception as e:
+        error_code, error_message = github_handle_error(e)
         iam_user_profile.set_result(success=False,
-                                    error_message=str(e),
+                                    error_code=error_code,
+                                    error_message=error_message,
                                     action=IAMActions.GET_USER
                                     )
         return iam_user_profile
@@ -170,30 +193,41 @@ def create_user_command(client, args, mapper_out, is_command_enabled):
     try:
         user_profile = args.get("user-profile")
         iam_user_profile = IAMUserProfile(user_profile=user_profile)
+        email = iam_user_profile.get_attribute('email')
 
         if not is_command_enabled:
-            user_profile.set_result(action=IAMActions.CREATE_USER,
-                                    skip=True,
-                                    skip_reason='Command is disabled.')
+            iam_user_profile.set_result(action=IAMActions.CREATE_USER,
+                                        skip=True,
+                                        skip_reason='Command is disabled.')
 
         else:
-            github_user = iam_user_profile.map_object(mapper_name=mapper_out)
-            github_user_schema = generate_user_scheme(github_user)
-            res = client.create_user(github_user_schema)
-            user_id = res.get('id', None)
-            iam_user_profile.set_result(success=True,
-                                        iden=user_id,
-                                        email=github_user.get('email'),
-                                        username=github_user.get('userName'),
-                                        action=IAMActions.CREATE_USER,
-                                        details=res,
-                                        active=True)
+            user_id = client.get_user_id_by_mail(email)
+            if user_id:
+                _, error_message = IAMErrors.USER_ALREADY_EXISTS
+                iam_user_profile.set_result(action=IAMActions.CREATE_USER,
+                                            skip=True,
+                                            skip_reason=error_message)
+
+            else:
+                github_user = iam_user_profile.map_object(mapper_name=mapper_out)
+                github_user_schema = generate_user_scheme(github_user)
+                res = client.create_user(github_user_schema)
+                user_id = res.get('id', None)
+                iam_user_profile.set_result(success=True,
+                                            iden=user_id,
+                                            email=res.get('email'),
+                                            username=res.get('userName'),
+                                            action=IAMActions.CREATE_USER,
+                                            details=res,
+                                            active=True)
 
         return iam_user_profile
 
     except Exception as e:
+        error_code, error_message = github_handle_error(e)
         iam_user_profile.set_result(success=False,
-                                    error_message=str(e),
+                                    error_code=error_code,
+                                    error_message=error_message,
                                     action=IAMActions.CREATE_USER
                                     )
         return iam_user_profile
@@ -205,7 +239,7 @@ def update_user_command(client, args, mapper_out, is_update_enabled, is_create_e
         iam_user_profile = IAMUserProfile(user_profile=user_profile)
 
         if not is_update_enabled:
-            user_profile.set_result(action=IAMActions.CREATE_USER,
+            iam_user_profile.set_result(action=IAMActions.UPDATE_USER,
                                     skip=True,
                                     skip_reason='Command is disabled.')
 
@@ -222,7 +256,7 @@ def update_user_command(client, args, mapper_out, is_update_enabled, is_create_e
                     iam_user_profile = create_user_command(client, args, mapper_out, is_create_enabled)
                 else:
                     error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
-                    user_profile.set_result(action=IAMActions.UPDATE_USER,
+                    iam_user_profile.set_result(action=IAMActions.UPDATE_USER,
                                             error_code=error_code,
                                             skip=True,
                                             skip_reason=error_message)
@@ -240,8 +274,10 @@ def update_user_command(client, args, mapper_out, is_update_enabled, is_create_e
         return iam_user_profile
 
     except Exception as e:
+        error_code, error_message = github_handle_error(e)
         iam_user_profile.set_result(success=False,
-                                    error_message=str(e),
+                                    error_code=error_code,
+                                    error_message=error_message,
                                     action=IAMActions.UPDATE_USER
                                     )
         return iam_user_profile
@@ -253,7 +289,7 @@ def disable_user_command(client, args, mapper_out, is_disable_enabled):
         iam_user_profile = IAMUserProfile(user_profile=user_profile)
 
         if not is_disable_enabled:
-            user_profile.set_result(action=IAMActions.CREATE_USER,
+            iam_user_profile.set_result(action=IAMActions.DISABLE_USER,
                                     skip=True,
                                     skip_reason='Command is disabled.')
 
@@ -264,7 +300,7 @@ def disable_user_command(client, args, mapper_out, is_disable_enabled):
 
             if not user_id:
                 error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
-                user_profile.set_result(action=IAMActions.DISABLE_USER,
+                iam_user_profile.set_result(action=IAMActions.DISABLE_USER,
                                         error_code=error_code,
                                         skip=True,
                                         skip_reason=error_message)
@@ -280,9 +316,11 @@ def disable_user_command(client, args, mapper_out, is_disable_enabled):
 
         return iam_user_profile
     except Exception as e:
+        error_code, error_message = github_handle_error(e)
         iam_user_profile.set_result(success=False,
-                                    error_message=str(e),
-                                    action=IAMActions.ENABLE_USER
+                                    error_code=error_code,
+                                    error_message=error_message,
+                                    action=IAMActions.DISABLE_USER
                                     )
         return iam_user_profile
 
