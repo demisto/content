@@ -240,7 +240,7 @@ Command for list of activities matching the specified filters.
 
 #### Command Example
 ```!microsoft-cas-activities-list custom_filter="{\"filters\":{\"activity.alertId\": {\"eq\":\"5f8ff3b02dccd61d06985ef8\"}}}" ```
-To Use A custom filter you need to provide 'filters' in an object in a nested JSON before the filter itself.
+To Use a custom filter you need to provide 'filters' in an object in a nested JSON before the filter itself.
 
 #### Human Readable Output
 
