@@ -1,4 +1,4 @@
-category: IT Services
+category: Identity and Access Management
 commonfields:
   id: GitHub IT Admin
   version: -1
@@ -28,241 +28,252 @@ configuration:
   name: org
   required: true
   type: 0
-- additionalinfo: An optional custom mapping that takes custom values in the SCIM
-    data into the integration.
-  defaultvalue: ""
-  display: Custom Mapping for Create User
-  name: customMappingCreateUser
-  required: false
-  type: 12
-- additionalinfo: An optional custom mapping that takes custom values in the SCIM
-    data into the integration.
-  defaultvalue: ""
-  display: Custom Mapping for UpdateUser
-  name: customMappingUpdateUser
-  required: false
-  type: 12
-description: GitHub Integration consists of a set of API endpoints that allow customers
-  to automate provisioning of GitHub organization membership.
+- defaultvalue: User Profile - ServiceNow (Incoming)
+  display: Incoming Mapper
+  name: mapper_in
+  required: true
+  type: 0
+- defaultvalue: User Profile - ServiceNow (Outgoing)
+  display: Outgoing Mapper
+  name: mapper_out
+  required: true
+  type: 0
+description: Integrate with GitHub's services to perform Identity Lifecycle Management operations.
 display: GitHub IT Admin
 name: GitHub IT Admin
 script:
   commands:
   - arguments:
-    - description: SCIM content in JSON format
-      name: scim
+    - default: false
+      description: User Profile indicator details.
+      isArray: false
+      name: user-profile
       required: true
-    description: Get a user detail
-    name: get-user
-    outputs:
-    - contextPath: GetUser
-      description: Command context path
-      type: unknown
-    - contextPath: GetUser.active
-      description: Gives the active status of user. Can be true of false.
-      type: boolean
-    - contextPath: GetUser.brand
-      description: Name of the Integration
-      type: string
-    - contextPath: GetUser.details
-      description: Gives the user Profile information if the API is success else error
-        message
-      type: string
-    - contextPath: GetUser.email
-      description: Value of email ID passed as argument
-      type: string
-    - contextPath: GetUser.errorCode
-      description: HTTP error response code
-      type: number
-    - contextPath: GetUser.errorMessage
-      description: Reason why the API is failed
-      type: string
-    - contextPath: GetUser.id
-      description: Value of id passed as argument
-      type: string
-    - contextPath: GetUser.instanceName
-      description: Name of the instance used for testing
-      type: string
-    - contextPath: GetUser.success
-      description: Status of the result. Can be true or false.
-      type: boolean
-    - contextPath: GetUser.userName
-      description: Value of username passed as argument
-      type: string
-  - arguments:
-    - description: SCIM content in JSON format
-      name: scim
-      required: true
-    - description: An optional custom mapping that takes custom values in the SCIM
-        data into the integration.
-      name: customMapping
-    description: Creates a user
-    name: create-user
-    outputs:
-    - contextPath: CreateUser
-      description: Command context path
-      type: Unknown
-    - contextPath: CreateUser.active
-      description: Gives the active status of user. Can be true of false.
-      type: boolean
-    - contextPath: CreateUser.brand
-      description: Name of the Integration
-      type: string
-    - contextPath: CreateUser.details
-      description: Gives the raw response from API
-      type: string
-    - contextPath: CreateUser.email
-      description: Value of email ID passed as argument
-      type: string
-    - contextPath: CreateUser.errorCode
-      description: HTTP error response code
-      type: number
-    - contextPath: CreateUser.errorMessage
-      description: Reason why the API is failed
-      type: string
-    - contextPath: CreateUser.instanceName
-      description: Name of the instance used for testing
-      type: string
-    - contextPath: CreateUser.id
-      description: Value of id passed as argument
-      type: string
-    - contextPath: CreateUser.success
-      description: Status of the result. Can be true or false.
-      type: boolean
-    - contextPath: CreateUser.username
-      description: Value of username passed as argument
-      type: string
-  - arguments:
-    - description: Old SCIM content in JSON format
-      name: oldScim
-      required: true
-    - description: New SCIM content in JSON format
-      name: newScim
-      required: true
-    - description: An optional custom mapping that takes custom values in the SCIM
-        data into the integration.
-      name: customMapping
-    description: Update a user
-    name: update-user
-    outputs:
-    - contextPath: UpdateUser
-      description: Command context path
-      type: Unknown
-    - contextPath: UpdateUser.active
-      description: Gives the active status of user. Can be true of false.
-      type: boolean
-    - contextPath: UpdateUser.brand
-      description: Name of the Integration
-      type: string
-    - contextPath: UpdateUser.details
-      description: Gives the raw response from API
-      type: string
-    - contextPath: UpdateUser.email
-      description: Value of email ID passed as argument
-      type: string
-    - contextPath: UpdateUser.errorCode
-      description: HTTP error response code
-      type: number
-    - contextPath: UpdateUser.errorMessage
-      description: Reason why the API is failed
-      type: string
-    - contextPath: UpdateUser.id
-      description: Value of id passed as argument
-      type: string
-    - contextPath: UpdateUser.instanceName
-      description: Name of the instance used for testing
-      type: string
-    - contextPath: UpdateUser.success
-      description: Status of the result. Can be true or false.
-      type: boolean
-    - contextPath: UpdateUser.username
-      description: Value of username passed as argument
-      type: string
-  - arguments:
-    - description: SCIM content in JSON format
-      name: scim
-      required: true
-    description: Disable a user
+      secret: false
+    deprecated: false
+    description: Creates a user.
     execution: true
-    name: disable-user
+    name: iam-create-user
     outputs:
-    - contextPath: DisableUser
-      description: Command context path
-      type: Unknown
-    - contextPath: DisableUser.active
-      description: Gives the active status of user. Can be true of false.
-      type: boolean
-    - contextPath: DisableUser.brand
-      description: Name of the Integration
+    - contextPath: IAM.Vendor.active
+      description: If true the employee's status is active, otherwise false.
+      type: Boolean
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.details
+      description: Gives the user information if the API was successful, otherwise
+        error information.
       type: string
-    - contextPath: DisableUser.details
-      description: Gives the raw response from API in case of error
+    - contextPath: IAM.Vendor.email
+      description: The employee's email address.
+      type: String
+    - contextPath: IAM.Vendor.errorCode
+      description: HTTP error response code.
+      type: Number
+    - contextPath: IAM.Vendor.errorMessage
+      description: Reason why the API failed.
+      type: String
+    - contextPath: IAM.Vendor.id
+      description: The employee's user ID in the app.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
       type: string
-    - contextPath: DisableUser.email
-      description: Value of email ID passed as argument
-      type: string
-    - contextPath: DisableUser.errorCode
-      description: HTTP error response code
-      type: number
-    - contextPath: DisableUser.errorMessage
-      description: Reason why the API is failed
-      type: string
-    - contextPath: DisableUser.id
-      description: Value of id passed as argument
-      type: string
-    - contextPath: DisableUser.instanceName
-      description: Name the instance used for testing
-      type: string
-    - contextPath: DisableUser.success
-      description: Status of the result. Can be true or false.
-      type: boolean
-    - contextPath: DisableUser.username
-      description: Value of username passed as argument
-      type: string
+    - contextPath: IAM.Vendor.success
+      description: If true, the command was executed successfully, otherwise false.
+      type: Boolean
+    - contextPath: IAM.Vendor.username
+      description: The employee's username in the app.
+      type: String
   - arguments:
-    - description: SCIM content in JSON format
-      name: scim
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
       required: true
-    description: Enable a user
-    name: enable-user
+      secret: false
+    deprecated: false
+    description: Updates an existing user with the data passed in the user-profile
+      argument.
+    execution: true
+    name: iam-update-user
     outputs:
-    - contextPath: EnableUser
-      description: Command context path
-    - contextPath: EnableUser.active
-      description: Gives the active status of user. Can be true of false
-      type: boolean
-    - contextPath: EnableUser.brand
-      description: Name of the Integration
+    - contextPath: IAM.Vendor.active
+      description: If true the employee's status is active, otherwise false.
+      type: Boolean
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.details
+      description: Gives the user information if the API was successful, otherwise
+        error information.
       type: string
-    - contextPath: EnableUser.details
-      description: Gives the response from API
+    - contextPath: IAM.Vendor.email
+      description: The employee's email address.
+      type: String
+    - contextPath: IAM.Vendor.errorCode
+      description: HTTP error response code.
+      type: Number
+    - contextPath: IAM.Vendor.errorMessage
+      description: Reason why the API failed.
+      type: String
+    - contextPath: IAM.Vendor.id
+      description: The employee's user ID in the app.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
       type: string
-    - contextPath: EnableUser.email
-      description: Value of email ID passed as argument
+    - contextPath: IAM.Vendor.success
+      description: If true, the command was executed successfully, otherwise false.
+      type: Boolean
+    - contextPath: IAM.Vendor.username
+      description: The employee's username in the app.
+      type: String
+  - arguments:
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a single user resource.
+    execution: false
+    name: iam-get-user
+    outputs:
+    - contextPath: IAM.Vendor.active
+      description: If true the employee's status is active, otherwise false.
+      type: Boolean
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.details
+      description: Gives the user information if the API was successful, otherwise
+        error information.
       type: string
-    - contextPath: EnableUser.errorCode
-      description: HTTP error response code
-      type: number
-    - contextPath: EnableUser.errorMessage
-      description: Reason why the API is failed
+    - contextPath: IAM.Vendor.email
+      description: The employee's email address.
+      type: String
+    - contextPath: IAM.Vendor.errorCode
+      description: HTTP error response code.
+      type: Number
+    - contextPath: IAM.Vendor.errorMessage
+      description: Reason why the API failed.
+      type: String
+    - contextPath: IAM.Vendor.id
+      description: The employee's user ID in the app.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
       type: string
-    - contextPath: EnableUser.id
-      description: Value of id passed as argument
+    - contextPath: IAM.Vendor.success
+      description: If true, the command was executed successfully, otherwise false.
+      type: Boolean
+    - contextPath: IAM.Vendor.username
+      description: The employee's username in the app.
+      type: String
+  - arguments:
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    deprecated: false
+    description: Enables a deprovisioned user.
+    execution: true
+    name: iam-enable-user
+    outputs:
+    - contextPath: IAM.Vendor.active
+      description: If true the employee's status is active, otherwise false.
+      type: Boolean
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.details
+      description: Gives the user information if the API was successful, otherwise
+        error information.
       type: string
-    - contextPath: EnableUser.instanceName
-      description: Name the instance used for testing
+    - contextPath: IAM.Vendor.email
+      description: The employee's email address.
+      type: String
+    - contextPath: IAM.Vendor.errorCode
+      description: HTTP error response code.
+      type: Number
+    - contextPath: IAM.Vendor.errorMessage
+      description: Reason why the API failed.
+      type: String
+    - contextPath: IAM.Vendor.id
+      description: The employee's user ID in the app.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
       type: string
-    - contextPath: EnableUser.success
-      description: Status of the result. Can be true or false
-      type: boolean
-    - contextPath: EnableUser.username
-      description: Value of username passed as argument
+    - contextPath: IAM.Vendor.success
+      description: If true, the command was executed successfully, otherwise false.
+      type: Boolean
+    - contextPath: IAM.Vendor.username
+      description: The employee's username in the app.
+      type: String
+  - arguments:
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    deprecated: false
+    description: Disable an active user.
+    execution: true
+    name: iam-disable-user
+    outputs:
+    - contextPath: IAM.Vendor.active
+      description: If true the employee's status is active, otherwise false.
+      type: Boolean
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.details
+      description: Gives the user information if the API was successful, otherwise
+        error information.
       type: string
-  dockerimage: demisto/python3:3.8.5.10845
+    - contextPath: IAM.Vendor.email
+      description: The employee's email address.
+      type: String
+    - contextPath: IAM.Vendor.errorCode
+      description: HTTP error response code.
+      type: Number
+    - contextPath: IAM.Vendor.errorMessage
+      description: Reason why the API failed.
+      type: String
+    - contextPath: IAM.Vendor.id
+      description: The employee's user ID in the app.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.success
+      description: If true, the command was executed successfully, otherwise false.
+      type: Boolean
+    - contextPath: IAM.Vendor.username
+      description: The employee's username in the app.
+      type: String
+  - deprecated: false
+    description: Retrieves a User Profile schema which holds all of the user fields within the application.
+      Used for outgoing-mapping through the Get Schema option.
+    execution: false
+    name: get-mapping-fields
+  dockerimage: demisto/python3:3.8.6.13358
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
-fromversion: 6.0.0
+  ismappable: true
+  isremotesyncout: true
 tests:
-- No tests (auto formatted)
+- No tests
+fromversion: 6.0.0

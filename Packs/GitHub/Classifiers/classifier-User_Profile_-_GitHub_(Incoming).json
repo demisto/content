@@ -1,0 +1,32 @@
+{
+ "description": "",
+ "feed": false,
+ "id": "e0bc1e9c-7878-40e0-8598-a65c563d270a",
+ "mapping": {
+  "User Profile": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+    "Email": {
+     "complex": null,
+     "simple": "emails"
+    },
+    "Given Name": {
+     "complex": null,
+     "simple": "givenName"
+    },
+    "Surname": {
+     "complex": null,
+     "simple": "familyName"
+    },
+    "Username": {
+     "complex": null,
+     "simple": "userName"
+    }
+   }
+  }
+ },
+ "name": "User Profile - GitHub (Incoming)",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

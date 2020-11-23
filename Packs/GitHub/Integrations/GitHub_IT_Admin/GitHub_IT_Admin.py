@@ -1,19 +1,13 @@
-''' IMPORTS '''
 import demistomock as demisto
 from CommonServerPython import *
-import json
 import traceback
-
 import requests
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-''' CONSTANTS '''
-USER_NOT_FOUND = "User not found"
-SCIM_EXTENSION_SCHEMA = "urn:scim:schemas:extension:custom:1.0:user"
-CUSTOM_MAPPING_CREATE = demisto.params().get('customMappingCreateUser')
-CUSTOM_MAPPING_UPDATE = demisto.params().get('customMappingUpdateUser')
+DEFAULT_OUTGOING_MAPPER = "User Profile - GitHub (Outgoing)"
+DEFAULT_INCOMING_MAPPER = "User Profile - GitHub (Incoming)"
 
 
 class Client(BaseClient):
@@ -23,41 +17,35 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, base_url, token, org, headers, verify=True, proxy=False):
-        self.base_url = base_url
+    def __init__(self, base_url, token, org, headers, ok_codes, verify=True, proxy=False):
+        super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers)
         self.token = token
         self.org = org
-        self.verify = verify
         self.headers = headers
+        self.ok_codes = ok_codes
         self.session = requests.Session()
         if not proxy:
             self.session.trust_env = False
         self.headers['Authorization'] = 'Bearer ' + self.token
 
-    def http_request(self, method, url_suffix, params=None, data=None, headers=None):
-        if not headers:
-            headers = self.headers
-        full_url = self.base_url + url_suffix
-        res = requests.request(
+    def http_request(self, method, url_suffix, params=None, data=None, ok_codes=None):
+        if not ok_codes:
+            ok_codes=self.ok_codes
+        res = self._http_request(
             method,
-            full_url,
-            verify=self.verify,
+            url_suffix,
             params=params,
-            json=data,
-            headers=headers
+            json_data=data,
+            ok_codes=ok_codes
         )
 
         return res
 
     def get_user(self, input_type, user_term):
 
-        if input_type == 'id':
-            uri = f'scim/v2/organizations/{encode_string_results(self.org)}/Users/{encode_string_results(user_term)}'
-
-        else:
-            user_term = "\"" + user_term + "\""
-            uri = f'scim/v2/organizations/{encode_string_results(self.org)}/' \
-                  f'Users?filter={encode_string_results(input_type)} eq {encode_string_results(user_term)}'
+        user_term = "\"" + user_term + "\""
+        uri = f'scim/v2/organizations/{encode_string_results(self.org)}/' \
+              f'Users?filter={encode_string_results(input_type)} eq {encode_string_results(user_term)}'
 
         return self.http_request(
             method='GET',
@@ -87,141 +75,22 @@ class Client(BaseClient):
             url_suffix=uri
         )
 
-    # Builds a new user github_user dict with pre-defined keys and custom mapping (for user)
-    def build_github_user(self, args, github_user, scim, fn):
-        extension_schema = scim.get(SCIM_EXTENSION_SCHEMA)
-        custom_mapping = None
+    def get_user_id_by_mail(self, email):
+        user_id = ""
+        user_term = "\"" + email + "\""
+        uri = f'scim/v2/organizations/{encode_string_results(self.org)}/' \
+              f'Users?filter={encode_string_results("emails")} eq {encode_string_results(user_term)}'
 
-        if fn == 'create':
-            custom_mapping_fromparams = CUSTOM_MAPPING_CREATE
-        else:
-            custom_mapping_fromparams = CUSTOM_MAPPING_UPDATE
+        res = self.http_request(
+            method='GET',
+            url_suffix=uri
+        )
+        res_json = res.json()
+        item = res_json.get('Resources')
+        if item:
+            user_id = item.get('id')
 
-        if args.get('customMapping'):
-            custom_mapping = json.loads(args.get('customMapping'))
-        elif custom_mapping_fromparams:
-            custom_mapping = json.loads(custom_mapping_fromparams)
-
-        if custom_mapping and extension_schema:
-            for key, value in custom_mapping.items():
-                # key is the attribute name in input scim. value is the attribute name of app profile
-                user_extension_data = extension_schema.get(key)
-                if user_extension_data:
-                    github_user[value] = user_extension_data
-
-        return github_user
-
-
-class OutputContext:
-    """
-        Class to build a generic output and context.
-    """
-
-    def __init__(self, success=None, active=None, iden=None, username=None, email=None, errorCode=None,
-                 errorMessage=None, details=None):
-        self.instanceName = demisto.callingContext['context']['IntegrationInstance']
-        self.brand = demisto.callingContext['context']['IntegrationBrand']
-        self.command = demisto.command().replace('-', '_').title().replace('_', '')
-        self.success = success
-        self.active = active
-        self.iden = iden
-        self.username = username
-        self.email = email
-        self.errorCode = errorCode
-        self.errorMessage = errorMessage
-        self.details = details
-        self.data = {
-            "brand": self.brand,
-            "instanceName": self.instanceName,
-            "success": success,
-            "active": active,
-            "id": iden,
-            "username": username,
-            "email": email,
-            "errorCode": errorCode,
-            "errorMessage": errorMessage,
-            "details": details
-        }
-
-
-def verify_and_load_scim_data(scim):
-
-    try:
-        scim = json.loads(scim)
-    except Exception:
-        pass
-    if type(scim) != dict:
-        raise Exception("SCIM data is not a valid JSON ")
-    return scim
-
-
-def map_scim(scim):
-    mapping = {
-        "userName": "userName",
-        "email": "emails(val.primary && val.primary==true).value",
-        "first_name": "name.givenName",
-        "last_name": "name.familyName",
-        "active": "active",
-        "id": "id",
-    }
-    parsed_scim = dict()
-    for k, v in mapping.items():
-        try:
-            value = demisto.dt(scim, v)
-            if(type(value) == list):
-                parsed_scim[k] = value[0]
-            else:
-                parsed_scim[k] = value
-        except Exception:
-            parsed_scim[k] = None
-    return parsed_scim
-
-
-def map_changes_to_existing_user(existing_user, new_json):
-    for key, value in new_json.items():
-        if type(value) == list:
-            # handle in specific way
-            # as of now only emails needs to be handled
-            if key == 'emails':
-                existing_email_list = existing_user.get(key)
-
-                # update
-                for new_json_item in value:
-                    for existing_json_item in existing_email_list:
-                        if existing_json_item.get('type') == new_json_item.get('type'):
-                            if existing_json_item.get('value') != new_json_item.get('value'):
-                                existing_json_item['value'] = new_json_item.get('value')
-                            if new_json_item.get('primary', None) is not None:
-                                existing_json_item['primary'] = new_json_item.get('primary')
-                            else:
-                                if existing_json_item.get('primary', None) is not None:
-                                    existing_json_item['primary'] = existing_json_item.get('primary')
-                            break
-
-                # add
-                new_email_list = []
-                for new_json_item in value:  # i
-                    exist = False
-                    for existing_json_item in existing_email_list:  # j
-                        if new_json_item.get('type') == existing_json_item.get('type', ''):
-                            exist = True
-                            break
-                    if not exist:
-                        new_email = {'type': new_json_item.get('type'),
-                                     'value': new_json_item.get('value')}
-                        if new_json_item.get('primary', None) is not None:
-                            new_email.update({'primary': new_json_item.get('primary')})
-                        new_email_list.append(new_email)
-                existing_email_list.extend(new_email_list)
-
-        elif type(value) == dict:
-            if key != SCIM_EXTENSION_SCHEMA:
-                map_changes_to_existing_user(existing_user.get(key), value)
-        else:
-            existing_user[key] = value
-
-
-''' COMMAND FUNCTIONS '''
+        return user_id
 
 
 def test_module(client, args):
@@ -244,7 +113,7 @@ def test_module(client, args):
     uri = f'scim/v2/organizations/{encode_string_results(client.org)}/Users/1234'
     res = client.http_request(method='GET', url_suffix=uri)
     res_text = res.text
-    if res.status_code == 404 and 'documentation_url' in res_text:
+    if 'documentation_url' in res_text:
         errortext = "URL or Organization Name " + str(client.org) + " Not Found."
         raise Exception(str(res.status_code) + " " + str(errortext))
     else:
@@ -256,300 +125,209 @@ def test_module(client, args):
             raise Exception(f"{res.status_code} - {res.text}")
 
 
-def get_user_command(client, args):
-    """
-        Returning user GET details and status of response.
+def get_user_command(client, args, mapper_in):
+    try:
+        user_profile = args.get("user-profile")
+        iam_user_profile = IAMUserProfile(user_profile=user_profile)
+        email = user_profile.get_attribute('email')
 
-        Args:   demisto command line argument
-        client: GitHub
+        if not email:
+            raise Exception('You must provide a valid email')
 
-        Returns:
-            success : success=True, id, email, login as username, details, active status
-            fail : success=False, id, login as username, errorCode, errorMessage, details
-    """
+        res = client.get_user('emails', email)
 
-    scim = verify_and_load_scim_data(args.get('scim'))
-    scim_flat_data = map_scim(scim)
-    user_id = scim_flat_data.get('id')
-    username = scim_flat_data.get('userName')
-    email = scim_flat_data.get('email')
+        if res.get('totalResults', 0) == 0:
+            # check the error message
+            iam_user_profile.set_result(success=False,
+                                        email=email,
+                                        error_message='error_message',
+                                        error_code=404,
+                                        action=IAMActions.GET_USER)
 
-    input_type = None
-    if not (user_id or username or email):
-        raise Exception('You must provide either the id, email or login as userName of the user')
+        else:
+            item = res.get('Resources')
+            github_user = convert_scheme_to_dict(item)
+            user_profile.update_with_app_data(github_user, mapper_in)
+            iam_user_profile.set_result(success=True,
+                                        iden=item.get('id', None),
+                                        email=email,
+                                        username=item.get('userName', None),
+                                        action=IAMActions.GET_USER,
+                                        details=res,
+                                        active=item.get('active', None))
 
-    if user_id:
-        user_term = user_id
-        input_type = 'id'
-    elif email:
-        user_term = email
-        input_type = 'emails'
-    else:
-        user_term = username
-        input_type = 'userName'
+        return iam_user_profile
 
-    res = client.get_user(input_type, user_term)
-    res_json = res.json()
-    generic_iam_context_data_list = []
+    except Exception as e:
+        iam_user_profile.set_result(success=False,
+                                    error_message=str(e),
+                                    action=IAMActions.GET_USER
+                                    )
+        return iam_user_profile
 
-    if res.status_code == 200:
-        if input_type == 'id':  # if search is using the id
-            id = res_json.get('id', None)
-            active = res_json.get('active', False)
-            username = res_json.get('userName', None)
-            for item in res_json.get('emails', None):
-                email = item['value']
-                if "primary" in item:
-                    break
-            generic_iam_context = OutputContext(success=True, iden=id, email=email,
-                                                username=username, details=res_json, active=active)
-            generic_iam_context_data_list.append(generic_iam_context.data)
 
-        else:  # if search is using the email or userName
-            if res_json.get('totalResults', 0) == 0:
-                generic_iam_context = OutputContext(success=False, iden=user_id, username=username, errorCode=404, email=email,
-                                                    errorMessage=USER_NOT_FOUND, details=res_json)
-                generic_iam_context_data_list.append(generic_iam_context.data)
+def create_user_command(client, args, mapper_out, is_command_enabled):
+    try:
+        user_profile = args.get("user-profile")
+        iam_user_profile = IAMUserProfile(user_profile=user_profile)
 
+        if not is_command_enabled:
+            user_profile.set_result(action=IAMActions.CREATE_USER,
+                                    skip=True,
+                                    skip_reason='Command is disabled.')
+
+        else:
+            github_user = iam_user_profile.map_object(mapper_name=mapper_out)
+            github_user_schema = generate_user_scheme(github_user)
+            res = client.create_user(github_user_schema)
+            user_id = res.get('id', None)
+            iam_user_profile.set_result(success=True,
+                                        iden=user_id,
+                                        email=github_user.get('email'),
+                                        username=github_user.get('userName'),
+                                        action=IAMActions.CREATE_USER,
+                                        details=res,
+                                        active=True)
+
+        return iam_user_profile
+
+    except Exception as e:
+        iam_user_profile.set_result(success=False,
+                                    error_message=str(e),
+                                    action=IAMActions.CREATE_USER
+                                    )
+        return iam_user_profile
+
+
+def update_user_command(client, args, mapper_out, is_update_enabled, is_create_enabled, create_if_not_exists):
+    try:
+        user_profile = args.get("user-profile")
+        iam_user_profile = IAMUserProfile(user_profile=user_profile)
+
+        if not is_update_enabled:
+            user_profile.set_result(action=IAMActions.CREATE_USER,
+                                    skip=True,
+                                    skip_reason='Command is disabled.')
+
+        else:
+            iam_user_profile = IAMUserProfile(user_profile=user_profile)
+            github_user = iam_user_profile.map_object(mapper_name=mapper_out)
+
+            email = github_user.get('email')
+            user_id = client.get_user_id_by_mail(email)
+
+            if not user_id:
+                # user doesn't exists
+                if create_if_not_exists:
+                    iam_user_profile = create_user_command(client, args, mapper_out, is_create_enabled)
+                else:
+                    error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
+                    user_profile.set_result(action=IAMActions.UPDATE_USER,
+                                            error_code=error_code,
+                                            skip=True,
+                                            skip_reason=error_message)
             else:
-                for item in res_json.get('Resources'):
-                    active = item.get('active', None)
-                    id = item.get('id', None)
-                    username = item.get('userName', None)
-                    for email_item in item.get('emails', []):
-                        email = email_item['value']
-                        if "primary" in email_item:
-                            break
-
-                    generic_iam_context = OutputContext(success=True, iden=id, email=email,
-                                                        username=username, details=item, active=active)
-                    generic_iam_context_data_list.append(generic_iam_context.data)
-
-    else:  # api returns 404, not found for user not found case.
-        generic_iam_context = OutputContext(success=False, iden=user_id, username=username, email=email,
-                                            errorCode=res.status_code,
-                                            errorMessage=res.headers.get('status'), details=res_json)
-        generic_iam_context_data_list.append(generic_iam_context.data)
-
-    generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
-    outputs = {
-        generic_iam_context_dt: generic_iam_context_data_list
-    }
-
-    readable_output = tableToMarkdown(name='Get GitHub User:',
-                                      t=generic_iam_context_data_list,
-                                      headers=["brand", "instanceName", "success", "active", "id",
-                                               "username", "email",
-                                               "errorCode", "errorMessage", "details"],
-                                      removeNull=True)
-
-    return (
-        readable_output,
-        outputs,
-        generic_iam_context_data_list
-    )
-
-
-def create_user_command(client, args):
-    """
-        Create user using POST to GitHub  API, if Connection to the service is successful.
-
-        Args: demisto command line argument
-        client: GitHub
-
-        Returns:
-            success : success=True, id, email, login as username, details, active status
-            fail : success=False, id, login as username, errorCode, errorMessage, details
-    """
-
-    scim = verify_and_load_scim_data(args.get('scim'))
-    parsed_scim = map_scim(scim)
-    github_user = scim
-    github_user = client.build_github_user(args, github_user, scim, 'create')
-
-    # Removing Elements from github_user dictionary which was not sent as part of scim
-    github_user = {key: value for key, value in github_user.items() if value is not None}
-    res = client.create_user(github_user)
-    res_json = res.json()
-
-    if res.status_code == 201:
-        id = res_json.get('id', None)
-        generic_iam_context = OutputContext(success=True,
-                                            iden=id,
-                                            email=parsed_scim.get('email'),
-                                            details=res_json,
-                                            username=parsed_scim.get('userName'),
+                github_user_schema = generate_user_scheme(github_user)
+                res = client.update_user(user_term=user_id, data=github_user_schema)
+                iam_user_profile.set_result(success=True,
+                                            iden=user_id,
+                                            email=github_user.get('email'),
+                                            username=github_user.get('userName'),
+                                            action=IAMActions.UPDATE_USER,
+                                            details=res,
                                             active=True)
 
-    else:
-        generic_iam_context = OutputContext(success=False,
-                                            iden=parsed_scim.get('id'),
-                                            email=parsed_scim.get('email'),
-                                            errorCode=res.status_code,
-                                            errorMessage=res.headers.get('status'),
-                                            username=parsed_scim.get('userName'),
-                                            details=res_json)
+        return iam_user_profile
 
-    generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
-
-    outputs = {
-        generic_iam_context_dt: generic_iam_context.data
-    }
-
-    readable_output = tableToMarkdown(name='Create GitHub User:',
-                                      t=generic_iam_context.data,
-                                      headers=["brand", "instanceName", "success", "active", "id",
-                                               "username", "email",
-                                               "errorCode", "errorMessage", "details"],
-                                      removeNull=True)
-    return (
-        readable_output,
-        outputs,
-        generic_iam_context.data
-    )
+    except Exception as e:
+        iam_user_profile.set_result(success=False,
+                                    error_message=str(e),
+                                    action=IAMActions.UPDATE_USER
+                                    )
+        return iam_user_profile
 
 
-def update_user_command(client, args):
-    """
-        Update user using PUT to GitHub API , if Connection to the service is successful.
+def disable_user_command(client, args, mapper_out, is_disable_enabled):
+    try:
+        user_profile = args.get("user-profile")
+        iam_user_profile = IAMUserProfile(user_profile=user_profile)
 
-        Args:   demisto command line argument
-        client: GitHub
+        if not is_disable_enabled:
+            user_profile.set_result(action=IAMActions.CREATE_USER,
+                                    skip=True,
+                                    skip_reason='Command is disabled.')
 
-        Returns:
-            success : success=True, id, email, login as username, details, active status
-            fail : success=False, id, login as username, errorCod, errorMessage, details
-    """
-
-    old_scim = verify_and_load_scim_data(args.get('oldScim'))
-    new_scim = verify_and_load_scim_data(args.get('newScim'))
-
-    parsed_old_scim = map_scim(old_scim)
-    user_id = parsed_old_scim.get('id')
-
-    if not (user_id):
-        raise Exception('You must provide id of the user')
-
-    res = client.get_user('id', user_id)
-    existing_user = res.json()
-    if res.status_code == 200:
-        map_changes_to_existing_user(existing_user, new_scim)
-
-        # custom mapping
-        github_user = client.build_github_user(args, existing_user, new_scim, 'update')
-        # Removing Elements from github_user dictionary which was not sent as part of scim
-        github_user = {key: value for key, value in github_user.items() if value is not None}
-        res_update = client.update_user(user_term=user_id, data=github_user)
-
-        if res_update.status_code == 200:
-            res_json = res_update.json()
-            generic_iam_context = OutputContext(success=True,
-                                                iden=user_id,
-                                                details=res_json,
-                                                active=True)
-        elif res_update.status_code == 404:
-            generic_iam_context = OutputContext(success=False,
-                                                iden=user_id,
-                                                errorCode=res_update.status_code,
-                                                errorMessage=USER_NOT_FOUND,
-                                                details=res_update.headers.get('status'))
         else:
-            generic_iam_context = OutputContext(success=False,
-                                                iden=user_id,
-                                                errorCode=res_update.status_code,
-                                                errorMessage=res_update.headers.get('status'),
-                                                details=res_update.headers.get('status'))
+            github_user = iam_user_profile.map_object(mapper_name=mapper_out)
+            email = github_user.get('email')
+            user_id = client.get_user_id_by_mail(client, email)
 
-    else:  # api returns 404, not found for user not found case.
-        generic_iam_context = OutputContext(success=False, iden=user_id,
-                                            errorCode=res.status_code,
-                                            errorMessage=res.headers.get('status'), details=existing_user)
+            if not user_id:
+                error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
+                user_profile.set_result(action=IAMActions.DISABLE_USER,
+                                        error_code=error_code,
+                                        skip=True,
+                                        skip_reason=error_message)
+            else:
+                res = client.disable_user(user_id)
+                iam_user_profile.set_result(success=True,
+                                            iden=user_id,
+                                            email=email,
+                                            username=github_user.get('userName'),
+                                            action=IAMActions.DISABLE_USER,
+                                            details=res,
+                                            active=False)
 
-    generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
-
-    outputs = {
-        generic_iam_context_dt: generic_iam_context.data
-    }
-
-    readable_output = tableToMarkdown(name='Updated GitHub User:',
-                                      t=generic_iam_context.data,
-                                      headers=["brand", "instanceName", "success", "active", "id",
-                                               "username", "email",
-                                               "errorCode", "errorMessage", "details"],
-                                      removeNull=True)
-
-    return (
-        readable_output,
-        outputs,
-        generic_iam_context.data
-    )
+        return iam_user_profile
+    except Exception as e:
+        iam_user_profile.set_result(success=False,
+                                    error_message=str(e),
+                                    action=IAMActions.ENABLE_USER
+                                    )
+        return iam_user_profile
 
 
-def disable_user_command(client, args):
-    """
-        Deactivate user by using 'DELETE' to Github API , if Connection to the service is successful.
+def generate_user_scheme(github_user):
+    scheme = {'name': {'familyName': github_user.get('familyName'),
+                       'givenName': github_user.get('givenName')},
+              'userName': github_user.get('email'),
+              'emails': [{'type': 'work', 'primary': True, 'value': github_user.get('email')}]}
+    return scheme
 
-        Args:   demisto command line argument
-        client: Github API
 
-        Returns:
-            success : success=True, id as iden, active status
-            fail : success=False, id as iden, errorCod, errorMessage, details
-    """
-    scim = verify_and_load_scim_data(args.get('scim'))
-    scim_flat_data = map_scim(scim)
-    user_id = scim_flat_data.get('id')
-
-    if not (user_id):
-        raise Exception('You must provide either the id of the user')
-
-    res = client.disable_user(user_id)
-
-    if res.status_code == 204:
-        generic_iam_context = OutputContext(active=False, success=True, iden=user_id)
-
-    elif res.status_code == 404:
-        generic_iam_context = OutputContext(success=False, iden=user_id, errorCode=res.status_code,
-                                            errorMessage=USER_NOT_FOUND, details=res.json())
-    else:
-        generic_iam_context = OutputContext(success=False, iden=user_id, errorCode=res.status_code,
-                                            errorMessage=res.json().get('detail'), details=res.json())
-
-    generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
-    outputs = {
-        generic_iam_context_dt: generic_iam_context.data
-    }
-
-    readable_output = tableToMarkdown(name='Disable GitHub User:',
-                                      t=generic_iam_context.data,
-                                      headers=["brand", "instanceName", "success", "active", "id",
-                                               "username", "email",
-                                               "errorCode", "errorMessage", "details"],
-                                      removeNull=True)
-
-    return (
-        readable_output,
-        outputs,
-        generic_iam_context.data
-    )
+def convert_scheme_to_dict(user_scheme):
+    user_dict = {}
+    for key, value in user_scheme:
+        if isinstance(value, str):
+            user_scheme[key] = value
+        elif isinstance(value, dict):
+            for sub_key, sub_value in value:
+                if isinstance(sub_value, str):
+                    user_scheme[sub_key] = sub_value
+        elif isinstance(value, List):
+            if isinstance(value[0], dict):
+                user_scheme[key] = value[0].get('value')
+    return user_dict
 
 
 def main():
-    """
-        PARSE AND VALIDATE INTEGRATION PARAMS
-    """
 
     params = demisto.params()
+    args = demisto.args()
 
-    # get the service API url
     base_url = params.get('url')
     # checks for '/' at the end url, if it is not available add it
     if base_url[-1] != '/':
         base_url += '/'
-    # get the service token  which is mendatory
     token = params.get('token')
-    # get the org(organization name)
     org = params.get('org')
+
+    mapper_in = params.get('mapper-in', DEFAULT_INCOMING_MAPPER)
+    mapper_out = params.get('mapper-out', DEFAULT_OUTGOING_MAPPER)
+    is_create_enabled = params.get("create_user_enabled")
+    is_enable_disable_enabled = params.get("enable_disable_user_enabled")
+    is_update_enabled = demisto.params().get("update_user_enabled")
+    create_if_not_exists = demisto.params().get("create_if_not_exists")
 
     verify_certificate = not demisto.params().get('insecure', False)
 
@@ -561,17 +339,7 @@ def main():
     proxy = demisto.params().get('proxy', False)
     command = demisto.command()
 
-    demisto.debug(f'Command being called is {demisto.command()}')
-
-    # Commands supported for GitHub API for user
-    commands = {
-        'test-module': test_module,
-        'get-user': get_user_command,
-        'create-user': create_user_command,
-        'update-user': update_user_command,
-        'enable-user': create_user_command,
-        'disable-user': disable_user_command
-    }
+    demisto.debug(f'Command being called is {command}')
 
     try:
         client = Client(
@@ -580,20 +348,40 @@ def main():
             org=org,
             verify=verify_certificate,
             proxy=proxy,
-            headers=headers)
+            headers=headers,
+            ok_codes=(200, 201)
+        )
+        if command == 'test-module':
+            test_module(client)
 
-        if command in commands:
-            human_readable, outputs, raw_response = commands[command](client, demisto.args())
-            return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+        elif command == 'iam-get-user':
+            user_profile = get_user_command(client, args, mapper_in)
+            return_results(user_profile)
 
-    # Log exceptions
+        elif command == 'iam-create-user':
+            user_profile = create_user_command(client, args, mapper_out, is_create_enabled)
+            return_results(user_profile)
+
+        elif command == 'iam-update-user':
+            user_profile = update_user_command(client, args, mapper_out, is_update_enabled,
+                                               is_create_enabled, create_if_not_exists)
+            return_results(user_profile)
+
+        elif command == 'iam-disable-user':
+            user_profile = disable_user_command(client, args, mapper_out, is_enable_disable_enabled)
+            return_results(user_profile)
+
+        elif command == 'iam-enable-user':
+            # no enable - using create
+            user_profile = create_user_command(client, args, mapper_out, is_create_enabled)
+            return_results(user_profile)
+
+        #elif command == 'get-mapping-fields':
+         #   return_results(get_mapping_fields_command(client))
+
     except Exception:
-        demisto.error(f'Failed to execute {demisto.command()} command. Traceback: {traceback.format_exc()}')
-        return_error(f'Failed to execute {demisto.command()} command. Traceback: {traceback.format_exc()}')
-
-    # Log exceptions
-    except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        # For any other integration command exception, return an error
+        return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
