@@ -2454,9 +2454,14 @@ def get_script_metadata_command(client: Client, args: Dict[str, str]) -> Tuple[s
     script_uid = args.get('script_uid')
 
     reply = client.get_script_metadata(script_uid)
+    script_metadata = copy.deepcopy(reply)
+
+    timestamp = script_metadata.get('modification_date')
+    script_metadata['modification_date_timestamp'] = timestamp
+    script_metadata['modification_date'] = timestamp_to_datestring(timestamp, TIME_FORMAT)
 
     return (
-        tableToMarkdown(name='Script Metadata', t=reply, removeNull=True, headerTransform=string_to_table_header),
+        tableToMarkdown(name='Script Metadata', t=script_metadata, removeNull=True, headerTransform=string_to_table_header),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.ScriptMetadata(val.script_uid == obj.script_uid)': reply
         },

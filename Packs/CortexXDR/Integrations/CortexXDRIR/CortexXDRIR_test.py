@@ -1313,12 +1313,17 @@ def test_get_script_metadata_command(requests_mock):
             - Assert the returned markdown, context data and raw response are as expected.
         """
     from CortexXDRIR import get_script_metadata_command, Client
-    from CommonServerPython import tableToMarkdown, string_to_table_header
+    from CommonServerPython import timestamp_to_datestring, tableToMarkdown, string_to_table_header
 
     get_script_metadata_response = load_test_data('./test_data/get_script_metadata.json')
     get_scripts_expected_result = {
         'PaloAltoNetworksXDR.ScriptMetadata(val.script_uid == obj.script_uid)': get_script_metadata_response.get('reply')
     }
+    script_metadata = copy.deepcopy(get_script_metadata_response).get('reply')
+    timestamp = script_metadata.get('modification_date')
+    script_metadata['modification_date_timestamp'] = timestamp
+    script_metadata['modification_date'] = timestamp_to_datestring(timestamp, '%Y-%m-%dT%H:%M:%S')
+
     requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_metadata/', json=get_script_metadata_response)
 
     client = Client(
@@ -1330,7 +1335,7 @@ def test_get_script_metadata_command(requests_mock):
 
     hr, context, raw_response = get_script_metadata_command(client, args)
 
-    assert hr == tableToMarkdown(name='Script Metadata', t=get_script_metadata_response.get('reply'),
+    assert hr == tableToMarkdown(name='Script Metadata', t=script_metadata,
                                  removeNull=True, headerTransform=string_to_table_header)
     assert context == get_scripts_expected_result
     assert raw_response == get_script_metadata_response.get('reply')
