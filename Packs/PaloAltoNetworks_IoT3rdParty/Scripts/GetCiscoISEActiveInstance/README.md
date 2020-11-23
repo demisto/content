@@ -32,7 +32,7 @@ There are no inputs for this script.
 ## Outputs
 ---
 
-| **Pathe** | **Description** | **Type** |
+| **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | PaloAltoIoTIntegrationBase.ActiveNodeInstance | Returns instance name of the active Cisco ISE node. | unknown |
 | PaloAltoIoTIntegrationBase.NodeErrorStatus | Returns the nodes error status if no active Cisco ISE nodes are found. | unknown |

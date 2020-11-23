@@ -31,4 +31,7 @@ This script uses the following commands and scripts.
 
 ## Outputs
 ---
-There are no outputs for this script.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| PaloAltoIoTIntegrationBase.Status | Total count of devices updated or created on ISE | unknown |
