@@ -41,7 +41,7 @@ echo "Finished copying successfully."
 # ====== SAVE MASTER COMMIT HISTORY ======
 
 touch $MASTER_HISTORY_PATH
-git log master --pretty="%H" > $MASTER_HISTORY_PATH
+git log master --all --pretty="%H" > $MASTER_HISTORY_PATH
 
 # ====== RUN VALIDATIONS ======
 
