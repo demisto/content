@@ -1319,7 +1319,7 @@ script:
     - contextPath: OpenSSL.extensions.name
       description: The extension's name.
       type: string
-  dockerimage: demisto/ansible-runner:1.0.0.13199
+  dockerimage: demisto/ansible-runner:1.0.0.13884
   runonce: false
   script: ''
   subtype: python3

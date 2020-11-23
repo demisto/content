@@ -681,7 +681,7 @@ script:
       type: string
     - contextPath: HCloud.hcloud_volume_info.labels
       description: User-defined labels (key-value pairs)
-  dockerimage: demisto/ansible-runner:1.0.0.13199
+  dockerimage: demisto/ansible-runner:1.0.0.13884
   runonce: false
   script: ''
   subtype: python3
