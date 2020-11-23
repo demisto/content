@@ -132,7 +132,7 @@ tasks:
       id: 942631c7-ed9c-4c01-8a97-2eae87593d92
       iscommand: false
       name: SendAllPANWIoTAlertsToSIEM
-      script: send_bulk_panw_iot_alerts_to_siem
+      script: SendAllPANWIoTAlertsToSIEM
       type: regular
       version: -1
     taskid: 942631c7-ed9c-4c01-8a97-2eae87593d92
@@ -163,7 +163,7 @@ tasks:
       id: d886f89d-c9cf-442e-8afa-fb3c9e6550b8
       iscommand: false
       name: SendAllPANWIoTDevicesToSIEM
-      script: send_bulk_panw_iot_devices_to_siem
+      script: SendAllPANWIoTDevicesToSIEM
       type: regular
       version: -1
     taskid: d886f89d-c9cf-442e-8afa-fb3c9e6550b8
@@ -194,7 +194,7 @@ tasks:
       id: 93cd8102-ac4b-45e1-8c46-e9de592f7f60
       iscommand: false
       name: SendAllPANWIoTVulnerabilitiesToSIEM
-      script: send_bulk_panw_iot_vulnerabilities_to_siem
+      script: SendAllPANWIoTVulnerabilitiesToSIEM
       type: regular
       version: -1
     taskid: 93cd8102-ac4b-45e1-8c46-e9de592f7f60
