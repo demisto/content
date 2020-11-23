@@ -7,6 +7,7 @@ fi
 
 _circle_token=$1
 _packs=$2
+_force_previous_commit=$3
 
 trigger_build_url="https://circleci.com/api/v2/project/github/demisto/content/pipeline"
 
@@ -15,7 +16,8 @@ post_data=$(cat <<-EOF
   "branch": "master",
   "parameters": {
     "force_pack_upload": "true",
-    "packs_to_upload": "${_packs}"
+    "packs_to_upload": "${_packs}",
+    "force_previous_commit": "${_force_previous_commit}"
   }
 }
 EOF
