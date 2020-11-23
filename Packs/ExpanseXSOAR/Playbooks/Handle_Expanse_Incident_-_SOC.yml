@@ -1,5 +1,5 @@
 description: Main playbook for Expanse Issues
-id: Handle Expanse Incident - SOC
+id: Handle Expanse Incident - Small
 inputs:
 - description: Prefix for XSOAR related Expanse tags
   key: TagPrefix
@@ -26,7 +26,7 @@ inputs:
   required: false
   value:
     simple: xsoar-false-positive
-name: Handle Expanse Incident - SOC
+name: Handle Expanse Incident - Small
 outputs: []
 starttaskid: "0"
 tasks:
@@ -266,8 +266,8 @@ tasks:
         \ Notes"
       id: 9a6818d9-3ace-4534-8571-af2c88f3ac08
       iscommand: false
-      name: 1a8bd8bd-9e41-465b-81e3-e3a9c51402d5
-      playbookId: 1a8bd8bd-9e41-465b-81e3-e3a9c51402d5
+      name: Expanse Attribution Subplaybook
+      playbookId: Expanse Attribution Subplaybook
       type: playbook
       version: -1
     taskid: 9a6818d9-3ace-4534-8571-af2c88f3ac08
@@ -313,6 +313,7 @@ tasks:
       name: Is Issue Related To Cloud Asset?
       type: condition
       version: -1
+      description: Check whether the asset is on prem or cloud.
     taskid: 1241ad4f-aff1-4283-8c5c-7d596a0a0258
     timertriggers: []
     type: condition
@@ -472,6 +473,7 @@ tasks:
       name: 'Ask: What Is The Organization Unit?'
       type: collection
       version: -1
+      description: Ask the user to perform attribution.
     taskid: 018db405-95bb-49bf-81af-cb520d34b50f
     timertriggers: []
     type: collection
@@ -831,6 +833,7 @@ tasks:
       name: Check for Possible Shadow IT?
       type: condition
       version: -1
+      description: Check if the incident is a possible Shadow IT one.
     taskid: ee9d4e40-eb81-4e91-85d6-3e31063e5c00
     timertriggers: []
     type: condition
@@ -1136,6 +1139,7 @@ tasks:
       name: Close Investigation?
       type: condition
       version: -1
+      description: Ask the user whether to close the investigation.
     taskid: a6416f01-09ef-47fc-893b-4c1ab7d87930
     timertriggers: []
     type: condition
@@ -1239,6 +1243,7 @@ tasks:
       name: Should Add New OU?
       type: condition
       version: -1
+      description: Determine if a new OU has to be added.
     taskid: 3752d545-238e-4d2b-8874-2c430c22159f
     timertriggers: []
     type: condition
@@ -1344,6 +1349,7 @@ tasks:
       name: Add New OU
       type: collection
       version: -1
+      description: Collect new OU details from the user.
     taskid: 980d214e-ed07-4dbc-82a0-455678d9bb9a
     timertriggers: []
     type: collection
@@ -1907,6 +1913,7 @@ tasks:
       name: Do We Have Tag To Use?
       type: condition
       version: -1
+      description: Branch depending on the OU.
     taskid: a573e752-0707-45e3-8cdb-7fece0dafff4
     timertriggers: []
     type: condition
@@ -2593,6 +2600,7 @@ tasks:
       iscommand: false
       name: Did User reply to the Shadow IT question?
       type: condition
+      description: Check whether user answered to the Shadow IT question.
       version: -1
     taskid: 5195bd32-4758-4a1c-8f5d-ff251f249a87
     timertriggers: []
@@ -2918,6 +2926,7 @@ tasks:
       name: On-prem with high confidence?
       type: condition
       version: -1
+      description: Check whether the asset is market as on prem with a high degree of confidence.
     taskid: 6b648a2e-17f7-4115-8d3f-19f0c8849332
     timertriggers: []
     type: condition
@@ -3223,6 +3232,7 @@ tasks:
       name: Are we writing to Expanse?
       type: condition
       version: -1
+      description: Determine whether playbook should write data back to Expanse.
     taskid: a988cee0-da44-4985-8580-325c73835f0b
     timertriggers: []
     type: condition
@@ -3265,6 +3275,7 @@ tasks:
       name: Are we writing to Expanse?
       type: condition
       version: -1
+      description: Determine whether playbook should write data back to Expanse.
     taskid: 9dbc7b00-be76-4436-8254-7cf6761dad1b
     timertriggers: []
     type: condition
@@ -3320,6 +3331,7 @@ tasks:
       name: Manual Remediation
       type: regular
       version: -1
+      description: Perform manual remediation
     taskid: d17dec3b-9a14-4dc4-860f-7136028549a0
     timertriggers: []
     type: regular
@@ -3360,11 +3372,11 @@ tasks:
       brand: ""
       id: 99535741-b5c4-435a-8c94-bd5946d09797
       iscommand: false
-      name: 99cbf362-c488-4c58-8dfd-1d42474bc108
-      playbookId: 99cbf362-c488-4c58-8dfd-1d42474bc108
+      name: Extract Expanse Indicators
+      playbookId: Extract Expanse Indicators
       type: playbook
       version: -1
-      description: ''
+      description: Extracts and Enriches Expanse from Indicator Assets
     taskid: 99535741-b5c4-435a-8c94-bd5946d09797
     timertriggers: []
     type: playbook
@@ -3443,8 +3455,8 @@ tasks:
       brand: ""
       id: fe1f22ee-7309-4516-8824-989a63bceb5b
       iscommand: false
-      name: 546435de-1945-42a7-8178-ccb4dc80de6f
-      playbookId: 546435de-1945-42a7-8178-ccb4dc80de6f
+      name: Find Cloud IP Address Region and Service
+      playbookId: Find Cloud IP Address Region and Service
       type: playbook
       version: -1
       description: ''
@@ -3484,8 +3496,8 @@ tasks:
       brand: ""
       id: bc6899e4-5c0e-4c16-8408-5ec13f475150
       iscommand: false
-      name: b6867d6a-1dfa-41f4-8d8a-004ddca9256b
-      playbookId: b6867d6a-1dfa-41f4-8d8a-004ddca9256b
+      name: Prisma Cloud Correlate Alerts
+      playbookId: Prisma Cloud Correlate Alerts
       type: playbook
       version: -1
       description: ''
