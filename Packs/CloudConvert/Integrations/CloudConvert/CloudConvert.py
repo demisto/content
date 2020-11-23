@@ -228,8 +228,9 @@ def import_command(client: Client, arguments: Dict[str, Any]):
     readable_output = tableToMarkdown(
         'Import Results',
         remove_empty_elements(results_data),
-        headers=('created_at', 'id', 'operation', 'status'),
-        headerTransform=string_to_table_header)
+        headers=('id', 'operation', 'created_at', 'status'),
+        headerTransform=string_to_table_header,
+    )
 
     return CommandResults(
         readable_output=readable_output,
@@ -260,7 +261,7 @@ def convert_command(client: Client, arguments: Dict[str, Any]):
     readable_output = tableToMarkdown(
         'Convert Results',
         remove_empty_elements(results_data),
-        headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'status'),
+        headers=('id', 'operation', 'created_at', 'status', 'depends_on_task_ids'),
         headerTransform=string_to_table_header,
     )
 
@@ -310,8 +311,9 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
         file_data = client.get_file_from_url(url)
         war_room_file = fileResult(filename=file_name, data=file_data)
         readable_output = tableToMarkdown('Check Status Results', remove_empty_elements(results_data),
-                                          headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'result',
-                                                   'status'), headerTransform=string_to_table_header)
+                                          headers=('id', 'operation', 'created_at', 'status', 'depends_on_task_ids',
+                                                   'results'),
+                                          headerTransform=string_to_table_header)
         return_results(CommandResults(
             outputs_prefix='CloudConvert.Task',
             outputs_key_field='id',
@@ -326,7 +328,7 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
         readable_output = tableToMarkdown(
             'Check Status Results',
             remove_empty_elements(results_data),
-            headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'result', 'status'),
+            headers=('id', 'operation', 'created_at', 'status', 'depends_on_task_ids', 'results'),
             headerTransform=string_to_table_header,
         )
 
@@ -367,7 +369,7 @@ def export_command(client: Client, arguments: Dict[str, Any]):
     readable_output = tableToMarkdown(
         'Export Results',
         remove_empty_elements(results_data),
-        headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'status'),
+        headers=('id', 'operation', 'created_at', 'status', 'depends_on_task_ids'),
         headerTransform=string_to_table_header,
     )
     return CommandResults(
