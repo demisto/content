@@ -15,7 +15,12 @@ from Tests.scripts.utils.collect_helpers import (
 )
 
 
-class FileType(constants.FileType, Enum):
+class Test(constants.FileType, Enum):
+    def test(self):
+        pass
+
+
+class FileType(Test):
     CONF_JSON = "confjson"
     METADATA = "metadata"
     WHITE_LIST = 'whitelist'
