@@ -232,6 +232,13 @@ script:
       - weeks
       required: false
       secret: false
+    - default: false
+      defaultValue: 'Yes'
+      description: If set to No query results are not mapped into the standard command context. Default is Yes.
+      isArray: false
+      name: transform_results
+      required: false
+      secret: false
     deprecated: false
     description: Runs a query on the threat table according to preset queries.
     execution: false

@@ -133,3 +133,71 @@ def test_get_table_name():
     assert get_table_name(query) == 'firewall.threat'
     query = 'Wrongly formmated query'
     assert get_table_name(query) == 'Unrecognized table name'
+
+
+def test_query_logs_command_transform_results():
+    from CortexDataLake import query_logs_command
+    cdl_record = {
+        'action': {'value': 'allow'},
+        'app': 'web-browsing',
+        'protocol': {'value': 'tcp'},
+        'dest_ip': {'value': '198.51.100.20'},
+        'rule_matched': 'Allow-All',
+        'characteristics_of_app': [
+            "able-to-transfer-file",
+            "has-known-vulnerability",
+            "tunnel-other-application",
+            "prone-to-misuse",
+            "is-saas"
+        ],
+        'log_source_name': 'ngfw1',
+        'is_nat': False,
+        'nat_dest_port': 80,
+        'nat_dest': {'value': '198.51.100.20'},
+        'nat_source': {'value': '203.0.113.1'},
+        'source_ip': {'value': '203.0.113.1'},
+        'app_category': 'networking',
+        'source_location': '203.0.113.0-203.0.113.255',
+        'dest_location': '198.51.100.0-198.51.255',
+        'count': 100,
+    }
+
+    class MockClient():
+        def query_loggings(self, query):
+            return [cdl_record], []
+
+    # test with no transform_results options, should transform to common context
+    _, results_no_xform, _ = query_logs_command({'limit': '1', 'query': 'SELECT * FROM `firewall.traffic`'}, MockClient())
+    assert results_no_xform == {'CDL.Logging': [{
+        'Action': 'allow',
+        'App': 'web-browsing',
+        'Protocol': 'tcp',
+        'DestinationIP': '198.51.100.20',
+        'RuleMatched': 'Allow-All',
+        'CharacteristicOfApp': [
+            "able-to-transfer-file",
+            "has-known-vulnerability",
+            "tunnel-other-application",
+            "prone-to-misuse",
+            "is-saas"
+        ],
+        'LogSourceName': 'ngfw1',
+        'IsNat': False,
+        'NatDestinationPort': 80,
+        'NatDestination': '198.51.100.20',
+        'NatSource': '203.0.113.1',
+        'SourceIP': '203.0.113.1',
+        'AppCategory': 'networking',
+        'SourceLocation': '203.0.113.0-203.0.113.255',
+        'DestinationLocation': '198.51.100.0-198.51.255',
+        'FileSHA256': None,
+        'FileName': None,
+        'TimeGenerated': None
+    }]}
+
+    # test with transform_results options, should transform to common context
+    _, results_xform, _ = query_logs_command(
+        {'limit': '1', 'query': 'SELECT * FROM `firewall.traffic`', 'transform_results': 'No'},
+        MockClient()
+    )
+    assert results_xform == {'CDL.Logging': [cdl_record]}
