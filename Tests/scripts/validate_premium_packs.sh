@@ -6,11 +6,14 @@ set -e
 CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
 CIRCLE_BUILD_NUM=${CIRCLE_BUILD_NUM:-00000}
 CIRCLE_ARTIFACTS=${CIRCLE_ARTIFACTS}
-CIRCLE_SHA1=${CIRCLE_SHA1}
-PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
-ID_SET=$CIRCLE_ARTIFACTS/id_set.json
-EXTRACT_FOLDER=$(mktemp -d)
 SECRET_CONF_PATH="./conf_secret.json"
+
+GCS_MARKET_BUCKET="marketplace-dist"
+INDEX_PATH="content/packs/index.zip"
+LOCAL_INDEX_PATH="./index.zip"
+MASTER_HISTORY_PATH="master_history.txt"
+
+# ====== AUTHENTICATE =======
 
 if [[ -z "$GCS_MARKET_KEY" ]]; then
     echo "GCS_MARKET_KEY not set aborting!"
@@ -24,25 +27,7 @@ echo "$GCS_MARKET_KEY" > "$KF"
 gcloud auth activate-service-account --key-file="$KF" > auth.out 2>&1
 echo "Auth loaded successfully."
 
-# ====== BUILD CONFIGURATION ======
-
-GCS_BUILD_BUCKET="marketplace-ci-build"
-BUILD_BUCKET_PATH="content/builds/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM"
-TARGET_PATH="$BUILD_BUCKET_PATH/content/packs/index.zip"
-INDEX_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$TARGET_PATH"
-BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
-
-# ====== PRODUCTION CONFIGURATION ======
-
-GCS_MARKET_BUCKET="marketplace-dist"
-INDEX_PATH="content/packs/index.zip"
-LOCAL_INDEX_PATH="./index.zip"
-
-# ====== TESTING CONFIGURATION ======
-
-GCS_MARKET_TESTING_BUCKET="marketplace-dist-dev"
-INDEX_TESTING_PATH="dev/content/packs/index.zip"
-MASTER_HISTORY_PATH="master_history.txt"
+# ====== DOWNLOAD INDEX ZIP ======
 
 if [ -f $LOCAL_INDEX_PATH ]; then
   echo "Removing file $LOCAL_INDEX_PATH"
@@ -53,10 +38,12 @@ echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$INDEX_PATH to target pat
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$INDEX_PATH" "$LOCAL_INDEX_PATH" > "$CIRCLE_ARTIFACTS/Validate Premium Packs.log" 2>&1
 echo "Finished copying successfully."
 
+# ====== SAVE MASTER COMMIT HISTORY ======
+
 touch $MASTER_HISTORY_PATH
 git log master --pretty="%H" > $MASTER_HISTORY_PATH
 
-echo "Master commit hash was $MASTER_COMMIT_HASH"
+# ====== RUN VALIDATIONS ======
 
 if [ ! -f $LOCAL_INDEX_PATH ]; then
   echo "Could not find file $LOCAL_INDEX_PATH"
