@@ -3274,7 +3274,7 @@ script:
       - absent
     description: Creates a Virtual Network Identifier member (VNI)
     name: nxos_vxlan_vtep_vni
-  dockerimage: demisto/ansible-runner:1.0.0.13884
+  dockerimage: demisto/ansible-runner:1.0.0.13885
   runonce: false
   script: ''
   subtype: python3

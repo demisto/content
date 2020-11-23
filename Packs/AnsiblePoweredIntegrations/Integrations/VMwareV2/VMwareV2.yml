@@ -4541,7 +4541,7 @@ script:
       name: cluster_name
     description: Manage VMware vCenter license keys
     name: vmware_vcenter_license
-  dockerimage: demisto/ansible-runner:1.0.0.13884
+  dockerimage: demisto/ansible-runner:1.0.0.13885
   runonce: false
   script: ''
   subtype: python3
