@@ -7,7 +7,7 @@ from enum import Enum
 from typing import Dict, Set, Optional, Tuple, List
 
 import demisto_sdk.commands.common.constants as constants
-from constants import FileType
+from demisto_sdk.commands.common.constants import FileType
 from demisto_sdk.commands.common import tools
 
 from Tests.scripts.utils.collect_helpers import (
