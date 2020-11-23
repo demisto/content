@@ -1,12 +1,1 @@
-### Community Contributed Integration
-#### Integration Author: ZingboxTeam
-Support and maintenance for this integration are provided by the author. Please use the following contact details:
-- **URL**: [https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions)
-***
-### Community Contributed Integration
- #### Integration Author: Cortex XSOAR
- No support or maintenance is provided by the author. Customers are encouraged to engage with the user community for questions and guidance at the [Cortex XSOAR Live Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions).
-***
-## Hello World
-- This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
-- You can use the following API Key: `43ea9b2d-4998-43a6-ae91-aba62a26868c`
+Palo Alto Networks Iot 3rd party allows users to integration Palo Alto Network IoT solution to other 3rd party products like SIEM, Cisco ISE and Service Now.

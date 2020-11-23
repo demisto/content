@@ -8,9 +8,18 @@ This script takes in PANW IoT cloud devices as input and exports them as Endpoin
 | Tags | PANW IoT 3rd Party Integration, Cisco ISE |
 | Demisto Version | 6.0.0 |
 
-This Scripts uses the following commands:
-'cisco-ise-get-endpoint-id' or 'cisco-ise-get-endpoint-id-by-name' - Gets an ID for an endpoint
-'cisco-ise-update-endpoint-custom-attribute' - For updating an endpoints custom attributes
+## Used In
+---
+This script is used in the following playbooks and scripts.
+* Incremental Export to SIEM - PANW IoT 3rd Party Integration
+
+## Dependencies
+---
+This script uses the following commands and scripts.
+* cisco-ise-get-endpoint-id
+* cisco-ise-get-endpoint-id-by-name
+* cisco-ise-create-endpoint
+* cisco-ise-update-endpoint-custom-attribute
 
 ## Inputs
 ---

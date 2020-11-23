@@ -2,16 +2,34 @@
     "name": "Palo Alto Networks IoT 3rd Party Integrations",
     "description": "Palo Alto Networks IoT 3rd Party Integrations",
     "support": "developer",
-    "currentVersion": "1.0.0",
+    "currentVersion": "6.0.0",
     "author": "ZingboxTeam",
     "url": "https://www.paloaltonetworks.com/network-security/iot-security",
     "email": "",
     "created": "2020-11-16T03:10:41Z",
     "categories": [
-        "Utilities"
+        "Network Security"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "Palo Alto 3rd Party",
+        "zingbox",
+        "Cisco ISE",
+        "SIEM"
+    ],
+    "useCases": [
+        "Bulk PANW IoT device inventory export to Cisco ISE",
+        "Bulk PANW IoT alert, device, vulnerability inventory export to SIEM",
+        "Bulk PANW IoT device inventory export to Service Now",
+        "Single PANW IoT Alert export to SIEM",
+        "Single PANW IoT Vulnerability export to SIEM",
+        "Quarantine PANW IoT discovered device in Cisco ISE",
+        "Un-quarantine PANW IoT discovered device in Cisco ISE",
+        "Single PANW IoT Alert export to Service Now",
+        "Single PANW IoT Vulnerability export to Service Now",
+        "Incremental PANW IoT device inventory export to Cisco ISE",
+        "Incremental PANW IoT alert, device, vulnerability inventory export to SIEM",
+        "Incremental PANW IoT device export to Service Now"
+    ],
     "keywords": [],
     "githubUser": []
 }

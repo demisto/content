@@ -8,6 +8,19 @@ This scripts determines which configured Cisco ISE instance is in active/primary
 | Tags | PANW IoT 3rd Party Integration, Cisco ISE |
 | Demisto Version | 6.0.0 |
 
+## Used In
+---
+This script is used in the following playbooks and scripts.
+* Bulk Export to Cisco ISE - PANW IoT 3rd Party Integration
+* Un-quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
+* Quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
+* Incremental Export to Cisco ISE - PANW IoT 3rd Party Integration
+
+## Dependencies
+---
+This script uses the following commands and scripts.
+* cisco-ise-get-nodes
+
 This Scripts uses the following commands:
 'cisco-ise-get-nodes' - Gets data for all Cisco ISE nodes in the current deployment
 
