@@ -1,0 +1,52 @@
+{
+ "description": "Maps incoming Tripwire incident fields.",
+ "feed": false,
+ "id": "631dc1af-b67a-451c-8efd-a2bab980177d",
+ "mapping": {
+  "Tripwire File Change": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+    "Device Id": {
+     "complex": null,
+     "simple": "nodeId"
+    },
+    "Device Name": {
+     "complex": null,
+     "simple": "nodeName"
+    },
+    "File Name": {
+     "complex": null,
+     "simple": "elementName"
+    },
+    "MD5": {
+     "complex": null,
+     "simple": "md5"
+    },
+    "Policy Description": {
+     "complex": null,
+     "simple": "ruleName"
+    },
+    "Policy ID": {
+     "complex": null,
+     "simple": "ruleId"
+    },
+    "SHA1": {
+     "complex": null,
+     "simple": "sha1"
+    },
+    "SHA256": {
+     "complex": null,
+     "simple": "sha256"
+    },
+    "SHA512": {
+     "complex": null,
+     "simple": "sha512"
+    }
+   }
+  }
+ },
+ "name": "Tripwire-mapper",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

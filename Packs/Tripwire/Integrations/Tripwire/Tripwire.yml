@@ -125,15 +125,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: Page limit for paging support
+      defaultValue: '50'
+      description: Limit for the number of returned results.
       isArray: false
-      name: page_limit
+      name: limit
       required: false
       secret: false
     - default: false
-      description: Page start for paging support
+      description: start index from which the results are returned.
       isArray: false
-      name: page_start
+      name: start
+      required: false
+      secret: false
+    - default: false
+      isArray: false
       required: false
       secret: false
     deprecated: false
@@ -227,15 +232,16 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '50'
       description: Page limit for paging support.
       isArray: false
-      name: page_limit
+      name: limit
       required: false
       secret: false
     - default: false
-      description: Page start for paging support.
+      description: start index from which the results are returned.
       isArray: false
-      name: 'page_start  '
+      name: 'start  '
       required: false
       secret: false
     deprecated: false
@@ -312,15 +318,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: Page limit for paging support.
+      defaultValue: '50'
+      description: Limit for the number of returned results.
       isArray: false
-      name: page_limit
+      name: limit
       required: false
       secret: false
     - default: false
-      description: Page start for paging support.
+      description: start index from which the results are returned.
       isArray: false
-      name: page_start
+      name: start
       required: false
       secret: false
     deprecated: false
@@ -406,15 +413,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: Page limit for paging support.
+      defaultValue: '50'
+      description: Limit for the number of returned results.
       isArray: false
-      name: page_limit
+      name: limit
       required: false
       secret: false
     - default: false
-      description: Page start for paging support.
+      description: start index from which the results are returned.
       isArray: false
-      name: page_start
+      name: start
       required: false
       secret: false
     deprecated: false

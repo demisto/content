@@ -21,8 +21,13 @@ URL_SUFFIX: Dict[str, str] = {
     'ELEMENTS': '/elements?{}',
     'VERSIONS': '/versions?{}',
     'TOKEN': '/csrf-token',
-    'RULES': '/rules?{}',
-    'RULE_RUN_REQUESTS': '/nodes/ruleRunRequests',
+    'RULES': '/rules?{}', }
+
+RULES_HUMAN_READABLE_HEADERS: Dict[str, list] = {
+    'RULES': ['name', 'id', 'severity', 'elementName', 'type', 'command', 'importedTime', 'modifiedTime'],
+    'ELEMENTS': ['id', 'name', 'nodeId', 'ruleId', 'baselineVersionId'],
+    'VERSIONS': ['id', 'timeDetected', 'elementId', 'elementName', 'changeType', 'nodeId', 'ruleId'],
+    'NODES': ['id', 'name', 'make', 'ipAddresses', 'type', 'lastCheck', 'modifiedTime'],
 }
 
 
@@ -86,6 +91,7 @@ class Client(BaseClient):
         :param versions_filter: (str) contains the filter of the request.
         :return: the result of the http request from the api
         """
+        demisto.info(f'fileters for version {versions_filter}')
         return self._http_request(method='GET', url_suffix=URL_SUFFIX['VERSIONS'].format(versions_filter))
 
 
@@ -116,14 +122,14 @@ def filter_versions(args: dict) -> str:
         filters += f"hash={args.get('version_hashes')}&"
     if args.get('baseline_version_ids'):
         filters += f"baselineVersion={args.get('baseline_version_ids')}&"
-    if args.get('time_detetcted_range'):
-        filters += f"timeDetectedRange={args.get('time_detetcted_range')}&"
+    if args.get('time_detected_range'):
+        filters += f"timeDetectedRange={args.get('time_detected_range')}&"
     if args.get('time_received_range'):
         filters += f"timeReceivedRange={args.get('time_received_range')}&"
-    if args.get('page_limit'):
-        filters += f"pageLimit={args.get('page_limit')}&"
-    if args.get('page_start'):
-        filters += f"pageStart={args.get('page_start')}&"
+    if args.get('limit'):
+        filters += f"pageLimit={args.get('limit')}&"
+    if args.get('start'):
+        filters += f"pageStart={args.get('start')}&"
     return filters
 
 
@@ -139,10 +145,10 @@ def filter_rules(args: dict) -> str:
         filters += f"name={args.get('rule_names')}&"
     if args.get('rule_types'):
         filters += f"type={args.get('rule_types')}&"
-    if args.get('page_limit'):
-        filters += f"pageLimit={args.get('page_limit')}&"
-    if args.get('page_start'):
-        filters += f"pageStart={args.get('page_start')}&"
+    if args.get('limit'):
+        filters += f"pageLimit={args.get('limit')}&"
+    if args.get('start'):
+        filters += f"pageStart={args.get('start')}&"
     return filters
 
 
@@ -164,10 +170,10 @@ def filter_elements(args: dict) -> str:
         filters += f"baselineVersionId={args.get('baseline_version_ids')}&"
     if args.get('last_version_id'):
         filters += f"lastVersionId={args.get('last_version_id')}&"
-    if args.get('page_limit'):
-        filters += f"pageLimit={args.get('page_limit')}&"
-    if args.get('page_start'):
-        filters += f"pageStart={args.get('page_start')}&"
+    if args.get('limit'):
+        filters += f"pageLimit={args.get('limit')}&"
+    if args.get('start'):
+        filters += f"pageStart={args.get('start')}&"
     return filters
 
 
@@ -189,10 +195,10 @@ def filter_nodes(args: dict) -> str:
         filters += f"make={args.get('node_os_names')}&"
     if args.get('tags'):
         filters += f"tag={args.get('tags')}&"
-    if args.get('page_limit'):
-        filters += f"pageLimit={args.get('page_limit')}&"
-    if args.get('page_start'):
-        filters += f"pageStart={args.get('page_start')}&"
+    if args.get('limit'):
+        filters += f"pageLimit={args.get('limit')}&"
+    if args.get('start'):
+        filters += f"pageStart={args.get('start')}&"
     return filters
 
 
@@ -216,7 +222,7 @@ def prepare_fetch(params: dict, first_fetch: str):
 
     # set filter for fetch
     time_now = datetime.utcnow().strftime(DATE_FORMAT)
-    params['time_received_range'] = f'{last_fetch},{time_now}'
+    params['time_detected_range'] = f'{last_fetch},{time_now}'
     fetch_filter = filter_versions(params)
 
     return params, fetch_filter, last_fetch
@@ -261,7 +267,8 @@ def versions_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     """
     versions_filter = filter_versions(args)
     result = client.get_versions(versions_filter)
-    readable_output = tableToMarkdown('Tripwire Versions list results', result, removeNull=True)
+    readable_output = tableToMarkdown('Tripwire Versions list results', result, removeNull=True,
+                                      headers=RULES_HUMAN_READABLE_HEADERS['VERSIONS'])
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Tripwire.Versions',
@@ -286,7 +293,8 @@ def rules_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     rules_filter = filter_rules(args)
     result = client.get_rules(rules_filter)
-    readable_output = tableToMarkdown('Tripwire Rules list results', result, removeNull=True)
+    readable_output = tableToMarkdown('Tripwire Rules list results', result, removeNull=True,
+                                      headers=RULES_HUMAN_READABLE_HEADERS['RULES'])
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Tripwire.Rules',
@@ -311,7 +319,8 @@ def nodes_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     node_filter = filter_nodes(args)
     result = client.get_nodes(node_filter)
-    readable_output = tableToMarkdown('Tripwire Nodes list results', result, removeNull=True)
+    readable_output = tableToMarkdown('Tripwire Nodes list results', result, removeNull=True,
+                                      headers=RULES_HUMAN_READABLE_HEADERS['NODES'])
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Tripwire.Nodes',
@@ -336,7 +345,8 @@ def elements_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     """
     elements_filter = filter_elements(args)
     result = client.get_elements(elements_filter)
-    readable_output = tableToMarkdown('Tripwire Elements list results', result, removeNull=True)
+    readable_output = tableToMarkdown('Tripwire Elements list results', result, removeNull=True,
+                                      headers=RULES_HUMAN_READABLE_HEADERS['ELEMENTS'])
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Tripwire.Elements',
@@ -373,22 +383,42 @@ def fetch_incidents(client: Client, max_results: int, last_fetch: str, fetch_fil
 
     incidents: List[Dict[str, Any]] = []
     last_fetch = datetime.strptime(last_fetch, DATE_FORMAT)
+    last_fetched_ids = demisto.getLastRun().get('fetched_ids', [])
     alerts = client.get_versions(fetch_filter)
     alerts = alerts[:int(max_results)]
+    demisto.info('in fetch')
+    fetched_ids = []
+    demisto.info(f'alerts are {str(alerts)}')
     for alert in alerts:
         incident_created_time = datetime.strptime(alert.get('timeDetected'), '%Y-%m-%dT%H:%M:%S.000Z')
+        demisto.info(f'last fetch {str(last_fetch)} and incident creates is {str(incident_created_time)}')
+
         if incident_created_time < last_fetch:
             continue
+
         incident_name = alert.get('id')
+
+        demisto.info(f'incidnet name {str(incident_name)}')
+        demisto.info(f'last fetched id {str(last_fetched_ids)}')
+        demisto.info(f'incident_name  {str(incident_name)}')
+
+        if incident_name in last_fetched_ids:
+            demisto.info('in if')
+            continue
+        demisto.info('before created incidnet')
+
         incident = {
             'name': incident_name,
             'occurred': incident_created_time.strftime(DATE_FORMAT),
             'rawJSON': json.dumps(alert),
         }
+        demisto.info('created incidnet')
         incidents.append(incident)
         last_fetch = incident_created_time
+        fetched_ids.extend([alert.get('id')])
 
-    next_run = {'lastRun': last_fetch.strftime(DATE_FORMAT)}
+    next_run = {'lastRun': last_fetch.strftime(DATE_FORMAT),
+                'fetched_ids': fetched_ids if fetched_ids else last_fetched_ids}
     return next_run, incidents
 
 

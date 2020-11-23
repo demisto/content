@@ -1,0 +1,20 @@
+{
+ "defaultIncidentType": "Tripwire File Change",
+ "description": "",
+ "feed": false,
+ "id": "Tripwire",
+ "keyTypeMap": {
+
+ },
+ "name": "Tripwire - Classifier",
+ "propagationLabels": [
+  "all"
+ ],
+ "transformer": {
+  "complex": null,
+  "simple": ""
+ },
+ "type": "classification",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

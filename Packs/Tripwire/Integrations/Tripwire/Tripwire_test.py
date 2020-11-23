@@ -115,8 +115,8 @@ def test_filter_nodes():
         'node_names': '4',
         'node_os_names': '5',
         'tags': '6',
-        'page_limit': '7',
-        'page_start': '8'
+        'limit': '7',
+        'start': '8'
     }
     filter_node = filter_nodes(params)
     expected_filter = 'id=1&ipAddress=2&macAddress=3&ic_name=4&make=5&tag=6&pageLimit=7&pageStart=8'
@@ -142,8 +142,8 @@ def test_filter_elements():
         'rule_oids': '4',
         'baseline_version_ids': '5',
         'last_version_id': '6',
-        'page_limit': '7',
-        'page_start': '8'
+        'limit': '7',
+        'start': '8'
     }
     filter_node = filter_elements(params)
     expected_filter = 'id=1&name=2&nodeId=3&ruleId=4&baselineVersionId=5&lastVersionId=6&pageLimit=7&pageStart=8'
@@ -165,8 +165,8 @@ def test_filter_rules():
         'rule_oids': '1',
         'rule_names': '2',
         'rule_types': '3',
-        'page_limit': '4',
-        'page_start': '5',
+        'limit': '4',
+        'start': '5',
     }
     filter_rule = filter_rules(params)
     expected_filter = 'id=1&name=2&type=3&pageLimit=4&pageStart=5'
@@ -196,8 +196,8 @@ def test_filter_versions():
         'baseline_version_ids': '9',
         'time_detetcted_range': '10',
         'time_received_range': '11',
-        'page_limit': '12',
-        'page_start': '13',
+        'limit': '12',
+        'start': '13',
     }
     filter_version = filter_versions(params)
     expected_filter = 'ruleId=1&ruleName=2&nodeId=3&id=4&elementId=5&elementName=6&nodeLabel=7&hash=8&baselineVersion' \

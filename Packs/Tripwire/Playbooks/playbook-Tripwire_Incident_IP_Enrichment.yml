@@ -1,6 +1,6 @@
-id: EnrichIpNode
+id: Tripwire Incident IP Enrichment
 version: -1
-name: EnrichIpNode
+name: Tripwire Incident IP Enrichment
 starttaskid: "0"
 tasks:
   "0":
