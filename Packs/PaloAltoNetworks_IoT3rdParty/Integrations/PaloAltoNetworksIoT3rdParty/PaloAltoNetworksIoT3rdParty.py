@@ -692,10 +692,10 @@ def convert_asset_to_external_format():
 
     elif output_format == 'CiscoISECustomAttributes':
         if asset_list:
-            if asset_type == 'Devices':
+            if asset_type == 'Device':
                 data = convert_device_list_to_ise_attributes(asset_list)
         else:
-            return_error("Output format CiscoISECustomAttributes not supported for Devices")
+            return_error("Output format CiscoISECustomAttributes not supported for %s" % asset_type)
         readable_res = "Converted %d %s to %s" % (len(data), asset_type, output_format)
 
     prefix = prefixMap[asset_type][output_format]
