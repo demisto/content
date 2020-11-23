@@ -429,7 +429,7 @@ def main(args):
     if first_run and previous_scheduled_task_id:
         # it means someone rerun the playbook, so we stop the previous scheduled task and set the task ID to be empty.
         if verbose:
-            demisto.info('Stopping previous scheduled task with ID: {}'.format(previous_scheduled_task_id))
+            demisto.debug('Stopping previous scheduled task with ID: {}'.format(previous_scheduled_task_id))
 
         demisto.executeCommand('StopScheduledTask', {'taskID': previous_scheduled_task_id})
         demisto.setContext('XDRSyncScriptTaskID', '')
@@ -438,7 +438,6 @@ def main(args):
         latest_incident_in_xdr = xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_run,
                                                    first_run, xdr_alerts_field, xdr_file_artifacts_field,
                                                    xdr_network_artifacts_field, incident_in_demisto, verbose)
-
     except Exception as ex:
         if verbose:
             raise
@@ -459,7 +458,7 @@ def main(args):
         })
 
         if is_error(res):
-            # return the error entries to war room
+            # return the error entries to warroom
             demisto.results(res)
             return
 
