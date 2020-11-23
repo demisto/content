@@ -1892,14 +1892,6 @@ script:
       isArray: true
       name: action_id
       required: true
-    - auto: PREDEFINED
-      default: true
-      defaultValue: "true"
-      description: Choose whether to attach retrieved files in the War Room. Default is "true".
-      name: attach_files
-      predefined:
-      - "true"
-      - "false"
     description: View the file retrieved by the xdr-retrieve-files command according to
       the action ID. Before running this command, you can use the xdr-action-status-get
       command to check if this action completed successfully.

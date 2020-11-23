@@ -2376,9 +2376,7 @@ def retrieve_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, d
 
 def retrieve_file_details_command(client: Client, args):
     action_id_list = argToList(args.get('action_id', ''))
-    attach_files = args.get('attach_files', 'true')
     action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
-    send_request_get_file = argToBoolean(attach_files)
 
     result = []
     raw_result = []
@@ -2399,24 +2397,18 @@ def retrieve_file_details_command(client: Client, args):
             if link:
                 retrived_files_count += 1
                 obj['file_link'] = link
-                if send_request_get_file:
-                    file = client.get_file(file_link=link)
-                    file_results.append(fileResult(filename=f'{endpoint}_{retrived_files_count}.zip', data=file))
+                file = client.get_file(file_link=link)
+                file_results.append(fileResult(filename=f'{endpoint}_{retrived_files_count}.zip', data=file))
             result.append(obj)
 
     return_entry = {'Type': entryTypes['note'],
                     'ContentsFormat': formats['json'],
                     'Contents': raw_result,
-                    'HumanReadable': '',
+                    'HumanReadable': f'### Action id : {action_id} \n'
+                                     f'Retrieved {retrived_files_count} files from {endpoints_count} endpoints. ',
                     'ReadableContentsFormat': formats['markdown'],
                     'EntryContext': {}
                     }
-    if send_request_get_file:
-        return_entry['HumanReadable'] = f'### Action id : {action_id} \n' \
-                                        f'Retrieved {retrived_files_count} files from {endpoints_count} endpoints. '
-    else:
-        return_entry['HumanReadable'] = tableToMarkdown(name='Retrieve file Details', t=result,
-                                                        headerTransform=string_to_table_header)
     return return_entry, file_results
 
 
