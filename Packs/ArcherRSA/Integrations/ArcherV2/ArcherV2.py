@@ -1070,10 +1070,10 @@ def fetch_incidents(
 
     next_run = {'last_fetch': last_fetch.strftime('%Y-%m-%dT%H:%M:%SZ')}
     if is_test:
-        incidents = {
+        incidents = [{
             'incidents': incidents,
             'records': records
-        }
+        }]
     return next_run, incidents
 
 
