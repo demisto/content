@@ -1,7 +1,7 @@
 {
  "description": "Maps incoming Tripwire incident fields.",
  "feed": false,
- "id": "631dc1af-b67a-451c-8efd-a2bab980177d",
+ "id": "Tripwire-mapper",
  "mapping": {
   "Tripwire File Change": {
    "dontMapEventToLabels": true,
@@ -45,7 +45,7 @@
    }
   }
  },
- "name": "Tripwire-mapper",
+ "name": "Tripwire - Incoming Mapper",
  "type": "mapping-incoming",
  "version": -1,
  "fromVersion": "6.0.0"

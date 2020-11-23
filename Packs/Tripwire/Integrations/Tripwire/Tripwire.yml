@@ -530,6 +530,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-defaultmapperin: HelloWorld-mapper
-defaultclassifier: HelloWorld
+defaultmapperin: Tripwire-mapper
+defaultclassifier: Tripwire
 fromversion: 5.0.0
