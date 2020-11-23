@@ -384,7 +384,8 @@
     {
       "Calculate Severity - Standard - Test": {
         "name": "Calculate Severity - Standard - Test",
-        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml"
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
+        "pack": "CommonPlaybooks"
       }
     },
     {
@@ -406,6 +407,12 @@
         "implementing_playbooks": [
           "Extract Indicators From File - Generic"
         ]
+      }
+    },
+    {
+      "Test XDR Playbook": {
+        "name": "Test XDR Playbook",
+        "pack": "CortexXDR"
       }
     }
   ]
