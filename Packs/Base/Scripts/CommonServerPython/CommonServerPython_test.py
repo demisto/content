@@ -2864,8 +2864,8 @@ def test_arg_to_timestamp_valid_inputs():
     Then
         ensure returned int which represents timestamp in milliseconds
     """
-    from CommonServerPython import arg_to_datetime
-    from datetime import datetime, timezone
+    from CommonServerPython import arg_to_datetime, TIMEZONE_UTC
+    from datetime import datetime
 
     # hard coded date
     result = arg_to_datetime(
@@ -2873,7 +2873,7 @@ def test_arg_to_timestamp_valid_inputs():
         arg_name='foo'
     )
 
-    assert result == datetime(2020, 11, 10, 21, 43, 43, tzinfo=timezone.utc)
+    assert result == datetime(2020, 11, 10, 21, 43, 43, tzinfo=TIMEZONE_UTC)
 
     # relative dates also work
     result = arg_to_datetime(
