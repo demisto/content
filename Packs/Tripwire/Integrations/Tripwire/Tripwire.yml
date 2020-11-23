@@ -3,8 +3,8 @@ commonfields:
   id: Tripwire
   version: -1
 configuration:
-  - defaultvalue: https://soar.monstersofhack.com
-    display: Server URL (e.g. https://soar.monstersofhack.com)
+  - defaultvalue: https://tripwire.com
+    display: Server URL (e.g. https://tripwire.com)
     name: url
     required: true
     type: 0
