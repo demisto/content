@@ -191,7 +191,7 @@ def notable_to_incident(event):
         if "Error in" in event.message:
             raise ValueError(event.message)
         else:
-            demisto.debug('\n\n message in notable_to_incident is: {}  \n\n'.format(convert_to_str(event.message)))
+            opt_in_log('\n\n message in notable_to_incident is: {}  \n\n'.format(convert_to_str(event.message)))
 
     if demisto.get(event, 'rule_title'):
         rule_title = event['rule_title']
@@ -207,7 +207,7 @@ def notable_to_incident(event):
         demisto.debug()
     else:
         incident["occurred"] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
-        demisto.debug('\n\n occurred time in else: {} \n\n'.format(incident["occurred"]))
+        opt_in_log('\n\n occurred time in else: {} \n\n'.format(incident["occurred"]))
 
     event = replace_keys(event) if REPLACE_FLAG else event
     incident["rawJSON"] = json.dumps(event)
@@ -506,6 +506,11 @@ def create_incident_id(incident):
     return incident_id
 
 
+def opt_in_log(message):
+    if demisto.params().get('extensive_logs', False):
+        demisto.info(message)
+
+
 def fetch_incidents(service):
     last_run = demisto.getLastRun() and demisto.getLastRun()['time']
     search_offset = demisto.getLastRun().get('offset', 0)
@@ -531,7 +536,7 @@ def fetch_incidents(service):
     earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
     latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
 
-    demisto.debug('\n\n last run time: {}, now: {} \n\n'.format(last_run, now))
+    opt_in_log('\n\n last run time: {}, now: {} \n\n'.format(last_run, now))
 
     kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
                       latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
@@ -553,7 +558,7 @@ def fetch_incidents(service):
 
     for item in reader:
         inc = notable_to_incident(item)
-        demisto.debug('\n\n inc after notable_to_incident: {} \n\n'.format(inc))
+        opt_in_log('\n\n inc after notable_to_incident: {} \n\n'.format(inc))
         incident_id = create_incident_id(inc)
         fetched_incidents_custom_ids[incident_id] = 'dummy'
         if incident_id not in last_run_fetched_ids:
@@ -568,14 +573,15 @@ def fetch_incidents(service):
     fetches_with_same_start_time_count = demisto.getLastRun().get('fetch_start_update_count', 0) + 1
 
     demisto.incidents(incidents)
+    opt_in_log('\n\n found incidents at the end of this run: {}\n\n'.format(fetched_incidents_custom_ids))
     if len(incidents) == 0:
         next_run = get_next_start_time(last_run, fetches_with_same_start_time_count)
-        demisto.debug('\n\n next run time with 00000 incidents: {}\n\n'.format(next_run))
+        opt_in_log('\n\n next run time with 00000 incidents: {}\n\n'.format(next_run))
         demisto.setLastRun({'time': next_run, 'offset': 0, 'found_incidents_ids': fetched_incidents_custom_ids,
                             'fetch_start_update_count': fetches_with_same_start_time_count})
     elif len(incidents) < FETCH_LIMIT:
         next_run = get_next_start_time(latest_incident_fetched_time, fetches_with_same_start_time_count)
-        demisto.debug('\n\n next run time with some incidents:  {}\n\n \n\n'.format(next_run))
+        opt_in_log('\n\n next run time with some incidents:  {}\n\n \n\n'.format(next_run))
         demisto.setLastRun(
             {'time': next_run, 'offset': 0, 'found_incidents_ids': fetched_incidents_custom_ids,
              'fetch_start_update_count': 0})
