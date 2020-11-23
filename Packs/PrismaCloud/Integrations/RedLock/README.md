@@ -185,7 +185,7 @@ Gets the details of an alert based on alert ID
 >### Alert
 >|ID|Status|FirstSeen|LastSeen|AlertTime|PolicyID|PolicyName|PolicyType|PolicySystemDefault|PolicyLabels|PolicyDescription|PolicySeverity|PolicyRecommendation|PolicyDeleted|PolicyRemediable|PolicyLastModifiedOn|PolicyLastModifiedBy|RiskScore|RiskRating|ResourceName|ResourceRRN|ResourceID|ResourceAccount|ResourceAccountID|ResourceType|ResourceRegionID|ResourceApiName|ResourceUrl|ResourceData|ResourceAccessKeyAge|ResourceInactiveSinceTs|ResourceCloudType|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| P-214016 | open | 05/28/2020 01:17:31 | 05/29/2020 14:16:42 | 05/29/2020 14:16:15 |  |  | config | false |  |  |  |  |  | false |  |  | 170 | F | demo-98787654432 |  | sg-98vc98sd76sd | testAWS | 9876654321 | SECURITY_GROUP | us-west-2 | aws-ec2-describe-security-groups |  | vpcId: vpc-0824920b6d19bc<br/>description: EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.<br/>tags: {u'value': u'demo-98787654432', u'key': u'Name'},<br/>{u'value': u'cn-demo', u'key': u'aws:eks:cluster-name'},<br/>{u'value': u'owned', u'key': u'kubernetes.io/cluster/cn-demo'}<br/>ipPermissions: {u'ipv4Ranges': [{u'description': u'kubernetes.io/rule/nlb/mtu=a7d568916a1b411ea83260a614b2e8ec', u'cidrIp': u'0.0.0.0/0'}], u'prefixListIds': [], u'fromPort': 3, u'ipRanges': [u'0.0.0.0/0'], u'toPort': 4, u'ipProtocol': u'icmp', u'userIdGroupPairs': [], u'ipv6Ranges': []},<br/>{u'ipv4Ranges': [{u'description': u'kubernetes.io/rule/nlb/client=a7d568916a1b411ea83260a614b2e8ec', u'cidrIp': u'0.0.0.0/0'}, {u'description': u'kubernetes.io/rule/nlb/health=a7d568916a1b411ea83260a614b2e8ec', u'cidrIp': u'192.168.0.0/16'}], u'prefixListIds': [], u'fromPort': 30463, u'ipRanges': [u'0.0.0.0/0', u'192.168.0.0/16'], u'toPort': 30463, u'ipProtocol': u'tcp', u'userIdGroupPairs': [], u'ipv6Ranges': []},<br/>{u'prefixListIds': [], u'ipv4Ranges': [{u'cidrIp': u'192.168.1.1/16'}], u'ipRanges': [u'192.168.1.1/16'], u'ipProtocol': u'-1', u'userIdGroupPairs': [{u'userId': u'9876654321', u'groupId': u'sg-0ce26260850e500d4', u'description': u'Allow unmanaged nodes to communicate with control plane (all ports)'}, {u'userId': u'9876654321', u'groupId': u'sg-98vc98sd76sd'}], u'ipv6Ranges': []}<br/>groupName: demo-98787654432<br/>ipPermissionsEgress: {u'prefixListIds': [], u'ipv4Ranges': [{u'cidrIp': u'0.0.0.0/0'}], u'ipRanges': [u'0.0.0.0/0'], u'ipProtocol': u'-1', u'userIdGroupPairs': [], u'ipv6Ranges': []}<br/>ownerId: 9876654321<br/>groupId: sg-98vc98sd76sd |  |  | aws |
+>| P-214016 | open | 05/28/2020 01:17:31 | 05/29/2020 14:16:42 | 05/29/2020 14:16:15 |  |  | config | false |  |  |  |  |  | false |  |  | 170 | F | demo-98787654432 |  | sg-98vc98sd76sd | testAWS | 9876654321 | SECURITY_GROUP | us-west-2 | aws-ec2-describe-security-groups |  | vpcId: vpc-0824920b6d19bc<br/>description: EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.<br/>tags: {u'value': u'demo-98787654432', u'key': u'Name'},<br/>{u'value': u'cn-demo', u'key': u'aws:eks:cluster-name'},<br/>{u'value': u'owned', u'key': u'kubernetes.io/cluster/cn-demo'}<br/>ipPermissions: {u'ipv4Ranges': [{u'description': u'kubernetes.io/rule/nlb/mtu=a7d568916a1b411ea83260a614b2e8ec', u'cidrIp': u'0.0.0.0/0'}], u'prefixListIds': [], u'fromPort': 3, u'ipRanges': [u'0.0.0.0/0'], u'toPort': 4, u'ipProtocol': u'icmp', u'userIdGroupPairs': [], u'ipv6Ranges': []},<br/>{u'ipv4Ranges': [{u'description': u'kubernetes.io/rule/nlb/client=a7d568916a1b411ea83260a614b2e8ec', u'cidrIp': u'0.0.0.0/0'}, {u'description': u'kubernetes.io/rule/nlb/health=a7d568916a1b411ea83260a614b2e8ec', u'cidrIp': u'192.168.0.0/16'}], u'prefixListIds': [], u'fromPort': 30463, u'ipRanges': [u'0.0.0.0/0', u'192.168.0.0/16'], u'toPort': 30463, u'ipProtocol': u'tcp', u'userIdGroupPairs': [], u'ipv6Ranges': []},<br/>{u'prefixListIds': [], u'ipv4Ranges': [{u'cidrIp': u'x.x.x.x/16'}], u'ipRanges': [u'x.x.x.x/16'], u'ipProtocol': u'-1', u'userIdGroupPairs': [{u'userId': u'9876654321', u'groupId': u'sg-0ce26260850e500d4', u'description': u'Allow unmanaged nodes to communicate with control plane (all ports)'}, {u'userId': u'9876654321', u'groupId': u'sg-98vc98sd76sd'}], u'ipv6Ranges': []}<br/>groupName: demo-98787654432<br/>ipPermissionsEgress: {u'prefixListIds': [], u'ipv4Ranges': [{u'cidrIp': u'0.0.0.0/0'}], u'ipRanges': [u'0.0.0.0/0'], u'ipProtocol': u'-1', u'userIdGroupPairs': [], u'ipv6Ranges': []}<br/>ownerId: 9876654321<br/>groupId: sg-98vc98sd76sd |  |  | aws |
 
 
 ### redlock-dismiss-alerts
@@ -443,7 +443,7 @@ Run RQL query on Prisma Cloud
 | Redlock.RQL.Response.AccountName | String | The cloud account name. | 
 | Redlock.RQL.Response.AllowDrillDown | Boolean | Flag to allow drill down. | 
 | Redlock.RQL.Response.CloudType | String | The cloud type. | 
-| Redlock.RQL.Response.Data | Object | The data object returned by the RQL response. | 
+| Redlock.RQL.Response.Data | Object | The data object returned by the RQL response. Reference: https://api.docs.prismacloud.io/reference#search-config | 
 | Redlock.RQL.Response.Deleted | Boolean | Flag if deleted. | 
 | Redlock.RQL.Response.HasAlert | Boolean | Flag to check if RQL response has alerts. | 
 | Redlock.RQL.Response.HasExtFindingRiskFactors | Boolean | Flag if query returns external risk factors. | 
@@ -549,7 +549,7 @@ Run RQL query on Prisma Cloud
                                 "Association": {
                                     "IpOwnerId": "amazon",
                                     "PublicDnsName": "ec2-x-x-x-x.eu-west-1.compute.amazonaws.com",
-                                    "PublicIp": "123.123.123.123"
+                                    "PublicIp": "y.y.y.y"
                                 },
                                 "Attachment": {
                                     "AttachTime": "2020-11-22T09:16:36.000Z",
@@ -574,43 +574,43 @@ Run RQL query on Prisma Cloud
                                 "MacAddress": "02:94:a1:55:69:43",
                                 "NetworkInterfaceId": "eni-0a5537731ce0b7fa2",
                                 "OwnerId": "1234567890",
-                                "PrivateDnsName": "ip-192.168.1.1.eu-west-1.compute.internal",
-                                "PrivateIpAddress": "192.168.1.1",
+                                "PrivateDnsName": "ip-x.x.x.x.eu-west-1.compute.internal",
+                                "PrivateIpAddress": "x.x.x.x",
                                 "PrivateIpAddresses": [
                                     {
                                         "Association": {
                                             "IpOwnerId": "amazon",
                                             "PublicDnsName": "ec2-x-x-x-x.eu-west-1.compute.amazonaws.com",
-                                            "PublicIp": "123.123.123.123"
+                                            "PublicIp": "y.y.y.y"
                                         },
                                         "Primary": true,
-                                        "PrivateDnsName": "ip-192.168.1.1.eu-west-1.compute.internal",
-                                        "PrivateIpAddress": "192.168.1.1"
+                                        "PrivateDnsName": "ip-x.x.x.x.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "x.x.x.x"
                                     },
                                     {
                                         "Primary": false,
-                                        "PrivateDnsName": "ip-192-168-10-234.eu-west-1.compute.internal",
-                                        "PrivateIpAddress": "192.168.10.234"
+                                        "PrivateDnsName": "ip-x.x.x.x.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "x.x.x.x"
                                     },
                                     {
                                         "Primary": false,
-                                        "PrivateDnsName": "ip-192-168-15-54.eu-west-1.compute.internal",
-                                        "PrivateIpAddress": "192.168.15.54"
+                                        "PrivateDnsName": "ip-x.x.x.x.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "x.x.x.x"
                                     },
                                     {
                                         "Primary": false,
-                                        "PrivateDnsName": "ip-192-168-18-172.eu-west-1.compute.internal",
-                                        "PrivateIpAddress": "192.168.18.172"
+                                        "PrivateDnsName": "ip-x.x.x.x.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "x.x.x.x"
                                     },
                                     {
                                         "Primary": false,
-                                        "PrivateDnsName": "ip-192-168-27-226.eu-west-1.compute.internal",
-                                        "PrivateIpAddress": "192.168.27.226"
+                                        "PrivateDnsName": "ip-a.a.a.a.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "a.a.a.a"
                                     },
                                     {
                                         "Primary": false,
-                                        "PrivateDnsName": "ip-192-168-27-234.eu-west-1.compute.internal",
-                                        "PrivateIpAddress": "192.168.27.234"
+                                        "PrivateDnsName": "ip-z.z.z.z.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "z.z.z.z"
                                     }
                                 ],
                                 "SourceDestCheck": true,
@@ -642,38 +642,38 @@ Run RQL query on Prisma Cloud
                                 "MacAddress": "x:z:d",
                                 "NetworkInterfaceId": "eni-xyz",
                                 "OwnerId": "1234567890",
-                                "PrivateDnsName": "ip-192.168.1.1.eu-west-1.compute.internal",
-                                "PrivateIpAddress": "192.168.1.1",
+                                "PrivateDnsName": "ip-x.x.x.x.eu-west-1.compute.internal",
+                                "PrivateIpAddress": "x.x.x.x",
                                 "PrivateIpAddresses": [
                                     {
                                         "Primary": false,
-                                        "PrivateDnsName": "ip-192.168.1.1.eu-west-1.compute.internal",
-                                        "PrivateIpAddress": "192.168.1.1"
+                                        "PrivateDnsName": "ip-x.x.x.x.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "x.x.x.x"
                                     },
                                     {
                                         "Primary": false,
-                                        "PrivateDnsName": "ip-192-168-15-191.eu-west-1.compute.internal",
-                                        "PrivateIpAddress": "192.168.15.191"
+                                        "PrivateDnsName": "ip-x.x.x.x.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "x.x.x.x"
                                     },
                                     {
                                         "Primary": false,
-                                        "PrivateDnsName": "ip-192.168.1.1.eu-west-1.compute.internal",
-                                        "PrivateIpAddress": "192.168.1.1"
+                                        "PrivateDnsName": "ip-x.x.x.x.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "x.x.x.x"
                                     },
                                     {
                                         "Primary": false,
-                                        "PrivateDnsName": "ip-192.168.1.1.eu-west-1.compute.internal",
-                                        "PrivateIpAddress": "192.168.1.1"
+                                        "PrivateDnsName": "ip-x.x.x.x.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "x.x.x.x"
                                     },
                                     {
                                         "Primary": false,
-                                        "PrivateDnsName": "ip-192.168.1.1.eu-west-1.compute.internal",
-                                        "PrivateIpAddress": "192.168.1.1"
+                                        "PrivateDnsName": "ip-x.x.x.x.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "x.x.x.x"
                                     },
                                     {
                                         "Primary": true,
-                                        "PrivateDnsName": "ip-192.168.1.1.eu-west-1.compute.internal",
-                                        "PrivateIpAddress": "192.168.1.1"
+                                        "PrivateDnsName": "ip-x.x.x.x.eu-west-1.compute.internal",
+                                        "PrivateIpAddress": "x.x.x.x"
                                     }
                                 ],
                                 "SourceDestCheck": true,
@@ -687,11 +687,11 @@ Run RQL query on Prisma Cloud
                             "GroupName": "",
                             "Tenancy": "default"
                         },
-                        "PrivateDnsName": "ip-192.168.1.1.eu-west-1.compute.internal",
-                        "PrivateIpAddress": "192.168.1.1",
+                        "PrivateDnsName": "ip-x.x.x.x.eu-west-1.compute.internal",
+                        "PrivateIpAddress": "x.x.x.x",
                         "ProductCodes": [],
                         "PublicDnsName": "ec2-x-x-x-x.eu-west-1.compute.amazonaws.com",
-                        "PublicIpAddress": "123.123.123.123",
+                        "PublicIpAddress": "y.y.y.y",
                         "RootDeviceName": "/dev/xvda",
                         "RootDeviceType": "ebs",
                         "SecurityGroups": [
