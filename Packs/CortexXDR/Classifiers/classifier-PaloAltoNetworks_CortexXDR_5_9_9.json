@@ -12,7 +12,7 @@
 	},
 	"mapping": {
 		"Cortex XDR Incident": {
-			"dontMapEventToLabels": true,
+			"dontMapEventToLabels": false,
 			"internalMapping": {
 				"XDR Alert Count": {
 					"complex": null,
