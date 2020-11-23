@@ -1122,9 +1122,13 @@ def main():
         if command in ('fetch-incidents', 'archer-fetch-test'):
             # Set and define the fetch incidents command to run after activated via integration settings.
             is_test = 'archer-fetch-test' == command
+            if is_test:
+                last_run = {}
+            else:
+                last_run = demisto.getLastRun()
             next_run, incidents = fetch_incidents(
                 client=client,
-                last_run=demisto.getLastRun(),
+                last_run=last_run,
                 first_fetch_time=first_fetch_time,
                 params=params,
                 is_test=is_test
