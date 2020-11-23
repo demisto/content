@@ -976,15 +976,13 @@ def check_if_incident_was_modified_in_xdr(incident_id):
     if incident_id in last_modified_incidents_dict:  # search the incident in the dict of modified incidents
         incident_modification_time_in_xdr = int(str(last_modified_incidents_dict[incident_id]))
 
-        demisto.info(f"XDR incident {incident_id}\n"  # type:ignore
+        demisto.info(f"XDR incident {incident_id}\n"
                      f"modified time:         {incident_modification_time_in_xdr}\n"
                      f"last mirrored in time: {last_mirrored_in_time_timestamp}")
 
         if incident_modification_time_in_xdr > last_mirrored_in_time_timestamp:  # need to update this incident
             demisto.info(f"Incident '{incident_id}' was modified. performing extra-data request.")
             return True
-        else:  # the incident was not modified
-            return False
     else:  # the incident was not modified
         return False
 
