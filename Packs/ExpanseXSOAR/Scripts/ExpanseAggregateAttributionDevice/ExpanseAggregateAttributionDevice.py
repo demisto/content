@@ -99,7 +99,7 @@ def aggregate_command(args: Dict[str, Any]) -> CommandResults:
         if sightings is not None:
             current_state['sightings'] += sightings
 
-    markdown = f'## ExpanseAggregateAttributionDevice'
+    markdown = '## ExpanseAggregateAttributionDevice'
     outputs = list(current_devices.values())
 
     return CommandResults(
