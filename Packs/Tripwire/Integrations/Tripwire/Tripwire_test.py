@@ -194,7 +194,7 @@ def test_filter_versions():
         'node_names': '7',
         'version_hashes': '8',
         'baseline_version_ids': '9',
-        'time_detetcted_range': '10',
+        'time_detected_range': '10',
         'time_received_range': '11',
         'limit': '12',
         'start': '13',
