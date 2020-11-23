@@ -168,7 +168,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
                                 fields = mapping[map_key].split(".")
                                 if len(fields) > 1:
                                     if indicator['fields'].get(fields[0]):
-                                        indicator['fields'][fields[0]].extend([{fields[1]: attributes.get(map_key)}])
+                                        indicator['fields'][fields[0]][0].update({fields[1]: attributes.get(map_key)})
                                     else:
                                         indicator['fields'][fields[0]] = [{fields[1]: attributes.get(map_key)}]
                                 else:
