@@ -359,6 +359,10 @@ def parse_indicators_list(iocs_list):
     """
         Parses the indicator list and returns dictionary that will be set to context.
     """
+    for indicator in iocs_list:
+        if indicator.get('type', '') == 'md5':
+            indicator['type'] = indicator.get('subtype', '')
+
     iocs_context = list(map(lambda i: {INDICATOR_EXTENDED_MAPPING[k]: v for (k, v) in i.items() if
                                        k in INDICATOR_EXTENDED_MAPPING.keys()}, iocs_list))
 
