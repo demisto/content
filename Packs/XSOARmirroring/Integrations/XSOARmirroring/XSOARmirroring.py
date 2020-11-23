@@ -4,7 +4,7 @@ import json
 import requests
 import traceback
 import dateparser
-from typing import Any, Dict, Tuple, List, Optional, cast
+from typing import Any, Dict, Tuple, List, Optional, cast, Set
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -248,7 +248,7 @@ def test_module(client: Client, first_fetch_time: int) -> str:
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
                     first_fetch_time: Optional[int], query: Optional[str], mirror_direction: str,
-                    mirror_tag: Optional[str]) -> Tuple[Dict[str, int], List[dict]]:
+                    mirror_tag: List[str], mirror_identically: Optional[bool]) -> Tuple[Dict[str, int], List[dict]]:
     """This function retrieves new incidents every interval (default is 1 minute).
 
     :type client: ``Client``
@@ -275,9 +275,13 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     :param mirror_direction:
         Mirror direction for the fetched incidents
 
-    :type mirror_tag: ``Optional[str]``
+    :type mirror_tag: ``List[str]``
     :param mirror_tag:
-        The tag that you will mirror out of the incident.
+        The tags that you will mirror out of the incident.
+
+    :type mirror_identically: ``Optional[bool]``
+    :param mirror_identically:
+        Enable this option to mirror the incident to the exact same fields in this system(in case they exist).
 
     :return:
         A tuple containing two elements:
@@ -312,17 +316,25 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     )
 
     for incident in incidents:
-        incident['mirror_direction'] = MIRROR_DIRECTION[mirror_direction]  # type: ignore
-        incident['mirror_instance'] = demisto.integrationInstance()
-        incident['mirror_tag'] = mirror_tag
+        incident['dbotMirrorDirection'] = MIRROR_DIRECTION[mirror_direction]  # type: ignore
+        incident['dbotMirrorInstance'] = demisto.integrationInstance()
+        incident['dbotMirrorTags'] = mirror_tag
+        incident['dbotMirrorId'] = incident['id']
 
-        incident_result = {
-            'name': incident.get('name', 'XSOAR Mirror'),
-            'occurred': incident.get('occurred'),
-            'rawJSON': json.dumps(incident),
-            'type': incident.get('type'),
-            'severity': incident.get('severity', 1),
-        }
+        if mirror_identically:
+            incident_result = incident.copy()
+            incident_result['rawJSON'] = json.dumps(incident)
+            demisto.info(json.dumps(incident_result))
+            del incident_result['id']
+
+        else:
+            incident_result = {
+                'name': incident.get('name', 'XSOAR Mirror'),
+                'occurred': incident.get('occurred'),
+                'rawJSON': json.dumps(incident),
+                'type': incident.get('type'),
+                'severity': incident.get('severity', 1),
+            }
 
         incidents_result.append(incident_result)
 
@@ -614,7 +626,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         )
 
 
-def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_tag: Optional[str]) -> str:
+def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_tags: Set[str]) -> str:
     """update-remote-system command: pushes local changes to the remote system
 
     :type client: ``Client``
@@ -628,8 +640,8 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
         ``args['incidentChanged']`` boolean telling us if the local incident indeed changed or not
         ``args['remoteId']`` the remote incident id
 
-    :type mirror_tag: ``Optional[str]``
-    :param mirror_tag:
+    :type mirror_tags: ``Optional[str]``
+    :param mirror_tags:
         The tag that you will mirror out of the incident.
 
     :return:
@@ -673,7 +685,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
     if parsed_args.entries:
         for entry in parsed_args.entries:
             demisto.info(f"this is the tag {entry.get('tags', [])}")
-            if mirror_tag and mirror_tag in entry.get('tags', []):
+            if mirror_tags.intersection(set(entry.get('tags', []))):
                 demisto.debug(f'Sending entry {entry.get("id")}')
                 client.add_incident_entry(incident_id=new_incident_id, entry=entry)
 
@@ -703,6 +715,8 @@ def main() -> None:
     )
     proxy = demisto.params().get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
+    mirror_tags = set(demisto.params().get('mirror_tag', '').split(',')) \
+        if demisto.params().get('mirror_tag') else set([])
     try:
         headers = {
             'Authorization': api_key
@@ -719,6 +733,10 @@ def main() -> None:
 
         elif demisto.command() == 'fetch-incidents':
             query = demisto.params().get('query', None)
+            disable_from_same_integration = demisto.params().get('disable_from_same_integration')
+            if disable_from_same_integration:
+                query += ' -sourceBrand:"XSOAR Mirroring"'
+
             max_results = arg_to_int(
                 arg=demisto.params().get('max_fetch'),
                 arg_name='max_fetch'
@@ -733,7 +751,8 @@ def main() -> None:
                 first_fetch_time=first_fetch_time,
                 query=query,
                 mirror_direction=demisto.params().get('mirror_direction'),
-                mirror_tag=demisto.params().get('mirror_tag')
+                mirror_tag=list(mirror_tags),
+                mirror_identically=demisto.params().get('mirror_identically')
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
@@ -751,7 +770,7 @@ def main() -> None:
             return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
 
         elif demisto.command() == 'update-remote-system':
-            return_results(update_remote_system_command(client, demisto.args(), demisto.params().get('mirror_tag')))
+            return_results(update_remote_system_command(client, demisto.args(), mirror_tags))
 
     # Log exceptions and return errors
     except Exception as e:
