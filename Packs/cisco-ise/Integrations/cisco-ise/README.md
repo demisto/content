@@ -36,6 +36,8 @@
 <li><a href="#h_a62bd46e-8b18-4f75-9215-2c1305374a47" target="_self">Create an ANC policy: cisco-ise-create-policy</a></li>
 <li><a href="#h_19abc45f-7827-416c-bbc4-2f2be27c6453" target="_self">Assign an ANC policy to an endpoint: cisco-ise-assign-policy</a></li>
 <li><a href="#h_f60063f9-8c7f-4198-945e-829c34c16fcb" target="_self">Get all blacklisted endpoints: cisco-ise-get-blacklist-endpoints</a></li>
+<li><a href="h_4bf25414-e9b3-41fe-a855-1bf7de70d143" target="_self">Get an endpoint ID by Name: cisco-ise-get-endpoint-id-by-name</a></li>
+<li><a href="h_9bf25414-e9b3-41fe-a855-1bf7de70d143" target="_self">Create new endpoint: cisco-ise-create-endpoint</a></li>
 </ol>
 <h3 id="h_5bf25414-e9b3-41fe-a855-1bf7de70d143">1. Get an endpoint ID</h3>
 <hr>
@@ -1194,3 +1196,104 @@
 </tr>
 </tbody>
 </table>
+<h3 id="h_4bf25414-e9b3-41fe-a855-1bf7de70d143">13. Get an endpoint ID by Name</h3>
+<hr>
+<p>Returns an EndpointID using its mac address as name (Available on ISE 2.3 and later versions).</p>
+<h5>Base Command</h5>
+<p><code>cisco-ise-get-endpoint-id-by-name</code></p>
+<h5>Input</h5>
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 150px;"><strong>Argument Name</strong></th>
+<th style="width: 505px;"><strong>Description</strong></th>
+<th style="width: 85px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 150px;">macAddress</td>
+<td style="width: 505px;">MAC address of the endpoint (format: 11:22:33:44:55:66).</td>
+<td style="width: 85px;">Required</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Context Output</h5>
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 324px;"><strong>Path</strong></th>
+<th style="width: 80px;"><strong>Type</strong></th>
+<th style="width: 336px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 324px;">Endpoint.ID</td>
+<td style="width: 80px;">string</td>
+<td style="width: 336px;">Endpoint ID.</td>
+</tr>
+<tr>
+<td style="width: 324px;">Endpoint.MACAddress</td>
+<td style="width: 80px;">string</td>
+<td style="width: 336px;">Endpoint MAC address.</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Command Example</h5>
+<pre>!cisco-ise-get-endpoint-id-by-name macAddress=00:0E:35:D4:D8:51</pre>
+<h5>Human Readable Output</h5>
+<h3>The endpoint ID is: 327b0120-4ba1-11e8-93bd-000c296ec148</h3>
+<h3 id="h_9bf25414-e9b3-41fe-a855-1bf7de70d143">14. Create new endpoint</h3>
+<hr />
+<p>Given a mac address and custom attribute list, a new Endpoint is created on Cisco ISE.</p>
+<h5>Base Command</h5>
+<p><code>cisco-ise-get-endpoint-id-by-name</code></p>
+<h5>Input</h5>
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 150px;"><strong>Argument Name</strong></th>
+<th style="width: 505px;"><strong>Description</strong></th>
+<th style="width: 85px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 150px;">mac_address</td>
+<td style="width: 505px;">MAC address of the endpoint (format: 11:22:33:44:55:66).</td>
+<td style="width: 85px;">Required</td>
+</tr>
+</tbody>
+  <tbody>
+<tr>
+<td style="width: 150px;">attributes_map</td>
+<td style="width: 505px;">A list of custom attributes and their values</td>
+<td style="width: 85px;">Required</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 324px;"><strong>Path</strong></th>
+<th style="width: 80px;"><strong>Type</strong></th>
+<th style="width: 336px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 324px;">CiscoISE.Endpoint.MACAddress</td>
+<td style="width: 80px;">string</td>
+<td style="width: 336px;">Mac address of the newly created Endpoint.</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<pre>!cisco-ise-create-endpoint mac_address=01:02:01:02:ab:ab attributes_map={\"zb_profie\":\"iphone\",\"zb_category\":\"phone\"}</pre>
+<h5>Human Readable Output</h5>
+<h3>Endpoint "01:02:01:02:ab:ab" has been created successfully</h3>
