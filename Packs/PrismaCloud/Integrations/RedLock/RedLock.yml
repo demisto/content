@@ -338,6 +338,9 @@ script:
         specified
       name: snooze-value
       required: false
+    - description: The time unit for if snoozing alert.  Both snooze value and unit
+        must be specified if snoozing.
+      name: snooze-unit
       auto: PREDEFINED
       predefined:
       - hour
@@ -346,9 +349,6 @@ script:
       - month
       - year
       - epoch
-    - description: The time unit for if snoozing alert.  Both snooze value and unit
-      name: snooze-unit
-        must be specified if snoozing.
     - description: Reason for dismissal
       name: dismissal-note
       required: true
