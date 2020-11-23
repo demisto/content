@@ -280,7 +280,6 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
         xdr_incident = latest_incident_in_xdr_result[0]['Contents']
 
         demisto_update_args[xdr_alerts_field] = replace_in_keys(xdr_incident.get('alerts').get('data', []), '_', '')
-
         demisto_update_args[xdr_file_artifacts_field] = replace_in_keys(
             xdr_incident.get('file_artifacts').get('data', []), '_', '')
 
