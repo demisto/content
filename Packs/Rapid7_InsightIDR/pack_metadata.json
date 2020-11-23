@@ -1,6 +1,6 @@
 {
     "name": "Rapid7 InsightIDR",
-    "description": "Cloud-Based SIEM",
+    "description": "Rapid7 InsightIDR is a Cloud-Based SIEM that detect and respond to security incidents.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

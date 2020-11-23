@@ -1,6 +1,6 @@
 {
-	"id": "5093a638-ab0b-4844-8cd9-6996a89ba38a",
-	"name": "Rapid7_InsightIDR_Mapper",
+	"id": "Rapid7 InsightIDR - Incoming Mapper",
+	"name": "Rapid7 InsightIDR - Incoming Mapper",
 	"type": "mapping-incoming",
 	"description": "Maps incoming InsightIDR alert fields.",
 	"fromVersion": "6.0.0",

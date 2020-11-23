@@ -1,8 +1,13 @@
 #Rapid7 InsightIDR: Cloud-based SIEM 
+
 ##Authentication
 Before you start, make sure that you have an API key with Read/Write privileges.
+###Generating API Keys
+1. Log into Rapid7 InsightIDR 
+2. Press on settings and select API Keys
+3. Generate a new API key
 
-This integration was integrated and tested with version xx of insightidr
+This integration was integrated and tested with version v1 of InsightIDR API
 ## Configure insightidr on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

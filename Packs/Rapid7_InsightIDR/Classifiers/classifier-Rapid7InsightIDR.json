@@ -1,6 +1,6 @@
 {
-	"id": "1bd927db-6bff-4084-8aab-29061b01a985",
-	"name": "Rapid7_InsightIDR_Classifier",
+	"id": "Rapid7 InsightIDR - Classifier",
+	"name": "Rapid7 InsightIDR - Classifier",
 	"type": "classification",
 	"description": "Classifies Rapid7 InsightIDR incidents",
 	"defaultIncidentType": "",
