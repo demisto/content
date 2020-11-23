@@ -38,8 +38,8 @@ tasks:
     task:
       id: 18a861eb-da27-4c9c-886f-cd050c3eaca2
       version: -1
-      name: Import File To Server From URL
-      script: '|||cloudconvert-import'
+      name: Upload File To Server From URL
+      script: '|||cloudconvert-upload'
       type: regular
       iscommand: true
       brand: ""
@@ -72,7 +72,7 @@ tasks:
     task:
       id: 74d14da9-de0d-4a50-86d4-afc13948f420
       version: -1
-      name: GenericPolling - Wait For Import Operation To Finish
+      name: GenericPolling - Wait For Upload Operation To Finish
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -187,7 +187,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: import
+                  simple: upload
           accessor: id
     separatecontext: false
     view: |-
@@ -276,8 +276,8 @@ tasks:
     task:
       id: 75480f24-5462-4c97-880c-61d7d966bbed
       version: -1
-      name: Export File To War Room Entry
-      script: '|||cloudconvert-export'
+      name: Download File To War Room Entry
+      script: '|||cloudconvert-download'
       type: regular
       iscommand: true
       brand: ""
@@ -285,9 +285,9 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      export_as:
+      download_as:
         complex:
-          root: inputs.export_via
+          root: inputs.download_via
       task_id:
         complex:
           root: CloudConvert.Task
@@ -346,7 +346,7 @@ tasks:
     task:
       id: fb818712-fcdc-45cc-82c0-723e14d7891a
       version: -1
-      name: Verify - Check If Import Request Sent Successfully
+      name: Verify - Check If Upload Request Sent Successfully
       type: condition
       iscommand: false
       brand: ""
@@ -366,7 +366,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: import/url
+              simple: upload/url
       - - operator: isNotEqualString
           left:
             value:
@@ -380,7 +380,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: import
+                        simple: upload
                 accessor: status
             iscontext: true
           right:
@@ -464,7 +464,7 @@ tasks:
     task:
       id: f8b7ad22-f454-42d6-8a50-754165958fb0
       version: -1
-      name: Verify command results - export
+      name: Verify command results - download
       type: condition
       iscommand: false
       brand: ""
@@ -484,7 +484,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: export
+              simple: download
       - - operator: isNotEqualString
           left:
             value:
@@ -498,7 +498,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: export
+                        simple: download
                 accessor: status
             iscontext: true
           right:
@@ -523,7 +523,7 @@ tasks:
     task:
       id: 548e8bfe-5bfd-4cbf-8ea3-05eef7ade0ae
       version: -1
-      name: GenericPolling - Wait For Export Request To Finish
+      name: GenericPolling - Wait For Download Request To Finish
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -555,7 +555,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: export
+                  simple: download
           accessor: id
       Interval:
         simple: "1"
@@ -637,7 +637,7 @@ tasks:
     task:
       id: 9c7e10b0-0489-4fbd-8f05-b03d2fc763e4
       version: -1
-      name: Check export type
+      name: Check download type
       type: condition
       iscommand: false
       brand: ""
@@ -651,7 +651,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.export_via
+              simple: inputs.download_via
             iscontext: true
           right:
             value:
@@ -956,7 +956,7 @@ tasks:
       - "32"
     scriptarguments:
       entry_id: {}
-      export_via:
+      download_via:
         simple: url
       output_format:
         simple: jpg
@@ -999,7 +999,7 @@ tasks:
     scriptarguments:
       entry_id:
         simple: ${File.EntryID}
-      export_via:
+      download_via:
         simple: url
       output_format:
         simple: jpg
@@ -1041,7 +1041,7 @@ tasks:
     scriptarguments:
       entry_id:
         simple: ${File.EntryID}
-      export_via:
+      download_via:
         simple: war_room_entry
       output_format:
         simple: jpg
@@ -1145,7 +1145,7 @@ tasks:
       version: -1
       name: Create War Room Entry
       description: Checks the status of an operation. Use the create_war_room_entry
-        argument to also create a War Room entry of the file when checking on an export
+        argument to also create a War Room entry of the file when checking on a download
         operation.
       script: CloudConvert|||cloudconvert-check-status
       type: regular
@@ -1168,7 +1168,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: export
+                  simple: download
           accessor: id
     separatecontext: false
     view: |-
@@ -1200,12 +1200,12 @@ inputs:
   value:
     simple: https://raw.githubusercontent.com/demisto/content/master/TestData/pdfworking.pdf
   required: false
-  description: This is the url of the imported file
+  description: This is the url of the uploaded file
   playbookInputQuery:
 - key: entry_id
   value: {}
   required: false
-  description: This is the entry id of the imported file
+  description: This is the entry id of the uploaded file
   playbookInputQuery:
 - key: output_format
   value:
@@ -1214,12 +1214,12 @@ inputs:
   description: |
     This is the desired output format
   playbookInputQuery:
-- key: export_via
+- key: download_via
   value:
     simple: war_room_entry
   required: true
   description: |
-    The method for exporting the resulted file, url or entry
+    The method for downloading the resulted file, url or entry
   playbookInputQuery:
 outputs: []
 sourceplaybookid: 27d078f8-e515-4cfc-83d7-30ab49a8b38e

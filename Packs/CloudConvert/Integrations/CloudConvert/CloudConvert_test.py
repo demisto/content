@@ -1,4 +1,4 @@
-from CloudConvert import import_command, Client, convert_command, check_status_command, export_command
+from CloudConvert import upload_command, Client, convert_command, check_status_command, download_command
 from CommonServerPython import remove_empty_elements, tableToMarkdown, string_to_table_header
 import demistomock as demisto
 import json
@@ -23,7 +23,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_import_valid_url(mocker):
+def test_upload_valid_url(mocker):
     """
 
     Given:
@@ -35,17 +35,17 @@ def test_import_valid_url(mocker):
 
     """
     client = create_client()
-    mocker.patch.object(client, 'import_url', return_value=util_load_json('./test_data/import_url_response.json'))
-    results = import_command(client, {'url': MOCK_URL})
-    readable_output = tableToMarkdown('Import Results', remove_empty_elements(util_load_json(
-        './test_data/import_url_response.json').get('data')),
+    mocker.patch.object(client, 'upload_url', return_value=util_load_json('./test_data/upload_url_response.json'))
+    results = upload_command(client, {'url': MOCK_URL})
+    readable_output = tableToMarkdown('Upload Results', remove_empty_elements(util_load_json(
+        './test_data/upload_url_response.json').get('data')),
         headers=('created_at', 'id', 'operation', 'status'),
         headerTransform=string_to_table_header)
-    assert results.outputs == remove_empty_elements(util_load_json('./test_data/import_url_response.json').get('data'))
+    assert results.outputs == remove_empty_elements(util_load_json('./test_data/upload_url_response.json').get('data'))
     assert results.readable_output == readable_output
 
 
-def test_import_invalid_url(mocker):
+def test_upload_invalid_url(mocker):
     """
 
     Given:
@@ -57,14 +57,14 @@ def test_import_invalid_url(mocker):
 
     """
     client = create_client()
-    mocker.patch.object(client, 'import_url', return_value=util_load_json('./test_data/import_url_bad_url_response.json'))
+    mocker.patch.object(client, 'upload_url', return_value=util_load_json('./test_data/upload_url_bad_url_response.json'))
     with pytest.raises(ValueError) as e:
-        import_command(client, {'url': MOCK_URL})
+        upload_command(client, {'url': MOCK_URL})
         if not e:
             assert False
 
 
-def test_import_valid_entry(mocker):
+def test_upload_valid_entry(mocker):
     """
 
     Given:
@@ -77,20 +77,20 @@ def test_import_valid_entry(mocker):
     """
 
     client = create_client()
-    mocker.patch.object(client, 'import_entry_id',
-                        return_value=util_load_json('./test_data/import_entry_response.json'))
-    results = import_command(client, {'entry_id': MOCK_ENTRY_ID})
-    readable_output = tableToMarkdown('Import Results',
-                                      remove_empty_elements(util_load_json('./test_data/import_e'
+    mocker.patch.object(client, 'upload_entry_id',
+                        return_value=util_load_json('./test_data/upload_entry_response.json'))
+    results = upload_command(client, {'entry_id': MOCK_ENTRY_ID})
+    readable_output = tableToMarkdown('Download Results',
+                                      remove_empty_elements(util_load_json('./test_data/upload_e'
                                                                            'ntry_response.json').get('data')),
                                       headers=('created_at', 'id', 'operation', 'status'),
                                       headerTransform=string_to_table_header)
-    assert results.outputs == remove_empty_elements(util_load_json('./test_data/import_entry_resp'
+    assert results.outputs == remove_empty_elements(util_load_json('./test_data/upload_entry_resp'
                                                                    'onse.json').get('data'))
     assert results.readable_output == readable_output
 
 
-def test_import_invalid_entry(mocker):
+def test_upload_invalid_entry(mocker):
     """
 
     Given:
@@ -105,7 +105,7 @@ def test_import_invalid_entry(mocker):
     client = create_client()
     mocker.patch.object(demisto, 'getFilePath', return_value=None)
     with pytest.raises(ValueError) as e:
-        import_command(client, {'entry_id': MOCK_ENTRY_ID})
+        upload_command(client, {'entry_id': MOCK_ENTRY_ID})
         if not e:
             assert False
 
@@ -185,22 +185,22 @@ def test_check_status_invalid_id(mocker):
 
 
 @pytest.mark.parametrize('create_war_room_entry', [True, False])
-def test_check_status_valid_id_non_export(mocker, create_war_room_entry):
+def test_check_status_valid_id_non_download(mocker, create_war_room_entry):
     """
 
     Given:
-        - A valid task id, of a non-export operation
+        - A valid task id, of a non-download operation
     When:
-        - When the user checks the status of a task that was priorly done, and it is not export.
+        - When the user checks the status of a task that was priorly done, and it is not download.
         the purpose here is to make sure that the extra argument, 'create_war_room_entry', only makes a difference
-         when the id is of an actual export operation.
+         when the id is of an actual download operation.
     Then:
         - Returns the response
 
     """
     client = create_client()
     mocker.patch.object(client, 'check_status', return_value=util_load_json(
-        'test_data/check_status_non_export_response.json'))
+        'test_data/check_status_non_download_response.json'))
 
     results = check_status_command(client, {
         'task_id': 'id',
@@ -208,35 +208,35 @@ def test_check_status_valid_id_non_export(mocker, create_war_room_entry):
     })
     readable_output = tableToMarkdown('Check Status Results',
                                       remove_empty_elements(util_load_json('test_data/check_status'
-                                                                           '_non_export_response.json').get('data')),
+                                                                           '_non_download_response.json').get('data')),
                                       headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'result',
                                                'status'),
                                       headerTransform=string_to_table_header)
     assert results.outputs == remove_empty_elements(util_load_json('test_data/'
-                                                                   'check_status_non_export_response.json').get('data'))
+                                                                   'check_status_non_download_response.json').get('data'))
     assert results.readable_output == readable_output
 
 
 @pytest.mark.parametrize('create_war_room_entry', [True, False])
-def test_check_status_valid_id_export(mocker, create_war_room_entry):
+def test_check_status_valid_id_download(mocker, create_war_room_entry):
     """
 
     Given:
-        - A valid task id, of an export operation
+        - A valid task id, of an download operation
     When:
-        - When the user checks the status of a task that was priorly done, and it is an export operation.
+        - When the user checks the status of a task that was priorly done, and it is an download operation.
 
     Then:
-        - When checking on a export operation and the argument 'create_war_room_entry' is set to True, the output is a
+        - When checking on a download operation and the argument 'create_war_room_entry' is set to True, the output is a
         warroom entry. if set to False, then a regular response is retrieved.
 
     """
     import CloudConvert
     client = create_client()
     mocker.patch.object(client, 'check_status', return_value=util_load_json(
-        'test_data/check_status_export_response.json'))
+        'test_data/check_status_download_response.json'))
     mocker.patch.object(client, 'get_file_from_url', return_value='')
-    file_name = util_load_json('test_data/check_status_export_response.json').get('data'). \
+    file_name = util_load_json('test_data/check_status_download_response.json').get('data'). \
         get('result').get('files')[0].get('filename')
     mocker.patch.object(CloudConvert, 'fileResult', return_value={'File': file_name})
     results = check_status_command(client, {
@@ -247,70 +247,70 @@ def test_check_status_valid_id_export(mocker, create_war_room_entry):
         assert results.get('File') == file_name
 
     else:
-        assert results.outputs == remove_empty_elements(util_load_json('test_data/check_status_export_response'
+        assert results.outputs == remove_empty_elements(util_load_json('test_data/check_status_download_response'
                                                                        '.json').get('data'))
         readable_output = tableToMarkdown('Check Status Results',
                                           remove_empty_elements(util_load_json('test_data/check_status'
-                                                                               '_export_response.json').get('data')),
+                                                                               '_download_response.json').get('data')),
                                           headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'result',
                                                    'status'),
                                           headerTransform=string_to_table_header)
         assert results.readable_output == readable_output
 
 
-@pytest.mark.parametrize('export_as', ['war_room_entry', 'url'])
-def test_export_invalid_id(mocker, export_as):
+@pytest.mark.parametrize('download_as', ['war_room_entry', 'url'])
+def test_download_invalid_id(mocker, download_as):
     """
 
     Given:
         - Invalid task id for given file
     When:
-        - When the user wants to export a file that was priorly uploaded
+        - When the user wants to download a file that was priorly uploaded
     Then:
         - Returns the response message of invalid input
 
     """
     client = create_client()
-    mocker.patch.object(client, 'export_url', return_value=util_load_json('test_data/export_invalid_id_response.json'))
+    mocker.patch.object(client, 'download_url', return_value=util_load_json('test_data/download_invalid_id_response.json'))
     with pytest.raises(ValueError) as e:
-        export_command(client, {
+        download_command(client, {
             'task_id': 'id',
-            'export_as': export_as
+            'download_as': download_as
         })
         if not e:
             assert False
 
 
-@pytest.mark.parametrize('export_as', ['war_room_entry', 'url'])
-def test_export_valid_id(mocker, export_as):
+@pytest.mark.parametrize('download_as', ['war_room_entry', 'url'])
+def test_download_valid_id(mocker, download_as):
     """
 
     Given:
         - Valid task id for given file
     When:
-        - When the user wants to export a file that was priorly uploaded
+        - When the user wants to download a file that was priorly uploaded
     Then:
         - Returns the response message of invalid input
 
     """
     client = create_client()
-    mocker.patch.object(client, 'export_url', return_value=util_load_json('test_data/export_valid_id_response.json'))
+    mocker.patch.object(client, 'download_url', return_value=util_load_json('test_data/download_valid_id_response.json'))
 
-    results = export_command(client, {
+    results = download_command(client, {
         'task_id': 'id',
-        'export_as': export_as
+        'download_as': download_as
     })
-    if export_as == 'url':
-        readable_output = tableToMarkdown('Export Results',
-                                          remove_empty_elements(util_load_json('test_data/export_valid'
+    if download_as == 'url':
+        readable_output = tableToMarkdown('Download Results',
+                                          remove_empty_elements(util_load_json('test_data/download_valid'
                                                                                '_id_response.json').get('data')),
                                           headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'status'),
                                           headerTransform=string_to_table_header)
         assert results.outputs == remove_empty_elements(util_load_json('test_data'
-                                                                       '/export_valid_id_response.json').get('data'))
+                                                                       '/download_valid_id_response.json').get('data'))
         assert results.readable_output == readable_output
 
     else:
-        request_results = util_load_json('test_data/export_valid_id_response.json')
-        request_results['data']['operation'] = 'export/entry'
+        request_results = util_load_json('test_data/download_valid_id_response.json')
+        request_results['data']['operation'] = 'download/entry'
         assert results.outputs == remove_empty_elements(request_results.get('data'))

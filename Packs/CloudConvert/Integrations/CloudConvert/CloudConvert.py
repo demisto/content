@@ -18,14 +18,15 @@ class Client(BaseClient):
         super().__init__(url, headers=headers, verify=verify, proxy=proxy)
 
     @logger
-    def import_url(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
+    def upload_url(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Import the file given as url to the API's server, for later conversion
+        Upload the file given as url to the API's server, for later conversion.
+        Note - this operation is called 'import' by the API.
         Args:
             arguments: dict containing the request arguments, should contain the field 'url'
 
         Returns:
-            dict containing the results of the import action as returned from the API (status, file ID, etc.)
+            dict containing the results of the upload action as returned from the API (status, file ID, etc.)
             ``Dict[str, Any]``
         """
 
@@ -37,16 +38,17 @@ class Client(BaseClient):
         )
 
     @logger
-    def import_entry_id(self, file_path: str, file_name: str) -> Dict[str, Any]:
+    def upload_entry_id(self, file_path: str, file_name: str) -> Dict[str, Any]:
         """
-        Import the file given as a war room entry id to the API's server, for later conversion
+        Upload the file given as a war room entry id to the API's server, for later conversion
+        Note - this operation is called 'import' by the API.
 
         Args:
             file_path: path to given file, derived from the entry id
             file_name: name of file, including format suffix
 
         Returns:
-            dict containing the results of the import action as returned from the API (status, file ID, etc.)
+            dict containing the results of the upload action as returned from the API (status, file ID, etc.)
             ``Dict[str, Any]``
         """
 
@@ -60,7 +62,7 @@ class Client(BaseClient):
         params = form.get('parameters')
 
         if port_url is None or params is None:
-            raise ValueError('Failed to initiate an import operation')
+            raise ValueError('Failed to initiate an upload operation')
 
         # Creating a temp file with the same data of the given file
         # This way the uploaded file has a path that the API can parse properly
@@ -97,7 +99,7 @@ class Client(BaseClient):
     @logger
     def convert(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Convert a file to desired format, given the file was priorly imported to the API's server
+        Convert a file to desired format, given the file was priorly uploaded to the API's server
         Args:
             arguments: dict containing the request arguments, should contain the fields 'task_id' and 'output_format'
 
@@ -133,15 +135,16 @@ class Client(BaseClient):
         )
 
     @logger
-    def export_url(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
+    def download_url(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Export a converted file to a url
+        Download a converted file to a url
+        Note - this operation is called 'export' by the API.
         Args:
             arguments:
                 dict containing the request arguments, should contain the field 'task_id' of the desired file
 
         Returns:
-            dict containing the results of the export action as returned from the API (status, file ID, etc.)
+            dict containing the results of the download action as returned from the API (status, file ID, etc.)
                     if the action was complete, the result url will be a part of this dict. If the request is pending,
                     one should retrieve the url via the 'check_status' command
             ``Dict[str, Any]``
@@ -195,23 +198,24 @@ def raise_error_if_no_data(results: Dict[str, Any]):
 
 
 @logger
-def import_command(client: Client, arguments: Dict[str, Any]):
+def upload_command(client: Client, arguments: Dict[str, Any]):
     """
-    Import a file to the API for later conversion
+    Upload a file to the API for later conversion
     Args:
         client: CloudConvert client to use
         arguments: All command arguments - either 'url' or 'entry_id'.
 
     Returns:
-        CommandResults object containing the results of the import action as returned from the API and its
+        CommandResults object containing the results of the upload action as returned from the API and its
              readable output
     """
 
     if arguments.get('url'):
         if arguments.get('entry_id'):
             raise ValueError('Both url and entry id were inserted - please insert only one.')
-        results = client.import_url(arguments)
+        results = client.upload_url(arguments)
         raise_error_if_no_data(results)
+        results['data']['operation'] = 'upload/url'
         results_data = results.get('data')
     elif arguments.get('entry_id'):
         demisto.debug('getting the path of the file from its entry id')
@@ -219,14 +223,15 @@ def import_command(client: Client, arguments: Dict[str, Any]):
         if not result:
             raise ValueError('No file was found for given entry id')
         file_path, file_name = result['path'], result['name']
-        results = client.import_entry_id(file_path, file_name)
+        results = client.upload_entry_id(file_path, file_name)
         raise_error_if_no_data(results)
+        results['data']['operation'] = 'upload/entry'
         results_data = results.get('data')
     else:
         raise ValueError('No url or entry id specified.')
 
     readable_output = tableToMarkdown(
-        'Import Results',
+        'Upload Results',
         remove_empty_elements(results_data),
         headers=('id', 'operation', 'created_at', 'status'),
         headerTransform=string_to_table_header,
@@ -244,7 +249,7 @@ def import_command(client: Client, arguments: Dict[str, Any]):
 @logger
 def convert_command(client: Client, arguments: Dict[str, Any]):
     """
-    Convert a file that was priorly imported
+    Convert a file that was priorly uploaded
     Args:
         client: CloudConvert client to use
         arguments: All command arguments, the fields 'task_id' and 'output_format'
@@ -281,8 +286,9 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
     Args:
         client: CloudConvert client to use
         arguments: All command arguments, the field 'task_id'
-            Note: When the checked operation is 'export', the field 'create_war_room_entry' should be True.
-            This way the results will be a war room entry containing the file.
+            Note: When the checked operation is 'download', the field 'create_war_room_entry' should be set according
+             to the chosen download method, true if downloading as war room entry and false if not.
+            This way a war room entry containing the file will be created if needed.
 
     Returns:
             CommandResults object containing the results of the check status action as returned from the API
@@ -294,13 +300,13 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
     raise_error_if_no_data(results)
     results_data = results.get('data', {})
 
-    # If checking on an export to entry operation, manually change the operation name
+    # If checking on an download to entry operation, manually change the operation name
     # For other operations, the operation matches the operation field in the API's response, so no change is needed
     if argToBoolean(arguments.get('create_war_room_entry', False)) \
             and results_data.get('operation') == 'export/url':
         results['data']['operation'] = 'export/entry'
 
-    # Check if an export to war room entry operation is finished
+    # Check if an download to war room entry operation is finished
     # If it did - create the entry
     if results_data.get('status') == 'finished' \
             and argToBoolean(arguments.get('create_war_room_entry', 'False'))\
@@ -342,32 +348,32 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
 
 
 @logger
-def export_command(client: Client, arguments: Dict[str, Any]):
+def download_command(client: Client, arguments: Dict[str, Any]):
     """
-    Export a converted file back to the user, either as a url or directly as a war room entry
+    Download a converted file back to the user, either as a url or directly as a war room entry
     Note: in order to get the resulted url/entry of the file you need to use a check-status command as well,
-        since the response of the export command is usually responded before the file is fully exported (hence the
+        since the response of the download command is usually responded before the file is fully downloaded (hence the
     'status' field is 'waiting', and not 'finished')
     Args:
         client: CloudConvert client to use
-        arguments: All command arguments, the fields 'task_id', and 'export_as' (url/war_room_entry)
+        arguments: All command arguments, the fields 'task_id', and 'download_as' (url/war_room_entry)
 
     Returns:
-        CommandResults object containing the results of the export action as returned from the API, and its readable
+        CommandResults object containing the results of the download action as returned from the API, and its readable
     """
 
-    # Call export to url request
+    # Call download as url request
     # In both url and war room entry we still first get a url
-    results = client.export_url(arguments)
+    results = client.download_url(arguments)
     raise_error_if_no_data(results)
     results_data = results.get('data')
 
-    # If exporting as war room entry, manually change the operation name
-    if arguments['export_as'] == 'war_room_entry':
+    # If downloading as war room entry, manually change the operation name
+    if arguments['download_as'] == 'war_room_entry':
         results['data']['operation'] = 'export/entry'
 
     readable_output = tableToMarkdown(
-        'Export Results',
+        'Download Results',
         remove_empty_elements(results_data),
         headers=('id', 'operation', 'created_at', 'status', 'depends_on_task_ids'),
         headerTransform=string_to_table_header,
@@ -392,7 +398,7 @@ def test_module(client: Client):
     """
 
     dummy_url = 'https://raw.githubusercontent.com/demisto/content/master/TestData/pdfworking.pdf'
-    result = client.import_url({'url': dummy_url})
+    result = client.upload_url({'url': dummy_url})
     if result.get('data'):
         return 'ok'
     elif result.get('message') == "Unauthenticated.":
@@ -402,6 +408,25 @@ def test_module(client: Client):
     else:
         return 'No response from server, the server could be temporary unavailable or it is handling too ' \
                'many requests. Please try again later.'
+
+
+def change_operation_title(title: str):
+    """
+    This function is being used in order to change the titles of the operations that are done by the API and are
+    returned in the response to titles that makes more sense for the users actions, and matches the API's use in
+    our system.
+    Args:
+        title: The name of the operation by the API
+
+    Returns: The name of the operation conducted by our user
+
+    """
+    title_exchange_dict = {
+        'import/url': 'upload/url',
+        'import/upload': 'upload/entry',
+        'export/url': 'download/url'
+        }
+    return title_exchange_dict[title]
 
 
 def main() -> None:
@@ -416,8 +441,8 @@ def main() -> None:
         }
         client = Client(headers, verify, proxy)
 
-        if command == 'cloudconvert-import':
-            return_results(import_command(client, demisto.args()))
+        if command == 'cloudconvert-upload':
+            return_results(upload_command(client, demisto.args()))
 
         elif command == 'cloudconvert-convert':
             return_results(convert_command(client, demisto.args()))
@@ -425,8 +450,8 @@ def main() -> None:
         elif command == 'cloudconvert-check-status':
             return_results(check_status_command(client, demisto.args()))
 
-        elif command == 'cloudconvert-export':
-            return_results(export_command(client, demisto.args()))
+        elif command == 'cloudconvert-download':
+            return_results(download_command(client, demisto.args()))
 
         elif command == 'test-module':
             return_results(test_module(client))

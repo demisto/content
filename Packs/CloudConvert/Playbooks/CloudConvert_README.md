@@ -11,8 +11,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 
 ### Commands
-* cloudconvert-export
-* cloudconvert-import
+* cloudconvert-download
+* cloudconvert-upload
 * cloudconvert-convert
 * cloudconvert-check-status
 
@@ -21,10 +21,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| url | The URL of the imported file. |  | Optional |
-| entry_id | The entry ID of the imported file. |  | Optional |
+| url | The URL of the uploaded file. |  | Optional |
+| entry_id | The entry ID of the uploaded file. |  | Optional |
 | output_format | The required output format.|  | Required |
-| export_via | The method for exporting the converted file - URL or war_room_entry. |  | Required |
+| download_via | The method for downloading the converted file - URL or war_room_entry. |  | Required |
 
 ## Playbook Outputs
 ---

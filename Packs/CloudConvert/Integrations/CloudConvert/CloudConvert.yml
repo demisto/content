@@ -35,9 +35,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Imports a file to convert.
+    description: Uploads a file to convert.
     execution: false
-    name: cloudconvert-import
+    name: cloudconvert-upload
     outputs:
     - contextPath: CloudConvert.Task.id
       description: Unique task ID of the scanned file.
@@ -52,13 +52,13 @@ script:
       description: The operation that was performed.
       type: String
     - contextPath: CloudConvert.Task.result.files.filename
-      description: The name of the imported file.
+      description: The name of the uploaded file.
       type: String
     - contextPath: CloudConvert.Task.result.files.size
-      description: The size of the imported file.
+      description: The size of the uploaded file.
       type: Number
     - contextPath: CloudConvert.Task.result.files.url
-      description: The URL of the imported file.
+      description: The URL of the uploaded file.
       type: String
     - contextPath: CloudConvert.Task.created_at
       description: Time the task was created.
@@ -80,7 +80,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of the task that imported the file.
+      description: ID of the task that uploaded the file.
       isArray: false
       name: task_id
       required: true
@@ -247,7 +247,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Whether to create an entry in the War Room if the task is finished. Possible values are: "True" and "False". Use this argument to be able to check on an export operation in the War Room.'
+      description: 'Whether to create an entry in the War Room if the task is finished. Possible values are: "True" and "False". Use this argument to be able to check on an download operation in the War Room.'
       isArray: false
       name: create_war_room_entry
       predefined:
@@ -256,7 +256,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Checks the status of an operation. Use the create_war_room_entry argument to also create a War Room entry of the file when checking on an export operation.
+    description: Checks the status of an operation. Use the create_war_room_entry argument to also create a war room entry of the file when checking on a download operation.
     execution: false
     name: cloudconvert-check-status
     outputs:
@@ -305,9 +305,9 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Whether to export the converted file to a URL or as a War Room entry. Possible values are: "url" and "war_room_entry". Note that if you export the file as a War Room entry, a URL of the file will also be generated.'
+      description: 'Whether to download the converted file to a URL or as a War Room entry. Possible values are: "url" and "war_room_entry". Note that if you download the file as a War Room entry, a URL of the file will also be generated.'
       isArray: false
-      name: export_as
+      name: download_as
       predefined:
       - url
       - war_room_entry
@@ -320,9 +320,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Exports a converted file to a URL or a War Room entry.
+    description: Downloads a converted file to a URL or a War Room entry.
     execution: false
-    name: cloudconvert-export
+    name: cloudconvert-download
     outputs:
     - contextPath: CloudConvert.Task.id
       description: Unique task ID of the scanned file.
@@ -337,13 +337,13 @@ script:
       description: The operation that was performed.
       type: String
     - contextPath: CloudConvert.Task.result.files.filename
-      description: The file name of the exported file.
+      description: The file name of the downloaded file.
       type: String
     - contextPath: CloudConvert.Task.result.files.size
-      description: The size of the exported file.
+      description: The size of the downloaded file.
       type: Number
     - contextPath: CloudConvert.Task.result.files.url
-      description: The URL of the exported file.
+      description: The URL of the downloaded file.
       type: String
     - contextPath: CloudConvert.Task.created_at
       description: Time the task was created.

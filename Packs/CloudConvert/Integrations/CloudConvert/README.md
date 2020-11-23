@@ -16,14 +16,14 @@ This integration was integrated and tested with version v2 of CloudConvert.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### cloudconvert-import
+### cloudconvert-upload
 ***
-Imports a file for conversion.
+Uploads a file for conversion.
 
 
 #### Base Command
 
-`cloudconvert-import`
+`cloudconvert-upload`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -40,9 +40,9 @@ Imports a file for conversion.
 | CloudConvert.Task.status | String | Status of the current task. | 
 | CloudConvert.Task.message | String | Response message from the API. | 
 | CloudConvert.Task.operation | String | The operation that was performed. | 
-| CloudConvert.Task.result.files.filename | String | The name of the imported file. | 
-| CloudConvert.Task.result.files.size | Number | The size of the imported file. | 
-| CloudConvert.Task.result.files.url | String | The URL of the imported file. | 
+| CloudConvert.Task.result.files.filename | String | The name of the uploaded file. | 
+| CloudConvert.Task.result.files.size | Number | The size of the uploaded file. | 
+| CloudConvert.Task.result.files.url | String | The URL of the uploaded file. | 
 | CloudConvert.Task.created_at | Date | Time the task was created. | 
 | CloudConvert.Task.started_at | Date | Start time of the task. | 
 | CloudConvert.Task.ended_at | Date | End time of the task. | 
@@ -52,7 +52,7 @@ Imports a file for conversion.
 
 
 #### Command Example
-`cloudconvert-import entry_id=@123`
+`cloudconvert-upload entry_id=@123`
 
 #### Human Readable Output
 
@@ -70,7 +70,7 @@ Converts an uploaded file to the required format.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | ID of the task that imported the file. | Required | 
+| task_id | ID of the task that uploaded the file. | Required | 
 | output_format | The required output format for the given file. | Required | 
 
 
@@ -103,7 +103,7 @@ Converts an uploaded file to the required format.
 
 ### cloudconvert-check-status
 ***
-Checks the status of an operation. Use the 'create_war_room_entry' argument to also create a war room entry of the file when checking on an export operation
+Checks the status of an operation. Use the 'create_war_room_entry' argument to also create a war room entry of the file when checking on a download operation.
 
 
 #### Base Command
@@ -114,7 +114,7 @@ Checks the status of an operation. Use the 'create_war_room_entry' argument to a
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | task_id | ID of the task used to convert the file. | Required | 
-| create_war_room_entry | Whether to create an entry in the War Room if the task is finished. Possible values are: "True" and "False". Use this argument to be able to check on an export operation in the War Room. | Optional | 
+| create_war_room_entry | Whether to create an entry in the War Room if the task is finished. Possible values are: "True" and "False". Use this argument to be able to check on a download operation in the War Room. | Optional | 
 
 
 #### Context Output
@@ -144,19 +144,19 @@ Checks the status of an operation. Use the 'create_war_room_entry' argument to a
 
 
 
-### cloudconvert-export
+### cloudconvert-download
 ***
-Exports a converted file to a URL or a War Room entry.
+Downloads a converted file as a URL or a War Room entry.
 
 
 #### Base Command
 
-`cloudconvert-export`
+`cloudconvert-download`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| export_as | 'Whether to export the converted file to a URL or as a War Room entry. Possible values are: "url" and "war_room_entry". Note that if you export the file as a War Room entry, a URL of the file will also be generated.' | Required | 
+| download_as | 'Whether to download the converted file as a URL or as a War Room entry. Possible values are: "url" and "war_room_entry". Note that if you download the file as a War Room entry, a URL of the file will also be generated.' | Required | 
 | task_id | ID of the task that converted the file. | Required | 
 
 
@@ -168,9 +168,9 @@ Exports a converted file to a URL or a War Room entry.
 | CloudConvert.Task.status | String | Status of the current task. | 
 | CloudConvert.Task.message | String | Response message from the API. | 
 | CloudConvert.Task.operation | String | The operation that was performed. | 
-| CloudConvert.Task.result.files.filename | String | The file name of the exported file. | 
-| CloudConvert.Task.result.files.size | Number | The size of the exported file. | 
-| CloudConvert.Task.result.files.url | String | The URL of the exported file. | 
+| CloudConvert.Task.result.files.filename | String | The file name of the downloaded file. | 
+| CloudConvert.Task.result.files.size | Number | The size of the downloaded file. | 
+| CloudConvert.Task.result.files.url | String | The URL of the downloaded file. | 
 | CloudConvert.Task.created_at | Date | Time the task was created. | 
 | CloudConvert.Task.started_at | Date | Start time of the task. | 
 | CloudConvert.Task.ended_at | Date | End time of the task. | 
@@ -181,7 +181,7 @@ Exports a converted file to a URL or a War Room entry.
 
 
 #### Command Example
-`cloudconvert-export task_id=1 export_as=url`
+`cloudconvert-download task_id=1 download_as=url`
 
 #### Human Readable Output
 

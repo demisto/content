@@ -38,9 +38,9 @@ tasks:
     task:
       id: 934ef52e-8df3-4b83-846c-db51efcfeed8
       version: -1
-      name: Import The File To The Server
-      description: Import the file.
-      script: '|||cloudconvert-import'
+      name: Upload The File To The Server
+      description: Upload the file.
+      script: '|||cloudconvert-upload'
       type: regular
       iscommand: true
       brand: ""
@@ -167,7 +167,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: import
+                  simple: upload
           accessor: id
     separatecontext: false
     view: |-
@@ -256,9 +256,9 @@ tasks:
     task:
       id: 1a9b20ed-7217-4558-8628-66e4263b8b34
       version: -1
-      name: Export The File
-      description: Export the file
-      script: '|||cloudconvert-export'
+      name: Download The File
+      description: Download the file
+      script: '|||cloudconvert-download'
       type: regular
       iscommand: true
       brand: ""
@@ -266,9 +266,9 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      export_as:
+      download_as:
         complex:
-          root: inputs.export_via
+          root: inputs.download_via
       task_id:
         complex:
           root: CloudConvert.Task
@@ -302,8 +302,8 @@ tasks:
     task:
       id: 5687ac9a-72b6-4b05-8661-1db87c10da81
       version: -1
-      name: 'Exporting To War Room Entry? '
-      description: Check if exporting to War Room entry.
+      name: 'Downloading To War Room Entry? '
+      description: Check if downloading to War Room entry.
       type: condition
       iscommand: false
       brand: ""
@@ -320,7 +320,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.export_via
+                root: inputs.download_via
             iscontext: true
           right:
             value:
@@ -374,7 +374,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: export
+                  simple: download
           accessor: id
       Interval:
         simple: "1"
@@ -411,9 +411,9 @@ tasks:
     task:
       id: c9d5343f-8ad3-4554-80e2-40b4191cf3c2
       version: -1
-      name: Check Status - Used For Getting Finished Export Task's Data
+      name: Check Status - Used For Getting Finished Download Task's Data
       description: Check the status of an operation. Use the 'create_war_room_entry' argument to
-        also create a War Room entry of the file when checking on an export operation.
+        also create a War Room entry of the file when checking on a download operation.
       script: '|||cloudconvert-check-status'
       type: regular
       iscommand: true
@@ -435,7 +435,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: export
+                  simple: download
           accessor: id
     separatecontext: false
     view: |-
@@ -457,10 +457,10 @@ tasks:
     task:
       id: c2f426de-4837-4090-8c8f-605d6f2545ed
       version: -1
-      name: Check Status - Used For Getting Finished Export Task's Data And Create
+      name: Check Status - Used For Getting Finished Download Task's Data And Create
         Entry
       description: Check the status of an operation. Use the 'create_war_room_entry' argument to
-        also create a War Room entry of the file when checking on an export operation.
+        also create a War Room entry of the file when checking on a download operation.
       script: '|||cloudconvert-check-status'
       type: regular
       iscommand: true
@@ -482,7 +482,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: export
+                  simple: download
           accessor: id
     separatecontext: false
     view: |-
@@ -573,13 +573,13 @@ inputs:
 - key: url
   value: {}
   required: false
-  description: The URL of the imported file. If an entry ID is supplied, do
+  description: The URL of the uploaded file. If an entry ID is supplied, do
     not use this argument.
   playbookInputQuery:
 - key: entry_id
   value: {}
   required: false
-  description: The entry ID of the imported file. If a URL is supplied, do
+  description: The entry ID of the uploaded file. If a URL is supplied, do
     not use this argument.
   playbookInputQuery:
 - key: output_format
@@ -588,11 +588,11 @@ inputs:
   description: |
     The required output format.
   playbookInputQuery:
-- key: export_via
+- key: download_via
   value: {}
   required: true
   description: |
-    The method for exporting the resulted file, URL or war_room_entry
+    The method for downloading the resulted file, URL or war_room_entry
   playbookInputQuery:
 outputs:
 - contextPath: CloudConvert.Task.result.files.url
