@@ -107,7 +107,8 @@ class Client(BaseClient):
 
         while True:
             if '/issues' in url_suffix and 'updates' not in url_suffix:
-                demisto.debug(f'DEBUGDEBUG Client._paginate: calling {url_suffix} with {params}')
+                pass
+                # demisto.debug(f'DEBUGDEBUG Client._paginate: calling {url_suffix} with {params}')
             result = self._http_request(
                 method=method,
                 url_suffix=url_suffix,
@@ -119,7 +120,8 @@ class Client(BaseClient):
             data = result.get('data', [])
             if data is not None:
                 if '/issues' in url_suffix and 'updates' not in url_suffix:
-                    demisto.debug(f'DEBUGDEBUG Client._paginate: returning {len(data)} results')
+                    pass
+                    # demisto.debug(f'DEBUGDEBUG Client._paginate: returning {len(data)} results')
                 for a in data:
                     yield a
 
@@ -217,38 +219,39 @@ class Client(BaseClient):
         }
 
         r = self._paginate(
-            method='GET', url_suffix=f"/v1/issues/issues", params=params
+            method='GET', url_suffix="/v1/issues/issues", params=params
         )
         broken = False
         ret: List = []
         for i in r:
             if skip and not broken:
                 if 'id' not in i or 'created' not in i:
-                    demisto.debug(f'DEBUGDEBUG get_issues: skipping an incident that does not have id or created')
+                    # demisto.debug('DEBUGDEBUG get_issues: skipping an incident that does not have id or created')
                     continue
 
                 # fix created time to make sure precision is the same to microsecond with no rounding
                 i['created'] = timestamp_us_to_datestring_utc(datestring_to_timestamp_us(i['created']), DATE_FORMAT)
 
-                demisto.debug(f'DEBUGDEBUG get_issues: skip check is on loop: processing issue {i["id"]}')
+                # demisto.debug(f'DEBUGDEBUG get_issues: skip check is on loop: processing issue {i["id"]}')
                 if i['created'] != created_after:
-                    demisto.debug(f'DEBUGDEBUG get_issues: breaking as {i["id"]}  time different than created_after '
-                                  f'[{i["created"]} vs {created_after}]')
+                    # demisto.debug(f'DEBUGDEBUG get_issues: breaking as {i["id"]}  time different than created_after '
+                    #               f'[{i["created"]} vs {created_after}]')
                     ret.append(i)
                     broken = True
                 elif i['id'] == skip:
-                    demisto.debug(f'DEBUGDEBUG get_issues: breaking as found id {skip} (skipping this one)')
+                    # demisto.debug(f'DEBUGDEBUG get_issues: breaking as found id {skip} (skipping this one)')
                     broken = True
                 else:
-                    demisto.debug(f'DEBUGDEBUG get_issues: skipping possible dup incident {i["id"]}')
+                    pass
+                    # demisto.debug(f'DEBUGDEBUG get_issues: skipping possible dup incident {i["id"]}')
             else:
-                demisto.debug(f'DEBUGDEBUG get_issues: adding incident {i["id"]}')
+                # demisto.debug(f'DEBUGDEBUG get_issues: adding incident {i["id"]}')
                 ret.append(i)
             if len(ret) == max_issues:
-                demisto.debug(f'DEBUGDEBUG get_issues: got enough incidents ({max_issues}), exiting for cycle')
+                # demisto.debug(f'DEBUGDEBUG get_issues: got enough incidents ({max_issues}), exiting for cycle')
                 break
 
-        demisto.debug(f'DEBUGDEBUG get_issues: returning IDs: [{str([i["id"] for i in ret])}]')
+        # demisto.debug(f'DEBUGDEBUG get_issues: returning IDs: [{str([i["id"] for i in ret])}]')
         return ret
 
     def get_issue_by_id(self, issue_id: str) -> Dict[str, Any]:
@@ -308,7 +311,7 @@ class Client(BaseClient):
     def get_asset_details(self, asset_type: str, asset_id: str,
                           include: str = 'annotations,attributionReasons') -> Dict[str, Any]:
         data: Dict = {}
-        demisto.debug(f'DEBUGDEBUG get_asset_details: retrieving details for asset {asset_id} of type {asset_type}')
+        # demisto.debug(f'DEBUGDEBUG get_asset_details: retrieving details for asset {asset_id} of type {asset_type}')
         if asset_type == 'IpRange':
             data = self.get_iprange_by_id(
                 iprange_id=asset_id,
@@ -338,7 +341,7 @@ class Client(BaseClient):
         )
 
     def update_issue(self, issue_id: str, update_type: str, value: str) -> Dict[str, Any]:
-        demisto.debug(f'DEBUGDEBUG update_issue: {issue_id}, {update_type}, {value}')
+        # demisto.debug(f'DEBUGDEBUG update_issue: {issue_id}, {update_type}, {value}')
         data: Dict = {
             'updateType': update_type,
             'value': value
@@ -552,7 +555,7 @@ class Client(BaseClient):
                                 if (x := reg.get(f, None)):
                                     ml_feature_list.append(x)
 
-        demisto.debug(f'DEBUGDEBUG parse_asset_data: fetch_details is {fetch_details}, ml_features_list is {ml_feature_list!r}')
+        # demisto.debug(f'DEBUGDEBUG parse_asset_data: fetch_details is {fetch_details}, ml_features_list is {ml_feature_list!r}')
         if len(ml_feature_list) > 0:
             changed = True
         return assets, ml_feature_list, changed
@@ -656,7 +659,7 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> CommandResults:
             if DBOT_CONTEXT_PATH in c:
                 if isinstance(c[DBOT_CONTEXT_PATH], dict):
                     c[DBOT_CONTEXT_PATH]['Type'] = 'domainglob'
-                elif isinstance(c[DBOT_CONTEXT_PATH, list]):
+                elif isinstance(c[DBOT_CONTEXT_PATH], list):
                     for n, l in enumerate(c['CONTEXT_PATH']):
                         if isinstance(l, dict):
                             c[DBOT_CONTEXT_PATH][n]['Type'] = 'domainglob'
@@ -958,12 +961,12 @@ def fetch_incidents(client: Client, max_incidents: int,
         last_fetch = cast(int, last_fetch)
 
     latest_created_time = last_fetch
-    demisto.debug(
-        f'DEBUGDEBUG fetch_incidents: last_fetch is {last_fetch}'
-        f' [{timestamp_us_to_datestring_utc(latest_created_time, DATE_FORMAT)}]')
+    # demisto.debug(
+    # f'DEBUGDEBUG fetch_incidents: last_fetch is {last_fetch}'
+    # f' [{timestamp_us_to_datestring_utc(latest_created_time, DATE_FORMAT)}]')
 
     last_issue_id = last_run.get('last_issue_id', None)
-    demisto.debug(f'DEBUGDEBUG fetch_incidents: last_issue_id is {last_issue_id}')
+    # demisto.debug(f'DEBUGDEBUG fetch_incidents: last_issue_id is {last_issue_id}')
     latest_issue_id: Optional[str] = None
 
     incidents: List[Dict[str, Any]] = []
@@ -990,7 +993,7 @@ def fetch_incidents(client: Client, max_incidents: int,
         progress_status=_progress_status, activity_status=_activity_status, tag=tag,
         created_after=created_after, sort='created', skip=cast(str, last_issue_id)
     )
-    demisto.debug(f'DEBUGDEBUG fetch_incidents: created_after is {created_after}')
+    # demisto.debug(f'DEBUGDEBUG fetch_incidents: created_after is {created_after}')
 
     for issue in issues:
         ml_feature_list: List[str] = []
@@ -999,13 +1002,13 @@ def fetch_incidents(client: Client, max_incidents: int,
             continue
         incident_created_time = datestring_to_timestamp_us(issue['created'])
 
-        demisto.debug(
-            f'DEBUGDEBUG fetch_incidents: loop: issue id is {issue["id"]} created at '
-            f'{issue["created"]} and incident_created_time is {incident_created_time} '
-            f'[{timestamp_us_to_datestring_utc(incident_created_time, DATE_FORMAT)}]')
+        # demisto.debug(
+        #     f'DEBUGDEBUG fetch_incidents: loop: issue id is {issue["id"]} created at '
+        #     f'{issue["created"]} and incident_created_time is {incident_created_time} '
+        #     f'[{timestamp_us_to_datestring_utc(incident_created_time, DATE_FORMAT)}]')
         if last_fetch:
             if incident_created_time < last_fetch:
-                demisto.debug(f'DEBUGDEBUG fetch_incidents loop: skipping issue id {issue["id"]}')
+                # demisto.debug(f'DEBUGDEBUG fetch_incidents loop: skipping issue id {issue["id"]}')
                 continue
         incident_name = issue['headline'] if 'headline' in issue else issue['id']
 
@@ -1041,7 +1044,7 @@ def fetch_incidents(client: Client, max_incidents: int,
                     if (x := geolocation.get(f, None)):
                         ml_feature_list.append(x)
 
-        demisto.debug(f'DEBUGDEBUG fetch_incidents: ml_features_list is {ml_feature_list!r}')
+        # demisto.debug(f'DEBUGDEBUG fetch_incidents: ml_features_list is {ml_feature_list!r}')
         # dedup, sort and join ml feature list
         issue['ml_features'] = ' '.join(sorted(list(set(ml_feature_list))))
         incident = {
@@ -1055,23 +1058,23 @@ def fetch_incidents(client: Client, max_incidents: int,
         incidents.append(incident)
         if incident_created_time > latest_created_time:
             latest_created_time = incident_created_time
-            demisto.debug(
-                f'DEBUGDEBUG fetch_incidents loop: issue id is {issue["id"]} and '
-                f' updating latest_created_time to {latest_created_time} '
-                f'[{timestamp_us_to_datestring_utc(latest_created_time, DATE_FORMAT)}]')
+            # demisto.debug(
+            #     f'DEBUGDEBUG fetch_incidents loop: issue id is {issue["id"]} and '
+            #     f' updating latest_created_time to {latest_created_time} '
+            #     f'[{timestamp_us_to_datestring_utc(latest_created_time, DATE_FORMAT)}]')
 
     next_run = {
         'last_fetch': latest_created_time,
         'last_issue_id': latest_issue_id if latest_issue_id else last_issue_id}
-    demisto.debug(f'DEBUGDEBUG fetch_incidents: next_run is {next_run} ({timestamp_us_to_datestring_utc(latest_created_time)}')
+    # demisto.debug(f'DEBUGDEBUG fetch_incidents: next_run is {next_run} ({timestamp_us_to_datestring_utc(latest_created_time)}')
     return next_run, incidents
 
 
 def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: bool = False,
                             incoming_tags: Optional[List[str]] = [], fetch_details: bool = False) -> GetRemoteDataResponse:
     parsed_args = GetRemoteDataArgs(args)
-    demisto.debug(f'DEBUGDEBUG get_remote_data_command invoked on incident {parsed_args.remote_incident_id} '
-                  f'with last_update: {parsed_args.last_update}')
+    # demisto.debug(f'DEBUGDEBUG get_remote_data_command invoked on incident {parsed_args.remote_incident_id} '
+    #               f'with last_update: {parsed_args.last_update}')
     issue_updates: List[Dict[str, Any]] = sorted(client.get_issue_updates(issue_id=parsed_args.remote_incident_id,
                                                                           update_types=None,
                                                                           created_after=parsed_args.last_update),
@@ -1170,7 +1173,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
     if len(incident_updates) > 0 or len(new_entries) > 0:
         incident_updates['id'] = parsed_args.remote_incident_id
 
-    demisto.debug(f'DEBUGDEBUG get-remote-data returning {json.dumps(incident_updates)} and {json.dumps(new_entries)}')
+    # demisto.debug(f'DEBUGDEBUG get-remote-data returning {json.dumps(incident_updates)} and {json.dumps(new_entries)}')
     return GetRemoteDataResponse(incident_updates, new_entries)
 
 
@@ -1259,13 +1262,15 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], sync_owne
                 )
 
         if changed:
-            demisto.debug(f'DEBUGDEBUG update-remote-system Updating on remote ID [{remote_incident_id}]')
+            pass
+            # demisto.debug(f'DEBUGDEBUG update-remote-system Updating on remote ID [{remote_incident_id}]')
         else:
-            demisto.debug(f'DEBUGDEBUG update-remote-system Skipping update on remote ID [{remote_incident_id}] [no changes]')
+            pass
+            # demisto.debug(f'DEBUGDEBUG update-remote-system Skipping update on remote ID [{remote_incident_id}] [no changes]')
 
     except Exception as e:
-        demisto.debug(f"DEBUGDEBUG update-remote-system Error in Expanse outgoing mirror for incident {remote_incident_id} \n"
-                      f"Error message: {str(e)}")
+        # demisto.debug(f"DEBUGDEBUG update-remote-system Error in Expanse outgoing mirror for incident {remote_incident_id} \n"
+        #               f"Error message: {str(e)}")
         raise e
 
     return remote_incident_id
