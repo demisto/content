@@ -20,8 +20,7 @@ runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
-tags:
-- expanse
+tags: []
 type: python
 fromversion: 5.0.0
 tests:

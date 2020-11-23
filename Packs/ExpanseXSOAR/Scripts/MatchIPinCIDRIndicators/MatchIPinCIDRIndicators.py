@@ -1,5 +1,6 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import demistomock as demisto
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerUserPython import *  # noqa
 """MatchIPinCIDRIndicators
 
 """
@@ -33,7 +34,7 @@ def match_ip_in_cidr_indicators(args: Dict[str, Any]) -> CommandResults:
         ranges.append(str(ipaddress.ip_network(f'{ip}/{r}', strict=False)))
 
     joinexpr = '\" or value:\"'.join(ranges)
-    query = f'type:CIDR {tagquery} and ( value:"{joinexpr}")'
+    query = f'type:CIDR{tagquery} and ( value:"{joinexpr}")'
 
     indicators = demisto.executeCommand("findIndicators", {"query": query, 'size': 32})
     outputs = list()
@@ -59,9 +60,9 @@ def match_ip_in_cidr_indicators(args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         outputs_prefix='MatchingCIDRIndicator',
         outputs_key_field='value',
-        outputs=outputs
+        outputs=outputs,
+        ignore_auto_extract=True
     )
-    # need to add IgnoreAutoExtract
 
 
 ''' MAIN FUNCTION '''
