@@ -446,8 +446,8 @@ tasks:
       brand: ""
       id: 9176e849-755c-4912-89de-5bc41fbfa43c
       iscommand: false
-      name: 689a2563-d16f-43fc-8ff9-9f60d6279444
-      playbookId: 689a2563-d16f-43fc-8ff9-9f60d6279444
+      name: Wait Until Windows Host Online
+      playbookName: Wait Until Windows Host Online
       type: playbook
       version: -1
       description: ''
