@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 import requests
+from urllib.parse import urlparse
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -624,32 +625,6 @@ def get_blacklist_group_id():
 
     return response
 
-def create_new_endpoint():
-
-    attr_map = demisto.args().get('attributes_map')
-    mac_address = demisto.args().get('mac_address')
-    if not is_mac_address(mac_address):
-        return_error('Please enter a valid mac address')
-    attr_map = json.loads(attr_map)
-    data = {
-        "ERSEndPoint": {
-            "mac": mac_address,
-            "customAttributes": {
-                "customAttributes": attr_map
-            }
-        }
-    }
-
-    api_endpoint = '/ers/config/endpoint'
-    res = http_request('POST', api_endpoint, data=json.dumps(data))
-    endpoint_context = {
-        'MACAddress': mac_address,
-    }
-
-    context = {
-        'CiscoISE.Endpoint(val.Name && val.Name === obj.Name)': endpoint_context
-    }
-    return_outputs(f'Endpoint "{mac_address}" has been created successfully', context)
 
 def get_blacklist_endpoints_request():
 
@@ -685,6 +660,128 @@ def get_blacklist_endpoints():
     }
 
     return_outputs(tableToMarkdown('CiscoISE Blacklist Endpoints', data, removeNull=True), context, endpoints)
+
+
+def get_endpoint_id_by_name(mac_address=None):
+    """
+    Returns endpoint id by specific mac address
+    Only compatible with Cisco ISE versions 2.3
+    """
+    if not is_mac_address(mac_address):
+        return_error('Given MAC address is invalid')
+
+    api_endpoint = f'/ers/config/endpoint/name/{mac_address}'
+    return http_request('GET', api_endpoint, '')
+
+
+def get_endpoint_id_by_name_command():
+
+    mac_address = demisto.args().get('macAddress')
+
+    if not is_mac_address(mac_address):
+        return_error('Given MAC address is invalid')
+
+    endpoint_data = get_endpoint_id_by_name(mac_address)
+    endpoint_id = endpoint_data.get('ERSEndPoint', {}).get('id', None)
+
+    entry_context = {
+        'Endpoint(val.ID === obj.ID)': {
+            'ID': endpoint_id,
+            'MACAddress': mac_address
+        }
+    }
+
+    return_outputs(f'The endpoint ID is: {endpoint_id}', entry_context, endpoint_id)
+
+
+def get_node_details(name=None):
+    """
+    Returns details for the given Cisco ISE node
+    """
+    if not name:
+        return_error('Given Cisco ISE node is invalid')
+
+    api_endpoint = f'/ers/config/node/name/{name}'
+    return http_request('GET', api_endpoint, '')
+
+
+def get_all_nodes_command():
+    """
+    Returns all nodes in the Cisco ISE Deployment
+    Also sets isLocalIstance in the output
+    """
+
+    instance_ip = urlparse(BASE_URL).netloc
+    try:
+        instance_ip = socket.gethostbyname(instance_ip)
+    except Exception as e:
+        LOG("Failed to get ip address of configured Cisco ISE instance, %s" % (e))
+
+    data = []
+    api_endpoint = '/ers/config/node'
+    response = http_request('GET', api_endpoint)
+    results = response.get('SearchResult', {})
+
+    if results.get('total', 0) < 1:
+        demisto.results("No Nodes were found")
+
+    node_data = results.get('resources', [])
+    for node in node_data:
+        is_local_istance = False
+        name = node.get('name')
+        node_details = get_node_details(name).get('Node', {})
+        ip = node_details.get('ipAddress')
+        if ip == instance_ip:
+            is_local_istance = True
+
+        data.append({
+            'Name': name,
+            'ip': ip,
+            'isLocalIstance': is_local_istance,
+            # if false then standalone mode.. ie single node
+            'inDeployment': node_details.get('inDeployment'),
+            # primary means active node
+            'primaryPapNode': node_details.get('primaryPapNode'),
+        })
+
+    context = {
+        'CiscoISE.NodesData': data
+    }
+
+    return_outputs(tableToMarkdown('CiscoISE deployment nodes', data, removeNull=True), context)
+
+
+def create_new_endpoint_command():
+    """
+    Creates a new Endpoint in Cisco ISE with the given
+    Mac address and Custom attributes
+    """
+
+    attr_map = demisto.args().get('attributes_map')
+    mac_address = demisto.args().get('mac_address')
+    if not is_mac_address(mac_address):
+        return_error('Please enter a valid mac address')
+    if attr_map is not None:
+        attr_map = json.loads(attr_map)
+    data = {
+        "ERSEndPoint": {
+            "mac": mac_address,
+            "customAttributes": {
+                "customAttributes": attr_map
+            }
+        }
+    }
+
+    api_endpoint = '/ers/config/endpoint'
+    http_request('POST', api_endpoint, data=json.dumps(data))
+    endpoint_context = {
+        'MACAddress': mac_address,
+    }
+
+    context = {
+        'CiscoISE.Endpoint(val.Name && val.Name === obj.Name)': endpoint_context
+    }
+    return_outputs(f'Endpoint "{mac_address}" has been created successfully', context)
 
 
 ''' EXECUTION CODE '''
@@ -725,7 +822,11 @@ def main():
         elif demisto.command() == 'cisco-ise-get-blacklist-endpoints':
             get_blacklist_endpoints()
         elif demisto.command() == 'cisco-ise-create-endpoint':
-            create_new_endpoint()
+            create_new_endpoint_command()
+        elif demisto.command() == 'cisco-ise-get-nodes':
+            get_all_nodes_command()
+        elif demisto.command() == 'cisco-ise-get-endpoint-id-by-name':
+            get_endpoint_id_by_name_command()
 
     except Exception as e:
         return_error(str(e))

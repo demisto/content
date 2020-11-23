@@ -44,13 +44,15 @@ There is no context output for this command.
 
 #### Human Readable Output
 ### Reporting Status:
-|integration_name|ise|
-|iot_cloud_response|received: yes|
-|message|successfully updated 100 devices|
-|playbook_name|Increment Export to Cisco ISE - PANW IoT 3rd Party Integration|
-|status|success|
-|timestamp|1606106283993|
-|type|device|
+|||
+| --- | --- |
+| integration_name | ise |
+| iot_cloud_response | received: yes |
+| message | successfully updated 100 devices |
+| playbook_name | Increment Export to Cisco ISE - PANW IoT 3rd Party Integration |
+| status | success |
+| timestamp | 1606106283993 |
+| type | device |
 
 
 ### panw-iot-3rd-party-get-single-asset
@@ -115,7 +117,8 @@ PANW IoT 3rd Party get asset list - Returns a list of assets for the specified a
 
 #### Human Readable Output
 ### Asset import summary:
-
+|||
+| --- | --- |
 | asset type | Device |
 | assets pulled | 11 |
 
