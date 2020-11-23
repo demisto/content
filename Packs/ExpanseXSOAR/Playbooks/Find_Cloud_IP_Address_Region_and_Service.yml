@@ -125,6 +125,7 @@ tasks:
       name: Cloud Provider Selector
       type: condition
       version: -1
+      description: Select the appropriate branch depending on the Cloud Provider
     taskid: e689a6a5-2163-4dfd-80e2-e3f567586a12
     timertriggers: []
     type: condition
