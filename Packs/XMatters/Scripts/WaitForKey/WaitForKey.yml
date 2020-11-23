@@ -1,0 +1,26 @@
+commonfields:
+  id: 32a144cd-24a5-412b-8275-76881980dd35
+  version: 9
+vcShouldKeepItemLegacyProdMachine: false
+name: WaitForKey
+script: ''
+type: python
+tags: []
+comment: 'A simple loop to inspect the context for a specific key. If the key is not
+  found after "iterations" loops, the script exits with a message. '
+enabled: true
+args:
+- name: context_key
+  required: true
+  description: The context key to wait for
+- name: iterations
+  required: true
+  default: true
+  description: The max number of iterations to loop before bailing.
+  defaultValue: "10"
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.8.6.13358
+runas: DBotWeakRole

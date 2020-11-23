@@ -1,12 +1,14 @@
 commonfields:
   id: 3dac9522-11c1-4251-8deb-a96b9a554c39
-  version: 12
+  version: 16
 vcShouldKeepItemLegacyProdMachine: false
 name: CloseTaskSetContext
 script: ''
 type: python
 tags:
 - Utilities
+comment: 'Close a task with the closeComplete command, but then also add the "comments"
+  to the incident context. '
 enabled: true
 args:
 - name: entry_id
@@ -16,10 +18,14 @@ args:
   defaultValue: ${lastCompletedTaskEntries}
 - name: context_key
   required: true
+  description: The context key to place the comments
 - name: comments
+  required: true
+  description: The comments to place into the context
 scripttarget: 0
 subtype: python3
 pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.8.6.13358
 runas: DBotWeakRole
+

@@ -1,5 +1,5 @@
 id: deeb234b-0c7e-4f09-83fb-e2e10fb8f608
-version: 134
+version: 146
 vcShouldKeepItemLegacyProdMachine: false
 name: xMatters - Wait for Response
 description: Trigger an xMatters workflow to notify a user for a response.
@@ -89,7 +89,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "10"
     separatecontext: false
     view: |-
       {
@@ -208,18 +208,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "7":
-    id: "7"
-    taskid: be5c9111-d5fd-4085-8e83-df76fb86376e
+  "10":
+    id: "10"
+    taskid: 70f9468c-4a46-4aab-835a-32cd2dfdf2bd
     type: regular
     task:
-      id: be5c9111-d5fd-4085-8e83-df76fb86376e
+      id: 70f9468c-4a46-4aab-835a-32cd2dfdf2bd
       version: -1
-      name: Print to wait
-      description: "Pretty-print the contents of the playbook context. \nThis seems
-        to properly set the XMatters.UserResponseOut value in the context after the
-        \ CloseTaskSetContext command."
-      scriptName: PrintContext
+      name: WaitForKey
+      scriptName: WaitForKey
       type: regular
       iscommand: false
       brand: ""
@@ -227,8 +224,9 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      outputformat:
-        simple: json
+      context_key:
+        simple: XMatters.UserResponseOut
+      iterations: {}
     separatecontext: false
     view: |-
       {
