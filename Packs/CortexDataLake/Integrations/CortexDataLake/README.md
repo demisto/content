@@ -70,7 +70,8 @@ Runs a query on the Cortex logging service.
 | --- | --- | --- |
 | query | A free-text SQL query. For example, query="SELECT * FROM \`firewall.traffic\` limit 10". There are multiple tables in Loggings, for example: threat, traffic, and so on. Refer to the Cortex Logging service schema reference for the full list. | Optional |
 | limit | The number of logs to return. Default is 10 | Optional | 
- 
+| transform_results | If set to No query results are not mapped into the standard command context. Default is Yes. | Optional | 
+
 
 
 ##### Context Output
