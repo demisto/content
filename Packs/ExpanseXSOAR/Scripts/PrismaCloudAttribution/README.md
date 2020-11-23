@@ -6,8 +6,8 @@ Prisma Cloud Attribution
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Tags | |
-| Demisto Version | 6.0.0 |
+| Tags |  |
+| Demisto Version | 5.0.0 |
 
 ## Inputs
 ---

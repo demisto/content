@@ -49,14 +49,6 @@ def util_load_json(path):
 
 
 def test_match_ip_in_cidr_indicators(mocker):
-    """
-    Given:
-        - list of prisma cloud assets as returned by redlock-search-config
-    When
-        - extracting a subset of fields from Prisma Cloud asset list
-    Then
-        - the expected subset of fields is returned to Context
-    """
     mock_assets = util_load_json('test_data/assets.json')
 
     result = attribution_command({

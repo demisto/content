@@ -47,16 +47,6 @@ def util_load_json(path):
 
 
 def test_match_ip_in_cidr_indicators(mocker):
-    """
-    Given:
-        - an IP address
-        - indicator tags to search for
-    When
-        - Finding longest matching CIDR indicator that contains the provided IP address
-    Then
-        - proper query i constructed to search for indicators with different prefix sizes and requested tags
-        - indicator with longest match is found and returned to Context
-    """
     mock_indicator = util_load_json('test_data/indicator.json')
 
     def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
