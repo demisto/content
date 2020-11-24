@@ -239,6 +239,7 @@ script:
             }
 
             if (params.fetchRecords && s.records) {
+                logDebug("s.records is: {0}".format((JSON.stringify(s.records))));
                 for (var i=0; i<s.records.length; i++) {
                     var incident = {name: 'Incident from SumoLogic',
                         details: JSON.stringify(s.records[i]), labels: [], rawJSON: JSON.stringify(s.records[i])};
@@ -247,6 +248,9 @@ script:
                         if (props[j] !== '_raw') {
                             incident.labels.push({type: props[j], value: s.records[i][props[j]]});
                         }
+                    }
+                    if (parseInt(s.records[i]._receipttime) >= currentFetch){
+                        currentFetch = parseInt(s.records[i]._receipttime) + 1
                     }
                     incidents.push(incident);
                 }
