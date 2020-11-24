@@ -105,7 +105,8 @@ def generate_report_malicious_site_human_readable(response_lines_array):
     elif response_status_code == MALICIOUS_REPORT_ERROR:
         human_readable = "### Takedown not submitted\n " \
                          "An error has occurred while submitting your takedown.\n" \
-                         "Error is: {}".format(" ".join(response_lines_array))
+                         "Error is: {}. It could be that there are no takedown credits left."\
+            .format(" ".join(response_lines_array))
     return human_readable
 
 
@@ -489,7 +490,7 @@ def test_module():
     """
     test_result = report_attack("https://www.test.com", "test", True)
     if test_result[0] != MALICIOUS_REPORT_SUCCESS:
-        raise Exception("Test request failed.")
+        raise Exception(f"Test request failed. Expected {MALICIOUS_REPORT_SUCCESS}, got {test_result[0]}")
     demisto.results("ok")
 
 

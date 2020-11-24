@@ -1,0 +1,5 @@
+!netcraft-report-attack attack=http://examp1eb4nk.com comment=Phishing
+!netcraft-get-takedown-info id=2071408
+!netcraft-get-takedown-notes takedown_id=493542
+!netcraft-add-notes-to-takedown note=Phishing takedown_id=493542
+!netcraft-escalate-takedown takedown_id=493542
