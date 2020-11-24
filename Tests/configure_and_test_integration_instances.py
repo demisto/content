@@ -157,7 +157,7 @@ class Build:
         self.tests_to_run = self.fetch_tests_list(options.tests_to_run)
         self.content_root = options.content_root
         self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
-        self.service_account = options.service_account if options.service_account else None
+        self.service_account = options.service_account
 
     @staticmethod
     def fetch_tests_list(tests_to_run_path: str):
@@ -1054,7 +1054,7 @@ def nightly_install_packs(build, install_method=install_all_content_packs, pack_
     for thread_index, server in enumerate(build.servers):
         kwargs = {'client': server.client, 'host': server.host}
         if service_account:
-            kwargs['service_account'] = build.service_account
+            kwargs['service_account'] = service_account
         if pack_path:
             kwargs['pack_path'] = pack_path
         threads_list.append(Thread(target=install_method, kwargs=kwargs))

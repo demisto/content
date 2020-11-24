@@ -17,7 +17,8 @@ from typing import List
 from Tests.Marketplace.marketplace_services import PACKS_FULL_PATH, IGNORED_FILES, GCPConfig, init_storage_client
 
 PACK_METADATA_FILE = 'pack_metadata.json'
-LATEST_VER_REGEX = re.compile(fr'^{GCPConfig.STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]+\.zip$')
+PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
+                                     r'+\.zip$')
 SUCCESS_FLAG = True
 
 
@@ -389,32 +390,31 @@ def get_latest_version_from_bucket(pack_id: str, production_bucket: Bucket) -> s
 
     """
     pack_bucket_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, pack_id)
-    pack_versions_paths = [f.name for f in production_bucket.list_blobs(prefix=pack_bucket_path) if
+    # Adding the '/' in the end of the prefix to search for the exact pack id
+    pack_versions_paths = [f.name for f in production_bucket.list_blobs(prefix=f'{pack_bucket_path}/') if
                            f.name.endswith('.zip')]
-    pack_versions = [LooseVersion(LATEST_VER_REGEX.findall(path)[0]) for path in pack_versions_paths]
+    pack_versions = [LooseVersion(PACK_PATH_VERSION_REGEX.findall(path)[0]) for path in pack_versions_paths]
     pack_latest_version = max(pack_versions).vstring
     return pack_latest_version
 
 
-def add_pack_to_installation_request(pack_id: str, pack_version: str, installation_request_body: List[dict]):
+def get_pack_installation_request_data(pack_id: str, pack_version: str):
     """
-    Adds a pack to the pack_ids variable which is given to the search_and_install_packs_and_their_dependencies
-    function. The request must have the ID and Version.
+    Returns the installation request data of a given pack and its version. The request must have the ID and Version.
 
     :param pack_id: Id of the pack to add.
     :param pack_version: Version of the pack to add.
-    :param installation_request_body: The current pack_ids object to be modified.
-    :return: Updated installation_request_body object.
+    :return: The request data part of the pack
     """
-    installation_request_body.append({
+    return {
         'id': pack_id,
         'version': pack_version
-    })
+    }
 
 
 def install_all_content_packs_for_nightly(client: demisto_client, host: str, service_account: str):
-    """
-    Iterates over the packs currently located in the Packs directory. Wrapper for install_packs.
+    """ Iterates over the packs currently located in the Packs directory. Wrapper for install_packs.
+    Retrieving the latest version of each pack from the production bucket.
 
     :param client: Demisto-py client to connect to the server.
     :param host: FQDN of the server.
@@ -426,23 +426,25 @@ def install_all_content_packs_for_nightly(client: demisto_client, host: str, ser
     # Initiate the GCS client and get the production bucket
     storage_client = init_storage_client(service_account)
     production_bucket = storage_client.bucket(GCPConfig.PRODUCTION_BUCKET)
-    logging.info("Installing all content packs for nightly flow")
+    logging.debug(f"Installing all content packs for nightly flow in server {host}")
 
     for pack_id in os.listdir(PACKS_FULL_PATH):
         if pack_id not in IGNORED_FILES:
             pack_version = get_latest_version_from_bucket(pack_id, production_bucket)
-            add_pack_to_installation_request(pack_id, pack_version, all_packs)
+            all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
     install_packs(client, host, all_packs, is_nightly=True)
 
 
 def install_all_content_packs(client: demisto_client, host: str):
-    """
-    Iterates over the packs currently located in the Packs directory. Wrapper for install_packs.
+    """ Iterates over the packs currently located in the Packs directory. Wrapper for install_packs.
+    Retrieving the latest version of each pack from the metadata file in content repo.
+
     :param client: Demisto-py client to connect to the server.
     :param host: FQDN of the server.
     :return: None. Prints the response from the server in the build.
     """
     all_packs = []
+    logging.debug(f"Installing all content packs in server {host}")
 
     for pack_id in os.listdir(PACKS_FULL_PATH):
         if pack_id not in IGNORED_FILES:
@@ -450,7 +452,7 @@ def install_all_content_packs(client: demisto_client, host: str):
             with open(metadata_path, 'r') as json_file:
                 pack_metadata = json.load(json_file)
                 pack_version = pack_metadata.get('currentVersion')
-            add_pack_to_installation_request(pack_id, pack_version, all_packs)
+            all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
     install_packs(client, host, all_packs)
 
 

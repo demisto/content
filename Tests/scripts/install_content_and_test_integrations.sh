@@ -6,9 +6,10 @@ set -e
 SECRET_CONF_PATH=$(cat secret_conf_path)
 CONF_PATH="./Tests/conf.json"
 
-[ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+IS_NIGHTLY=false
 
-if [ "$IS_NIGHTLY" = true ]; then
+if [ -n "${NIGHTLY}" ]; then
+  IS_NIGHTLY=true
   GCS_PATH=$(mktemp)
   echo $GCS_MARKET_KEY > $GCS_PATH
 fi

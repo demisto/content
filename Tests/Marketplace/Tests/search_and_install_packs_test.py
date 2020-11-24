@@ -283,7 +283,11 @@ def test_install_nightly_packs_endless_loop(mocker):
     script.install_nightly_packs(client, 'my_host', packs_to_install)
 
 
-def test_latest_ver_regex():
+@pytest.mark.parametrize('path, latest_version', [
+    (f'{GCPConfig.STORAGE_BASE_PATH}/TestPack/1.0.1/TestPack.zip', '1.0.1'),
+    (f'{GCPConfig.STORAGE_BASE_PATH}/Blockade.io/1.0.1/Blockade.io.zip', '1.0.1')
+])
+def test_pack_path_version_regex(path, latest_version):
     """
        Given:
            - A path in GCS of a zipped pack.
@@ -292,9 +296,7 @@ def test_latest_ver_regex():
        Then:
            - Validate that the extracted version is the expected version.
    """
-    assert script.LATEST_VER_REGEX.findall(f'{GCPConfig.STORAGE_BASE_PATH}/TestPack/1.0.1/TestPack.zip')[0] == '1.0.1'
-    assert script.LATEST_VER_REGEX.findall(f'{GCPConfig.STORAGE_BASE_PATH}/Blockade.io/1.0.1/Blockade.io.zip')[0] ==\
-           '1.0.1'
+    assert script.PACK_PATH_VERSION_REGEX.findall(path)[0] == latest_version
 
 
 def test_get_latest_version_from_bucket(mocker):

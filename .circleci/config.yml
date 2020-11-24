@@ -415,6 +415,13 @@ references:
         context: nightly_env
     - Create Instances:
         context: nightly_env
+    - Run Unit Testing And Lint:
+        context: nightly_env
+        requires:
+          - Setup Environment
+    - Run Validations:
+        requires:
+          - Setup Environment
     - Server Master:
         requires:
           - Create Instances
