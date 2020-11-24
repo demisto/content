@@ -7,7 +7,7 @@ Print  Expanse Attribution Suggestions
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Demisto Version | 6.0.0 |
+| Demisto Version | 5.0.0 |
 
 ## Inputs
 ---

@@ -206,7 +206,7 @@ def expanse_print_suggestions(args: Dict[str, Any]) -> CommandResults:
         "The enrichment correlates log information from Firewalls with UserID enabled. If users from within your corporate"
         " network or **Prisma Access** are connecting to this service, they will appear in the following table.\n\n"
     )
-    if expanse_users:
+    if expanse_users and isinstance(expanse_users, list):
         for n, u in enumerate(expanse_users):
             if not isinstance(u, dict):
                 continue
@@ -229,17 +229,22 @@ def expanse_print_suggestions(args: Dict[str, Any]) -> CommandResults:
         md += "*No user evidence found in logs.*\n"
     md += "\n\n"
 
-    md += "## Top public IPs communicating to this service\n\n"
+    md += "## Top IPs communicating to this service\n\n"
     md += (
         "The enrichment correlates log information from Firewalls that terminate connections on this service. If any firewall"
-        " that is sending logs to Panorama, Cortex Data lake or Splunk is seeing traffic to this service from external networks,"
+        " that is sending logs to Panorama, Cortex Data lake or Splunk is seeing traffic to this service from any network,"
         " the information will be reported. The top talkers that are connecting to this service are displayed in the following"
         " table.\n\n"
     )
-    if expanse_ips:
-        md += tableToMarkdown("Top public IPs communicating to this service", expanse_ips, headerTransform=pascalToSpace)
+    if expanse_ips and isinstance(expanse_ips, list) and all(isinstance(x, dict) for x in expanse_ips):
+        md += tableToMarkdown(
+            name="Top IPs communicating to this service",
+            t=expanse_ips,
+            headers=["ip", "internal", "sightings"],
+            headerTransform=pascalToSpace
+        )
     else:
-        md += "*No public IP evidence found in logs.*\n"
+        md += "*No IP evidence found in logs.*\n"
     md += "\n\n"
 
     md += "## PAN-OS Firewalls with sightings\n\n"
@@ -248,8 +253,13 @@ def expanse_print_suggestions(args: Dict[str, Any]) -> CommandResults:
         " that is sending logs to Panorama, Cortex Data lake or Splunk is seeing traffic to this service, they will be reported"
         " in the following table.\n\n"
     )
-    if expanse_devices:
-        md += tableToMarkdown("PAN-OS Firewalls", expanse_devices, headerTransform=pascalToSpace)
+    if expanse_devices and isinstance(expanse_devices, list) and all(isinstance(x, dict) for x in expanse_devices):
+        md += tableToMarkdown(
+            name="PAN-OS Firewalls",
+            t=expanse_devices,
+            headers=["serial", "vsys", "device-group", "exposing_service", "expanse-tag", "sightings"],
+            headerTransform=pascalToSpace
+        )
         md += (
             "(*) ***exposing_service*** *means that Firewall logs were found where the destination IP:port corresponds to this"
             " service, and the source is a non-private IP. Such Firewalls are likely to be protecting the service.*"
@@ -260,10 +270,10 @@ def expanse_print_suggestions(args: Dict[str, Any]) -> CommandResults:
 
     md += "## Prisma Cloud Inventory\n\n"
     md += (
-        "The enrichment correlates asset information from Prisma Cloud inventory, searching for assets that own the IP addres or"
+        "The enrichment correlates asset information from Prisma Cloud inventory, searching for assets that own the IP address or"
         " the FQDN. If found, the cloud asset details are reported in the following table.\n\n"
     )
-    if prisma_cloud_assets:
+    if prisma_cloud_assets and isinstance(prisma_cloud_assets, list) and all(isinstance(x, dict) for x in prisma_cloud_assets):
         md += tableToMarkdown(
             name="Asset information from Prisma Cloud inventory",
             t=prisma_cloud_assets,
