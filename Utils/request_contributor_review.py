@@ -75,12 +75,11 @@ def tag_user_on_pr(reviewers, pr_number, pack, pack_files, github_token=None, ve
     reviewers_comment = "\n".join({f"- @{r}" for r in reviewers})
     pack_files_comment = "\n".join({f for f in pack_files})
 
-    f"### Your contributed pack has been modified. Please review the changes.\n"
     comment_body = {
-        "body":  f"### Your contributed {pack} {PR_COMMENT_PREFIX}\n"
-                 f"{pack_files_comment}\n"
-                 f" Please review the changes.\n"
-                 f"{reviewers_comment}"
+        "body": f"### Your contributed {pack} {PR_COMMENT_PREFIX}\n"
+                f"{pack_files_comment}\n"
+                f" Please review the changes.\n"
+                f"{reviewers_comment}"
     }
 
     response = requests.post(comments_endpoint, headers=headers, verify=verify_ssl, json=comment_body)
