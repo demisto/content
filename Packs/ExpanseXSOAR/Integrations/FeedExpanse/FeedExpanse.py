@@ -82,7 +82,6 @@ class Client(BaseClient):
         next_url: Optional[str] = None
 
         while True:
-            demisto.debug(f"Calling: {next_url}")
             result = self._http_request(
                 method=method,
                 url_suffix=url_suffix,
