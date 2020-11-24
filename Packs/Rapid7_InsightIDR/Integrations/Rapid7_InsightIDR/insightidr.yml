@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: rapid7_insightidr
+  id: Rapid7 InsightIDR
   version: -1
 configuration:
 - display: Insight cloud server region (i.e EU)
@@ -30,8 +30,8 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: Max number of alerts per fetch. Defaults to 20, max is 1000.
-  defaultvalue: '20'
+- additionalinfo: Max number of alerts per fetch. Default is 50.
+  defaultvalue: '50'
   display: Fetch Limit
   name: max_fetch
   required: false
@@ -44,14 +44,14 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: 'Cloud-based SIEM '
+description: 'Rapid7 InsightIDR is a Cloud-Based SIEM that detect and respond to security incidents.'
 display: Rapid7 InsightIDR
-name: rapid7_insightidr
+name: Rapid7 InsightIDR
 script:
   commands:
   - arguments:
     - default: false
-      description: An optional time range string (ie 1 week, 1 day)
+      description: An optional time range string (i.e 1 week, 1 day)
       isArray: false
       name: time_range
       required: false
@@ -510,7 +510,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: An optional time range string (ie 1 week, 1 day) - While using
+      description: An optional time range string (i.e 1 week, 1 day) - While using
         this parameter, start_time and end_time isn't needed
       isArray: false
       name: time_range
@@ -570,7 +570,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: An optional time range string (ie 1 week, 1 day) - While using
+      description: An optional time range string (i.e 1 week, 1 day) - While using
         this parameter, start_time and end_time isn't needed
       isArray: false
       name: time_range

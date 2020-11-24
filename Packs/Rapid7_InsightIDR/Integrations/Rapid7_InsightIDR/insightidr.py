@@ -708,7 +708,7 @@ def fetch_incidents(client: Client,
         last_run(Dict[str, int]): Dict with last_fetch object,
                                   saving the last fetch time(in millisecond timestamp)
         first_fetch_time: Dict with first fetch time in str (ex: 3 days ago) need to be parsed
-        max_fetch(str): Max number of alerts per fetch. Defaults to 20, max is 1000
+        max_fetch(str): Max number of alerts per fetch. Default is 50
     Returns:
         Tuple of next_run (millisecond timestamp) and the incidents list
     """
@@ -722,7 +722,7 @@ def fetch_incidents(client: Client,
     incidents = []
     next_run = last_fetch
 
-    size = int(max_fetch)
+    size = int(max_fetch) if max_fetch else 50
     params = {'start_time': last_fetch.strftime(DATE_FORMAT),
               'size': size}
 

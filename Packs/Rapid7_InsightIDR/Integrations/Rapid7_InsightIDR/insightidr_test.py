@@ -1,6 +1,7 @@
 """InsightIDR Integration for Cortex XSOAR - Unit Tests file"""
 import io
 import json
+from CommonServerPython import *
 
 REGION = 'us'
 
@@ -422,14 +423,26 @@ def test_fetch_incidents(requests_mock) -> None:
         proxy=False
     )
 
-    last_run = {'last_fetch': None}
+    last_fetch_timestamp = parse_date_range('1 day', to_timestamp=True)[0]
+    last_run = {'last_fetch': last_fetch_timestamp}
 
     response = fetch_incidents(client=client,
-                               max_fetch='2',
+                               max_fetch='1',
                                last_run=last_run,
-                               first_fetch_time='3 days')
+                               first_fetch_time='1 day')
     outputs = []
     for investigation in response[1]:
         outputs.append(investigation)
 
-    assert response[1] == outputs
+    assert last_fetch_timestamp + 1 == response[0]['last_fetch']
+    assert response[1] == [{
+        'name': 'Joe enabled account Joebob',
+        'occurred': '2018-06-06T16:56:42.000Z',
+        'rawJSON': outputs[0]['rawJSON'],
+    },
+    {
+        'name': 'Hello',
+        'occurred': '2018-06-06T16:56:43.000Z',
+        'rawJSON': outputs[1]['rawJSON'],
+    }
+    ]
