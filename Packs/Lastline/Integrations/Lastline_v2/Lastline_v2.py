@@ -72,7 +72,7 @@ class Client(BaseClient):
                 self.command_params[param] = self.command_params[param].replace('T', ' ')
         result = self.http_request('/analysis/get_completed')
         if 'data' in result:
-            context_entry: List = []
+            context_entry: List[List] = [[]]
             if self.use_credentials_login:
                 context_entry = self.get_status_and_time_get_history_req(argToList(result['data']))
             else:
@@ -135,8 +135,8 @@ class Client(BaseClient):
         for uuid in uuid_set:
             tasks_same_uuid = [x for x in tasks if x.get('task_uuid') == uuid]
             latest_date = max(datetime.strptime(x.get('task_start_time'), '%Y-%m-%d %H:%M:%S') for x in tasks_same_uuid)
-            latest_date = latest_date.strftime('%Y-%m-%d %H:%M:%S')
-            task = [x for x in tasks_same_uuid if x.get('task_start_time') == latest_date][0]
+            latest_date_str = latest_date.strftime('%Y-%m-%d %H:%M:%S')
+            task = [x for x in tasks_same_uuid if x.get('task_start_time') == latest_date_str][0]
             filtered_tasks.append(task)
 
         for task in filtered_tasks:
