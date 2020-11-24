@@ -3,7 +3,6 @@
 import os
 import sys
 import urllib3
-import inspect
 from blessings import Terminal
 from github import Github, enable_console_debug_logging
 from github.Repository import Repository
@@ -26,6 +25,7 @@ def get_stale_branch_names_with_contrib(repo: Repository) -> List[str]:  # noqa:
     Returns:
         (List[str]): List of branch names that are stale and have the "contrib/" prefix
     """
+    # set now with GMT timezone
     now = datetime.now(timezone.min)
     organization = 'demisto'
     branch_names = []
@@ -37,11 +37,9 @@ def get_stale_branch_names_with_contrib(repo: Repository) -> List[str]:  # noqa:
 
             # Make sure there are no open prs pointing to/from the branch
             if prs_with_branch_as_base.totalCount < 1 and prs_with_branch_as_head.totalCount < 1:
-                # load all members
-                inspect.getmembers(branch.commit)
-
                 # Make sure HEAD commit is stale
-                if (last_modified := branch.commit.last_modified) and (last_commit_datetime := parse(last_modified)):
+                if (last_modified := branch.commit.commit.last_modified) and (
+                        last_commit_datetime := parse(last_modified)):
                     elapsed_days = (now - last_commit_datetime).days
                     if elapsed_days >= 60:
                         branch_names.append(branch.name)
@@ -60,7 +58,7 @@ def main():
     repo = 'content'
     content_repo = gh.get_repo(f'{organization}/{repo}')
 
-    stale_contrib_branches = list(set(get_stale_branch_names_with_contrib(content_repo)))
+    stale_contrib_branches = get_stale_branch_names_with_contrib(content_repo)
     for branch_name in stale_contrib_branches:
         try:
             print(f'Deleting {branch_name}')
