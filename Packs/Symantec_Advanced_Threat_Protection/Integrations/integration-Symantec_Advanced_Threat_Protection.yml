@@ -67,6 +67,16 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  defaultvalue: 7 days
+  name: first_fetch
+  required: false
+  type: 0
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  defaultvalue: '50'
+  name: max_fetch
+  required: false
+  type: 0
 script:
   script: >
     var serverUrl = params.url.replace(/[\/]+$/, '') + '/';
@@ -308,14 +318,6 @@ script:
         }
         var number = parseInt(range_split[0]);
         var unit = range_split[1].toLowerCase();
-        if (['minute', 'minutes',
-            'hour', 'hours',
-            'day', 'days',
-            'month', 'months',
-            'year', 'years',
-            ].indexOf(unit) < 0) {
-            throw 'The unit of date_range is invalid. Must be minutes, hours, days, months or years.';
-        }
         var d = new Date();
         if (unit.indexOf('minute') >= 0) {
             d.setTime(d.getTime() - (number * 60 * 1000));
@@ -325,8 +327,10 @@ script:
             d.setTime(d.getTime() - (number * 24 * 60 * 60 * 1000));
         } else if (unit.indexOf('month') >= 0) {
             d.setTime(d.getTime() - (number * 30 * 24 * 60 * 60 * 1000));
-        } else if (unit.indexOf('month') >= 0) {
+        } else if (unit.indexOf('year') >= 0) {
             d.setTime(d.getTime() - (number * 365 * 30 * 24 * 60 * 60 * 1000));
+        } else {
+            throw 'The unit of date_range is invalid. Must be minutes, hours, days, months or years.';
         }
         return d;
     };
