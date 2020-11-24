@@ -17,6 +17,7 @@ from typing import (
     Tuple, Union, cast,
 )
 
+from itertools import islice
 from dateparser import parse
 from datetime import datetime, timezone
 import ipaddress
@@ -29,8 +30,11 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 SERVER = "https://expander.expanse.co"
 TOKEN_DURATION = 7200
-MAX_RESULTS = 1000  # max results per search
+DEFAULT_RESULTS = 20  # default results per search
+MAX_RESULTS = 5000  # max results per search
+MAX_PAGE_SIZE = 1000  # max results per page
 MAX_INCIDENTS = 100  # max incidents per fetch
+MAX_UPDATES = 100  # max updates received
 PREFIX = SERVER + "/api"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
@@ -176,10 +180,10 @@ class Client(BaseClient):
         return int(r['count'])
 
     def get_issues(self,
-                   max_issues: int,
+                   limit: int,
                    content_search: Optional[str] = None,
                    provider: Optional[str] = None,
-                   business_unit: Optional[str] = None,
+                   business_units: Optional[str] = None,
                    assignee: Optional[str] = None,
                    issue_type: Optional[str] = None,
                    inet_search: Optional[str] = None,
@@ -188,20 +192,19 @@ class Client(BaseClient):
                    progress_status: Optional[str] = None,
                    activity_status: Optional[str] = None,
                    priority: Optional[str] = None,
-                   tag: Optional[str] = None,
+                   tags: Optional[str] = None,
                    created_before: Optional[str] = None,
                    created_after: Optional[str] = None,
                    modified_before: Optional[str] = None,
                    modified_after: Optional[str] = None,
-                   sort: Optional[str] = None,
-                   skip: Optional[str] = None
-                   ) -> List[Dict[str, Any]]:
+                   sort: Optional[str] = None
+                   ) -> Iterator[Any]:
 
         params = {
-            'limit': max_issues if not skip else max_issues + 1,  # workaround to avoid unnecessary API calls
+            'limit': limit,
             'contentSearch': content_search,
             'providerName': provider if provider else None,
-            'businessUnitName': business_unit if business_unit else None,
+            'businessUnitName': business_units if business_units else None,
             'assigneeUsername': assignee if assignee else None,
             'issueTypeName': issue_type if issue_type else None,
             'inetSearch': inet_search,
@@ -210,7 +213,7 @@ class Client(BaseClient):
             'progressStatus': progress_status if progress_status else None,
             'activityStatus': activity_status if activity_status else None,
             'priority': priority if priority else None,
-            'tagName': tag if tag else None,
+            'tagName': tags if tags else None,
             'createdBefore': created_before,
             'createdAfter': created_after,
             'modifiedBefore': modified_before,
@@ -218,51 +221,19 @@ class Client(BaseClient):
             'sort': sort
         }
 
-        r = self._paginate(
+        return self._paginate(
             method='GET', url_suffix="/v1/issues/issues", params=params
         )
-        broken = False
-        ret: List = []
-        for i in r:
-            if skip and not broken:
-                if 'id' not in i or 'created' not in i:
-                    # demisto.debug('DEBUGDEBUG get_issues: skipping an incident that does not have id or created')
-                    continue
-
-                # fix created time to make sure precision is the same to microsecond with no rounding
-                i['created'] = timestamp_us_to_datestring_utc(datestring_to_timestamp_us(i['created']), DATE_FORMAT)
-
-                # demisto.debug(f'DEBUGDEBUG get_issues: skip check is on loop: processing issue {i["id"]}')
-                if i['created'] != created_after:
-                    # demisto.debug(f'DEBUGDEBUG get_issues: breaking as {i["id"]}  time different than created_after '
-                    #               f'[{i["created"]} vs {created_after}]')
-                    ret.append(i)
-                    broken = True
-                elif i['id'] == skip:
-                    # demisto.debug(f'DEBUGDEBUG get_issues: breaking as found id {skip} (skipping this one)')
-                    broken = True
-                else:
-                    pass
-                    # demisto.debug(f'DEBUGDEBUG get_issues: skipping possible dup incident {i["id"]}')
-            else:
-                # demisto.debug(f'DEBUGDEBUG get_issues: adding incident {i["id"]}')
-                ret.append(i)
-            if len(ret) == max_issues:
-                # demisto.debug(f'DEBUGDEBUG get_issues: got enough incidents ({max_issues}), exiting for cycle')
-                break
-
-        # demisto.debug(f'DEBUGDEBUG get_issues: returning IDs: [{str([i["id"] for i in ret])}]')
-        return ret
 
     def get_issue_by_id(self, issue_id: str) -> Dict[str, Any]:
         return self._http_request(
             method='GET', url_suffix=f'/v1/issues/issues/{issue_id}')
 
     def get_issue_updates(self, issue_id: str, update_types: Optional[List],
-                          created_after: Optional[str]) -> Iterator[Any]:
+                          created_after: Optional[str], limit: int = DEFAULT_RESULTS) -> Iterator[Any]:
         updates = self._paginate(
             method='GET', url_suffix=f'/v1/issues/issues/{issue_id}/updates',
-            params=dict(limit=MAX_RESULTS))
+            params=dict(limit=limit))
         after = datestring_to_timestamp_us(created_after) if created_after else None
 
         for u in updates:
@@ -272,24 +243,24 @@ class Client(BaseClient):
                 continue
             yield u
 
-    def list_businessunits(self) -> Iterator[Any]:
-        params = dict(limit=MAX_RESULTS)
+    def list_businessunits(self, limit: int = DEFAULT_RESULTS) -> Iterator[Any]:
+        params = dict(limit=limit)
         return self._paginate(
             method='GET',
             url_suffix='/v1/issues/businessUnits',
             params=params
         )
 
-    def list_providers(self) -> Iterator[Any]:
-        params = dict(limit=MAX_RESULTS)
+    def list_providers(self, limit: int = DEFAULT_RESULTS) -> Iterator[Any]:
+        params = dict(limit=limit)
         return self._paginate(
             method='GET',
             url_suffix='/v1/issues/providers',
             params=params
         )
 
-    def list_tags(self) -> Iterator[Any]:
-        params = dict(limit=MAX_RESULTS)
+    def list_tags(self, limit: int = DEFAULT_RESULTS) -> Iterator[Any]:
+        params = dict(limit=limit)
         return self._paginate(
             method='GET',
             url_suffix='/v3/annotations/tags',
@@ -564,6 +535,16 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
+def calculate_limits(limit: str) -> Tuple[int, int]:
+    total_results = check_int(limit, 'limit', None, None, False)
+    if not total_results:
+        total_results = DEFAULT_RESULTS
+    elif total_results > MAX_RESULTS:
+        total_results = MAX_RESULTS
+    max_page_size = MAX_PAGE_SIZE if total_results > MAX_PAGE_SIZE else total_results
+    return (total_results, max_page_size)
+
+
 def handle_iprange_include(arg: Optional[str], arg_name: Optional[str]) -> str:
     include = argToList(arg)
     sanitized_include: str = ''
@@ -774,15 +755,13 @@ def test_module(client: Client) -> str:
 
 def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    max_issues = check_int(args.get('limit'), 'limit', None, None, False)
-    if not max_issues:
-        max_issues = MAX_RESULTS
+    total_results, max_page_size = calculate_limits(args.get('limit', None))
 
     provider = ','.join(argToList(args.get('provider')))
-    business_unit = ','.join(argToList(args.get('business_unit')))
+    business_units = ','.join(argToList(args.get('business_unit')))
     assignee = ','.join(argToList(args.get('assignee')))
     issue_type = ','.join(argToList(args.get('issue_type')))
-    tag = ','.join(argToList(args.get('tag')))
+    tags = ','.join(argToList(args.get('tag')))
 
     content_search = args.get('content_search')
     inet_search = args.get('domain_search')
@@ -825,12 +804,17 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     d = args.get('modified_after', None)
     modified_after = parse(d).strftime(DATE_FORMAT) if d else None
 
-    issues = client.get_issues(max_issues=max_issues, content_search=content_search, provider=provider,
-                               business_unit=business_unit, assignee=assignee, issue_type=issue_type,
-                               inet_search=inet_search, domain_search=domain_search, port_number=port_number,
-                               progress_status=progress_status, activity_status=activity_status, priority=priority,
-                               tag=tag, created_before=created_before, created_after=created_after,
-                               modified_before=modified_before, modified_after=modified_after, sort=sort)
+    issues = list(
+        islice(
+            client.get_issues(limit=max_page_size, content_search=content_search, provider=provider,
+                              business_units=business_units, assignee=assignee, issue_type=issue_type,
+                              inet_search=inet_search, domain_search=domain_search, port_number=port_number,
+                              progress_status=progress_status, activity_status=activity_status, priority=priority,
+                              tags=tags, created_before=created_before, created_after=created_after,
+                              modified_before=modified_before, modified_after=modified_after, sort=sort),
+            total_results
+        )
+    )
 
     if len(issues) < 1:
         return CommandResults(readable_output='No Issues Found')
@@ -854,6 +838,7 @@ def get_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def get_issue_updates_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    total_results, max_page_size = calculate_limits(args.get('limit', None))
 
     issue_id = args.get('issue_id', None)
     if not issue_id:
@@ -866,10 +851,22 @@ def get_issue_updates_command(client: Client, args: Dict[str, Any]) -> CommandRe
     d = args.get('created_after', None)
     created_after = parse(d).strftime(DATE_FORMAT) if d else None
 
-    issue_updates = sorted(client.get_issue_updates(issue_id=issue_id,
-                                                    update_types=update_types,
-                                                    created_after=created_after),
-                           key=lambda k: k['created'])
+    issue_updates = [
+        {**u, "issueId": issue_id}  # this adds the issue id to the resulting dict
+        for u in sorted(
+            islice(
+                client.get_issue_updates(
+                    issue_id=issue_id,
+                    limit=max_page_size,
+                    update_types=update_types,
+                    created_after=created_after
+                ),
+                total_results
+            ),
+            key=lambda k: k['created']
+        )
+    ]
+
     # demisto.debug(f'DEBUGDEBUG issue_updates is {json.dumps(issue_updates)}')
     return CommandResults(
         outputs_prefix="Expanse.IssueUpdate", outputs_key_field="id", outputs=issue_updates
@@ -877,6 +874,7 @@ def get_issue_updates_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 
 def get_issue_comments_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    total_results, max_page_size = calculate_limits(args.get('limit', None))
 
     issue_id = args.get('issue_id', None)
     if not issue_id:
@@ -885,10 +883,21 @@ def get_issue_comments_command(client: Client, args: Dict[str, Any]) -> CommandR
     d = args.get('created_after', None)
     created_after = parse(d).strftime(DATE_FORMAT) if d else None
 
-    issue_comments = sorted(client.get_issue_updates(issue_id=issue_id,
-                                                     update_types=['Comment'],
-                                                     created_after=created_after),
-                            key=lambda k: k['created'])
+    issue_comments = [
+        {**u, "issueId": issue_id}  # this adds the issue id to the resulting dict
+        for u in sorted(
+            islice(
+                client.get_issue_updates(
+                    issue_id=issue_id,
+                    limit=max_page_size,
+                    update_types=['Comment'],
+                    created_after=created_after
+                ),
+                total_results
+            ),
+            key=lambda k: k['created']
+        )
+    ]
 
     for n, c in enumerate(issue_comments):
         if (u := c.get('user'), None) and isinstance(u, dict) and 'username' in u:
@@ -903,7 +912,7 @@ def get_issue_comments_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
     return CommandResults(
-        outputs_prefix="ExpanseIssueComment",
+        outputs_prefix="Expanse.IssueComment",
         outputs_key_field="id",
         outputs=issue_comments,
         readable_output=md
@@ -934,8 +943,8 @@ def update_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults
 def fetch_incidents(client: Client, max_incidents: int,
                     last_run: Dict[str, Union[Optional[int], Optional[str]]], first_fetch: Optional[int],
                     priority: Optional[str], activity_status: Optional[str],
-                    progress_status: Optional[str], business_unit: Optional[str],
-                    tag: Optional[str], mirror_direction: Optional[str], sync_tags: Optional[List[str]],
+                    progress_status: Optional[str], business_units: Optional[str], issue_types: Optional[str],
+                    tags: Optional[str], mirror_direction: Optional[str], sync_tags: Optional[List[str]],
                     fetch_details: Optional[bool], fetch_behavior: Optional[bool]
                     ) -> Tuple[Dict[str, Union[Optional[int], Optional[str]]], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
@@ -988,11 +997,45 @@ def fetch_incidents(client: Client, max_incidents: int,
 
     created_after = timestamp_us_to_datestring_utc(latest_created_time, DATE_FORMAT)
 
-    issues = client.get_issues(
-        max_issues=max_incidents, priority=_priority, business_unit=business_unit,
-        progress_status=_progress_status, activity_status=_activity_status, tag=tag,
-        created_after=created_after, sort='created', skip=cast(str, last_issue_id)
+    r = client.get_issues(
+        limit=max_incidents if not last_issue_id else max_incidents + 1,  # workaround to avoid unnecessary API calls
+        priority=_priority, business_units=business_units,
+        progress_status=_progress_status, activity_status=_activity_status, tags=tags,
+        created_after=created_after, sort='created'
     )
+
+    broken = False
+    issues: List = []
+    skip = cast(str, last_issue_id)
+    for i in r:
+        if skip and not broken:
+            if 'id' not in i or 'created' not in i:
+                # demisto.debug('DEBUGDEBUG get_issues: skipping an incident that does not have id or created')
+                continue
+
+            # fix created time to make sure precision is the same to microsecond with no rounding
+            i['created'] = timestamp_us_to_datestring_utc(datestring_to_timestamp_us(i['created']), DATE_FORMAT)
+
+            # demisto.debug(f'DEBUGDEBUG get_issues: skip check is on loop: processing issue {i["id"]}')
+            if i['created'] != created_after:
+                # demisto.debug(f'DEBUGDEBUG get_issues: breaking as {i["id"]}  time different than created_after '
+                #               f'[{i["created"]} vs {created_after}]')
+                issues.append(i)
+                broken = True
+            elif i['id'] == skip:
+                # demisto.debug(f'DEBUGDEBUG get_issues: breaking as found id {skip} (skipping this one)')
+                broken = True
+            else:
+                pass
+                # demisto.debug(f'DEBUGDEBUG get_issues: skipping possible dup incident {i["id"]}')
+        else:
+            # demisto.debug(f'DEBUGDEBUG get_issues: adding incident {i["id"]}')
+            issues.append(i)
+        if len(issues) == max_incidents:
+            # demisto.debug(f'DEBUGDEBUG get_issues: got enough incidents ({max_issues}), exiting for cycle')
+            break
+
+    # demisto.debug(f'DEBUGDEBUG get_issues: returning IDs: [{str([i["id"] for i in ret])}]')
     # demisto.debug(f'DEBUGDEBUG fetch_incidents: created_after is {created_after}')
 
     for issue in issues:
@@ -1075,10 +1118,18 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
     parsed_args = GetRemoteDataArgs(args)
     # demisto.debug(f'DEBUGDEBUG get_remote_data_command invoked on incident {parsed_args.remote_incident_id} '
     #               f'with last_update: {parsed_args.last_update}')
-    issue_updates: List[Dict[str, Any]] = sorted(client.get_issue_updates(issue_id=parsed_args.remote_incident_id,
-                                                                          update_types=None,
-                                                                          created_after=parsed_args.last_update),
-                                                 key=lambda k: k['created'])
+    issue_updates: List[Dict[str, Any]] = sorted(
+        islice(
+            client.get_issue_updates(
+                issue_id=parsed_args.remote_incident_id,
+                limit=MAX_UPDATES,
+                update_types=None,
+                created_after=parsed_args.last_update
+            ),
+            MAX_UPDATES
+        ),
+        key=lambda k: k['created']
+    )
 
     new_entries: List = []
     incident_updates: Dict[str, Any] = {}
@@ -1276,8 +1327,11 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], sync_owne
     return remote_incident_id
 
 
-def list_businessunits_command(client: Client, _: Dict[str, Any]) -> CommandResults:
-    outputs = [businessunit for businessunit in client.list_businessunits()]
+def list_businessunits_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    total_results, max_page_size = calculate_limits(args.get('limit', None))
+    outputs = list(
+        islice(client.list_businessunits(limit=max_page_size), total_results)
+    )
 
     return CommandResults(
         outputs_prefix="Expanse.BusinessUnit", outputs_key_field="id", outputs=outputs
@@ -1285,16 +1339,20 @@ def list_businessunits_command(client: Client, _: Dict[str, Any]) -> CommandResu
 
 
 def list_providers_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    outputs = [provider for provider in client.list_providers()]
-
+    total_results, max_page_size = calculate_limits(args.get('limit', None))
+    outputs = list(
+        islice(client.list_providers(limit=max_page_size), total_results)
+    )
     return CommandResults(
         outputs_prefix="Expanse.Provider", outputs_key_field="id", outputs=outputs
     )
 
 
 def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    outputs = [tag for tag in client.list_tags()]
-
+    total_results, max_page_size = calculate_limits(args.get('limit', None))
+    outputs = list(
+        islice(client.list_tags(limit=max_page_size), total_results)
+    )
     return CommandResults(
         outputs_prefix="Expanse.Tag", outputs_key_field="id", outputs=outputs
     )
@@ -1356,8 +1414,9 @@ def get_iprange_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     id_: Optional[str] = args.pop('id', None)
 
     if id_ is not None and len(args) != 0:
-        # XXX - is this the right form?
         raise ValueError("You can only use [id] only with [include] parameter")
+
+    total_results, max_page_size = calculate_limits(args.get('limit', None))
 
     outputs: Iterator[Any] = iter([])
     ip_ranges: List = []
@@ -1365,24 +1424,25 @@ def get_iprange_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs = iter([client.get_iprange_by_id(id_, include)])
     else:
         params: Dict = {
-            "include": include
+            "include": include,
+            "limit": max_page_size
         }
 
         business_units = argToList(args.get('businessunits'))
         if len(business_units) != 0:
-            params['business-units'] = business_units
+            params['business-units'] = ','.join(business_units)
         business_unit_names = argToList(args.get('businessunitnames'))
         if len(business_unit_names) != 0:
-            params['business-unit-names'] = business_unit_names
+            params['business-unit-names'] = ','.join(business_unit_names)
         inet = args.get('inet')
         if inet is not None:
             params['inet'] = inet
         tags = argToList(args.get('tags'))
         if len(tags) != 0:
-            params['tags'] = tags
+            params['tags'] = ','.join(tags)
         tag_names = argToList(args.get('tagnames'))
         if len(tag_names) != 0:
-            params['tag-names'] = tag_names
+            params['tag-names'] = ','.join(tag_names)
 
         outputs = client.get_ipranges(params=params)
 
@@ -1397,11 +1457,14 @@ def get_iprange_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             k: o[k]
             for k in o if k not in cidr_context_excluded_fields
         })
+        if len(ip_ranges) >= total_results:
+            break
 
     return CommandResults(
         outputs_prefix="Expanse.IPRange",
         outputs_key_field="id",
-        outputs=ip_ranges
+        readable_output="## No IP Ranges found" if len(ip_ranges) == 0 else None,
+        outputs=None if len(ip_ranges) == 0 else ip_ranges
     )
 
 
@@ -1410,7 +1473,6 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     last_observed_date: Optional[str] = args.pop('last_observed_date', None)
 
     if domain is not None and len(args) != 0:
-        # XXX - is this the right form?
         raise ValueError("The only argument allowed with domain is last_observed_date")
 
     if domain is not None:
@@ -1473,7 +1535,6 @@ def get_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResu
     last_observed_date: Optional[str] = args.pop('last_observed_date', None)
 
     if pem_md5_hash is not None and len(args) != 0:
-        # XXX - is this the right form?
         raise ValueError("The only argument allowed with pem_md5_hash is last_observed_date")
 
     if pem_md5_hash is not None:
@@ -1691,13 +1752,17 @@ def cidr_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if len(cidrs) == 0:
         raise ValueError('cidr(s) not specified')
 
+    # trim down the list to the max number of supported results
+    if len(cidrs) > MAX_RESULTS:
+        cidrs = cidrs[:MAX_RESULTS]
+
     include = handle_iprange_include(args.get('include'), 'include')
 
     cidr_data_list: List[Dict[str, Any]] = []
     cidr_standard_list: List[Common.Indicator] = []
 
     for cidr in cidrs:
-        cidr_data = next(client.get_ipranges(params={'inet': cidr, 'include': include}), None)
+        cidr_data = next(client.get_ipranges(params={'inet': cidr, 'include': include, 'limit': 1}), None)
         if cidr_data is None:
             continue
 
@@ -1803,8 +1868,9 @@ def main() -> None:
             priority = demisto.params().get('priority', None)
             activity_status = demisto.params().get('activityStatus', None)
             progress_status = demisto.params().get('progressStatus', None)
-            business_unit = demisto.params().get('businessUnit', None)
-            tag = demisto.params().get('tag', None)
+            business_units = argToList(demisto.params().get('businessUnit', None))
+            issue_types = argToList(demisto.params().get('issueType', None))
+            tags = argToList(demisto.params().get('tags', None))
 
             sync_tags = argToList(demisto.params().get('sync_tags', None))
             fetch_details = argToBoolean(demisto.params().get('fetch_details'))
@@ -1819,8 +1885,9 @@ def main() -> None:
                 priority=priority,
                 activity_status=activity_status,
                 progress_status=progress_status,
-                business_unit=business_unit,
-                tag=tag,
+                business_units=business_units,
+                tags=tags,
+                issue_types=issue_types,
                 mirror_direction=mirror_direction,
                 sync_tags=sync_tags,
                 fetch_details=fetch_details,
