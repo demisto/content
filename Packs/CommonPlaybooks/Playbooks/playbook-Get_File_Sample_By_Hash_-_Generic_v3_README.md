@@ -32,7 +32,23 @@ This playbook does not use any commands.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | File | File sample object | unknown |
+| File.SHA256 | SHA256 hash of the file. | unknown |
+| File.Name | File name. | unknown |
+| File.Size | File size. | unknown |
+| File.Safelisted | Whether the file is on the Safe List. | unknown |
+| File.Timestamp | Timestamp. | unknown |
+| File.MD5 | MD5 hash of the file. | unknown |
+| File.Company | Name of the company that released a binary. | unknown |
+| File.OS | The OS. | unknown |
+| File.ProductName | The product name. | unknown |
+| File.Path | The binary path. | unknown |
+| File.LastSeen | LThe lst time the binary was seen. | unknown |
+| File.Description | The binary description. | unknown |
+| File.Hostname | The binary hostname. | unknown |
+| File.Extension | The binary extension. | unknown |
+| File.ServerAddedTimestamp | The timestamp when the server was added. | unknown |
+| File.InternalName | The internal name. | unknown |
 
 ## Playbook Image
 ---
-![Get File Sample By Hash - Generic v3](https://raw.githubusercontent.com/demisto/content/8eb0c6e3e592d9eedbcf72b025c403d44a5ba395/Packs/CommonPlaybooks/doc_files/Get_File_Sample_By_Hash_-_Generic_v3.png)
+![Get File Sample By Hash - Generic v3](Insert the link to your image here)

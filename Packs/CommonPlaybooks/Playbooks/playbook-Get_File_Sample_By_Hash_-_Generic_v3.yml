@@ -165,6 +165,39 @@ outputs:
 - contextPath: File
   description: File sample object
   type: unknown
+- contextPath: File.SHA256
+  description: SHA256 hash of the file.
+- contextPath: File.Name
+  description: File name.
+- contextPath: File.Size
+  description: File size.
+- contextPath: File.Safelisted
+  description: Whether the file is on the Safe List.
+- contextPath: File.Timestamp
+  description: Timestamp.
+- contextPath: File.MD5
+  description: MD5 hash of the file.
+- contextPath: File.Company
+  description: Name of the company that released a binary.
+- contextPath: File.OS
+  description: The OS.
+- contextPath: File.ProductName
+  description: The product name.
+- contextPath: File.Path
+  description: The binary path.
+- contextPath: File.LastSeen
+  description: LThe lst time the binary was seen.
+- contextPath: File.Description
+  description: The binary description.
+- contextPath: File.Hostname
+  description: The binary hostname.
+- contextPath: File.Extension
+  description: The binary extension.
+- contextPath: File.ServerAddedTimestamp
+  description: The timestamp when the server was added.
+- contextPath: File.InternalName
+  description: The internal name.
+sourceplaybookid: Get File Sample By Hash - Generic v2
 tests:
 - Account Enrichment - Generic v2.1 - Test
 - Calculate Severity - Generic v2 - Test
