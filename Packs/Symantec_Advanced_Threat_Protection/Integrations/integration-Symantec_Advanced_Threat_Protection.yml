@@ -67,16 +67,6 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  defaultvalue: 7 days
-  name: first_fetch
-  required: false
-  type: 0
-- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  defaultvalue: '50'
-  name: max_fetch
-  required: false
-  type: 0
 script:
   script: >
     var serverUrl = params.url.replace(/[\/]+$/, '') + '/';
