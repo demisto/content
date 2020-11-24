@@ -118,9 +118,9 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
     pr_author = get_pr_author(pr_number=pr_number, github_token=github_token, verify_ssl=verify_ssl)
     tagged_packs_reviewers = get_pr_tagged_reviewers(pr_number=pr_number, github_token=github_token,
                                                      verify_ssl=verify_ssl)
-    reviewers = set()
 
     for pack in modified_packs:
+        reviewers = set()
         pack_metadata_path = os.path.join(PACKS_FULL_PATH, pack, PACK_METADATA)
 
         if not os.path.exists(pack_metadata_path):
@@ -148,12 +148,12 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
         else:
             print(f"{pack} pack has no default github reviewer")
 
-    if reviewers:
-        pack_files = {p for p in modified_files if p.startswith(PACKS_FOLDER) and Path(p).parts[1] == pack}
-        tag_user_on_pr(reviewers=reviewers, pr_number=pr_number, pack=pack, pack_files=pack_files,
-                       github_token=github_token, verify_ssl=verify_ssl)
-    else:
-        print("No reviewers were found.")
+        if reviewers:
+            pack_files = {p for p in modified_files if p.startswith(PACKS_FOLDER) and Path(p).parts[1] == pack}
+            tag_user_on_pr(reviewers=reviewers, pr_number=pr_number, pack=pack, pack_files=pack_files,
+                           github_token=github_token, verify_ssl=verify_ssl)
+        else:
+            print("No reviewers were found.")
 
 
 def main():
