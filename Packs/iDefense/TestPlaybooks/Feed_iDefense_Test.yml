@@ -1,6 +1,5 @@
 id: Feed iDefense Test
-version: 4
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Feed iDefense Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -73,7 +73,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 280
+          "y": 290
         }
       }
     note: false
@@ -92,6 +92,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -151,10 +152,11 @@ view: |-
   }
 inputs:
 - key: Limit
-  value: {}
+  value:
+    simple: "50"
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 fromversion: 5.5.0
-description: Test playbook for Feed iDefense
+description: Test playbook for iDefense feed
