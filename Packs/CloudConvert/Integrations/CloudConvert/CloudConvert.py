@@ -26,7 +26,7 @@ class Client(BaseClient):
             arguments: dict containing the request arguments, should contain the field 'url'
 
         Returns:
-            dict containing the results of the upload action as returned from the API (status, file ID, etc.)
+            dict containing the results of the upload action as returned from the API (status, task ID, etc.)
             ``Dict[str, Any]``
         """
 
@@ -48,7 +48,7 @@ class Client(BaseClient):
             file_name: name of file, including format suffix
 
         Returns:
-            dict containing the results of the upload action as returned from the API (status, file ID, etc.)
+            dict containing the results of the upload action as returned from the API (status, task ID, etc.)
             ``Dict[str, Any]``
         """
 
@@ -104,7 +104,7 @@ class Client(BaseClient):
             arguments: dict containing the request arguments, should contain the fields 'task_id' and 'output_format'
 
         Returns:
-            dict containing the results of the convert action as returned from the API (status, file ID, etc.)
+            dict containing the results of the convert action as returned from the API (status, task ID, etc.)
             ``Dict[str, Any]``
         """
 
@@ -123,7 +123,7 @@ class Client(BaseClient):
             arguments: dict containing the request arguments, should contain the field 'task_id'
 
         Returns:
-            dict containing the results of the check status action as returned from the API (status, file ID, etc.)
+            dict containing the results of the check status action as returned from the API (status, task ID, etc.)
             ``Dict[str, Any]``
         """
 
@@ -144,7 +144,7 @@ class Client(BaseClient):
                 dict containing the request arguments, should contain the field 'task_id' of the desired file
 
         Returns:
-            dict containing the results of the download action as returned from the API (status, file ID, etc.)
+            dict containing the results of the download action as returned from the API (status, task ID, etc.)
                     if the action was complete, the result url will be a part of this dict. If the request is pending,
                     one should retrieve the url via the 'check_status' command
             ``Dict[str, Any]``
@@ -187,7 +187,7 @@ def raise_error_if_no_data(results: Dict[str, Any]):
 
     Returns:
         raises error if there is no 'data' field, with the matching error message returned from the server
-        if no error message was given frem the server, suggests the other optional errors
+        if no error message was given from the server, suggests the other optional errors
     """
     if results.get('data') is None:
         if results.get('message'):
@@ -214,9 +214,7 @@ def upload_command(client: Client, arguments: Dict[str, Any]):
         if arguments.get('entry_id'):
             raise ValueError('Both url and entry id were inserted - please insert only one.')
         results = client.upload_url(arguments)
-        raise_error_if_no_data(results)
-        format_operation_title(results)
-        results_data = results.get('data')
+
     elif arguments.get('entry_id'):
         demisto.debug('getting the path of the file from its entry id')
         result = demisto.getFilePath(arguments.get('entry_id'))
@@ -224,16 +222,18 @@ def upload_command(client: Client, arguments: Dict[str, Any]):
             raise ValueError('No file was found for given entry id')
         file_path, file_name = result['path'], result['name']
         results = client.upload_entry_id(file_path, file_name)
-        raise_error_if_no_data(results)
-        format_operation_title(results)
-        results_data = results.get('data')
+
     else:
         raise ValueError('No url or entry id specified.')
+
+    raise_error_if_no_data(results)
+    format_operation_title(results)
+    results_data = results.get('data')
 
     readable_output = tableToMarkdown(
         'Upload Results',
         remove_empty_elements(results_data),
-        headers=('id', 'operation', 'created_at', 'status'),
+        headers=( 'id', 'operation', 'created_at', 'status'),
         headerTransform=string_to_table_header,
     )
 
@@ -299,8 +299,7 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
     results = client.check_status(arguments)
     raise_error_if_no_data(results)
     format_operation_title(results)
-
-    results_data = results.get('data', {})
+    results_data = results.get('data')
 
     # If checking on an download to entry operation, manually change the operation name
     # This is because the 'download as entry' operation is our variation on the export to url operation,
@@ -318,7 +317,7 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
         url = results_info.get('url')
         file_name = results_info.get('filename')
         file_data = client.get_file_from_url(url)
-        war_room_file = fileResult(filename=file_name, data=file_data)
+        war_room_file = fileResult(filename=file_name, data=file_data, file_type=entryTypes['entryInfoFile'])
         readable_output = tableToMarkdown('Check Status Results', remove_empty_elements(results_data),
                                           headers=('id', 'operation', 'created_at', 'status', 'depends_on_task_ids',
                                                    'results'),
@@ -379,6 +378,7 @@ def download_command(client: Client, arguments: Dict[str, Any]):
         format_operation_title(results)
 
     results_data = results.get('data')
+
     readable_output = tableToMarkdown(
         'Download Results',
         remove_empty_elements(results_data),

@@ -592,15 +592,18 @@ inputs:
   value: {}
   required: true
   description: |
-    The method for downloading the resulted file, URL or war_room_entry
+    The method for downloading the resulted file, URL or war_room_entry.
   playbookInputQuery:
 outputs:
 - contextPath: CloudConvert.Task.result.files.url
   description: Resulted file url
+  type: String
 - contextPath: CloudConvert.Task.result.files.filename
   description: Resulted file name
+  type: String
 - contextPath: CloudConvert.Task.result.files.size
   description: Resulted size of file
+  type: String
 tests:
 - CloudConvert-test
 fromversion: 5.0.0
