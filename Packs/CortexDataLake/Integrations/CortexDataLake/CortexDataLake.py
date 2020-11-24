@@ -787,7 +787,7 @@ def query_logs_command(args: dict, client: Client) -> Tuple[str, Dict[str, List[
     """
     query = args.get('query', '')
     limit = args.get('limit', '')
-    transform_results = argToBoolean(args.get('transform_results', 'Yes'))
+    transform_results = argToBoolean(args.get('transform_results', 'true'))
 
     if 'limit' not in query.lower():
         query += f' LIMIT {limit}'
