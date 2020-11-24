@@ -3,7 +3,6 @@ This class replaces the old get_modified_files_for_testing function in collect_t
 """
 import glob
 import os
-from enum import Enum
 from typing import Dict, Set, Optional, Tuple, List
 
 import demisto_sdk.commands.common.constants as constants
