@@ -16,18 +16,34 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.api_key = api_key
 
-    def get_domains_list(self, request: Optional[str]):
+    def get_domains_list(self, suffix: Optional[str], request: Optional[str]):
         if request:
             res = self._http_request('GET', full_url=request)
         else:
-            res = self._http_request('GET', f"domains?customerKey={self.api_key}")
+            res = self._http_request('GET', f"domains?customerKey={self.api_key}&{suffix}")
         return res
 
-    def delete_domains(self, domain):
-        return self._http_request('POST', f"domains?customerKey={self.api_key}&where[name]={domain}")
+    def delete_domains(self, domain_name, domain_id):
+        res = ''
+        if domain_id:
+            res = self._http_request('DELETE', f"domains/{domain_id}?customerKey={self.api_key}")
+        if domain_name:
+            res = self._http_request('DELETE', f"domains?customerKey={self.api_key}&where[name]={domain_name}")
+        return res
 
     def add_event_to_domain(self, event):
         return self._http_request('POST', f"events?customerKey={self.api_key}", json_data=event)
+
+
+def domains_list_suffix(page, limit, request):
+    suffix = ''
+    if request:
+        suffix = request
+    if page:
+        suffix += f'page={page}&'
+    if limit:
+        suffix += f'limit={limit}&'
+    return suffix
 
 
 def create_domain_list(client, response):
@@ -42,7 +58,10 @@ def create_domain_list(client, response):
 
 
 def domains_list_command(client, args):
-    response = client.get_domains_list()
+    page = args.get('page')
+    limit = args.get('limit')
+    suffix = domains_list_suffix(page=page, limit=limit)
+    response = client.get_domains_list(suffix=suffix)
     return create_domain_list(response)
 
 
@@ -50,33 +69,29 @@ def domain_event_add_command(client, args):
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    domain = args.get('domain')
+    alert_time = args.get('alert_time')
+    device_id = args.get('device_id')
+    dst_domain = args.get('dst_domain')
+    dst_url = args.get('dst_url')
     checkStatus = client.get_domains_list()
     if checkStatus == "NotExist":
         status = True
 
     if checkStatus == "NotExist":
 
-        myobj = {
-            "alertTime": "2020-01-13T11:14:26.0Z",
-            "deviceId": "ba6a59f4-e692-4724-ba36-c28132c761de",
-            "deviceVersion": "13.7a",
-            "dstDomain": str(domain),
-            "dstUrl": "http://" + str(domain) + "/a-bad-url",
-            "eventTime": "2020-01-13T13:30:26.0Z",
+        new_event = {
+            "alertTime": alert_time,
+            "deviceId": device_id,
+            "deviceVersion": "13.7a",  #?????
+            "dstDomain": dst_domain,
+            "dstUrl": dst_url,
+            "eventTime": alert_time,
             "protocolVersion": "1.0a",
             "providerName": "Security Platform"
         }
 
-        r2 = requests.post(myEventsrequest, json=myobj, verify=False)
-        r2_j = r2.json()
-        r_code = r2.status_code
-        # r_code ==>
-        # 202 Accepted—Everything worked as expected.
-        # 400 Bad Request—Likely missing a required parameter or malformed JSON. Please check the syntax on your query.
-        # 403 Unauthorized—Request had Authorization header but token was missing or invalid. Please ensure your API token is valid.
-        # 404 Not Found—The requested item doesn't exist, check the syntax of your query or ensure the IP and/or domain are valid. If deleting a domain, ensure the id is correct.
-        # 500, 502, 503, 504 Server errors—Something went wrong on our end.
+        response = client.add_event_to_domain(new_event)
+        r_code = response.status_code
         if int(r_code) == 202:
             ActionResult = "Success"
             status = True
@@ -133,12 +148,17 @@ def domain_event_add_command(client, args):
 
 
 def domain_delete_command(client, args):
-    domain = args.get('domain')
-    response = client.delete_domain(domain)
+    domain_name = args.get('name')
+    domain_id = args.get('id')
+    if not domain_name and not domain_id:
+        raise DemistoException(
+            'Both domain name and domain id do not exist, Please supply one of them in order to set the domain to '
+            'delete command')
+    response = client.delete_domains(domain_id=domain_id, domain_name=domain_name)
     if int(response.status_code) == 204:
-        message = f"{domain} Domain was removed from blacklist"
+        message = f"{domain_name if domain_name else domain_id} Domain was removed from blacklist"
     else:
-        message = f"{domain} Not in the blacklist or Error"
+        message = f"{domain_name if domain_name else domain_id} Domain not in the blacklist or Error"
     return message
 
 
@@ -171,7 +191,7 @@ def main():
     }
 
     try:
-        client = Client(base_url=base_url, api_key=api_key, verify=verify, proxy=proxy)
+        client = Client(base_url=base_url, api_key=api_key, verify=verify, proxy=proxy, ok_codes)
 
         if command == 'test-module':
             return_results(test_module(client))

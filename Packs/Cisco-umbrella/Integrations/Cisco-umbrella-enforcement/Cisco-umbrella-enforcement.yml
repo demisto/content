@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Cisco Umbrella Enforcement
+  id: Cisco_Umbrella_Enforcement
   version: -1
 configuration:
 - defaultvalue: https://s-platform.api.opendns.com/1.0/
@@ -9,7 +9,7 @@ configuration:
   required: true
   type: 0
 - display: API Key
-  name: api_key
+  name: APIKey
   required: true
   type: 4
 - display: Trust any certificate (not secure)
@@ -20,44 +20,97 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Cisco OpenDNS Integration , add and remove domain  to/from Custom Integration List
+- display: Long running instance
+  name: longRunning
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Cisco OpenDNS Integration , add and remove domain  to/from Custom Integration
+  List
 display: Cisco Umbrella Enforcement
-name: Cisco Umbrella Enforcement
+name: Cisco_Umbrella_Enforcement
 script:
   commands:
   - arguments:
-    - default: true
-      description: Enter the domain you would like to categorize (e.g. amazon.com)
+    - default: false
+      description: Alert time of the new event.
       isArray: false
-      name: domain
-      required: true
+      name: alert_time
+      required: false
+      secret: false
+    - default: false
+      description: Device ID of the new event.
+      isArray: false
+      name: device_id
+      required: false
+      secret: false
+    - default: false
+      description: Destination domain of the new event.
+      isArray: false
+      name: dst_domain
+      required: false
+      secret: false
+    - default: false
+      description: "Destination url\t of the new event."
+      isArray: false
+      name: dst_url
+      required: false
       secret: false
     deprecated: false
-    description: Returns the category of a domain. e.g. domain=amazon.com returns Ecommerce/Shopping
+    description: Posts a Malware event to the API for processing and optionally adding
+      to a customer's domain lists.
     execution: false
-    name: umbrella-domain-categorization
+    name: umbrella-domain-event-add
+  - arguments:
+    - default: false
+      description: Number of page which should be retured, if non selected the default
+        is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The limit of queries per page.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: List of domains.
+    execution: false
+    name: umbrella-domains-list
     outputs:
-    - contextPath: Domain.Name
-      description: Domain name
-      type: string
-    - contextPath: Domain.SecurityCategories
-      description: The Umbrella security category, or categories, that match this domain
-      type: string
-    - contextPath: Domain.ContentCategories
-      description: The Umbrella content category or categories that match this domain
-      type: string
-    - contextPath: Domain.Malicious.Vendor
-      description: For malicious domains, the vendor that made the decision
-      type: string
-    - contextPath: Domain.Malicious.Description
-      description: For malicious domains, the reason for the vendor to make the decision
-      type: string
+    - contextPath: CiscoUmbrellaEnforcement.domain
+      type: String
+  - arguments:
+    - default: false
+      description: 'Id of the domain. '
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: Name of the domain.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete domain.
+    execution: false
+    name: umbrella-domain-delete
   dockerimage: demisto/python3:3.8.6.12176
+  feed: false
+  isfetch: false
   longRunning: true
+  longRunningPort: false
   runonce: true
-  script: ''
+  script: '-'
   subtype: python3
   type: python
-fromversion: 6.0.0
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)
+fromversion: 6.0.0
