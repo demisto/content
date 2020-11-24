@@ -80,7 +80,7 @@ class Client(BaseClient):
         res = self._http_request(
             method='POST',
             url_suffix=uri,
-            data=json.dumps(body),
+            json_data=body,
             params=query_params
         )
         return res
@@ -93,7 +93,7 @@ class Client(BaseClient):
         res = self._http_request(
             method='POST',
             url_suffix=uri,
-            data=json.dumps(body)
+            json_data=body
         )
         return res
 
