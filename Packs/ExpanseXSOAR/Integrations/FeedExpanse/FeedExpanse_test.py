@@ -8,16 +8,6 @@ def util_load_json(path):
 
 
 def test_indicator_generator(requests_mock):
-    """
-    Given:
-        - an Expanse client
-        - a valid API Key
-    When
-        - indicator generator is called
-    Then
-        - all 4 types of assets are retrieved from the API (IPs, Certificates, IPRanges and Domains)
-        - Expanse assets are mapped into the appropriate fields
-    """
     from FeedExpanse import Client, indicator_generator
 
     # load mock responses
@@ -64,5 +54,4 @@ def test_indicator_generator(requests_mock):
     ))
 
     expected_result = util_load_json('./test_data/test_indicators_generator_result.json')
-
     assert result == expected_result

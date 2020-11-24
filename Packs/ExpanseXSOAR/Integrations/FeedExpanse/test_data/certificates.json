@@ -36,7 +36,7 @@
                 "formattedIssuerOrg": "ExampleCA",
                 "issuerOrgUnit": null,
                 "issuerState": null,
-                "publicKey": "3aEjDzsVHYfsA7kQi2EgIi7HXK3bjvVotfkgriEQseg=",
+                "publicKey": "real-public-key-will-be-here",
                 "publicKeyAlgorithm": "RSA",
                 "publicKeyRsaExponent": 65537,
                 "signatureAlgorithm": "SHA256withRSA",
@@ -56,8 +56,8 @@
                 "publicKeyBits": 2048,
                 "pemSha256": "3aEjDzsVHYfsA7kQi2EgIi7HXK3bjvVotfkgriEQseg=",
                 "pemSha1": "h5p90eUUheWHSx61SNVPbaQcyt4=",
-                "publicKeyModulus": "deaddead",
-                "publicKeySpki": "3aEjDzsVHYfsA7kQi2EgIi7HXK3bjvVotfkgriEQseg="
+                "publicKeyModulus": "real-public-key-modulus-will-be-here",
+                "publicKeySpki": "real-public-key-spki-will-be-here"
             },
             "commonName": "example.example.com",
             "properties": [
