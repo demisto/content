@@ -86,7 +86,8 @@ class Client:
             params=params,
             json=data,
             auth=(self.service_principal, self.secret),
-            proxies=self.proxies
+            proxies=self.proxies,
+            timeout=10
         )
 
         if res.status_code not in [200, 204]:
