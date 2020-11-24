@@ -232,11 +232,15 @@ script:
       - weeks
       required: false
       secret: false
-    - default: false
-      defaultValue: 'Yes'
-      description: If set to No query results are not mapped into the standard command context. Default is Yes.
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: If set to false query results are not mapped into the standard command context. Default is true.
       isArray: false
       name: transform_results
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
