@@ -1,0 +1,13 @@
+{
+    "value": [
+        {
+            "name": "alerts-nsg",
+            "id": "some_id",
+            "etag": "tag",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "location": "westeurope",
+            "tags": {},
+            "properties": {"Some": "Rules"}
+      }
+    ]
+}

@@ -90,6 +90,7 @@ class MicrosoftClient(BaseClient):
             self.resources = resources if resources else []
             self.resource_to_access_token: Dict[str, str] = {}
 
+    @logger
     def http_request(
             self, *args, resp_type='json', headers=None,
             return_empty_response=False, scope: Optional[str] = None,
@@ -138,6 +139,7 @@ class MicrosoftClient(BaseClient):
         except ValueError as exception:
             raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
 
+    @logger
     def get_access_token(self, resource: str = '', scope: Optional[str] = None):
         """
         Obtains access and refresh token from oproxy server or just a token from a self deployed app.
@@ -258,6 +260,7 @@ class MicrosoftClient(BaseClient):
         return (parsed_response.get('access_token', ''), parsed_response.get('expires_in', 3595),
                 parsed_response.get('refresh_token', ''))
 
+    @logger
     def _get_self_deployed_token(self, refresh_token: str = '', scope: Optional[str] = None) -> Tuple[str, int, str]:
         if self.grant_type == AUTHORIZATION_CODE:
             if not self.multi_resource:
@@ -312,6 +315,7 @@ class MicrosoftClient(BaseClient):
 
         return access_token, expires_in, ''
 
+    @logger
     def _get_self_deployed_token_auth_code(
             self, refresh_token: str = '', resource: str = '', scope: Optional[str] = None) -> Tuple[str, int, str]:
         """
@@ -354,6 +358,7 @@ class MicrosoftClient(BaseClient):
 
         return access_token, expires_in, refresh_token
 
+    @logger
     def _get_refresh_token_from_auth_code_param(self) -> str:
         refresh_prefix = "refresh_token:"
         if self.auth_code.startswith(refresh_prefix):  # for testing we allow setting the refresh token directly

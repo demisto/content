@@ -45,11 +45,11 @@ class Client:
             scope='',  # TODO: See if scope is needed
             tenant_id=tenant_id,
             auth_code=auth_code,
-            ok_codes=(200, 201, 202, 204, 400, 401, 403, 404)  # TODO: why are these OK codes?
+            ok_codes=(200, 201, 202, 204)
         )
 
     @logger
-    def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None, is_get_entity_cmd=False):
+    def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None, resp_type='json'):
         if not params:
             params = {}
         if not full_url:
@@ -59,23 +59,64 @@ class Client:
                                           url_suffix=url_suffix,
                                           full_url=full_url,
                                           json_data=data,
-                                          params=params)
+                                          params=params,
+                                           resp_type=resp_type)
 
     @logger
     def list_network_security_groups(self):
         return self.http_request('GET', '')
 
-
     @logger
     def list_rules(self, security_group: str):
         return self.http_request('GET', f'{security_group}/securityRules')
+
+    @logger
+    def delete_rule(self, security_group: str, rule_name: str):
+        return self.http_request('DELETE', f'/{security_group}/securityRules/{rule_name}', resp_type='response')
+
+    @logger
+    def create_rule(self,security_group: str, rule_name: str, properties: dict):
+        return self.http_request('PUT', f'/{security_group}/securityRules/{rule_name}', data={"properties": properties})
+
+    @logger
+    def get_rule(self,security_group: str, rule_name: str):
+        try:
+            return self.http_request('GET', f'/{security_group}/securityRules/{rule_name}')
+        except Exception as e:
+            if '404' in str(e):
+                raise ValueError(f'Rule {rule_name} was not found')
+            raise e
+
+
+'''HELPER FUNCTIONS'''
+
+
+def format_rule(rule_json: dict, security_rule_name: str):
+    """
+    format the rule and create the commandResult object with it
+    Args:
+        rule_json: the json returned from the http_request
+        security_rule_name: the name of the rule
+
+    Returns:
+        CommandResults for the rule
+    """
+    rule_json.update(rule_json.pop('properties', {}))
+
+    hr = tableToMarkdown(f"Rule {security_rule_name}", rule_json, removeNull=True)
+
+    return CommandResults(outputs_prefix='AzureNSG.Rules',
+                          outputs_key_field='id',
+                          outputs=rule_json,
+                          readable_output=hr)
+
 
 
 ''' COMMAND FUNCTIONS '''
 
 
 @logger
-def list_groups_command(client: Client, args: dict) -> dict:
+def list_groups_command(client: Client) -> dict:
     """
 
     Args:
@@ -100,19 +141,18 @@ def list_groups_command(client: Client, args: dict) -> dict:
 
 
 @logger
-def list_rules_command(client: Client, args: dict) -> dict:
+def list_rules_command(client: Client, security_group_name: str) -> dict:
     """
 
     Args:
         client: The MSclient
-        args: args should hold the name of the security group as `security_group_name` (the value could be a
-            comma-seperated list of names).
+        security_group_name: a comma-seperated list of security group names
 
     Returns:
         a list of  rules for the security group
     """
     #TODO: in the yml, check isArray
-    security_groups = argToList(args.get('security_group_name', ''))
+    security_groups = argToList(security_group_name)
     rules = []
     for group in security_groups:
         rules_returned = client.list_rules(group)
@@ -122,12 +162,129 @@ def list_rules_command(client: Client, args: dict) -> dict:
     # We want to flatten the rules `properties` key as this is the more important key and we'd like to be able to display it nicely
     for rule in rules:
         rule.update(rule.pop('properties', {}))
-    hr = tableToMarkdown(f"Rules in {args.get('security_group_name', '')}", rules, removeNull=True)
+    hr = tableToMarkdown(f"Rules in {security_group_name}", rules, removeNull=True)
 
     return CommandResults(outputs_prefix='AzureNSG.Rules',
                           outputs_key_field='id',
                           outputs=rules,
                           readable_output=hr)
+
+
+@logger
+def delete_rule_command(client: Client, security_group_name: str, security_rule_name: str) -> dict:
+    """
+
+    Args:
+        client: The MSClient
+        security_group_name: the name of the security group
+        security_rule_name: The name of the rule to delete
+
+    """
+
+    rule_deleted = client.delete_rule(security_group_name, security_rule_name)
+    if rule_deleted.status_code == 204:
+        raise ValueError(f"Rule {security_rule_name} not found.")
+    if rule_deleted.status_code == 202:
+        return f"Rule {security_rule_name} deleted."
+
+
+@logger
+def create_rule_command(client: Client, security_group_name: str, security_rule_name: str, direction: str,
+                        action: str = 'Allow', protocol: str = 'Any', source: str = 'Any', source_ports: str = '*',
+                        destination: str = 'Any', destination_ports: str = '*', priority: str = '4096',
+                        description: str = None):
+
+    # The reason for using 'Any' as default instead of '*' is to adhere to the standards in the UI.
+    properties = {
+            "protocol": '*' if protocol == 'Any' else protocol,
+            "sourceAddressPrefix": '*' if source == 'Any' else source,
+            "destinationAddressPrefix": '*' if destination == 'Any' else destination,
+            "access": action,
+            "priority": priority,
+            "direction": direction,
+        }
+    source_ports_list = argToList(source_ports)
+    if len(source_ports_list) > 1:
+        properties["sourcePortRanges"] = source_ports_list
+    else:
+        properties["sourcePortRange"] = source_ports
+
+    dest_ports_list = argToList(destination_ports)
+    if len(dest_ports_list) > 1:
+        properties['destinationPortRanges'] = dest_ports_list
+    else:
+        properties['destinationPortRange'] = destination_ports
+
+    if description:
+        properties['description'] = description
+    rule = client.create_rule(security_group_name, security_rule_name, properties)
+
+    return format_rule(rule, security_rule_name)
+
+
+@logger
+def update_rule_command(client: Client, security_group_name: str, security_rule_name: str, direction: str = None,
+                        action: str = None, protocol: str = None, source: str = None, source_ports: str = None,
+                        destination: str = None, destination_ports: str = None, priority: str = None,
+                        description: str = None):
+    """
+    Update an existing rule.
+
+    As I couldn't find a way to just update specific fields, the command gets the existing rule, then updates
+    the wanted fields and sends that as a "new" rule. This will update the rule and not create a new rule.
+
+    Args:
+        client: The MS Client
+        security_group_name: the security group name
+        security_rule_name: The name of the rule to update
+        ... The rest of the arguments are described in the command yml
+
+    Returns:
+    an updated rule
+    """
+
+    rule = client.get_rule(security_group_name, security_rule_name)
+    properties = rule.get('properties')
+
+    updated_properties = assign_params(protocol=protocol, sourceAddressPrefix=source,
+                                       destinationAddressPrefix=destination, access=action, priority=priority,
+                                       direction=direction, description=description)
+    if source_ports:
+        source_ports_list = argToList(source_ports)
+        if len(source_ports_list) > 1:
+            properties.pop("sourcePortRange")  # Can't supply both sourcePortRange and sourcePortRanges
+            updated_properties["sourcePortRanges"] = source_ports_list
+        else:
+            properties.pop("sourcePortRanges")  # Can't supply both sourcePortRange and sourcePortRanges
+            updated_properties["sourcePortRange"] = source_ports
+
+    if destination_ports:
+        dest_ports_list = argToList(destination_ports)
+        if len(dest_ports_list) > 1:
+            properties.pop("destinationPortRange")  # Can't supply both destinationPortRange and destinationPortRanges
+            updated_properties['destinationPortRanges'] = dest_ports_list
+        else:
+            properties.pop("destinationPortRanges")  # Can't supply both destinationPortRange and destinationPortRanges
+            updated_properties['destinationPortRange'] = destination_ports
+
+    properties.update(updated_properties)
+
+    rule = client.create_rule(security_group_name, security_rule_name, properties)
+    return format_rule(rule, security_rule_name)
+
+
+@logger
+def get_rule_command(client: Client, security_group_name: str, security_rule_name: str):
+    rule = client.get_rule(security_group_name, security_rule_name)
+    return format_rule(rule, security_rule_name)
+
+
+@logger
+def test_connection(client, params):
+    if params.get('self_deployed', False) and not params.get('auth_code'):
+        return_error('You must enter an authorization code in a self-deployed configuration.')
+    client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
+    return '✅ Great Success!'
 
 
 ''' MAIN FUNCTION '''
@@ -154,12 +311,20 @@ def main() -> None:
             proxy=params.get('proxy', False)
         )
         commands = {
-            'azure-nsg-list-groups': list_groups_command,
-            'azure-nsg-list-rules': list_rules_command,
+            'azure-nsg-security-groups-list': list_groups_command,
+            'azure-nsg-security-rules-list': list_rules_command,
+            'azure-nsg-test': test_connection,
+            'azure-nsg-security-rules-delete': delete_rule_command,
+            'azure-nsg-security-rules-create': create_rule_command,
+            'azure-nsg-security-rules-update': update_rule_command,
+            'azure-nsg-security-rules-get': get_rule_command,
         }
 
-        return_results(commands[command](client, args))
+        demisto.debug(f"Integration Context: -=-=-=-=-==-\n{demisto.getIntegrationContext()}")
+        if command == 'test-module':
+            raise Exception("Please use !azure-nsg-test instead")
 
+        return_results(commands[command](client, **args))
 
     # Log exceptions and return errors
     except Exception as e:
@@ -173,5 +338,4 @@ from MicrosoftApiModule import *
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
 
