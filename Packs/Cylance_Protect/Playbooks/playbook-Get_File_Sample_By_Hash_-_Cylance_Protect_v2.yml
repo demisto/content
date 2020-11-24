@@ -205,7 +205,7 @@ inputs:
       root: File
       accessor: SHA256
   required: false
-  description: ""
+  description: SHA256 hash of the file.
 - key: unzip
   value: {}
   required: false
@@ -213,6 +213,18 @@ inputs:
     Specifies whether the downloaded file will be unzipped. The command default is 'no'.
     Yes - unzip automatically
     No - will not unzip
-outputs: []
+outputs:
+- contextPath: File.SHA256
+  description: SHA256 hash of the file.
+- contextPath: File.Name
+  description: File name.
+- contextPath: File.Size
+  description: File size.
+- contextPath: File.Safelisted
+  description: Whether the file is on the Safe List.
+- contextPath: File.Timestamp
+  description: Timestamp.
+- contextPath: File.MD5
+  description: MD5 hash of the file.
 tests:
 - No test
