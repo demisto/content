@@ -12,6 +12,11 @@
             "playbookID": "GoogleCalendar-Test",
             "fromversion": "5.0.0"
         },
+      {
+            "integrations": "GoogleDrive",
+            "playbookID": "GoogleDrive-Test",
+            "fromversion": "5.0.0"
+        },
         {
             "integrations": "FireEyeNX",
             "playbookID": "FireEyeNX-Test"
@@ -735,7 +740,7 @@
             "playbookID": "WordTokenizeTest",
             "toversion": "4.5.9"
         },
-                {
+        {
             "integrations": "QRadar",
             "playbookID": "test playbook - QRadarCorrelations",
             "timeout": 2000,
@@ -1876,7 +1881,8 @@
         },
         {
             "integrations": "FireEye HX",
-            "playbookID": "FireEye HX Test"
+            "playbookID": "FireEye HX Test",
+            "timeout": 500
         },
         {
             "integrations": "FireEyeFeed",
@@ -3000,8 +3006,8 @@
             "playbookID": "Endace-Test",
             "fromversion": "5.0.0"
         },
-		{
-			"integrations": "Deep Instinct",
+        {
+            "integrations": "Deep Instinct",
             "playbookID": "Deep_Instinct-Test",
             "fromversion": "5.0.0"
         },
@@ -3144,13 +3150,13 @@
             "integrations": "Whois",
             "fromversion": "4.5.0"
         },
-		{
+        {
             "integrations": "F5 ASM",
             "playbookID": "playbook-F5_ASM-Test",
             "timeout": 600,
             "fromversion": "5.0.0",
             "nightly": true
-		},
+        },
         {
             "playbookID": "Hatching Triage - Detonate File",
             "integrations": "Hatching Triage",
@@ -3159,6 +3165,11 @@
         {
             "integrations": "Talos Feed",
             "playbookID": "FeedTalosTestPlaybook",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Rundeck",
+            "playbookID": "Rundeck_test",
             "fromversion": "5.5.0"
         },
         {
@@ -3178,6 +3189,11 @@
             "integrations": "Generic Webhook",
             "playbookID": "Generic Webhook - Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Palo Alto Networks Enterprise DLP",
+            "playbookID": "Palo_Alto_Networks_Enterprise_DLP - Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
@@ -3266,10 +3282,15 @@
         "Test-BPA": "Issue 28406",
         "SymantecEndpointProtection_Test": "Issue 30157",
         "forcepoint test": "Issue 28043",
-        "Test-BPA_Integration": "Issue 28236"
+        "Test-BPA_Integration": "Issue 28236",
+        "CanaryTools Test": "Issue 30796",
+        "Generic Webhook - Test": "Issue 30797",
+        "Service Desk Plus Test": "Issue 29026",
+        "VxStream Test": "Issue 29280",
+        "palo_alto_firewall_test_pb": "Issue 27501"
     },
     "skipped_integrations": {
-
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
@@ -3368,7 +3389,7 @@
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
@@ -3376,13 +3397,13 @@
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-
+        
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
         "Smokescreen IllusionBLACK": "partner integration",
-
+        
         "_comment5": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Endace": "Issue 24304",
@@ -3391,6 +3412,7 @@
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
+        "FortiManager": "Can only be run within PANW network",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Cymulate": "Partner didn't provided test playbook",
@@ -3497,6 +3519,7 @@
         "Google Resource Manager": "googleclient sdk has time based challenge exchange",
         "Google Cloud Storage": "SDK",
         "GoogleCalendar": "googleclient sdk has time based challenge exchange",
+        "GoogleDrive":  "googleclient sdk has time based challenge exchange",
         "Syslog Sender": "syslog",
         "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
@@ -3554,7 +3577,7 @@
         "Mail Listener v2"
     ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
