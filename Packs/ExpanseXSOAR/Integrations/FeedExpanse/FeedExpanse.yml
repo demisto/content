@@ -161,4 +161,4 @@ script:
   dockerimage: demisto/python3:3.8.6.13358
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- Feed Expanse Test
