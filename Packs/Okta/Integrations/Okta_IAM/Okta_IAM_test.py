@@ -383,7 +383,7 @@ def test_get_app_user_assignment_command(mocker):
     command_result = get_app_user_assignment_command(client, args)
 
     assert command_result.outputs.get('UserID') == 'mock_user_id'
-    assert command_result.outputs.get('application_id') == 'mock_app_id'
+    assert command_result.outputs.get('AppID') == 'mock_app_id'
     assert command_result.outputs.get('IsAssigned') is True
 
 
