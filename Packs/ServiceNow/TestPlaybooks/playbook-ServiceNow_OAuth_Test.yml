@@ -49,7 +49,7 @@ tasks:
       - "2"
     scriptarguments:
       password:
-        simple: @R6wWjITp39m7@Ev5uF#
+        simple: '@R6wWjITp39m7@Ev5uF#'
       username:
         simple: admin_test_Nov2020-01
     separatecontext: false
