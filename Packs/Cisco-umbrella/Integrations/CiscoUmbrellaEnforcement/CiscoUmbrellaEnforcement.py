@@ -13,7 +13,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url, verify, proxy, api_key):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, ok_codes=(200, 202))
         self.api_key = api_key
 
     def get_domains_list(self, suffix: Optional[str], request: Optional[str]):
@@ -73,78 +73,30 @@ def domain_event_add_command(client, args):
     device_id = args.get('device_id')
     dst_domain = args.get('dst_domain')
     dst_url = args.get('dst_url')
-    checkStatus = client.get_domains_list()
-    if checkStatus == "NotExist":
-        status = True
+    # checkStatus = client.get_domains_list()
+    # if checkStatus == "NotExist":
+    #     status = True
+    #
+    # if checkStatus == "NotExist":
 
-    if checkStatus == "NotExist":
+    new_event = {
+        "alertTime": alert_time,
+        "deviceId": device_id,
+        "deviceVersion": "13.7a",  #?????
+        "dstDomain": dst_domain,
+        "dstUrl": dst_url,
+        "eventTime": alert_time,
+        "protocolVersion": "1.0a",
+        "providerName": "Security Platform"
+    }
 
-        new_event = {
-            "alertTime": alert_time,
-            "deviceId": device_id,
-            "deviceVersion": "13.7a",  #?????
-            "dstDomain": dst_domain,
-            "dstUrl": dst_url,
-            "eventTime": alert_time,
-            "protocolVersion": "1.0a",
-            "providerName": "Security Platform"
-        }
-
-        response = client.add_event_to_domain(new_event)
-        r_code = response.status_code
-        if int(r_code) == 202:
-            ActionResult = "Success"
-            status = True
-        else:
-            ActionResult = "Failed"
-            status = False
-
-        # print("Result :", r2_j)
-        # print("Response Code :", r_code)
-
-        human_readable_data = {
-            'Domain': str(domain),
-            'Action Result Code': r_code,
-            'Response :': r2_j['id'],
-            'ActionResult': ActionResult
-        }
-
-        outputs = {
-            'OpenDNSblockDomain': {
-                'Domain': str(domain),
-                'Action Result Code': r_code,
-                'Response :': r2_j['id'],
-                'ActionResult': ActionResult
-            }
-        }
-
-        headers = ['Domain', 'Action Result Code', 'Response', 'ActionResult']
-        human_readable = tableToMarkdown('OpenDNSblockDomain info', human_readable_data, headers=headers,
-                                         removeNull=True)
-        return_outputs(human_readable, outputs, r2_j)
-        return status
+    response = client.add_event_to_domain(new_event)
+    r_code = response.status_code
+    if int(r_code) == 202:
+        ActionResult = f"New event was added successfuly."
     else:
-        human_readable_data = {
-            'Domain': str(domain),
-            'Action Result Code': "Already Blocked",
-            'Response :': "Already Blocked",
-            'ActionResult': "Already Blocked"
-        }
-
-        outputs = {
-            'OpenDNSblockDomain': {
-                'Domain': str(domain),
-                'Action Result Code': "Already Blocked",
-                'Response :': "Already Blocked",
-                'ActionResult': "Already Blocked"
-            }
-        }
-
-        headers = ['Domain', 'Action Result Code', 'Response', 'ActionResult']
-        human_readable = tableToMarkdown('OpenDNSblockDomain info', human_readable_data, headers=headers,
-                                         removeNull=True)
-        return_outputs(human_readable, outputs)
-        return True
+        ActionResult = f"New event's addition failed."
+    return ActionResult
 
 
 def domain_delete_command(client, args):
@@ -191,7 +143,7 @@ def main():
     }
 
     try:
-        client = Client(base_url=base_url, api_key=api_key, verify=verify, proxy=proxy, ok_codes)
+        client = Client(base_url=base_url, api_key=api_key, verify=verify, proxy=proxy)
 
         if command == 'test-module':
             return_results(test_module(client))
