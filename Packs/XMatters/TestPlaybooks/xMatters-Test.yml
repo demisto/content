@@ -1,6 +1,5 @@
 id: xMatters-Test
-version: 8
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: xMatters-Test
 description: Nightly build test
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -284,6 +284,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {

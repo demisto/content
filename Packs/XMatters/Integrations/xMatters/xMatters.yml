@@ -35,7 +35,8 @@ configuration:
   additionalinfo: This is for creating events in xMatters from Cortex XSOAR. Used
     for the xm-trigger-workflow command.
 - display: Fetch Type
-  additionalinfo: In a future release the xMatters incidents will be supported. For now it's just events.
+  additionalinfo: In a future release the xMatters incidents will be supported. For
+    now it's just events.
   name: fetch_type
   defaultvalue: events
   type: 15
@@ -127,11 +128,11 @@ script:
       - HIGH
       description: Priority of the event.
     - name: from
-      description: A date and time in UTC format that represents the start of the time range
-        you want to search. (i.e. `2020-01-01T00:11:22Z`)
+      description: A date and time in UTC format that represents the start of the
+        time range you want to search. (i.e. `2020-01-01T00:11:22Z`)
     - name: to
-      description: A date and time in UTC format that represents the end of the time range
-        you want to search. (i.e. `2020-01-01T00:11:22Z`)
+      description: A date and time in UTC format that represents the end of the time
+        range you want to search. (i.e. `2020-01-01T00:11:22Z`)
     - name: workflow
       description: The name of the workflow the event is tied to.
     - name: form
@@ -146,7 +147,8 @@ script:
     - contextPath: xMatters.GetEvents.Created
       description: The date and time the event was created
     - contextPath: xMatters.GetEvents.Terminated
-      description: The date and time the event was terminated. Populated only if the event is terminated.
+      description: The date and time the event was terminated. Populated only if the
+        event is terminated.
     - contextPath: xMatters.GetEvents.ID
       description: The UUID of the event
     - contextPath: xMatters.GetEvents.Name
@@ -156,7 +158,8 @@ script:
     - contextPath: xMatters.GetEvents.FormName
       description: The name of the form the event is tied to
     - contextPath: xMatters.GetEvents.Status
-      description: The status of the event ACTIVE, SUSPENDED, TERMINATED, TERMINATED_EXTERNAL, SUPRESSED
+      description: The status of the event ACTIVE, SUSPENDED, TERMINATED, TERMINATED_EXTERNAL,
+        SUPRESSED
     - contextPath: xMatters.GetEvents.Priority
       description: The priority of the event. LOW, MEDIUM, HIGH
     - contextPath: xMatters.GetEvents.Properties
@@ -175,7 +178,8 @@ script:
     - contextPath: xMatters.GetEvent.Created
       description: The date and time the event was created
     - contextPath: xMatters.GetEvent.Terminated
-      description: The date and time the event was terminated. Populated only if the event is terminated.
+      description: The date and time the event was terminated. Populated only if the
+        event is terminated.
     - contextPath: xMatters.GetEvent.ID
       description: The UUID of the event
     - contextPath: xMatters.GetEvent.Name
@@ -185,7 +189,8 @@ script:
     - contextPath: xMatters.GetEvent.FormName
       description: The name of the form the event is tied to
     - contextPath: xMatters.GetEvent.Status
-      description: The status of the event ACTIVE, SUSPENDED, TERMINATED, TERMINATED_EXTERNAL, SUPRESSED
+      description: The status of the event ACTIVE, SUSPENDED, TERMINATED, TERMINATED_EXTERNAL,
+        SUPRESSED
     - contextPath: xMatters.GetEvent.Priority
       description: The priority of the event. LOW, MEDIUM, HIGH
     - contextPath: xMatters.GetEvent.Properties

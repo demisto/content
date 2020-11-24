@@ -1,7 +1,6 @@
 commonfields:
-  id: 32a144cd-24a5-412b-8275-76881980dd35
-  version: 9
-vcShouldKeepItemLegacyProdMachine: false
+  id: WaitForKey
+  version: -1
 name: WaitForKey
 script: ''
 type: python
@@ -20,7 +19,9 @@ args:
   defaultValue: "10"
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.8.6.13358
 runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

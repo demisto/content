@@ -31,7 +31,7 @@ def close_task_set_context(args: Dict[str, Any]) -> CommandResults:
 def main():
     try:
         return_results(close_task_set_context(demisto.args()))
-    
+
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute close_task_set_context. Error: {str(ex)}')

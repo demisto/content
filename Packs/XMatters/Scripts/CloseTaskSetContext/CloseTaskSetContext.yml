@@ -1,7 +1,6 @@
 commonfields:
-  id: 3dac9522-11c1-4251-8deb-a96b9a554c39
-  version: 16
-vcShouldKeepItemLegacyProdMachine: false
+  id: CloseTaskSetContext
+  version: -1
 name: CloseTaskSetContext
 script: ''
 type: python
@@ -24,8 +23,10 @@ args:
   description: The comments to place into the context
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.8.6.13358
 runas: DBotWeakRole
 
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
