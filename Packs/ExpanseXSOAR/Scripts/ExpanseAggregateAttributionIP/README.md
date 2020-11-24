@@ -6,7 +6,7 @@ Aggregate entries from multiple sources into AttributionIP
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Tags | expanse |
+| Tags | |
 | Demisto Version | 5.0.0 |
 
 ## Used In
