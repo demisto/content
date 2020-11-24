@@ -1,12 +1,12 @@
 {
  "defaultIncidentType": "Tripwire File Change",
- "description": "",
+ "description": "Classifies Tripwire incidents.",
  "feed": false,
  "id": "Tripwire",
  "keyTypeMap": {
 
  },
- "name": \"Tripwire - Classifier",
+ "name": "Tripwire - Classifier",
  "propagationLabels": [
   "all"
  ],
