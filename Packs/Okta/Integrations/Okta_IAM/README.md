@@ -26,10 +26,12 @@ For more information, please refer to the [Identity Lifecycle Management article
 | isFetch | Fetch incidents | False |
 | incidentFetchInterval | Incidents Fetch Interval | False |
 | incidentType | Incident type | False |
+| auto_generate_query_filter | Automatically generate fetch query filter | False |
 | fetch_query_filter | Fetch Query Filter | True |
 | first_fetch | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
 
 * To allow the integration to access the mapper from within the code, as required by the ILM pack, both mappers have to be configured in their proper respective fields and not in the "Mapper (outgoing)" dropdown list selector.
+* Mark the `Automatically generate fetch query filter` checkbox after you've entered all your Okta application IDs in the ILM settings incident.
 * Generate the `Fetch Query Filter` parameter for okta logs API to retrieve only applications configured in XSOAR. In order to generate the filter, go to Okta's System Log and use the advanced search to retrieve only desired logs.
   For example, to retrieve only additions/removal of users to/from an application with ID "0oae3ioe51sQ64Aui2h7", you will need to use the following filter: `(eventType eq "application.user_membership.add" or eventType eq "application.user_membership.remove") and target.id co "0oae3ioe51sQ64Aui2h7"`.
   For more information about the filtering syntax, visit [Okta's API docs](https://developer.okta.com/docs/reference/api-overview/#filtering).
@@ -255,7 +257,7 @@ Gets a specific user assignment for an application by id.
 
 #### Base Command
 
-`okta-get-assigned-user-for-app`
+`okta-get-app-user-assignment`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -268,20 +270,57 @@ Gets a specific user assignment for an application by id.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.UserAppAssignment.profile | unknown | App-specific profile for the user. | 
-| Okta.UserAppAssignment.created | date | Timestamp when app user was created. | 
-| Okta.UserAppAssignment.externalId | string | ID of user in target app. | 
-| Okta.UserAppAssignment.id | string | Unique ID of the user. | 
-| Okta.UserAppAssignment.status | string | Status of app user. | 
-| Okta.UserAppAssignment.credentials | unknown | Credentials for assigned app. | 
-| Okta.UserAppAssignment.credentials.userName | string | Username of the user. | 
+| Okta.AppUserAssignment.UserID | string | ID of the user. | 
+| Okta.AppUserAssignment.AppID | string | ID of the application. | 
+| Okta.AppUserAssignment.IsAssigned | boolean | True if the user is assigned to the application, false otherwise. | 
 
 
 #### Command Example
-```!okta-get-assigned-user-for-app user_id=00uuv6y8t1iy8YXm94h7 application_id=0oae3ioe51sQ64Aui2h7```
+```!okta-get-app-user-assignment user_id=00uuv6y8t1iy8YXm94h7 application_id=0oae3ioe51sQ64Aui2h7```
 
 #### Human Readable Output
-### Okta User App Assignment
-|id|profile|created|credentials|status|
-|---|---|---|---|---|
-| 00uuv6y8t1iy8YXm94h7 | firstName: Test<br/>lastName: Demisto<br/>groupAdmin: false<br/>resourceViewer: false<br/>admin: false<br/>licensedSheetCreator: false<br/>email: testdemisto2@paloaltonetworks.com | 2020-11-03T09:59:30.000Z | userName: testdemisto2@paloaltonetworks.com | ACTIVE |
+### App User Assignment
+|App ID|Is Assigned|User ID|
+|---|---|---|
+| 0oae3ioe51sQ64Aui2h7 | true | 00uuv6y8t1iy8YXm94h7 |
+
+
+
+### okta-list-applications
+***
+Returns a list of Okta applications data.
+
+
+#### Base Command
+
+`okta-list-applications`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Search for applications by their names. | Optional | 
+| filter | Filters apps by status, user.id or group.id expression. | Optional | 
+| limit | Maximum number of apps to retrieve (maximal value is 200). Default is 50. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Okta.Application.ID | string | ID of the application. | 
+| Okta.Application.Name | string | Name of the application. | 
+| Okta.Application.Label | string | Label of the application. | 
+
+
+#### Command Example
+``` !okta-list-applications limit=5 query="Workday" ```
+
+#### Human Readable Output
+### Okta Applications
+|ID|Name|Label|
+|---|---|---|
+| 0ob8zlypk6GVPRr2T0h7 | workday | Workday - Preview |
+| 0oabz0ozy5dDpEKyA0h7 | workday | Workday - Prod |
+| 0oae3ioe51sQ64Aui2h7 | workday | Workday - Impl1 |
+
+
