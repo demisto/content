@@ -10,11 +10,21 @@ configuration:
   type: 0
 - display: API Key for accessing Lastline APIs
   name: api_key
-  required: true
+  required: false
   type: 0
 - display: API Token for accessing Lastline APIs
   name: api_token
-  required: true
+  required: false
+  type: 4
+- display: Lastline username
+  hidden: false
+  name: username
+  required: false
+  type: 0
+- display: Lastline password
+  hidden: false
+  name: password
+  required: false
   type: 4
 - display: Use system proxy settings
   name: proxy
