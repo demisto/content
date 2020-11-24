@@ -64,7 +64,7 @@ def main():
     for branch_name in stale_contrib_branches:
         try:
             print(f'Deleting {branch_name}')
-            branch_ref = content_repo.get_git_ref(os.path.join('heads', branch_name))
+            branch_ref = content_repo.get_git_ref(f'heads/{branch_name}')
             branch_ref.delete()
         except Exception as e:
             print(f"{t.red}Deletion of {branch_name} encountered an issue: {str(e)}{t.normal}")

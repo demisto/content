@@ -23,6 +23,7 @@ jobs:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
         run: |
           echo "Handling stale contribution base branches (contrib/*)"
+          cd Utils/github_workflow_scripts
           pipenv install --dev
           pipenv run Utils/github_workflow_scripts/close_stale_contrib_branches.py
           echo "Finished deleting stale branches"
