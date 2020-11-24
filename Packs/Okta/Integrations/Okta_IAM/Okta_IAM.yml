@@ -367,3 +367,5 @@ script:
 tests:
 - No tests
 fromversion: 6.0.0
+defaultmapperin: Okta IAM (mapper)
+defaultclassifier: Workday Classifier
