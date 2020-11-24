@@ -1,5 +1,4 @@
-import time
-from CiscoUmbrellaEnforcement import Client, domains_list_suffix
+from CiscoUmbrellaEnforcement import domains_list_suffix
 
 
 def test_domains_list_suffix():

@@ -84,6 +84,7 @@ script:
     name: umbrella-domains-list
     outputs:
     - contextPath: CiscoUmbrellaEnforcement.domain
+      description: Domain list.
       type: String
   - arguments:
     - default: false
@@ -102,7 +103,7 @@ script:
     description: Delete domain.
     execution: false
     name: umbrella-domain-delete
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: false
   longRunning: true
