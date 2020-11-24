@@ -197,7 +197,7 @@ def test_query_logs_command_transform_results():
 
     # test with transform_results options, should transform to common context
     _, results_xform, _ = query_logs_command(
-        {'limit': '1', 'query': 'SELECT * FROM `firewall.traffic`', 'transform_results': 'No'},
+        {'limit': '1', 'query': 'SELECT * FROM `firewall.traffic`', 'transform_results': 'false'},
         MockClient()
     )
     assert results_xform == {'CDL.Logging': [cdl_record]}
