@@ -3534,7 +3534,7 @@
         "EWSO365": "oproxy dependent",
         "QRadar": "Playbooks has parallel steps which are causing inconsistent results",
         "MISP V2": "Issue 26905",
-        "Tripwire": "because of dev bug that first recording does not work with proxy. will remove"
+        "Tripwire": "because of dev bug that first recording does not work with proxy. will remove",
     },
     "parallel_integrations": [
         "SNDBOX",
