@@ -507,13 +507,15 @@ def test_fetch_incidents(requests_mock) -> None:
         outputs.append(investigation)
 
     assert last_fetch_timestamp + 1 == response[0]['last_fetch']
-    assert response[1] == [{
-        'name': 'Joe enabled account Joebob',
-        'occurred': '2018-06-06T16:56:42.000Z',
-        'rawJSON': outputs[0]['rawJSON'],
-    },
-    {
-        'name': 'Hello',
-        'occurred': '2018-06-06T16:56:43.000Z',
-        'rawJSON': outputs[1]['rawJSON'],
-    }]
+    assert response[1] == [
+        {
+            'name': 'Joe enabled account Joebob',
+            'occurred': '2018-06-06T16:56:42.000Z',
+            'rawJSON': outputs[0]['rawJSON'],
+        },
+        {
+            'name': 'Hello',
+            'occurred': '2018-06-06T16:56:43.000Z',
+            'rawJSON': outputs[1]['rawJSON'],
+        }
+    ]
