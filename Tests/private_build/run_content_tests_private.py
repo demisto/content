@@ -22,7 +22,7 @@ from Tests.test_content import SettingsTester, ParallelPrintsManager, DataKeeper
     print_test_summary, update_test_msg, turn_off_telemetry, \
     create_result_files, get_all_tests, get_instances_ips_and_names, get_server_numeric_version, \
     initialize_queue_and_executed_tests_set, get_test_records_of_given_test_names, \
-    extract_filtered_tests, load_conf_files, set_integration_params, collect_integrations, notify_failed_test,\
+    extract_filtered_tests, load_conf_files, set_integration_params, collect_integrations, notify_failed_test, \
     SERVER_URL
 
 # Disable insecure warnings
@@ -86,8 +86,8 @@ def run_test_logic(tests_settings: Any, c: Any, failed_playbooks: list,
     :param thread_index: Integer indicating what thread the test is running on.
     :return: Boolean indicating if the test was successful.
     """
-    status, inc_id = check_integration(c, server_url, demisto_user, demisto_pass, integrations, playbook_id, prints_manager,
-                                       test_options, thread_index=thread_index)
+    status, inc_id = check_integration(c, server_url, demisto_user, demisto_pass, integrations, playbook_id,
+                                       prints_manager, test_options, thread_index=thread_index)
     if status == PB_Status.COMPLETED:
         prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color,
                                      thread_index,
@@ -144,7 +144,8 @@ def run_test(tests_settings: SettingsTester, demisto_user: str, demisto_pass: st
     :return: No object is returned.
     """
     start_message = f'------ Test {test_message} start ------'
-    client = demisto_client.configure(base_url=server_url, username=demisto_user, password=demisto_pass, verify_ssl=False)
+    client = demisto_client.configure(base_url=server_url, username=demisto_user, password=demisto_pass,
+                                      verify_ssl=False)
     prints_manager.add_print_job(start_message + ' (Private Build Test)', print, thread_index,
                                  include_timestamp=True)
     run_test_logic(tests_settings, client, failed_playbooks, integrations, playbook_id,
@@ -159,15 +160,12 @@ def run_test(tests_settings: SettingsTester, demisto_user: str, demisto_pass: st
 
 
 def run_private_test_scenario(tests_settings: SettingsTester, t: dict, default_test_timeout: int,
-                              skipped_tests_conf: set,
-                              nightly_integrations: list, skipped_integrations_conf: set,
-                              skipped_integration: set, run_all_tests: bool, is_filter_configured: bool,
-                              filtered_tests: list, skipped_tests: set, secret_params: dict,
-                              failed_playbooks: list, playbook_skipped_integration: set,
-                              succeed_playbooks: list, slack: str, circle_ci: str, build_number: str,
-                              server: str, build_name: str, server_numeric_version: str, demisto_user: str,
-                              demisto_pass: str, demisto_api_key: str, prints_manager: ParallelPrintsManager,
-                              thread_index: int = 0):
+                              skipped_tests_conf: set, nightly_integrations: list, skipped_integrations_conf: set,
+                              skipped_integration: set, filtered_tests: list, skipped_tests: set, secret_params: dict,
+                              failed_playbooks: list, playbook_skipped_integration: set, succeed_playbooks: list,
+                              slack: str, circle_ci: str, build_number: str, server: str, build_name: str,
+                              server_numeric_version: str, demisto_user: str, demisto_pass: str, demisto_api_key: str,
+                              prints_manager: ParallelPrintsManager, thread_index: int = 0):
     """
     Checks to see if test should run given the scenario. If the test should run, it will collect the
     integrations which are required to run the test.
@@ -180,8 +178,6 @@ def run_private_test_scenario(tests_settings: SettingsTester, t: dict, default_t
     :param nightly_integrations: List of integrations which should only be tested on a nightly build.
     :param skipped_integrations_conf: Collection of integrations which are skiped.
     :param skipped_integration: Set of skipped integrations. Currently not used in private.
-    :param run_all_tests: Boolean. True if 'Run all tests' is present in the test filter.
-    :param is_filter_configured: Boolean indicating if there are items in the test filter.
     :param filtered_tests: List of tests excluded from testing.
     :param skipped_tests: List of skipped tests.
     :param secret_params: Parameters found in the content-test-conf. Used to configure the instance.
@@ -226,10 +222,9 @@ def run_private_test_scenario(tests_settings: SettingsTester, t: dict, default_t
     if playbook_id in filtered_tests:
         playbook_skipped_integration.update(test_skipped_integration)
 
-    if not run_all_tests:
-        # Skip filtered test
-        if is_filter_configured and playbook_id not in filtered_tests:
-            return
+    # Skip tests that are missing from filtered list
+    if filtered_tests and playbook_id not in filtered_tests:
+        return
 
     # Skip bad test
     if playbook_id in skipped_tests_conf:
@@ -307,7 +302,7 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
-    filtered_tests, is_filter_configured, run_all_tests = extract_filtered_tests()
+    filtered_tests = extract_filtered_tests()
 
     if not tests or len(tests) == 0:
         prints_manager.add_print_job('no integrations are configured for test', print, thread_index)
@@ -339,7 +334,7 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
                 executed_in_current_round, prints_manager, t, thread_index)
             run_private_test_scenario(tests_settings, t, default_test_timeout, skipped_tests_conf,
                                       nightly_integrations, skipped_integrations_conf,
-                                      skipped_integration, run_all_tests, is_filter_configured,
+                                      skipped_integration,
                                       filtered_tests, skipped_tests, secret_params,
                                       failed_playbooks, playbook_skipped_integration,
                                       succeed_playbooks, slack, circle_ci, build_number, server,
