@@ -231,6 +231,8 @@ def feed_main(params, feed_name, prefix):
     handle_proxy()
     client = Client(**params)
     indicator_type = params.get('indicator_type')
+    auto_detect = params.get('auto_detect_type')
+
     feedTags = argToList(params.get('feedTags'))
     limit = int(demisto.args().get('limit', 10))
     command = demisto.command()
@@ -243,14 +245,12 @@ def feed_main(params, feed_name, prefix):
             return_results(test_module(client, limit))
 
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, indicator_type, feedTags,
-                                                  params.get('auto_detect_type'))
+            indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
 
         elif command == f'{prefix}get-indicators':
             # dummy command for testing
-            auto_detect = params.get('auto_detect_type')
             indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect, limit)
             hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
             return_results(CommandResults(readable_output=hr, raw_response=indicators))

@@ -41,16 +41,16 @@ def test_build_iterator_paging():
     url_page1 = 'https://api.intelgraph.idefense.com/rest/threatindicator/v0/ip?page_size=200&page=1'
     status_code = 200
     json_data_page1 = {"results": [{"display_text": "2.2.2.2"}, {"display_text": "1.1.1.1"}],
-                       "total_size": 100,
+                       "total_size": 4,
                        "page": 1,
-                       "page_size": 2,
+                       "page_size": 200,
                        "more": True}
 
     url_page2 = 'https://api.intelgraph.idefense.com/rest/threatindicator/v0/ip?page_size=200&page=2'
     json_data_page2 = {"results": [{"display_text": "3.3.3.3"}, {"display_text": "4.4.4.4"}],
-                       "total_size": 100,
-                       "page": 1,
-                       "page_size": 50,
+                       "total_size": 4,
+                       "page": 2,
+                       "page_size": 200,
                        "more": False}
 
     with requests_mock.Mocker() as m:

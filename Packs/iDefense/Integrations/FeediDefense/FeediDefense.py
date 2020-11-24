@@ -12,10 +12,9 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
     page_number = integration_context.get(f'{current_indicator_type}_page', 1)
 
     more_indicators = True
-    is_limit_reached = False
     params['page_size'] = 200
     result: list = []
-    while more_indicators and not is_limit_reached:
+    while more_indicators:
         params['page'] = page_number
         r = requests.get(
             url=feed.get('url', client.url),
@@ -30,14 +29,15 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
         try:
             r.raise_for_status()
             data = r.json()
-            result = result + jmespath.search(expression=feed.get('extractor'), data=data)
+            result.extend(jmespath.search(expression=feed.get('extractor'), data=data))
             more_indicators = data.get('more')
             page_number += 1
             if not more_indicators:
                 set_integration_context({f'{current_indicator_type}_page': 1})
             if len(result) >= limit:
-                is_limit_reached = True
-                set_integration_context({f'{current_indicator_type}_page': page_number})
+                set_integration_context({f'{current_indicator_type}_page': page_number})  # When reach the limit for
+                # one fetching, save next page number in order to start from him at the next fetch
+                break
 
         except ValueError as VE:
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
