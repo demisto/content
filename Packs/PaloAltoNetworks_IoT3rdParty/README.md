@@ -1,7 +1,7 @@
 ## Palo Alto Networks IoT 3rd Party Integrations Content Pack
 ---
 
-This content pack enables Palo Alto Networks IoT solution to integrate with 3rd party solutions like SIEM, Cisco ISE and Service Now.
+This content pack enables Palo Alto Networks IoT solution to integrate with 3rd party products like SIEM, Cisco ISE and Service Now.
 
 ### Palo Alto Networks IoT 3rd Party Integration
 ---
