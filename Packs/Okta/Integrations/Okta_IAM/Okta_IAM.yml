@@ -67,6 +67,19 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- display: Automatically generate fetch query filter
+  defaultvalue: 'false'
+  name: auto_generate_query_filter
+  required: false
+  type: 8
+  additionalinfo: If checked, the fetch query filter will be automatically generated from
+    the IAM configuration incident. Otherwise, the Fetch Query Filter parameter will be used.
+- display: Fetch Query Filter
+  name: fetch_query_filter
+  required: false
+  type: 0
+  additionalinfo: Generate a query filter for okta logs API to retrieve only applications
+    configured in XSOAR. To generate the filter, go to Okta's System Log and use the advanced search.
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -328,7 +341,8 @@ script:
       description: Filters apps by status, user.id or group.id expression.
     - name: limit
       required: false
-      description: Maximum number of apps to retrieve.
+      defaultValue: '50'
+      description: Maximum number of apps to retrieve (maximal value is 200).
     outputs:
     - contextPath: Okta.Application.ID
       description: ID of the application.
@@ -336,7 +350,10 @@ script:
     - contextPath: Okta.Application.Name
       description: Name of the application.
       type: string
-    description: Returns a list of applications' IDs and names.
+    - contextPath: Okta.Application.Label
+      description: Label of the application.
+      type: string
+    description: Returns a list of Okta applications data.
   dockerimage: demisto/python3:3.8.6.13358
   isfetch: true
   longRunning: false

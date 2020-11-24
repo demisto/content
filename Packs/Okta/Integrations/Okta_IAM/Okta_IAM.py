@@ -125,23 +125,25 @@ class Client(BaseClient):
 
     def list_apps(self, query, query_filter, limit):
         query_params = {
-            'q': query,
-            'filter': query_filter,
-            'limit': limit
+            'q': encode_string_results(query),
+            'filter': encode_string_results(query_filter),
+            'limit': encode_string_results(limit)
         }
         res = self._http_request(
             method='GET',
             url_suffix='/apps',
             params=query_params
         )
+        return res
 
-    def get_logs(self, last_run_time=None, time_now=None):
+    def get_logs(self, last_run_time=None, time_now=None, query_filter=None, auto_generate_filter=False):
         logs = []
 
         uri = 'logs'
-        query_filter = get_query_filter()
 
-        demisto.debug('okta fetch: ' + str(query_filter))
+        if auto_generate_filter:
+            query_filter = get_query_filter()
+
         params = {
             'filter': encode_string_results(query_filter),
             'since': encode_string_results(last_run_time),
@@ -481,7 +483,8 @@ def get_app_user_assignment_command(client, args):
     return CommandResults(
         outputs=outputs,
         outputs_prefix='Okta.AppUserAssignment',
-        outputs_key_field=['UserID', 'AppID']
+        outputs_key_field=['UserID', 'AppID'],
+        readable_output=tableToMarkdown('App User Assignment', outputs, headerTransform=pascalToSpace)
     )
 
 
@@ -490,16 +493,26 @@ def list_apps_command(client, args):
     query_filter = args.get('filter')
     limit = min(int(args.get('limit')), 200)
 
-    applications = client.list_apps(query, query_filter, limit)  # todo: complete if needed
+    applications = client.list_apps(query, query_filter, limit)
+
+    outputs = []
+
+    for app in applications:
+        outputs.append({
+            'ID': app.get('id'),
+            'Name': app.get('name'),
+            'Label': app.get('label')
+        })
 
     return CommandResults(
-        outputs=applications,
+        outputs=outputs,
         outputs_prefix='Okta.Application',
-        outputs_key_field='id'
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Okta Applications', outputs, headers=['ID', 'Name', 'Label'])
     )
 
 
-def fetch_incidents(client, last_run, first_fetch_str, fetch_limit):
+def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter=None, auto_generate_filter=False):
     """ If no events were saved from last run, returns new events from Okta's /log API. Otherwise,
     returns the events from last run. In both cases, no more than `fetch_limit` incidents will be returned,
     and the rest of them will be saved for next run.
@@ -509,6 +522,8 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit):
             last_run: (dict) The "last run" object that was set on the previous run.
             first_fetch_str: (str) First fetch time parameter (e.g. "1 day", "2 months", etc).
             fetch_limit: (int) Maximum number of incidents to return.
+            query_filter: (str) Logs API query filter.
+            auto_generate_filter: (bool) Whether or not to automatically generate the query filter.
         Returns:
             incidents: (dict) Incidents/events that will be created in Cortex XSOAR
             next_run: (dict) The "last run" object for the next run.
@@ -522,7 +537,7 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit):
 
     demisto.debug(f'Okta: Fetching logs from {last_run_time} to {time_now}.')
     if not incidents:
-        log_events = client.get_logs(last_run_time, time_now)
+        log_events = client.get_logs(last_run_time, time_now, query_filter, auto_generate_filter)
         for entry in log_events:
             # mapping is done at the classification and mapping stage
             incident = {
@@ -558,6 +573,8 @@ def main():
 
     first_fetch_str = params.get('first_fetch')
     fetch_limit = int(params.get('max_fetch'))
+    auto_generate_query_filter = params.get('auto_generate_query_filter')
+    fetch_query_filter = params.get('fetch_query_filter')
 
     headers = {
         'Content-Type': 'application/json',
@@ -610,7 +627,8 @@ def main():
 
         elif command == 'fetch-incidents':
             last_run = demisto.getLastRun()
-            incidents, next_run = fetch_incidents(client, last_run, first_fetch_str, fetch_limit)
+            incidents, next_run = fetch_incidents(client, last_run, first_fetch_str, fetch_limit,
+                                                  fetch_query_filter, auto_generate_query_filter)
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)
 
