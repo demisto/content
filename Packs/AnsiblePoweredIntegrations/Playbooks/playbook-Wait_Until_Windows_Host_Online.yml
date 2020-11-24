@@ -189,4 +189,4 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
-description: 6.0.0
+description: Pauses execution until the Windows host responds to a ping over WinRM.
