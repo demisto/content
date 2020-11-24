@@ -233,7 +233,7 @@ def upload_command(client: Client, arguments: Dict[str, Any]):
     readable_output = tableToMarkdown(
         'Upload Results',
         remove_empty_elements(results_data),
-        headers=( 'id', 'operation', 'created_at', 'status'),
+        headers=('id', 'operation', 'created_at', 'status'),
         headerTransform=string_to_table_header,
     )
 
@@ -299,7 +299,7 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
     results = client.check_status(arguments)
     raise_error_if_no_data(results)
     format_operation_title(results)
-    results_data = results.get('data')
+    results_data = results.get('data', {})
 
     # If checking on an download to entry operation, manually change the operation name
     # This is because the 'download as entry' operation is our variation on the export to url operation,
@@ -417,7 +417,7 @@ def test_module(client: Client):
                'many requests. Please try again later.'
 
 
-def format_operation_title(results: Dict[str, any]):
+def format_operation_title(results: Dict[str, Any]):
     """
     This function is being used in order to change the titles of the operations that are done by the API and are
     returned in the response to titles that makes more sense for the users actions, and matches the API's use in
@@ -430,8 +430,7 @@ def format_operation_title(results: Dict[str, any]):
     title_exchange_dict = {
         'import/url': 'upload/url',
         'import/upload': 'upload/entry',
-        'export/url': 'download/url'
-        }
+        'export/url': 'download/url'}
 
     operation = results['data']['operation']
 

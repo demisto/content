@@ -40,8 +40,8 @@ def test_upload_valid_url(mocker):
     raw_response = util_load_json('./test_data/upload_url_response.json')
     raw_response['data']['operation'] = 'upload/url'
     readable_output = tableToMarkdown('Upload Results', remove_empty_elements(raw_response.get('data')),
-        headers=('id', 'operation', 'created_at', 'status'),
-        headerTransform=string_to_table_header,
+                                      headers=('id', 'operation', 'created_at', 'status'),
+                                      headerTransform=string_to_table_header,
                                       )
 
     assert results.outputs == remove_empty_elements(raw_response.get('data'))
