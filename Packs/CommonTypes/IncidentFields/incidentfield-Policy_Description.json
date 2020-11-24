@@ -6,6 +6,7 @@
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
+        "Microsoft CAS Alert",
 		"Tripwire File Change"
 	],
 	"breachScript": "",
@@ -38,6 +39,7 @@
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
+        "Microsoft CAS Alert",
 		"Tripwire File Change"
 	],
 	"threshold": 72,
