@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Cisco_OpenDNS
+  id: Cisco Umbrella Enforcement
   version: -1
 configuration:
 - defaultvalue: https://s-platform.api.opendns.com/1.0/
@@ -9,7 +9,7 @@ configuration:
   required: true
   type: 0
 - display: API Key
-  name: APIKey
+  name: api_key
   required: true
   type: 4
 - display: Trust any certificate (not secure)
@@ -20,48 +20,44 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Long running instance
-  name: longRunning
-  required: false
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-description: Cisco OpenDNS Integration , add and remove domain  to/from Custom Integration
-  List
-display: Cisco_OpenDNS
-name: Cisco_OpenDNS
+description: Cisco OpenDNS Integration , add and remove domain  to/from Custom Integration List
+display: Cisco Umbrella Enforcement
+name: Cisco Umbrella Enforcement
 script:
   commands:
   - arguments:
     - default: true
-      description: Domain
+      description: Enter the domain you would like to categorize (e.g. amazon.com)
+      isArray: false
       name: domain
       required: true
-    description: Open DNS  Block Domain
-    name: open-dns-block-domain
-    - arguments: []
-    description: Gel List of all Blaclist Items
-    name: OpenDNSgetBlackList
-  - arguments:
-    - description: Domain
-      name: domain
-      required: true
-    description: Check if Domain already exist on the Blacklist
-    name: OpenDNScheckDomainInBlackList
-  - arguments:
-    - description: Domainto be deleted
-      name: domain
-      required: true
-    name: OpenDNSdeleteDomain
+      secret: false
+    deprecated: false
+    description: Returns the category of a domain. e.g. domain=amazon.com returns Ecommerce/Shopping
+    execution: false
+    name: umbrella-domain-categorization
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+      type: string
+    - contextPath: Domain.SecurityCategories
+      description: The Umbrella security category, or categories, that match this domain
+      type: string
+    - contextPath: Domain.ContentCategories
+      description: The Umbrella content category or categories that match this domain
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+      type: string
   dockerimage: demisto/python3:3.8.6.12176
   longRunning: true
   runonce: true
   script: ''
   subtype: python3
   type: python
-  dockerimage45: demisto/python3:3.7.4.2245
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)

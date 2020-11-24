@@ -16,8 +16,12 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.api_key = api_key
 
-    def get_domains_list(self):
-        return self._http_request('GET', f"domains?customerKey={self.api_key}")
+    def get_domains_list(self, request: Optional[str]):
+        if request:
+            res = self._http_request('GET', full_url=request)
+        else:
+            res = self._http_request('GET', f"domains?customerKey={self.api_key}")
+        return res
 
     def delete_domains(self, domain):
         return self._http_request('POST', f"domains?customerKey={self.api_key}&where[name]={domain}")
@@ -26,30 +30,28 @@ class Client(BaseClient):
         return self._http_request('POST', f"events?customerKey={self.api_key}", json_data=event)
 
 
+def create_domain_list(client, response):
+    full_domains_list = []
+    while response:
+        response_data = response["data"]
+        for domain in response_data:
+            full_domains_list.append(domain.get('name'))
+        response_next_page = response["meta"]["next"]
+        response = client.get_domains_list(response_next_page) if response_next_page else {}
+    return full_domains_list
+
+
 def domains_list_command(client, args):
     response = client.get_domains_list()
-    metadata = response["meta"]
-    mydata = response["data"]
-    nextPage = response["meta"]["next"]
-    while nextPage:
-        r = requests.get(nextPage)
-        r_j = r.json()
-        metadata = r_j["meta"]
-        mydata.extend(r_j["data"])
-        nextPage = r_j["meta"]["next"]
-    i = 0
-    finalData = []
-    while i < len(mydata):
-        finalData.append(mydata[i]["name"])
-        i = i + 1
-    return finalData
+    return create_domain_list(response)
 
 
 def domain_event_add_command(client, args):
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    checkStatus = client.get_domains_list(domain)
+    domain = args.get('domain')
+    checkStatus = client.get_domains_list()
     if checkStatus == "NotExist":
         status = True
 
@@ -66,7 +68,6 @@ def domain_event_add_command(client, args):
             "providerName": "Security Platform"
         }
 
-        # print("my object : ", myobj)
         r2 = requests.post(myEventsrequest, json=myobj, verify=False)
         r2_j = r2.json()
         r_code = r2.status_code
@@ -132,14 +133,13 @@ def domain_event_add_command(client, args):
 
 
 def domain_delete_command(client, args):
+    domain = args.get('domain')
     response = client.delete_domain(domain)
-    r_code = response.status_code
-    # print("delRequest status ", r_code)
-    if int(r_code) == 204:
-        message = domain + " Domain was removed from blacklist"
+    if int(response.status_code) == 204:
+        message = f"{domain} Domain was removed from blacklist"
     else:
-        message = domain + " Not in the blacklist or Error"
-    demisto.results(message)
+        message = f"{domain} Not in the blacklist or Error"
+    return message
 
 
 def test_module(client):
