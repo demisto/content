@@ -51,7 +51,7 @@ configuration:
   type: 15
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
-  display: Indicator Expiration Method
+  display: ''
   options:
   - never
   - interval

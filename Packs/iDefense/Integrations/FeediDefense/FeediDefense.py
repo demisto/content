@@ -3,9 +3,8 @@ from CommonServerPython import *
 from JSONFeedApiModule import *  # noqa: E402
 
 
-def custom_build_iterator(client: Client, feed: Dict, **kwargs) -> List:
+def custom_build_iterator(client: Client, feed: Dict, limit: int = 50000, **kwargs) -> List:
     params: dict = feed.get('filters', {})
-    fetch_indicators_limit = 50000
     current_indicator_type = feed.get('indicator_type')
     integration_context = get_integration_context()
     page_number = integration_context.get(f'{current_indicator_type}_page', 1)
@@ -34,7 +33,7 @@ def custom_build_iterator(client: Client, feed: Dict, **kwargs) -> List:
             page_number += 1
             if not more_indicators:
                 set_integration_context({f'{current_indicator_type}_page': 1})
-            if len(result) > fetch_indicators_limit:
+            if len(result) >= limit:
                 is_limit_reached = True
                 set_integration_context({f'{current_indicator_type}_page': page_number})
 

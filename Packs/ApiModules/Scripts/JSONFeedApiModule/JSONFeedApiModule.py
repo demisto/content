@@ -96,18 +96,18 @@ class Client:
         return result
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, limit) -> str:
     for feed_name, feed in client.feed_name_to_config.items():
         build_iterator_paging = feed.get('build_iterator_paging')
         if build_iterator_paging:
-            build_iterator_paging(client, feed)
+            build_iterator_paging(client, feed, limit)
         else:
             client.build_iterator(feed)
     return 'ok'
 
 
-def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool, **kwargs) \
-        -> Union[Dict, List[Dict]]:
+def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool,
+                             limit: int = 0, **kwargs) -> Union[Dict, List[Dict]]:
     """
     Fetches the indicators from client.
     :param client: Client of a JSON Feed
@@ -119,10 +119,17 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
     for feed_name, feed in client.feed_name_to_config.items():
         build_iterator_paging = feed.get('build_iterator_paging')
         if build_iterator_paging:
-            feeds_results[feed_name] = build_iterator_paging(client, feed, **kwargs)
+            demisto.debug("Got a custom function to handle with pagination, "
+                          "Going to use this function instead build_iterator function")
+            indicators_from_feed = build_iterator_paging(client, feed, limit, **kwargs)
+            if isinstance(indicators_from_feed, list):
+                feeds_results[feed_name] = indicators_from_feed
+            else:
+                demisto.debug("Custom function to handle with pagination must have a list as a return type")
         else:
             feeds_results[feed_name] = client.build_iterator(feed, **kwargs)
 
+    service_limit = 1
     for service_name, items in feeds_results.items():
         feed_config = client.feed_name_to_config.get(service_name, {})
         indicator_field = feed_config.get('indicator') if feed_config.get('indicator') else 'indicator'
@@ -161,6 +168,10 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             indicator['rawJSON'] = item
 
             indicators.append(indicator)
+            if limit and service_limit >= limit:
+                service_limit = 0
+                break
+            service_limit += 1
 
     return indicators
 
@@ -221,6 +232,7 @@ def feed_main(params, feed_name, prefix):
     client = Client(**params)
     indicator_type = params.get('indicator_type')
     feedTags = argToList(params.get('feedTags'))
+    limit = int(demisto.args().get('limit', 10))
     command = demisto.command()
     if prefix and not prefix.endswith('-'):
         prefix += '-'
@@ -228,7 +240,7 @@ def feed_main(params, feed_name, prefix):
         demisto.info(f'Command being called is {demisto.command()}')
     try:
         if command == 'test-module':
-            return_results(test_module(client))
+            return_results(test_module(client, limit))
 
         elif command == 'fetch-indicators':
             indicators = fetch_indicators_command(client, indicator_type, feedTags,
@@ -238,9 +250,8 @@ def feed_main(params, feed_name, prefix):
 
         elif command == f'{prefix}get-indicators':
             # dummy command for testing
-            limit = int(demisto.args().get('limit', 10))
             auto_detect = params.get('auto_detect_type')
-            indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect)[:limit]
+            indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect, limit)
             hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
             return_results(CommandResults(readable_output=hr, raw_response=indicators))
 
