@@ -44,7 +44,7 @@ class Client(BaseClient):
         res = self._http_request(
             method='POST',
             url_suffix=uri,
-            data=json.dumps(user_data)
+            json_data=user_data
         )
         return res.get('result')
 
@@ -53,7 +53,7 @@ class Client(BaseClient):
         res = self._http_request(
             method='PATCH',
             url_suffix=uri,
-            data=json.dumps(user_data)
+            json_data=user_data
         )
         return res.get('result')
 
