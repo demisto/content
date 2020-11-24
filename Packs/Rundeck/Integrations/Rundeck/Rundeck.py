@@ -1320,9 +1320,6 @@ def main() -> None:
         elif demisto.command() == "rundeck-adhoc-script-run-from-url":
             result = adhoc_script_run_from_url_command(client, args)
             return_results(result)
-        elif demisto.command() == "rundeck-webhook-event-send":
-            result = webhook_event_send_command(client, args)
-            return_results(result)
 
     # Log exceptions and return errors
     except Exception as e:
