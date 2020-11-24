@@ -6,7 +6,7 @@
  "keyTypeMap": {
 
  },
- "name": "Tripwire - Classifier",
+ "name": \"Tripwire - Classifier",
  "propagationLabels": [
   "all"
  ],
