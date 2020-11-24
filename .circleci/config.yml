@@ -545,7 +545,7 @@ jobs:
       - unless:
           condition: << pipeline.parameters.instance_tests >>
           steps:
-            - *restore_cache
+            #- *restore_cache
             - *add_ssh_keys
             - *prepare_environment
             - *secrets
