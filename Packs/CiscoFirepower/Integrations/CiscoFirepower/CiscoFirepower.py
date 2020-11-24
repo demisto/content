@@ -14,7 +14,8 @@ INTEGRATION_NAME = 'Cisco Firepower'
 INTEGRATION_CONTEXT_NAME = 'CiscoFP'
 
 OUTPUT_KEYS_DICTIONARY = {
-    'id': 'ID'
+    'id': 'ID',
+    'url': 'URL'
 }
 
 
