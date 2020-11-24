@@ -5,7 +5,9 @@ import argparse
 import shutil
 import logging
 import re
+from typing import Tuple
 from zipfile import ZipFile
+from google.cloud.storage import Blob, Bucket
 
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, \
@@ -17,7 +19,7 @@ LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/pa
                               r'[A-Za-z0-9-_]+\.zip$)')
 
 
-def get_pack_names(target_packs):
+def get_pack_names(target_packs: str) -> set:
     """
     Retrieves the paths of all relevant packs (that aren't ignored)
 
@@ -46,8 +48,8 @@ def get_pack_names(target_packs):
         sys.exit(1)
 
 
-def copy_index(index_folder_path, build_index_blob, build_index_generation, production_bucket,
-               build_bucket):
+def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_generation: str, production_bucket: Bucket,
+               build_bucket: Bucket):
     """ Copies the build bucket index to the production bucket index path.
 
     Args:
@@ -88,7 +90,8 @@ def copy_index(index_folder_path, build_index_blob, build_index_generation, prod
         shutil.rmtree(index_folder_path)
 
 
-def upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket):
+def upload_core_packs_config(production_bucket: Bucket, build_number: str, extract_destination_path: str,
+                             build_bucket: Bucket):
     """Uploads corepacks.json file configuration to bucket. Corepacks file includes core packs for server installation.
 
      Args:
@@ -136,7 +139,7 @@ def upload_core_packs_config(production_bucket, build_number, extract_destinatio
     logging.success(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.")
 
 
-def download_and_extract_index(build_bucket, extract_destination_path):
+def download_and_extract_index(build_bucket: Bucket, extract_destination_path: str):
     """Downloads and extracts production and build indexes zip from cloud storage.
 
     Args:
@@ -185,7 +188,7 @@ def download_and_extract_index(build_bucket, extract_destination_path):
         sys.exit(1)
 
 
-def get_successful_and_failed_packs(packs_results_file_path):
+def get_successful_and_failed_packs(packs_results_file_path: str) -> Tuple[dict, dict]:
     """ Loads the packs_results.json file to get the successful and failed packs dicts
 
     Args:
@@ -204,7 +207,7 @@ def get_successful_and_failed_packs(packs_results_file_path):
     return {}, {}
 
 
-def copy_id_set(production_bucket, build_bucket):
+def copy_id_set(production_bucket: Bucket, build_bucket: Bucket):
     """ Copies the id_set.json artifact from the build bucket to the production bucket.
 
     Args:
@@ -229,7 +232,7 @@ def copy_id_set(production_bucket, build_bucket):
         logging.success("Finished uploading id_set.json to storage.")
 
 
-def verify_copy(successful_packs, pc_successful_packs_dict):
+def verify_copy(successful_packs: list, pc_successful_packs_dict: dict):
     """ Verify that all uploaded packs from Prepare were copied & verify that no packs were mistakenly copied
 
     Args:
@@ -245,6 +248,20 @@ def verify_copy(successful_packs, pc_successful_packs_dict):
     error_str += f"Packs not copied: {', '.join(not_uploaded)}\n" if not_uploaded else ""
     error_str += f"Packs mistakenly copied: {', '.join(mistakenly_uploaded)}\n" if mistakenly_uploaded else ""
     assert not not_uploaded and not mistakenly_uploaded, error_str
+
+
+def check_if_need_to_upload(pc_successful_packs_dict: dict, pc_failed_packs_dict: dict):
+    """ If the two dicts are empty then no upload was done in Prepare Content step, so we need to skip uploading
+
+    Args:
+        pc_successful_packs_dict: The successful packs dict
+        pc_failed_packs_dict: The failed packs dict
+
+    """
+    if not pc_successful_packs_dict and not pc_failed_packs_dict:
+        logging.warning("Production bucket is updated with origin/master.")
+        logging.warning("Skipping Upload To Marketplace Storage Step.")
+        sys.exit(0)
 
 
 def options_handler():
@@ -315,6 +332,9 @@ def main():
     pc_successful_packs_dict, pc_failed_packs_dict = get_successful_and_failed_packs(
         os.path.join(os.path.dirname(packs_artifacts_path), PACKS_RESULTS_FILE)
     )
+
+    # Check if needs to upload or not
+    check_if_need_to_upload(pc_successful_packs_dict, pc_failed_packs_dict)
 
     # Detect packs to upload
     pack_names = get_pack_names(target_packs)
