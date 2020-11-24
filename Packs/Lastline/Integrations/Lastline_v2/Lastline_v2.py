@@ -72,10 +72,11 @@ class Client(BaseClient):
                 self.command_params[param] = self.command_params[param].replace('T', ' ')
         result = self.http_request('/analysis/get_completed')
         if 'data' in result:
+            context_entry: List = []
             if self.use_credentials_login:
-                context_entry: List = self.get_status_and_time_get_history_req(argToList(result['data']))
+                context_entry = self.get_status_and_time_get_history_req(argToList(result['data']))
             else:
-                context_entry: List = self.get_status_and_time(argToList(result['data']))
+                context_entry = self.get_status_and_time(argToList(result['data']))
 
             for i in range(len(context_entry)):
                 context_entry[i] = {
@@ -155,7 +156,7 @@ class Client(BaseClient):
 
         result: Dict = {}
         if self.use_credentials_login:
-            url_suffix = SUFFIX_TRANSFORMER.get(path)
+            url_suffix = SUFFIX_TRANSFORMER[path]
             result = self._http_request(url_suffix['method'], url_suffix['url'], data=self.credentials,
                                         params=self.command_params, files=file_to_upload, timeout=2000)
         else:
