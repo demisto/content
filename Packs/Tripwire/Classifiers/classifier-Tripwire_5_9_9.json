@@ -2,10 +2,7 @@
   "brandName": "Tripwire",
   "custom": true,
   "defaultIncidentType": "Tripwire File Change",
-  "id": "Tripwire",
-  "version": -1,
-  "fromVersion": "5.0.0",
-  "toVersion": "5.9.9",
+  "id": "631dc1af-b67a-451c-8efd-a2bab980177dn",
   "isDefault": false,
   "mapping": {
     "Tripwire File Change": {
@@ -50,8 +47,12 @@
       }
     }
   },
- "transformer": {
-  "complex": null,
-  "simple": ""
- }
+  "version": -1,
+  "fromVersion": "5.0.0",
+  "toVersion": "5.9.9",
+  "transformer": {
+    "complex": null,
+    "simple": ""
+  },
+  "keyTypeMap": {}
 }

@@ -3,13 +3,8 @@
  "description": "Classifies Tripwire incidents.",
  "feed": false,
  "id": "Tripwire",
- "keyTypeMap": {
-
- },
+ "keyTypeMap": {},
  "name": "Tripwire - Classifier",
- "propagationLabels": [
-  "all"
- ],
  "transformer": {
   "complex": null,
   "simple": ""
