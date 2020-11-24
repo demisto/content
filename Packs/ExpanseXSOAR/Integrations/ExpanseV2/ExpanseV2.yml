@@ -86,6 +86,10 @@ configuration:
   name: tag
   required: false
   type: 0
+- display: Fetch issue with Types (comma separated)
+  name: issueType
+  required: false
+  type: 0
 - defaultvalue: None
   display: Incident Mirroring Direction
   hidden: false
@@ -266,6 +270,12 @@ script:
       description: Created after
       isArray: false
       name: created_after
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of entries to retrieve
+      isArray: false
+      name: limit
       required: false
       secret: false
     outputs:
@@ -934,7 +944,13 @@ script:
     description: List available business units 
     deprecated: false
     execution: false
-    arguments: []
+    arguments:
+    - default: false
+      description: Maximum number of entries to retrieve
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     outputs:
     - contextPath: Expanse.BusinessUnit.id
       description: 'Business Unit ID'
@@ -946,7 +962,13 @@ script:
     description: List available providers 
     deprecated: false
     execution: false
-    arguments: []
+    arguments:
+    - default: false
+      description: Maximum number of entries to retrieve
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     outputs:
     - contextPath: Expanse.Provider.id
       description: 'Provider ID'
@@ -958,7 +980,13 @@ script:
     description: List available tags
     deprecated: false
     execution: false
-    arguments: []
+    arguments:
+    - default: false
+      description: Maximum number of entries to retrieve
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     outputs:
     - contextPath: 'Expanse.Tag.created'
       description: ''
@@ -1280,6 +1308,12 @@ script:
       name: include
       description: Include "none" or any of the following options (comma separated) - annotations, severityCounts, attributionReasons, relatedRegistrationInformation, locationInformation
       defaultValue: none
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of results to retrieve
+      isArray: false
+      name: limit
       required: false
       secret: false
     outputs:
