@@ -82,7 +82,7 @@ configuration:
 - display: Disable mirroring for incidents came from this integration
   additionalinfo: Enable this option to disable mirroring of incidents came from the integration of XSOAR Mirroring. This adds `-sourceBrand:“XSOAR Mirroring”` to your query.
   name: disable_from_same_integration
-  defaultvalue: ""
+  defaultvalue: "true"
   type: 8
   required: false
 - display: Trust any certificate (not secure)
