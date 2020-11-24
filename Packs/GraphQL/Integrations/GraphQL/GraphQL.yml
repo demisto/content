@@ -41,7 +41,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Primary key field in the response to provide a unique object in the context
+      description: Primary key field in the response to provide a unique object in the context.
         data.
       isArray: false
       name: outputs_key_field
