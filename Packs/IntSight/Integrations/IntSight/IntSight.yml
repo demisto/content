@@ -17,7 +17,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: All
-  display: 'Minimum Alert severity level to fetch incidents incidents from, allowed values are: ''All'', ''Low'', ''Medium'',''High''(Setting to All will fetch all incidents)'
+  display: 'Minimum Alert severity level to fetch incidents incidents from, allowed values are: All, Low, Medium, High. (Setting to All will fetch all incidents)'
   name: severity_level
   required: false
   type: 0
