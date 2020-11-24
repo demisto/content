@@ -57,7 +57,7 @@ def test_build_iterator_paging():
         m.get(url_page1, status_code=status_code, json=json_data_page1)
         m.get(url_page2, status_code=status_code, json=json_data_page2)
         client = Client(**PARAMS)
-        results = custom_build_iterator(client, PARAMS['feed_name_to_config']['IP'])
+        results = custom_build_iterator(client, PARAMS['feed_name_to_config']['IP'], 0)
         assert len(results) == 4
 
 
@@ -80,6 +80,6 @@ def test_build_iterator_no_json():
     with requests_mock.Mocker() as m:
         m.get(url_page1, status_code=status_code, json="ccc")
         with pytest.raises(TypeError) as e:
-            custom_build_iterator(client, PARAMS['feed_name_to_config']['Domain'])
+            custom_build_iterator(client, PARAMS['feed_name_to_config']['Domain'], 0)
         if not e:
             assert False
