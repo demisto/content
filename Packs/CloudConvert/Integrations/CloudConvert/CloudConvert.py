@@ -215,7 +215,7 @@ def upload_command(client: Client, arguments: Dict[str, Any]):
             raise ValueError('Both url and entry id were inserted - please insert only one.')
         results = client.upload_url(arguments)
         raise_error_if_no_data(results)
-        results['data']['operation'] = 'upload/url'
+        format_operation_title(results)
         results_data = results.get('data')
     elif arguments.get('entry_id'):
         demisto.debug('getting the path of the file from its entry id')
@@ -225,7 +225,7 @@ def upload_command(client: Client, arguments: Dict[str, Any]):
         file_path, file_name = result['path'], result['name']
         results = client.upload_entry_id(file_path, file_name)
         raise_error_if_no_data(results)
-        results['data']['operation'] = 'upload/entry'
+        format_operation_title(results)
         results_data = results.get('data')
     else:
         raise ValueError('No url or entry id specified.')
@@ -298,19 +298,22 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
     """
     results = client.check_status(arguments)
     raise_error_if_no_data(results)
+    format_operation_title(results)
+
     results_data = results.get('data', {})
 
     # If checking on an download to entry operation, manually change the operation name
-    # For other operations, the operation matches the operation field in the API's response, so no change is needed
+    # This is because the 'download as entry' operation is our variation on the export to url operation,
+    # hence not distinguished as a different operation by the API
     if argToBoolean(arguments.get('create_war_room_entry', False)) \
-            and results_data.get('operation') == 'export/url':
-        results['data']['operation'] = 'export/entry'
+            and results_data.get('operation') == 'download/url':
+        results['data']['operation'] = 'download/entry'
 
     # Check if an download to war room entry operation is finished
     # If it did - create the entry
     if results_data.get('status') == 'finished' \
             and argToBoolean(arguments.get('create_war_room_entry', 'False'))\
-            and results_data.get('operation') == 'export/entry':
+            and results_data.get('operation') == 'download/entry':
         results_info = results_data.get('result', {}).get('files', [{}])[0]
         url = results_info.get('url')
         file_name = results_info.get('filename')
@@ -366,12 +369,16 @@ def download_command(client: Client, arguments: Dict[str, Any]):
     # In both url and war room entry we still first get a url
     results = client.download_url(arguments)
     raise_error_if_no_data(results)
-    results_data = results.get('data')
 
     # If downloading as war room entry, manually change the operation name
+    # This is because the 'download as entry' operation is our variation on the export to url operation,
+    # hence not distinguished as a different operation by the API
     if arguments['download_as'] == 'war_room_entry':
-        results['data']['operation'] = 'export/entry'
+        results['data']['operation'] = 'download/entry'
+    else:
+        format_operation_title(results)
 
+    results_data = results.get('data')
     readable_output = tableToMarkdown(
         'Download Results',
         remove_empty_elements(results_data),
@@ -410,15 +417,14 @@ def test_module(client: Client):
                'many requests. Please try again later.'
 
 
-def change_operation_title(title: str):
+def format_operation_title(results: Dict[str, any]):
     """
     This function is being used in order to change the titles of the operations that are done by the API and are
     returned in the response to titles that makes more sense for the users actions, and matches the API's use in
     our system.
-    Args:
-        title: The name of the operation by the API
 
-    Returns: The name of the operation conducted by our user
+    Args:
+        results: The response from the http request
 
     """
     title_exchange_dict = {
@@ -426,7 +432,11 @@ def change_operation_title(title: str):
         'import/upload': 'upload/entry',
         'export/url': 'download/url'
         }
-    return title_exchange_dict[title]
+
+    operation = results['data']['operation']
+
+    results['data']['operation'] = title_exchange_dict[operation] if operation in title_exchange_dict.keys() \
+        else operation
 
 
 def main() -> None:

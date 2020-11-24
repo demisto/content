@@ -37,11 +37,14 @@ def test_upload_valid_url(mocker):
     client = create_client()
     mocker.patch.object(client, 'upload_url', return_value=util_load_json('./test_data/upload_url_response.json'))
     results = upload_command(client, {'url': MOCK_URL})
-    readable_output = tableToMarkdown('Upload Results', remove_empty_elements(util_load_json(
-        './test_data/upload_url_response.json').get('data')),
-        headers=('created_at', 'id', 'operation', 'status'),
-        headerTransform=string_to_table_header)
-    assert results.outputs == remove_empty_elements(util_load_json('./test_data/upload_url_response.json').get('data'))
+    raw_response = util_load_json('./test_data/upload_url_response.json')
+    raw_response['data']['operation'] = 'upload/url'
+    readable_output = tableToMarkdown('Upload Results', remove_empty_elements(raw_response.get('data')),
+        headers=('id', 'operation', 'created_at', 'status'),
+        headerTransform=string_to_table_header,
+                                      )
+
+    assert results.outputs == remove_empty_elements(raw_response.get('data'))
     assert results.readable_output == readable_output
 
 
@@ -80,13 +83,15 @@ def test_upload_valid_entry(mocker):
     mocker.patch.object(client, 'upload_entry_id',
                         return_value=util_load_json('./test_data/upload_entry_response.json'))
     results = upload_command(client, {'entry_id': MOCK_ENTRY_ID})
-    readable_output = tableToMarkdown('Download Results',
-                                      remove_empty_elements(util_load_json('./test_data/upload_e'
-                                                                           'ntry_response.json').get('data')),
-                                      headers=('created_at', 'id', 'operation', 'status'),
-                                      headerTransform=string_to_table_header)
-    assert results.outputs == remove_empty_elements(util_load_json('./test_data/upload_entry_resp'
-                                                                   'onse.json').get('data'))
+    raw_response = util_load_json('./test_data/upload_entry_response.json')
+    raw_response['data']['operation'] = 'upload/entry'
+    readable_output = tableToMarkdown('Upload Results',
+                                      remove_empty_elements(raw_response.get('data')),
+                                      headers=('id', 'operation', 'created_at', 'status'),
+                                      headerTransform=string_to_table_header,
+                                      )
+
+    assert results.outputs == remove_empty_elements(raw_response.get('data'))
     assert results.readable_output == readable_output
 
 
@@ -132,7 +137,7 @@ def test_convert_valid_format_and_id(mocker):
                                       remove_empty_elements(util_load_json('test_data/convert_val'
                                                                            'id_format_and_id_response.'
                                                                            'json').get('data')),
-                                      headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'status'),
+                                      headers=('id', 'operation', 'created_at', 'status', 'depends_on_task_ids'),
                                       headerTransform=string_to_table_header)
     assert results.outputs == remove_empty_elements(util_load_json('test_data/convert_valid_format_and_id_response.json'
                                                                    ).get('data'))
@@ -201,16 +206,15 @@ def test_check_status_valid_id_non_download(mocker, create_war_room_entry):
     client = create_client()
     mocker.patch.object(client, 'check_status', return_value=util_load_json(
         'test_data/check_status_non_download_response.json'))
-
     results = check_status_command(client, {
         'task_id': 'id',
         'create_war_room_entry': create_war_room_entry
     })
+    raw_response = util_load_json('test_data/check_status_non_download_response.json')
     readable_output = tableToMarkdown('Check Status Results',
-                                      remove_empty_elements(util_load_json('test_data/check_status'
-                                                                           '_non_download_response.json').get('data')),
-                                      headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'result',
-                                               'status'),
+                                      remove_empty_elements(raw_response.get('data')),
+                                      headers=('id', 'operation', 'created_at', 'status', 'depends_on_task_ids',
+                                               'results'),
                                       headerTransform=string_to_table_header)
     assert results.outputs == remove_empty_elements(util_load_json('test_data/'
                                                                    'check_status_non_download_response.json').get('data'))
@@ -243,17 +247,18 @@ def test_check_status_valid_id_download(mocker, create_war_room_entry):
         'task_id': 'id',
         'create_war_room_entry': create_war_room_entry
     })
+    raw_response = util_load_json('test_data/check_status_download_response.json')
     if create_war_room_entry:
+        raw_response['data']['operation'] = 'download/entry'
         assert results.get('File') == file_name
 
     else:
-        assert results.outputs == remove_empty_elements(util_load_json('test_data/check_status_download_response'
-                                                                       '.json').get('data'))
+        raw_response['data']['operation'] = 'download/url'
+        assert results.outputs == remove_empty_elements(raw_response.get('data'))
         readable_output = tableToMarkdown('Check Status Results',
-                                          remove_empty_elements(util_load_json('test_data/check_status'
-                                                                               '_download_response.json').get('data')),
-                                          headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'result',
-                                                   'status'),
+                                          remove_empty_elements(raw_response.get('data')),
+                                          headers=('id', 'operation', 'created_at', 'status', 'depends_on_task_ids',
+                                                   'results'),
                                           headerTransform=string_to_table_header)
         assert results.readable_output == readable_output
 
@@ -300,17 +305,17 @@ def test_download_valid_id(mocker, download_as):
         'task_id': 'id',
         'download_as': download_as
     })
+    raw_response = util_load_json('test_data/download_valid_id_response.json')
     if download_as == 'url':
+        raw_response['data']['operation'] = 'download/url'
         readable_output = tableToMarkdown('Download Results',
-                                          remove_empty_elements(util_load_json('test_data/download_valid'
-                                                                               '_id_response.json').get('data')),
-                                          headers=('created_at', 'depends_on_task_ids', 'id', 'operation', 'status'),
-                                          headerTransform=string_to_table_header)
-        assert results.outputs == remove_empty_elements(util_load_json('test_data'
-                                                                       '/download_valid_id_response.json').get('data'))
+                                          remove_empty_elements(raw_response.get('data')),
+                                          headers=('id', 'operation', 'created_at', 'status', 'depends_on_task_ids'),
+                                          headerTransform=string_to_table_header,
+                                          )
+        assert results.outputs == remove_empty_elements(raw_response.get('data'))
         assert results.readable_output == readable_output
 
     else:
-        request_results = util_load_json('test_data/download_valid_id_response.json')
-        request_results['data']['operation'] = 'download/entry'
-        assert results.outputs == remove_empty_elements(request_results.get('data'))
+        raw_response['data']['operation'] = 'download/entry'
+        assert results.outputs == remove_empty_elements(raw_response.get('data'))
