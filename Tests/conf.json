@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "rapid7_insightidr",
+            "integrations": "Rapid7 InsightIDR",
             "playbookID": "playbook-InsightIDR-test",
             "fromversion": "5.0.0"
         },

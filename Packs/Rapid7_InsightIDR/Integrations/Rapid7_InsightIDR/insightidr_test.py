@@ -18,10 +18,15 @@ def util_load_file(path) -> str:
 
 def test_insight_idr_list_investigations(requests_mock) -> None:
     """
-        Tests insight_idr_list_investigations_command.
-        Configures requests_mock instance to generate the appropriate
-        API response, loaded from a local JSON file. Checks
-        the output of the command function with the expected output.
+    Scenario: test list investigations
+    Given:
+     - User has provided valid credentials
+    When:
+     - insight_idr_list_investigations_command is called
+    Then:
+     - Ensure prefix is correct
+     - Ensure key field is correct
+     - Ensure output is as expected
     """
     from insightidr import Client, insight_idr_list_investigations_command
 
@@ -50,10 +55,15 @@ def test_insight_idr_list_investigations(requests_mock) -> None:
 
 def test_insight_idr_get_investigation(requests_mock) -> None:
     """
-        Tests insight_idr_get_investigation_command.
-        Configures requests_mock instance to generate the appropriate
-        API response, loaded from a local JSON file. Checks
-        the output of the command function with the expected output.
+    Scenario: test get investigation
+    Given:
+     - User has provided valid credentials
+    When:
+     - insight_idr_get_investigation_command is called
+    Then:
+     - Ensure prefix is correct
+     - Ensure key field is correct
+     - Ensure output is as expected
     """
     from insightidr import Client, insight_idr_get_investigation_command
 
@@ -79,10 +89,16 @@ def test_insight_idr_get_investigation(requests_mock) -> None:
 
 def test_close_investigation(requests_mock) -> None:
     """
-        Tests insight_idr_close_investigations_command.
-        Configures requests_mock instance to generate the appropriate
-        API response, loaded from a local JSON file. Checks
-        the output of the command function with the expected output.
+    Scenario: test close investigations
+    Given:
+     - User has provided valid credentials
+     - User has provided valid times
+    When:
+     - insight_idr_close_investigations_command is called
+    Then:
+     - Ensure prefix is correct
+     - Ensure key field is correct
+     - Ensure the amount of ids that were closed
     """
     from insightidr import Client, insight_idr_close_investigations_command
 
@@ -109,10 +125,16 @@ def test_close_investigation(requests_mock) -> None:
 
 def test_assign_user(requests_mock) -> None:
     """
-        Tests insight_idr_assign_user_command.
-        Configures requests_mock instance to generate the appropriate
-        API response, loaded from a local JSON file. Checks
-        the output of the command function with the expected output.
+    Scenario: test assign user to investigations
+    Given:
+     - User has provided valid credentials
+     - User has provided valid email address
+    When:
+     - insight_idr_assign_user_command is called
+    Then:
+     - Ensure prefix is correct
+     - Ensure key field is correct
+     - Ensure email field is as expected
     """
     from insightidr import Client, insight_idr_assign_user_command
 
@@ -145,10 +167,16 @@ def test_assign_user(requests_mock) -> None:
 
 def test_set_status(requests_mock) -> None:
     """
-        Tests insight_idr_set_status_command.
-        Configures requests_mock instance to generate the appropriate
-        API response, loaded from a local JSON file. Checks
-        the output of the command function with the expected output.
+    Scenario: test set status to investigations
+    Given:
+     - User has provided valid credentials
+     - User has provided valid status
+    When:
+     - insight_idr_set_status_command is called
+    Then:
+     - Ensure prefix is correct
+     - Ensure key field is correct
+     - Ensure status field is as expected
     """
     from insightidr import Client, insight_idr_set_status_command
 
@@ -182,10 +210,16 @@ def test_set_status(requests_mock) -> None:
 
 def test_insight_idr_add_threat_indicators(requests_mock) -> None:
     """
-        Tests insight_idr_add_threat_indicators_command.
-        Configures requests_mock instance to generate the appropriate
-        API response, loaded from a local JSON file. Checks
-        the output of the command function with the expected output.
+    Scenario: test add indiactors to threat
+    Given:
+     - User has provided valid credentials
+     - User has provided valid indicators
+    When:
+     - insight_idr_add_threat_indicators_command is called
+    Then:
+     - Ensure prefix is correct
+     - Ensure key field is correct
+     - Ensure output is as expected
     """
     from insightidr import Client, insight_idr_add_threat_indicators_command
 
@@ -215,10 +249,16 @@ def test_insight_idr_add_threat_indicators(requests_mock) -> None:
 
 def test_insight_idr_replace_threat_indicators(requests_mock) -> None:
     """
-        Tests insight_idr_replace_threat_indicators_command.
-        Configures requests_mock instance to generate the appropriate
-        API response, loaded from a local JSON file. Checks
-        the output of the command function with the expected output.
+    Scenario: test replace indiactors to threat
+    Given:
+     - User has provided valid credentials
+     - User has provided valid indicators
+    When:
+     - insight_idr_replace_threat_indicators_command is called
+    Then:
+     - Ensure prefix is correct
+     - Ensure key field is correct
+     - Ensure output is as expected
     """
     from insightidr import Client, insight_idr_replace_threat_indicators_command
 
@@ -248,10 +288,15 @@ def test_insight_idr_replace_threat_indicators(requests_mock) -> None:
 
 def test_insight_idr_list_logs(requests_mock) -> None:
     """
-        Tests insight_idr_list_logs_command.
-        Configures requests_mock instance to generate the appropriate
-        API response, loaded from a local JSON file. Checks
-        the output of the command function with the expected output.
+    Scenario: test list logs
+    Given:
+     - User has provided valid credentials
+    When:
+     - insight_idr_list_logs_command is called
+    Then:
+     - Ensure prefix is correct
+     - Ensure key field is correct
+     - Ensure output is as expected
     """
     from insightidr import Client, insight_idr_list_logs_command
 
@@ -280,10 +325,15 @@ def test_insight_idr_list_logs(requests_mock) -> None:
 
 def test_insight_idr_list_log_sets(requests_mock) -> None:
     """
-        Tests insight_idr_list_log_sets_command.
-        Configures requests_mock instance to generate the appropriate
-        API response, loaded from a local JSON file. Checks
-        the output of the command function with the expected output.
+    Scenario: test list log sets
+    Given:
+     - User has provided valid credentials
+    When:
+     - insight_idr_list_log_sets_command is called
+    Then:
+     - Ensure prefix is correct
+     - Ensure key field is correct
+     - Ensure output is as expected
     """
     from insightidr import Client, insight_idr_list_log_sets_command
 
@@ -313,10 +363,14 @@ def test_insight_idr_list_log_sets(requests_mock) -> None:
 
 def test_insight_idr_download_logs(requests_mock) -> None:
     """
-        Tests insight_idr_download_logs_command.
-        Configures requests_mock instance to generate the appropriate
-        API response, loaded from a local TEXT file. Checks
-        the output of the command function with the expected output.
+    Scenario: test download logs
+    Given:
+     - User has provided valid credentials
+     - User has provided valid logIDs
+    When:
+     - insight_idr_download_logs_command is called
+    Then:
+     - Ensure file type
     """
     from insightidr import Client, insight_idr_download_logs_command
 
@@ -339,10 +393,16 @@ def test_insight_idr_download_logs(requests_mock) -> None:
 
 def test_insight_idr_query_log(requests_mock) -> None:
     """
-        Tests insight_idr_query_log_command.
-        Configures requests_mock instance to generate the appropriate
-        API response, loaded from a local JSON file. Checks
-        the output of the command function with the expected output.
+    Scenario: test query log
+    Given:
+     - User has provided valid credentials
+     - User has provided valid logID
+    When:
+     - insight_idr_query_log_command is called
+    Then:
+     - Ensure prefix is correct
+     - Ensure key field is correct
+     - Ensure output is as expected
     """
     from insightidr import Client, insight_idr_query_log_command
 
@@ -371,10 +431,16 @@ def test_insight_idr_query_log(requests_mock) -> None:
 
 def test_insight_idr_query_log_set(requests_mock) -> None:
     """
-        Tests insight_idr_query_log_set_command.
-        Configures requests_mock instance to generate the appropriate
-        API response, loaded from a local JSON file. Checks
-        the output of the command function with the expected output.
+    Scenario: test query log set
+    Given:
+     - User has provided valid credentials
+     - User has provided valid logset ID
+    When:
+     - insight_idr_query_log_set_command is called
+    Then:
+     - Ensure prefix is correct
+     - Ensure key field is correct
+     - Ensure output is as expected
     """
     from insightidr import Client, insight_idr_query_log_set_command
 
@@ -403,10 +469,16 @@ def test_insight_idr_query_log_set(requests_mock) -> None:
 
 def test_fetch_incidents(requests_mock) -> None:
     """
-        Tests fetch_incidents.
-        Configures requests_mock instance to generate the appropriate
-        API response, loaded from a local JSON file. Checks
-        the output of the command function with the expected output.
+    Scenario: test fetch incidents
+    Given:
+     - User has provided valid credentials
+     - User has provided valid last_run and first_time_fetch
+     - User has provided valid max_fetch
+    When:
+     - insight_idr_query_log_set_command is called
+    Then:
+     - Ensure output is as expected
+     - Ensure timestamp is as expected (+1 Miliseconds)
     """
     from insightidr import Client, fetch_incidents
 
@@ -444,5 +516,4 @@ def test_fetch_incidents(requests_mock) -> None:
         'name': 'Hello',
         'occurred': '2018-06-06T16:56:43.000Z',
         'rawJSON': outputs[1]['rawJSON'],
-    }
-    ]
+    }]
