@@ -78,7 +78,7 @@ def tag_user_on_pr(reviewers, pr_number, pack, pack_files, github_token=None, ve
     f"### Your contributed pack has been modified. Please review the changes.\n"
     comment_body = {
         "body":  f"### Your contributed {pack} {PR_COMMENT_PREFIX}\n"
-                 f"{pack_files_comment}"
+                 f"{pack_files_comment}\n"
                  f" Please review the changes.\n"
                  f"{reviewers_comment}"
     }
