@@ -143,17 +143,17 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
                     reviewers.add(github_user)
                     print(f"Found {github_user} default reviewer of pack {pack}")
 
+            if reviewers:
+                pack_files = {p for p in modified_files if p.startswith(PACKS_FOLDER) and Path(p).parts[1] == pack}
+                tag_user_on_pr(reviewers=reviewers, pr_number=pr_number, pack=pack, pack_files=pack_files,
+                               github_token=github_token, verify_ssl=verify_ssl)
+            else:
+                print(f"{pack} pack No reviewers were found.")
+
         elif pack_metadata.get('support') == XSOAR_SUPPORT:
             print(f"Skipping check of {pack} pack supported by {XSOAR_SUPPORT}")
         else:
             print(f"{pack} pack has no default github reviewer")
-
-        if reviewers:
-            pack_files = {p for p in modified_files if p.startswith(PACKS_FOLDER) and Path(p).parts[1] == pack}
-            tag_user_on_pr(reviewers=reviewers, pr_number=pr_number, pack=pack, pack_files=pack_files,
-                           github_token=github_token, verify_ssl=verify_ssl)
-        else:
-            print("No reviewers were found.")
 
 
 def main():
