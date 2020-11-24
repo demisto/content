@@ -1138,7 +1138,6 @@ jobs:
           command: |
             echo "export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')" >> $BASH_ENV
             echo "export DEMISTO_BASE_URL=\"https://$(cat env_results.json | jq -r '.[0].InstanceDNS')\"" >> $BASH_ENV
-            cat env_results.json
             echo "Server URL: $DEMISTO_BASE_URL"
       - run:
           name: Install SDK Master
