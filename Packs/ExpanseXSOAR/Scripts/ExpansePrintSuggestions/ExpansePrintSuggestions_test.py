@@ -8,7 +8,7 @@ MOCK_IP = "198.51.101.1"
 MOCK_PORT = "8888"
 MOCK_FQDN = "test.developers.example.com"
 MOCK_REGION = "us-west-2"
-MOCK_SERVICE = "EC2" 
+MOCK_SERVICE = "EC2"
 MOCK_PROVIDER = "Amazon Web Services"
 MOCK_BUSINESS_UNITS = "R&D"
 MOCK_ISSUE_TAGS = "Engineering,Suspicious"
@@ -19,9 +19,11 @@ def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
+
 def util_load_raw(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return f.read()
+
 
 def test_match_ip_in_cidr_indicators(mocker):
     mock_users = util_load_json('test_data/expanse_users.json')
@@ -50,4 +52,3 @@ def test_match_ip_in_cidr_indicators(mocker):
     })
 
     assert result.readable_output == mock_markdown_result
-
