@@ -72,10 +72,11 @@ class Client(BaseClient):
                 self.command_params[param] = self.command_params[param].replace('T', ' ')
         result = self.http_request('/analysis/get_completed')
         if 'data' in result:
+            context_entry: List[Any] = []
             if self.use_credentials_login:
-                context_entry: List = self.get_status_and_time_get_history_req(argToList(result['data']))
+                context_entry = self.get_status_and_time_get_history_req(argToList(result['data']))
             else:
-                context_entry: List = self.get_status_and_time(argToList(result['data'].get('tasks')))
+                context_entry = self.get_status_and_time(argToList(result['data'].get('tasks')))
 
             for i in range(len(context_entry)):
                 context_entry[i] = {
