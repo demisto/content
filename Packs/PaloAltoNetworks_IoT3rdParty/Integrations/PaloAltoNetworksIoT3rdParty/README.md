@@ -2,7 +2,7 @@ Use Palo Alto Networks IoT 3rd Party to integrate Palo Alto Networks IoT solutio
 ## Configure Palo Alto Networks IoT 3rd Party on Cortex XSOAR
 
 1. Navigate to **Settings** &gt; **Integrations** &gt; **Servers & Services**.
-2. Search for Palo Alto Networks IoT 3rd Part.
+2. Search for Palo Alto Networks IoT 3rd Party.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
