@@ -1,5 +1,4 @@
-comment: This scripts determines which configured Cisco ISE instance is in 
-active/primary state and returns the name of this instance.
+comment: This scripts determines which configured Cisco ISE instance is in active/primary state and returns the name of this instance.
 commonfields:
   id: GetCiscoISEActiveInstance
   version: -1
