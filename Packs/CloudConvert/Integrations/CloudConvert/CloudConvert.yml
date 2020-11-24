@@ -87,7 +87,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The required output format for the given file. The supported destination formats are: "3g2", "3gp", "3gpp", 7z", "aac", "ac3", "aif", "aifc", "aiff", "amr", "au", "avi", az"w3, "bmp", "caf", "cavs", "cgm", "csv", "doc", "docx", "dv", "dvr", "dwg", "dxf", "emf", "eot", "eps", "epub", "flac", "flv", "gif", "html", "icns", "ico", "jpg", "lrf", "m2ts", "m4a", "m4b", "m4v", "md", "mkv", "mobi", "mod", "mov", "mp3", "mp4", "mpeg", "mpg", "mts", "mxf", "odd", "odp", "ods", "odt", "oeb", "oga", "ogg", "otf", "pdb", "pdf", "png", "ppt", "pptx", "ps", "psd", "rar", "rm", "rmvb", rs"t, "rtf", "sf2", "svg", "swf", "tar", "tar.bz2", "tar.gz", "tar.lzo", "tex", "tiff", "ts", "ttf", "txt", "vob", "voc", "wav", "weba", "webm", "webp", "wma", "wmf", "wmv", "woff", "woff2", "wtv", "xls", "xlsx", "xps", "zip".'
+      description: 'The required output format for the given file. The supported destination formats are: 3g2, 3gp, 3gpp, 7z, aac, ac3, aif, aifc, aiff, amr, au, avi, azw3, bmp, caf, cavs, cgm, csv, doc, docx, dv, dvr, dwg, dxf, emf, eot, eps, epub, flac, flv, gif, html, icns, ico, jpg, lrf, m2ts, m4a, m4b, m4v, md, mkv, mobi, mod, mov, mp3, mp4, mpeg, mpg, mts, mxf, odd, odp, ods, odt, oeb, oga, ogg, otf, pdb, pdf, png, ppt, pptx, ps, psd, rar, rm, rmvb, rst, rtf, sf2, svg, swf, tar, tar.bz2, tar.gz, tar.lzo, tex, tiff, ts, ttf, txt, vob, voc, wav, weba, webm, webp, wma, wmf, wmv, woff, woff2, wtv, xls, xlsx, xps, zip.'
       isArray: false
       name: output_format
       predefined:
