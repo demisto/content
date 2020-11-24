@@ -229,51 +229,6 @@
       "items": [
        {
         "endCol": 2,
-        "fieldId": "fireeyenxscversion",
-        "height": 53,
-        "id": "6a9a3170-e7ad-11ea-b9fb-69214b89606a",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "fireeyenxtimeutc",
-        "height": 53,
-        "id": "6c784040-e7ad-11ea-b9fb-69214b89606a",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "fireeyenxtargetmacaddress",
-        "height": 53,
-        "id": "6fa60090-e7ad-11ea-b9fb-69214b89606a",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "fireeyenxid",
-        "height": 53,
-        "id": "714e0b40-e7ad-11ea-b9fb-69214b89606a",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "fireeyenxuuid",
-        "height": 53,
-        "id": "730901b0-e7ad-11ea-b9fb-69214b89606a",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
         "fieldId": "fireeyenxalerttype",
         "height": 53,
         "id": "e45c6e40-00dc-11eb-8966-f589ddaf289f",

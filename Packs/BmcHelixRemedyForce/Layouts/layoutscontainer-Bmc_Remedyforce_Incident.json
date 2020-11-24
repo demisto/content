@@ -509,15 +509,6 @@
                 "startCol": 0
               },
               {
-                "endCol": 2,
-                "fieldId": "bmcremedyforceduedatetime",
-                "height": 53,
-                "id": "8b0c4970-c818-11ea-84c3-a533a3774767",
-                "index": 1,
-                "sectionItemType": "field",
-                "startCol": 0
-              },
-              {
                 "dropEffect": "move",
                 "endCol": 2,
                 "fieldId": "bmcremedyforceduedate",
@@ -587,15 +578,6 @@
             "items": [
               {
                 "endCol": 2,
-                "fieldId": "bmcremedyforceduedatetime",
-                "height": 53,
-                "id": "8b0c4970-c818-11ea-84c3-a533a3774767",
-                "index": 0,
-                "sectionItemType": "field",
-                "startCol": 0
-              },
-              {
-                "endCol": 2,
                 "fieldId": "bmcremedyforceservice",
                 "height": 53,
                 "id": "656cace0-c819-11ea-84c3-a533a3774767",
@@ -658,15 +640,6 @@
             "hideName": false,
             "i": "7plqqlsm0f-8b9d4960-c819-11ea-84c3-a533a3774767",
             "items": [
-              {
-                "endCol": 2,
-                "fieldId": "bmcremedyforceduedatetime",
-                "height": 53,
-                "id": "8b0c4970-c818-11ea-84c3-a533a3774767",
-                "index": 0,
-                "sectionItemType": "field",
-                "startCol": 0
-              },
               {
                 "endCol": 2,
                 "fieldId": "bmcremedyforcequeue",
