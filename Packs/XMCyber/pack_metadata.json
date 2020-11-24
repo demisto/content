@@ -11,12 +11,12 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Critical Assets",
-        "Breach and Attack Simulation",
-        "BAS",
-        "Choke Points",
-        "VA",
-        "VM"
+        "Breach",
+        "Simulation",
+        "Network",
+        "IT",
+        "Alerts",
+        "Attack"
     ],
     "useCases": [],
     "keywords": [],
