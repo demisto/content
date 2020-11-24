@@ -126,7 +126,7 @@ def create_mapper(path: Path) -> str:
     if not os.path.isdir(dest_mapper_path):
         os.mkdir(dest_mapper_path)
 
-    mapper_path = dest_mapper_path / f'classifier-mapper-incoming-HelloWorldTest.json'
+    mapper_path = dest_mapper_path / 'classifier-mapper-incoming-HelloWorldTest.json'
     with open(mapper_path, 'w+') as stream:
         json.dump(mapper, stream, indent=4)
     return str(mapper_path)
