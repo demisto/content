@@ -3,7 +3,9 @@ from CommonServerPython import *
 from JSONFeedApiModule import *  # noqa: E402
 
 
-def custom_build_iterator(client: Client, feed: Dict, limit: int = 50000, **kwargs) -> List:
+def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
+    if not limit:
+        limit = 50000
     params: dict = feed.get('filters', {})
     current_indicator_type = feed.get('indicator_type')
     integration_context = get_integration_context()
