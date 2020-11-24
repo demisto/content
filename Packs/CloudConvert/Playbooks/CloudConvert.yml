@@ -1,20 +1,20 @@
 id: CloudConvert - Convert File
-version: -1
+version: 6
+vcShouldKeepItemLegacyProdMachine: false
 name: CloudConvert - Convert File
 description: Use this playbook to convert a file to the required format using CloudConvert.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 310e2bd8-a0c8-4243-83bd-064d35844268
+    taskid: f4d3108d-f097-433d-8048-697d7c307824
     type: start
     task:
-      id: 310e2bd8-a0c8-4243-83bd-064d35844268
+      id: f4d3108d-f097-433d-8048-697d7c307824
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 934ef52e-8df3-4b83-846c-db51efcfeed8
+    taskid: 61954bf7-0d23-4b53-833b-ef80b01b2995
     type: regular
     task:
-      id: 934ef52e-8df3-4b83-846c-db51efcfeed8
+      id: 61954bf7-0d23-4b53-833b-ef80b01b2995
       version: -1
       name: Upload The File To The Server
       description: Upload the file.
@@ -82,10 +82,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 33555613-cbd2-487e-8030-93227a8906b1
+    taskid: bcb3103e-7a24-43b1-88c3-5ff9a8195bf1
     type: playbook
     task:
-      id: 33555613-cbd2-487e-8030-93227a8906b1
+      id: bcb3103e-7a24-43b1-88c3-5ff9a8195bf1
       version: -1
       name: GenericPolling
       description: |-
@@ -138,10 +138,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: cc390895-2837-4b14-8cd6-470c6f99c42f
+    taskid: 8b738b30-0849-4a76-838b-060509f5f1d6
     type: regular
     task:
-      id: cc390895-2837-4b14-8cd6-470c6f99c42f
+      id: 8b738b30-0849-4a76-838b-060509f5f1d6
       version: -1
       name: Convert The File
       description: Convert the file to the required format.
@@ -184,10 +184,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 191ce5b8-26af-4f33-80ec-d7c19771f928
+    taskid: 0542955c-ec8e-43c4-80f4-52f911077f8a
     type: playbook
     task:
-      id: 191ce5b8-26af-4f33-80ec-d7c19771f928
+      id: 0542955c-ec8e-43c4-80f4-52f911077f8a
       version: -1
       name: GenericPolling
       description: |-
@@ -251,10 +251,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 1a9b20ed-7217-4558-8628-66e4263b8b34
+    taskid: 7f475e6b-c9f8-45c6-897a-54b2e4db0a04
     type: regular
     task:
-      id: 1a9b20ed-7217-4558-8628-66e4263b8b34
+      id: 7f475e6b-c9f8-45c6-897a-54b2e4db0a04
       version: -1
       name: Download The File
       description: Download the file
@@ -297,10 +297,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 5687ac9a-72b6-4b05-8661-1db87c10da81
+    taskid: ca4d2dc7-1656-41a7-875f-835b9d1e5038
     type: condition
     task:
-      id: 5687ac9a-72b6-4b05-8661-1db87c10da81
+      id: ca4d2dc7-1656-41a7-875f-835b9d1e5038
       version: -1
       name: 'Downloading To War Room Entry? '
       description: Check if downloading to War Room entry.
@@ -339,10 +339,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: e3bdecaf-2861-43e3-86ef-6fcbf83aa87f
+    taskid: 4a40fdc4-207f-4394-86cd-61fdd68e7b1a
     type: playbook
     task:
-      id: e3bdecaf-2861-43e3-86ef-6fcbf83aa87f
+      id: 4a40fdc4-207f-4394-86cd-61fdd68e7b1a
       version: -1
       name: GenericPolling
       description: |-
@@ -406,14 +406,15 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: c9d5343f-8ad3-4554-80e2-40b4191cf3c2
+    taskid: 34ee3436-c1e9-41d9-8730-ed9c4d00b17f
     type: regular
     task:
-      id: c9d5343f-8ad3-4554-80e2-40b4191cf3c2
+      id: 34ee3436-c1e9-41d9-8730-ed9c4d00b17f
       version: -1
       name: Check Status - Used For Getting Finished Download Task's Data
-      description: Check the status of an operation. Use the 'create_war_room_entry' argument to
-        also create a War Room entry of the file when checking on a download operation.
+      description: Check the status of an operation. Use the 'create_war_room_entry'
+        argument to also create a War Room entry of the file when checking on a download
+        operation.
       script: '|||cloudconvert-check-status'
       type: regular
       iscommand: true
@@ -452,15 +453,16 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: c2f426de-4837-4090-8c8f-605d6f2545ed
+    taskid: 6bd613f6-9cb0-4642-86ec-77cd1d535e70
     type: regular
     task:
-      id: c2f426de-4837-4090-8c8f-605d6f2545ed
+      id: 6bd613f6-9cb0-4642-86ec-77cd1d535e70
       version: -1
       name: Check Status - Used For Getting Finished Download Task's Data And Create
         Entry
-      description: Check the status of an operation. Use the 'create_war_room_entry' argument to
-        also create a War Room entry of the file when checking on a download operation.
+      description: Check the status of an operation. Use the 'create_war_room_entry'
+        argument to also create a War Room entry of the file when checking on a download
+        operation.
       script: '|||cloudconvert-check-status'
       type: regular
       iscommand: true
@@ -499,16 +501,15 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 2d9994d4-80e5-467a-894d-f66d88578f7b
+    taskid: 91d59754-4771-4c04-8b4c-dbe49afa7477
     type: title
     task:
-      id: 2d9994d4-80e5-467a-894d-f66d88578f7b
+      id: 91d59754-4771-4c04-8b4c-dbe49afa7477
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -524,14 +525,14 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: dc887b89-5538-4f8a-82ec-c2d7f16433f9
+    taskid: 6e7a08d8-833e-4adb-8d45-3b4872c1a613
     type: condition
     task:
-      id: dc887b89-5538-4f8a-82ec-c2d7f16433f9
+      id: 6e7a08d8-833e-4adb-8d45-3b4872c1a613
       version: -1
       name: IsIntegrationAvailable
-      description: Returns 'yes' if the integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise
+        returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -573,27 +574,27 @@ inputs:
 - key: url
   value: {}
   required: false
-  description: The URL of the uploaded file. If an entry ID is supplied, do
-    not use this argument.
-  playbookInputQuery:
+  description: The URL of the uploaded file. If an entry ID is supplied, do not use
+    this argument.
+  playbookInputQuery: null
 - key: entry_id
   value: {}
   required: false
-  description: The entry ID of the uploaded file. If a URL is supplied, do
-    not use this argument.
-  playbookInputQuery:
+  description: The entry ID of the uploaded file. If a URL is supplied, do not use
+    this argument.
+  playbookInputQuery: null
 - key: output_format
   value: {}
   required: true
   description: |
     The required output format.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: download_via
   value: {}
   required: true
   description: |
     The method for downloading the resulted file, URL or war_room_entry.
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: CloudConvert.Task.result.files.url
   description: Resulted file url
@@ -604,6 +605,6 @@ outputs:
 - contextPath: CloudConvert.Task.result.files.size
   description: Resulted size of file
   type: String
-tests:
-- CloudConvert-test
-fromversion: 5.0.0
+- contextPath: CloudConvert.InfoFile
+  description: Resulted file details if exported as war room entry
+  type: string

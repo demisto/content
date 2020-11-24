@@ -1,20 +1,20 @@
 id: CloudConvert-test
-version: -1
+version: 31
+vcShouldKeepItemLegacyProdMachine: false
 name: CloudConvert-test
 description: Use this playbook to convert files using Cloud Convert
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: df5ec691-577e-4ae2-8647-3617a447e353
+    taskid: d461be4b-cf4d-4583-8aaf-47a59fcc321c
     type: start
     task:
-      id: df5ec691-577e-4ae2-8647-3617a447e353
+      id: d461be4b-cf4d-4583-8aaf-47a59fcc321c
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "46"
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 18a861eb-da27-4c9c-886f-cd050c3eaca2
+    taskid: b091f5e0-42a8-40cc-8202-1e5898e788ce
     type: regular
     task:
-      id: 18a861eb-da27-4c9c-886f-cd050c3eaca2
+      id: b091f5e0-42a8-40cc-8202-1e5898e788ce
       version: -1
       name: Upload File To Server From URL
       script: '|||cloudconvert-upload'
@@ -67,10 +67,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 74d14da9-de0d-4a50-86d4-afc13948f420
+    taskid: c5d8defd-f8e8-431c-83ee-29a5332a5e5d
     type: playbook
     task:
-      id: 74d14da9-de0d-4a50-86d4-afc13948f420
+      id: c5d8defd-f8e8-431c-83ee-29a5332a5e5d
       version: -1
       name: GenericPolling - Wait For Upload Operation To Finish
       description: |-
@@ -123,10 +123,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: b878af20-c95e-4a0d-88cd-ddffc4f4910e
+    taskid: 84ece974-756c-4105-82af-fe3904e166b2
     type: regular
     task:
-      id: b878af20-c95e-4a0d-88cd-ddffc4f4910e
+      id: 84ece974-756c-4105-82af-fe3904e166b2
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -159,10 +159,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 828349bb-f35c-41b2-8ad2-38cccafcb6d0
+    taskid: 369d8c31-0406-442a-8d24-6f9691e7b485
     type: regular
     task:
-      id: 828349bb-f35c-41b2-8ad2-38cccafcb6d0
+      id: 369d8c31-0406-442a-8d24-6f9691e7b485
       version: -1
       name: Convert File
       script: '|||cloudconvert-convert'
@@ -204,10 +204,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: d9de62f2-5083-45a3-879a-902c99b74112
+    taskid: 486ab7a2-3f2e-4f0a-825c-16751c6b045c
     type: playbook
     task:
-      id: d9de62f2-5083-45a3-879a-902c99b74112
+      id: 486ab7a2-3f2e-4f0a-825c-16751c6b045c
       version: -1
       name: GenericPolling - Wait For Convert Operation To Finish
       description: |-
@@ -271,10 +271,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 75480f24-5462-4c97-880c-61d7d966bbed
+    taskid: d80eae14-9bd3-4dd2-8751-1d626c75cb6a
     type: regular
     task:
-      id: 75480f24-5462-4c97-880c-61d7d966bbed
+      id: d80eae14-9bd3-4dd2-8751-1d626c75cb6a
       version: -1
       name: Download File To War Room Entry
       script: '|||cloudconvert-download'
@@ -316,16 +316,15 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: e33ea27f-0346-4aaa-83f0-d6cc8c715cf7
+    taskid: 204adbb6-e311-4a70-8213-2867f3a58427
     type: title
     task:
-      id: e33ea27f-0346-4aaa-83f0-d6cc8c715cf7
+      id: 204adbb6-e311-4a70-8213-2867f3a58427
       version: -1
       name: Done!
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -341,10 +340,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: fb818712-fcdc-45cc-82c0-723e14d7891a
+    taskid: 0f781842-a044-4d1e-8ac1-8a15b7bb5355
     type: condition
     task:
-      id: fb818712-fcdc-45cc-82c0-723e14d7891a
+      id: 0f781842-a044-4d1e-8ac1-8a15b7bb5355
       version: -1
       name: Verify - Check If Upload Request Sent Successfully
       type: condition
@@ -400,10 +399,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 2360ff07-56de-4c2e-8327-91ca7d467009
+    taskid: e3bc1148-e77a-469b-808f-d5cdabb2318c
     type: condition
     task:
-      id: 2360ff07-56de-4c2e-8327-91ca7d467009
+      id: e3bc1148-e77a-469b-808f-d5cdabb2318c
       version: -1
       name: Verify - Check If Convert Request Sent Successfully
       type: condition
@@ -459,10 +458,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: f8b7ad22-f454-42d6-8a50-754165958fb0
+    taskid: 83bd1c61-92ff-4711-8b0f-f3814fa931d8
     type: condition
     task:
-      id: f8b7ad22-f454-42d6-8a50-754165958fb0
+      id: 83bd1c61-92ff-4711-8b0f-f3814fa931d8
       version: -1
       name: Verify command results - download
       type: condition
@@ -518,10 +517,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 548e8bfe-5bfd-4cbf-8ea3-05eef7ade0ae
+    taskid: f6883ad5-fd65-4920-8857-052e46aeecd4
     type: playbook
     task:
-      id: 548e8bfe-5bfd-4cbf-8ea3-05eef7ade0ae
+      id: f6883ad5-fd65-4920-8857-052e46aeecd4
       version: -1
       name: GenericPolling - Wait For Download Request To Finish
       description: |-
@@ -587,10 +586,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: ad50c0f8-4417-4f52-8f24-686edd03a3a3
+    taskid: 0fd8c9ff-857d-4b77-8616-4e7d4c5aa135
     type: regular
     task:
-      id: ad50c0f8-4417-4f52-8f24-686edd03a3a3
+      id: 0fd8c9ff-857d-4b77-8616-4e7d4c5aa135
       version: -1
       name: Create Sample File
       description: Sends http request. Returns the response as json.
@@ -632,10 +631,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 9c7e10b0-0489-4fbd-8f05-b03d2fc763e4
+    taskid: 450b20f6-783f-4d6a-846b-0d5e390a1bef
     type: condition
     task:
-      id: 9c7e10b0-0489-4fbd-8f05-b03d2fc763e4
+      id: 450b20f6-783f-4d6a-846b-0d5e390a1bef
       version: -1
       name: Check download type
       type: condition
@@ -670,10 +669,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 223a37ef-4004-4af8-8cae-1b8f03e889c7
+    taskid: f9734823-8fe0-4adb-8855-6f77535d14ad
     type: condition
     task:
-      id: 223a37ef-4004-4af8-8cae-1b8f03e889c7
+      id: f9734823-8fe0-4adb-8855-6f77535d14ad
       version: -1
       name: Verify - Check Format Of Resulted File
       type: condition
@@ -690,7 +689,7 @@ tasks:
           left:
             value:
               complex:
-                root: File
+                root: InfoFile
                 accessor: Extension
             iscontext: true
           right:
@@ -711,10 +710,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 6081ef77-2cea-42a5-8ddd-e16a230d3f66
+    taskid: 19788f55-8c32-40ef-8192-6b9faa389a19
     type: condition
     task:
-      id: 6081ef77-2cea-42a5-8ddd-e16a230d3f66
+      id: 19788f55-8c32-40ef-8192-6b9faa389a19
       version: -1
       name: Verify - Check If We Got A Resulted URL
       type: condition
@@ -746,10 +745,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: a1eb30ad-20ac-432b-884f-38242222da7d
+    taskid: 76f56790-3ab6-4a40-860c-ff5206bf86ad
     type: condition
     task:
-      id: a1eb30ad-20ac-432b-884f-38242222da7d
+      id: 76f56790-3ab6-4a40-860c-ff5206bf86ad
       version: -1
       name: Verify - Check Format Of Resulted File
       type: condition
@@ -766,7 +765,7 @@ tasks:
           left:
             value:
               complex:
-                root: File
+                root: InfoFile
                 accessor: Extension
             iscontext: true
           right:
@@ -787,10 +786,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: f18b10a5-afcf-4f56-8347-9ecfd3ac9d27
+    taskid: c1b30e84-d0a9-4e3e-8d2d-2e77c758c803
     type: regular
     task:
-      id: f18b10a5-afcf-4f56-8347-9ecfd3ac9d27
+      id: c1b30e84-d0a9-4e3e-8d2d-2e77c758c803
       version: -1
       name: Create Sample File
       description: Sends http request. Returns the response as json.
@@ -832,10 +831,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 23e56a6d-8f0c-45b8-8f23-17307ea4e5d2
+    taskid: ff263e88-0bde-4e7f-895e-314b947e8452
     type: regular
     task:
-      id: 23e56a6d-8f0c-45b8-8f23-17307ea4e5d2
+      id: ff263e88-0bde-4e7f-895e-314b947e8452
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -868,10 +867,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: aee05bef-c7ea-46da-8230-5ffab8d7eba7
+    taskid: c7de7070-8d74-4a96-8eaa-f415262b0964
     type: regular
     task:
-      id: aee05bef-c7ea-46da-8230-5ffab8d7eba7
+      id: c7de7070-8d74-4a96-8eaa-f415262b0964
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -904,10 +903,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 6fc41ee6-f1ea-45cc-88a5-b3f449b83b27
+    taskid: 2a5ca1fc-2b06-40d6-8b39-0da37d9aee2a
     type: regular
     task:
-      id: 6fc41ee6-f1ea-45cc-88a5-b3f449b83b27
+      id: 2a5ca1fc-2b06-40d6-8b39-0da37d9aee2a
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -940,10 +939,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 2363dbc3-ebc6-4d9e-86d8-0f145489bfb2
+    taskid: d4b4a276-eedd-4a3b-8d8c-ab7596c6f016
     type: playbook
     task:
-      id: 2363dbc3-ebc6-4d9e-86d8-0f145489bfb2
+      id: d4b4a276-eedd-4a3b-8d8c-ab7596c6f016
       version: -1
       name: Convert URL TO URL Using The CloudConvert Playbook
       description: Use this Playbook to convert a file using CloudConvert
@@ -955,9 +954,9 @@ tasks:
       '#none#':
       - "32"
     scriptarguments:
-      entry_id: {}
       download_via:
         simple: url
+      entry_id: {}
       output_format:
         simple: jpg
       url:
@@ -982,10 +981,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: 0f75e0de-4bcd-43b6-8c77-947f7c74f878
+    taskid: 98ecaf18-01ad-48df-8bfd-04c68e82a34d
     type: playbook
     task:
-      id: 0f75e0de-4bcd-43b6-8c77-947f7c74f878
+      id: 98ecaf18-01ad-48df-8bfd-04c68e82a34d
       version: -1
       name: Convert Entry TO URL Using The CloudConvert Playbook
       description: Use this Playbook to convert a file using CloudConvert
@@ -997,10 +996,10 @@ tasks:
       '#none#':
       - "45"
     scriptarguments:
-      entry_id:
-        simple: ${File.EntryID}
       download_via:
         simple: url
+      entry_id:
+        simple: ${File.EntryID}
       output_format:
         simple: jpg
       url: {}
@@ -1024,10 +1023,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: 7a6d9d2d-e832-4812-89fc-179f0f0be470
+    taskid: 12bec5d0-a418-4a25-8da0-dfb21210ddbf
     type: playbook
     task:
-      id: 7a6d9d2d-e832-4812-89fc-179f0f0be470
+      id: 12bec5d0-a418-4a25-8da0-dfb21210ddbf
       version: -1
       name: Convert Entry To Entry Using The CloudConvert Playbook
       description: Use this Playbook to convert a file using CloudConvert
@@ -1039,10 +1038,10 @@ tasks:
       '#none#':
       - "36"
     scriptarguments:
-      entry_id:
-        simple: ${File.EntryID}
       download_via:
         simple: war_room_entry
+      entry_id:
+        simple: ${File.EntryID}
       output_format:
         simple: jpg
       url: {}
@@ -1066,10 +1065,10 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: fbe17ff1-ffe4-439f-87e4-8579728fab92
+    taskid: 32a98c7c-ce36-48ea-84a8-868a731ac5c1
     type: condition
     task:
-      id: fbe17ff1-ffe4-439f-87e4-8579728fab92
+      id: 32a98c7c-ce36-48ea-84a8-868a731ac5c1
       version: -1
       name: Verify - Check If We Got A Resulted URL
       type: condition
@@ -1103,10 +1102,10 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: e31a328e-ad9b-40b4-8540-70e681ab4be8
+    taskid: 9bd21af4-20bc-4a41-8aef-272228c76b3c
     type: condition
     task:
-      id: e31a328e-ad9b-40b4-8540-70e681ab4be8
+      id: 9bd21af4-20bc-4a41-8aef-272228c76b3c
       version: -1
       name: IsIntegrationAvailable
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -1116,6 +1115,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      "no":
+      - "13"
       "yes":
       - "3"
     scriptarguments:
@@ -1127,8 +1128,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -250
+          "x": 860,
+          "y": -240
         }
       }
     note: false
@@ -1138,10 +1139,10 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: ca73c053-fece-445e-8923-59df50a720d4
+    taskid: f6db3760-9a70-4bf7-8c7a-4d25fac61eea
     type: regular
     task:
-      id: ca73c053-fece-445e-8923-59df50a720d4
+      id: f6db3760-9a70-4bf7-8c7a-4d25fac61eea
       version: -1
       name: Create War Room Entry
       description: Checks the status of an operation. Use the create_war_room_entry
@@ -1185,11 +1186,13 @@ tasks:
     quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "46_13_no": 0.1
+    },
     "paper": {
       "dimensions": {
         "height": 4195,
-        "width": 380,
+        "width": 790,
         "x": 450,
         "y": -350
       }
@@ -1201,26 +1204,25 @@ inputs:
     simple: https://raw.githubusercontent.com/demisto/content/master/TestData/pdfworking.pdf
   required: false
   description: This is the url of the uploaded file
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: entry_id
   value: {}
   required: false
   description: This is the entry id of the uploaded file
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: output_format
   value:
     simple: jpg
   required: true
   description: |
     This is the desired output format
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: download_via
   value:
     simple: war_room_entry
   required: true
   description: |
     The method for downloading the resulted file, url or entry
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
 sourceplaybookid: 27d078f8-e515-4cfc-83d7-30ab49a8b38e
-fromversion: 5.0.0
