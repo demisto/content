@@ -1,0 +1,30 @@
+{
+ "id": "indicator_userpswdhint",
+ "version": -1,
+ "modified": "2020-11-22T09:32:10.693812+02:00",
+ "name": "User PSWD Hint",
+ "ownerOnly": false,
+ "cliName": "userpswdhint",
+ "type": "markdown",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": true,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 2,
+ "hidden": false,
+ "associatedTypes": [
+  "ER Token"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": true,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}

@@ -4,40 +4,42 @@ from CommonServerPython import *
 from typing import Dict, Any
 import traceback
 
+# update the hint field with the following value:
+# ╔═══════════════════════════════════════╗
+# ║                                       ║
+# ║    ╔═════════════════════════════╗    ║
+# ║    ║ ╔═════════════════════════╗ ║    ║
+# ║    ║ ║  Demisto has 7 letters  ║ ║    ║
+# ║    ║ ║  XSOAR has 5 letters    ║ ║    ║
+# ║    ║ ║  What is the password   ║ ║    ║
+# ║    ║ ╚═════════════════════════╝ ║    ║
+# ║    ╚═════════════════════════════╝    ║
+# ║                                       ║
+# ╚═══════════════════════════════════════╝
 
-HINT = '''
-Demisto has 7 letters
-XSOAR has 5 letters
-What is the password
-'''
 
 ''' COMMAND FUNCTION '''
 
+
 def set_indicator_hint(indicator_id):
-    demisto.execute
+    res = demisto.executeCommand('setIndicator', {
+        'id': indicator_id,
+        'customFields': {
+            'userpswdhint': '![](https://user-images.githubusercontent.com/30797606/'
+                            '100021906-ee631480-2dea-11eb-8c47-bb3691053435.png)',
+        },
+    })
+
+    if is_error(res):
+        demisto.error(f'oylo!\n{res}\n\n')
 
 
 def hint_command(args: Dict[str, Any]) -> CommandResults:
-    demisto.info(f'''
-\n\n
-args:
-{args}
+    indicator_id = dict_safe_get(args, ['indicator', 'id'])
+    set_indicator_hint(indicator_id)
 
-demisto class:
-{dir(demisto)}
-
-Calling context:
-{demisto.callingContext}
-\n\n
-    ''')
-
-    markdown = ''
-
-    return CommandResults(
-        readable_output=markdown,
-        # outputs=outputs,
-        # outputs_key_field=None
-    )
+    # return blank string to avoid additional text in the execute notification.
+    return CommandResults(readable_output=' ')
 
 
 ''' MAIN FUNCTION '''
