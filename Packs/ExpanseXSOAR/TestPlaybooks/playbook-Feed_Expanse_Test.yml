@@ -69,10 +69,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: dfdc1bec-7705-4fd1-8a15-5b1506bdc5ac
+    taskid: 16e82449-c69b-4245-860d-148e5ff62669
     type: regular
     task:
-      id: dfdc1bec-7705-4fd1-8a15-5b1506bdc5ac
+      id: 16e82449-c69b-4245-860d-148e5ff62669
       version: -1
       name: FeedExpanse Get Indicators
       description: Retrieve discovered IPs/IP Ranges/Domains/Certificates as indicators
@@ -86,8 +86,6 @@ tasks:
     scriptarguments:
       certificate: {}
       domain: {}
-      extend-context:
-        simple: Indicator=.
       ip: {}
       iprange: {}
       max_indicators:
@@ -107,10 +105,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 6a084d19-4509-44bd-8b36-496971c17a24
+    taskid: f382f459-c6ee-42e2-875f-421b643c530c
     type: condition
     task:
-      id: 6a084d19-4509-44bd-8b36-496971c17a24
+      id: f382f459-c6ee-42e2-875f-421b643c530c
       version: -1
       name: Check Indicators
       description: Check if the retrieved indicators are correct.
@@ -128,12 +126,12 @@ tasks:
           left:
             value:
               complex:
-                root: Indicator
+                root: Expanse.Indicator
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: Indicator.type
+                        simple: Expanse.Indicator.type
                       iscontext: true
                     right:
                       value:
@@ -146,12 +144,12 @@ tasks:
           left:
             value:
               complex:
-                root: Indicator
+                root: Expanse.Indicator
                 filters:
                 - - operator: inList
                     left:
                       value:
-                        simple: Indicator.type
+                        simple: Expanse.Indicator.type
                       iscontext: true
                     right:
                       value:
@@ -164,12 +162,12 @@ tasks:
           left:
             value:
               complex:
-                root: Indicator
+                root: Expanse.Indicator
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: Indicator.type
+                        simple: Expanse.Indicator.type
                       iscontext: true
                     right:
                       value:
@@ -182,16 +180,16 @@ tasks:
           left:
             value:
               complex:
-                root: Indicator
+                root: Expanse.Indicator
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: Indicator.type
+                        simple: Expanse.Indicator.type
                       iscontext: true
                     right:
                       value:
-                        simple: Certificate
+                        simple: ExpanseCertificate
             iscontext: true
           right:
             value:
@@ -199,7 +197,7 @@ tasks:
       - - operator: hasLength
           left:
             value:
-              simple: Indicator
+              simple: Expanse.Indicator
             iscontext: true
           right:
             value:
