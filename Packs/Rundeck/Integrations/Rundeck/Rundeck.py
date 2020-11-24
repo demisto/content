@@ -1197,37 +1197,6 @@ def adhoc_script_run_from_url_command(client: Client, args: dict):
     )
 
 
-def webhook_event_send_command(client: Client, args: dict):
-    auth_token = args.get("auth_token", "")
-    options: str = args.get("options", "")
-    free_json: str = args.get("json", "")
-    options_as_dict: dict = attribute_pairs_to_dict(options)
-
-    try:
-        demisto.info('start convert "options" argument to str')
-        if options_as_dict:
-            options_as_str: str = json.dumps(options_as_dict)
-        else:
-            options_as_str = free_json
-            demisto.info('finish convert "options" argument to str')
-    except Exception as e:
-        raise DemistoException(
-            f'There was a problem converting "json" to json. The reason is: {e}'
-        )
-    result = client.webhook_event_send(auth_token, options_as_str, free_json)
-
-    headers = [key.replace("_", " ") for key in [*result.keys()]]
-    readable_output = tableToMarkdown(
-        "Webhook event send:", result, headers=headers, headerTransform=pascalToSpace
-    )
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix="Rundeck.WebhookEvent",
-        outputs=result,
-        outputs_key_field="id",
-    )
-
-
 def test_module(client: Client, project_name: Optional[str]) -> str:
     try:
         projects_list = client.get_project_list()

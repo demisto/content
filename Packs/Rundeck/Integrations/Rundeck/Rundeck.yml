@@ -1070,7 +1070,7 @@ script:
     - default: false
       description: |-
         Data you want to post to the webhook endpoint. For example: 'op1=val1,op2=val2'.
-        You can pass either the 'options' or 'json' argument.
+        You can pass eith.
       isArray: false
       name: options
       required: false
