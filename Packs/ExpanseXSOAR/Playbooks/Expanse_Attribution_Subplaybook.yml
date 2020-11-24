@@ -432,8 +432,6 @@ tasks:
       '#none#':
       - "45"
     scriptarguments:
-      extend-context:
-        simple: CDLResult=page.result.data
       ignore-outputs:
         simple: "false"
       limit:
@@ -523,8 +521,6 @@ tasks:
       '#none#':
       - "45"
     scriptarguments:
-      extend-context:
-        simple: CDLResult=page.result.data
       ignore-outputs:
         simple: "false"
       limit:
