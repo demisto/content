@@ -844,7 +844,7 @@ jobs:
                       echo "Not AMI run, can't run on this version"
                       exit 0
                   fi
-            #- *destroy_instances
+            - *destroy_instances
             - *store_artifacts
   Server 6_0:
     <<: *container_config
@@ -914,7 +914,7 @@ jobs:
                 command: |
                   ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
                 when: always
-         #  - *destroy_instances
+            - *destroy_instances
             - *store_artifacts
 
   Server Master:
