@@ -49,9 +49,9 @@ tasks:
       - "2"
     scriptarguments:
       password:
-        simple: xXavk8J@G9dr
+        simple: @R6wWjITp39m7@Ev5uF#
       username:
-        simple: admin
+        simple: admin_test_Nov2020-01
     separatecontext: false
     view: |-
       {

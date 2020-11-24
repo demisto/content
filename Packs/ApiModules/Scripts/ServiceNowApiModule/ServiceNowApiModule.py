@@ -147,7 +147,7 @@ class ServiceNowClient(BaseClient):
                 except ValueError as exception:
                     raise DemistoException('Failed to parse json object from response: {}'.format(res.content),
                                            exception)
-                if res.status_code in [401]:
+                if 'error' in res:
                     return_error(
                         f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
                         f'and try to run again the login command to generate a new refresh token as it '
