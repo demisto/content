@@ -32,4 +32,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![CloudConvert](./doc_images/CloudConvert_playbook_image.png)
+![CloudConvert](./doc_imgs/CloudConvert_playbook_image.png)
