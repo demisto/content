@@ -1,3 +1,5 @@
+from typing import Dict, Union
+
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -23,7 +25,7 @@ class Client(BaseClient):
             res = self._http_request('GET', f"domains?customerKey={self.api_key}&{suffix}")
         return res
 
-    def delete_domains(self, domain_name, domain_id):
+    def delete_domains(self, domain_name: str, domain_id: str):
         res = ''
         if domain_id:
             res = self._http_request('DELETE', f"domains/{domain_id}?customerKey={self.api_key}")
@@ -31,11 +33,11 @@ class Client(BaseClient):
             res = self._http_request('DELETE', f"domains?customerKey={self.api_key}&where[name]={domain_name}")
         return res
 
-    def add_event_to_domain(self, event):
+    def add_event_to_domain(self, event: dict):
         return self._http_request('POST', f"events?customerKey={self.api_key}", json_data=event)
 
 
-def domains_list_suffix(page, limit, request):
+def domains_list_suffix(page: Optional[str] = '', limit: Optional[str] = '', request: Optional[str] = '') -> str:
     suffix = ''
     if request:
         suffix = request
@@ -46,26 +48,31 @@ def domains_list_suffix(page, limit, request):
     return suffix
 
 
-def create_domain_list(client, response):
+def create_domain_list(client: Client, response: Dict[str, Union[dict, list]]) -> list:
     full_domains_list = []
     while response:
-        response_data = response["data"]
+        response_data = response.get('data',[])
         for domain in response_data:
             full_domains_list.append(domain.get('name'))
-        response_next_page = response["meta"]["next"]
+        response_next_page = response.get('meta', {}).get('next', '')
         response = client.get_domains_list(response_next_page) if response_next_page else {}
     return full_domains_list
 
 
-def domains_list_command(client, args):
+def domains_list_command(client: Client, args: dict) -> CommandResults:
     page = args.get('page')
     limit = args.get('limit')
     suffix = domains_list_suffix(page=page, limit=limit)
     response = client.get_domains_list(suffix=suffix)
-    return create_domain_list(response)
+    domains_list = create_domain_list(client, response)
+    return CommandResults(
+        outputs_prefix='CiscoUmbrellaEnforcement',
+        outputs_key_field='Domains',
+        outputs=domains_list,
+    )
 
 
-def domain_event_add_command(client, args):
+def domain_event_add_command(client: Client, args: dict) -> str:
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
@@ -82,7 +89,7 @@ def domain_event_add_command(client, args):
     new_event = {
         "alertTime": alert_time,
         "deviceId": device_id,
-        "deviceVersion": "13.7a",  #?????
+        "deviceVersion": "13.7a",  # ?????
         "dstDomain": dst_domain,
         "dstUrl": dst_url,
         "eventTime": alert_time,
@@ -93,15 +100,15 @@ def domain_event_add_command(client, args):
     response = client.add_event_to_domain(new_event)
     r_code = response.status_code
     if int(r_code) == 202:
-        ActionResult = f"New event was added successfuly."
+        ActionResult = "New event was added successfuly."
     else:
-        ActionResult = f"New event's addition failed."
+        ActionResult = "New event's addition failed."
     return ActionResult
 
 
-def domain_delete_command(client, args):
-    domain_name = args.get('name')
-    domain_id = args.get('id')
+def domain_delete_command(client: Client, args: dict) -> str:
+    domain_name = args.get('name', '')
+    domain_id = args.get('id', '')
     if not domain_name and not domain_id:
         raise DemistoException(
             'Both domain name and domain id do not exist, Please supply one of them in order to set the domain to '
@@ -114,17 +121,10 @@ def domain_delete_command(client, args):
     return message
 
 
-def test_module(client):
-    try:
-        response = client.get_domains_list()
-        r_code = response.status_code
-        if int(r_code) == 200:
-            status = 'ok'
-        else:
-            status = 'Error'
-    except Exception as e:
-        LOG(e)
-        return_error(e.message)
+def test_module(client: Client) -> str:
+    response = client.get_domains_list(domains_list_suffix())
+    if int(response.status_code) != 200:
+        raise DemistoException('test failed')
     return 'ok'
 
 
