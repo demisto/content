@@ -153,12 +153,13 @@ class Client(BaseClient):
             with open(file_to_upload, 'rb') as _file:
                 file_to_upload = {'file': (file_to_upload, _file.read())}
 
+        result: Dict = {}
         if self.use_credentials_login:
             url_suffix = SUFFIX_TRANSFORMER.get(path)
-            result: Dict = self._http_request(url_suffix['method'], url_suffix['url'],data=self.credentials,
-                                              params=self.command_params, files=file_to_upload, timeout=2000)
+            result = self._http_request(url_suffix['method'], url_suffix['url'], data=self.credentials,
+                                        params=self.command_params, files=file_to_upload, timeout=2000)
         else:
-            result: Dict = self._http_request('POST', path, params=self.command_params, headers=headers, files=file_to_upload)
+            result = self._http_request('POST', path, params=self.command_params, headers=headers, files=file_to_upload)
 
         lastline_exception_handler(result)
         return result
@@ -321,7 +322,7 @@ def main():
             'api_token': params.get('api_token')
         }
         api_params.update(demisto.args())
-        credentials ={}
+        credentials = {}
         cred_login = False
 
     else:
