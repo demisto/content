@@ -133,7 +133,8 @@ def create_mapper(path: Path) -> str:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Creates incident field, incident type and a layout in a given pack.")
+    parser = argparse.ArgumentParser(description="Creates incident field, incident type, mapper and a "
+                                                 "layout in a given pack.")
     parser.add_argument('pack_name')
     parser.add_argument('--artifacts-folder', required=False)
     args = parser.parse_args()
