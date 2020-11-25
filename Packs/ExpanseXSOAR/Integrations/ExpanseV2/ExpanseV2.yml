@@ -35,6 +35,12 @@ configuration:
   required: false
   defaultvalue: false
   type: 8
+- display: Mirror additional incident (Asset tags, Attribution Reasons)
+  hidden: false
+  name: mirror_details
+  required: false
+  defaultvalue: false
+  type: 8
 - display: Fetch risky flows from Expanse Behavior
   hidden: false
   name: fetch_behavior
@@ -273,7 +279,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximum number of entries to retrieve
+      description: Maximum number of results to retrieve
       isArray: false
       name: limit
       required: false
@@ -946,7 +952,7 @@ script:
     execution: false
     arguments:
     - default: false
-      description: Maximum number of entries to retrieve
+      description: Maximum number of results to retrieve
       isArray: false
       name: limit
       required: false
@@ -964,7 +970,7 @@ script:
     execution: false
     arguments:
     - default: false
-      description: Maximum number of entries to retrieve
+      description: Maximum number of results to retrieve
       isArray: false
       name: limit
       required: false
@@ -982,7 +988,7 @@ script:
     execution: false
     arguments:
     - default: false
-      description: Maximum number of entries to retrieve
+      description: Maximum number of results to retrieve
       isArray: false
       name: limit
       required: false
@@ -1292,6 +1298,12 @@ script:
       required: false
       secret: false
     - default: false
+      description: Maximum number of entries to retrieve
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
       description: Tag IDs
       isArray: true
       name: tags
@@ -1386,6 +1398,12 @@ script:
       description: List all domains with the specified substring
       isArray: false
       name: search
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of entries to retrieve
+      isArray: false
+      name: limit
       required: false
       secret: false
     - default: false
@@ -1530,6 +1548,12 @@ script:
       description: List all certificates with the specified substring in common name
       isArray: false
       name: search
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of entries to retrieve
+      isArray: false
+      name: limit
       required: false
       secret: false
     - default: false
@@ -1699,7 +1723,13 @@ script:
     description: List Risk Rules
     deprecated: false
     execution: false
-    arguments: []
+    arguments:
+    - default: false
+      description: Maximum number of entries to retrieve
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     outputs:
     - contextPath: Expanse.RiskRule.id
       description: 'Expanse Risk Rule ID'
