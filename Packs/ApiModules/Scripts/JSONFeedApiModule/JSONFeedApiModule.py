@@ -113,6 +113,8 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
     :param client: Client of a JSON Feed
     :param indicator_type: the default indicator type
     :param feedTags: the indicator tags
+    :param auto_detect: a boolean indicates if we should automatically detect the indicator_type
+    :param limit: given only when get-indicators command is running. function will return number indicators as the limit
     """
     indicators = []
     feeds_results = {}
@@ -122,14 +124,12 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             demisto.debug("Got a custom function to handle with pagination, "
                           "Going to use this function instead build_iterator function")
             indicators_from_feed = build_iterator_paging(client, feed, limit, **kwargs)
-            if isinstance(indicators_from_feed, list):
-                feeds_results[feed_name] = indicators_from_feed
-            else:
-                demisto.debug("Custom function to handle with pagination must have a list as a return type")
+            if not isinstance(indicators_from_feed, list):
+                raise Exception("Custom function to handle with pagination must have a list as a return type")
+            feeds_results[feed_name] = indicators_from_feed
         else:
             feeds_results[feed_name] = client.build_iterator(feed, **kwargs)
 
-    service_limit = 1
     for service_name, items in feeds_results.items():
         feed_config = client.feed_name_to_config.get(service_name, {})
         indicator_field = feed_config.get('indicator') if feed_config.get('indicator') else 'indicator'
@@ -168,10 +168,9 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             indicator['rawJSON'] = item
 
             indicators.append(indicator)
-            if limit and service_limit >= limit:
-                service_limit = 0
+            if limit and len(indicator) % limit == 0:  # We have a limitation only when get-indicators command is
+                # called, and then we return for each service_name "limit" of indicators
                 break
-            service_limit += 1
 
     return indicators
 

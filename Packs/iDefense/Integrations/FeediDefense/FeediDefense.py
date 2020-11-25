@@ -26,6 +26,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
             **kwargs
         )
 
+        demisto.debug(f"initiating API call with url: {r.url}")
         try:
             r.raise_for_status()
             data = r.json()
@@ -43,7 +44,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
         except TypeError as TE:
             raise TypeError(f'Error massage: {TE}\n\n Try To check extractor value')
-
+    demisto.debug(f"Received in total {len(result)} results from api call")
     return result
 
 
