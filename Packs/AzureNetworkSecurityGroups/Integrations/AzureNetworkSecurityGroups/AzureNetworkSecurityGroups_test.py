@@ -45,6 +45,9 @@ def test_format_rule():
 
 
 def test_list_groups_command(mocker):
+    """
+    Validate that list_groups_command returns the output in the correct format
+    """
     from AzureNetworkSecurityGroups import list_groups_command
     client = mock_client(mocker, util_load_json("test_data/list_network_groups_result.json"))
     results = list_groups_command(client)
@@ -53,6 +56,11 @@ def test_list_groups_command(mocker):
 
 
 def test_create_rule_command(mocker):
+    """
+    Given: a rule to be created
+    When: protocol is 'Allow', source ports are a range and destination ports are an array of ports
+    Then: Validate protocol and source are converted to `*` and destination port is converted to list.
+    """
     from AzureNetworkSecurityGroups import create_rule_command
     client = mock_client(mocker, util_load_json("test_data/list_network_groups_result.json"))
     result = create_rule_command(client, security_group_name='securityGroup', security_rule_name='test_rule',
@@ -65,7 +73,32 @@ def test_create_rule_command(mocker):
     assert ['1', '2', '3', '4-6'] == properties.get('destinationPortRanges')
 
 
+def test_update_rule_command(mocker):
+    """
+    Given: a rule to update
+    When: destination ports are changed from one port to a list and protocol and source are any
+    Then: Validate `destinationPortRange` `sourcePortRanges` are not a keys in the passed properties dict and
+        `destinationPortRanges`, `sourcePortRange` are keys. Also check that source and protocol are changed to `*` as
+        they are general
+
+    """
+    from AzureNetworkSecurityGroups import update_rule_command
+    client = mock_client(mocker, util_load_json("test_data/get_rule_result.json"))
+    results = update_rule_command(client, security_group_name='securityGroup', security_rule_name='wow',
+                                 direction='Inbound', action='Allow', protocol='Any', source='Any',
+                                  source_ports='900-1000', destination_ports='1,2,3,4-6')
+    properties = client.http_request.call_args_list[1][1].get('data').get('properties')
+    assert 'destinationPortRange' not in properties.keys()
+    assert 'destinationPortRanges' in properties.keys()
+    assert 'sourcePortRanges' not in properties.keys()
+    assert 'sourcePortRange' in properties.keys()
+    assert properties.get('protocol') == properties.get('sourceAddressPrefix') == '*'
+
+
 def test_list_rules_command(mocker):
+    """
+    Validate that list_rules_command returns the output in the correct format
+    """
     from AzureNetworkSecurityGroups import list_rules_command
     client = mock_client(mocker, util_load_json("test_data/list_rule_results.json"))
     result = list_rules_command(client, 'groupName')
@@ -74,46 +107,11 @@ def test_list_rules_command(mocker):
 
 
 def test_get_rule(mocker):
-    from AzureNetworkSecurityGroups import get_rule_command
-    client = mock_client(mocker, util_load_json("test_data/list_rule_results.json"))
-    result = get_rule_command(client, 'groupName', 'Port_8080')
-    assert '### Rule Port_8080' in result.readable_output
-    assert result.outputs[0].get('name') == 'Port_8080'
-
-
-def test_start_scan(requests_mock):
-    """Tests helloworld-scan-start command function.
-
-    Configures requests_mock instance to generate the appropriate start_scan
-    API response when the correct start_scan API request is performed. Checks
-    the output of the command function with the expected output.
     """
-    from HelloWorld import Client, scan_start_command
-
-    mock_response = {
-        'scan_id': '7a161a3f-8d53-42de-80cd-92fb017c5a12',
-        'status': 'RUNNING'
-    }
-    requests_mock.get('https://test.com/api/v1/start_scan?hostname=example.com', json=mock_response)
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'hostname': 'example.com'
-    }
-
-    response = scan_start_command(client, args)
-
-    assert response.outputs_prefix == 'HelloWorld.Scan'
-    assert response.outputs_key_field == 'scan_id'
-    assert response.outputs == {
-        'scan_id': '7a161a3f-8d53-42de-80cd-92fb017c5a12',
-        'status': 'RUNNING',
-        'hostname': 'example.com'
-    }
+    Validate that get_rule_command returns the output in the correct format
+    """
+    from AzureNetworkSecurityGroups import get_rule_command
+    client = mock_client(mocker, util_load_json("test_data/get_rule_result.json"))
+    result = get_rule_command(client, 'groupName', 'wow')
+    assert '### Rule wow' in result.readable_output
+    assert result.outputs.get('name') == 'wow'

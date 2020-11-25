@@ -19,34 +19,38 @@ API_VERSION = '2020-05-01'
 ''' CLIENT CLASS '''
 
 
-class Client:
+class AzureNSGClient:
     @logger
-    def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, redirect_uri, auth_code,
-                 subscription_id, resource_group_name, workspace_name, verify, proxy):
-        #TODO: do we need the `workspace_name` parameter?
+    def __init__(self, self_deployed, tenant_id, app_id, app_secret, redirect_uri, auth_code,
+                 subscription_id, resource_group_name, verify, proxy):
 
-        tenant_id = refresh_token if self_deployed else ''  #TODO: why is this saved in the refresh token?
-        refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
+        refresh_token = demisto.getIntegrationContext().get('current_refresh_token')
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/' \
             f'resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups'
-        self.ms_client = MicrosoftClient(
-            self_deployed=self_deployed,
-            auth_id=auth_and_token_url,
-            refresh_token=refresh_token,
-            enc_key=enc_key,
-            redirect_uri=redirect_uri,
-            token_retrieval_url='https://login.microsoftonline.com/{tenant_id}/oauth2/token',
-            grant_type=AUTHORIZATION_CODE,  # disable-secrets-detection
-            app_name='',  #TODO: Do we need an appname?
-            base_url=base_url,
-            verify=verify,
-            proxy=proxy,
-            resource='https://management.core.windows.net',
-            scope='',  # TODO: See if scope is needed
-            tenant_id=tenant_id,
-            auth_code=auth_code,
-            ok_codes=(200, 201, 202, 204)
-        )
+        client_args = {
+            'self_deployed': True,  # We always set the self_deployed key as True because when not using a self
+                                    # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
+                                    # flow and most of the same arguments should be set, as we're !not! using OProxy.
+            'auth_id': app_id,
+            'auth_code': auth_code,
+            'refresh_token': refresh_token,
+            'enc_key': app_secret,
+            'redirect_uri': redirect_uri,
+            'token_retrieval_url': 'https://login.microsoftonline.com/{tenant_id}/oauth2/token',
+            'grant_type': AUTHORIZATION_CODE,  # disable-secrets-detection
+            'app_name': '',  #TODO: Do we need an appname?
+            'base_url': base_url,
+            'verify': verify,
+            'proxy': proxy,
+            'resource': 'https://management.core.windows.net',
+            'tenant_id': tenant_id,
+            'ok_codes': (200, 201, 202, 204)
+        }
+        if not self_deployed:
+            client_args['grant_type'] = DEVICE_CODE
+            client_args['token_retrieval_url'] = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+            client_args['scope'] = 'https://management.azure.com/user_impersonation offline_access user.read'
+        self.ms_client = MicrosoftClient(**client_args)
 
     @logger
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None, resp_type='json'):
@@ -116,7 +120,7 @@ def format_rule(rule_json: dict, security_rule_name: str):
 
 
 @logger
-def list_groups_command(client: Client) -> dict:
+def list_groups_command(client: AzureNSGClient) -> dict:
     """
 
     Args:
@@ -141,7 +145,7 @@ def list_groups_command(client: Client) -> dict:
 
 
 @logger
-def list_rules_command(client: Client, security_group_name: str) -> dict:
+def list_rules_command(client: AzureNSGClient, security_group_name: str) -> dict:
     """
 
     Args:
@@ -171,7 +175,7 @@ def list_rules_command(client: Client, security_group_name: str) -> dict:
 
 
 @logger
-def delete_rule_command(client: Client, security_group_name: str, security_rule_name: str) -> dict:
+def delete_rule_command(client: AzureNSGClient, security_group_name: str, security_rule_name: str) -> dict:
     """
 
     Args:
@@ -189,7 +193,7 @@ def delete_rule_command(client: Client, security_group_name: str, security_rule_
 
 
 @logger
-def create_rule_command(client: Client, security_group_name: str, security_rule_name: str, direction: str,
+def create_rule_command(client: AzureNSGClient, security_group_name: str, security_rule_name: str, direction: str,
                         action: str = 'Allow', protocol: str = 'Any', source: str = 'Any', source_ports: str = '*',
                         destination: str = 'Any', destination_ports: str = '*', priority: str = '4096',
                         description: str = None):
@@ -223,7 +227,7 @@ def create_rule_command(client: Client, security_group_name: str, security_rule_
 
 
 @logger
-def update_rule_command(client: Client, security_group_name: str, security_rule_name: str, direction: str = None,
+def update_rule_command(client: AzureNSGClient, security_group_name: str, security_rule_name: str, direction: str = None,
                         action: str = None, protocol: str = None, source: str = None, source_ports: str = None,
                         destination: str = None, destination_ports: str = None, priority: str = None,
                         description: str = None):
@@ -246,8 +250,10 @@ def update_rule_command(client: Client, security_group_name: str, security_rule_
     rule = client.get_rule(security_group_name, security_rule_name)
     properties = rule.get('properties')
 
-    updated_properties = assign_params(protocol=protocol, sourceAddressPrefix=source,
-                                       destinationAddressPrefix=destination, access=action, priority=priority,
+    updated_properties = assign_params(protocol='*' if protocol == 'Any' else protocol,
+                                       sourceAddressPrefix='*' if source == 'Any' else source,
+                                       destinationAddressPrefix='*' if destination == 'Any' else destination,
+                                       access=action, priority=priority,
                                        direction=direction, description=description)
     if source_ports:
         source_ports_list = argToList(source_ports)
@@ -274,7 +280,7 @@ def update_rule_command(client: Client, security_group_name: str, security_rule_
 
 
 @logger
-def get_rule_command(client: Client, security_group_name: str, security_rule_name: str):
+def get_rule_command(client: AzureNSGClient, security_group_name: str, security_rule_name: str):
     rule = client.get_rule(security_group_name, security_rule_name)
     return format_rule(rule, security_rule_name)
 
@@ -287,6 +293,21 @@ def test_connection(client, params):
     return '✅ Great Success!'
 
 
+@logger
+def start_auth(client: AzureNSGClient) -> CommandResults:
+    user_code = client.ms_client.device_auth_request()
+    return CommandResults(readable_output=f"""### Authorization instructions
+1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
+ and enter the code **{user_code}** to authenticate.
+2. Run the **!azure-nsg-auth-complete** command in the War Room.""")
+
+
+@logger
+def complete_auth(client: AzureNSGClient):
+    client.ms_client.get_access_token()
+    return 'Authorization completed successfully.'
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -297,34 +318,35 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {command}')
     try:
-        client = Client(
+        client = AzureNSGClient(
             self_deployed=params.get('self_deployed', False),
-            auth_and_token_url=params.get('auth_id', ''),
-            refresh_token=params.get('tenant_id', ''),
-            enc_key=params.get('enc_key', ''),
+            app_id=params.get('app_id', ''),
+            tenant_id=params.get('tenant_id', ''),
+            app_secret=params.get('app_secret', ''),
             redirect_uri=params.get('redirect_uri', ''),
-            auth_code=params.get('auth_code', ''),
             subscription_id=params.get('subscription_id', ''),
+            auth_code=params.get('auth_code', ''),
             resource_group_name=params.get('resource_group_name', ''),
-            workspace_name=params.get('workspaceName', ''),  #TODO: is it needed?
             verify=not params.get('insecure', False),
-            proxy=params.get('proxy', False)
+            proxy=params.get('proxy', False),
         )
         commands = {
             'azure-nsg-security-groups-list': list_groups_command,
             'azure-nsg-security-rules-list': list_rules_command,
-            'azure-nsg-test': test_connection,
             'azure-nsg-security-rules-delete': delete_rule_command,
             'azure-nsg-security-rules-create': create_rule_command,
             'azure-nsg-security-rules-update': update_rule_command,
             'azure-nsg-security-rules-get': get_rule_command,
+            'azure-nsg-auth-start': start_auth,
+            'azure-nsg-auth-complete': complete_auth,
         }
-
-        demisto.debug(f"Integration Context: -=-=-=-=-==-\n{demisto.getIntegrationContext()}")
+        demisto.debug(f"Integration Context: -=-=-=-=-==-\n{demisto.getIntegrationContext()}") #TODO remove
         if command == 'test-module':
             raise Exception("Please use !azure-nsg-test instead")
-
-        return_results(commands[command](client, **args))
+        if command == 'azure-nsg-test':
+            return_results(test_connection(client, params))
+        else:
+            return_results(commands[command](client, **args))
 
     # Log exceptions and return errors
     except Exception as e:
