@@ -124,11 +124,11 @@ function CreateNewSession {
     }
     $session = New-PSSession @sessions_params -WarningAction:SilentlyContinue
 
-	if (!$session) {
-		throw "Fail - establishing session to $url"
-	}
+    if (!$session) {
+        throw "Fail - establishing session to $url"
+    }
 
-	return $session
+    return $session
     <#
         .DESCRIPTION
         Creates new pssession using Oauth2.0 method.
@@ -738,7 +738,7 @@ class SecurityAndComplianceClient {
 
     [psobject]NewSearch([string]$search_name,  [string]$case, [string]$kql, [string]$description, [bool]$allow_not_found_exchange_locations, [string[]]$exchange_location,
                         [string[]]$exchange_location_exclusion, [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion) {
-		try{
+        try{
             # Establish session to remote
             $this.CreateSession()
             # Import and Execute command
@@ -807,13 +807,13 @@ class SecurityAndComplianceClient {
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/new-compliancesearch?view=exchange-ps
         #>
-	}
+    }
 
     SetSearch([string]$search_name, [string]$kql, [string]$description, [bool]$allow_not_found_exchange_locations, [string[]]$add_exchange_location,
               [string[]]$add_exchange_location_exclusion, [string[]]$add_public_folder_location, [string[]]$add_share_point_location, [string[]]$add_share_point_location_exclusion,
               [string[]]$remove_exchange_location, [string[]]$remove_exchange_location_exclusion, [string[]]$remove_public_folder_location, [string[]]$remove_share_point_location,
               [string[]]$remove_share_point_location_exclusion) {
-		try{
+        try{
             # Establish session to remote
             $this.CreateSession()
             # Import and Execute command
@@ -892,9 +892,9 @@ class SecurityAndComplianceClient {
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/set-compliancesearch?view=exchange-ps
         #>
-	}
+    }
 
-	RemoveSearch([string]$search_name) {
+    RemoveSearch([string]$search_name) {
         try{
             # Establish session to remote
             $this.CreateSession()
@@ -919,9 +919,9 @@ class SecurityAndComplianceClient {
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/remove-compliancesearch?view=exchange-ps
         #>
-	}
+    }
 
-	[array]ListSearch() {
+    [array]ListSearch() {
         try {
             # Establish session to remote
             $this.CreateSession()
@@ -948,9 +948,9 @@ class SecurityAndComplianceClient {
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/get-compliancesearch?view=exchange-ps
         #>
-	}
+    }
 
-	[psobject]GetSearch([string]$search_name, [int]$limit) {
+    [psobject]GetSearch([string]$search_name, [int]$limit) {
         try{
             # Establish session to remote
             $this.CreateSession()
@@ -986,7 +986,7 @@ class SecurityAndComplianceClient {
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/get-compliancesearch?view=exchange-ps
         #>
-	}
+    }
 
     StartSearch([string]$search_name) {
         try{
@@ -1013,7 +1013,7 @@ class SecurityAndComplianceClient {
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/start-compliancesearch?view=exchange-ps
         #>
-	}
+    }
 
     StopSearch([string]$search_name) {
         try{
@@ -1040,7 +1040,7 @@ class SecurityAndComplianceClient {
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/stop-compliancesearch?view=exchange-ps
         #>
-	}
+    }
 
     [psobject]NewSearchAction([string]$search_name, [string]$action, [string]$purge_type) {
         try{
@@ -1090,7 +1090,7 @@ class SecurityAndComplianceClient {
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/new-compliancesearchaction?view=exchange-ps
         #>
-	}
+    }
 
     RemoveSearchAction([string]$search_action_name) {
         try{
@@ -1117,7 +1117,7 @@ class SecurityAndComplianceClient {
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/remove-compliancesearchaction?view=exchange-ps
         #>
-	}
+    }
 
     [array]ListSearchActions() {
         try{
@@ -1146,7 +1146,7 @@ class SecurityAndComplianceClient {
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/get-compliancesearchaction?view=exchange-ps
         #>
-	}
+    }
 
     [psobject]GetSearchAction([string]$search_action_name, [int]$limit) {
         try{
@@ -1184,7 +1184,7 @@ class SecurityAndComplianceClient {
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/get-compliancesearchaction?view=exchange-ps
         #>
-	}
+    }
 }
 
 #### COMMAND FUNCTIONS ####
@@ -1197,7 +1197,7 @@ function TestModuleCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndCompli
         throw "Fill password for basic auth or use command !o365-sc-start-auth for Oauth2.0 authorization (MFA enabled accounts)."
     }
     $raw_response = $null
-	$human_readable = "ok"
+    $human_readable = "ok"
     $entry_context = $null
 
     return $human_readable, $entry_context, $raw_response
@@ -1205,7 +1205,7 @@ function TestModuleCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndCompli
 
 function StartAuthCommand ([OAuth2DeviceCodeClient]$client) {
     $raw_response = $client.AuthorizationRequest()
-	$human_readable = "## $script:INTEGRATION_NAME - Authorize instructions
+    $human_readable = "## $script:INTEGRATION_NAME - Authorize instructions
 1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **$($raw_response.user_code)** to authenticate.
 2. Run the following command **!$script:COMMAND_PREFIX-complete-auth** in the War Room."
     $entry_context = @{}
@@ -1248,13 +1248,13 @@ function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
                                       $exchange_location, $exchange_location_exclusion, $public_folder_location, $share_point_location, $share_point_location_exclusion)
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, ContentMatchQuery
-	$human_readable = TableToMarkdown $md_columns  "$script:INTEGRATION_NAME - New search '$($kwargs.search_name)' created"
+    $human_readable = TableToMarkdown $md_columns  "$script:INTEGRATION_NAME - New search '$($kwargs.search_name)' created"
     # Entry context
     $entry_context = @{
         $script:SEARCH_ENTRY_CONTEXT = ParseSearchToEntryContext $raw_response
     }
 
-	return $human_readable, $entry_context, $raw_response
+    return $human_readable, $entry_context, $raw_response
 }
 
 function SetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
@@ -1279,16 +1279,16 @@ function SetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     # Raw response
     $raw_response = @{}
     # Human readable
-	$human_readable = "$script:INTEGRATION_NAME - Search **$($kwargs.search_name)** modified!"
+    $human_readable = "$script:INTEGRATION_NAME - Search **$($kwargs.search_name)** modified!"
     # Entry context
     $entry_context = @{}
 
-	return $human_readable, $entry_context, $raw_response
+    return $human_readable, $entry_context, $raw_response
 }
 
 function RemoveSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
-	# Remove operation doesn't return any output
-	$client.RemoveSearch($kwargs.search_name)
+    # Remove operation doesn't return any output
+    $client.RemoveSearch($kwargs.search_name)
     # Raw response
     $raw_response = @{}
     # Human readable
@@ -1296,7 +1296,7 @@ function RemoveSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$k
     # Entry context
     $entry_context = @{}
 
-	return $human_readable, $entry_context, $raw_response
+    return $human_readable, $entry_context, $raw_response
 }
 
 function ListSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
@@ -1306,13 +1306,13 @@ function ListSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwa
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, RunBy
     $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - Search configurations"
     # Entry context
-	$entry_context = @{
+    $entry_context = @{
         $script:SEARCH_ENTRY_CONTEXT =  $raw_response | ForEach-Object {
             ParseSearchToEntryContext $_
         }
     }
 
-	return $human_readable, $entry_context, $raw_response
+    return $human_readable, $entry_context, $raw_response
 }
 
 function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
@@ -1328,7 +1328,7 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     }
     # Human readable - Basic info
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, RunBy
-	$human_readable = TableToMarkdown $md_columns  "$script:INTEGRATION_NAME - '$($kwargs.search_name)' search"
+    $human_readable = TableToMarkdown $md_columns  "$script:INTEGRATION_NAME - '$($kwargs.search_name)' search"
     # Human readable - Statistics
     $parsed_results = $entry_context[$script:SEARCH_ENTRY_CONTEXT].SuccessResults
     if ($parsed_results -and $statistics) {
@@ -1341,7 +1341,7 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
         }
     }
 
-	return $human_readable, $entry_context, $raw_response, $file_entry
+    return $human_readable, $entry_context, $raw_response, $file_entry
 }
 
 function StartSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
@@ -1354,7 +1354,7 @@ function StartSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kw
     # Entry context
     $entry_context = @{}
 
-	return $human_readable, $entry_context, $raw_response
+    return $human_readable, $entry_context, $raw_response
 }
 
 function StopSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
@@ -1367,7 +1367,7 @@ function StopSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwa
     # Entry context
     $entry_context = @{}
 
-	return $human_readable, $entry_context, $raw_response
+    return $human_readable, $entry_context, $raw_response
 }
 
 function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
@@ -1381,7 +1381,7 @@ function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
         $script:SEARCH_ACTION_ENTRY_CONTEXT = ParseSearchActionToEntryContext $raw_response
     }
 
-	return $human_readable, $entry_context, $raw_response
+    return $human_readable, $entry_context, $raw_response
 }
 
 function RemoveSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
@@ -1394,7 +1394,7 @@ function RemoveSearchActionCommand([SecurityAndComplianceClient]$client, [hashta
     # Entry context
     $entry_context = @{}
 
-	return $human_readable, $entry_context, $raw_response
+    return $human_readable, $entry_context, $raw_response
 }
 
 function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
@@ -1409,7 +1409,7 @@ function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
     }
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, SearchName, Action, LastModifiedTime, RunBy, JobEndTime, Status
-	$human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - search action '$($kwargs.search_action_name)'"
+    $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - search action '$($kwargs.search_action_name)'"
     # Human readable - Mail results
     $parsed_results = $entry_context[$script:SEARCH_ACTION_ENTRY_CONTEXT].Results
     if ($parsed_results -and $results) {
@@ -1423,7 +1423,7 @@ function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
     }
 
 
-	return $human_readable, $entry_context, $raw_response, $file_entry
+    return $human_readable, $entry_context, $raw_response, $file_entry
 }
 
 function ListSearchActionsCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
@@ -1434,13 +1434,13 @@ function ListSearchActionsCommand([SecurityAndComplianceClient]$client, [hashtab
     $md_columns = $raw_response | Select-Object -Property Name, SearchName, Action, LastModifiedTime, RunBy, JobEndTime, Status
     $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - search actions"
     # Entry context
-	$entry_context = @{
+    $entry_context = @{
         $script:SEARCH_ACTION_ENTRY_CONTEXT = $raw_response | ForEach-Object {
             ParseSearchActionToEntryContext $_
         }
     }
 
-	return $human_readable, $entry_context, $raw_response
+    return $human_readable, $entry_context, $raw_response
 }
 
 #### INTEGRATION COMMANDS MANAGER ####
@@ -1456,7 +1456,7 @@ function Main {
     $no_proxy = $false
     $insecure = (ConvertTo-Boolean $integration_params.insecure)
 
-	try {
+    try {
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
         # Refreshing tokens if expired
@@ -1469,7 +1469,7 @@ function Main {
         switch ($command) {
             "test-module" {
                 ($human_readable, $entry_context, $raw_response) = TestModuleCommand $oauth2_client $cs_client
-			}
+            }
             "$script:COMMAND_PREFIX-auth-start" {
                 ($human_readable, $entry_context, $raw_response) = StartAuthCommand $oauth2_client
             }
@@ -1479,39 +1479,39 @@ function Main {
             "$script:COMMAND_PREFIX-auth-test" {
                 ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $cs_client
             }
-			"$script:COMMAND_PREFIX-new-search" {
-				($human_readable, $entry_context, $raw_response) = NewSearchCommand $cs_client $command_arguments
-			}
+            "$script:COMMAND_PREFIX-new-search" {
+                ($human_readable, $entry_context, $raw_response) = NewSearchCommand $cs_client $command_arguments
+            }
             "$script:COMMAND_PREFIX-set-search" {
-				($human_readable, $entry_context, $raw_response) = SetSearchCommand $cs_client $command_arguments
-			}
-			"$script:COMMAND_PREFIX-remove-search" {
-				($human_readable, $entry_context, $raw_response) = RemoveSearchCommand $cs_client $command_arguments
-			}
-			"$script:COMMAND_PREFIX-list-search" {
-				($human_readable, $entry_context, $raw_response) = ListSearchCommand $cs_client $command_arguments
-			}
-			"$script:COMMAND_PREFIX-get-search" {
-				($human_readable, $entry_context, $raw_response, $file_entry) = GetSearchCommand $cs_client $command_arguments
-			}
+                ($human_readable, $entry_context, $raw_response) = SetSearchCommand $cs_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-remove-search" {
+                ($human_readable, $entry_context, $raw_response) = RemoveSearchCommand $cs_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-list-search" {
+                ($human_readable, $entry_context, $raw_response) = ListSearchCommand $cs_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-get-search" {
+                ($human_readable, $entry_context, $raw_response, $file_entry) = GetSearchCommand $cs_client $command_arguments
+            }
             "$script:COMMAND_PREFIX-start-search" {
-				($human_readable, $entry_context, $raw_response) = StartSearchCommand $cs_client $command_arguments
-			}
+                ($human_readable, $entry_context, $raw_response) = StartSearchCommand $cs_client $command_arguments
+            }
             "$script:COMMAND_PREFIX-stop-search" {
-				($human_readable, $entry_context, $raw_response) = StopSearchCommand $cs_client $command_arguments
-			}
-			"$script:COMMAND_PREFIX-new-search-action" {
-				($human_readable, $entry_context, $raw_response) = NewSearchActionCommand $cs_client $command_arguments
-			}
+                ($human_readable, $entry_context, $raw_response) = StopSearchCommand $cs_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-new-search-action" {
+                ($human_readable, $entry_context, $raw_response) = NewSearchActionCommand $cs_client $command_arguments
+            }
             "$script:COMMAND_PREFIX-remove-search-action" {
-				($human_readable, $entry_context, $raw_response) = RemoveSearchActionCommand $cs_client $command_arguments
-			}
+                ($human_readable, $entry_context, $raw_response) = RemoveSearchActionCommand $cs_client $command_arguments
+            }
             "$script:COMMAND_PREFIX-list-search-action" {
-				($human_readable, $entry_context, $raw_response) = ListSearchActionsCommand $cs_client $command_arguments
-			}
+                ($human_readable, $entry_context, $raw_response) = ListSearchActionsCommand $cs_client $command_arguments
+            }
             "$script:COMMAND_PREFIX-get-search-action" {
-				($human_readable, $entry_context, $raw_response, $file_entry) = GetSearchActionCommand $cs_client $command_arguments
-			}
+                ($human_readable, $entry_context, $raw_response, $file_entry) = GetSearchActionCommand $cs_client $command_arguments
+            }
         }
         # Updating integration context if access token changed
         UpdateIntegrationContext $oauth2_client
