@@ -107,11 +107,11 @@ Checks the reputation of the given IP.
 
 #### Human Readable Output
 
-### IP reputation for: 39.41.26.166
+##### IP reputation for: 39.41.26.166
 
-  Address        Confidence   Source           Type   Status   Modified                   Organization   ASN     Country   Severity
-  -------------- ------------ ---------------- ------ -------- -------------------------- -------------- ------- --------- ----------
-  39.41.26.166   96           TOR Exit Nodes   ip     active   2019-06-24T10:10:12.289Z   PTCL           45595   PK        low
+| Address | Confidence | Source | Type | Status | Modified | Organization | ASN | Country | Severity |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 39.41.26.166 | 96 | TOR Exit Nodes | ip | active | 2019-06-24T10:10:12.289Z | PTCL | 45595 | PK | low |
 
 
 ### domain
@@ -137,12 +137,8 @@ Checks the reputation of the given domain name.
 | --- | --- | --- |
 | Domain.Name | String | The domain name. | 
 | Domain.DNS | String | IPs resolved by DNS.  | 
-| Domain.WHOIS.CreationDate | Date | Date the domain was created. The date format is: YYYYMMDDThhmmss.
-Where T denotes the start of the value
-for time, in UTC time. | 
-| Domain.WHOIS.UpdatedDate | Date | Date the domain was last updated. The date format is: YYYYMMDDThhmmss.
-Where T denotes the start of the value
-for time, in UTC time. | 
+| Domain.WHOIS.CreationDate | Date | Date the domain was created. The date format is: YYYYMMDDThhmmss. Where T denotes the start of the value for time, in UTC time. | 
+| Domain.WHOIS.UpdatedDate | Date | Date the domain was last updated. The date format is: YYYYMMDDThhmmss. Where T denotes the start of the value for time, in UTC time. | 
 | Domain.WHOIS.Registrant.Name | String | Name of the registrant. | 
 | Domain.WHOIS.Registrant.Email | String | Email address of the registrant. | 
 | Domain.WHOIS.Registrant.Phone | String | Phone number of the registrant. | 
@@ -150,8 +146,7 @@ for time, in UTC time. |
 | ThreatStream.Domain.Address | String | The domain name of the indicator. | 
 | ThreatStream.Domain.Country | String | Country associated with the indicator. | 
 | ThreatStream.Domain.Type | String | The indicator type. | 
-| ThreatStream.Domain.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-for time, in UTC time. | 
+| ThreatStream.Domain.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
 | ThreatStream.Domain.Severity | String | The indicator severity \("very-high", "high", "medium", "low"\). | 
 | ThreatStream.Domain.Confidence | String | Level of certainty that an observable is of the reported indicator type. Confidence score can range from 0-100, in increasing order of confidence. | 
 | ThreatStream.Domain.Status | String | Status assigned to the indicator. | 
@@ -210,9 +205,9 @@ for time, in UTC time. |
 
 #### Domain reputation for: microsoftfaq.com
 
-  Address            Confidence   Source    Type     Status   Modified                   Organization   ASN   Country   Severity
-  ------------------ ------------ --------- -------- -------- -------------------------- -------------- ----- --------- ----------
-  microsoftfaq.com   38           Analyst   domain   active   2019-06-24T08:39:04.644Z                                  high
+| Address | Confidence | Source | Type | Status | Modified | Organization | ASN | Country | Severity |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| microsoftfaq.com | 38 | Analyst | domain | active | 2019-06-24T08:39:04.644Z |   |   |   | high |
 
 
 ### file
@@ -247,8 +242,7 @@ Checks the reputation of the given MD5 hash of the file.
 | ThreatStream.File.Status | String | Status assigned to the indicator. | 
 | ThreatStream.File.Type | String | The indicator type. | 
 | ThreatStream.File.MD5 | String | The MD5 hash of the indicator. | 
-| ThreatStream.File.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-for time, in UTC time. | 
+| ThreatStream.File.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
 | ThreatStream.File.Source | String | The source of the indicator. | 
 
 
@@ -282,9 +276,9 @@ for time, in UTC time. |
 
 ##### MD5 reputation for: 07df6c1d9a76d81f191be288d463784b
 
-  Confidence   Source           Type   Status   Modified                   Severity   MD5
-  ------------ ---------------- ------ -------- -------------------------- ---------- ----------------------------------
-  75           URLHaus Hashes   md5    active   2019-06-24T10:13:27.284Z   medium     07df6c1d9a76d81f191be288d463784b
+| Confidence | Source | Type | Status | Modified | Severity | MD5 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 75 | URLHaus Hashes | md5 | active | 2019-06-24T10:13:27.284Z | medium | 07df6c1d9a76d81f191be288d463784b |
 
 
 ### threatstream-email-reputation
@@ -318,8 +312,7 @@ Checks the reputation of the given email address.
 | ThreatStream.EmailReputation.Type | String | The indicator type. | 
 | ThreatStream.EmailReputation.Email | String | The email address of the indicator. | 
 | ThreatStream.EmailReputation.Source | String | The source of the indicator. | 
-| ThreatStream.EmailReputation.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-for time, in UTC time. | 
+| ThreatStream.EmailReputation.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
 
 
 #### Command Example
@@ -349,9 +342,9 @@ for time, in UTC time. |
 
 ##### Email reputation for: foo@test.com
 
-  Confidence   Source                                 Type    Status   Modified                   Severity   Email
-  ------------ -------------------------------------- ------- -------- -------------------------- ---------- --------------
-  100          Anomali Labs Compromised Credentials   email   active   2019-06-24T09:50:23.810Z   low        foo@test.com
+| Confidence | Source | Type | Status | Modified | Severity | Email |
+| --- | --- | --- | --- | --- | --- | --- |
+| 100 | Anomali Labs Compromised Credentials | email | active | 2019-06-24T09:50:23.810Z | low | foo@test.com |
 
 
 ### threatstream-get-passive-dns
@@ -379,10 +372,8 @@ Returns enrichment data for Domain or IP for availabe observables.
 | ThreatStream.PassiveDNS.Ip | String | The IP value. | 
 | ThreatStream.PassiveDNS.Rrtype | String | The Rrtype value. | 
 | ThreatStream.PassiveDNS.Source | String | The source value. | 
-| ThreatStream.PassiveDNS.FirstSeen | String | The first seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-for time, in UTC time. | 
-| ThreatStream.PassiveDNS.LastSeen | String | The last seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-for time, in UTC time. | 
+| ThreatStream.PassiveDNS.FirstSeen | String | The first seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
+| ThreatStream.PassiveDNS.LastSeen | String | The last seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
 
 
 #### Command Example
@@ -415,10 +406,10 @@ for time, in UTC time. |
 
 ##### Passive DNS enrichment data for: discoverer.blog
 
-  Domain            Ip               Rrtype   Source     FirstSeen             LastSeen
-  ----------------- ---------------- -------- ---------- --------------------- ---------------------
-  discoverer.blog   184.168.221.52   A        Spamhaus   2019-06-23T08:09:54   2019-06-23T08:09:54
-  discoverer.blog   50.63.202.51     A        Spamhaus   2019-06-21T10:33:54   2019-06-21T10:33:54
+| Domain | Ip | Rrtype | Source | FirstSeen | LastSeen |
+| --- | --- | --- | --- | --- | --- |
+| discoverer.blog | 184.168.221.52 | A | Spamhaus | 2019-06-23T08:09:54 | 2019-06-23T08:09:54 |
+| discoverer.blog | 50.63.202.51 | A | Spamhaus | 2019-06-21T10:33:54 | 2019-06-21T10:33:54 |
 
 
 ### threatstream-import-indicator-with-approval
@@ -600,19 +591,18 @@ Returns a list of threat model.
 
 ##### List of Actors
 
-  CreatedTime                  ID   Name                         Type
-  ---------------------------- ---- ---------------------------- -------
-  2015-06-29T17:02:01.885011   2    Pirpi                        Actor
-  2015-06-30T19:20:05.930697   3    TeamCyberGhost               Actor
-  2015-07-01T18:10:53.241301   4    Wekby                        Actor
-  2015-07-01T19:27:06.180602   5    Axiom                        Actor
-  2015-07-01T19:52:56.019862   7    Peace (Group) a/k/a C0d0s0   Actor
-  2015-07-01T19:58:50.741202   8    Nitro                        Actor
-  2015-07-06T16:06:12.123839   9    Comment Crew                 Actor
-  2015-07-07T17:40:04.920012   10   Comfoo                       Actor
-  2015-07-07T18:53:12.331221   11   Syrian Electronic Army       Actor
-  2015-07-08T20:59:29.751919   12   DD4BC                        Actor
-
+| CreatedTime | ID | Name | Type |
+| --- | --- | --- | --- |
+| 2015-06-29T17:02:01.885011 | 2 | Pirpi | Actor |
+| 2015-06-30T19:20:05.930697 | 3 | TeamCyberGhost | Actor |
+| 2015-07-01T18:10:53.241301 | 4 | Wekby | Actor |
+| 2015-07-01T19:27:06.180602 | 5 | Axiom | Actor |
+| 2015-07-01T19:52:56.019862 | 7 | Peace (Group) a/k/a C0d0s0 | Actor |
+| 2015-07-01T19:58:50.741202 | 8 | Nitro | Actor |
+| 2015-07-06T16:06:12.123839 | 9 | Comment Crew | Actor |
+| 2015-07-07T17:40:04.920012 | 10 | Comfoo | Actor |
+| 2015-07-07T18:53:12.331221 | 11 | Syrian Electronic Army | Actor |
+| 2015-07-08T20:59:29.751919 | 12 | DD4BC | Actor |
 
 
 ### threatstream-get-model-description
@@ -1017,29 +1007,28 @@ Returns a list of indicators associated with the specified model and ID of the m
 
 ##### Indicators list for Threat Model Incident with id 11885
 
-  IType      Value                                      ID            Confidence   Source         Type   Status   Tags                                                    Modified                  Organization   ASN   Country   Severity
-  ---------- ------------------------------------------ ------------- ------------ -------------- ------ -------- ------------------------------------------------------- ------------------------- -------------- ----- --------- -----------
-  mal\_md5   417072b246af74647897978902f7d903562e0f6f   50117813617   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.446                                  very-high
-  mal\_md5   d3c65377d39e97ab019f7f00458036ee0c7509a7   50117813616   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.455                                  very-high
-  mal\_md5   5f51084a4b81b40a8fcf485b0808f97ba3b0f6af   50117813615   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.462                                  very-high
-  mal\_md5   220a8eacd212ecc5a55d538cb964e742acf039c6   50117813614   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.469                                  very-high
-  mal\_md5   a16ef7d96a72a24e2a645d5e3758c7d8e6469a55   50117813612   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.477                                  very-high
-  mal\_md5   275e76fc462b865fe1af32f5f15b41a37496dd97   50117813611   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.485                                  very-high
-  mal\_md5   df4b8c4b485d916c3cadd963f91f7fa9f509723f   50117813610   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.493                                  very-high
-  mal\_md5   66eccea3e8901f6d5151b49bca53c126f086e437   50117813609   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.500                                  very-high
-  mal\_md5   3d90630ff6c151fc2659a579de8d204d1c2f841a   50117813608   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.507                                  very-high
-  mal\_md5   a6d14b104744188f80c6c6b368b589e0bd361607   50117813607   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.513                                  very-high
-  mal\_md5   e3f183e67c818f4e693b69748962eecda53f7f88   50117813606   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.520                                  very-high
-  mal\_md5   f326479a4aacc2aaf86b364b78ed5b1b0def1fbe   50117813605   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.527                                  very-high
-  mal\_md5   c4d1fb784fcd252d13058dbb947645a902fc8935   50117813604   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.534                                  very-high
-  mal\_md5   fb4a4143d4f32b0af4c2f6f59c8d91504d670b41   50117813603   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.541                                  very-high
-  mal\_md5   400e4f843ff93df95145554b2d574a9abf24653f   50117813602   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.548                                  very-high
-  mal\_md5   f82d18656341793c0a6b9204a68605232f0c39e7   50117813601   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.555                                  very-high
-  mal\_md5   c33fe4c286845a175ee0d83db6d234fe24dd2864   50117813600   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.562                                  very-high
-  mal\_md5   d9294b86b3976ddf89b66b8051ccf98cfae2e312   50117813599   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.569                                  very-high
-  mal\_md5   9fc71853d3e6ac843bd36ce9297e398507e5b2bd   50117813597   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.576                                  very-high
-  mal\_md5   c0ad9c242c533effd50b51e94874514a5b9f2219   50117813596   100          ThreatStream   md5    active   FINSPY,FinSpy,community-threat-briefing,Weaponization   2017-09-25T11:43:54.583                                  very-high
-
+| IType | Value | ID | Confidence | Source | Type | Status | Tags | Modified | Organization | ASN | Country | Severity |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| mal_md5 | 417072b246af74647897978902f7d903562e0f6f | 50117813617 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.446 |   |   |   | very-high |
+| mal_md5 | d3c65377d39e97ab019f7f00458036ee0c7509a7 | 50117813616 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.455 |   |   |   | very-high |
+| mal_md5 | 5f51084a4b81b40a8fcf485b0808f97ba3b0f6af | 50117813615 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.462 |   |   |   | very-high |
+| mal_md5 | 220a8eacd212ecc5a55d538cb964e742acf039c6 | 50117813614 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.469 |   |   |   | very-high |
+| mal_md5 | a16ef7d96a72a24e2a645d5e3758c7d8e6469a55 | 50117813612 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.477 |   |   |   | very-high |
+| mal_md5 | 275e76fc462b865fe1af32f5f15b41a37496dd97 | 50117813611 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.485 |   |   |   | very-high |
+| mal_md5 | df4b8c4b485d916c3cadd963f91f7fa9f509723f | 50117813610 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.493 |   |   |   | very-high |
+| mal_md5 | 66eccea3e8901f6d5151b49bca53c126f086e437 | 50117813609 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.500 |   |   |   | very-high |
+| mal_md5 | 3d90630ff6c151fc2659a579de8d204d1c2f841a | 50117813608 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.507 |   |   |   | very-high |
+| mal_md5 | a6d14b104744188f80c6c6b368b589e0bd361607 | 50117813607 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.513 |   |   |   | very-high |
+| mal_md5 | e3f183e67c818f4e693b69748962eecda53f7f88 | 50117813606 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.520 |   |   |   | very-high |
+| mal_md5 | f326479a4aacc2aaf86b364b78ed5b1b0def1fbe | 50117813605 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.527 |   |   |   | very-high |
+| mal_md5 | c4d1fb784fcd252d13058dbb947645a902fc8935 | 50117813604 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.534 |   |   |   | very-high |
+| mal_md5 | fb4a4143d4f32b0af4c2f6f59c8d91504d670b41 | 50117813603 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.541 |   |   |   | very-high |
+| mal_md5 | 400e4f843ff93df95145554b2d574a9abf24653f | 50117813602 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.548 |   |   |   | very-high |
+| mal_md5 | f82d18656341793c0a6b9204a68605232f0c39e7 | 50117813601 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.555 |   |   |   | very-high |
+| mal_md5 | c33fe4c286845a175ee0d83db6d234fe24dd2864 | 50117813600 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.562 |   |   |   | very-high |
+| mal_md5 | d9294b86b3976ddf89b66b8051ccf98cfae2e312 | 50117813599 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.569 |   |   |   | very-high |
+| mal_md5 | 9fc71853d3e6ac843bd36ce9297e398507e5b2bd | 50117813597 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.576 |   |   |   | very-high |
+| mal_md5 | c0ad9c242c533effd50b51e94874514a5b9f2219 | 50117813596 | 100 | ThreatStream | md5 | active | FINSPY,FinSpy,community-threat-briefing,Weaponization | 2017-09-25T11:43:54.583 |   |   |   | very-high |
 
 
 ### threatstream-submit-to-sandbox
@@ -1102,9 +1091,9 @@ Submits a file or URL to the ThreatStream-hosted Sandbox for detonation.
 
 ##### The submission info for 5358@6cf3881e-1cfd-48b5-8fc3-0b9fcfb791f0
 
-  ReportID   Status       Platform
-  ---------- ------------ ----------
-  422662     processing   WINDOWS7
+| ReportID | Status | Platform |
+| --- | --- | --- |
+| 422662 | processing | WINDOWS7 |
 
 
 ### threatstream-get-analysis-status
@@ -1137,6 +1126,11 @@ Returns the current status of the report that was submitted to the sandbox. The 
 
 #### Human Readable Output
 
+##### Report 413336 analysis results
+
+| Category | Started | Completed | Duration | VmName | VmID | ReportID | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| File | 2019-05-30 14:05:25 | 2019-05-30 14:06:33 | 68 |   |   | 413336 | Benign |
 
 
 ### threatstream-analysis-report
@@ -1204,9 +1198,9 @@ Returns the report of a file or URL that was submitted to the sandbox.
 
 ##### The analysis status for id 422662
 
-  ReportID   Status       Platform   Verdict
-  ---------- ------------ ---------- ---------
-  422662     processing   WINDOWS7   Benign
+| Category | Started | Completed | Duration | VmName | VmID | ReportID | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| File | 2019-05-30 14:05:25 | 2019-05-30 14:06:33 | 68 |   |   | 413336 | Benign |
 
 
 ### threatstream-get-indicators
@@ -1242,8 +1236,7 @@ Return filtered indicators from ThreatStream. If a query is defined, it overides
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatStream.Indicators.IType | String | The indicator type. | 
-| ThreatStream.Indicators.Modified | String | Date and time when the indicator was last updated on the ThreatStream. Format: YYYYMMDDThhmmss, where T denotes the start of the value
-for time, in UTC time. | 
+| ThreatStream.Indicators.Modified | String | Date and time when the indicator was last updated on the ThreatStream. Format: YYYYMMDDThhmmss, where T denotes the start of the value for time, in UTC time. | 
 | ThreatStream.Indicators.Confidence | String | Level of certainty that an observable is of the reported indicator type. | 
 | ThreatStream.Indicators.Value | String | The indicator value. | 
 | ThreatStream.Indicators.Status | String | The indicator status. | 
@@ -1346,13 +1339,13 @@ for time, in UTC time. |
 
 ##### The indicators results
 
-  IType      Value            Confidence   ID            Source                          Type   Status   Tags                     Modified                   Organization           ASN    Country   Severity
-  ---------- ---------------- ------------ ------------- ------------------------------- ------ -------- ------------------------ -------------------------- ---------------------- ------ --------- ----------
-  scan\_ip   121.31.166.99    84           53042398831   Anomali Labs MHN                ip     active                            2019-06-24T10:19:52.077Z   China Unicom Guangxi   4837   CN        medium
-  scan\_ip   121.31.166.99    84           53042253345   Anomali Labs MHN Tagged         ip     active   port-1433,suricata,TCP   2019-06-24T09:51:04.804Z   China Unicom Guangxi   4837   CN        medium
-  scan\_ip   182.88.27.168    84           53016547378   DShield Scanning IPs            ip     active                            2019-06-24T06:08:12.585Z   China Unicom Guangxi   4837   CN        medium
-  scan\_ip   182.91.129.165   84           53038621037   Alien Vault OTX Malicious IPs   ip     active   AlienVault,OTX           2019-06-23T19:38:05.782Z   China Unicom Guangxi   4837   CN        medium
-  scan\_ip   182.91.129.207   84           52970998522   DShield Scanning IPs            ip     active                            2019-06-23T17:52:51.165Z   China Unicom Guangxi   4837   CN        medium
+| IType | Value | Confidence | ID | Source | Type | Status | Tags | Modified | Organization | ASN | Country | Severity |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| scan_ip | 121.31.166.99 | 84 | 53042398831 | Anomali Labs MHN | ip | active |   | 2019-06-24T10:19:52.077Z | China Unicom Guangxi | 4837 | CN | medium |
+| scan_ip | 121.31.166.99 | 84 | 53042253345 | Anomali Labs MHN Tagged | ip | active | port-1433,suricata,TCP | 2019-06-24T09:51:04.804Z | China Unicom Guangxi | 4837 | CN | medium |
+| scan_ip | 182.88.27.168 | 84 | 53016547378 | DShield Scanning IPs | ip | active |   | 2019-06-24T06:08:12.585Z | China Unicom Guangxi | 4837 | CN | medium |
+| scan_ip | 182.91.129.165 | 84 | 53038621037 | Alien Vault OTX Malicious IPs | ip | active | AlienVault,OTX | 2019-06-23T19:38:05.782Z | China Unicom Guangxi | 4837 | CN | medium |
+| scan_ip | 182.91.129.207 | 84 | 52970998522 | DShield Scanning IPs | ip | active |   | 2019-06-23T17:52:51.165Z | China Unicom Guangxi | 4837 | CN | medium |
 
 
 
@@ -1490,11 +1483,11 @@ Creates a threat model with the specified parameters.
 
 ##### Indicators list for Threat Model Actor with id 26697
 
-  IType                Value            ID            Confidence   Source    Type     Status   Tags                                                   Modified                  Organization                      ASN     Country   Severity
-  -------------------- ---------------- ------------- ------------ --------- -------- -------- ------------------------------------------------------ ------------------------- --------------------------------- ------- --------- ----------
-  suspicious\_domain   chatbotshq.com   53042425532   86           Analyst   domain   active   Suspicious-Domain-Registration,TSLABS,victim-Hi-Tech   2019-06-24T10:51:16.384   Hostinger International Limited   12769   US        high
-  suspicious\_domain   marketshq.com    53042425520   85           Analyst   domain   active   Suspicious-Domain-Registration,TSLABS,victim-Hi-Tech   2019-06-24T10:51:16.589   GoDaddy.com, LLC                  26496   US        high
-  suspicious\_domain   leanomalie.com   53042425466   77           Analyst   domain   active   Suspicious-Domain-Registration,TSLABS,victim-Hi-Tech   2019-06-24T10:54:31.318   GoDaddy.com, LLC                  26496   US        high
+| IType | Value | ID | Confidence | Source | Type | Status | Tags | Modified | Organization | ASN | Country | Severity |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| suspicious_domain | chatbotshq.com | 53042425532 | 86 | Analyst | domain | active | Suspicious-Domain-Registration,TSLABS,victim-Hi-Tech | 2019-06-24T10:51:16.384 | Hostinger International Limited | 12769 | US | high |
+| suspicious_domain | marketshq.com | 53042425520 | 85 | Analyst | domain | active | Suspicious-Domain-Registration,TSLABS,victim-Hi-Tech | 2019-06-24T10:51:16.589 | GoDaddy.com, LLC | 26496 | US | high |
+| suspicious_domain | leanomalie.com | 53042425466 | 77 | Analyst | domain | active | Suspicious-Domain-Registration,TSLABS,victim-Hi-Tech | 2019-06-24T10:54:31.318 | GoDaddy.com, LLC | 26496 | US | high |
 
 
 
@@ -1576,9 +1569,9 @@ Updates a threat model with specific parameters. If one or more optional paramet
 
 ##### Indicators list for Threat Model Actor with id 26697
 
-  IType         Value         ID            Confidence   Source    Type   Status   Tags      Modified                  Organization   ASN   Country   Severity
-  ------------- ------------- ------------- ------------ --------- ------ -------- --------- ------------------------- -------------- ----- --------- ----------
-  exploit\_ip   54.39.20.14   53042694591   36           Analyst   ip     active   HoneyDB   2019-06-24T11:28:31.185   OVH Hosting          CA        high
+| IType | Value | ID | Confidence | Source | Type | Status | Tags | Modified | Organization | ASN | Country | Severity |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| exploit_ip | 54.39.20.14 | 53042694591 | 36 | Analyst | ip | active | HoneyDB | 2019-06-24T11:28:31.185 | OVH Hosting |   | CA | high |
 
 
 ### threatstream-supported-platforms
@@ -1646,18 +1639,11 @@ Returns list of supported platforms for default or premium sandbox.
 
 ##### Supported platforms for default sandbox
 
-  ---------------------------------
-  Name        Types    Label
-  ----------- -------- ------------
-  WINDOWSXP   file,\   Windows XP
-               url     
-
-  WINDOWS7    file,\   Windows 7
-               url     
-
-  ALL         file,\   All
-               url     
-  ---------------------------------
+| Name | Types | Label |
+| --- | --- | --- |
+| WINDOWSXP | file, url | Windows XP |
+| WINDOWS7 | file, url | Windows 7 |
+| ALL | file, url | All |
 
 
 
@@ -1688,8 +1674,7 @@ Checks the reputation of the given URL.
 | DBotScore.Score | Number | The actual score. | 
 | URL.Data | String | The URL of the indicator. | 
 | URL.Malicious.Vendor | String | Vendor that reported the indicator as malicious. | 
-| ThreatStream.URL.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-for time, in UTC time. | 
+| ThreatStream.URL.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
 | ThreatStream.URL.Confidence | String | Level of certainty that an observable is of the reported indicator type. Confidence score can range from 0-100, in increasing order of confidence. | 
 | ThreatStream.URL.Status | String | The status of the indicator. | 
 | ThreatStream.URL.Organization | String | Name of the business that owns the IP address associated with the indicator. | 
@@ -1733,9 +1718,9 @@ for time, in UTC time. |
 
 #### Human Readable Output
 
-##### URL reputation for: http://194.147.35.172/mikey.mpsl
+##### URL reputation for: `http://194.147.35.172/mikey.mpsl`
 
-  Address                            Confidence   Source        Type   Status   Modified                   Organization   Country   Severity
-  ---------------------------------- ------------ ------------- ------ -------- -------------------------- -------------- --------- -----------
-  http://194.147.35.172/mikey.mpsl   90           H3X Tracker   url    active   2019-06-24T10:10:05.890Z   LLC Baxet      RU        very-high
+| Address | Confidence | Source | Type | Status | Modified | Organization | Country | Severity |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `http://194.147.35.172/mikey.mpsl` | 90 | H3X Tracker | url | active | 2019-06-24T10:10:05.890Z | LLC Baxet | RU | very-high |
 

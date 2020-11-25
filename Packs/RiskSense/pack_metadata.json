@@ -2,10 +2,10 @@
     "name": "RiskSense",
     "description": "RiskSense is a cloud-based platform that provides vulnerability management and prioritization to measure and control cybersecurity risk.",
     "support": "partner",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "RiskSense",
-    "url": "https://www.risksense.com",
-    "email": "",
+    "url": "https://risksense.com/support/",
+    "email": "support@risksense.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Vulnerability Management"
@@ -15,5 +15,6 @@
     "keywords": [],
     "githubUser": [
         "crestdatasystems"
-    ]
+    ],
+    "certification": "certified"
 }

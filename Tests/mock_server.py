@@ -189,18 +189,24 @@ class MITMProxy:
 
         self.process = None
         self.empty_files = []
+        self.failed_tests_count = 0
+        self.successful_tests_count = 0
+        self.successful_rerecord_count = 0
+        self.failed_rerecord_count = 0
+        self.failed_rerecord_tests = []
         self.rerecorded_tests = []
-
         silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
 
     @staticmethod
-    def configure_proxy_in_demisto(client, proxy=''):
+    def configure_proxy_in_demisto(username, password, server, proxy=''):
+        client = demisto_client.configure(base_url=server, username=username,
+                                          password=password, verify_ssl=False)
+
         system_conf_response = demisto_client.generic_request_func(
             self=client,
             path='/system/config',
             method='GET'
         )
-
         system_conf = ast.literal_eval(system_conf_response[0]).get('sysConf', {})
 
         http_proxy = https_proxy = proxy
@@ -217,7 +223,7 @@ class MITMProxy:
         }
         response = demisto_client.generic_request_func(self=client, path='/system/config',
                                                        method='POST', body=data)
-        # client.api_client.pool.close()
+
         return response
 
     def get_mock_file_size(self, filepath):
@@ -410,8 +416,8 @@ class MITMProxy:
         self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=PIPE, stderr=PIPE)
         self.process.poll()
         if self.process.returncode is not None:
-            raise Exception("Proxy process terminated unexpectedly.\nExit code: {}\noutputs:\nSTDOUT\n{}\n\nSTDERR\n{}"
-                            .format(self.process.returncode, self.process.stdout.read(), self.process.stderr.read()))
+            print_error("Proxy process terminated unexpectedly.\nExit code: {}\noutputs:\nSTDOUT\n{}\n\nSTDERR\n{}"
+                        .format(self.process.returncode, self.process.stdout.read(), self.process.stderr.read()))
         log_file_exists = False
         seconds_since_init = 0
         # Make sure process is up and running
@@ -421,7 +427,7 @@ class MITMProxy:
             time.sleep(PROXY_PROCESS_INIT_INTERVAL)
             seconds_since_init += PROXY_PROCESS_INIT_INTERVAL
         if not log_file_exists:
-            self.stop()
+            self.stop(thread_index, prints_manager)
             raise Exception("Proxy process took to long to go up.")
         proxy_up_message = 'Proxy process up and running. Took {} seconds'.format(seconds_since_init)
         prints_manager.add_print_job(proxy_up_message, print, thread_index)

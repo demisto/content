@@ -35,6 +35,81 @@ display: Farsight DNSDB v2
 name: DNSDB_v2
 script:
   commands:
+  - name: dnsdb-flex
+    arguments:
+    - name: method
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - regex
+      - glob
+      description: query value type
+    - name: key
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - rrnames
+      - rdata
+      description: search over rrnames or rdata
+    - name: value
+      required: true
+      description: query regex or glob
+    - name: rrtype
+      description: query rrtype
+    - name: limit
+      description: Limit the number of returned records
+      defaultValue: "50"
+    - name: time_first_before
+      description: Filter results for entries seen for first time before (ISO or UNIX timestamp,
+        relative if negative)
+    - name: time_last_before
+      description: Filter results for entries seen for last time before (ISO or UNIX timestamp,
+        relative if negative)
+    - name: time_first_after
+      description: Filter results for entries seen for first time after (ISO or UNIX timestamp,
+        relative if negative)
+    - name: time_last_after
+      description: Filter results for entries seen for last time after (ISO or UNIX timestamp,
+        relative if negative)
+    outputs:
+    - contextPath: DNSDB.Record.RRName
+      type: string
+      description: The owner name of the resource record in DNS presentation format.
+    - contextPath: DNSDB.Record.RRType
+      type: string
+      description: >
+        The resource record type of the resource record, either using the standard
+        DNS type mnemonic, or an RFC 3597
+        generic type, i.e. the string TYPE immediately followed by the decimal RRtype
+        number.
+    - contextPath: DNSDB.Record.RData
+      type: string
+      description: >
+        The record data value. The Rdata value is converted to the standard presentation
+        format based on the rrtype
+        value. If the encoder lacks a type-specific presentation format for the resource
+        record's type, then the RFC
+        3597 generic Rdata encoding will be used.
+    - contextPath: DNSDB.Record.RawRData
+      type: string
+      description: >
+        The hex-encoded raw record data value. This may be passed as a parameter to the
+        dnsdb_rdata_raw command.
+    - contextPath: DNSDB.Record.Count
+      type: number
+      description: The number of times the resource record was observed via passive
+        DNS replication.
+    - contextPath: DNSDB.Record.TimeFirst
+      type: date
+      description: The first time that the resource record was observed.
+    - contextPath: DNSDB.Record.TimeLast
+      type: date
+      description: The most recent time that the resource record was observed.
+    - contextPath: DNSDB.Record.FromZoneFile
+      type: bool
+      description: False if the resource record was observed via passive DNS replication,
+        True if by zone file import.
+    description: DNSDB flex search
   - name: dnsdb-rdata
     arguments:
     - name: type
@@ -43,6 +118,7 @@ script:
       predefined:
       - name
       - ip
+      - raw
       description: Query type
     - name: value
       required: true
@@ -114,6 +190,7 @@ script:
       predefined:
       - name
       - ip
+      - raw
       description: Query type
     - name: value
       required: true
@@ -344,6 +421,6 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.6.12176
   isfetch: false
 fromversion: 5.0.0

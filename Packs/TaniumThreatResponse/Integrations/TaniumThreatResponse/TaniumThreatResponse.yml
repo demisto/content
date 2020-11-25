@@ -37,7 +37,7 @@ configuration:
   name: filter_alerts_by_state
   options:
   - unresolved
-  - in progress
+  - inprogress
   - resolved
   - suppressed
   required: false
@@ -1683,7 +1683,7 @@ script:
     - contextPath: Tanium.DownloadFile.Downloaded
       description: The date of the download request.
       type: Date
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.8.6.12176
   isfetch: true
   longRunning: false
   longRunningPort: false

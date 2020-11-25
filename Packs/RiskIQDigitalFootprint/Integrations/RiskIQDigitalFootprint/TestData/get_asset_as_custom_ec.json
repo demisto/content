@@ -1,0 +1,202 @@
+{
+  "name": "63245",
+  "type": "AS",
+  "firstSeen": 1532708763182,
+  "lastSeen": 1591634429689,
+  "uuid": "9ca2cd53-af69-cbca-f398-e891ecf413d3",
+  "label": "63245",
+  "description": "AS63245",
+  "assetAsNames": [
+    {
+      "value": "DUMMY-01",
+      "firstSeen": 1532708763182,
+      "lastSeen": 1587456222572,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetOrgNames": [
+    {
+      "value": "dummy.com",
+      "firstSeen": 1532708763182,
+      "lastSeen": 1586212561931,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetOrgIds": [
+    {
+      "value": "DUMMY-ORG",
+      "firstSeen": 1532708763182,
+      "lastSeen": 1586212561931,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetCountries": [
+    {
+      "value": "united states",
+      "firstSeen": 1586212561934,
+      "lastSeen": 1587456222572,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "us",
+      "firstSeen": 1532708763182,
+      "lastSeen": 1586212561931
+    },
+    {
+      "value": "US",
+      "firstSeen": 1532708763182,
+      "lastSeen": 1532708763182
+    }
+  ],
+  "assetRegistries": [
+    {
+      "value": "DUMMYREG",
+      "firstSeen": 1532708763182,
+      "lastSeen": 1587456222572,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetFirstSeen": 1532708763182,
+  "assetLastSeen": 1591600289183,
+  "assetCount": 3411,
+  "assetAsnNumber": 63245,
+  "assetAsn": {
+    "asnID": 63245,
+    "description": "DUMMY-01, united states",
+    "registry": "DUMMYREG",
+    "countryCode": "united states",
+    "name": "AS63245",
+    "id": 63245,
+    "fullName": "AS63245 - united states - DUMMY-01, united states"
+  },
+  "assetMailServers": [
+    {
+      "value": "dummy.mailserver.com",
+      "firstSeen": 1322692530000,
+      "lastSeen": 1591530037000,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "dummy1.mailserver.com",
+      "firstSeen": 1322692530000,
+      "lastSeen": 1591530037000,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "dummy2.mailserver.com",
+      "firstSeen": 1322692530000,
+      "lastSeen": 1591530037000,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "dummy3.mailserver.com",
+      "firstSeen": 1322692530000,
+      "lastSeen": 1591530037000,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "dummy4.mailserver.com",
+      "firstSeen": 1322692530000,
+      "lastSeen": 1591530037000,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "whoisCreatedAt": 1591402147858,
+  "whoisUpdatedAt": 1591402147858,
+  "whoisStatus": "ACTIVE",
+  "whoisID": 6674824394369493291,
+  "whoisDomain": "dummydomain.com",
+  "whoisDomainMd5": "9b4f498908b61ea0887cdfdca9f47542",
+  "whoisDomainUnicode": "dummydomain.com",
+  "whoisTld": "com",
+  "whoisNameservers": "dummy.nameserver.com, dummy1.nameserver.com, dummy2.nameserver.com, dummy3.nameserver.com",
+  "whoisServer": "dummy.com",
+  "whoisRegistrarIanaID": 146,
+  "whoisRegistrarName": "Dummy, LLC",
+  "whoisRegistrarEmail": "abuse@dummydomain.com",
+  "whoisRegistrarCreatedAt": 1137076406000,
+  "whoisRegistrarUpdatedAt": 1483618972000,
+  "whoisRegistrarExpiresAt": 1768228406000,
+  "whoisRegistrantWhoisContactID": 0,
+  "whoisRegistrantEmail": "dummy@whoisdummydomain.com",
+  "whoisRegistrantName": "DUMMY, LLC",
+  "whoisRegistrantOrganization": "DUMMY, LLC.",
+  "whoisRegistrantStreet": "157, Dummy street, office 1",
+  "whoisRegistrantCity": "limassol",
+  "whoisRegistrantZip": "3026",
+  "whoisRegistrantCountry": "cyprus",
+  "whoisRegistrantPhone": "12345678901",
+  "whoisRegistrantFax": "12345678901",
+  "whoisRegistrantState": "cyprus",
+  "whoisRegistrantAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisRegistrantId": 0,
+  "whoisAdminWhoisContactID": 0,
+  "whoisAdminEmail": "dummy@whoisdummydomain.com",
+  "whoisAdminName": "DUMMY, LLC",
+  "whoisAdminOrganization": "DUMMY, LLC.",
+  "whoisAdminStreet": "157, Dummy street, office 1",
+  "whoisAdminCity": "limassol",
+  "whoisAdminZip": "3026",
+  "whoisAdminCountry": "cyprus",
+  "whoisAdminPhone": "12345678901",
+  "whoisAdminFax": "12345678901",
+  "whoisAdminAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisAdminId": 0,
+  "whoisTechnicalWhoisContactID": 0,
+  "whoisTechnicalEmail": "dummy@whoisdummydomain.com",
+  "whoisTechnicalName": "DUMMY, LLC",
+  "whoisTechnicalOrganization": "DUMMY, LLC.",
+  "whoisTechnicalStreet": "157, Dummy street, office 1",
+  "whoisTechnicalCity": "limassol",
+  "whoisTechnicalZip": "3026",
+  "whoisTechnicalCountry": "cyprus",
+  "whoisTechnicalPhone": "12345678901",
+  "whoisTechnicalFax": "12345678901",
+  "whoisTechnicalAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisTechnicalId": 0,
+  "whoisBillingWhoisContactID": 0,
+  "whoisBillingEmail": "dummy@whoisdummydomain.com",
+  "whoisBillingName": "DUMMY, LLC",
+  "whoisBillingOrganization": "DUMMY, LLC.",
+  "whoisBillingStreet": "157, Dummy street, office 1",
+  "whoisBillingCity": "limassol",
+  "whoisBillingZip": "3026",
+  "whoisBillingCountry": "cyprus",
+  "whoisBillingPhone": "12345678901",
+  "whoisBillingFax": "12345678901",
+  "whoisBillingAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisBillingId": 0,
+  "whoisDomainStatus": "delete prohibited,transfer prohibited,renew prohibited,update prohibited",
+  "whoisAuditCreatedAt": 1591402147834,
+  "whoisAuditUpdatedAt": 1591402147834,
+  "whoisRegistrarParseCode": 36643,
+  "whoisNoRecord": false,
+  "whoisDomainAvailable": false,
+  "whoisContactEmails": "dummy@dummy.com",
+  "whoisExpired": false,
+  "whoisContacts": [
+    {
+      "whoisContactID": 0,
+      "organization": "Dummy Organization",
+      "state": "california",
+      "country": "united states",
+      "address": "california\nunited states\n",
+      "id": 0
+    }
+  ],
+  "whoisContactNames": "Dummy",
+  "whoisContactOrganizations": "Dummy Organization",
+  "whoisContactCountries": "united states",
+  "whoisCompositeParseCode": 36643,
+  "whoisId": 6674824394369493291
+}

@@ -261,7 +261,6 @@ Successfully deleted the saved search test1234.
 ***
 Tests connectivity to Azure Log Analytics.
 
-
 #### Base Command
 
 `azure-log-analytics-test`

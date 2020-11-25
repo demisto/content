@@ -2,13 +2,14 @@
     "name": "Workday",
     "description": "Workday offers enterprise-level software solutions for financial management, human resources, and planning.",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-05-24T10:19:27Z",
     "categories": [
-        "IT Services"
+        "IT Services",
+        "Identity and Access Management"
     ],
     "tags": [],
     "useCases": [],
