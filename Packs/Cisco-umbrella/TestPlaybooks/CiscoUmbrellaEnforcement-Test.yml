@@ -1,0 +1,307 @@
+id: CiscoUmbrellaEnforcement-Test
+version: -1
+name: CiscoUmbrellaEnforcement-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 22176103-0a11-4e85-8b19-f8b2ac87d65f
+    type: start
+    task:
+      id: 22176103-0a11-4e85-8b19-f8b2ac87d65f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: c112916b-3e19-427c-8fce-4652d0cc3872
+    type: regular
+    task:
+      id: c112916b-3e19-427c-8fce-4652d0cc3872
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: a8b63b87-72a0-46a6-841b-43b2af0e05a4
+    type: regular
+    task:
+      id: a8b63b87-72a0-46a6-841b-43b2af0e05a4
+      version: -1
+      name: umbrella-domain-event-add
+      script: '|||umbrella-domain-event-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alert_time:
+        simple: "2013-02-08T09:30:26.0Z"
+      device_id:
+        simple: ba6a59f4-e692-4724-ba36-c28132c761de
+      device_version:
+        simple: 13.7a
+      dst_domain:
+        simple: test1.com
+      dst_url:
+        simple: test1.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 44d01ed4-4637-4fd5-86c1-b33d418b08eb
+    type: regular
+    task:
+      id: 44d01ed4-4637-4fd5-86c1-b33d418b08eb
+      version: -1
+      name: umbrella-domains-list
+      script: '|||umbrella-domains-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 13f64eab-3b7a-4ee0-8273-1a36bf9837b8
+    type: condition
+    task:
+      id: 13f64eab-3b7a-4ee0-8273-1a36bf9837b8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: CiscoUmbrellaEnforcement.Domains
+            iscontext: true
+          right:
+            value:
+              simple: test1.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 8d56aebc-3647-4c7f-8dd4-63c7d2554f85
+    type: regular
+    task:
+      id: 8d56aebc-3647-4c7f-8dd4-63c7d2554f85
+      version: -1
+      name: umbrella-domain-delete
+      script: '|||umbrella-domain-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      id: {}
+      name:
+        simple: test1.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 04696be3-6427-4add-8fac-5808573eab1b
+    type: title
+    task:
+      id: 04696be3-6427-4add-8fac-5808573eab1b
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: a1c602e1-ab1c-444b-8f78-252ac3df968d
+    type: regular
+    task:
+      id: a1c602e1-ab1c-444b-8f78-252ac3df968d
+      version: -1
+      name: umbrella-domains-list
+      script: '|||umbrella-domains-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 06dffdd4-89b2-4986-86c0-3c85899c7c82
+    type: condition
+    task:
+      id: 06dffdd4-89b2-4986-86c0-3c85899c7c82
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: CiscoUmbrellaEnforcement.domain
+            iscontext: true
+          right:
+            value:
+              simple: test1.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''
