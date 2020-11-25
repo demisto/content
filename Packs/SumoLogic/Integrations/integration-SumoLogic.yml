@@ -249,8 +249,14 @@ script:
                             incident.labels.push({type: props[j], value: s.records[i][props[j]]});
                         }
                     }
-                    if (parseInt(s.records[i]._receipttime) >= currentFetch){
-                        currentFetch = parseInt(s.records[i]._receipttime) + 1
+                    var recordDate = new Date("{0}T{1}".format(s.records[i].date, s.records[i].time));
+                    logDebug("recordDate {0}".format(recordDate));
+                    var recordDateEpoch = Math.ceil(recordDate);
+                    logDebug("recordDateEpoch {0}".format(recordDateEpoch));
+                    logDebug("currentFetch {0}".format(currentFetch));
+                    if (recordDateEpoch >= currentFetch){
+                        currentFetch = recordDateEpoch + 1
+                        logDebug("new currentFetch {0}".format(currentFetch));
                     }
                     incidents.push(incident);
                 }
