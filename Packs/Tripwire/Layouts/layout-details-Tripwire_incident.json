@@ -1,9 +1,9 @@
 {
 	"TypeName": "Tripwire incident",
-	"kind": "detailsV2",
+	"kind": "details",
 	"layout": {
 		"id": "Tripwire incident",
-		"kind": "detailsV2",
+		"kind": "details",
 		"modified": "2020-11-23T11:24:36.865357+03:00",
 		"name": "",
 		"system": false,
@@ -422,10 +422,10 @@
 				"type": "canvas"
 			}
 		],
-      "typeId": "Tripwire incident",
+      "typeId": "Tripwire File Change",
 		"version": -1
 	},
-	"typeId": "Tripwire incident",
+	"typeId": "Tripwire File Change",
 	"version": -1,
 	"fromVersion": "5.0.0",
 	"toVersion": "5.9.9"

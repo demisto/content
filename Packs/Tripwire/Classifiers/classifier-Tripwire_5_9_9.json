@@ -2,7 +2,7 @@
   "brandName": "Tripwire",
   "custom": true,
   "defaultIncidentType": "Tripwire File Change",
-  "id": "631dc1af-b67a-451c-8efd-a2bab980177dn",
+  "id": "Tripwire",
   "isDefault": false,
   "mapping": {
     "Tripwire File Change": {

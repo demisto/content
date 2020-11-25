@@ -38,7 +38,6 @@ class Client(BaseClient):
     Should only do requests and return data.
     It inherits from BaseClient defined in CommonServer Python.
     Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld implementation, no special attributes defined
     """
 
     def __init__(self, base_url: str, verify=False, proxy=False, auth=None):
@@ -231,20 +230,20 @@ def prepare_fetch(params: dict, first_fetch: str):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, args: dict) -> str:
+def test_module(client: Client, params: dict) -> str:
     """Tests API connectivity and authentication'
-
-    :type client: ``dict``
-    :param args: contains the test modules arguments.
 
     :type client: ``Client``
     :param client: Tripwire client to use
 
+    :type client: ``dict``
+    :param params: contains the test modules params.
+
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-    if args.get('isFetch'):
-        params, fetch_filter, last_fetch = prepare_fetch(args, args.get('first_fetch', ''))
+    if params.get('isFetch'):
+        params, fetch_filter, last_fetch = prepare_fetch(params, params.get('first_fetch', ''))
         fetch_incidents(client=client, last_fetch=last_fetch, fetch_filter=fetch_filter, max_results=1)
 
     client.get_nodes("")
@@ -267,8 +266,9 @@ def versions_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     """
     versions_filter = filter_versions(args)
     result = client.get_versions(versions_filter)
-    readable_output = tableToMarkdown('Tripwire Versions list results', result, removeNull=True,
-                                      headers=RULES_HUMAN_READABLE_HEADERS['VERSIONS'])
+    readable_output = tableToMarkdown(
+        f'Tripwire Versions list results\nThe number of returned results is: {len(result)}', result, removeNull=True,
+        headers=RULES_HUMAN_READABLE_HEADERS['VERSIONS'])
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Tripwire.Versions',
@@ -293,7 +293,8 @@ def rules_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     rules_filter = filter_rules(args)
     result = client.get_rules(rules_filter)
-    readable_output = tableToMarkdown('Tripwire Rules list results', result, removeNull=True,
+    readable_output = tableToMarkdown(f'Tripwire Rules list results\nThe number of returned results is: {len(result)}',
+                                      result, removeNull=True,
                                       headers=RULES_HUMAN_READABLE_HEADERS['RULES'])
     return CommandResults(
         readable_output=readable_output,
@@ -319,7 +320,8 @@ def nodes_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     node_filter = filter_nodes(args)
     result = client.get_nodes(node_filter)
-    readable_output = tableToMarkdown('Tripwire Nodes list results', result, removeNull=True,
+    readable_output = tableToMarkdown(f'Tripwire Nodes list results\nThe number of returned results is: {len(result)}',
+                                      result, removeNull=True,
                                       headers=RULES_HUMAN_READABLE_HEADERS['NODES'])
     return CommandResults(
         readable_output=readable_output,
@@ -345,8 +347,9 @@ def elements_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     """
     elements_filter = filter_elements(args)
     result = client.get_elements(elements_filter)
-    readable_output = tableToMarkdown('Tripwire Elements list results', result, removeNull=True,
-                                      headers=RULES_HUMAN_READABLE_HEADERS['ELEMENTS'])
+    readable_output = tableToMarkdown(
+        f'Tripwire Elements list results\nThe number of returned results is: {len(result)}', result, removeNull=True,
+        headers=RULES_HUMAN_READABLE_HEADERS['ELEMENTS'])
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Tripwire.Elements',
@@ -355,8 +358,7 @@ def elements_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def fetch_incidents(client: Client, max_results: int, last_fetch: str, fetch_filter: str = ''
-                    ) -> Tuple[Dict[str, str], List[dict]]:
+def fetch_incidents(client: Client, max_results: int, params: dict) -> Tuple[Dict[str, str], List[dict]]:
     """
     :type client: ``Client``
     :param client: Tripwire client to use
@@ -364,13 +366,9 @@ def fetch_incidents(client: Client, max_results: int, last_fetch: str, fetch_fil
     :type max_results: ``int``
     :param max_results: Maximum numbers of incidents per fetch
 
-    :type last_fetch: ``str``
-    :param last_fetch:
-        A string contains the last fetched date and time.
-
-    :type fetch_filter: ``Optional[str]``
-    :param fetch_filter:
-        A string that contains the filters for the command.
+    :type params: ``dict``
+    :param params:
+        A dict contains the instance params.
 
     :return:
         A tuple containing two elements:
@@ -380,9 +378,12 @@ def fetch_incidents(client: Client, max_results: int, last_fetch: str, fetch_fil
 
     :rtype: ``Tuple[Dict[str, int], List[dict]]``
     """
+    params, fetch_filter, last_fetch = prepare_fetch(params, params.get('first_fetch'))
 
     incidents: List[Dict[str, Any]] = []
     last_fetch = datetime.strptime(last_fetch, DATE_FORMAT)
+    # This is necessary for making sure there are no duplicate incidents. The reason for it is as the api returns
+    # the versions that occurred from the given time including and this causes duplicates.
     last_fetched_ids = demisto.getLastRun().get('fetched_ids', [])
     alerts = client.get_versions(fetch_filter)
     alerts = alerts[:int(max_results)]
@@ -397,14 +398,14 @@ def fetch_incidents(client: Client, max_results: int, last_fetch: str, fetch_fil
 
         if incident_name in last_fetched_ids:
             continue
+        last_fetch = incident_created_time
 
         incident = {
-            'name': incident_name,
+            'name': f"Element {alert.get('elementName')} version has been changed to: {incident_name}",
             'occurred': incident_created_time.strftime(DATE_FORMAT),
             'rawJSON': json.dumps(alert),
         }
         incidents.append(incident)
-        last_fetch = incident_created_time
         fetched_ids.extend([alert.get('id')])
 
     next_run = {'lastRun': last_fetch.strftime(DATE_FORMAT),
@@ -453,9 +454,7 @@ def main() -> None:
 
         elif command == 'fetch-incidents':
             max_fetch = params.get('max_fetch', 10)
-            params, fetch_filter, last_fetch = prepare_fetch(params, params.get('first_fetch'))
-            next_run, incidents = fetch_incidents(client=client, last_fetch=last_fetch,
-                                                  fetch_filter=fetch_filter, max_results=max_fetch)
+            next_run, incidents = fetch_incidents(client=client, params=demisto.params(), max_results=max_fetch)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         else:
