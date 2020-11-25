@@ -968,7 +968,6 @@ def get_incidents_command(client, args):
 
 def check_if_incident_was_modified_in_xdr(incident_id):
     demisto_incident = demisto.get_incidents()[0]
-    demisto.info(json.dumps(demisto_incident, indent=4))
     last_mirrored_in_time = demisto_incident.get('CustomFields', {}).get('lastmirroredintime')
     last_mirrored_in_time_timestamp = arg_to_timestamp(last_mirrored_in_time, 'last_mirrored_in_time')
 
