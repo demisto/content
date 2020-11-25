@@ -9,7 +9,7 @@ from google.cloud.storage.blob import Blob
 from distutils.version import LooseVersion
 
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
-    get_higher_server_version, GCPConfig
+    get_higher_server_version, GCPConfig, BucketUploadFlow, PackStatus, json_write, load_json
 
 
 @pytest.fixture(scope="module")
@@ -1220,3 +1220,67 @@ class TestReleaseNotes:
         task_stat, pack_stat = dummy_pack.is_failed_to_upload(failed_packs_dict)
         assert task_stat == task_status
         assert pack_stat == status
+
+
+class TestAddToPacksResultsFile:
+    """ Test add_to_packs_results function
+
+    """
+    FILE_AFTER_PREPARE_CONTENT = {
+        f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}": {
+            f"{BucketUploadFlow.SUCCESSFUL_PACKS.value}": {
+                "A": {
+                    f"{BucketUploadFlow.STATUS.value}": PackStatus.SUCCESS.value,
+                    f"{BucketUploadFlow.AGGREGATED.value}": "[1.0.0, 1.0.1] => 1.0.1"
+                },
+                "B": {
+                    f"{BucketUploadFlow.STATUS.value}": PackStatus.SUCCESS.value,
+                    f"{BucketUploadFlow.AGGREGATED.value}": "[1.0.0, 1.0.1] => 1.0.1"
+                }
+            }
+        }
+    }
+
+    FILE_AFTER_ONE_UPLOAD = {
+        f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}": FILE_AFTER_PREPARE_CONTENT[
+            f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}"],
+        f"{BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE.value}": {
+            f"{BucketUploadFlow.SUCCESSFUL_PACKS.value}": {
+                "A": {
+                    f"{BucketUploadFlow.STATUS.value}": PackStatus.SUCCESS.value,
+                    f"{BucketUploadFlow.AGGREGATED.value}": "[1.0.0, 1.0.1] => 1.0.1"
+                }
+            }
+        }
+    }
+
+    FILE_AT_THE_END_OF_UPLOAD = {
+        f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}": FILE_AFTER_PREPARE_CONTENT[
+            f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}"],
+        f"{BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE.value}": FILE_AFTER_PREPARE_CONTENT[
+            f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}"]
+    }
+
+    @pytest.mark.parametrize("start_file, end_file, pack_to_add", [
+        (FILE_AFTER_PREPARE_CONTENT, FILE_AFTER_ONE_UPLOAD, Pack("A", ".")),
+        (FILE_AFTER_ONE_UPLOAD, FILE_AT_THE_END_OF_UPLOAD, Pack("B", "."))
+    ])
+    def test_add_to_packs_results(self, start_file, end_file, pack_to_add, tmp_path):
+        """
+           Given:
+               - The packs_results.json file after prepare content step, a successful pack A to add to the file
+               - The packs_results.json file one upload, a successful pack B to add to the file
+           When:
+               - Adding the pack A to the packs_results.json
+               - Adding the pack B to the packs_results.json
+           Then:
+               - Verify that the file content is what we expect
+       """
+        packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE.value)
+        json_write(packs_results_file_path, start_file)
+        pack_to_add._status = PackStatus.SUCCESS.name
+        pack_to_add._aggregated = True
+        pack_to_add._aggregation_str = "[1.0.0, 1.0.1] => 1.0.1"
+        pack_to_add.add_to_packs_results(packs_results_file_path, BucketUploadFlow.SUCCESSFUL_PACKS.value)
+        packs_results_file = load_json(packs_results_file_path)
+        assert packs_results_file == end_file

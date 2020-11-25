@@ -19,14 +19,29 @@ from distutils.version import LooseVersion
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
-from typing import Tuple
+from typing import Tuple, Union
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
 IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported']  # files to ignore inside Packs folder
 IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
-PACKS_RESULTS_FILE = "packs_results.json"
+
+
+class BucketUploadFlow(enum.Enum):
+    """ Bucket Upload Flow constants
+
+    """
+    PACKS_RESULTS_FILE = "packs_results.json"
+    PREPARE_CONTENT_FOR_TESTING = "prepare_content_for_testing"
+    UPLOAD_PACKS_TO_MARKETPLACE_STORAGE = "upload_packs_to_marketplace_storage"
+    SUCCESSFUL_PACKS = "successful_packs"
+    FAILED_PACKS = "failed_packs"
+    STATUS = "status"
+    AGGREGATED = "aggregated"
+    BUCKET_UPLOAD_BUILD_TITLE = "Upload Packs To Marketplace Storage"
+    BUCKET_UPLOAD_TYPE = "bucket_upload_flow"
+    UPLOAD_JOB_NAME = "Upload Packs To Marketplace"
 
 
 class GCPConfig(object):
@@ -980,8 +995,8 @@ class Pack(object):
         if len(pack_versions_dict) > 1:
             # In case that there is more than 1 new release notes file, wrap all release notes together for one
             # changelog entry
-            aggregation_str = f"{[lv.vstring for lv in found_versions if lv > changelog_latest_rn_version]} => " \
-                              f"{latest_release_notes}"
+            aggregation_str = f"{', '.join(lv.vstring for lv in found_versions if lv > changelog_latest_rn_version)}]"\
+                              f" => {latest_release_notes}"
             logging.info(f"Aggregating ReleaseNotes versions: {aggregation_str}")
             release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
             self._aggregated = True
@@ -1776,8 +1791,88 @@ class Pack(object):
         else:
             return False, str()
 
+    def add_to_packs_results(self, packs_results_file_path: str, packs_type: str):
+        """ Adds the pack to the correct section in the packs_results.json file
+
+        Args:
+            packs_results_file_path: The path to the pack_results.json file
+            packs_type: can be BucketUploadFlow.FAILED_PACKS.value or BucketUploadFlow.SUCCESSFUL_PACKS.value
+
+        """
+        packs_results_file = load_json(packs_results_file_path)
+        upload_packs_dict = packs_results_file.get(BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE.value, {})
+        packs_type_dict = upload_packs_dict.get(packs_type, {})
+        packs_type_dict.update({
+            self._pack_name: {
+                BucketUploadFlow.STATUS.value: PackStatus[self._status].value,
+                BucketUploadFlow.AGGREGATED.value: self._aggregation_str if self._aggregated and self._aggregation_str
+                else "False"
+            }
+        })
+        if packs_type in upload_packs_dict:
+            upload_packs_dict[packs_type].update(packs_type_dict)
+        else:
+            upload_packs_dict[packs_type] = packs_type_dict
+        if BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE.value in packs_results_file:
+            packs_results_file[BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE.value].update(upload_packs_dict)
+        else:
+            packs_results_file[BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE.value] = upload_packs_dict
+        json_write(packs_results_file_path, packs_results_file)
+
+    def add_to_failed(self, packs_results_file_path: str):
+        """ Adds the pack to the failed section in the packs_results.json file
+
+        Args:
+            packs_results_file_path: The path to the pack_results.json file
+
+        """
+        self.add_to_packs_results(packs_results_file_path, BucketUploadFlow.FAILED_PACKS.value)
+
+    def add_to_successful(self, packs_results_file_path: str):
+        """ Adds the pack to the successful section in the packs_results.json file
+
+        Args:
+            packs_results_file_path: The path to the pack_results.json file
+
+        """
+        self.add_to_packs_results(packs_results_file_path, BucketUploadFlow.SUCCESSFUL_PACKS.value)
+
 
 # HELPER FUNCTIONS
+
+
+def load_json(file_path: str) -> dict:
+    """ Reads and loads json file.
+
+    Args:
+        file_path (str): full path to json file.
+
+    Returns:
+        dict: loaded json file.
+
+    """
+    try:
+        if file_path:
+            with open(file_path, 'r') as json_file:
+                result = json.load(json_file)
+        else:
+            result = {}
+        return result
+    except json.decoder.JSONDecodeError:
+        return {}
+
+
+def json_write(file_path: str, data: Union[list, dict]):
+    """ Writes given data to a json file
+
+    Args:
+        file_path: The file path
+        data: The data to write
+
+    """
+    with open(file_path, "w") as f:
+        f.write(json.dumps(data, indent=4))
+
 
 def is_integration_image(file_name):
     """ Indicates whether a file_name in pack directory (in the bucket) is an integration image or not

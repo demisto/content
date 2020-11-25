@@ -11,9 +11,8 @@ from google.cloud.storage import Blob, Bucket
 
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, \
-    IGNORED_FILES, PACKS_FOLDER, PACKS_RESULTS_FILE
-from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, load_json, \
-    get_packs_summary
+    IGNORED_FILES, PACKS_FOLDER, BucketUploadFlow, load_json
+from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, get_packs_summary
 
 LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/packs/([A-Za-z0-9-_]+/\d+\.\d+\.\d+/'
                               r'[A-Za-z0-9-_]+\.zip$)')
@@ -201,8 +200,10 @@ def get_successful_and_failed_packs(packs_results_file_path: str) -> Tuple[dict,
     """
     if os.path.exists(packs_results_file_path):
         packs_results_file = load_json(packs_results_file_path)
-        successful_packs_dict = packs_results_file.get('successful_packs', {})
-        failed_packs_dict = packs_results_file.get('failed_packs', {})
+        successful_packs_dict = packs_results_file.get(BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value, {}) \
+            .get(BucketUploadFlow.SUCCESSFUL_PACKS.value, {})
+        failed_packs_dict = packs_results_file.get(BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value, {}) \
+            .get(BucketUploadFlow.FAILED_PACKS.value, {})
         return successful_packs_dict, failed_packs_dict
     return {}, {}
 
@@ -329,9 +330,9 @@ def main():
         download_and_extract_index(build_bucket, extract_destination_path)
 
     # Get the successful and failed packs file from Prepare Content step in Create Instances job if there are
-    pc_successful_packs_dict, pc_failed_packs_dict = get_successful_and_failed_packs(
-        os.path.join(os.path.dirname(packs_artifacts_path), PACKS_RESULTS_FILE)
-    )
+    packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path),
+                                           BucketUploadFlow.PACKS_RESULTS_FILE.value)
+    pc_successful_packs_dict, pc_failed_packs_dict = get_successful_and_failed_packs(packs_results_file_path)
 
     # Check if needs to upload or not
     check_if_need_to_upload(pc_successful_packs_dict, pc_failed_packs_dict)
@@ -348,24 +349,28 @@ def main():
         task_status, pack_status = pack.is_failed_to_upload(pc_failed_packs_dict)
         if task_status:
             pack.status = pack_status
+            pack.add_to_failed(packs_results_file_path)
             pack.cleanup()
             continue
 
         task_status, user_metadata = pack.load_user_metadata()
         if not task_status:
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
+            pack.add_to_failed(packs_results_file_path)
             pack.cleanup()
             continue
 
         task_status = pack.copy_integration_images(production_bucket, build_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
+            pack.add_to_failed(packs_results_file_path)
             pack.cleanup()
             continue
 
         task_status = pack.copy_author_image(production_bucket, build_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
+            pack.add_to_failed(packs_results_file_path)
             pack.cleanup()
             continue
 
@@ -373,6 +378,7 @@ def main():
         task_status = pack.create_local_changelog(build_index_folder_path)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
+            pack.add_to_failed(packs_results_file_path)
             pack.cleanup()
             continue
 
@@ -386,10 +392,12 @@ def main():
 
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
+            pack.add_to_failed(packs_results_file_path)
             pack.cleanup()
             continue
 
         pack.status = PackStatus.SUCCESS.name
+        pack.add_to_successful(packs_results_file_path)
 
     # upload core packs json to bucket
     upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket)
