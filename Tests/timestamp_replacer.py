@@ -328,7 +328,7 @@ class TimestampReplacer:
                     json_keys = self.determine_problematic_keys(content)
                     self.json_keys.update(json_keys)
                 except Exception:
-                    logging.exception(f'failed to run literal_eval on content {content}')
+                    logging.exception(f'failed while parsing content: {content}')
 
     def determine_problematic_keys(self, content: dict) -> List[str]:
         """Given a json request body, return the keys (in dot notation) whose values are potentially timestamp data.
