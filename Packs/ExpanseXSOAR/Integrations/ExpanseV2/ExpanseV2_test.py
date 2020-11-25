@@ -16,6 +16,10 @@ def test_authentication(mocker):
     pass
 
 
+def test_pagination(mocker):
+    pass
+
+
 def test_fetch_incidents(mocker):
     pass
 
