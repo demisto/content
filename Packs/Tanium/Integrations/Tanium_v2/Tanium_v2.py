@@ -77,16 +77,10 @@ class Client(BaseClient):
     def parse_action_parameters(self, parameters):
         parameters = parameters.split(';')
         parameter_conditions = []
-        add_to_the_previous_pram = ''
-        for param in reversed(parameters):
-            param += add_to_the_previous_pram
-            add_to_the_previous_pram = ''
-            if '=' not in param:
-                add_to_the_previous_pram = f';{param}'
-                continue
+        for param in parameters:
             parameter_conditions.append({
-                'key': param.partition('=')[0],
-                'value': param.partition('=')[-1]})
+                'key': param.split('=')[0],
+                'value': param.split('=')[1]})
         return parameter_conditions
 
     def add_parameters_to_question(self, question_response, parameters):

@@ -1,3 +1,4 @@
+import pytest
 from Tanium_v2 import Client, get_question_result
 import json
 
@@ -306,3 +307,20 @@ def test_get_question_result_invalid_input():
         _, _, _ = get_question_result(client, data_args)
     except ValueError as e:
         assert str(e) == 'completion-percentage argument is invalid, Please enter number between 1 to 100'
+
+
+data_test_parse_action_parameters = [
+    ('key1=value1', [{'key': 'key1', 'value': 'value1'}]),
+    ('key1=value1=value1', [{'key': 'key1', 'value': 'value1=value1'}]),
+    ('key1=value1=value1;key2=value2', [{'key': 'key2', 'value': 'value2'}, {'key': 'key1', 'value': 'value1=value1'}]),
+    ('key1=value1=value1;key2=valu;e2', [{'key': 'key2', 'value': 'valu;e2'}, {'key': 'key1', 'value': 'value1=value1'}]),
+    ('key1=value1=value1;key2=ab=;c', [{'key': 'key2', 'value': 'ab=;c'}, {'key': 'key1', 'value': 'value1=value1'}])
+
+]
+
+
+@ pytest.mark.parametrize('parameters, accepted_result', data_test_parse_action_parameters)
+def test_parse_action_parameters(parameters, accepted_result):
+    client = Client(BASE_URL, 'username', 'password', 'domain')
+    result = client.parse_action_parameters(parameters)
+    assert result == accepted_result
