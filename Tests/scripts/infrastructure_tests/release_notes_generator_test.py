@@ -262,9 +262,9 @@ class TestGenerateReleaseNotesSummary:
         rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
 
         assert VERSION in rn_summary and ASSET_ID in rn_summary  # summary title
-        assert '### FakePack1 Pack v2.0.0 (Community Supported)' in rn_summary
+        assert '### FakePack1 Pack v2.0.0 (Community Contributed)' in rn_summary
         assert '### FakePack2 Pack v1.1.0' in rn_summary
-        assert '### FakePack2 Pack v1.1.0 (Community Supported)' not in rn_summary
+        assert '### FakePack2 Pack v1.1.0 (Community Contributed)' not in rn_summary
 
     def test_release_notes_summary_with_empty_lines_in_rn(self):
         """

@@ -2968,11 +2968,6 @@
             "fromversion": "4.5.0"
         },
         {
-            "integrations": "Logz.io",
-            "playbookID": "Logzio - Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "IBM Resilient Systems",
             "playbookID": "IBM Resilient Systems Test"
         },
