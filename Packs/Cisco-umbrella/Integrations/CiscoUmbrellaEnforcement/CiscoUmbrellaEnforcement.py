@@ -1,5 +1,3 @@
-from typing import Dict, Union
-
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -51,7 +49,7 @@ def domains_list_suffix(page: Optional[str] = '', limit: Optional[str] = '', req
     return suffix
 
 
-def create_domain_list(client: Client, response: Dict[str, Union[dict, list]]) -> list:
+def create_domain_list(client: Client, response: dict) -> list:
     full_domains_list = []
     while response:
         response_data = response.get('data', [])
@@ -68,7 +66,7 @@ def domains_list_command(client: Client, args: dict) -> CommandResults:
     suffix = domains_list_suffix(page=page, limit=limit)
     response = client.get_domains_list(suffix=suffix)
     domains_list = create_domain_list(client, response)
-    readable_output = tableToMarkdown(t=domains_list, name='List of Domains',headers=['Domain'])
+    readable_output = tableToMarkdown(t=domains_list, name='List of Domains', headers=['Domain'])
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='CiscoUmbrellaEnforcement.Domains',
