@@ -739,8 +739,6 @@ def create_record_command(client: Client, args: Dict[str, str]):
 
     res = client.do_request('Post', '/api/core/content', data=body)
 
-    print(f'Body: {body}, Res: {res}')
-
     errors = get_errors_from_res(res)
     if errors:
         return_error(errors)
