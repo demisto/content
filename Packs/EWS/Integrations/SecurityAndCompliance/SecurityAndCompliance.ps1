@@ -101,7 +101,7 @@ function CreateNewSession {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope='Function')]
     param([string]$url, [string]$upn, [string]$password, [string]$bearer_token, [bool]$insecure, [bool]$proxy)
 
-    $url = GetRedirectUri -uri $url -upn $upn -password $password -bearer_token $bearer_token -insecure $insecure -proxy $proxy
+    $url = GetRedirectUri -url $url -upn $upn -password $password -bearer_token $bearer_token -insecure $insecure -proxy $proxy
 
     if ($password){
         $credential = ConvertTo-SecureString "$password" -AsPlainText -Force
@@ -705,7 +705,7 @@ class SecurityAndComplianceClient {
     }
 
     CreateSession() {
-        $this.session = CreateNewSession -uri $this.url -upn $this.upn -password $this.password -bearer_token $this.bearer_token -insecure $this.insecure -proxy $this.proxy
+        $this.session = CreateNewSession -url $this.url -upn $this.upn -password $this.password -bearer_token $this.bearer_token -insecure $this.insecure -proxy $this.proxy
         <#
             .DESCRIPTION
             This method is for internal use. It creates session to Security & Compliance Center.
