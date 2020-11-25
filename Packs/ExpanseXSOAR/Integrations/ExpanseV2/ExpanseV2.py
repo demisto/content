@@ -394,11 +394,11 @@ class Client(BaseClient):
             params=params
         )
 
-    def list_risk_rules(self) -> Iterator[Any]:
+    def list_risk_rules(self, params: Dict[str, Any]) -> Iterator[Any]:
         return self._paginate(
             method='GET',
             url_suffix='/v1/behavior/risk-rules',
-            params=None
+            params=params
         )
 
     def get_risky_flows(self, limit: int, created_before: Optional[str], created_after: Optional[str],
@@ -715,14 +715,15 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> CommandResults:
             for k in domain_data if k not in domain_context_excluded_fields
         })
 
-    readable_output = tableToMarkdown('Expanse Domain List', domain_data_list)
+    readable_output = tableToMarkdown(
+        'Expanse Domain List', domain_data_list) if len(domain_data_list) > 0 else "## No Domains found"
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Expanse.Domain',
         outputs_key_field='domain',
-        outputs=domain_data_list,
-        indicators=domain_standard_list
+        outputs=domain_data_list if len(domain_data_list) > 0 else None,
+        indicators=domain_standard_list if len(domain_standard_list) > 0 else None
     )
 
 
@@ -1114,7 +1115,7 @@ def fetch_incidents(client: Client, max_incidents: int,
 
 
 def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: bool = False,
-                            incoming_tags: Optional[List[str]] = [], fetch_details: bool = False) -> GetRemoteDataResponse:
+                            incoming_tags: Optional[List[str]] = [], mirror_details: bool = False) -> GetRemoteDataResponse:
     parsed_args = GetRemoteDataArgs(args)
     # demisto.debug(f'DEBUGDEBUG get_remote_data_command invoked on incident {parsed_args.remote_incident_id} '
     #               f'with last_update: {parsed_args.last_update}')
@@ -1212,9 +1213,9 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
             })
 
     # update_assets
-    if fetch_details:
+    if mirror_details:
         issue_details: Dict[str, Any] = client.get_issue_by_id(issue_id=parsed_args.remote_incident_id)
-        assets, ml_feature_list, changed = client.parse_asset_data(issue_details, fetch_details)
+        assets, ml_feature_list, changed = client.parse_asset_data(issue_details, mirror_details)
         if changed:
             incident_updates['assets'] = assets
             # dedup, sort and join ml feature list
@@ -1334,7 +1335,10 @@ def list_businessunits_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
     return CommandResults(
-        outputs_prefix="Expanse.BusinessUnit", outputs_key_field="id", outputs=outputs
+        outputs_prefix="Expanse.BusinessUnit",
+        outputs_key_field="id",
+        outputs=outputs if len(outputs) > 0 else None,
+        readable_output="## No Business Units found" if len(outputs) == 0 else None
     )
 
 
@@ -1344,7 +1348,10 @@ def list_providers_command(client: Client, args: Dict[str, Any]) -> CommandResul
         islice(client.list_providers(limit=max_page_size), total_results)
     )
     return CommandResults(
-        outputs_prefix="Expanse.Provider", outputs_key_field="id", outputs=outputs
+        outputs_prefix="Expanse.Provider",
+        outputs_key_field="id",
+        outputs=outputs if len(outputs) > 0 else None,
+        readable_output="## No Providers found" if len(outputs) == 0 else None
     )
 
 
@@ -1354,7 +1361,10 @@ def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         islice(client.list_tags(limit=max_page_size), total_results)
     )
     return CommandResults(
-        outputs_prefix="Expanse.Tag", outputs_key_field="id", outputs=outputs
+        outputs_prefix="Expanse.Tag",
+        outputs_key_field="id",
+        outputs=outputs if len(outputs) > 0 else None,
+        readable_output="## No Tags found" if len(outputs) == 0 else None
     )
 
 
@@ -1464,7 +1474,7 @@ def get_iprange_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix="Expanse.IPRange",
         outputs_key_field="id",
         readable_output="## No IP Ranges found" if len(ip_ranges) == 0 else None,
-        outputs=None if len(ip_ranges) == 0 else ip_ranges
+        outputs=ip_ranges if len(ip_ranges) > 0 else None
     )
 
 
@@ -1475,13 +1485,17 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if domain is not None and len(args) != 0:
         raise ValueError("The only argument allowed with domain is last_observed_date")
 
+    total_results, max_page_size = calculate_limits(args.get('limit', None))
+
     if domain is not None:
         output = client.get_domain_by_domain(domain=domain, last_observed_date=last_observed_date)
         if output and isinstance(output, dict) and 'domain' not in output:
             output['domain'] = domain
         return format_domain_data([output])
 
-    params: Dict[str, Any] = {}
+    params: Dict[str, Any] = {
+        "limit": max_page_size
+    }
 
     domain_search: Optional[str] = args.get('search', None)
     if domain_search is not None:
@@ -1489,27 +1503,27 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     provider_id = argToList(args.get('providers'))
     if len(provider_id) > 0:
-        params['providerId'] = provider_id
+        params['providerId'] = ','.join(provider_id)
 
     provider_name = argToList(args.get('providernames'))
     if len(provider_name) > 0:
-        params['providerName'] = provider_name
+        params['providerName'] = ','.join(provider_name)
 
     business_unit_id = argToList(args.get('businessunits'))
     if len(business_unit_id) > 0:
-        params['businessUnitId'] = business_unit_id
+        params['businessUnitId'] = ','.join(business_unit_id)
 
     business_unit_name = argToList(args.get('businessunitnames'))
     if len(business_unit_name) > 0:
-        params['businessUnitName'] = business_unit_name
+        params['businessUnitName'] = ','.join(business_unit_name)
 
     tag_id = argToList(args.get('tags'))
     if len(tag_id) > 0:
-        params['tagId'] = tag_id
+        params['tagId'] = ','.join(tag_id)
 
     tag_name = argToList(args.get('tagnames'))
     if len(tag_name) > 0:
-        params['tagName'] = tag_name
+        params['tagName'] = ','.join(tag_name)
 
     dns_resolution_status = args.get('has_dns_resolution')
     if dns_resolution_status is not None:
@@ -1526,7 +1540,12 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if last_observed_date is not None:
         params['minLastObservedDate'] = last_observed_date
 
-    domain_data = list(client.get_domains(params=params))
+    domain_data = list(
+        islice(
+            client.get_domains(params=params),
+            total_results
+        )
+    )
     return format_domain_data(domain_data)
 
 
@@ -1537,44 +1556,50 @@ def get_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResu
     if pem_md5_hash is not None and len(args) != 0:
         raise ValueError("The only argument allowed with pem_md5_hash is last_observed_date")
 
+    total_results, max_page_size = calculate_limits(args.get('limit', None))
+
     if pem_md5_hash is not None:
         output = client.get_certificate_by_pem_md5_hash(
             pem_md5_hash=pem_md5_hash,
             last_observed_date=last_observed_date
         )
         return CommandResults(
-            outputs_prefix="Expanse.Certificate", outputs_key_field="id", outputs=output
+            outputs_prefix="Expanse.Certificate",
+            outputs_key_field="id",
+            readable_output="## No Certificates found" if not output else None,
+            outputs=output if output else None
         )
 
-    params: Dict[str, Any] = {}
-
-    domain_search: Optional[str] = args.get('search', None)
-    if domain_search is not None:
-        params['commonNameSearch'] = domain_search
+    params: Dict[str, Any] = {
+        "limit": max_page_size
+    }
+    cn_search: Optional[str] = args.get('search', None)
+    if cn_search is not None:
+        params['commonNameSearch'] = cn_search
 
     provider_id = argToList(args.get('providers'))
     if len(provider_id) > 0:
-        params['providerId'] = provider_id
+        params['providerId'] = ','.join(provider_id)
 
     provider_name = argToList(args.get('providernames'))
     if len(provider_name) > 0:
-        params['providerName'] = provider_name
+        params['providerName'] = ','.join(provider_name)
 
     business_unit_id = argToList(args.get('businessunits'))
     if len(business_unit_id) > 0:
-        params['businessUnitId'] = business_unit_id
+        params['businessUnitId'] = ','.join(business_unit_id)
 
     business_unit_name = argToList(args.get('businessunitnames'))
     if len(business_unit_name) > 0:
-        params['businessUnitName'] = business_unit_name
+        params['businessUnitName'] = ','.join(business_unit_name)
 
     tag_id = argToList(args.get('tags'))
     if len(tag_id) > 0:
-        params['tagId'] = tag_id
+        params['tagId'] = ','.join(tag_id)
 
     tag_name = argToList(args.get('tagnames'))
     if len(tag_name) > 0:
-        params['tagName'] = tag_name
+        params['tagName'] = ','.join(tag_name)
 
     certificate_advertisement_status = args.get('has_certificate_advertisement')
     if certificate_advertisement_status is not None:
@@ -1594,12 +1619,17 @@ def get_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResu
     if last_observed_date is not None:
         params['minLastObservedDate'] = last_observed_date
 
+    cert_data = list(
+        islice(
+            client.get_certificates(params=params),
+            total_results
+        )
+    )
     return CommandResults(
         outputs_prefix="Expanse.Certificate",
         outputs_key_field="id",
-        outputs=list(client.get_certificates(
-            params=params
-        ))
+        readable_output="## No Certificates found" if len(cert_data) == 0 else None,
+        outputs=cert_data if len(cert_data) > 0 else None
     )
 
 
@@ -1659,14 +1689,15 @@ def expanse_certificate_command(client: Client, args: Dict[str, Any]) -> Command
             for k in certificate_data if k not in certificate_context_excluded_fields
         })
 
-    readable_output = tableToMarkdown('ExpanseCertificate List', certificate_data_list)
+    readable_output = tableToMarkdown(
+        'ExpanseCertificate List', certificate_data_list) if len(certificate_data_list) > 0 else "## No Certificates found"
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Expanse.ExpanseCertificate',
         outputs_key_field='pemMD5Hash',
-        outputs=certificate_data_list,
-        indicators=certificate_standard_list
+        outputs=certificate_data_list if len(certificate_data_list) > 0 else None,
+        indicators=certificate_standard_list if len(certificate_standard_list) > 0 else None
     )
 
 
@@ -1722,14 +1753,15 @@ def ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             for k in ip_data if k not in ip_context_excluded_fields
         })
 
-    readable_output = tableToMarkdown('Expanse IP List', ip_data_list)
+    readable_output = tableToMarkdown(
+        'Expanse IP List', ip_data_list) if len(ip_data_list) > 0 else "## No IPs found"
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Expanse.IP',
         outputs_key_field='IP',
-        outputs=ip_data_list,
-        indicators=ip_standard_list
+        outputs=ip_data_list if len(ip_data_list) > 0 else None,
+        indicators=ip_standard_list if len(ip_standard_list) > 0 else None
     )
 
 
@@ -1785,31 +1817,41 @@ def cidr_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         cidr_standard_context = ExpanseCIDR(cidr_data['cidr'])
         cidr_standard_list.append(cidr_standard_context)
 
-    readable_output = tableToMarkdown('Expanse IP Range List', cidr_data_list)
+    readable_output = tableToMarkdown(
+        'Expanse IP Range List', cidr_data_list) if len(cidr_standard_list) > 0 else "## No IP Ranges found"
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Expanse.IPRange',
         outputs_key_field='IP',
-        outputs=cidr_data_list,
-        indicators=cidr_standard_list
+        outputs=cidr_data_list if len(cidr_data_list) > 0 else None,
+        indicators=cidr_standard_list if len(cidr_standard_list) > 0 else None
     )
 
 
 def list_risk_rules_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    total_results, max_page_size = calculate_limits(args.get('limit', None))
 
-    risk_rules = client.list_risk_rules()
+    params = {
+        "limit": max_page_size
+    }
+    risk_rules = list(
+        islice(
+            client.list_risk_rules(params),
+            total_results
+        )
+    )
 
     return CommandResults(
-        outputs_prefix="Expanse.RiskRules", outputs_key_field="id", outputs=list(risk_rules)
+        outputs_prefix="Expanse.RiskRules",
+        outputs_key_field="id",
+        readable_output="## No Risk Rules found" if len(risk_rules) == 0 else None,
+        outputs=risk_rules if len(risk_rules) > 0 else None
     )
 
 
 def get_risky_flows_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
-    limit = check_int(args.get('limit'), 'limit', None, None, False)
-    if not limit:
-        limit = MAX_RESULTS
+    total_results, max_page_size = calculate_limits(args.get('limit', None))
 
     d = args.get('created_before', None)
     created_before = parse(d).strftime(DATE_FORMAT) if d else None
@@ -1819,12 +1861,24 @@ def get_risky_flows_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     internal_ip_range = args.get('internal_ip_range', None)
     risk_rule = args.get('risk_rule', None)
-    tag_names = args.get('tagnames', None)
 
-    risky_flows = client.get_risky_flows(limit=limit, created_before=created_before, created_after=created_after,
-                                         internal_ip_range=internal_ip_range, risk_rule=risk_rule, tag_names=tag_names)
+    tags = argToList(args.get('tagnames'))
+    if len(tags) > 0:
+        tag_names = ','.join(tags)
+
+    risky_flows = list(
+        islice(
+            client.get_risky_flows(limit=max_page_size, created_before=created_before, created_after=created_after,
+                                   internal_ip_range=internal_ip_range, risk_rule=risk_rule, tag_names=tag_names),
+            total_results
+        )
+    )
+
     return CommandResults(
-        outputs_prefix="Expanse.RiskyFlows", outputs_key_field="id", outputs=list(risky_flows)
+        outputs_prefix="Expanse.RiskyFlows",
+        outputs_key_field="id",
+        readable_output="## No Risky Flows found" if len(risky_flows) == 0 else None,
+        outputs=risky_flows if len(risky_flows) > 0 else None
     )
 
 
@@ -1899,9 +1953,9 @@ def main() -> None:
 
         elif demisto.command() == "get-remote-data":
             sync_owners = argToBoolean(demisto.params().get('sync_owners'))
-            fetch_details = argToBoolean(demisto.params().get('fetch_details'))
+            mirror_details = argToBoolean(demisto.params().get('mirror_details'))
             incoming_tags = argToList(demisto.params().get('incoming_tags', None))
-            return_results(get_remote_data_command(client, demisto.args(), sync_owners, incoming_tags, fetch_details))
+            return_results(get_remote_data_command(client, demisto.args(), sync_owners, incoming_tags, mirror_details))
 
         elif demisto.command() == "update-remote-system":
             sync_owners = argToBoolean(demisto.params().get('sync_owners'))
