@@ -1,8 +1,8 @@
 [
     {
         "value": "test@test.com",
-        "tlp": "",
-        "reported by": "",
-        "type": "Email"
+        "tlp": "color",
+        "type": "Email",
+        "reportedby": "source"
     }
 ]

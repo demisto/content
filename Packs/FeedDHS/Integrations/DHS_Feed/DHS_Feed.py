@@ -80,8 +80,10 @@ class TaxiiClient:
         'X-TAXII-Content-Type': 'urn:taxii.mitre.org:message:xml:1.1'
     }
 
-    def __init__(self, pem: str, crt: str, collection: str, verify: Optional[Union[str, bool]] = True):
+    def __init__(self, pem: str, crt: str, collection: str, base_url: Optional[str] = None,
+                 verify: Optional[Union[str, bool]] = True):
 
+        self.base_url = base_url.strip('/') if base_url else 'https://taxii.dhs.gov:8443'
         self._pem = TempFile(pem, '.pem')
         self._crt = TempFile(crt, '.crt')
         self.cert = (self._crt.path, self._pem.path)
@@ -107,13 +109,13 @@ class TaxiiClient:
         ).text
 
     def discovery_request(self) -> Dict:
-        url = 'https://taxii.dhs.gov:8443/flare/taxii11/discovery'
+        url = f'{self.base_url}/flare/taxii11/discovery'
         data = '<Discovery_Request xmlns = "http://taxii.mitre.org/messages/taxii_xml_binding-1.1" message_id="{ID}"/>'
         data = insert_id(data)
         return parse(self._request(url, data))
 
     def poll_request(self, start: str, end: str) -> Dict:
-        url = 'https://taxii.dhs.gov:8443/flare/taxii11/poll'
+        url = f'{self.base_url}/flare/taxii11/poll'
         data = insert_id(copy(self.poll_data).replace('{START_TIME}', start).replace('{END_TIME}', end))
         return parse(self._request(url, data)).get("taxii_11:Poll_Response", {})
 
@@ -141,8 +143,11 @@ class Indicators:
 
     @staticmethod
     def _tlp_color_from_header(stix_header: Dict) -> str:
-        ais = safe_data_get(stix_header.get('stix:Handling', {}), ['Marking', 'Marking_Structure'], 'marking')
-        return safe_data_get(ais, ['Not_Proprietary', 'TLPMarking'], 'AIS').get('@color')
+        try:
+            ais = safe_data_get(stix_header.get('stix:Handling', {}), ['Marking', 'Marking_Structure'], 'marking')
+            return safe_data_get(ais, ['Not_Proprietary', 'TLPMarking'], 'AIS').get('@color')
+        except AttributeError:
+            return ''
 
     @staticmethod
     def _source_from_header(stix_header: Dict) -> str:
@@ -154,7 +159,7 @@ class Indicators:
 
     @staticmethod
     def _indicators(block: Dict) -> Iterator[Dict]:
-        indicator = safe_data_get(block, ['Indicators', 'Indicator'], 'stix', {})
+        indicator = safe_data_get(block, ['Indicators', 'Indicator'], prefix='stix', default={})
         if isinstance(indicator, List):
             for single_indicator in indicator:
                 yield single_indicator
@@ -215,90 +220,118 @@ class Indicators:
         }
 
     @staticmethod
-    def _indicator_data(indicator: Dict, source: str, tlp_color: str) -> Dict:
-        indicator = safe_data_get(indicator.get('indicator:Observable', {}), ['Object', 'Properties'], 'cybox')
-        if not indicator:
+    def _indicator_data(indicator: Dict, source: str, tlp_color: str, tags: Optional[List[str]] = None) -> Dict:
+        indicator_data = safe_data_get(indicator.get('indicator:Observable', {}), ['Object', 'Properties'], 'cybox')
+        if not indicator_data:
             return {}
-        fields = {
-            'trafficlightprotocol': tlp_color,
-            'tags': ['DHS'],
-            'rawJSON': indicator,
-            'reportedby': source
-        }
-        indicator_type = indicator.get('@xsi:type')
+        fields = {}
+        for key, val in [('tags', tags), ('reportedby', source), ('trafficlightprotocol', tlp_color)]:
+            if val:
+                fields[key] = val
+        indicator_type = indicator_data.get('@xsi:type')
+        indicator = Indicators._get_indicator_by_type(indicator_type, indicator_data)
+        fields.update(indicator.get('fields', {}))
+        indicator['fields'] = fields
+        return indicator
+
+    @staticmethod
+    def _get_indicator_by_type(indicator_type: str, indicator_data: Dict) -> Dict:
         if indicator_type.startswith('Address'):
-            indicator_value = Indicators._create_ip_indicator(indicator)
+            indicator = Indicators._create_ip_indicator(indicator_data)
         elif indicator_type.startswith('File'):
-            indicator_value = Indicators._create_file_indicator(indicator)
+            indicator = Indicators._create_file_indicator(indicator_data)
         elif indicator_type.startswith('URI'):
-            indicator_value = Indicators._create_url_indicator(indicator)
+            indicator = Indicators._create_url_indicator(indicator_data)
         elif indicator_type.startswith('EmailMessage'):
-            indicator_value = Indicators._create_email_indicator(indicator)
+            indicator = Indicators._create_email_indicator(indicator_data)
         elif indicator_type.startswith('DomainName'):
-            indicator_value = Indicators._create_domain_indicator(indicator)
+            indicator = Indicators._create_domain_indicator(indicator_data)
         else:
-            indicator_value = {}
-        fields.update(indicator_value.get('fields', {}))
-        indicator_value['fields'] = fields
-        return indicator_value
+            indicator = {}
+
+        indicator['rawJson'] = indicator_data
+        return indicator
 
     @staticmethod
     def _blocks(data: Dict) -> List[Dict]:
-        blocks = safe_data_get(data, 'Content_Block', 'taxii_11')
+        blocks = safe_data_get(data, 'Content_Block', 'taxii_11', default=[])
         if not isinstance(blocks, List):
             blocks = [blocks]
-        return list(filter(None, map(lambda x: safe_data_get(x, ['taxii_11:Content', 'stix:STIX_Package']), blocks)))
+        return list(filter(None, map(
+            lambda x: safe_data_get(x, ['taxii_11:Content', 'stix:STIX_Package'], default={}), blocks)))
 
     @staticmethod
-    def indicators_from_data(data: Dict, filter_tlp_color: Optional[str] = None) -> Iterator[Dict]:
+    def indicators_from_data(data: Dict, filter_tlp_color: Optional[str] = None,
+                             tags: Optional[List[str]] = None) -> Iterator[Dict]:
         if int(data.get('taxii_11:Record_Count', 0)) == 0:
             raise EmptyData
         for block in Indicators._blocks(data):
             stix_header = block.get('stix:STIX_Header', {})
-            try:
-                tlp_color = Indicators._tlp_color_from_header(stix_header)
-            except AttributeError:
-                continue
+            tlp_color = Indicators._tlp_color_from_header(stix_header)
 
             if filter_tlp_color and not filter_tlp_color == tlp_color:
                 continue
             source = Indicators._source_from_header(stix_header)
             for indicator in Indicators._indicators(block):
-                if ready_indicator := Indicators._indicator_data(indicator, source, tlp_color):
+                if ready_indicator := Indicators._indicator_data(indicator, source, tlp_color, tags):
                     yield ready_indicator
 
 
+def header_transform(header: str) -> str:
+    return 'reported by' if header == 'reportedby' else header
+
+
 def indicator_to_context(indicator: Dict) -> Dict:
-    return {
+    reported_by = safe_data_get(indicator, ['fields', 'reportedby'], default='')
+    context_indicator = {
         'value': indicator.get('value', ''),
         'tlp': safe_data_get(indicator, ['fields', 'trafficlightprotocol'], default=''),
-        'reported by': safe_data_get(indicator, ['fields', 'reportedby'], default=''),
         'type': indicator.get('type', '')
     }
+    if reported_by:
+        context_indicator['reportedby'] = reported_by
+    return context_indicator
 
 
-def command_test_module(client: TaxiiClient):
-    client.discovery_request()
-    return_results('ok')
+def ssl_files_checker(public_key: str, private_key: str):
+    from cryptography import x509
+    from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives import serialization
+    x509.load_pem_x509_certificate(public_key.encode('utf-8'), default_backend())
+    serialization.load_pem_private_key(private_key.encode('utf-8'), None, default_backend())
 
 
-def fetch_indicators(client: TaxiiClient, tlp_color: Optional[str] = None, hours_back: int = 12):
+def command_test_module(client: TaxiiClient, private_key: str, public_key: str, first_fetch: str):
+    ssl_files_checker(public_key, private_key)
+    get_first_fetch(first_fetch)
+    res = client.discovery_request()
+    if safe_data_get(res, ['taxii_11:Discovery_Response', 'taxii_11:Service_Instance']):
+        return_results('ok')
+    elif safe_data_get(res, ['taxii_11:Status_Message', '@status_type']) == 'UNAUTHORIZED':
+        raise DemistoException('invalid credential.')
+    else:
+        raise DemistoException('unknown error.')
+
+
+def fetch_indicators(client: TaxiiClient, tlp_color: Optional[str] = None, hours_back: str = '24 hours',
+                     tags: Optional[List[str]] = None):
     time_field = 'time'
     end = datetime.utcnow()
     start = demisto.getLastRun().get(time_field)
     if start is None:
-        start = (end - timedelta(hours=hours_back)).strftime(TIME_FORMAT)
+        start = (end - timedelta(hours=get_first_fetch(hours_back))).strftime(TIME_FORMAT)
     end = end.strftime(TIME_FORMAT)
     data = client.poll_request(start, end)
     try:
-        demisto.createIndicators(list(Indicators.indicators_from_data(data, tlp_color)))
+        demisto.createIndicators(list(Indicators.indicators_from_data(data, tlp_color, tags)))
         demisto.setLastRun({time_field: end})
     except EmptyData:
         pass
 
 
 def get_indicators(client: TaxiiClient, tlp_color: Optional[str] = None,
-                   limit: int = 20, offset: int = 6, days_back: int = 20):
+                   limit: int = 20, offset: int = 6, days_back: int = 20,
+                   tags: Optional[List[str]] = None):
     loops = int(days_back * 24 / offset)
     t_time = datetime.utcnow()
     all_indicators = SetList(extract=lambda x: x.get('value'))
@@ -308,7 +341,7 @@ def get_indicators(client: TaxiiClient, tlp_color: Optional[str] = None,
         data = client.poll_request(start, end)
         try:
             all_indicators.extend(reversed(
-                list(Indicators.indicators_from_data(data, tlp_color))
+                list(Indicators.indicators_from_data(data, tlp_color, tags))
             ))
             if len(all_indicators) >= limit:
                 break
@@ -319,7 +352,8 @@ def get_indicators(client: TaxiiClient, tlp_color: Optional[str] = None,
     all_indicators.reverse()
     indicators = all_indicators[:limit]
     entry_context = list(map(indicator_to_context, indicators))
-    human_readable = tableToMarkdown(name='DHS indicators', t=entry_context, removeNull=True)
+    human_readable = tableToMarkdown(name='DHS indicators', t=entry_context,
+                                     removeNull=True, headerTransform=header_transform)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='DHS',
@@ -328,27 +362,50 @@ def get_indicators(client: TaxiiClient, tlp_color: Optional[str] = None,
     )
 
 
+def get_first_fetch(first_fetch_string: str) -> int:
+    try:
+        number, time_unit = first_fetch_string.split(' ')
+        time_unit = time_unit.lower()
+        int_number = int(number)
+    except ValueError:
+        raise DemistoException('first_fetch is not in the correct format (e.g. <number> <time unit>).')
+
+    if 'hour' in time_unit:
+        return int_number
+    elif 'day' in time_unit:
+        return int_number * 24
+    elif 'week' in time_unit:
+        return int_number * 24 * 7
+    else:
+        raise DemistoException(f'{time_unit} is not an allowed time unit '
+                               f'(allowed units are day, days, hour, hours, week, weeks).')
+
+
 def main():
     params = demisto.params()
     key = fix_rsa_data(params.get('key', ''), 4)
-    crt = fix_rsa_data(params.get('crt', ''), 2)
+    crt = params.get('crt', '')
     collection = params.get('collection')
-    client = TaxiiClient(key, crt, collection, params.get('insecure') == 'true')
+    tags = argToList(params['tags']) if params.get('tags') else None
+    client = TaxiiClient(key, crt, collection, base_url=params.get('base_url'),
+                         verify=argToBoolean(params.get('insecure')))
     command = demisto.command()
     handle_proxy()
     try:
         if command == 'fetch-indicators':
-            fetch_indicators(client, hours_back=int(params.get('first_fetch')), tlp_color=params.get('tlp_color'))
+            fetch_indicators(client, hours_back=params.get('first_fetch', ''),
+                             tlp_color=params.get('tlp_color'), tags=tags)
         elif command == 'dhs-get-indicators':
             args = demisto.args()
-            command_results = get_indicators(client, tlp_color=args.get('tlp_color'), limit=int(args.get('limit', 20)))
+            command_results = get_indicators(client, tlp_color=args.get('tlp_color'), limit=int(args.get('limit', 20)),
+                                             tags=params.get('tags'))
             return_results(command_results)
         elif command == 'test-module':
-            command_test_module(client)
+            command_test_module(client, key, crt, params.get('first_fetch', ''))
         else:
             raise DemistoException('not implemented.')
 
-    except Exception as error:
+    except SyntaxError as error:
         return_error(str(error), error)
 
 

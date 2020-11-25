@@ -8,9 +8,41 @@ configuration:
   name: feed
   required: false
   type: 8
+- defaultvalue: 'https://taxii.dhs.gov:8443'
+  display: Base URL
+  name: base_url
+  required: true
+  type: 0
+- additionalinfo: 'for more info visit https://us-cert.cisa.gov/ais'
+  display: Key File as Text
+  name: key
+  required: true
+  type: 4
+- additionalinfo: 'for more info visit https://us-cert.cisa.gov/ais'
+  display: Certificate File as Text
+  name: crt
+  required: true
+  type: 12
+- display: Feed Type
+  name: collection
+  required: true
+  type: 15
+  options:
+  - AIS
+  - CISCP
+- additionalinfo: The Traffic Light Protocol (TLP) fetch from feed.
+  display: Filter by Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
-  defaultvalue: feedInstanceReputationNotSet
+  defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -33,16 +65,6 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
-  display: Traffic Light Protocol Color
-  name: tlp_color
-  options:
-  - RED
-  - AMBER
-  - GREEN
-  - WHITE
-  required: false
-  type: 15
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy
@@ -63,23 +85,8 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- display: Client private Key
-  name: key
-  required: true
-  type: 4
-- display: Client public Key
-  name: crt
-  required: true
-  type: 4
-- display: Feed Type
-  name: collection
-  required: true
-  type: 15
-  options:
-  - AIS
-  - CISCP
-- defaultvalue: 24
-  display: First fetch time in hours back
+- defaultvalue: 1 day
+  display: First fetch time
   name: first_fetch
   required: false
   type: 0
@@ -98,8 +105,7 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- defaultvalue: 'DHS'
-  additionalinfo: Supports CSV values.
+- additionalinfo: Supports CSV values.
   display: Tags
   hidden: false
   name: feedTags
@@ -152,7 +158,10 @@ script:
     - contextPath: DHS.value
       description: the indicator.
       type: string
-  dockerimage: demisto/winrm:1.0.0.13142
+    - contextPath: DHS.tlp
+      description: the traffic lighte prorotocol.
+      type: string
+  dockerimage: demisto/xml-feed:1.0.0.13966
   feed: true
   isfetch: false
   longRunning: false

@@ -75,6 +75,69 @@ class TestHelpers:
         output = insert_id(input_str)
         assert output == expected_output, 'failed to insert uuid'
 
+    data_test_get_first_fetch = [
+        ('1 hour', 1),
+        ('1 day', 24),
+        ('1 week', 24 * 7),
+        ('2 hours', 2),
+        ('2 days', 48),
+        ('2 weeks', 2 * 24 * 7)
+    ]
+
+    @pytest.mark.parametrize('first_fetch_str, expected_output', data_test_get_first_fetch)
+    def test_get_first_fetch(self, first_fetch_str, expected_output):
+        assert expected_output == get_first_fetch(first_fetch_str)
+
+    data_test_get_first_fetch_error_msg = [
+        ('hour', 'first_fetch is not in the correct format (e.g. <number> <time unit>).'),
+        ('', 'first_fetch is not in the correct format (e.g. <number> <time unit>).'),
+        ('x hour', 'first_fetch is not in the correct format (e.g. <number> <time unit>).'),
+        ('8 years', 'years is not an allowed time unit (allowed units are day, days, hour, hours, week, weeks).')
+    ]
+
+    @pytest.mark.parametrize('first_fetch_str, expected_error', data_test_get_first_fetch_error_msg)
+    def test_get_first_fetch_error_msg(self, first_fetch_str, expected_error):
+        try:
+            get_first_fetch(first_fetch_str)
+        except DemistoException as error:
+            assert str(error) == expected_error
+        else:
+            raise Exception
+
+    data_test_ssl_files_checker = [
+        ('test_data/rsa/2048b-rsa-example-keypair.pem', 'test_data/rsa/2048b-rsa-example-cert.pem')
+    ]
+
+    @pytest.mark.parametrize('input_key, input_public', data_test_ssl_files_checker)
+    def test_ssl_files_checker(self, input_key, input_public):
+        with open(input_key, 'r') as input_key:
+            with open(input_public, 'r') as input_public:
+                ssl_files_checker(input_public.read(), input_key.read())
+
+    @pytest.mark.parametrize('input_key, input_public', data_test_ssl_files_checker)
+    def test_ssl_files_checker_with_invalid_files(self, input_key, input_public):
+        with open(input_key, 'r') as input_key:
+            input_key = input_key.read()
+        with open(input_public, 'r') as input_public:
+            input_public = input_public.read()
+        try:
+            temp_input_public = input_public.split('\n')[:-6]
+            temp_input_public.extend(input_public.split('\n')[-7:])
+            ssl_files_checker('\n'.join(temp_input_public), input_key)
+        except ValueError as error:
+            assert str(error).startswith('Unable to load certificate')
+        else:
+            raise Exception
+
+        try:
+            temp_input_private = input_key.split('\n')[:-6]
+            temp_input_private.extend(input_key.split('\n')[-7:])
+            ssl_files_checker(input_public, '\n'.join(temp_input_private))
+        except ValueError as error:
+            assert str(error) == 'Could not deserialize key data.'
+        else:
+            raise Exception
+
 
 class TestSafeDataGet:
     data_test_safe_data_get = [
@@ -257,7 +320,7 @@ class TestIndicators:
     @pytest.mark.parametrize('data_type', data_types)
     def test_indicators_to_indicator_data(self, data_type):
         indicators = self.read_json(f'test_data/indicators/indicators_from_{data_type}_data.json')
-        test_data_indicators = list(map(lambda x: Indicators._indicator_data(x, '', ''), indicators))
+        test_data_indicators = list(map(lambda x: Indicators._indicator_data(x, 'source', 'color', ['tag']), indicators))
         data_indicators = self.read_json(f'test_data/data_indicators/{data_type}_data_indicators.json')
         assert test_data_indicators == data_indicators
 
@@ -296,15 +359,44 @@ class TestIndicators:
         assert test_sources == sources
 
 
-class TestCommands:
+class TestCommandTestModule:
 
-    def setup(self):
+    def nothing(self, *args, **kwargs):
+        return lambda: self.data
+
+    def setup_class(self):
         self.client = TaxiiClient('', '', '')
+        self.data = None
+        self.ssl_files_checker = self.get_first_fetch = self.discovery_request = None
+
+    def mock_data(self, mocker):
+        self.ssl_files_checker = mocker.patch('DHS_Feed.ssl_files_checker', new=self.nothing)
+        self.get_first_fetch = mocker.patch('DHS_Feed.get_first_fetch', new=self.nothing)
+        self.discovery_request = mocker.patch.object(self.client, 'discovery_request', new_callable=self.nothing)
 
     def test_command_test_module(self, mocker):
-        demisto_results = mocker.patch.object(demisto, 'results')
-        discovery_request = mocker.patch.object(self.client, 'discovery_request')
-        mocker.patch.object(self.client, '_request', return_value='<test> "test" </test>')
-        command_test_module(self.client)
-        demisto_results.assert_called_with('ok')
-        assert discovery_request.call_count == 1
+        self.mock_data(mocker)
+        return_results = mocker.patch('DHS_Feed.return_results')
+        self.data = {'taxii_11:Discovery_Response': {'taxii_11:Service_Instance': ['somthing']}}
+        command_test_module(self.client, '', '', '')
+        return_results.assert_called_with('ok')
+
+    def test_command_test_module_with_invalid_credential(self, mocker):
+        self.mock_data(mocker)
+        self.data = {'taxii_11:Status_Message': {'@status_type': 'UNAUTHORIZED'}}
+        try:
+            command_test_module(self.client, '', '', '')
+        except DemistoException as error:
+            assert str(error) == 'invalid credential.'
+        else:
+            raise Exception
+
+    def test_command_test_module_with_unknown_error(self, mocker):
+        self.mock_data(mocker)
+        self.data = {}
+        try:
+            command_test_module(self.client, '', '', '')
+        except DemistoException as error:
+            assert str(error) == 'unknown error.'
+        else:
+            raise Exception
