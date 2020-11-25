@@ -54,7 +54,7 @@ def test_second_fetch(mocker):
     mocker.patch('Tripwire.prepare_fetch', return_value=(params, fetch_filter, "2020-10-21T09:20:41Z"))
     client = Client(base_url="http://test.com", auth=("admin", "123"), verify=False, proxy=False)
 
-    _, incidents = fetch_incidents(client=client, max_results=2, params=params)
+    _, incidents = fetch_incidents(client=client, max_results=4, params=params)
     # there are 4 returned incidents however only 2 occured after last fetch
     assert len(incidents) == 2
 
