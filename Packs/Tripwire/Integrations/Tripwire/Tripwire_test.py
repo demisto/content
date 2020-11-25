@@ -23,7 +23,7 @@ def test_first_fetch(mocker):
     mocker.patch.object(Client, 'get_versions', return_value=VERSIONS_RAW_RESPONSE)
     fetch_filter = 'ruleId=-1:1&timeReceivedRange=2020-10-19T14:20:41Z,2020-11-17T14:20:41Z'
     params = {}
-    mocker.patch('Tripwire.prepare_fetch', return_value=(params, "2020-10-19T14:20:41Z", fetch_filter))
+    mocker.patch('Tripwire.prepare_fetch', return_value=(params, fetch_filter, "2020-10-19T14:20:41Z"))
     client = Client(base_url="http://test.com", auth=("admin", "123"), verify=False, proxy=False)
 
     _, incidents = fetch_incidents(client=client, max_results=2, params=params)
@@ -51,7 +51,7 @@ def test_second_fetch(mocker):
     mocker.patch.object(Client, 'get_versions', return_value=VERSIONS_RAW_RESPONSE)
     fetch_filter = 'ruleId=-1:1&timeReceivedRange=2020-10-21T09:20:41Z,2020-11-17T14:20:41Z'
     params = {}
-    mocker.patch('Tripwire.prepare_fetch', return_value=(params, "2020-10-21T09:20:41Z", fetch_filter))
+    mocker.patch('Tripwire.prepare_fetch', return_value=(params, fetch_filter, "2020-10-21T09:20:41Z"))
     client = Client(base_url="http://test.com", auth=("admin", "123"), verify=False, proxy=False)
 
     _, incidents = fetch_incidents(client=client, max_results=2, params=params)
@@ -76,7 +76,7 @@ def test_empty_fetch(mocker):
     mocker.patch.object(Client, 'get_versions', return_value=VERSIONS_RAW_RESPONSE)
     fetch_filter = 'ruleId=-1:1&timeReceivedRange=2020-10-30T09:20:41Z,2020-11-17T14:20:41Z'
     params = {}
-    mocker.patch('Tripwire.prepare_fetch', return_value=(params, "2020-10-30T09:20:41Z", fetch_filter))
+    mocker.patch('Tripwire.prepare_fetch', return_value=(params, fetch_filter, "2020-10-30T09:20:41Z"))
     client = Client(base_url="http://test.com", auth=("admin", "123"), verify=False, proxy=False)
 
     _, incidents = fetch_incidents(client=client, max_results=2, params=params)
