@@ -1,0 +1,310 @@
+category: Utilities
+commonfields:
+  id: Palo Alto Networks Automatic SLR (Community)
+  version: -1
+configuration:
+- additionalinfo: Do not include http:// or https:// or any trailing slash (/) on
+    the end
+  defaultvalue: my-firewall.example.tld
+  display: Firewall Management FQDN or IP Address
+  name: ngfw_fqdn_ip
+  required: true
+  type: 0
+- defaultvalue: "443"
+  display: Firewall Management TCP Port
+  name: ngfw_port
+  required: true
+  type: 0
+- defaultvalue: default-ngfw-api-key
+  display: Firewall Management API Key
+  name: ngfw_api_key
+  required: true
+  type: 4
+- additionalinfo: Timeout (in seconds) to perform firewall API operations
+  defaultvalue: "300"
+  display: Firewall Timeout
+  name: ngfw_timeout
+  required: true
+  type: 0
+- defaultvalue: "true"
+  display: Verify Firewall TLS Certificate
+  name: ngfw_tls_verify
+  required: false
+  type: 8
+- additionalinfo: 'How-to: https://docs.paloaltonetworks.com/vm-series/10-0/vm-series-deployment/license-the-vm-series-firewall/licensing-api/manage-the-licensing-api-key.html'
+  defaultvalue: default-csp-api-key
+  display: Customer Support Portal (CSP) API Key
+  name: csp_api_key
+  required: true
+  type: 4
+- additionalinfo: Timeout (in seconds) to perform Palo Alto Networks Customer
+  defaultvalue: "300"
+  display: CSP Timeout
+  name: csp_timeout
+  required: true
+  type: 0
+- additionalinfo: Verify Palo Alto Networks Customer Support Portal (CSP) TLS Certificate
+  defaultvalue: "true"
+  display: Verify CSP TLS Certificate
+  name: csp_tls_verify
+  required: false
+  type: 8
+- additionalinfo: Use the configured system proxy for XSOAR to route requests
+  defaultvalue: "false"
+  display: XSOAR System Proxy
+  name: system_proxy
+  required: false
+  type: 8
+- additionalinfo: Enable Verbose (Debug) Output - Do NOT enable unless needed!
+  defaultvalue: "false"
+  display: Enable Verbose Output
+  name: system_debug
+  required: false
+  type: 8
+- additionalinfo: Customer Account Name to appear on the report
+  defaultvalue: ACME Inc
+  display: Customer Account Name
+  name: slr_account_name
+  required: true
+  type: 0
+- defaultvalue: Perimeter/Internet Gateway
+  display: Firewall Deployment Location
+  name: slr_deployment_location
+  options:
+  - Datacenter/Internal Segmentation
+  - Hybrid (Perimeter and Datacenter)
+  - Perimeter/Internet Gateway
+  required: true
+  type: 15
+- defaultvalue: United States
+  display: Deployment Country
+  name: slr_geographic_country
+  required: true
+  type: 0
+- defaultvalue: Americas
+  display: Deployment Geographic Region
+  name: slr_geographic_region
+  options:
+  - Americas
+  - APAC
+  - EMEA
+  - Japan
+  required: true
+  type: 15
+- additionalinfo: Tailors certain portions of the output to the relevant industry
+    chosen
+  defaultvalue: High Technology
+  display: Customer Industry
+  name: slr_industry
+  options:
+  - Aerospace & Defense
+  - Agriculture
+  - Automotive
+  - Construction
+  - Energy
+  - Financial Services
+  - Government - County
+  - Government - Federal
+  - Government - International
+  - Government - Municipal
+  - Government - State
+  - Healthcare
+  - Higher Education
+  - High Technology
+  - Hospitality
+  - Insurance
+  - Lower Education
+  - Manufacturing
+  - Media & Entertainment
+  - Mining
+  - Non-Profit
+  - Other
+  - Pharma & Life Sciences
+  - Professional & Legal Services
+  - Real Estate
+  - Service Provider
+  - Telecommunications
+  - Transportation & Logistics
+  - Utilities
+  - Waste Management
+  - Wholesale & Retail
+  required: true
+  type: 15
+- defaultvalue: English
+  display: Language
+  name: slr_language
+  options:
+  - Chinese (s)
+  - Chinese (t)
+  - English
+  - French
+  - German
+  - Italian
+  - Japanese
+  - Korean
+  - Polish
+  - Portugese
+  - Russian
+  - Spanish
+  - Spanish (Latino)
+  required: true
+  type: 15
+- additionalinfo: Name to appear on the front page of the report (e.g. Jane Doe)
+  defaultvalue: XSOAR Integration
+  display: Prepared By
+  name: slr_prepared_by
+  required: true
+  type: 0
+- additionalinfo: Email address to appear on the front page of the report (e.g. jane.doe@example.tld)
+  defaultvalue: xsoar@example.tld
+  display: Requested By
+  name: slr_requested_by
+  required: true
+  type: 0
+- additionalinfo: Email address to send the report to
+  defaultvalue: customer@example.tld
+  display: Send To
+  name: slr_send_to
+  required: true
+  type: 0
+description: A community supported integration to allow XSOAR to automatically generate
+  Security Lifecycle Review's (SLR's)
+display: Palo Alto Networks Automatic SLR (Community)
+name: Palo Alto Networks Automatic SLR (Community)
+script:
+  commands:
+  - arguments: []
+    description: Initiates the stats_dump.tar.gz generation job on the target firewall
+    name: autoslr-ngfw-generate
+    outputs:
+    - contextPath: AutoSLR.generate.job_id
+      description: Job ID of stats_dump.tar.gz generation job
+      type: string
+  - arguments:
+    - description: Job ID to check
+      name: job_id
+      required: true
+    description: Checks the status of the stats_dump.tar.gz generation job, returns
+      true when completed
+    name: autoslr-ngfw-check
+    outputs:
+    - contextPath: AutoSLR.generate.job_status
+      description: Returns true when completed, false is an error occured
+      type: boolean
+  - arguments:
+    - description: Job ID of stats_dump.tar.gz generation task
+      name: job_id
+      required: true
+    description: Downloads the stats_dump.tar.gz from the target firewall
+    name: autoslr-ngfw-download
+    outputs:
+    - contextPath: AutoSLR.generate.file_name
+      description: Filename of downloaded file
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: EntryID of Downloaded File
+      type: string
+  - arguments:
+    - name: input_file
+    description: Uploads the stats_dump.tar.gz to Palo Alto Networks
+    name: autoslr-csp-upload
+    outputs:
+    - contextPath: AutoSLR.upload.id
+      description: SLR Reference ID
+      type: string
+    - contextPath: AutoSLR.upload.send_to
+      description: Email address where the report is being sent to
+      type: string
+  - arguments: []
+    name: autoslr-ngfw-system-info
+    outputs:
+    - contextPath: AutoSLR.ngfw_system_info.hostname
+      description: Firewall Hostname
+      type: string
+    - contextPath: AutoSLR.ngfw_system_info.serial
+      description: Firewall Serial Number
+      type: string
+    - contextPath: AutoSLR.ngfw_system_info.software
+      description: Firewall PANOS Version
+      type: string
+  - arguments: []
+    description: This command will dump all the non-sensitive parameters to the context,
+      useful for debugging purposes
+    execution: true
+    name: autoslr-dump-params
+    outputs:
+    - contextPath: AutoSLR.params.csp_host
+      description: CSP URL
+      type: string
+    - contextPath: AutoSLR.params.csp_proxy
+      description: Use XSOAR Proxy
+      type: boolean
+    - contextPath: AutoSLR.params.csp_timeout
+      description: Timeout for API Operation
+      type: number
+    - contextPath: AutoSLR.params.csp_tls_verify
+      description: Enable/Disable TLS Certificate Verification
+      type: boolean
+    - contextPath: AutoSLR.params.csp_verbose
+      description: Enable/Disable Verbose Log Output
+      type: boolean
+    - contextPath: AutoSLR.params.ngfw_host
+      description: Firewall Management FQDN/IP Address
+      type: string
+    - contextPath: AutoSLR.params.ngfw_port
+      description: Firewall Management TCP Port
+      type: number
+    - contextPath: AutoSLR.params.ngfw_proxy
+      description: Use XSOAR Proxy
+      type: boolean
+    - contextPath: AutoSLR.params.ngfw_timeout
+      description: Timeout for API Operation
+      type: number
+    - contextPath: AutoSLR.params.ngfw_tls_verify
+      description: Enable/Disable TLS Certificate Verification
+      type: boolean
+    - contextPath: AutoSLR.params.ngfw_verbose
+      description: Enable/Disable Verbose Log Output
+      type: boolean
+    - contextPath: AutoSLR.params.slr_account_name
+      description: Customer Name
+      type: string
+    - contextPath: AutoSLR.params.slr_country
+      description: Customer Deployment Country
+      type: string
+    - contextPath: AutoSLR.params.slr_deployment_location
+      description: Customer Deployment Logical Location
+      type: string
+    - contextPath: AutoSLR.params.slr_geographic_region
+      description: Customer Deployment Geographic Region
+      type: string
+    - contextPath: AutoSLR.params.slr_industry
+      description: Customer Industry
+      type: string
+    - contextPath: AutoSLR.params.slr_language
+      description: 'Customer Langugage '
+      type: string
+    - contextPath: AutoSLR.params.slr_prepared_by
+      description: Person who generated the report (name)
+      type: string
+    - contextPath: AutoSLR.params.slr_requested_by
+      description: Person who generated the report (email)
+      type: string
+    - contextPath: AutoSLR.params.slr_send_to
+      description: Email address to send the completed report to
+      type: string
+    - contextPath: AutoSLR.params.system_proxy
+      description: Use XSOAR Proxy
+      type: boolean
+    - contextPath: AutoSLR.params.system_verbose
+      description: Enable/Disable Verbose Log Output
+      type: boolean
+  dockerimage: demisto/python3:3.8.6.13358
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+  dockerimage45: demisto/python3:3.8.3.9324
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
