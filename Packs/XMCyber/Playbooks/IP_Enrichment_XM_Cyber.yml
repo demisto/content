@@ -201,7 +201,7 @@ tasks:
     - incidentfield: Entity Report
       output:
         simple: ${XMCyber.Entity.report}
-    - incidentField: Compromising Techniques
+    - incidentfield: Compromising Techniques
       output:
         simple: ${XMCyber.Entity.compromisingTechniques}
   "41":
