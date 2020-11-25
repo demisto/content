@@ -295,7 +295,7 @@ def aggregate_release_notes(pack_name: str, pack_versions_dict: dict, pack_metad
     if is_partner_supported_in_metadata(pack_metadata):
         pack_version_title += ' (Partner Supported)'
     elif is_community_supported_in_metadata(pack_metadata):
-        pack_version_title += ' (Community Supported)'
+        pack_version_title += ' (Community Contributed)'
     return (f'### {pack_name} Pack v{pack_version_title}\n'
             f'{pack_release_notes}')
 
