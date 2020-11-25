@@ -1,21 +1,21 @@
-id: O365 - Security And Compliance - search start - Generic polling
+id: O365 - Security And Compliance - Search Start
 version: -1
-name: O365 - Security And Compliance - search start - Generic polling
-description: This playbook intend to start search in security and compliace and than
+name: O365 - Security And Compliance - Search Start
+description: This playbook intend to start search in security and compliance and than
   wait to search to complete.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ca5dfed0-e804-46aa-89ab-6f9da00ff115
+    taskid: f5ed6013-3892-47c0-8b54-3f1b63588728
     type: start
     task:
-      id: ca5dfed0-e804-46aa-89ab-6f9da00ff115
+      id: f5ed6013-3892-47c0-8b54-3f1b63588728
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 5e2cdd46-d2c8-47fa-8e3d-08d41f1dc9d2
+    taskid: b7b4011b-373f-4d82-811b-4a780e5fd973
     type: playbook
     task:
-      id: 5e2cdd46-d2c8-47fa-8e3d-08d41f1dc9d2
+      id: b7b4011b-373f-4d82-811b-4a780e5fd973
       version: -1
       name: GenericPolling
       description: |-
@@ -59,7 +59,8 @@ tasks:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
       Ids:
-        simple: ${inputs.Search name}
+        complex:
+          root: inputs.search_name
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -70,7 +71,7 @@ tasks:
         simple: "10"
       dt:
         simple: O365.SecurityAndCompliance.ContentSearch.Search(val.Status &&  val.Status
-          != "Completed")
+          == "InProgress" || val.Status == "Starting")
     separatecontext: true
     loop:
       iscommand: false
@@ -91,16 +92,16 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 9438dcb4-53e3-430b-8a20-42584b4be4bb
+    taskid: 5f446474-6ee1-4bf7-8fdd-648d63699463
     type: title
     task:
-      id: 9438dcb4-53e3-430b-8a20-42584b4be4bb
+      id: 5f446474-6ee1-4bf7-8fdd-648d63699463
       version: -1
       name: Search completed
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -116,10 +117,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: ef220e85-6cf1-4330-8920-f19099af896e
+    taskid: 4977cec2-5a50-4cd0-86d1-4eabc6b74a15
     type: regular
     task:
-      id: ef220e85-6cf1-4330-8920-f19099af896e
+      id: 4977cec2-5a50-4cd0-86d1-4eabc6b74a15
       version: -1
       name: Start search
       description: Start stopped, completed or not started compliance search in the
@@ -133,7 +134,8 @@ tasks:
       - "3"
     scriptarguments:
       search_name:
-        simple: ${inputs.Search name}
+        complex:
+          root: inputs.search_name
     separatecontext: false
     view: |-
       {
@@ -160,13 +162,12 @@ view: |-
     }
   }
 inputs:
-- key: Search name
+- key: search_name
   value: {}
   required: true
   description: The name of the compliance search.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: b9d8fe6c-1af4-4780-81a5-3de32cfc118a
 fromversion: 5.5.0
 tests:
- - O365-SecurityAndCompliance-Test
+- O365-SecurityAndCompliance-Test

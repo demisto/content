@@ -35,16 +35,16 @@ function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client){
 function GetRedirectUri {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Scope='Function')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope='Function')]
-    param([string]$uri, [string]$upn, [string]$password, [string]$bearer_token, [bool]$insecure, [bool]$proxy)
-    $end_uri = $uri
+    param([string]$url, [string]$upn, [string]$password, [string]$bearer_token, [bool]$insecure, [bool]$proxy)
+    $end_uri = $url
     if ($password){
-        $end_uri = "$uri/powershell-liveid/"
+        $end_uri = "$url/powershell-liveid/"
     }
     elseif ($bearer_token) {
         $token_value = ConvertTo-SecureString "Bearer $bearer_token" -AsPlainText -Force
         $credential = New-Object System.Management.Automation.PSCredential($upn, $token_value)
         $params = @{
-            "URI" = "$uri/powershell-liveid?BasicAuthToOAuthConversion=true;PSVersion=7.0.3"
+            "URI" = "$url/powershell-liveid?BasicAuthToOAuthConversion=true;PSVersion=7.0.3"
             "Method" = "Post"
             "Credential" = $credential
             "NoProxy" = !$proxy
@@ -99,9 +99,9 @@ function GetRedirectUri {
 function CreateNewSession {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Scope='Function')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope='Function')]
-    param([string]$uri, [string]$upn, [string]$password, [string]$bearer_token, [bool]$insecure, [bool]$proxy)
+    param([string]$url, [string]$upn, [string]$password, [string]$bearer_token, [bool]$insecure, [bool]$proxy)
 
-    $uri = GetRedirectUri -uri $uri -upn $upn -password $password -bearer_token $bearer_token -insecure $insecure -proxy $proxy
+    $url = GetRedirectUri -uri $url -upn $upn -password $password -bearer_token $bearer_token -insecure $insecure -proxy $proxy
 
     if ($password){
         $credential = ConvertTo-SecureString "$password" -AsPlainText -Force
@@ -116,7 +116,7 @@ function CreateNewSession {
     $session_options =  New-PSSessionOption @session_option_params
     $sessions_params = @{
         "ConfigurationName" = "Microsoft.Exchange"
-        "ConnectionUri" = $uri
+        "ConnectionUri" = $url
         "Credential" = $credential
         "Authentication" = "Basic"
         "AllowRedirection" = $true
@@ -125,7 +125,7 @@ function CreateNewSession {
     $session = New-PSSession @sessions_params -WarningAction:SilentlyContinue
 
 	if (!$session) {
-		throw "Fail - establishing session to $uri"
+		throw "Fail - establishing session to $url"
 	}
 
 	return $session
@@ -516,7 +516,7 @@ class OAuth2DeviceCodeClient {
                 $error_details = "Please run command !ews-start-auth , before running this command."
             }
             elseif ($response_body.error -eq "expired_token") {
-                $error_details = "At least $($this.access_token_expires_in) seconds have passed from executing !ews-start-auth, Please run command !ews-start-auth again."
+                $error_details = "At least $($this.access_token_expires_in) seconds have passed from executing !ews-start-auth, Please run the ***ews-start-auth*** command again."
             } else {
                 $error_details = $response_body
             }
@@ -658,7 +658,7 @@ class OAuth2DeviceCodeClient {
 #### Security And Compliance client - OAUTH2.0 ####
 
 class SecurityAndComplianceClient {
-    [string]$uri
+    [string]$url
     [string]$upn
     [string]$password
     [string]$bearer_token
@@ -667,13 +667,13 @@ class SecurityAndComplianceClient {
     [bool]$proxy
 
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope='Function')]
-    SecurityAndComplianceClient([string]$uri, [string]$upn, [string]$password, [string]$bearer_token, [bool]$insecure, [bool]$proxy) {
+    SecurityAndComplianceClient([string]$url, [string]$upn, [string]$password, [string]$bearer_token, [bool]$insecure, [bool]$proxy) {
         $this.upn = $upn
         $this.password = $password
         $this.bearer_token = $bearer_token
         $this.insecure = $insecure
         $this.proxy = $proxy
-        $this.uri = $uri
+        $this.url = $url
         <#
             .DESCRIPTION
             SecurityAndComplianceClient connect to Security & Compliance Center using powershell session (OAuth2.0) and allow interact with it.
@@ -705,7 +705,7 @@ class SecurityAndComplianceClient {
     }
 
     CreateSession() {
-        $this.session = CreateNewSession -uri $this.uri -upn $this.upn -password $this.password -bearer_token $this.bearer_token -insecure $this.insecure -proxy $this.proxy
+        $this.session = CreateNewSession -uri $this.url -upn $this.upn -password $this.password -bearer_token $this.bearer_token -insecure $this.insecure -proxy $this.proxy
         <#
             .DESCRIPTION
             This method is for internal use. It creates session to Security & Compliance Center.
@@ -1453,17 +1453,17 @@ function Main {
         Proxy currently isn't supported by PWSH New-Pssession, However partly implmentation of proxy feature still function (OAuth2.0 and redirect),
         leaving this parameter for feature development if required.
     #>
-    $proxy = $false
+    $no_proxy = $false
     $insecure = (ConvertTo-Boolean $integration_params.insecure)
 
 	try {
         # Creating Compliance and search client
-        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $proxy)
+        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
         # Refreshing tokens if expired
         $oauth2_client.RefreshTokenIfExpired()
         # Creating Compliance and search client
-        $cs_client = [SecurityAndComplianceClient]::new($integration_params.uri, $integration_params.credentials.identifier,
-                                                        $integration_params.credentials.password, $oauth2_client.access_token, $insecure, $proxy)
+        $cs_client = [SecurityAndComplianceClient]::new($integration_params.url, $integration_params.credentials.identifier,
+                                                        $integration_params.credentials.password, $oauth2_client.access_token, $insecure, $no_proxy)
         # Executing command
         $Demisto.Debug("Command being called is $Command")
         switch ($command) {

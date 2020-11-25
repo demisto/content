@@ -1,21 +1,21 @@
-id: O365 - Security And Compliance - search action - Generic polling
+id: O365 - Security And Compliance - Search Action
 version: -1
-name: O365 - Security And Compliance - search action - Generic polling
-description: This playbook intend to create new search action in security and compliace
+name: O365 - Security And Compliance - Search Action
+description: This playbook intend to create new search action in security and compliance
   and than wait to search action to complete.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ca5dfed0-e804-46aa-89ab-6f9da00ff115
+    taskid: 10f32136-0872-4c2f-80de-6c736e896561
     type: start
     task:
-      id: ca5dfed0-e804-46aa-89ab-6f9da00ff115
+      id: 10f32136-0872-4c2f-80de-6c736e896561
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: ee860a02-5505-47d1-8ad1-e72007ae6fe5
+    taskid: bf288d5d-d5df-4452-8ebb-a5d2727c63bd
     type: regular
     task:
-      id: ee860a02-5505-47d1-8ad1-e72007ae6fe5
+      id: bf288d5d-d5df-4452-8ebb-a5d2727c63bd
       version: -1
       name: Create search action
       description: After you create a content search using the !o365-sc-new-search
@@ -52,11 +52,14 @@ tasks:
       - "3"
     scriptarguments:
       action:
-        simple: ${inputs.Search action}
+        complex:
+          root: inputs.search_action
       purge_type:
-        simple: ${inputs.Purge type}
+        complex:
+          root: inputs.purge_type
       search_name:
-        simple: ${inputs.Search name}
+        complex:
+          root: inputs.search_name
     separatecontext: false
     view: |-
       {
@@ -72,10 +75,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 13bafa62-ab83-4af6-86e8-4dc369e22b91
+    taskid: 376d45ea-b5b9-41d8-8b45-c7613116c0a3
     type: playbook
     task:
-      id: 13bafa62-ab83-4af6-86e8-4dc369e22b91
+      id: 376d45ea-b5b9-41d8-8b45-c7613116c0a3
       version: -1
       name: GenericPolling
       description: |-
@@ -97,7 +100,9 @@ tasks:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
       Ids:
-        simple: ${O365.SecurityAndCompliance.ContentSearch.SearchAction.Name}
+        complex:
+          root: O365.SecurityAndCompliance.ContentSearch.SearchAction
+          accessor: Name
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -108,7 +113,7 @@ tasks:
         simple: "10"
       dt:
         simple: O365.SecurityAndCompliance.ContentSearch.SearchAction(val.Status &&  val.Status
-          != "Completed")
+          == "InProgress" || val.Status == "Starting" || val.Status == "Purging")
     separatecontext: true
     loop:
       iscommand: false
@@ -129,16 +134,16 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: dee90d35-cd3e-48c6-8085-769b28613fb6
+    taskid: 8b7a6246-14a6-438c-8c59-8f7e011aa9a5
     type: title
     task:
-      id: dee90d35-cd3e-48c6-8085-769b28613fb6
+      id: 8b7a6246-14a6-438c-8c59-8f7e011aa9a5
       version: -1
-      description: ""
       name: Search action completed.
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -165,25 +170,25 @@ view: |-
     }
   }
 inputs:
-- key: Search name
+- key: search_name
   value: {}
   required: true
   description: The name of the compliance search.
-  playbookInputQuery: null
-- key: Search action
+  playbookInputQuery:
+- key: search_action
   value: {}
   required: true
   description: Search action to perform - Preview/Purge.
-  playbookInputQuery: null
-- key: Purge type
+  playbookInputQuery:
+- key: purge_type
   value: {}
   required: false
   description: Choose purge type if purge action chose - Soft Delete/Hard Delete.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Name
   description: Security and compliance search action name.
   type: string
 fromversion: 5.5.0
 tests:
- - O365-SecurityAndCompliance-Test
+- O365-SecurityAndCompliance-Test

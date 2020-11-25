@@ -4,11 +4,11 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://ps.compliance.protection.outlook.com
-  display: Search and Compliance URI
-  name: uri
+  display: Search and Compliance URL
+  name: url
   required: true
   type: 0
-- display: Email (Password for basic authentication only)
+- display: Username (Password for basic authentication only)
   name: credentials
   defaultvalue: ""
   type: 9
