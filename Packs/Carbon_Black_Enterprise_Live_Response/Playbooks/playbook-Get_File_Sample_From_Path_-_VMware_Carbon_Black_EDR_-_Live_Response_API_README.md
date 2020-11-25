@@ -16,9 +16,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 * cb-list-sessions
-* cb-get-file-from-endpoint
-* cb-session-create
 * cb-session-close
+* cb-session-create
+* cb-get-file-from-endpoint
 
 ## Playbook Inputs
 ---
@@ -26,24 +26,24 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Sensor_ID | The sensor ID. Provided the sensor ID to run the command with a new session. The session will be created and closed automatically. |  | Optional |
-| Path | Path of the file on the endpoint |  | Optional |
+| Path | The path of the file to retrieve.<br/>For example:<br/>C:\\users\\folder\\file.txt |  | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| File  | The file to sample. | unknown |
-| CbLiveResponse.File.Size | File size. | unknown |
-| CbLiveResponse.File.SHA1 | File SHA1. | unknown |
-| CbLiveResponse.File.SHA256 | File SHA256. | unknown |
-| CbLiveResponse.File.Name | File name. | unknown |
-| CbLiveResponse.File.SSDeep | File SSDeep. | unknown |
-| CbLiveResponse.File.EntryID | File EntryID. | unknown |
-| CbLiveResponse.File.Info | File info. | unknown |
-| CbLiveResponse.File.Type | File type. | unknown |
-| CbLiveResponse.File.MD5 | File MD5. | unknown |
-| CbLiveResponse.File.Extension | File extension. | unknown |
+| File  | The file to sample. | string |
+| CbLiveResponse.File.Size | File size. | number |
+| CbLiveResponse.File.SHA1 | File SHA1. | string |
+| CbLiveResponse.File.SHA256 | File SHA256. | string |
+| CbLiveResponse.File.Name | File name. | string |
+| CbLiveResponse.File.SSDeep | File SSDeep. | string |
+| CbLiveResponse.File.EntryID | File EntryID. | string |
+| CbLiveResponse.File.Info | File info. | string |
+| CbLiveResponse.File.Type | File type. | string |
+| CbLiveResponse.File.MD5 | File MD5. | string |
+| CbLiveResponse.File.Extension | File extension. | string |
 
 ## Playbook Image
 ---

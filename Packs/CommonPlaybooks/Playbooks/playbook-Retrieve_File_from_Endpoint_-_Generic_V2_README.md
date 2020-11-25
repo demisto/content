@@ -23,45 +23,28 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| MD5 | Get file sample from MD5 input. |  | Optional |
-| SHA256 | Get file sample from SHA256 input. |  | Optional |
+| MD5 | The MD5 hash value for the file to retrieve. |  | Optional |
+| SHA256 | The SHA256 hash value for the file to retrieve.. |  | Optional |
 | Hostname | Hostname of the machine on which the file is located. |  | Optional |
-| Path | File path. |  | Optional |
-| UseD2 | Determines whether a D2 agent will be used to retrieve the file.<br/>Default is no. |  | Optional |
-| Sensor ID | The sensor ID. Provided the sensor ID to run the command with a new session. The session will be created and closed automatically. |  | Optional |
+| Path | The path of the file to retrieve.<br/>For example:<br/>C:\\users\\folder\\file.txt |  | Optional |
+| UseD2 | Determines whether a D2 agent will be used to retrieve the file.<br/>Options:<br/>no \(default\)<br/>yes | no | Optional |
+| Agent_ID | The ID of the agent in the relevant integration \(such as EDR\). |  | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| File | File sample object | unknown |
-| CbLiveResponse.File.Size | File size. | unknown |
-| CbLiveResponse.File.SHA1 | File SHA1. | unknown |
-| CbLiveResponse.File.SHA256 | File SHA256. | unknown |
-| CbLiveResponse.File.Name | File name. | unknown |
-| CbLiveResponse.File.SSDeep | File SSDeep. | unknown |
-| CbLiveResponse.File.EntryID | File EntryID. | unknown |
-| CbLiveResponse.File.Info | File info. | unknown |
-| CbLiveResponse.File.Type | File type. | unknown |
-| CbLiveResponse.File.MD5 | File MD5. | unknown |
-| CbLiveResponse.File.Extension | File extension. | unknown |
-| File.SHA256 | SHA256 hash of the file. | unknown |
-| File.Name | File name. | unknown |
-| File.Size | File size. | unknown |
-| File.Safelisted | Whether the file is on the Safe List. | unknown |
-| File.Timestamp | Timestamp. | unknown |
-| File.MD5 | MD5 hash of the file. | unknown |
-| File.Company | Name of the company that released a binary. | unknown |
-| File.OS | The OS. | unknown |
-| File.ProductName | The product name. | unknown |
-| File.Path | The binary path. | unknown |
-| File.LastSeen | LThe lst time the binary was seen. | unknown |
-| File.Description | The binary description. | unknown |
-| File.Hostname | The binary hostname. | unknown |
-| File.Extension | The binary extension. | unknown |
-| File.ServerAddedTimestamp | The timestamp when the server was added. | unknown |
-| File.InternalName | The internal name. | unknown |
+| File | File sample object | string |
+| File  | The file to sample. | string |
+| File.Size | The size of the file. | number |
+| File.Type | The type of the file. | string |
+| File.Info | General information of the file. | string |
+| File.MD5 | The MD5 hash of the file. | string |
+| File.SHA1 | The SHA1 hash of the file. | string |
+| File.SHA256 | The SHA256 hash of the file. | string |
+| File.SHA512 | The SHA512 hash of the file. | string |
+| File.SSDeep | The SSDeep of the file. | string |
 
 ## Playbook Image
 ---

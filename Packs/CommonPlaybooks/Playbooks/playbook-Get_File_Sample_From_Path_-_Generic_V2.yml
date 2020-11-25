@@ -183,18 +183,20 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 931591d2-1338-45bf-8083-0a91db928068
+    taskid: 96e50a4f-9369-4549-885e-7a53814d1548
     type: playbook
     task:
-      id: 931591d2-1338-45bf-8083-0a91db928068
+      id: 96e50a4f-9369-4549-885e-7a53814d1548
       version: -1
       name: Get File Sample From Path - VMware Carbon Black EDR - Live Response API
+      description: |-
+        This playbook retrieve file from endpoints by path using VMware Carbon Black EDR (Live Response API).
+        Make sure to provide Carbon Black sensor ID of the endpoint from which you want to retrieve the file.
       playbookName: Get File Sample From Path - VMware Carbon Black EDR - Live Response
         API
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -204,7 +206,7 @@ tasks:
           root: inputs.Path
       Sensor_ID:
         complex:
-          root: inputs.Sensor_ID
+          root: inputs.Agent_ID
     separatecontext: true
     loop:
       iscommand: false
@@ -241,7 +243,9 @@ inputs:
   required: false
   description: |-
     Determines whether a D2 agent will be used to retrieve the file.
-    Default is no.
+    Options:
+    no (default)
+    yes
   playbookInputQuery:
 - key: Hostname
   value: {}
@@ -251,38 +255,47 @@ inputs:
 - key: Path
   value: {}
   required: false
-  description: File path.
+  description: |
+    The path of the file to retrieve.
+    For example:
+    C:\users\folder\file.txt
   playbookInputQuery:
-- key: Sensor_ID
+- key: Agent_ID
   value: {}
   required: false
-  description: Carbon Black sensor ID. Provided the sensor ID to run the command with
-    a new session. The session will be created and closed automatically.
+  description: The ID of the agent in the relevant integration (such as EDR).
   playbookInputQuery:
 outputs:
 - contextPath: File
   description: The file to sample.
-  type: unknown
-- contextPath: CbLiveResponse.File.Size
-  description: File size.
-- contextPath: CbLiveResponse.File.SHA1
-  description: File SHA1.
-- contextPath: CbLiveResponse.File.SHA256
-  description: File SHA256.
-- contextPath: CbLiveResponse.File.Name
-  description: File name.
-- contextPath: CbLiveResponse.File.SSDeep
-  description: File SSDeep.
-- contextPath: CbLiveResponse.File.EntryID
-  description: File EntryID.
-- contextPath: CbLiveResponse.File.Info
-  description: File info.
-- contextPath: CbLiveResponse.File.Type
-  description: File type.
-- contextPath: CbLiveResponse.File.MD5
-  description: File MD5.
-- contextPath: CbLiveResponse.File.Extension
-  description: File extension.
+  type: string
+- contextPath: 'File '
+  description: The file to sample.
+  type: string
+- contextPath: File.Size
+  description: The size of the file.
+  type: number
+- contextPath: File.Type
+  description: The type of the file.
+  type: string
+- contextPath: File.Info
+  description: 'General information of the file. '
+  type: string
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: string
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: string
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: string
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: string
+- contextPath: File.SSDeep
+  description: The SSDeep of the file.
+  type: string
 tests:
 - Account Enrichment - Generic v2.1 - Test
 - Calculate Severity - Generic v2 - Test

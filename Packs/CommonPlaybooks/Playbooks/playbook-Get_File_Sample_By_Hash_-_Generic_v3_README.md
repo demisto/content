@@ -23,31 +23,23 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| MD5 | Get file sample from MD5 input |  | Optional |
-| SHA256 | Get file sample from SHA256 input |  | Optional |
+| MD5 | The MD5 hash value for the file to retrieve. |  | Optional |
+| SHA256 | The SHA256 hash value for the file to retrieve. |  | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| File | File sample object | unknown |
-| File.SHA256 | SHA256 hash of the file. | unknown |
-| File.Name | File name. | unknown |
-| File.Size | File size. | unknown |
-| File.Safelisted | Whether the file is on the Safe List. | unknown |
-| File.Timestamp | Timestamp. | unknown |
-| File.MD5 | MD5 hash of the file. | unknown |
-| File.Company | Name of the company that released a binary. | unknown |
-| File.OS | The OS. | unknown |
-| File.ProductName | The product name. | unknown |
-| File.Path | The binary path. | unknown |
-| File.LastSeen | LThe lst time the binary was seen. | unknown |
-| File.Description | The binary description. | unknown |
-| File.Hostname | The binary hostname. | unknown |
-| File.Extension | The binary extension. | unknown |
-| File.ServerAddedTimestamp | The timestamp when the server was added. | unknown |
-| File.InternalName | The internal name. | unknown |
+| File | File sample object | string |
+| File.Size | The size of the file. | number |
+| File.Type | The type of the file. | string |
+| File.Info | General information of the file. | string |
+| File.MD5 | The MD5 hash of the file. | string |
+| File.SHA1 | The SHA1 hash of the file. | string |
+| File.SHA256 | The SHA256 hash of the file. | string |
+| File.SHA512 | The SHA512 hash of the file. | string |
+| File.SSDeep | The SSDeep of the file. | string |
 
 ## Playbook Image
 ---

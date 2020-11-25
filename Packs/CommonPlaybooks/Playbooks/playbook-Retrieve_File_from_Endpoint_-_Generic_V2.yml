@@ -106,10 +106,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 845f34c5-1b4a-4c94-8c24-cca8ec4ddcbe
+    taskid: 9f97e611-7310-4635-88ca-f80e9342e0fa
     type: playbook
     task:
-      id: 845f34c5-1b4a-4c94-8c24-cca8ec4ddcbe
+      id: 9f97e611-7310-4635-88ca-f80e9342e0fa
       version: -1
       name: Get File Sample From Path - Generic V2
       description: |
@@ -125,15 +125,15 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
+      Agent_ID:
+        complex:
+          root: inputs.Agent_ID
       Hostname:
         complex:
           root: inputs.Hostname
       Path:
         complex:
           root: inputs.Path
-      Sensor_ID:
-        complex:
-          root: inputs.Sensor ID
       UseD2:
         complex:
           root: inputs.UseD2
@@ -171,12 +171,12 @@ inputs:
 - key: MD5
   value: {}
   required: false
-  description: Get file sample from MD5 input.
+  description: The MD5 hash value for the file to retrieve.
   playbookInputQuery:
 - key: SHA256
   value: {}
   required: false
-  description: Get file sample from SHA256 input.
+  description: The SHA256 hash value for the file to retrieve..
   playbookInputQuery:
 - key: Hostname
   value: {}
@@ -186,79 +186,57 @@ inputs:
 - key: Path
   value: {}
   required: false
-  description: File path.
+  description: |-
+    The path of the file to retrieve.
+    For example:
+    C:\users\folder\file.txt
   playbookInputQuery:
 - key: UseD2
-  value: {}
+  value:
+    simple: "no"
   required: false
   description: |-
     Determines whether a D2 agent will be used to retrieve the file.
-    Default is no.
+    Options:
+    no (default)
+    yes
   playbookInputQuery:
-- key: Sensor ID
+- key: Agent_ID
   value: {}
   required: false
-  description: The sensor ID. Provided the sensor ID to run the command with a new
-    session. The session will be created and closed automatically.
+  description: The ID of the agent in the relevant integration (such as EDR).
   playbookInputQuery:
 outputs:
 - contextPath: File
   description: File sample object
-  type: unknown
-- contextPath: CbLiveResponse.File.Size
-  description: File size.
-- contextPath: CbLiveResponse.File.SHA1
-  description: File SHA1.
-- contextPath: CbLiveResponse.File.SHA256
-  description: File SHA256.
-- contextPath: CbLiveResponse.File.Name
-  description: File name.
-- contextPath: CbLiveResponse.File.SSDeep
-  description: File SSDeep.
-- contextPath: CbLiveResponse.File.EntryID
-  description: File EntryID.
-- contextPath: CbLiveResponse.File.Info
-  description: File info.
-- contextPath: CbLiveResponse.File.Type
-  description: File type.
-- contextPath: CbLiveResponse.File.MD5
-  description: File MD5.
-- contextPath: CbLiveResponse.File.Extension
-  description: File extension.
-- contextPath: File.SHA256
-  description: SHA256 hash of the file.
-- contextPath: File.Name
-  description: File name.
+  type: string
+- contextPath: 'File '
+  description: The file to sample.
+  type: string
 - contextPath: File.Size
-  description: File size.
-- contextPath: File.Safelisted
-  description: Whether the file is on the Safe List.
-- contextPath: File.Timestamp
-  description: Timestamp.
+  description: The size of the file.
+  type: number
+- contextPath: File.Type
+  description: The type of the file.
+  type: string
+- contextPath: File.Info
+  description: General information of the file.
+  type: string
 - contextPath: File.MD5
-  description: MD5 hash of the file.
-- contextPath: File.Company
-  description: Name of the company that released a binary.
-- contextPath: File.OS
-  description: The OS.
-- contextPath: File.ProductName
-  description: The product name.
-- contextPath: File.Path
-  description: The binary path.
-- contextPath: File.LastSeen
-  description: LThe lst time the binary was seen.
-- contextPath: File.Description
-  description: The binary description.
-- contextPath: File.Hostname
-  description: The binary hostname.
-- contextPath: File.Extension
-  description: The binary extension.
-- contextPath: File.ServerAddedTimestamp
-  description: The timestamp when the server was added.
-- contextPath: File.InternalName
-  description: The internal name.
-sourceplaybookid: Retrieve File from Endpoint - Generic
+  description: The MD5 hash of the file.
+  type: string
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: string
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: string
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: string
+- contextPath: File.SSDeep
+  description: The SSDeep of the file.
+  type: string
 fromversion: 5.0.0
 tests:
 - Retrieve File from Endpoint - Generic V2 Test
-

@@ -195,30 +195,43 @@ inputs:
 outputs:
 - contextPath: File.InternalName
   description: The internal name.
+  type: string
 - contextPath: File.ServerAddedTimestamp
   description: The timestamp when the server was added.
+  type: string
 - contextPath: File.Name
   description: The binary name.
+  type: string
 - contextPath: File.Extension
   description: The binary extension.
+  type: string
 - contextPath: File.Timestamp
   description: The binary timestamp.
+  type: string
 - contextPath: File.Hostname
   description: The binary hostname.
+  type: string
 - contextPath: File.Description
   description: The binary description.
+  type: string
 - contextPath: File.LastSeen
   description: LThe lst time the binary was seen.
+  type: string
 - contextPath: File.Path
   description: The binary path.
+  type: string
 - contextPath: File.ProductName
   description: The product name.
+  type: string
 - contextPath: File.OS
   description: The OS.
+  type: string
 - contextPath: File.MD5
   description: The MD5 hash of the binary.
+  type: string
 - contextPath: File.Company
   description: Name of the company that released a binary.
+  type: string
 tests:
 - Carbon Black Response Test
 fromversion: 5.0.0

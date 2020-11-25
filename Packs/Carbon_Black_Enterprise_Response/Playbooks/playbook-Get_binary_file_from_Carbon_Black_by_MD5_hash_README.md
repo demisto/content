@@ -27,19 +27,19 @@ This playbook does not use any sub-playbooks.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| File.InternalName | The internal name. | unknown |
-| File.ServerAddedTimestamp | The timestamp when the server was added. | unknown |
-| File.Name | The binary name. | unknown |
-| File.Extension | The binary extension. | unknown |
-| File.Timestamp | The binary timestamp. | unknown |
-| File.Hostname | The binary hostname. | unknown |
-| File.Description | The binary description. | unknown |
-| File.LastSeen | LThe lst time the binary was seen. | unknown |
-| File.Path | The binary path. | unknown |
-| File.ProductName | The product name. | unknown |
-| File.OS | The OS. | unknown |
-| File.MD5 | The MD5 hash of the binary. | unknown |
-| File.Company | Name of the company that released a binary. | unknown |
+| File.InternalName | The internal name. | string |
+| File.ServerAddedTimestamp | The timestamp when the server was added. | string |
+| File.Name | The binary name. | string |
+| File.Extension | The binary extension. | string |
+| File.Timestamp | The binary timestamp. | string |
+| File.Hostname | The binary hostname. | string |
+| File.Description | The binary description. | string |
+| File.LastSeen | LThe lst time the binary was seen. | string |
+| File.Path | The binary path. | string |
+| File.ProductName | The product name. | string |
+| File.OS | The OS. | string |
+| File.MD5 | The MD5 hash of the binary. | string |
+| File.Company | Name of the company that released a binary. | string |
 
 ## Playbook Image
 ---
