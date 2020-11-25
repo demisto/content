@@ -21,11 +21,12 @@ def test_first_fetch(mocker):
         """
     mocker.patch.object(Client, 'get_session_token')
     mocker.patch.object(Client, 'get_versions', return_value=VERSIONS_RAW_RESPONSE)
+    fetch_filter = 'ruleId=-1:1&timeReceivedRange=2020-10-19T14:20:41Z,2020-11-17T14:20:41Z'
+    params = {}
+    mocker.patch('Tripwire.prepare_fetch', return_value=(params, "2020-10-19T14:20:41Z", fetch_filter))
     client = Client(base_url="http://test.com", auth=("admin", "123"), verify=False, proxy=False)
-    fetch_filter = {'rule_oids': '-1:1',
-                    'time_received_range': '2020-10-19T14:20:41Z,2020-11-17T14:20:41Z'}
-    _, incidents = fetch_incidents(client=client, max_results=2, last_fetch="2020-10-19T14:20:41Z",
-                                   fetch_filter=fetch_filter)
+
+    _, incidents = fetch_incidents(client=client, max_results=2, params=params)
     assert len(incidents) == 2
     for incident in incidents:
         assert datetime.strptime(incident.get('occurred'), '%Y-%m-%dT%H:%M:%SZ') >= datetime.strptime(
@@ -48,10 +49,12 @@ def test_second_fetch(mocker):
         """
     mocker.patch.object(Client, 'get_session_token')
     mocker.patch.object(Client, 'get_versions', return_value=VERSIONS_RAW_RESPONSE)
+    fetch_filter = 'ruleId=-1:1&timeReceivedRange=2020-10-21T09:20:41Z,2020-11-17T14:20:41Z'
+    params = {}
+    mocker.patch('Tripwire.prepare_fetch', return_value=(params, "2020-10-21T09:20:41Z", fetch_filter))
     client = Client(base_url="http://test.com", auth=("admin", "123"), verify=False, proxy=False)
-    fetch_filter = {'ruleId': '-1:1&timeReceivedRange=2020-10-30T14:20:41Z,2020-11-17T14:20:41Z'}
-    _, incidents = fetch_incidents(client=client, max_results=4, last_fetch="2020-10-21T09:20:41Z",
-                                   fetch_filter=fetch_filter)
+
+    _, incidents = fetch_incidents(client=client, max_results=2, params=params)
     # there are 4 returned incidents however only 2 occured after last fetch
     assert len(incidents) == 2
 
@@ -71,10 +74,12 @@ def test_empty_fetch(mocker):
         """
     mocker.patch.object(Client, 'get_session_token')
     mocker.patch.object(Client, 'get_versions', return_value=VERSIONS_RAW_RESPONSE)
+    fetch_filter = 'ruleId=-1:1&timeReceivedRange=2020-10-30T09:20:41Z,2020-11-17T14:20:41Z'
+    params = {}
+    mocker.patch('Tripwire.prepare_fetch', return_value=(params, "2020-10-30T09:20:41Z", fetch_filter))
     client = Client(base_url="http://test.com", auth=("admin", "123"), verify=False, proxy=False)
-    fetch_filter = {'ruleId': '-1:1&timeReceivedRange=2020-10-30T14:20:41Z,2020-11-17T14:20:41Z'}
-    _, incidents = fetch_incidents(client=client, max_results=4, last_fetch="2020-10-30T09:20:41Z",
-                                   fetch_filter=fetch_filter)
+
+    _, incidents = fetch_incidents(client=client, max_results=2, params=params)
     assert len(incidents) == 0
 
 

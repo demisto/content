@@ -378,7 +378,7 @@ def fetch_incidents(client: Client, max_results: int, params: dict) -> Tuple[Dic
 
     :rtype: ``Tuple[Dict[str, int], List[dict]]``
     """
-    params, fetch_filter, last_fetch = prepare_fetch(params, params.get('first_fetch'))
+    params, fetch_filter, last_fetch = prepare_fetch(params, params.get('first_fetch', ''))
 
     incidents: List[Dict[str, Any]] = []
     last_fetch = datetime.strptime(last_fetch, DATE_FORMAT)
