@@ -1,9 +1,9 @@
 {
 	"TypeName": "Tripwire incident",
-	"kind": "details",
+	"kind": "detailsV2",
 	"layout": {
 		"id": "Tripwire incident",
-		"kind": "details",
+		"kind": "detailsV2",
 		"modified": "2020-11-23T11:24:36.865357+03:00",
 		"name": "",
 		"system": false,
