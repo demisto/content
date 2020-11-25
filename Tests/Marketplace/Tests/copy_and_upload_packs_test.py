@@ -1,11 +1,8 @@
 import pytest
 import os
 import json
-import shutil
-from tempfile import mkdtemp
 
-from Tests.Marketplace.marketplace_services import GCPConfig
-from Tests.Marketplace.copy_and_upload_packs import PACKS_RESULTS_FILE
+from Tests.Marketplace.marketplace_services import GCPConfig, BucketUploadFlow
 
 
 # disable-secrets-detection-start
@@ -45,7 +42,7 @@ class TestGetPackNames:
 
 
 class TestHelperFunctions:
-    def test_get_successful_and_failed_packs(self):
+    def test_get_successful_and_failed_packs(self, tmp_path):
         """
            Given:
                - File that doesn't exist
@@ -59,8 +56,7 @@ class TestHelperFunctions:
                - Verify that we get the expected dictionary
        """
         from Tests.Marketplace.copy_and_upload_packs import get_successful_and_failed_packs
-        tempdir = mkdtemp()
-        file = os.path.join(tempdir, PACKS_RESULTS_FILE)
+        file = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE.value)
 
         # Case 1: assert file does not exist
         successful, failed = get_successful_and_failed_packs(file)
@@ -77,23 +73,36 @@ class TestHelperFunctions:
         # Case 3: assert valid file
         with open(file, "w") as f:
             f.write(json.dumps({
-                "failed_packs": {"TestPack2": {"status": "status2", "aggregated": False}},
-                "successful_packs": {"TestPack1": {"status": "status1", "aggregated": True}}
+                f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}": {
+                    f"{BucketUploadFlow.FAILED_PACKS.value}": {
+                        "TestPack2": {
+                            f"{BucketUploadFlow.STATUS.value}": "status2",
+                            f"{BucketUploadFlow.AGGREGATED.value}": False
+                        }
+                    },
+                    f"{BucketUploadFlow.SUCCESSFUL_PACKS.value}": {
+                        "TestPack1": {
+                            f"{BucketUploadFlow.STATUS.value}": "status1",
+                            f"{BucketUploadFlow.AGGREGATED.value}": True
+                        }
+                    }
+                }
             }))
         successful, failed = get_successful_and_failed_packs(file)
-        assert successful == {"TestPack1": {"status": "status1", "aggregated": True}}
+        assert successful == {"TestPack1": {
+            f"{BucketUploadFlow.STATUS.value}": "status1",
+            f"{BucketUploadFlow.AGGREGATED.value}": True
+        }}
         successful_list = [*successful]
         ans = 'TestPack1' in successful_list
         assert ans
-        assert failed == {"TestPack2": {"status": "status2", "aggregated": False}}
+        assert failed == {"TestPack2": {
+            f"{BucketUploadFlow.STATUS.value}": "status2",
+            f"{BucketUploadFlow.AGGREGATED.value}": False}
+        }
         failed_list = [*failed]
         ans = 'TestPack2' in failed_list
         assert ans
-
-        try:
-            shutil.rmtree(tempdir)
-        except shutil.Error:
-            pass
 
 
 class TestRegex:
