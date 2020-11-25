@@ -28,6 +28,8 @@ try:
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
     from typing import Optional, List, Any
+
+    global dateparser
     import dateparser
     from datetime import timezone  # type: ignore
 except Exception:
