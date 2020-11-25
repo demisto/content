@@ -50,7 +50,7 @@ def get_pr_author(pr_number, github_token, verify_ssl):
     return pr_info.get('user', {}).get('login', '').lower()
 
 
-def get_pr_modified_packs(pr_number, github_token, verify_ssl):
+def get_pr_modified_files_and_packs(pr_number, github_token, verify_ssl):
     pr_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/pulls/{pr_number}/files"
 
     headers = {'Authorization': 'Bearer ' + github_token} if github_token else {}
@@ -68,12 +68,13 @@ def get_pr_modified_packs(pr_number, github_token, verify_ssl):
     return modified_packs, pr_files
 
 
-def tag_user_on_pr(reviewers, pr_number, pack, pack_files, github_token=None, verify_ssl=True):
+def tag_user_on_pr(reviewers: set, pr_number: str, pack: str, pack_files: set, github_token: str = None,
+                   verify_ssl: bool = True):
     comments_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues/{pr_number}/comments"
     headers = {"Authorization": "Bearer " + github_token} if github_token else {}
 
     reviewers_comment = "\n".join({f"- @{r}" for r in reviewers})
-    pack_files_comment = "\n".join({f for f in pack_files})
+    pack_files_comment = "\n".join(pack_files)
 
     comment_body = {
         "body": f"### Your contributed {pack} {PR_COMMENT_PREFIX}\n"
@@ -114,7 +115,7 @@ def get_pr_tagged_reviewers(pr_number, github_token, verify_ssl):
 
 
 def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True):
-    modified_packs, modified_files = get_pr_modified_packs(pr_number=pr_number, github_token=github_token, verify_ssl=verify_ssl)
+    modified_packs, modified_files = get_pr_modified_files_and_packs(pr_number=pr_number, github_token=github_token, verify_ssl=verify_ssl)
     pr_author = get_pr_author(pr_number=pr_number, github_token=github_token, verify_ssl=verify_ssl)
     tagged_packs_reviewers = get_pr_tagged_reviewers(pr_number=pr_number, github_token=github_token,
                                                      verify_ssl=verify_ssl)
@@ -144,7 +145,8 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
                     print(f"Found {github_user} default reviewer of pack {pack}")
 
             if reviewers:
-                pack_files = {p for p in modified_files if p.startswith(PACKS_FOLDER) and Path(p).parts[1] == pack}
+                pack_files = {file for file in modified_files if file.startswith(PACKS_FOLDER) and
+                              Path(file).parts[1] == pack}
                 tag_user_on_pr(reviewers=reviewers, pr_number=pr_number, pack=pack, pack_files=pack_files,
                                github_token=github_token, verify_ssl=verify_ssl)
             else:
