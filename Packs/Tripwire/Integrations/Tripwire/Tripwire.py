@@ -25,8 +25,8 @@ URL_SUFFIX: Dict[str, str] = {
 
 RULES_HUMAN_READABLE_HEADERS: Dict[str, list] = {
     'RULES': ['name', 'id', 'severity', 'elementName', 'type', 'command', 'importedTime', 'modifiedTime'],
-    'ELEMENTS': ['id', 'name', 'nodeId', 'ruleId', 'baselineVersionId'],
-    'VERSIONS': ['id', 'timeDetected', 'elementId', 'elementName', 'changeType', 'nodeId', 'ruleId'],
+    'ELEMENTS': ['id', 'name', 'nodeName', 'ruleName', 'baselineVersionId'],
+    'VERSIONS': ['id', 'timeDetected', 'elementName', 'changeType', 'nodeName', 'ruleName'],
     'NODES': ['id', 'name', 'make', 'ipAddresses', 'type', 'lastCheck', 'modifiedTime'],
 }
 
@@ -131,9 +131,15 @@ def filter_versions(args: dict) -> str:
         for baseline_version in argToList(args.get('baseline_version_ids')):
             filters += f"baselineVersion={baseline_version}&"
     if args.get('time_detected_range'):
-        filters += f"timeDetectedRange={args.get('time_detected_range')}&"
+        start, end = argToList(args.get('time_detected_range'))
+        start = parse_date_range(start, date_format=DATE_FORMAT)[0]
+        end = parse_date_range(end, date_format=DATE_FORMAT)[0]
+        filters += f"timeDetectedRange={start},{end}&"
     if args.get('time_received_range'):
-        filters += f"timeReceivedRange={args.get('time_received_range')}&"
+        start, end = argToList(args.get('time_received_range'))
+        start = parse_date_range(start, date_format=DATE_FORMAT)[0]
+        end = parse_date_range(end, date_format=DATE_FORMAT)[0]
+        filters += f"timeReceivedRange={start},{end}&"
     if args.get('limit'):
         filters += f"pageLimit={args.get('limit')}&"
     if args.get('start'):

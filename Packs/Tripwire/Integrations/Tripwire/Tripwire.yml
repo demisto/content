@@ -35,13 +35,13 @@ configuration:
   hidden: false
   name: rule_oids
   required: false
-  type: 0
+  type: 12
 - additionalinfo: Nodes IDs of elements versions to fetch, comma seperated.
   display: Node ids
   hidden: false
   name: node_oids
   required: false
-  type: 0
+  type: 12
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -121,7 +121,7 @@ script:
       secret: false
     - default: false
       description: Time received range of element versions to fetch.
-      isArray: false
+      isArray: true
       name: time_received_range
       required: false
       secret: false
