@@ -14,7 +14,7 @@ from zipfile import ZipFile
 from typing import Any, Tuple, Union
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
-    get_packs_statistics_dataframe, PACKS_RESULTS_FILE
+    get_packs_statistics_dataframe, json_write, BucketUploadFlow, load_json
 from demisto_sdk.commands.common.tools import run_command, str2bool
 
 from Tests.scripts.utils.log_util import install_logging
@@ -422,27 +422,6 @@ def build_summary_table_md(packs_input_list: list, include_pack_status: bool = F
         table.append(row_hr)
 
     return '\n'.join(table)
-
-
-def load_json(file_path: str) -> dict:
-    """ Reads and loads json file.
-
-    Args:
-        file_path (str): full path to json file.
-
-    Returns:
-        dict: loaded json file.
-
-    """
-    try:
-        if file_path:
-            with open(file_path, 'r') as json_file:
-                result = json.load(json_file)
-        else:
-            result = {}
-        return result
-    except json.decoder.JSONDecodeError:
-        return {}
 
 
 def get_content_git_client(content_repo_path: str):
@@ -869,37 +848,39 @@ def store_successful_and_failed_packs_in_ci_artifacts(circle_artifacts_path, suc
 
     Args:
         circle_artifacts_path (str): The path to the circle artifacts dir path
-        failed_packs: The list of all failed packs
-        successful_packs: The list of all successful packs
+        failed_packs (list): The list of all failed packs
+        successful_packs (list): The list of all successful packs
 
     """
     packs_results = dict()
+    packs_results[BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value] = dict()
 
     if failed_packs:
         failed_packs_dict = {
-            "failed_packs": {
+            BucketUploadFlow.FAILED_PACKS.value: {
                 pack.name: {
-                    "status": PackStatus[pack.status].value,
-                    "aggregated": pack.aggregation_str if pack.aggregated and pack.aggregation_str else "False"
+                    BucketUploadFlow.STATUS.value: PackStatus[pack.status].value,
+                    BucketUploadFlow.AGGREGATED.value: pack.aggregation_str if pack.aggregated and pack.aggregation_str
+                    else "False"
                 } for pack in failed_packs
             }
         }
-        packs_results.update(failed_packs_dict)
+        packs_results[BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value].update(failed_packs_dict)
 
     if successful_packs:
         successful_packs_dict = {
-            "successful_packs": {
+            BucketUploadFlow.SUCCESSFUL_PACKS.value: {
                 pack.name: {
-                    "status": PackStatus[pack.status].value,
-                    "aggregated": pack.aggregation_str if pack.aggregated and pack.aggregation_str else "False"
+                    BucketUploadFlow.STATUS.value: PackStatus[pack.status].value,
+                    BucketUploadFlow.AGGREGATED.value: pack.aggregation_str if pack.aggregated and pack.aggregation_str
+                    else "False"
                 } for pack in successful_packs
             }
         }
-        packs_results.update(successful_packs_dict)
+        packs_results[BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value].update(successful_packs_dict)
 
     if packs_results:
-        with open(os.path.join(circle_artifacts_path, PACKS_RESULTS_FILE), "w") as f:
-            f.write(json.dumps(packs_results, indent=4))
+        json_write(os.path.join(circle_artifacts_path, BucketUploadFlow.PACKS_RESULTS_FILE.value), packs_results)
 
 
 def main():

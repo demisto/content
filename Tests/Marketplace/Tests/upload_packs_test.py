@@ -1,6 +1,8 @@
 import pytest
+import os
 from unittest.mock import patch
-from Tests.Marketplace.upload_packs import get_packs_names
+from Tests.Marketplace.upload_packs import get_packs_names, store_successful_and_failed_packs_in_ci_artifacts, load_json
+from Tests.Marketplace.marketplace_services import Pack, BucketUploadFlow, PackStatus
 
 
 # disable-secrets-detection-start
@@ -495,3 +497,106 @@ class TestCleanPacks:
 
         assert not skipped_cleanup
         shutil.rmtree.assert_called_once_with(os.path.join(index_folder_path, invalid_pack))
+
+
+class TestStoreInCircleCIArtifacts:
+    """ Test the store_successful_and_failed_packs_in_ci_artifacts function
+
+    """
+    FAILED_PACK_DICT = {
+        f'{BucketUploadFlow.STATUS.value}': PackStatus.FAILED_UPLOADING_PACK.value,
+        f'{BucketUploadFlow.AGGREGATED.value}': 'False'
+    }
+    SUCCESSFUL_PACK_DICT = {
+        f'{BucketUploadFlow.STATUS.value}': PackStatus.SUCCESS.value,
+        f'{BucketUploadFlow.AGGREGATED.value}': '[1.0.0, 1.0.1] => 1.0.1'
+    }
+
+    @staticmethod
+    def get_successful_packs():
+        successful_packs = [Pack(pack_name='A', pack_path='.'), Pack(pack_name='B', pack_path='.')]
+        for pack in successful_packs:
+            pack._status = PackStatus.SUCCESS.name
+            pack._aggregated = True
+            pack._aggregation_str = '[1.0.0, 1.0.1] => 1.0.1'
+        return successful_packs
+
+    @staticmethod
+    def get_failed_packs():
+        failed_packs = [Pack(pack_name='C', pack_path='.'), Pack(pack_name='D', pack_path='.')]
+        for pack in failed_packs:
+            pack._status = PackStatus.FAILED_UPLOADING_PACK.name
+            pack._aggregated = False
+        return failed_packs
+
+    def test_store_successful_and_failed_packs_in_ci_artifacts_both(self, tmp_path):
+        """
+           Given:
+               - Successful packs list
+               - Failed packs list
+               - A path to the circle ci artifacts dir
+           When:
+               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+           Then:
+               - Verify that the file content is what we expect for.
+       """
+        successful_packs = self.get_successful_packs()
+        failed_packs = self.get_failed_packs()
+        store_successful_and_failed_packs_in_ci_artifacts(tmp_path, successful_packs, failed_packs)
+        packs_results_file = load_json(os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE.value))
+        assert packs_results_file == {
+            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}': {
+                f'{BucketUploadFlow.FAILED_PACKS.value}': {
+                    'C': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT,
+                    'D': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT
+                },
+                f'{BucketUploadFlow.SUCCESSFUL_PACKS.value}': {
+                    'A': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT,
+                    'B': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT
+                }
+            }
+        }
+
+    def test_store_successful_and_failed_packs_in_ci_artifacts_successful_only(self, tmp_path):
+        """
+           Given:
+               - Successful packs list
+               - A path to the circle ci artifacts dir
+           When:
+               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+           Then:
+               - Verify that the file content is what we expect for.
+       """
+        successful_packs = self.get_successful_packs()
+        store_successful_and_failed_packs_in_ci_artifacts(tmp_path, successful_packs, [])
+        packs_results_file = load_json(os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE.value))
+        assert packs_results_file == {
+            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}': {
+                f'{BucketUploadFlow.SUCCESSFUL_PACKS.value}': {
+                    'A': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT,
+                    'B': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT
+                }
+            }
+        }
+
+    def test_store_successful_and_failed_packs_in_ci_artifacts_failed_only(self, tmp_path):
+        """
+           Given:
+               - Failed packs list
+               - A path to the circle ci artifacts dir
+           When:
+               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+           Then:
+               - Verify that the file content is what we expect for.
+       """
+        failed_packs = self.get_failed_packs()
+        store_successful_and_failed_packs_in_ci_artifacts(tmp_path, [], failed_packs)
+        packs_results_file = load_json(os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE.value))
+        assert packs_results_file == {
+            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}': {
+                f'{BucketUploadFlow.FAILED_PACKS.value}': {
+                    'C': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT,
+                    'D': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT
+                }
+            }
+        }
