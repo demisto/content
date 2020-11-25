@@ -34,7 +34,8 @@
         {
             "integrations": "Microsoft Endpoint Configuration Manager",
             "playbookID": "Microsoft ECM - Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "timeout": 400
         },
         {
             "integrations": "CrowdStrike Falcon Intel v2",
