@@ -18,7 +18,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, ok_codes=(200, 202))
         self.api_key = api_key
 
-    def get_domains_list(self, suffix: Optional[str], request: Optional[str]):
+    def get_domains_list(self, suffix: Optional[str] = '', request: Optional[str] = ''):
         if request:
             res = self._http_request('GET', full_url=request)
         else:
@@ -51,7 +51,7 @@ def domains_list_suffix(page: Optional[str] = '', limit: Optional[str] = '', req
 def create_domain_list(client: Client, response: Dict[str, Union[dict, list]]) -> list:
     full_domains_list = []
     while response:
-        response_data = response.get('data',[])
+        response_data = response.get('data', [])
         for domain in response_data:
             full_domains_list.append(domain.get('name'))
         response_next_page = response.get('meta', {}).get('next', '')
@@ -65,10 +65,12 @@ def domains_list_command(client: Client, args: dict) -> CommandResults:
     suffix = domains_list_suffix(page=page, limit=limit)
     response = client.get_domains_list(suffix=suffix)
     domains_list = create_domain_list(client, response)
+    readable_output = f'## {domains_list}'
     return CommandResults(
-        outputs_prefix='CiscoUmbrellaEnforcement',
-        outputs_key_field='Domains',
-        outputs=domains_list,
+        readable_output=readable_output,
+        outputs_prefix='CiscoUmbrellaEnforcement.Domains',
+        outputs_key_field='',
+        outputs=domains_list
     )
 
 
@@ -80,6 +82,8 @@ def domain_event_add_command(client: Client, args: dict) -> str:
     device_id = args.get('device_id')
     dst_domain = args.get('dst_domain')
     dst_url = args.get('dst_url')
+    device_version = args.get('device_version')
+
     # checkStatus = client.get_domains_list()
     # if checkStatus == "NotExist":
     #     status = True
@@ -89,7 +93,7 @@ def domain_event_add_command(client: Client, args: dict) -> str:
     new_event = {
         "alertTime": alert_time,
         "deviceId": device_id,
-        "deviceVersion": "13.7a",  # ?????
+        "deviceVersion": device_version,
         "dstDomain": dst_domain,
         "dstUrl": dst_url,
         "eventTime": alert_time,
@@ -100,7 +104,7 @@ def domain_event_add_command(client: Client, args: dict) -> str:
     response = client.add_event_to_domain(new_event)
     r_code = response.status_code
     if int(r_code) == 202:
-        ActionResult = "New event was added successfuly."
+        ActionResult = "New event was added successfully."
     else:
         ActionResult = "New event's addition failed."
     return ActionResult
@@ -130,7 +134,7 @@ def test_module(client: Client) -> str:
 
 def main():
     params = demisto.params()
-    base_url = params.get('url')
+    base_url = f"{params.get('url')}/1.0/"
     api_key = params.get('api_key')
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
