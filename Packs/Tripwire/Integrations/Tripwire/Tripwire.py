@@ -244,7 +244,7 @@ def test_module(client: Client, params: dict) -> str:
     """
     if params.get('isFetch'):
         params, fetch_filter, last_fetch = prepare_fetch(params, params.get('first_fetch', ''))
-        fetch_incidents(client=client, last_fetch=last_fetch, fetch_filter=fetch_filter, max_results=1)
+        fetch_incidents(client=client, params=params, max_results=1)
 
     client.get_nodes("")
     return 'ok'

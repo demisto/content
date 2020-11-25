@@ -122,7 +122,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEmpty
+      - - operator: isNotEmpty
           left:
             value:
               simple: Tripwire.Versions.elementId
