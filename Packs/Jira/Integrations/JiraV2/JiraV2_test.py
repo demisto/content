@@ -140,7 +140,7 @@ def test_module(mocker):
     mocker.patch('JiraV2.jira_req', return_value=user_data)
     mocker.patch('JiraV2.run_query', return_value={})
     result = module()
-    assert result == 'ok1'
+    assert result == 'ok'
 
 
 def test_get_modified_remote_data(mocker):
@@ -150,5 +150,5 @@ def test_get_modified_remote_data(mocker):
     """
     from JiraV2 import main
     mocker.patch.object(demisto, 'command', return_value='get-modified-remote-data')
-    with pytest.raises(UnicodeDecodeError):
+    with pytest.raises(NotImplementedError):
         main()
