@@ -115,7 +115,8 @@ def get_pr_tagged_reviewers(pr_number, github_token, verify_ssl):
 
 
 def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True):
-    modified_packs, modified_files = get_pr_modified_files_and_packs(pr_number=pr_number, github_token=github_token, verify_ssl=verify_ssl)
+    modified_packs, modified_files = get_pr_modified_files_and_packs(pr_number=pr_number, github_token=github_token,
+                                                                     verify_ssl=verify_ssl)
     pr_author = get_pr_author(pr_number=pr_number, github_token=github_token, verify_ssl=verify_ssl)
     tagged_packs_reviewers = get_pr_tagged_reviewers(pr_number=pr_number, github_token=github_token,
                                                      verify_ssl=verify_ssl)
@@ -145,8 +146,8 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
                     print(f"Found {github_user} default reviewer of pack {pack}")
 
             if reviewers:
-                pack_files = {file for file in modified_files if file.startswith(PACKS_FOLDER) and
-                              Path(file).parts[1] == pack}
+                pack_files = {file for file in modified_files if file.startswith(PACKS_FOLDER)
+                              and Path(file).parts[1] == pack}
                 tag_user_on_pr(reviewers=reviewers, pr_number=pr_number, pack=pack, pack_files=pack_files,
                                github_token=github_token, verify_ssl=verify_ssl)
             else:
