@@ -49,37 +49,33 @@ configuration:
   name: mapper-out
   required: true
   type: 0
-- display: Fetch limit (recommended value is less than 200)
+- defaultvalue: '50'
+  display: Fetch limit (recommended value is less than 200)
   name: max_fetch
-  defaultvalue: "50"
-  type: 0
   required: false
+  type: 0
 - display: Fetch incidents
   name: isFetch
+  required: false
   type: 8
-  required: false
-- display: Incidents Fetch Interval
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
   name: incidentFetchInterval
-  defaultvalue: "1"
-  type: 19
   required: false
+  type: 19
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
-- display: Automatically generate fetch query filter
-  defaultvalue: 'false'
+  type: 13
+- defaultvalue: 'false'
+  display: Automatically generate fetch query filter
   name: auto_generate_query_filter
   required: false
   type: 8
-  additionalinfo: If checked, the fetch query filter will be automatically generated from
-    the IAM configuration incident. Otherwise, the Fetch Query Filter parameter will be used.
 - display: Fetch Query Filter
   name: fetch_query_filter
   required: false
   type: 0
-  additionalinfo: Generate a query filter for okta logs API to retrieve only applications
-    configured in XSOAR. To generate the filter, go to Okta's System Log and use the advanced search.
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -308,18 +304,27 @@ script:
       description: The employee's username in the app.
       type: String
   - deprecated: false
-    description: Retrieves a User Profile schema which holds all of the user fields within the application.
-      Used for outgoing-mapping through the Get Schema option.
+    description: Retrieves a User Profile schema which holds all of the user fields
+      within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  - name: okta-get-app-user-assignment
-    arguments:
-    - name: user_id
-      required: true
+  - arguments:
+    - default: false
       description: ID of the user for which to get information.
-    - name: application_id
+      isArray: false
+      name: user_id
       required: true
+      secret: false
+    - default: false
       description: ID of the application for which to get information.
+      isArray: false
+      name: application_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns information about application's user assignment.
+    execution: false
+    name: okta-get-app-user-assignment
     outputs:
     - contextPath: Okta.AppUserAssignment.UserID
       description: ID of the user.
@@ -330,19 +335,30 @@ script:
     - contextPath: Okta.AppUserAssignment.IsAssigned
       description: True if the user is assigned to the application, false otherwise.
       type: boolean
-    description: Returns information about application's user assignment.
-  - name: okta-list-applications
-    arguments:
-    - name: query
-      required: false
+  - arguments:
+    - default: false
       description: Search for applications by their names.
-    - name: filter
+      isArray: false
+      name: query
       required: false
+      secret: false
+    - default: false
       description: Filters apps by status, user.id or group.id expression.
-    - name: limit
+      isArray: false
+      name: filter
       required: false
+      secret: false
+    - default: false
       defaultValue: '50'
       description: Maximum number of apps to retrieve (maximal value is 200).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of Okta applications data.
+    execution: false
+    name: okta-list-applications
     outputs:
     - contextPath: Okta.Application.ID
       description: ID of the application.
@@ -353,7 +369,28 @@ script:
     - contextPath: Okta.Application.Label
       description: Label of the application.
       type: string
-    description: Returns a list of Okta applications data.
+  - arguments:
+    - default: false
+      description: IAM configuration data.
+      isArray: false
+      name: configuration
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates IAM configuration data in the integration context.
+    execution: false
+    name: okta-iam-set-configuration
+  - deprecated: false
+    description: Gets the IAM configuration data from the integration context.
+    execution: false
+    name: okta-iam-get-configuration
+    outputs:
+    - contextPath: Okta.IAMConfiguration.ApplicationID
+      description: An Okta application ID.
+      type: String
+    - contextPath: Okta.IAMConfiguration.Instance
+      description: An XSOAR IAM integration instance name.
+      type: String
   dockerimage: demisto/python3:3.8.6.13358
   isfetch: true
   longRunning: false
@@ -362,10 +399,8 @@ script:
   script: '-'
   subtype: python3
   type: python
-  ismappable: true
-  isremotesyncout: true
 tests:
 - No tests
-fromversion: 6.0.0
 defaultmapperin: Okta IAM - App Sync (mapper)
 defaultclassifier: Okta IAM - App Sync (classifier)
+fromversion: 6.0.0

@@ -136,13 +136,13 @@ class Client(BaseClient):
         )
         return res
 
-    def get_logs(self, last_run_time=None, time_now=None, query_filter=None, auto_generate_filter=False):
+    def get_logs(self, last_run_time=None, time_now=None, query_filter=None, auto_generate_filter=False, context=None):
         logs = []
 
         uri = 'logs'
 
         if auto_generate_filter:
-            query_filter = get_query_filter()
+            query_filter = get_query_filter(context)
 
         params = {
             'filter': encode_string_results(query_filter),
@@ -187,18 +187,13 @@ class Client(BaseClient):
 '''HELPER FUNCTIONS'''
 
 
-def get_query_filter():
+def get_query_filter(context):
     application_ids = []
     exception_msg = 'You must configure AppInstance mapping before fetching logs from Okta.'
     query_filter = '(eventType eq "application.user_membership.add" ' \
                    'or eventType eq "application.user_membership.remove") and'
 
-    indicator_query = 'type:\"IAM Settings - Test (Dan)\" value:\"IAM Settings\"'
-    iam_settings_indicator = demisto.searchIndicators(query=indicator_query).get('iocs', [])
-    if not iam_settings_indicator:
-        raise DemistoException(exception_msg)
-
-    iam_settings = iam_settings_indicator[0].get('CustomFields', {}).get('appinstancemapping')
+    iam_settings = get_configuration(context)
     if not iam_settings:
         raise DemistoException(exception_msg)
 
@@ -512,7 +507,24 @@ def list_apps_command(client, args):
     )
 
 
-def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter=None, auto_generate_filter=False):
+def get_configuration(context):
+    iam_configuration = context.get('IAMConfiguration', {})
+    return CommandResults(
+        outputs=iam_configuration,
+        outputs_prefix='Okta.IAMConfiguration',
+        outputs_key_field='ApplicationID',
+        readable_output=tableToMarkdown('Okta IAM Configuration', iam_configuration)
+    )
+
+
+def set_configuration(args):
+    iam_configuration = json.loads(args.get('configuration'))
+    context = {'IAMConfiguration': iam_configuration}
+    return context
+
+
+def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter=None,
+                    auto_generate_filter=False, context=None):
     """ If no events were saved from last run, returns new events from Okta's /log API. Otherwise,
     returns the events from last run. In both cases, no more than `fetch_limit` incidents will be returned,
     and the rest of them will be saved for next run.
@@ -524,6 +536,7 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter
             fetch_limit: (int) Maximum number of incidents to return.
             query_filter: (str) Logs API query filter.
             auto_generate_filter: (bool) Whether or not to automatically generate the query filter.
+            context: (dict) Integration Context object.
         Returns:
             incidents: (dict) Incidents/events that will be created in Cortex XSOAR
             next_run: (dict) The "last run" object for the next run.
@@ -537,7 +550,7 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter
 
     demisto.debug(f'Okta: Fetching logs from {last_run_time} to {time_now}.')
     if not incidents:
-        log_events = client.get_logs(last_run_time, time_now, query_filter, auto_generate_filter)
+        log_events = client.get_logs(last_run_time, time_now, query_filter, auto_generate_filter, context)
         for entry in log_events:
             # mapping is done at the classification and mapping stage
             incident = {
@@ -625,10 +638,19 @@ def main():
         elif command == 'okta-list-applications':
             return_results(list_apps_command(client, args))
 
+        elif command == 'okta-iam-get-configuration':
+            context = demisto.getIntegrationContext()
+            return_results(get_configuration(context))
+
+        elif command == 'okta-iam-set-configuration':
+            context = set_configuration(args)
+            demisto.setIntegrationContext(context)
+
         elif command == 'fetch-incidents':
             last_run = demisto.getLastRun()
+            context = demisto.getIntegrationContext()
             incidents, next_run = fetch_incidents(client, last_run, first_fetch_str, fetch_limit,
-                                                  fetch_query_filter, auto_generate_query_filter)
+                                                  fetch_query_filter, auto_generate_query_filter, context)
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)
 
