@@ -2,7 +2,7 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
-      {
+        {
             "integrations": "CiscoUmbrellaEnforcement",
             "playbookID": "CiscoUmbrellaEnforcement-Test",
             "fromversion": "5.0.0"
