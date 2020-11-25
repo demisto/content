@@ -4,13 +4,15 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-flake8 = "*"
+pylint = "*"
+pytest = "==5.0.1"
+pytest-mock = "*"
+requests-mock = "*"
+pytest-asyncio = "*"
 
 [packages]
-pygithub = "*"
+pytest = "*"
 requests = "*"
-blessings = "*"
-dateparser = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.7"
