@@ -1,0 +1,176 @@
+id: Carbon Black Live Response - Create active session
+version: -1
+name: Carbon Black Live Response - Create active session
+description: Creates an active session.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1f48e8f5-ec87-4acb-8857-40dd9a445080
+    type: start
+    task:
+      id: 1f48e8f5-ec87-4acb-8857-40dd9a445080
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 28f833ea-2d5e-4c47-8fb5-9c4f8335280f
+    type: title
+    task:
+      id: 28f833ea-2d5e-4c47-8fb5-9c4f8335280f
+      version: -1
+      name: Session created
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 8a0beb88-3daf-423c-8e62-5a4b61706b94
+    type: regular
+    task:
+      id: 8a0beb88-3daf-423c-8e62-5a4b61706b94
+      version: -1
+      name: Create new session
+      description: Create a new CarbonBlack session for a given sensor.
+      script: '|||cb-session-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      command-timeout: {}
+      keepalive-timeout: {}
+      sensor:
+        complex:
+          root: inputs.sensor
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 1e9c0da0-ebcb-41b1-8adc-4a95bbb6d7be
+    type: playbook
+    task:
+      id: 1e9c0da0-ebcb-41b1-8adc-4a95bbb6d7be
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: CbLiveResponse.Sessions
+          accessor: CbSessionID
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: session
+      PollingCommandName:
+        simple: cb-session-info
+      Timeout:
+        simple: "10"
+      dt:
+        simple: CbLiveResponse.Sessions(val.Status.toUpperCase()  != "ACTIVE")
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: sensor
+  value: {}
+  required: true
+  description: Sensor ID to create a session for.
+  playbookInputQuery:
+outputs:
+- contextPath: CbLiveResponse.Sessions.CbSessionID
+  description: Session ID
+  type: number
+fromversion: 5.0.0
+tests:
+- No test
