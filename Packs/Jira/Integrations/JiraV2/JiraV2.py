@@ -10,6 +10,7 @@ BASE_URL = demisto.getParam('url').rstrip('/') + '/'
 API_TOKEN = demisto.getParam('APItoken')
 USERNAME = demisto.getParam('username')
 PASSWORD = demisto.getParam('password')
+COMMAND_NOT_IMPELEMENTED_MSG = 'Command not implemented'
 
 HEADERS = {
     'Content-Type': 'application/json',
@@ -754,7 +755,12 @@ def main():
         elif demisto.command() == 'get-remote-data':
             return_results(get_remote_data_command(**demisto.args()))
 
+        else:
+            raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
+
     except Exception as err:
+        if isinstance(err, NotImplementedError) and COMMAND_NOT_IMPELEMENTED_MSG in str(err):
+            raise
         return_error(str(err))
 
     finally:
