@@ -217,6 +217,7 @@ script:
       type: string
   - arguments: []
     name: autoslr-ngfw-system-info
+    description: Retrieve information about the target firewall
     outputs:
     - contextPath: AutoSLR.ngfw_system_info.hostname
       description: Firewall Hostname
