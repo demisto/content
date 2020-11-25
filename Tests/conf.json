@@ -50,7 +50,7 @@
             "integrations": "Majestic Million",
             "playbookID": "Majestic Million Test Playbook",
             "fromversion": "5.5.0",
-            "memory_threshold": 250,
+            "memory_threshold": 300,
             "timeout": 500
         },
         {
@@ -3295,7 +3295,6 @@
         "Test-BPA_Integration": "Issue 28236",
         "CanaryTools Test": "Issue 30796",
         "Generic Webhook - Test": "Issue 30797",
-        "Service Desk Plus Test": "Issue 29026",
         "VxStream Test": "Issue 29280",
         "palo_alto_firewall_test_pb": "Issue 27501"
     },
