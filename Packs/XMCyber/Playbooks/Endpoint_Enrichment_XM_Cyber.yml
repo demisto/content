@@ -2,7 +2,7 @@ id: Endpoint Enrichment - XM Cyber
 version: -1
 fromversion: 6.0.0
 name: Endpoint Enrichment - XM Cyber
-description: 
+description:
   Enrich an endpoint by hostname using XM Cyber integration.
   Outputs include affected assets, affected entities, complexity of compromise, and more
 starttaskid: "0"
@@ -174,7 +174,7 @@ tasks:
       version: -1
       name: Enrich Hostname
       description: Return data on Entity by hostname from XM Cyber
-      script: '|||hostname'
+      script: '|||xmcyber-hostname'
       type: regular
       iscommand: true
       brand: ""
