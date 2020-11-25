@@ -1,0 +1,39 @@
+args:
+- default: true
+  description: IP to block
+  name: ip
+  required: true
+- description: Rule name
+  name: rulename
+- auto: PREDEFINED
+  description: Direction to block (to, from or both - default)
+  name: direction
+  predefined:
+  - to
+  - from
+  - both
+  required: true
+- description: Base name for added ip/hosts inside checkpoint db
+  name: ipname
+comment: Blocks IP in configured firewall
+commonfields:
+  id: BlockIPCopy
+  version: -1
+dependson:
+  should:
+  - panorama
+  - checkpoint
+enabled: true
+name: BlockIPCopy
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags:
+- firewall
+- checkpoint
+- panorama
+type: javascript
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
