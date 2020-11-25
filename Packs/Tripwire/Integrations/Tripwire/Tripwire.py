@@ -104,23 +104,32 @@ def filter_versions(args: dict) -> str:
     """
     filters = ""
     if args.get('rule_oids'):
-        filters += f"ruleId={args.get('rule_oids')}&"
+        for rule_id in argToList(args.get('rule_oids')):
+            filters += f"ruleId={rule_id}&"
     if args.get('rule_names'):
-        filters += f"ruleName={args.get('rule_names')}&"
+        for rule_name in argToList(args.get('rule_names')):
+            filters += f"ruleName={rule_name}&"
     if args.get('node_oids'):
-        filters += f"nodeId={args.get('node_oids')}&"
+        for node_id in argToList(args.get('node_oids')):
+            filters += f"nodeId={node_id}&"
     if args.get('version_oids'):
-        filters += f"id={args.get('version_oids')}&"
+        for id in argToList(args.get('version_oids')):
+            filters += f"id={id}&"
     if args.get('element_oids'):
-        filters += f"elementId={args.get('element_oids')}&"
+        for element_id in argToList(args.get('element_oids')):
+            filters += f"elementId={element_id}&"
     if args.get('element_names'):
-        filters += f"elementName={args.get('element_names')}&"
+        for element_name in argToList(args.get('element_names')):
+            filters += f"elementName={element_name}&"
     if args.get('node_names'):
-        filters += f"nodeLabel={args.get('node_names')}&"
+        for node_label in argToList(args.get('node_names')):
+            filters += f"nodeLabel={node_label}&"
     if args.get('version_hashes'):
-        filters += f"hash={args.get('version_hashes')}&"
+        for hash in argToList(args.get('version_hashes')):
+            filters += f"hash={hash}&"
     if args.get('baseline_version_ids'):
-        filters += f"baselineVersion={args.get('baseline_version_ids')}&"
+        for baseline_version in argToList(args.get('baseline_version_ids')):
+            filters += f"baselineVersion={baseline_version}&"
     if args.get('time_detected_range'):
         filters += f"timeDetectedRange={args.get('time_detected_range')}&"
     if args.get('time_received_range'):
@@ -139,11 +148,14 @@ def filter_rules(args: dict) -> str:
     """
     filters = ""
     if args.get('rule_oids'):
-        filters += f"id={args.get('rule_oids')}&"
+        for id in argToList(args.get('rule_oids')):
+            filters += f"id={id}&"
     if args.get('rule_names'):
-        filters += f"name={args.get('rule_names')}&"
+        for name in argToList(args.get('rule_names')):
+            filters += f"name={name}&"
     if args.get('rule_types'):
-        filters += f"type={args.get('rule_types')}&"
+        for type in argToList(args.get('rule_types')):
+            filters += f"type={type}&"
     if args.get('limit'):
         filters += f"pageLimit={args.get('limit')}&"
     if args.get('start'):
@@ -158,17 +170,23 @@ def filter_elements(args: dict) -> str:
     """
     filters = ""
     if args.get('element_oids'):
-        filters += f"id={args.get('element_oids')}&"
+        for id in argToList(args.get('element_oids')):
+            filters += f"id={id}&"
     if args.get('element_names'):
-        filters += f"name={args.get('element_names')}&"
+        for name in argToList(args.get('element_names')):
+            filters += f"name={name}&"
     if args.get('node_oids'):
-        filters += f"nodeId={args.get('node_oids')}&"
+        for name in argToList(args.get('node_oids')):
+            filters += f"nodeId={name}&"
     if args.get('rule_oids'):
-        filters += f"ruleId={args.get('rule_oids')}&"
+        for rule_id in argToList(args.get('rule_oids')):
+            filters += f"ruleId={rule_id}&"
     if args.get('baseline_version_ids'):
-        filters += f"baselineVersionId={args.get('baseline_version_ids')}&"
+        for baseline_versionId in argToList(args.get('baseline_version_ids')):
+            filters += f"baselineVersionId={baseline_versionId}&"
     if args.get('last_version_id'):
-        filters += f"lastVersionId={args.get('last_version_id')}&"
+        for last_version_id in argToList(args.get('last_version_id')):
+            filters += f"lastVersionId={last_version_id}&"
     if args.get('limit'):
         filters += f"pageLimit={args.get('limit')}&"
     if args.get('start'):
@@ -183,17 +201,23 @@ def filter_nodes(args: dict) -> str:
     """
     filters = ""
     if args.get('node_oids'):
-        filters += f"id={args.get('node_oids')}&"
+        for id in argToList(args.get('node_oids')):
+            filters += f"id={id}&"
     if args.get('node_ips'):
-        filters += f"ipAddress={args.get('node_ips')}&"
+        for ip_address in argToList(args.get('node_ips')):
+            filters += f"ipAddress={ip_address}&"
     if args.get('node_mac_adresses'):
-        filters += f"macAddress={args.get('node_mac_adresses')}&"
+        for mac_address in argToList(args.get('node_mac_adresses')):
+            filters += f"macAddress={mac_address}&"
     if args.get('node_names'):
-        filters += f"ic_name={args.get('node_names')}&"
+        for ic_name in argToList(args.get('node_names')):
+            filters += f"ic_name={ic_name}&"
     if args.get('node_os_names'):
-        filters += f"make={args.get('node_os_names')}&"
+        for make in argToList(args.get('node_os_names')):
+            filters += f"make={make}&"
     if args.get('tags'):
-        filters += f"tag={args.get('tags')}&"
+        for tag in argToList(args.get('tags')):
+            filters += f"tag={tag}&"
     if args.get('limit'):
         filters += f"pageLimit={args.get('limit')}&"
     if args.get('start'):
