@@ -9,7 +9,7 @@ configuration:
   required: true
   type: 0
 - display: API Key
-  name: APIKey
+  name: api_key
   required: true
   type: 4
 - display: Trust any certificate (not secure)
@@ -89,7 +89,7 @@ script:
     execution: false
     name: umbrella-domains-list
     outputs:
-    - contextPath: CiscoUmbrellaEnforcement.domain
+    - contextPath: CiscoUmbrellaEnforcement.Domains
       description: Domain list.
       type: String
   - arguments:

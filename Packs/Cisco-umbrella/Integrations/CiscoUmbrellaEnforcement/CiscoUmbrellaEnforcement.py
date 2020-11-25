@@ -15,26 +15,29 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url, verify, proxy, api_key):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, ok_codes=(200, 202))
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, ok_codes=(200, 202, 204))
         self.api_key = api_key
 
     def get_domains_list(self, suffix: Optional[str] = '', request: Optional[str] = ''):
         if request:
             res = self._http_request('GET', full_url=request)
         else:
-            res = self._http_request('GET', f"domains?customerKey={self.api_key}&{suffix}")
+            res = self._http_request('GET', url_suffix=f"domains?customerKey={self.api_key}&{suffix}")
         return res
 
     def delete_domains(self, domain_name: str, domain_id: str):
         res = ''
         if domain_id:
-            res = self._http_request('DELETE', f"domains/{domain_id}?customerKey={self.api_key}")
+            res = self._http_request('DELETE', f"domains/{domain_id}?customerKey={self.api_key}",
+                                     return_empty_response=True)
         if domain_name:
-            res = self._http_request('DELETE', f"domains?customerKey={self.api_key}&where[name]={domain_name}")
+            res = self._http_request('DELETE', f"domains?customerKey={self.api_key}&where[name]={domain_name}",
+                                     return_empty_response=True)
         return res
 
     def add_event_to_domain(self, event: dict):
-        return self._http_request('POST', f"events?customerKey={self.api_key}", json_data=event)
+        return self._http_request('POST', f"events?customerKey={self.api_key}", json_data=event,
+                                  return_empty_response=True)
 
 
 def domains_list_suffix(page: Optional[str] = '', limit: Optional[str] = '', request: Optional[str] = '') -> str:
@@ -65,7 +68,7 @@ def domains_list_command(client: Client, args: dict) -> CommandResults:
     suffix = domains_list_suffix(page=page, limit=limit)
     response = client.get_domains_list(suffix=suffix)
     domains_list = create_domain_list(client, response)
-    readable_output = f'## {domains_list}'
+    readable_output = tableToMarkdown(t=domains_list, name='List of Domains',headers=['Domain'])
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='CiscoUmbrellaEnforcement.Domains',
@@ -84,12 +87,6 @@ def domain_event_add_command(client: Client, args: dict) -> str:
     dst_url = args.get('dst_url')
     device_version = args.get('device_version')
 
-    # checkStatus = client.get_domains_list()
-    # if checkStatus == "NotExist":
-    #     status = True
-    #
-    # if checkStatus == "NotExist":
-
     new_event = {
         "alertTime": alert_time,
         "deviceId": device_id,
@@ -102,9 +99,8 @@ def domain_event_add_command(client: Client, args: dict) -> str:
     }
 
     response = client.add_event_to_domain(new_event)
-    r_code = response.status_code
-    if int(r_code) == 202:
-        ActionResult = "New event was added successfully."
+    if response.get('id'):
+        ActionResult = f"New event was added successfully, The id is {str(response.get('id'))}."
     else:
         ActionResult = "New event's addition failed."
     return ActionResult
@@ -126,9 +122,7 @@ def domain_delete_command(client: Client, args: dict) -> str:
 
 
 def test_module(client: Client) -> str:
-    response = client.get_domains_list(domains_list_suffix())
-    if int(response.status_code) != 200:
-        raise DemistoException('test failed')
+    client.get_domains_list(domains_list_suffix())
     return 'ok'
 
 
