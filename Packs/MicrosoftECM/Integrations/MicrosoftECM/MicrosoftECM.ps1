@@ -976,7 +976,7 @@ Function StartService()
 		[Parameter()] [bool]$ShouldPollResults,
 		[Parameter()] [Int32]$timeoutSeconds
 	)
-	$escapedServiceName = $serviceName.Replace("`'", "")
+	$escapedServiceName = $serviceName.Replace("'", "''")
 	$scriptText = "Get-Service '$escapedServiceName' -ErrorAction Stop | Start-Service -PassThru -ErrorAction Stop"
 	$scriptName = "XSOAR StartService"
 	$result = ExecuteServiceScript $DeviceName $CollectionID $CollectionName $scriptText $scriptName
@@ -994,7 +994,7 @@ Function RestartService()
 		[Parameter()] [bool]$ShouldPollResults,
 		[Parameter()] [Int32]$timeoutSeconds
 	)
-	$escapedServiceName = $serviceName.Replace("`'", "")
+	$escapedServiceName = $serviceName.Replace("'", "''")
 	$scriptText = "Get-Service '$escapedServiceName' -ErrorAction Stop | Restart-Service -PassThru -ErrorAction Stop"
 	$scriptName = "XSOAR RestartService"
 	$result = ExecuteServiceScript $DeviceName $CollectionID $CollectionName $scriptText $scriptName
@@ -1012,7 +1012,7 @@ Function StopService()
 		[Parameter()] [bool]$ShouldPollResults,
 		[Parameter()] [Int32]$timeoutSeconds
 	)
-	$escapedServiceName = $serviceName.Replace("`'", "")
+	$escapedServiceName = $serviceName.Replace("'", "''")
 	$scriptText = "Get-Service '$escapedServiceName' -ErrorAction Stop | Stop-Service -PassThru -ErrorAction Stop"
 	$scriptName = "XSOAR StopService"
 	$result = ExecuteServiceScript $DeviceName $CollectionID $CollectionName $scriptText $scriptName
