@@ -1033,13 +1033,13 @@ def get_agent_id(host_name):
 def collect_endpoint_contxt(host):
 
     return {
-        'Hostname': host['hostname'],
-        'ID': host['_id'],
-        'IPAddress': host['primary_ip_address'],
-        'Domain': host['domain'],
-        'MACAddress': host['primary_mac'],
-        'OS': host['os']['platform'],
-        'OSVersion': host['os']['product_name']
+        'Hostname': host.get('hostname'),
+        'ID': host.get('_id'),
+        'IPAddress': host.get('primary_ip_address'),
+        'Domain': host.get('domain'),
+        'MACAddress': host.get('primary_mac'),
+        'OS': host.get('os', {}).get('platform'),
+        'OSVersion': host.get('os', {}).get('product_name')
     }
 
 

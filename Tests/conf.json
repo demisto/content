@@ -12,6 +12,11 @@
             "playbookID": "GoogleCalendar-Test",
             "fromversion": "5.0.0"
         },
+      {
+            "integrations": "GoogleDrive",
+            "playbookID": "GoogleDrive-Test",
+            "fromversion": "5.0.0"
+        },
         {
             "integrations": "FireEyeNX",
             "playbookID": "FireEyeNX-Test"
@@ -45,7 +50,7 @@
             "integrations": "Majestic Million",
             "playbookID": "Majestic Million Test Playbook",
             "fromversion": "5.5.0",
-            "memory_threshold": 250,
+            "memory_threshold": 300,
             "timeout": 500
         },
         {
@@ -1876,7 +1881,8 @@
         },
         {
             "integrations": "FireEye HX",
-            "playbookID": "FireEye HX Test"
+            "playbookID": "FireEye HX Test",
+            "timeout": 500
         },
         {
             "integrations": "FireEyeFeed",
@@ -3279,7 +3285,6 @@
         "Test-BPA_Integration": "Issue 28236",
         "CanaryTools Test": "Issue 30796",
         "Generic Webhook - Test": "Issue 30797",
-        "Service Desk Plus Test": "Issue 29026",
         "VxStream Test": "Issue 29280",
         "palo_alto_firewall_test_pb": "Issue 27501"
     },
@@ -3379,7 +3384,7 @@
         "SNDBOX": "Issue 28826",
         "illuminate": "Will be replaced by analyst1 - Issue 9401",
         "Workday": "License expired Issue: 29590, 29595",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
@@ -3406,6 +3411,7 @@
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
+        "FortiManager": "Can only be run within PANW network",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Cymulate": "Partner didn't provided test playbook",
@@ -3512,6 +3518,7 @@
         "Google Resource Manager": "googleclient sdk has time based challenge exchange",
         "Google Cloud Storage": "SDK",
         "GoogleCalendar": "googleclient sdk has time based challenge exchange",
+        "GoogleDrive":  "googleclient sdk has time based challenge exchange",
         "Syslog Sender": "syslog",
         "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
