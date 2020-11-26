@@ -381,19 +381,19 @@ def ngfw_get_system_info(xmlapi):
 	response = xmlapi.get_system_info()
 	xml = ET.fromstring(response)
 	
-	system_name = None
-	system_serial = None
-	sw_version = None
+	system_name = ''
+	system_serial = ''
+	sw_version = ''
 	
 	for elem in xml.findall('./result'):
-		system_name = elem.find('./system/hostname').text
-		system_serial = elem.find('./system/serial').text
-		sw_version = elem.find('./system/sw-version').text
+		system_name = elem.find('./system/hostname')
+		system_serial = elem.find('./system/serial')
+		sw_version = elem.find('./system/sw-version')
 	
 	result = {
-		'hostname': system_name,
-		'serial': system_serial,
-		'software': sw_version
+		'hostname': str(system_name.text),
+		'serial': str(system_serial.text),
+		'software': str(sw_version.text)
 	}
 	
 	readable_output = tableToMarkdown('Firewall Information', result)
