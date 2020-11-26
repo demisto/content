@@ -54,6 +54,8 @@ def parse_date_to_datetime(date: str, day_first: bool = False) -> datetime:
 
 
 def parser(date_str, *args, **kwargs) -> datetime:
+    """Wrapper of dateparser.parse to support return type value
+    """
     date_obj = dateparser.parse(date_str, *args, **kwargs)
     assert isinstance(date_obj, datetime), f'Could not parse date {date_str}'  # MYPY Fix
     return date_obj
