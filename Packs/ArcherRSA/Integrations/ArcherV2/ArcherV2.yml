@@ -40,7 +40,7 @@ configuration:
   name: applicationDateField
   required: true
   type: 0
-- display: Use European Time format (dd/mm/yyyy) instead of the American one
+- display: Use European Time format (DD/MM/YYYY) instead of the American one
   name: useEuropeanTime
   defaultvalue: "false"
   type: 8
