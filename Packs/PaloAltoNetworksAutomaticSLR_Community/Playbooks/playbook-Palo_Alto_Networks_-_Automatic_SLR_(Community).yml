@@ -9,6 +9,7 @@ contentitemexportablefields:
 description: Initial default playbook to run the Palo Alto Networks Automatic SLR
   (Community) integration
 id: 68642c5d-dd02-4f23-8e5d-30232112dcca
+fromversion: "5.0.0"
 inputs: []
 name: Palo Alto Networks - Automatic SLR (Community)
 outputs: []
