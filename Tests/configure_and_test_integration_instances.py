@@ -1170,7 +1170,6 @@ def instance_testing(build: Build, all_module_instances, pre_update):
     else:
         logging.info(f'No integrations to configure for the chosen tests. ({update_status}-update)')
 
-    #testing_client = build.servers[0].client
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
