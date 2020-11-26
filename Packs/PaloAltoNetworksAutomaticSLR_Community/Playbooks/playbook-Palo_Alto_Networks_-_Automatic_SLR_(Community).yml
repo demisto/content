@@ -1,11 +1,3 @@
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 9875daaa-a39e-463b-8152-6b166272f789
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: Initial default playbook to run the Palo Alto Networks Automatic SLR
   (Community) integration
 id: 68642c5d-dd02-4f23-8e5d-30232112dcca
@@ -27,6 +19,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "None"
       id: 411be4a6-a93e-450b-82ec-d32c1df584e8
       iscommand: false
       name: ""
@@ -256,6 +249,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Palo Alto Networks Automatic SLR (Community)
+      description: "Retrieve information about the firewall"
       id: b43fc033-3c7b-4bc3-8b6e-fa64ceac1a43
       iscommand: true
       name: Get System Info
