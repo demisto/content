@@ -508,11 +508,11 @@ def list_apps_command(client, args):
 
 
 def get_configuration(context):
-    iam_configuration = context.get('IAMConfiguration', {})
+    iam_configuration = context.get('IAMConfiguration', [])
     return CommandResults(
         outputs=iam_configuration,
         outputs_prefix='Okta.IAMConfiguration',
-        outputs_key_field='ApplicationID',
+        outputs_key_field='applicationid',
         readable_output=tableToMarkdown('Okta IAM Configuration', iam_configuration)
     )
 
@@ -635,7 +635,7 @@ def main():
         elif command == 'okta-get-app-user-assignment':
             return_results(get_app_user_assignment_command(client, args))
 
-        elif command == 'okta-list-applications':
+        elif command == 'okta-iam-list-applications':
             return_results(list_apps_command(client, args))
 
         elif command == 'okta-iam-get-configuration':

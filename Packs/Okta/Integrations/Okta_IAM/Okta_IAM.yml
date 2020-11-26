@@ -358,7 +358,7 @@ script:
     deprecated: false
     description: Returns a list of Okta applications data.
     execution: false
-    name: okta-list-applications
+    name: okta-iam-list-applications
     outputs:
     - contextPath: Okta.Application.ID
       description: ID of the application.
@@ -385,10 +385,10 @@ script:
     execution: false
     name: okta-iam-get-configuration
     outputs:
-    - contextPath: Okta.IAMConfiguration.ApplicationID
+    - contextPath: Okta.IAMConfiguration.applicationid
       description: An Okta application ID.
       type: String
-    - contextPath: Okta.IAMConfiguration.Instance
+    - contextPath: Okta.IAMConfiguration.instance
       description: An XSOAR IAM integration instance name.
       type: String
   dockerimage: demisto/python3:3.8.6.13358

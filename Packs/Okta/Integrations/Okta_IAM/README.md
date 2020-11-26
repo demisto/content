@@ -293,7 +293,7 @@ Returns a list of Okta applications data.
 
 #### Base Command
 
-`okta-list-applications`
+`okta-iam-list-applications`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -313,7 +313,7 @@ Returns a list of Okta applications data.
 
 
 #### Command Example
-``` !okta-list-applications limit=5 query="Workday" ```
+``` !okta-iam-list-applications limit=5 query="Workday" ```
 
 #### Human Readable Output
 ### Okta Applications
@@ -322,5 +322,36 @@ Returns a list of Okta applications data.
 | 0ob8zlypk6GVPRr2T0h7 | workday | Workday - Preview |
 | 0oabz0ozy5dDpEKyA0h7 | workday | Workday - Prod |
 | 0oae3ioe51sQ64Aui2h7 | workday | Workday - Impl1 |
+
+
+### okta-iam-get-configuration
+***
+Gets the IAM configuration data from the integration context.
+
+
+#### Base Command
+
+`okta-iam-get-configuration`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Okta.IAMConfiguration.applicationid | String | An Okta application ID. | 
+| Okta.IAMConfiguration.instance | String | An XSOAR IAM integration instance name. | 
+
+
+#### Command Example
+```!okta-iam-get-configuration using="Okta IAM_instance_1_copy"```
+
+#### Human Readable Output
+### Okta IAM Configuration
+|applicationid|instance|
+|---|---|
+| 0oc8zlypk6GVPRr2G0h7 | ServiceNow IAM_Instance_1 |
+| 0oabz0ovy5eDpEKyA0h7 | Salesforce IAM_Instance_1 |
 
 
