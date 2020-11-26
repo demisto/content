@@ -90,7 +90,6 @@ CATEGORIES_ID = {
     "SSH": "22",
     "IoT_Targeted": "23"
 }
-
 session = requests.session()
 
 
