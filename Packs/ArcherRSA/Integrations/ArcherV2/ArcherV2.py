@@ -32,7 +32,16 @@ ACCOUNT_STATUS_DICT = {1: 'Active', 2: 'Inactive', 3: 'Locked'}
 
 
 def format_time(datetime_object: datetime, use_european_time: bool) -> str:
-    """7/22/2017 3:58 PM (American) or 22/7/2017 3:58 PM (European)"""
+    """Transform datetime to string, handles european time.
+
+    Arguments:
+        datetime_object: object to transform
+        use_european_time: Whatever the day position should be first or second
+
+    Returns:
+        A string formatted:
+        7/22/2017 3:58 PM (American) or 22/7/2017 3:58 PM (European)
+    """
     time_format = '%d/%m/%Y %I:%M %p' if use_european_time else '%m/%d/%Y %I:%M %p'
     return datetime_object.strftime(time_format)
 
@@ -53,17 +62,19 @@ def parse_date_to_datetime(date: str, day_first: bool = False) -> datetime:
     return date_obj
 
 
-def parser(date_str, *args, **kwargs) -> datetime:
+def parser(date_str, date_formats=None, languages=None, locales=None, region=None, settings=None) -> datetime:
     """Wrapper of dateparser.parse to support return type value
     """
-    date_obj = dateparser.parse(date_str, *args, **kwargs)
+    date_obj = dateparser.parse(
+        date_str, date_formats=date_formats, languages=languages, locales=locales, region=region, settings=settings
+    )
     assert isinstance(date_obj, datetime), f'Could not parse date {date_str}'  # MYPY Fix
     return date_obj
 
 
 def get_token_soap_request(user, password, instance):
     return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
+           '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
            'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
            '    <soap:Body>' + \
            '        <CreateUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
@@ -374,17 +385,21 @@ class Client(BaseClient):
             record['Id'] = content_obj.get('Id')
         return record, res, errors
 
-    def record_to_incident(self, record_item, app_id, date_field, day_first=False) -> dict:
+    def record_to_incident(
+            self, record_item, app_id, date_field, day_first: bool = False, offset: int = 0
+    ) -> Tuple[dict, datetime]:
         labels = []
         raw_record = record_item['raw']
         record_item = record_item['record']
-        demisto.debug(f'in record_to_incident, record_item={json.dumps(record_item)}, date_field={date_field}')
         incident_created_time = datetime(1, 1, 1)
         if record_item.get(date_field):
             incident_created_time = parse_date_to_datetime(
                 record_item[date_field], day_first=day_first
             ).replace(tzinfo=None)
+            # fix occurred by offset
+            incident_created_time = incident_created_time + timedelta(minutes=offset)
 
+        # Will convert value to strs
         for k, v in record_item.items():
             if isinstance(v, str):
                 labels.append({
@@ -409,7 +424,7 @@ class Client(BaseClient):
             'rawJSON': json.dumps(raw_record)
         }
         demisto.debug(f'Going out with a new incident. occurred={incident["occurred"]}')
-        return incident
+        return incident, incident_created_time
 
     def search_records(
             self, app_id, fields_to_display=None, field_to_search='', search_value='',
@@ -510,8 +525,8 @@ class Client(BaseClient):
 
                 cache['fieldValueList'][field_id] = field_data
                 demisto.setIntegrationContext(cache)
-
-        return field_data
+                return field_data
+        return {}
 
 
 def extract_from_xml(xml, path):
@@ -886,7 +901,7 @@ def upload_file_command(client: Client, args: Dict[str, str]):
     else:
         raise DemistoException('Upload file failed')
 
-    return_outputs(f'File uploaded succsessfully, attachment ID: {attachment_id}', {}, res)
+    return_outputs(f'File uploaded successfully, attachment ID: {attachment_id}', {}, res)
     return attachment_id
 
 
@@ -1051,7 +1066,7 @@ def print_cache_command(client: Client, args: Dict[str, str]):
 
 def fetch_incidents(
         client: Client, params: dict, from_time: str
-) -> Tuple[list, datetime]:
+) -> Tuple[list, str]:
     """Fetches incidents
 
     Args:
@@ -1066,7 +1081,7 @@ def fetch_incidents(
     app_id = params['applicationId']
     date_field = params['applicationDateField']
     max_results = params.get('fetch_limit', 10)
-    time_offset = int(params.get('time_zone', '0'))
+    offset = int(params.get('time_zone', '0'))
     fields_to_display = argToList(params.get('fields_to_fetch'))
     fields_to_display.append(date_field)
     day_first = argToBoolean(params.get('useEuropeanTime', False))
@@ -1080,24 +1095,19 @@ def fetch_incidents(
         date_operator='GreaterThan',
         max_results=max_results
     )
+
     # Build incidents
-    incidents = [client.record_to_incident(item, app_id, date_field) for item in records]
+    incidents = list()
+    next_fetch = from_time_utc_obj
+    for record in records:
+        incident, incident_created_time = client.record_to_incident(
+            record, app_id, date_field, day_first=day_first, offset=offset
+        )
+        if incident_created_time > next_fetch:
+            next_fetch = incident_created_time
+        incidents.append(incident)
 
-    # Sort by last time occurred
-    incidents.sort(
-        key=lambda incident: parser(incident['occurred'])
-    )
-
-    # Fixing occurred time
-    for i in range(len(incidents)):
-        occurred = parser(incidents[i]['occurred']).replace(tzinfo=None)
-        occurred = occurred + timedelta(minutes=time_offset)
-        incidents[i]['occurred'] = occurred.strftime(OCCURRED_FORMAT)
-
-    next_fetch = from_time
-    if incidents:
-        next_fetch = incidents[-1]['occurred']
-    return incidents, parser(next_fetch)
+    return incidents, next_fetch.strftime(OCCURRED_FORMAT)
 
 
 def get_fetch_time(last_fetch: dict, first_fetch_time: str, offset: int = 0) -> str:
@@ -1107,6 +1117,7 @@ def get_fetch_time(last_fetch: dict, first_fetch_time: str, offset: int = 0) -> 
     Args:
         last_fetch: a dict that may contain 'last_fetch'
         first_fetch_time: time back in simple format (3 days)
+        offset: time difference between CortexXSOAR machine and Archer, in minutes.
 
     Returns:
         Time to start fetch from
@@ -1167,17 +1178,15 @@ def main():
     try:
         if command == 'fetch-incidents':
             offset = int(params['time_zone'])
-            # 7/22/2017 3:58 PM (American) or 22/7/2017 3:58 PM (European)
             from_time = get_fetch_time(
                 demisto.getLastRun(), params.get('fetch_time', '3 days'), offset
             )
 
-            incidents, next_fetch_obj = fetch_incidents(
+            incidents, next_fetch = fetch_incidents(
                 client=client,
                 params=params,
                 from_time=from_time
             )
-            next_fetch = next_fetch_obj.strftime(OCCURRED_FORMAT)
             demisto.debug(f'Setting next run to {next_fetch}')
             demisto.setLastRun({'last_fetch': next_fetch})
             demisto.incidents(incidents)
