@@ -482,11 +482,11 @@ def main():
             'fetch-incidents': lambda: execute_fetch_incidents_command(client),
             'mobileiron-cloud-get-devices-data': lambda: execute_get_devices_data_command(client),
             'mobileiron-cloud-get-device-by-mac': lambda:
-            execute_get_device_by_field_command(client, field_name='wifiMacAddress', field_value=args.get("device_mac")),
+            execute_get_device_by_field_command(client, field_name='wifiMacAddress',
+                                                field_value=args.get("device_mac")),
             'mobileiron-cloud-get-device-by-serial': lambda:
-            execute_get_device_by_field_command(client, field_name='serialNumber', field_value=args.get("device_serial")),
-            'mobileiron-cloud-get-device-by-ip': lambda:
-            execute_get_device_by_field_command(client, field_name='ipAddress', field_value=args.get("device_ip")),
+            execute_get_device_by_field_command(client, field_name='serialNumber',
+                                                field_value=args.get("device_serial")),
             'mobileiron-cloud-get-device-by-id': lambda: execute_get_device_by_id_command(client),
             'mobileiron-cloud-unlock-device': lambda: execute_device_action_command(client, "unlock"),
             'mobileiron-cloud-retire-device': lambda: execute_device_action_command(client, "retire"),
