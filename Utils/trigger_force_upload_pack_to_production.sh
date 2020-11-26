@@ -8,7 +8,9 @@ fi
 _circle_token=$1
 _packs=$2
 _force_previous_commit=$3
+
 trigger_build_url="https://circleci.com/api/v2/project/github/demisto/content/pipeline"
+
 post_data=$(cat <<-EOF
 {
   "branch": "master",
@@ -20,6 +22,8 @@ post_data=$(cat <<-EOF
 }
 EOF
 )
+
+
 curl \
 --header "Accept: application/json" \
 --header "Content-Type: application/json" \
