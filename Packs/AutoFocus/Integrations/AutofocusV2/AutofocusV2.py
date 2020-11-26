@@ -1480,7 +1480,7 @@ def search_file_command(file):
     command_results = []
 
     for sha256 in file_list:
-        raw_res = search_indicator('sha256', sha256.lower())
+        raw_res = search_indicator('filehash', sha256.lower())
         if not raw_res.get('indicator'):
             raise ValueError('Invalid response for indicator')
 
