@@ -26,10 +26,11 @@ def prepare_arg_dict(ids_arg_name, ids, additional_arg_names, additional_arg_val
 def main(args):
     try:
         args = prepare_arg_dict(args.get('pollingCommandArgName'),
-                                args.get('ids'),
+                                args.get('ids').encode('utf-8'),
                                 args.get('additionalPollingCommandArgNames'),
                                 args.get('additionalPollingCommandArgValues'),
                                 )
+
         demisto.results(demisto.executeCommand(demisto.getArg('pollingCommand'), args))
     except Exception as exp:
         return_error('An error occurred: {}'.format(exp), error=exp)
@@ -37,3 +38,4 @@ def main(args):
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main(demisto.args())
+    # main({key: val.encode('utf-8') for key, val in demisto.args().items()})

@@ -27,7 +27,7 @@ script: >-
 
   args = demisto.args()
 
-  ids = parseIds(args['ids'])
+  ids = parseIds(args['ids'].encode('utf-8'))
 
   dt = args['dt']
 
