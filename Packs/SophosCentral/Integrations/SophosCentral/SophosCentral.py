@@ -25,7 +25,7 @@ class Client(BaseClient):
         self.client_id = client_id
         self.client_secret = client_secret
 
-    def list_alert(self, limit: Optional[int]) -> Union[dict, str, Response]:
+    def list_alert(self, limit: Optional[int]) -> Dict:
         """
         List all alerts connected to a tenant.
 
@@ -41,7 +41,7 @@ class Client(BaseClient):
                                       headers=self.headers, params=params)
         return response
 
-    def get_alert(self, alert_id: str) -> Union[dict, str, Response]:
+    def get_alert(self, alert_id: str) -> Dict:
         """
         Get a single alert based on ID.
 
@@ -57,7 +57,7 @@ class Client(BaseClient):
         return response
 
     def action_alert(self, alert_id: str, action: str,
-                     message: Optional[str]) -> Union[dict, str, Response]:
+                     message: Optional[str]) -> Dict:
         """
         Take action against one alert.
 
@@ -79,7 +79,7 @@ class Client(BaseClient):
                      product: Optional[List[str]], category: Optional[List[str]],
                      group_key: Optional[str], severity: Optional[List[str]],
                      ids: Optional[List[str]],
-                     limit: Optional[int]) -> Union[dict, str, Response]:
+                     limit: Optional[int]) -> Dict:
         """
         Search alerts based on parameters.
 
@@ -112,7 +112,7 @@ class Client(BaseClient):
                       last_seen_after: Optional[str],
                       ids: Optional[List[str]],
                       view: Optional[str],
-                      limit: Optional[int]) -> Union[dict, str, Response]:
+                      limit: Optional[int]) -> Dict:
         """
         List all endpoints for a tenant.
 
@@ -141,7 +141,7 @@ class Client(BaseClient):
                                       url_suffix=url_suffix)
         return response
 
-    def scan_endpoint(self, endpoint_id: str) -> Union[dict, str, Response]:
+    def scan_endpoint(self, endpoint_id: str) -> Dict:
         """
         Initiate a scan on an endpoint.
 
@@ -156,7 +156,7 @@ class Client(BaseClient):
                                       url_suffix=url_suffix)
         return response
 
-    def get_tamper(self, endpoint_id: str) -> Union[dict, str, Response]:
+    def get_tamper(self, endpoint_id: str) -> Dict:
         """
         Get tamper protection of an endpoint
 
@@ -171,7 +171,7 @@ class Client(BaseClient):
                                       url_suffix=url_suffix)
         return response
 
-    def update_tamper(self, endpoint_id: str, enabled: bool) -> Union[dict, str, Response]:
+    def update_tamper(self, endpoint_id: str, enabled: bool) -> Dict:
         """
         Get tamper protection of an endpoin
 
@@ -189,7 +189,7 @@ class Client(BaseClient):
         return response
 
     def list_allowed_item(self, page_size: Optional[int],
-                          page: Optional[int]) -> Union[dict, str, Response]:
+                          page: Optional[int]) -> Dict:
         """
         List all allowed items for a tenant.
 
@@ -206,7 +206,7 @@ class Client(BaseClient):
                                       url_suffix=url_suffix)
         return response
 
-    def get_allowed_item(self, allowed_item_id: str) -> Union[dict, str, Response]:
+    def get_allowed_item(self, allowed_item_id: str) -> Dict:
         """
         Get a single allowed item.
 
@@ -223,7 +223,7 @@ class Client(BaseClient):
 
     def add_allowed_item(self, item_type: str, comment: str, certificate_signer: Optional[str],
                          file_name: Optional[str], path: Optional[str], sha256: Optional[str],
-                         origin_endpoint_id: Optional[str]) -> Union[dict, str, Response]:
+                         origin_endpoint_id: Optional[str]) -> Dict:
         """
         Add a new allowed item.
 
@@ -249,7 +249,7 @@ class Client(BaseClient):
                                       url_suffix=url_suffix)
         return response
 
-    def update_allowed_item(self, allowed_item_id: str, comment: str) -> Union[dict, str, Response]:
+    def update_allowed_item(self, allowed_item_id: str, comment: str) -> Dict:
         """
         Update an existing allowed item.
 
@@ -266,7 +266,7 @@ class Client(BaseClient):
                                       url_suffix=url_suffix)
         return response
 
-    def delete_allowed_item(self, allowed_item_id: str) -> Union[dict, str, Response]:
+    def delete_allowed_item(self, allowed_item_id: str) -> Dict:
         """
         Delete an existing allowed item.
 
@@ -282,7 +282,7 @@ class Client(BaseClient):
         return response
 
     def list_blocked_item(self, page_size: Optional[int],
-                          page: Optional[int]) -> Union[dict, str, Response]:
+                          page: Optional[int]) -> Dict:
         """
         List all blocked items for a tenant.
 
@@ -299,7 +299,7 @@ class Client(BaseClient):
                                       url_suffix=url_suffix)
         return response
 
-    def get_blocked_item(self, allowed_item_id: str) -> Union[dict, str, Response]:
+    def get_blocked_item(self, allowed_item_id: str) -> Dict:
         """
         Get a single blocked item.
 
@@ -316,7 +316,7 @@ class Client(BaseClient):
 
     def add_blocked_item(self, item_type: str, comment: str, certificate_signer: Optional[str],
                          file_name: Optional[str], path: Optional[str], sha256: Optional[str],
-                         origin_endpoint_id: Optional[str]) -> Union[dict, str, Response]:
+                         origin_endpoint_id: Optional[str]) -> Dict:
         """
         Add a new blocked item.
 
@@ -342,7 +342,7 @@ class Client(BaseClient):
                                       url_suffix=url_suffix)
         return response
 
-    def delete_blocked_item(self, allowed_item_id: str) -> Union[dict, str, Response]:
+    def delete_blocked_item(self, allowed_item_id: str) -> Dict:
         """
         Delete an existing blocked item.
 
@@ -359,7 +359,7 @@ class Client(BaseClient):
 
     def list_scan_exclusion(self, exclusion_type: Optional[str],
                             page_size: Optional[int],
-                            page: Optional[int]) -> Union[dict, str, Response]:
+                            page: Optional[int]) -> Dict:
         """
         List all scan exclusions.
 
@@ -378,7 +378,7 @@ class Client(BaseClient):
                                       url_suffix=url_suffix)
         return response
 
-    def get_scan_exclusion(self, exclusion_id: str) -> Union[dict, str, Response]:
+    def get_scan_exclusion(self, exclusion_id: str) -> Dict:
         """
         Get a single scan exclusion.
 
@@ -394,7 +394,7 @@ class Client(BaseClient):
         return response
 
     def add_scan_exclusion(self, comment: Optional[str], scan_mode: Optional[str],
-                           exclusion_type: str, value: str) -> Union[dict, str, Response]:
+                           exclusion_type: str, value: str) -> Dict:
         """
         Add a new scan exclusion.
 
@@ -416,7 +416,7 @@ class Client(BaseClient):
 
     def update_scan_exclusion(self, comment: Optional[str], scan_mode: Optional[str],
                               exclusion_id: str,
-                              value: Optional[str]) -> Union[dict, str, Response]:
+                              value: Optional[str]) -> Dict:
         """
         Update an existing scan exclusion.
 
@@ -436,7 +436,7 @@ class Client(BaseClient):
                                       url_suffix=url_suffix)
         return response
 
-    def delete_scan_exclusion(self, exclusion_id: str) -> Union[dict, str, Response]:
+    def delete_scan_exclusion(self, exclusion_id: str) -> Dict:
         """
         Delete an existing scan exclusion.
 
@@ -453,7 +453,7 @@ class Client(BaseClient):
 
     def list_exploit_mitigation(self, mitigation_type: Optional[str], page_size: Optional[int],
                                 page: Optional[int],
-                                modified: Optional[bool]) -> Union[dict, str, Response]:
+                                modified: Optional[bool]) -> Dict:
         """
         List all exploit mitigations.
 
@@ -474,7 +474,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_exploit_mitigation(self, mitigation_id: str) -> Union[dict, str, Response]:
+    def get_exploit_mitigation(self, mitigation_id: str) -> Dict:
         """
         Get a single exploit mitigation.
 
@@ -489,7 +489,7 @@ class Client(BaseClient):
                                       url_suffix=url_suffix)
         return response
 
-    def add_exploit_mitigation(self, path: str) -> Union[dict, str, Response]:
+    def add_exploit_mitigation(self, path: str) -> Dict:
         """
         Add a new exploit mitigation.
 
@@ -506,7 +506,7 @@ class Client(BaseClient):
         return response
 
     def update_exploit_mitigation(self, mitigation_id: str,
-                                  path: Optional[str]) -> Union[dict, str, Response]:
+                                  path: Optional[str]) -> Dict:
         """
         Update an existing exploit mitigation.
 
@@ -523,7 +523,7 @@ class Client(BaseClient):
                                       url_suffix=url_suffix)
         return response
 
-    def delete_exploit_mitigation(self, mitigation_id: str) -> Union[dict, str, Response]:
+    def delete_exploit_mitigation(self, mitigation_id: str) -> Dict:
         """
         Update an existing exploit mitigation.
 
@@ -539,7 +539,7 @@ class Client(BaseClient):
         return response
 
     def list_detected_exploit(self, page_size: Optional[int], page: Optional[int],
-                              thumbprint_not_in: Optional[str]) -> Union[dict, str, Response]:
+                              thumbprint_not_in: Optional[str]) -> Dict:
         """
         List all detected exploits.
 
@@ -557,7 +557,7 @@ class Client(BaseClient):
                                       url_suffix=url_suffix)
         return response
 
-    def get_detected_exploit(self, detected_exploit_id: str) -> Union[dict, str, Response]:
+    def get_detected_exploit(self, detected_exploit_id: str) -> Dict:
         """
         Get a single detected exploit.
 
@@ -614,18 +614,18 @@ def get_client_data(bearer_token: str):
     response = get(headers=headers,
                    url='https://api.central.sophos.com/whoami/v1')
     try:
-        response = response.json()
+        response_data = response.json()
     except (json.JSONDecodeError, DemistoException) as exception:
         raise DemistoException('Failed getting a whoami response JSON: ', exception) from exception
-    headers.update({'X-Tenant-ID': response.get('id')})
-    api_hosts = response.get('apiHosts')
+    headers.update({'X-Tenant-ID': response_data.get('id')})
+    api_hosts = response_data.get('apiHosts')
     if not api_hosts:
         raise DemistoException('Error finding data region. ' + str(response))
     base_url = api_hosts.get('dataRegion') + '/'
     return headers, base_url
 
 
-def create_alert_output(item: Dict, table_headers: List[str]) -> Dict[str, str]:
+def create_alert_output(item: Dict, table_headers: List[str]) -> Dict[str, Optional[Any]]:
     """
     Create the complete output dictionary for an alert.
 
@@ -652,7 +652,7 @@ def create_alert_output(item: Dict, table_headers: List[str]) -> Dict[str, str]:
     return object_data
 
 
-def sophos_central_alert_list_command(client: Client, args: dict) -> CommandResults:
+def sophos_central_alert_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     List all alerts.
 
@@ -1087,10 +1087,10 @@ def sophos_central_allowed_item_delete_command(client: Client, args: dict) -> Co
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     result = client.delete_allowed_item(args.get('allowed_item_id'))
-    readable_output = 'Success deleting allowed item: ' + args.get('allowed_item_id')
+    readable_output = f'Success deleting allowed item: {args.get("allowed_item_id")}'
     outputs = {'deletedItemId': args.get('allowed_item_id')}
     if not result or not result.get('deleted'):
-        readable_output = 'Failed deleting allowed item: ' + args.get('allowed_item_id')
+        readable_output = f'Failed deleting allowed item: {args.get("allowed_item_id")}'
         outputs = {}
     return CommandResults(raw_response=result, readable_output=readable_output, outputs=outputs,
                           outputs_prefix='SophosCentral.DeletedAllowedItem')
@@ -1571,12 +1571,12 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     return {'last_fetch': next_run_timestamp}, incidents
 
 
-def test_module(client):
+def test_module(client: Client) -> str:
     """
     Test the validity of the connection and the
 
     Args:
-        client: Sophos Central client
+        client (Client): Sophos Central client
 
     Returns:
         'ok' if test passed, anything else will fail the test.
@@ -1585,7 +1585,7 @@ def test_module(client):
         result = client.list_alert(1)
         if result and result.get('pages'):
             return 'ok'
-        return result
+        return str(result)
     except DemistoException as exception:
         if 'Name does not resolve' in str(exception):
             return 'Wrong API server region found.'
@@ -1751,11 +1751,12 @@ def main():
 
     except Exception as e:
         if "Error parsing the query params or request body" in str(e):
-            return_error(f'Failed to execute {demisto.command()} command due to an error parsing '
-                         'the arguments. Make sure the arguments are correctly formatted.')
-        if 'Unauthorized' in str(e):
-            return_error('Wrong credentials (ID and / or secret) given.')
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+            error_string = 'Make sure the arguments are correctly formatted.'
+        elif 'Unauthorized' in str(e):
+            error_string = 'Wrong credentials (ID and / or secret) given.'
+        else:
+            error_string = str(e)
+        return_error(f'Failed to execute {demisto.command()} command. Error: {error_string}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
