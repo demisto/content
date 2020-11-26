@@ -8,7 +8,7 @@ VMware vCenter server is a centralized management application that lets you mana
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | url | Server URL \(i.e. 192.168.0.1:30022\) | True |
+    | url | Server URL \(i.e., 192.168.0.1:30022\) | True |
     | credentials | Credentials | True |
     | insecure | Trust any certificate (not secure) Select in case you wish to circumvent server certification validation. You may want to do this in case the server you are connecting to does not have a valid certificate. | False |
     | proxy | Use system proxy settings | False |
@@ -36,15 +36,15 @@ Returns all virtual machines on a system.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMWare.Name | String | VM name | 
-| VMWare.Template | bool | true if template, else false | 
-| VMWare.Path | String | Path to VM | 
-| VMWare.Guest | String | Guest full name | 
-| VMWare.UUID | String | VM instance UUID | 
-| VMWare.IP | String | VM IP address | 
-| VMWare.State | String | VM State \(i.e. poweredOn, poweredOff, suspended, HardRebooted\) | 
-| VMWare.HostName | String | Host name of VM | 
-| VMWare.MACAddress | String | MAC Address of VM | 
+| VMWare.Name | String | VM name. | 
+| VMWare.Template | bool | true if template, else false. | 
+| VMWare.Path | String | Path to VM. | 
+| VMWare.Guest | String | Guest full name. | 
+| VMWare.UUID | String | VM instance UUID. | 
+| VMWare.IP | String | VM IP address. | 
+| VMWare.State | String | VM state \(i.e., poweredOn, poweredOff, suspended, HardRebooted\). | 
+| VMWare.HostName | String | Host name of VM. | 
+| VMWare.MACAddress | String | MAC address of VM .| 
 
 
 #### Command Example
@@ -89,8 +89,8 @@ Powers on a powered-off or suspended virtual machine.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMWare.UUID | String | VM instance UUID | 
-| VMWare.State | String | VM State \(i.e. poweredOn, poweredOff, suspended, HardRebooted\) | 
+| VMWare.UUID | String | VM instance UUID. | 
+| VMWare.State | String | VM state \(i.e., poweredOn, poweredOff, suspended, HardRebooted\). | 
 
 
 #### Command Example
@@ -128,8 +128,8 @@ Powers off a powered-on or suspended virtual machine.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMWare.UUID | String | VM instance UUID | 
-| VMWare.State | String | VM State \(i.e. poweredOn, poweredOff, suspended, HardRebooted\) | 
+| VMWare.UUID | String | VM instance UUID. | 
+| VMWare.State | String | VM state \(i.e., poweredOn, poweredOff, suspended, HardRebooted\). | 
 
 
 #### Command Example
@@ -168,8 +168,8 @@ Reboots a powered-on virtual machine.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMWare.UUID | String | VM instance UUID | 
-| VMWare.State | String | VM State \(i.e. poweredOn, poweredOff, suspended, HardRebooted\) | 
+| VMWare.UUID | String | VM instance UUID. | 
+| VMWare.State | String | VM state \(i.e., poweredOn, poweredOff, suspended, HardRebooted\). | 
 
 
 #### Command Example
@@ -208,8 +208,8 @@ Suspends a powered-on virtual machine.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMWare.UUID | String | VM instance UUID | 
-| VMWare.State | String | VM State \(i.e. poweredOn, poweredOff, suspended, HardRebooted\) | 
+| VMWare.UUID | String | VM instance UUID. | 
+| VMWare.State | String | VM state \(i.e., poweredOn, poweredOff, suspended, HardRebooted\), | 
 
 
 #### Command Example
@@ -257,7 +257,7 @@ There is no context output for this command.
 
 ### vmware-create-snapshot
 ***
-Creates VM snapshot
+Creates a VM snapshot.
 
 
 #### Base Command
@@ -268,10 +268,10 @@ Creates VM snapshot
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | vm-uuid | VM UUID of virtual machine to take snapshot of. | Required | 
-| name | Snapshot name | Optional | 
-| description | Snapshot description | Optional | 
-| memory | Snapshot the virtual machine's memory | Optional | 
-| quiesce | Quiesce guest file system (needs VMWare Tools installed). | Optional | 
+| name | Snapshot name. | Optional | 
+| description | Snapshot description. | Optional | 
+| memory | Snapshot the virtual machine's memory. Default is "True". | Optional | 
+| quiesce | Quiesce guest file system (needs VMWare Tools installed). Default is "False". | Optional | 
 
 
 #### Context Output
@@ -287,7 +287,7 @@ There is no context output for this command.
 
 ### vmware-revert-snapshot
 ***
-Reverts VM to snapshot
+Reverts VM to snapshot.
 
 
 #### Base Command
@@ -297,7 +297,7 @@ Reverts VM to snapshot
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| snapshot-name | Snapshot name to revert to | Required | 
+| snapshot-name | Snapshot name to revert to. | Required | 
 | vm-uuid | VM UUID of virtual machine to revert snapshot. | Required | 
 
 
@@ -305,7 +305,7 @@ Reverts VM to snapshot
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMWare.UUID | String | VM instance UUID | 
+| VMWare.UUID | String | VM instance UUID. | 
 | VMWare.Snapshot | String | Name of the snapshot reverted to. | 
 
 
@@ -338,7 +338,7 @@ Gets events of VM
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | vm-uuid | VM UUID of virtual machine to get events of. | Required | 
-| event-type | Type of events to get, given in CSV (i.e.  VmGuestRebootEvent,VmGuestShutdownEvent). | Optional | 
+| event-type | Type of events to get, given in CSV (i.e.,  VmGuestRebootEvent,VmGuestShutdownEvent). | Optional | 
 
 
 #### Context Output
@@ -348,7 +348,7 @@ There is no context output for this command.
 
 ### vmware-change-nic-state
 ***
-Changes the state of a VM NIC
+Changes the state of a VM NIC.
 
 
 #### Base Command
@@ -358,17 +358,17 @@ Changes the state of a VM NIC
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vm-uuid | VM UUID of virtual machine to change NIC state | Required | 
-| nic-state | New state of the NIC to be changed | Required | 
-| nic-number | Number of the NIC to be changed | Required | 
+| vm-uuid | VM UUID of virtual machine to change NIC state. | Required | 
+| nic-state | New state of the NIC to be changed. | Required | 
+| nic-number | Number of the NIC to be changed. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMWare.UUID | String | VM instance UUID | 
-| VMWare.NICState | String | VM NIC State \(i.e. connected, disconnected, delete\) | 
+| VMWare.UUID | String | VM instance UUID. | 
+| VMWare.NICState | String | VM NIC state \(i.e., connected, disconnected, delete\). | 
 
 
 #### Command Example
