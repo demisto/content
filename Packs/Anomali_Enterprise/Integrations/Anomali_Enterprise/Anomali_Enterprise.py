@@ -12,7 +12,6 @@ VENDOR_NAME = 'Anomali Enterprise'
 
 
 class Client(BaseClient):
-
     """
     Client to use in the Anomali Enterprise integration. Overrides BaseClient
     """
