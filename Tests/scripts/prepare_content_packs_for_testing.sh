@@ -26,15 +26,15 @@ echo "Auth loaded successfully."
 GCS_BUILD_BUCKET="marketplace-ci-build"
 BUILD_BUCKET_PATH="content/builds/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM"
 TARGET_PATH="$BUILD_BUCKET_PATH/content/packs"
-PACKS_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$TARGET_PATH"
+CONTENT_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH/content"
 BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
 
 # ====== PRODUCTION CONFIGURATION ======
 GCS_MARKET_BUCKET="marketplace-dist"
-SOURCE_PATH="content/packs"
+SOURCE_PATH="content"
 
-echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target path: gs://$PACKS_FULL_TARGET_PATH ..."
-gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$PACKS_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
+echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target path: gs://$CONTENT_FULL_TARGET_PATH ..."
+gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$CONTENT_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
 echo "Finished copying successfully."
 
 if [ ! -n "${NIGHTLY}" ] && [ ! -n "${BUCKET_UPLOAD}" ]; then

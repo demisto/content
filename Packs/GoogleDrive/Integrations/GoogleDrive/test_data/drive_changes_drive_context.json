@@ -1,0 +1,287 @@
+{
+  "GoogleDrive.DriveChange(val.time == obj.time && val.fileId == obj.fileId && val.driveId == obj.driveId && val.userId == obj.userId)": [
+    {
+      "kind": "drive#change",
+      "type": "string",
+        "teamDriveId": "string",
+        "teamDrive": {
+          "kind": "drive#drive",
+          "id": "string",
+          "name": "string",
+          "themeId": "string",
+          "colorRgb": "string"
+        },
+      "changeType": "string",
+      "time": "2020-08-19T05:46:47.418Z",
+      "removed": true,
+      "fileId": "string",
+      "file": {
+        "teamDriveId": "string",
+        "viewersCanCopyContent": true,
+        "kind": "drive#file",
+        "id": "string",
+        "name": "string",
+        "mimeType": "string",
+        "description": "string",
+        "starred": true,
+        "trashed": true,
+        "explicitlyTrashed": true,
+        "trashingUser": {
+          "kind": "drive#user",
+          "displayName": "string",
+          "photoLink": "string",
+          "me": true,
+          "permissionId": "string",
+          "emailAddress": "string"
+        },
+        "trashedTime": "2020-08-19T05:46:47.418Z",
+        "parents": [
+          "string"
+        ],
+        "properties": {
+          "key": "string"
+        },
+        "appProperties": {
+          "key": "string"
+        },
+        "spaces": [
+          "string"
+        ],
+        "version": 123456,
+        "webContentLink": "string",
+        "webViewLink": "string",
+        "iconLink": "string",
+        "hasThumbnail": true,
+        "thumbnailLink": "string",
+        "thumbnailVersion": 123456,
+        "viewedByMe": true,
+        "viewedByMeTime": "2020-08-19T05:46:47.418Z",
+        "createdTime": "2020-08-19T05:46:47.418Z",
+        "modifiedTime": "2020-08-19T05:46:47.418Z",
+        "modifiedByMeTime": "2020-08-19T05:46:47.418Z",
+        "modifiedByMe": true,
+        "sharedWithMeTime": "2020-08-19T05:46:47.418Z",
+        "sharingUser": {
+          "kind": "drive#user",
+          "displayName": "string",
+          "photoLink": "string",
+          "me": true,
+          "permissionId": "string",
+          "emailAddress": "string"
+        },
+        "owners": [
+          {
+            "kind": "drive#user",
+            "displayName": "string",
+            "photoLink": "string",
+            "me": true,
+            "permissionId": "string",
+            "emailAddress": "string"
+          }
+        ],
+        "driveId": "string",
+        "lastModifyingUser": {
+          "kind": "drive#user",
+          "displayName": "string",
+          "photoLink": "string",
+          "me": true,
+          "permissionId": "string",
+          "emailAddress": "string"
+        },
+        "shared": true,
+        "ownedByMe": true,
+        "capabilities": {
+          "canMoveTeamDriveItem": true,
+          "canMoveItemIntoTeamDrive": true,
+          "canReadTeamDrive": true,
+          "canChangeViewersCanCopyContent": true,
+          "canMoveChildrenOutOfTeamDrive": true,
+          "canMoveChildrenWithinTeamDrive": true,
+          "canMoveItemOutOfTeamDrive": true,
+          "canMoveItemWithinTeamDrive": true,
+          "canAddChildren": true,
+          "canAddFolderFromAnotherDrive": true,
+          "canAddMyDriveParent": true,
+          "canChangeCopyRequiresWriterPermission": true,
+          "canComment": true,
+          "canCopy": true,
+          "canDelete": true,
+          "canDeleteChildren": true,
+          "canDownload": true,
+          "canEdit": true,
+          "canListChildren": true,
+          "canModifyContent": true,
+          "canModifyContentRestriction": true,
+          "canMoveChildrenOutOfDrive": true,
+          "canMoveChildrenWithinDrive": true,
+          "canMoveItemOutOfDrive": true,
+          "canMoveItemWithinDrive": true,
+          "canReadRevisions": true,
+          "canReadDrive": true,
+          "canRemoveChildren": true,
+          "canRemoveMyDriveParent": true,
+          "canRename": true,
+          "canShare": true,
+          "canTrash": true,
+          "canTrashChildren": true,
+          "canUntrash": true
+        },
+        "copyRequiresWriterPermission": true,
+        "writersCanShare": true,
+        "permissions": [
+          {
+            "kind": "drive#permission",
+            "id": "string",
+            "type": "string",
+            "emailAddress": "string",
+            "domain": "string",
+            "role": "string",
+            "view": "string",
+            "allowFileDiscovery": true,
+            "displayName": "string",
+            "photoLink": "string",
+            "expirationTime": "2020-08-19T05:46:47.418Z",
+            "teamDrivePermissionDetails": [
+              {
+                "inherited": false,
+                "role": "string"
+              }
+            ],
+            "permissionDetails": [
+              {
+                "permissionType": "string",
+                "role": "string",
+                "inheritedFrom": "string",
+                "inherited": true
+              }
+            ],
+            "deleted": true
+          }
+        ],
+        "permissionIds": [
+          "string"
+        ],
+        "hasAugmentedPermissions": true,
+        "folderColorRgb": "string",
+        "originalFilename": "string",
+        "fullFileExtension": "string",
+        "fileExtension": "string",
+        "md5Checksum": "string",
+        "size": 123456,
+        "quotaBytesUsed": 123456,
+        "headRevisionId": "string",
+        "contentHints": {
+          "thumbnail": {
+            "image": "bytes",
+            "mimeType": "string"
+          },
+          "indexableText": "string"
+        },
+        "imageMediaMetadata": {
+          "width": 50,
+          "height": 50,
+          "rotation": 50,
+          "location": {
+            "latitude": 1234.4321,
+            "longitude": 1234.4321,
+            "altitude": 1234.4321
+          },
+          "time": "string",
+          "cameraMake": "string",
+          "cameraModel": "string",
+          "exposureTime": 10.22,
+          "aperture": 10.22,
+          "flashUsed": true,
+          "focalLength": 10.22,
+          "isoSpeed": 50,
+          "meteringMode": "string",
+          "sensor": "string",
+          "exposureMode": "string",
+          "colorSpace": "string",
+          "whiteBalance": "string",
+          "exposureBias": 10.22,
+          "maxApertureValue": 10.22,
+          "subjectDistance": 50,
+          "lens": "string"
+        },
+        "videoMediaMetadata": {
+          "width": 50,
+          "height": 50,
+          "durationMillis": 123456
+        },
+        "isAppAuthorized": true,
+        "exportLinks": {
+          "key": "string"
+        },
+        "shortcutDetails": {
+          "targetId": "string",
+          "targetMimeType": "string"
+        },
+        "contentRestrictions": [
+          {
+            "readOnly": false,
+            "reason": "string",
+            "restrictingUser": {
+              "kind": "drive#user",
+              "displayName": "string",
+              "photoLink": "string",
+              "me": false,
+              "permissionId": "string",
+              "emailAddress": "string"
+            },
+            "restrictionTime": "2020-08-19T05:46:47.418Z",
+            "type": "string"
+          }
+        ]
+      },
+      "driveId": "string",
+      "drive": {
+        "kind": "drive#drive",
+        "id": "string",
+        "name": "string",
+        "themeId": "string",
+        "colorRgb": "string",
+        "backgroundImageFile": {
+          "id": "string",
+          "xCoordinate": 10.22,
+          "yCoordinate": 10.22,
+          "width": 10.22
+        },
+        "backgroundImageLink": "string",
+        "capabilities": {
+          "canAddChildren": true,
+          "canChangeCopyRequiresWriterPermissionRestriction": true,
+          "canChangeDomainUsersOnlyRestriction": true,
+          "canChangeDriveBackground": true,
+          "canChangeDriveMembersOnlyRestriction": true,
+          "canComment": true,
+          "canCopy": true,
+          "canDeleteChildren": true,
+          "canDeleteDrive": true,
+          "canDownload": true,
+          "canEdit": true,
+          "canListChildren": true,
+          "canManageMembers": true,
+          "canReadRevisions": true,
+          "canRename": true,
+          "canRenameDrive": true,
+          "canShare": true,
+          "canTrashChildren": true
+        },
+        "createdTime": "2020-08-19T05:46:47.418Z",
+        "hidden": true,
+        "restrictions": {
+          "adminManagedRestrictions": true,
+          "copyRequiresWriterPermission": true,
+          "domainUsersOnly": true,
+          "driveMembersOnly": true
+        }
+      }
+    }
+  ],
+  "GoogleDrive.PageToken.DriveChange(val.driveId == obj.driveId && val.userId == obj.userId)": {
+    "userId": "user@test.com",
+    "nextPageToken": "string",
+    "newStartPageToken": "string"
+  }
+}
