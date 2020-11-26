@@ -1,7 +1,6 @@
 commonfields:
   id: Palo Alto Networks Automatic SLR (Community)
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Palo Alto Networks Automatic SLR (Community)
 display: Palo Alto Networks Automatic SLR (Community)
 category: Utilities
@@ -864,3 +863,4 @@ script:
   dockerimage: demisto/python3:3.8.3.9324
   runonce: false
   subtype: python3
+fromversion: 5.0.0
