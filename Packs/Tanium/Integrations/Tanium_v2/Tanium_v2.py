@@ -74,7 +74,7 @@ class Client(BaseClient):
 
         return parameter_conditions
 
-    def parse_action_parameters(self, parameters: str) -> Optional[List[dict]]:
+    def parse_action_parameters(self, parameters: str):
         """
         get a string which contains keys and values separated by '=' and ';' And returns them as a list of dictionaries
         Args:
