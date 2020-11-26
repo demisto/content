@@ -1219,6 +1219,7 @@ def process_search_command(client: Client, args: Dict) -> CommandResults:
         limit = 20
     try:
         limit = int(limit)
+
     except ValueError:
         raise ValueError("Please provide a number as limit.")
 
