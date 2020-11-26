@@ -1,7 +1,6 @@
 {
 	"description": "Event layout for Sophos Central",
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -328,8 +327,5 @@
 	"group": "incident",
 	"id": "Sophos Central Event Layout",
 	"name": "Sophos Central Event Layout",
-	"propagationLabels": [
-		"all"
-	],
 	"version": -1
 }

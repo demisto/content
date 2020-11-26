@@ -1,5 +1,6 @@
 id: playbook-SophosCentral_Test
 version: 34
+fromversion: 5.0.0
 vcShouldKeepItemLegacyProdMachine: false
 name: playbook-SophosCentral_Test
 starttaskid: "0"

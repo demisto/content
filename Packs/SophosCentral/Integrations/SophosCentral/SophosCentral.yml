@@ -67,11 +67,13 @@ configuration:
   display: Fetch Limit
   name: max_fetch
   required: false
+  type: 0
 - additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days.
   defaultvalue: 7 days
   display: First Fetch Time
   name: fetch_time
   required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -442,8 +444,8 @@ script:
       isArray: false
       name: tamper_protection_enabled
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -597,8 +599,8 @@ script:
       isArray: false
       name: get_password
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -629,8 +631,8 @@ script:
       isArray: false
       name: enabled
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
       required: true
       secret: false
     - auto: PREDEFINED
@@ -640,8 +642,8 @@ script:
       isArray: false
       name: get_password
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -1431,8 +1433,8 @@ script:
       isArray: false
       name: modified
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
