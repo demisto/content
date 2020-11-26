@@ -1,3 +1,5 @@
+from typing import Dict
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -74,7 +76,7 @@ class Client(BaseClient):
 
         return parameter_conditions
 
-    def parse_action_parameters(self, parameters: str):
+    def parse_action_parameters(self, parameters: str) -> List[Any]:
         """
         get a string which contains keys and values separated by '=' and ';' And returns them as a list of dictionaries
         Args:
@@ -84,7 +86,7 @@ class Client(BaseClient):
             parameter_conditions(List): list of dictionaries
         """
         parameters = parameters.split(';')
-        parameter_conditions = []
+        parameter_conditions: List[Dict[str, str]] = list()
         add_to_the_previous_pram = ''
         # Goes over the parameters from the end and any param that does not contain a key and value is added to the previous param
         for param in reversed(parameters):
