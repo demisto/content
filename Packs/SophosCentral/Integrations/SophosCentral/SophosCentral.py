@@ -1,9 +1,8 @@
 from datetime import datetime, timedelta
 import time
-from typing import Dict, List, Optional, Union, cast, Tuple
+from typing import Dict, List, Optional, Union, Tuple
 import dateparser
 from requests import Response, post, get
-from math import ceil
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
