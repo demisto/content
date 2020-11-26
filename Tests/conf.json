@@ -3282,7 +3282,6 @@
         "CanaryTools Test": "Issue 30796",
         "Generic Webhook - Test": "Issue 30797",
         "VxStream Test": "Issue 29280",
-        "palo_alto_firewall_test_pb": "Issue 27501"
     },
     "skipped_integrations": {
 
