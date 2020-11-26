@@ -241,7 +241,8 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
 
 def upload_index_to_storage(index_folder_path: str, extract_destination_path: str, index_blob: Any,
                             build_number: str, private_packs: list, current_commit_hash: str,
-                            index_generation: int, is_private: bool = False, force_upload: bool = False):
+                            index_generation: int, is_private: bool = False, force_upload: bool = False,
+                            previous_commit_hash: str = None):
     """
     Upload updated index zip to cloud storage.
 
@@ -254,20 +255,19 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     :param index_generation: downloaded index generation.
     :param is_private: Indicates if upload is private.
     :param force_upload: Indicates if force upload or not.
+    :param previous_commit_hash: The previous commit hash to diff with.
     :returns None.
 
     """
-    index_json_file_path = os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")
-
     if force_upload:
-        # If we force upload we don't want to update the commit in the index.json file, this is to be able to identify
-        # all changed packs in the next upload
-        commit = load_json(index_json_file_path).get('commit')
+        # If we force upload we don't want to update the commit in the index.json file,
+        # this is to be able to identify all changed packs in the next upload
+        commit = previous_commit_hash
     else:
         # Otherwise, update the index with the current commit hash (the commit of the upload)
         commit = current_commit_hash
 
-    with open(index_json_file_path, "w+") as index_file:
+    with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json"), "w+") as index_file:
         index = {
             'revision': build_number,
             'modified': datetime.utcnow().strftime(Metadata.DATE_FORMAT),
@@ -1080,7 +1080,7 @@ def main():
     upload_index_to_storage(index_folder_path=index_folder_path, extract_destination_path=extract_destination_path,
                             index_blob=index_blob, build_number=build_number, private_packs=private_packs,
                             current_commit_hash=current_commit_hash, index_generation=index_generation,
-                            force_upload=force_upload)
+                            force_upload=force_upload, previous_commit_hash=previous_commit_hash)
 
     # upload id_set.json to bucket
     upload_id_set(storage_bucket, id_set_path)
