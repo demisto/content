@@ -1,4 +1,3 @@
-import requests
 from requests import Session
 from requests.models import Response
 import demistomock as demisto
@@ -22,12 +21,23 @@ create_inp_schme = {'familyName': 'J13', 'givenName': 'MJ', 'userName': 'TestID@
 
 demisto.callingContext = {'context': {'IntegrationInstance': 'Test', 'IntegrationBrand': 'Test'}}
 
-GITHUB_USER_OUTPUT = {'emails': [{'value': 'TestID@networks.com', 'type': 'work', 'primary': True}],
-                      'roles': [], 'userName': 'TestID@networks.com', 'name': {'givenName': 'MJ', 'familyName': 'J13'},
-                      'schemas': ['urn:ietf:params:scim:schemas:core:2.0:User'], 'id': '12345', 'active': True,
-                      'meta': {'resourceType': 'User', 'created': '2020-11-23T09:26:31.000-08:00',
-                               'lastModified': '2020-11-23T09:26:31.000-08:00',
-                               'location': 'https://api.github.com/scim/v2/abc'}}
+GITHUB_CREATE_USER_OUTPUT = {'emails': [{'value': 'TestID@networks.com', 'type': 'work', 'primary': True}],
+                             'roles': [], 'userName': 'TestID@networks.com',
+                             'name': {'givenName': 'MJ', 'familyName': 'J13'},
+                             'schemas': ['urn:ietf:params:scim:schemas:core:2.0:User'], 'id': '12345',
+                             'active': True,
+                             'meta': {'resourceType': 'User', 'created': '2020-11-23T09:26:31.000-08:00',
+                                      'lastModified': '2020-11-23T09:26:31.000-08:00',
+                                      'location': 'https://api.github.com/scim/v2/abc'}}
+
+GITHUB_UPDATE_USER_OUTPUT = {'schemas': ['urn:ietf:paramsListResponse'], 'totalResults': 1,
+                             'itemsPerPage': 1, 'startIndex': 1, 'Resources': [
+        {'emails': [{'value': 'TestID@networks.com', 'type': 'work', 'primary': True}], 'roles': [],
+         'name': {'familyName': 'J13', 'givenName': 'MJ'}, 'userName': 'TestID@networks.com',
+         'schemas': ['urn:ietf:User'], 'id': '12345',
+         'active': True, 'meta': {'resourceType': 'User', 'created': '2020-11-23T09:26:31.000-08:00',
+                                  'lastModified': '2020-11-23T09:26:31.000-08:00',
+                                  'location': '//l'}}]}
 
 
 def get_outputs_from_user_profile(user_profile):
@@ -41,7 +51,7 @@ def test_create_user_command(mocker):
     client = mock_client()
 
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
-    mocker.patch.object(client, 'create_user', return_value=GITHUB_USER_OUTPUT)
+    mocker.patch.object(client, 'create_user', return_value=GITHUB_CREATE_USER_OUTPUT)
     mocker.patch.object(client, 'get_user_id_by_mail', return_value='')
 
     iam_user_profile = create_user_command(client, args, 'mapper_out', True)
@@ -55,11 +65,10 @@ def test_create_user_command(mocker):
 
 
 def test_get_user_command__existing_user(mocker):
-    # FIX OUTPUTS!
     client = mock_client()
     args = {"user-profile": {"email": "mock@mock.com"}}
 
-    mocker.patch.object(client, 'get_user', return_value=GITHUB_USER_OUTPUT)
+    mocker.patch.object(client, 'get_user', return_value=GITHUB_UPDATE_USER_OUTPUT)
     mocker.patch.object(IAMUserProfile, 'update_with_app_data', return_value={})
 
     iam_user_profile = get_user_command(client, args, 'mapper_in')
@@ -133,10 +142,10 @@ def test_update_user_command__non_existing_user(mocker):
 
     mocker.patch.object(client, 'get_user_id_by_mail', return_value='')
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
-    mocker.patch.object(client, 'create_user', return_value=GITHUB_USER_OUTPUT)
+    mocker.patch.object(client, 'create_user', return_value=GITHUB_CREATE_USER_OUTPUT)
 
     iam_user_profile = update_user_command(client, args, 'mapper_out', is_update_enabled=True,
-                                               is_create_enabled=True, create_if_not_exists=True)
+                                           is_create_enabled=True, create_if_not_exists=True)
     outputs = get_outputs_from_user_profile(iam_user_profile)
 
     assert outputs.get('action') == IAMActions.CREATE_USER
@@ -153,7 +162,7 @@ def test_update_user_command__command_is_disabled(mocker):
 
     mocker.patch.object(client, 'get_user_id_by_mail', return_value='')
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
-    mocker.patch.object(client, 'update_user', return_value=GITHUB_USER_OUTPUT)
+    mocker.patch.object(client, 'update_user', return_value=GITHUB_UPDATE_USER_OUTPUT)
 
     user_profile = update_user_command(client, args, 'mapper_out', is_update_enabled=False,
                                        is_create_enabled=False, create_if_not_exists=False)

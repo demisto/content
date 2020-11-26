@@ -23,17 +23,37 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: 'true'
+  display: Create User Command Enabled
+  name: create-user-enabled
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Update User Command Enabled
+  name: update-user-enabled
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Enable/Disable User Commands Enabled
+  name: enable-disable-user-enabled
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Automatically create user if not found in update and enable commands
+  name: create-if-not-exists
+  required: false
+  type: 8
 - defaultvalue: ""
   display: organization name
   name: org
   required: true
   type: 0
-- defaultvalue: User Profile - ServiceNow (Incoming)
+- defaultvalue: User Profile - GitHub (Incoming)
   display: Incoming Mapper
   name: mapper_in
   required: true
   type: 0
-- defaultvalue: User Profile - ServiceNow (Outgoing)
+- defaultvalue: User Profile - GitHub (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
   required: true

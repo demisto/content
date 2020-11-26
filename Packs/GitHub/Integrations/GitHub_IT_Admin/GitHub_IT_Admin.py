@@ -28,7 +28,7 @@ class Client(BaseClient):
             self.session.trust_env = False
         self.headers['Authorization'] = 'Bearer ' + self.token
 
-    def http_request(self, method, url_suffix, params=None, data=None, ok_codes=None):
+    def http_request(self, method, url_suffix, params=None, data=None, ok_codes=None, resp_type='json'):
         if not ok_codes:
             ok_codes=self.ok_codes
         res = self._http_request(
@@ -36,7 +36,8 @@ class Client(BaseClient):
             url_suffix,
             params=params,
             json_data=data,
-            ok_codes=ok_codes
+            ok_codes=ok_codes,
+            resp_type=resp_type
         )
 
         return res
@@ -72,7 +73,8 @@ class Client(BaseClient):
         uri = f'scim/v2/organizations/{encode_string_results(self.org)}/Users/{encode_string_results(data)}'
         return self.http_request(
             method='DELETE',
-            url_suffix=uri
+            url_suffix=uri,
+            resp_type='text'
         )
 
     def get_user_id_by_mail(self, email):
@@ -85,10 +87,11 @@ class Client(BaseClient):
             method='GET',
             url_suffix=uri
         )
-        res_json = res.json()
-        item = res_json.get('Resources')
-        if item:
-            user_id = item.get('id')
+        if not res.get('totalResults', 0) == 0:
+            if isinstance(res.get('Resources'), list):
+                item = res.get('Resources')[0]
+                if item:
+                    user_id = item.get('id')
 
         return user_id
 
@@ -108,7 +111,7 @@ def github_handle_error(e):
         return error_code, error_message
 
     except Exception as e:
-        error_code = e.res.status_code
+        error_code = ""
         error_message = str(e)
         return error_code, error_message
 
@@ -151,13 +154,9 @@ def get_user_command(client, args, mapper_in):
         iam_user_profile = IAMUserProfile(user_profile=user_profile)
         email = iam_user_profile.get_attribute('email')
 
-        if not email:
-            raise Exception('You must provide a valid email')
-
         res = client.get_user('emails', email)
 
         if res.get('totalResults', 0) == 0:
-            # check the error message
             error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
             iam_user_profile.set_result(success=False,
                                         email=email,
@@ -166,9 +165,9 @@ def get_user_command(client, args, mapper_in):
                                         action=IAMActions.GET_USER)
 
         else:
-            item = res.get('Resources')
+            item = res.get('Resources')[0]
             github_user = convert_scheme_to_dict(item)
-            user_profile.update_with_app_data(github_user, mapper_in)
+            iam_user_profile.update_with_app_data(github_user, mapper_in)
             iam_user_profile.set_result(success=True,
                                         iden=item.get('id', None),
                                         email=email,
@@ -240,8 +239,8 @@ def update_user_command(client, args, mapper_out, is_update_enabled, is_create_e
 
         if not is_update_enabled:
             iam_user_profile.set_result(action=IAMActions.UPDATE_USER,
-                                    skip=True,
-                                    skip_reason='Command is disabled.')
+                                        skip=True,
+                                        skip_reason='Command is disabled.')
 
         else:
             iam_user_profile = IAMUserProfile(user_profile=user_profile)
@@ -257,9 +256,9 @@ def update_user_command(client, args, mapper_out, is_update_enabled, is_create_e
                 else:
                     error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
                     iam_user_profile.set_result(action=IAMActions.UPDATE_USER,
-                                            error_code=error_code,
-                                            skip=True,
-                                            skip_reason=error_message)
+                                                error_code=error_code,
+                                                skip=True,
+                                                skip_reason=error_message)
             else:
                 github_user_schema = generate_user_scheme(github_user)
                 res = client.update_user(user_term=user_id, data=github_user_schema)
@@ -290,20 +289,20 @@ def disable_user_command(client, args, mapper_out, is_disable_enabled):
 
         if not is_disable_enabled:
             iam_user_profile.set_result(action=IAMActions.DISABLE_USER,
-                                    skip=True,
-                                    skip_reason='Command is disabled.')
+                                        skip=True,
+                                        skip_reason='Command is disabled.')
 
         else:
             github_user = iam_user_profile.map_object(mapper_name=mapper_out)
             email = github_user.get('email')
-            user_id = client.get_user_id_by_mail(client, email)
+            user_id = client.get_user_id_by_mail(email)
 
             if not user_id:
                 error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
                 iam_user_profile.set_result(action=IAMActions.DISABLE_USER,
-                                        error_code=error_code,
-                                        skip=True,
-                                        skip_reason=error_message)
+                                            error_code=error_code,
+                                            skip=True,
+                                            skip_reason=error_message)
             else:
                 res = client.disable_user(user_id)
                 iam_user_profile.set_result(success=True,
@@ -328,23 +327,25 @@ def disable_user_command(client, args, mapper_out, is_disable_enabled):
 def generate_user_scheme(github_user):
     scheme = {'name': {'familyName': github_user.get('familyName'),
                        'givenName': github_user.get('givenName')},
-              'userName': github_user.get('email'),
+              'userName': github_user.get('userName'),
               'emails': [{'type': 'work', 'primary': True, 'value': github_user.get('email')}]}
     return scheme
 
 
 def convert_scheme_to_dict(user_scheme):
     user_dict = {}
-    for key, value in user_scheme:
+    for key, value in user_scheme.items():
         if isinstance(value, str):
-            user_scheme[key] = value
+            user_dict[key] = value
         elif isinstance(value, dict):
-            for sub_key, sub_value in value:
+            for sub_key, sub_value in value.items():
                 if isinstance(sub_value, str):
-                    user_scheme[sub_key] = sub_value
+                    user_dict[sub_key] = sub_value
         elif isinstance(value, List):
-            if isinstance(value[0], dict):
-                user_scheme[key] = value[0].get('value')
+            if not value:
+                continue
+            elif isinstance(value[0], dict):
+                user_dict[key] = value[0].get('value')
     return user_dict
 
 
@@ -362,10 +363,10 @@ def main():
 
     mapper_in = params.get('mapper-in', DEFAULT_INCOMING_MAPPER)
     mapper_out = params.get('mapper-out', DEFAULT_OUTGOING_MAPPER)
-    is_create_enabled = params.get("create_user_enabled")
-    is_enable_disable_enabled = params.get("enable_disable_user_enabled")
-    is_update_enabled = demisto.params().get("update_user_enabled")
-    create_if_not_exists = demisto.params().get("create_if_not_exists")
+    is_create_enabled = params.get("create-user-enabled")
+    is_enable_disable_enabled = params.get("disable-user-enabled")
+    is_update_enabled = demisto.params().get("update-user-enabled")
+    create_if_not_exists = demisto.params().get("create-if-not-exists")
 
     verify_certificate = not demisto.params().get('insecure', False)
 
@@ -387,10 +388,10 @@ def main():
             verify=verify_certificate,
             proxy=proxy,
             headers=headers,
-            ok_codes=(200, 201)
+            ok_codes=(200, 201, 204)
         )
         if command == 'test-module':
-            test_module(client)
+            test_module(client, args)
 
         elif command == 'iam-get-user':
             user_profile = get_user_command(client, args, mapper_in)
