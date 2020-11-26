@@ -1,19 +1,19 @@
 {
-    "name": "ArgusManagedDefence",
-    "description": "Incident response from mnemonic.",
+    "name": "mnemonic MDR",
+    "description": "Rapidly detect, analyse and respond to security threats with mnemonic’s leading Managed Detection and Response (MDR) service.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "mnemonic",
     "url": "https://mnemonic.no",
-    "email": "msi-dev@mnemonic.no",
+    "email": "contact@mnemonic.no",
     "created": "2020-10-01T14:15:52Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "mdr"
-    ],
+    "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "mnemonic", "Argus", "MDR"
+    ],
     "githubUser": []
 }

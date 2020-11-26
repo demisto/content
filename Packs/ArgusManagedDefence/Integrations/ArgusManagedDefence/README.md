@@ -1,9 +1,10 @@
-MSSP
-This integration was integrated and tested with version xx of ArgusManagedDefence
+Rapidly detect, analyse and respond to security threats with mnemonic’s leading Managed Detection and Response (MDR) service.
+
+This integration was integrated and tested with version 1.0.0 of mnemonic MDR.
 ## Configure ArgusManagedDefence on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ArgusManagedDefence.
+2. Search for mnemonic MDR.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
