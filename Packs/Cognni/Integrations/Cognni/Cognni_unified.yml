@@ -166,7 +166,7 @@ script:
   script: "# \n\n\nimport urllib3\nimport dateparser\nimport traceback\nfrom typing\
     \ import Any, Dict, List, Optional, Tuple, cast, Iterable\n\nurllib3.disable_warnings()\n\
     \n''' CONSTANTS '''\n\nDATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'\nMAX_EVENTS_TO_FETCH\
-    \ = 20\nCOGNNI_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']\n\n''' CLIENT\
+    \ = 50\nCOGNNI_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']\n\n''' CLIENT\
     \ CLASS '''\n\n\nclass Client(BaseClient):\n    \"\"\"Client class to interact\
     \ with the service API\n\n    This Client implements API calls, and does not contain\
     \ any Demisto logic.\n    Should only do requests and return data.\n    It inherits\
@@ -182,33 +182,28 @@ script:
     \            json_data=graphql_operation\n        )\n        return res['data']\n\
     \n    def ping(self) -> Dict[str, Any]:\n        query = \"{ping}\"\n\n      \
     \  return self.graphql(\n            query=query\n        )\n\n    def fetch_events(self,\
-    \ min_severity: int, start_time: int, events_limit: int) -> List[Dict[str, Any]]:\n\
-    \        query = \"\"\"\n            query ($pagination: Pagination, $fromDate:Date,\
-    \ $severities:[Int]) {\n                events(filter: { pagination: $pagination,fromDate:\
-    \ $fromDate, severities: $severities}) {\n                    events {\n     \
-    \                   eventId: id\n                        description\n       \
-    \                 sourceApplication\n                        date\n          \
-    \              severity\n                        items {\n                   \
-    \         itemId: id\n                            externalId\n               \
-    \             type\n                            name\n                       \
-    \     clusterUID\n                            data\n                         \
-    \   createdAt\n                            labels {\n                        \
-    \        name\n                            }\n                        }\n    \
-    \                    insights {\n                            name\n          \
-    \              }\n                    }\n                }\n            }\n  \
-    \      \"\"\"\n        severity = min_severity + 1\n        severities = [min_severity]\n\
-    \n        while severity <= 4:\n            severities.append(severity)\n    \
-    \        severity = severity + 1\n        variables = {\n            \"pagination\"\
-    : {\n                \"limit\": events_limit\n            },\n            \"fromDate\"\
-    : start_time,\n            \"severities\": severities\n        }\n\n        res\
+    \ min_severity: int, start_time: str, events_limit: int, offset: int) -> List[Dict[str,\
+    \ Any]]:\n        query = \"\"\"\n            query($severityValue:String!, $pagination:Pagination)\n\
+    {events(\n    filter:\n  {coordinates: [\n  {\n      x:{\n            type: None,\n\
+    \            value: \"none\"\n        },\n        y: {\n            type: Severity,\n\
+    \            value: $severityValue\n        },\n        z: {\n            type:Week,\n\
+    \            values:[\\\"\"\"\"+start_time+\"\"\"\\\"]\n        }\n  }]\n   pagination:\
+    \ $pagination\n  })\n    {\n      eventId:id\n     description\n     severity\n\
+    \      sourceApplication\n      date\n     items {\n       itemId: id\n      \
+    \ externalId\n       type\n       name\n       clusterUID\n       data\n     \
+    \  createdAt\n       labels {\n         name\n        }\n      }\n      insights\
+    \ {\n        name\n      }\n    }\n}\n        \"\"\"\n\n        variables = {\n\
+    \            \"pagination\": {\n                \"limit\": events_limit,\n   \
+    \             \"offset\": offset,\n                \"direction\": \"Ascend\"\n\
+    \            },\n            \"severityValue\": str(min_severity),\n        }\n\
+    \n        res = self.graphql(\n            query=query,\n            variables=variables\n\
+    \        )\n        return res['events']\n\n    def get_event(self, event_id:\
+    \ str) -> Dict[str, Any]:\n        query = \"\"\"\n            query ($event_id:\
+    \ ID!) {\n                event(id: $event_id){\n                    id\n    \
+    \                description\n                    sourceApplication\n        \
+    \            date\n                }\n            }\n        \"\"\"\n\n      \
+    \  variables = {\n            \"event_id\": event_id\n        }\n\n        res\
     \ = self.graphql(\n            query=query,\n            variables=variables\n\
-    \        )\n        return res['events']['events']\n\n    def get_event(self,\
-    \ event_id: str) -> Dict[str, Any]:\n        query = \"\"\"\n            query\
-    \ ($event_id: ID!) {\n                event(id: $event_id){\n                \
-    \    id\n                    description\n                    sourceApplication\n\
-    \                    date\n                }\n            }\n        \"\"\"\n\n\
-    \        variables = {\n            \"event_id\": event_id\n        }\n\n    \
-    \    res = self.graphql(\n            query=query,\n            variables=variables\n\
     \        )\n        return res['event']\n\n    def fetch_insights(self, min_severity:\
     \ int) -> List[Dict[str, Any]]:\n        query = \"\"\"\n             query ($min_severity:\
     \ Int) {\n                 insights(minSeverity: $min_severity){\n           \
@@ -311,80 +306,83 @@ script:
     \   \"\"\"\n\n    result = client.ping()\n    readable_output = f'## ping: {result[\"\
     ping\"]}'\n    return CommandResults(\n        readable_output=readable_output,\n\
     \        outputs_prefix='Cognni.ping',\n        raw_response={},\n        outputs={}\n\
-    \    )\n\n\ndef fetch_incidents(client: Client, last_run: Dict[str, int],\n  \
-    \                  first_fetch_time: Optional[int],\n                    events_limit:\
-    \ int,\n                    min_severity: int\n                    ) -> Tuple[Dict[str,\
-    \ int], List[dict]]:\n    \"\"\"This function retrieves new alerts every interval\
-    \ (default is 1 minute).\n\n    This function has to implement the logic of making\
-    \ sure that incidents are\n    fetched only once and no incidents are missed.\
-    \ By default it's invoked by\n    XSOAR every minute. It will use last_run to\
-    \ save the timestamp of the last\n    incident it processed. If last_run is not\
-    \ provided, it should use the\n    integration parameter first_fetch_time to determine\
-    \ when to start fetching\n    the first time.\n\n    :param events_limit:\n  \
-    \  :type client: ``Client``\n    :param client: Cognni client to use\n\n    :type\
-    \ last_run: ``Optional[Dict[str, int]]``\n    :param last_run:\n        A dict\
-    \ with a key containing the latest incident created time we got\n        from\
-    \ last fetch\n\n    :type first_fetch_time: ``Optional[int]``\n    :param first_fetch_time:\n\
-    \        If last_run is None (first time we are fetching), it contains\n     \
-    \   the timestamp in milliseconds on when to start fetching incidents\n\n    :type\
-    \ min_severity: ``str``\n    :param min_severity:\n        minimum severity of\
-    \ the alert to search for.\n        Options are: \"Low\", \"Medium\", \"High\"\
-    , \"Critical\"\n\n    :return:\n        A tuple containing two elements:\n   \
-    \         next_run (``Dict[str, int]``): Contains the timestamp that will be\n\
-    \                    used in ``last_run`` on the next fetch.\n            incidents\
-    \ (``List[dict]``): List of incidents that will be created in XSOAR\n\n    :rtype:\
-    \ ``Tuple[Dict[str, int], List[dict]]``\n    \"\"\"\n\n    last_fetch = last_run.get('last_fetch',\
-    \ None)\n\n    if last_fetch is None:\n        last_fetch = first_fetch_time\n\
-    \    else:\n        last_fetch = int(last_fetch)\n\n    latest_created_time =\
-    \ cast(int, last_fetch)\n\n    events = client.fetch_events(\n        events_limit=events_limit,\n\
-    \        start_time=timestamp_to_datestring(last_fetch),\n        min_severity=min_severity\n\
-    \    )\n\n    if last_fetch:\n        new_events = list(filter(lambda event: date_to_timestamp(\n\
-    \            date_str_or_dt=event.get('date'),\n            date_format='%Y-%m-%dT%H:%M:%S.000Z'\n\
-    \        ) > last_fetch,\n            events))\n    else:\n        new_events\
-    \ = events\n\n    if not new_events:\n        next_run = {'last_fetch': latest_created_time}\n\
-    \        return next_run, list()\n\n    latest_event = find_latest_event(new_events)\n\
-    \    if latest_event:\n        latest_created_time = date_to_timestamp(\n    \
-    \        date_str_or_dt=latest_event.get('date', latest_created_time),\n     \
-    \       date_format='%Y-%m-%dT%H:%M:%S.000Z'\n        )\n\n    incidents = convert_events_to_incidents(new_events)\n\
-    \n    next_run = {'last_fetch': latest_created_time}\n    return next_run, incidents\n\
-    \n\ndef fetch_incidents_command(client: Client, first_fetch_time: int, args: Dict[str,\
-    \ Any]) -> CommandResults:\n    events_limit = arg_to_int(\n        arg=args.get('events_limit'),\n\
-    \        arg_name='events_limit',\n        required=False\n    )\n    min_severity\
-    \ = int(args.get('min_severity', 2))\n\n    if not events_limit or events_limit\
+    \    )\n\n\ndef fetch_incidents_command(client: Client, first_fetch_time: int,\
+    \ args: Dict[str, Any]) -> CommandResults:\n    events_limit = arg_to_int(\n \
+    \       arg=args.get('events_limit'),\n        arg_name='events_limit',\n    \
+    \    required=False\n    )\n    min_severity = int(args.get('min_severity', 2))\n\
+    \    start_time = args.get('from_date')\n\n    if not events_limit or events_limit\
     \ > MAX_EVENTS_TO_FETCH:\n        events_limit = MAX_EVENTS_TO_FETCH\n\n    next_run,\
     \ incidents = fetch_incidents(client,\n                                      \
     \    last_run={},\n                                          first_fetch_time=first_fetch_time,\n\
     \                                          events_limit=events_limit,\n      \
     \                                    min_severity=min_severity\n             \
-    \                             )\n\n    readable_output = tableToMarkdown(f'Cognni\
-    \ {len(incidents)} incidents', incidents)\n\n    return CommandResults(\n    \
-    \    readable_output=readable_output,\n        outputs_prefix='Cognni.incidents',\n\
-    \        outputs=incidents\n    )\n\n\ndef get_event_command(client: Client, args:\
-    \ Dict[str, Any]) -> CommandResults:\n    \"\"\"cognni-get-event command: Returns\
-    \ a Cognni event\n\n    :type client: ``Client``\n    :param client: Cognni client\
-    \ to use\n\n    :type args: ``Dict[str, Any]``\n    :param args:\n        all\
-    \ command arguments, usually passed from ``demisto.args()``.\n        ``args['event_id']``\
-    \ alert ID to return\n\n    :return:\n        A ``CommandResults`` object that\
-    \ is then passed to ``return_results``,\n        that contains an alert\n\n  \
-    \  :rtype: ``CommandResults``\n    \"\"\"\n\n    event_id = args.get('event_id',\
-    \ None)\n    if not event_id:\n        raise ValueError('event_id not specified')\n\
-    \n    event = client.get_event(event_id=event_id)\n    readable_output = tableToMarkdown(f'Cognni\
-    \ event {event_id}', event)\n\n    return CommandResults(\n        readable_output=readable_output,\n\
-    \        outputs_prefix='Cognni.event',\n        outputs_key_field='id',\n   \
-    \     outputs=event\n    )\n\n\ndef fetch_insights_command(client: Client, args:\
-    \ Dict[str, Any]) -> CommandResults:\n    min_severity = int(args.get('min_severity',\
-    \ 2))\n\n    insights = client.fetch_insights(min_severity=min_severity)\n\n \
-    \   readable_output = tableToMarkdown(f'Cognni {len(insights)} insights', insights)\n\
-    \n    return CommandResults(\n        readable_output=readable_output,\n     \
-    \   outputs_prefix='Cognni.insights',\n        outputs_key_field='id',\n     \
-    \   outputs=insights\n    )\n\n\ndef get_insight_command(client: Client, args:\
-    \ Dict[str, Any]) -> CommandResults:\n    \"\"\"cognni-get-insight command: Returns\
-    \ a Cognni event\n\n    :type client: ``Client``\n    :param client: Cognni client\
-    \ to use\n\n    :type args: ``Dict[str, Any]``\n    :param args:\n        all\
-    \ command arguments, usually passed from ``demisto.args()``.\n        ``args['event_id']``\
-    \ alert ID to return\n\n    :return:\n        A ``CommandResults`` object that\
-    \ is then passed to ``return_results``,\n        that contains an alert\n\n  \
-    \  :rtype: ``CommandResults``\n    \"\"\"\n\n    insight_id = args.get('insight_id',\
+    \                             )\n    readable_output = tableToMarkdown(f'Cognni\
+    \ {len(incidents)} incidents', incidents)\n    return CommandResults(\n      \
+    \  readable_output=readable_output,\n        outputs_prefix='Cognni.incidents',\n\
+    \        outputs=incidents\n    )\n\n\ndef fetch_incidents(client: Client, last_run:\
+    \ Dict[str, int],\n                    first_fetch_time: Optional[int],\n    \
+    \                events_limit: int,\n                    min_severity: int\n \
+    \                   ) -> Tuple[Dict[str, int], List[dict]]:\n    \"\"\"This function\
+    \ retrieves new alerts every interval (default is 1 minute).\n\n    This function\
+    \ has to implement the logic of making sure that incidents are\n    fetched only\
+    \ once and no incidents are missed. By default it's invoked by\n    XSOAR every\
+    \ minute. It will use last_run to save the timestamp of the last\n    incident\
+    \ it processed. If last_run is not provided, it should use the\n    integration\
+    \ parameter first_fetch_time to determine when to start fetching\n    the first\
+    \ time.\n\n    :param events_limit:\n    :type client: ``Client``\n    :param\
+    \ client: Cognni client to use\n\n    :type last_run: ``Optional[Dict[str, int]]``\n\
+    \    :param last_run:\n        A dict with a key containing the latest incident\
+    \ created time we got\n        from last fetch\n\n    :type first_fetch_time:\
+    \ ``Optional[int]``\n    :param first_fetch_time:\n        If last_run is None\
+    \ (first time we are fetching), it contains\n        the timestamp in milliseconds\
+    \ on when to start fetching incidents\n\n    :type min_severity: ``str``\n   \
+    \ :param min_severity:\n        minimum severity of the alert to search for.\n\
+    \        Options are: \"Low\", \"Medium\", \"High\", \"Critical\"\n\n    :return:\n\
+    \        A tuple containing two elements:\n            next_run (``Dict[str, int]``):\
+    \ Contains the timestamp that will be\n                    used in ``last_run``\
+    \ on the next fetch.\n            incidents (``List[dict]``): List of incidents\
+    \ that will be created in XSOAR\n\n    :rtype: ``Tuple[Dict[str, int], List[dict]]``\n\
+    \    \"\"\"\n\n    last_fetch = last_run.get('last_fetch', None)\n\n    offset\
+    \ = last_run.get('offset')\n    if last_fetch is None:\n        last_fetch = first_fetch_time\n\
+    \    else:\n        last_fetch = int(last_fetch)\n\n    if offset is None:\n \
+    \       offset = 0\n\n    latest_created_time = cast(int, last_fetch)\n\n    events\
+    \ = client.fetch_events(\n        events_limit=events_limit,\n        offset=offset,\n\
+    \        start_time=timestamp_to_datestring(last_fetch),\n        min_severity=min_severity\n\
+    \    )\n\n    if last_fetch:\n        new_events = list(filter(lambda event: date_to_timestamp(\n\
+    \            date_str_or_dt=event.get('date'),\n            date_format='%Y-%m-%dT%H:%M:%S.000Z'\n\
+    \        ) > last_fetch,\n                                 events))\n    else:\n\
+    \        new_events = events\n\n    if not new_events:\n        next_run = {'last_fetch':\
+    \ latest_created_time}\n        return next_run, list()\n\n    latest_event =\
+    \ find_latest_event(new_events)\n    if latest_event:\n        latest_created_time\
+    \ = date_to_timestamp(\n            date_str_or_dt=latest_event.get('date', latest_created_time),\n\
+    \            date_format='%Y-%m-%dT%H:%M:%S.000Z'\n        )\n\n    incidents\
+    \ = convert_events_to_incidents(new_events)\n\n    next_run = {'last_fetch': latest_created_time,\n\
+    \                'offset': offset + len(events)}\n    return next_run, incidents\n\
+    \n\ndef get_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:\n\
+    \    \"\"\"cognni-get-event command: Returns a Cognni event\n\n    :type client:\
+    \ ``Client``\n    :param client: Cognni client to use\n\n    :type args: ``Dict[str,\
+    \ Any]``\n    :param args:\n        all command arguments, usually passed from\
+    \ ``demisto.args()``.\n        ``args['event_id']`` alert ID to return\n\n   \
+    \ :return:\n        A ``CommandResults`` object that is then passed to ``return_results``,\n\
+    \        that contains an alert\n\n    :rtype: ``CommandResults``\n    \"\"\"\n\
+    \n    event_id = args.get('event_id', None)\n    if not event_id:\n        raise\
+    \ ValueError('event_id not specified')\n\n    event = client.get_event(event_id=event_id)\n\
+    \    readable_output = tableToMarkdown(f'Cognni event {event_id}', event)\n\n\
+    \    return CommandResults(\n        readable_output=readable_output,\n      \
+    \  outputs_prefix='Cognni.event',\n        outputs_key_field='id',\n        outputs=event\n\
+    \    )\n\n\ndef fetch_insights_command(client: Client, args: Dict[str, Any]) ->\
+    \ CommandResults:\n    min_severity = int(args.get('min_severity', 2))\n\n   \
+    \ insights = client.fetch_insights(min_severity=min_severity)\n\n    readable_output\
+    \ = tableToMarkdown(f'Cognni {len(insights)} insights', insights)\n\n    return\
+    \ CommandResults(\n        readable_output=readable_output,\n        outputs_prefix='Cognni.insights',\n\
+    \        outputs_key_field='id',\n        outputs=insights\n    )\n\n\ndef get_insight_command(client:\
+    \ Client, args: Dict[str, Any]) -> CommandResults:\n    \"\"\"cognni-get-insight\
+    \ command: Returns a Cognni event\n\n    :type client: ``Client``\n    :param\
+    \ client: Cognni client to use\n\n    :type args: ``Dict[str, Any]``\n    :param\
+    \ args:\n        all command arguments, usually passed from ``demisto.args()``.\n\
+    \        ``args['event_id']`` alert ID to return\n\n    :return:\n        A ``CommandResults``\
+    \ object that is then passed to ``return_results``,\n        that contains an\
+    \ alert\n\n    :rtype: ``CommandResults``\n    \"\"\"\n\n    insight_id = args.get('insight_id',\
     \ None)\n    if not insight_id:\n        raise ValueError('insight_id not specified')\n\
     \n    insight = client.get_insight(insight_id=insight_id)\n\n    readable_output\
     \ = tableToMarkdown(f'Cognni event {insight_id}', insight)\n\n    return CommandResults(\n\
@@ -396,7 +394,7 @@ script:
     \ = demisto.params()['url']\n\n    verify_certificate = not demisto.params().get('insecure',\
     \ False)\n\n    first_fetch_time = arg_to_timestamp(\n        arg=demisto.params().get('first_fetch',\
     \ '3 days'),\n        arg_name='First fetch time',\n        required=True\n  \
-    \  )\n    assert isinstance(first_fetch_time, int)\n\n    proxy = demisto.params().get('proxy',\
+    \  )\n    assert isinstance(first_fetch_time, int)\n    proxy = demisto.params().get('proxy',\
     \ False)\n\n    demisto.debug(f'Command being called is {demisto.command()}')\n\
     \    try:\n        client = Client(\n            base_url=base_url,\n        \
     \    verify=verify_certificate,\n            proxy=proxy)\n\n        fetch_key_res\

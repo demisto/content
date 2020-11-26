@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-MAX_EVENTS_TO_FETCH = 20
+MAX_EVENTS_TO_FETCH = 50
 COGNNI_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 
 ''' CLIENT CLASS '''
@@ -55,54 +55,67 @@ class Client(BaseClient):
             query=query
         )
 
-    def fetch_events(self, min_severity: int, start_time: int, events_limit: int) -> List[Dict[str, Any]]:
+    def fetch_events(self, min_severity: int, start_time: str, events_limit: int, offset: int) -> List[Dict[str, Any]]:
         query = """
-            query ($pagination: Pagination, $fromDate:Date, $severities:[Int]) {
-                events(filter: { pagination: $pagination,fromDate: $fromDate, severities: $severities}) {
-                    events {
-                        eventId: id
-                        description
-                        sourceApplication
-                        date
-                        severity
-                        items {
-                            itemId: id
-                            externalId
-                            type
-                            name
-                            clusterUID
-                            data
-                            createdAt
-                            labels {
-                                name
-                            }
-                        }
-                        insights {
-                            name
-                        }
-                    }
-                }
-            }
+            query($severityValue:String!, $pagination:Pagination)
+{events(
+    filter:
+  {coordinates: [
+  {
+      x:{
+            type: None,
+            value: "none"
+        },
+        y: {
+            type: Severity,
+            value: $severityValue
+        },
+        z: {
+            type:Week,
+            values:[\""""+start_time+"""\"]
+        }
+  }]
+   pagination: $pagination
+  })
+    {
+      eventId:id
+     description
+     severity
+      sourceApplication
+      date
+     items {
+       itemId: id
+       externalId
+       type
+       name
+       clusterUID
+       data
+       createdAt
+       labels {
+         name
+        }
+      }
+      insights {
+        name
+      }
+    }
+}
         """
-        severity = min_severity + 1
-        severities = [min_severity]
 
-        while severity <= 4:
-            severities.append(severity)
-            severity = severity + 1
         variables = {
             "pagination": {
-                "limit": events_limit
+                "limit": events_limit,
+                "offset": offset,
+                "direction": "Ascend"
             },
-            "fromDate": start_time,
-            "severities": severities
+            "severityValue": str(min_severity),
         }
 
         res = self.graphql(
             query=query,
             variables=variables
         )
-        return res['events']['events']
+        return res['events']
 
     def get_event(self, event_id: str) -> Dict[str, Any]:
         query = """
@@ -397,6 +410,32 @@ def ping_command(client: Client) -> CommandResults:
     )
 
 
+def fetch_incidents_command(client: Client, first_fetch_time: int, args: Dict[str, Any]) -> CommandResults:
+    events_limit = arg_to_int(
+        arg=args.get('events_limit'),
+        arg_name='events_limit',
+        required=False
+    )
+    min_severity = int(args.get('min_severity', 2))
+    start_time = args.get('from_date')
+
+    if not events_limit or events_limit > MAX_EVENTS_TO_FETCH:
+        events_limit = MAX_EVENTS_TO_FETCH
+
+    next_run, incidents = fetch_incidents(client,
+                                          last_run={},
+                                          first_fetch_time=first_fetch_time,
+                                          events_limit=events_limit,
+                                          min_severity=min_severity
+                                          )
+    readable_output = tableToMarkdown(f'Cognni {len(incidents)} incidents', incidents)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Cognni.incidents',
+        outputs=incidents
+    )
+
+
 def fetch_incidents(client: Client, last_run: Dict[str, int],
                     first_fetch_time: Optional[int],
                     events_limit: int,
@@ -441,15 +480,20 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
 
     last_fetch = last_run.get('last_fetch', None)
 
+    offset = last_run.get('offset')
     if last_fetch is None:
         last_fetch = first_fetch_time
     else:
         last_fetch = int(last_fetch)
 
+    if offset is None:
+        offset = 0
+
     latest_created_time = cast(int, last_fetch)
 
     events = client.fetch_events(
         events_limit=events_limit,
+        offset=offset,
         start_time=timestamp_to_datestring(last_fetch),
         min_severity=min_severity
     )
@@ -459,7 +503,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
             date_str_or_dt=event.get('date'),
             date_format='%Y-%m-%dT%H:%M:%S.000Z'
         ) > last_fetch,
-            events))
+                                 events))
     else:
         new_events = events
 
@@ -476,35 +520,9 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
 
     incidents = convert_events_to_incidents(new_events)
 
-    next_run = {'last_fetch': latest_created_time}
+    next_run = {'last_fetch': latest_created_time,
+                'offset': offset + len(events)}
     return next_run, incidents
-
-
-def fetch_incidents_command(client: Client, first_fetch_time: int, args: Dict[str, Any]) -> CommandResults:
-    events_limit = arg_to_int(
-        arg=args.get('events_limit'),
-        arg_name='events_limit',
-        required=False
-    )
-    min_severity = int(args.get('min_severity', 2))
-
-    if not events_limit or events_limit > MAX_EVENTS_TO_FETCH:
-        events_limit = MAX_EVENTS_TO_FETCH
-
-    next_run, incidents = fetch_incidents(client,
-                                          last_run={},
-                                          first_fetch_time=first_fetch_time,
-                                          events_limit=events_limit,
-                                          min_severity=min_severity
-                                          )
-
-    readable_output = tableToMarkdown(f'Cognni {len(incidents)} incidents', incidents)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Cognni.incidents',
-        outputs=incidents
-    )
 
 
 def get_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -612,7 +630,6 @@ def main() -> None:
         required=True
     )
     assert isinstance(first_fetch_time, int)
-
     proxy = demisto.params().get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
