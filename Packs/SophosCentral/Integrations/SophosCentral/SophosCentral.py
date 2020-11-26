@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 import time
-from typing import Dict, List, Optional, Union, Tuple
+from typing import Dict, List, Optional, Tuple
 import dateparser
-from requests import Response, post, get
+from requests import post, get
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -663,7 +663,7 @@ def sophos_central_alert_list_command(client: Client, args: Dict[str, str]) -> C
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    results = client.list_alert(min(int(args.get('limit')), 100))
+    results = client.list_alert(min(int(args.get('limit', '')), 100))
     items = results.get('items')
     table_headers = ['id', 'description', 'severity', 'raisedAt', 'allowedActions',
                      'managedAgentId', 'category', 'type']
@@ -689,7 +689,7 @@ def sophos_central_alert_get_command(client: Client, args: dict) -> CommandResul
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    result = client.get_alert(args.get('alert_id'))
+    result = client.get_alert(args.get('alert_id', ''))
     table_headers = ['id', 'description', 'severity', 'raisedAt', 'allowedActions',
                      'managedAgentId', 'category', 'type']
     object_data = {}
@@ -719,7 +719,7 @@ def sophos_central_alert_action_command(client: Client, args: dict) -> CommandRe
     alert_ids = argToList(args.get('alert_id'))
     results = []
     for alert_id in alert_ids:
-        result = client.action_alert(alert_id, args.get('action'), args.get('message'))
+        result = client.action_alert(alert_id, args.get('action', ''), args.get('message', ''))
         if result:
             results.append(result)
             object_data = {field: result.get(field) for field in table_headers}
@@ -754,7 +754,7 @@ def sophos_central_alert_search_command(client: Client, args: dict) -> CommandRe
                                   argToList(args.get('product')),
                                   argToList(args.get('category')),
                                   args.get('group_key'), argToList(args.get('severity')),
-                                  argToList(args.get('ids')), min(int(args.get('limit')), 100))
+                                  argToList(args.get('ids')), min(int(args.get('limit', '')), 100))
     items = results.get('items')
     table_headers = ['id', 'description', 'severity', 'raisedAt', 'allowedActions',
                      'managedAgentId', 'category', 'type']
@@ -786,7 +786,7 @@ def sophos_central_endpoint_list_command(client: Client, args: dict) -> CommandR
                                    argToList(args.get('lockdown_status')),
                                    args.get('last_seen_before'), args.get('last_seen_after'),
                                    args.get('ids'), args.get('view'),
-                                   min(int(args.get('limit')), 100))
+                                   min(int(args.get('limit', '')), 100))
     items = results.get('items')
     table_headers = ['id', 'hostname', 'ipv4Addresses', 'ipv6Addresses', 'macAddresses', 'type',
                      'online', 'tamperProtectionEnabled']
@@ -984,7 +984,7 @@ def sophos_central_allowed_item_list_command(client: Client, args: dict) -> Comm
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    results = client.list_allowed_item(min(int(args.get('page_size')), 100), args.get('page'))
+    results = client.list_allowed_item(min(int(args.get('page_size', '')), 100), args.get('page'))
     items = results.get('items')
     table_headers = ['id', 'comment', 'fileName', 'sha256', 'path', 'certificateSigner',
                      'createdAt', 'createdByName', 'type', 'updatedAt']
@@ -992,7 +992,7 @@ def sophos_central_allowed_item_list_command(client: Client, args: dict) -> Comm
     if items:
         for item in items:
             outputs.append(create_item_output(item))
-    readable_output = f'### Current page: {int(args.get("page"))}\n'
+    readable_output = f'### Current page: {int(args.get("page", ""))}\n'
     readable_output += tableToMarkdown(name=f'Listed {len(outputs)} Allowed Items:', t=outputs,
                                        headers=table_headers, removeNull=True)
     return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.AllowedItem',
@@ -1010,7 +1010,7 @@ def sophos_central_allowed_item_get_command(client: Client, args: dict) -> Comma
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    result = client.get_allowed_item(args.get('allowed_item_id'))
+    result = client.get_allowed_item(args.get('allowed_item_id', ''))
     table_headers = ['id', 'comment', 'fileName', 'sha256', 'path', 'certificateSigner',
                      'createdAt', 'createdByName', 'type', 'updatedAt']
     object_data = {}
@@ -1035,7 +1035,7 @@ def sophos_central_allowed_item_add_command(client: Client, args: dict) -> Comma
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     validate_item_fields(args)
-    result = client.add_allowed_item(args.get('item_type'), args.get('comment'),
+    result = client.add_allowed_item(args.get('item_type', ''), args.get('comment', ''),
                                      args.get('certificate_signer'), args.get('file_name'),
                                      args.get('path'), args.get('sha256'),
                                      args.get('origin_endpoint_id'))
@@ -1062,7 +1062,7 @@ def sophos_central_allowed_item_update_command(client: Client, args: dict) -> Co
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    result = client.update_allowed_item(args.get('allowed_item_id'), args.get('comment'))
+    result = client.update_allowed_item(args.get('allowed_item_id', ''), args.get('comment', ''))
     table_headers = ['id', 'comment', 'fileName', 'sha256', 'path', 'certificateSigner',
                      'createdAt', 'createdByName', 'type', 'updatedAt']
     object_data = {}
@@ -1086,11 +1086,11 @@ def sophos_central_allowed_item_delete_command(client: Client, args: dict) -> Co
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    result = client.delete_allowed_item(args.get('allowed_item_id'))
-    readable_output = f'Success deleting allowed item: {args.get("allowed_item_id")}'
-    outputs = {'deletedItemId': args.get('allowed_item_id')}
+    result = client.delete_allowed_item(args.get('allowed_item_id', ''))
+    readable_output = f'Success deleting allowed item: {args.get("allowed_item_id", "")}'
+    outputs = {'deletedItemId': args.get('allowed_item_id', '')}
     if not result or not result.get('deleted'):
-        readable_output = f'Failed deleting allowed item: {args.get("allowed_item_id")}'
+        readable_output = f'Failed deleting allowed item: {args.get("allowed_item_id", "")}'
         outputs = {}
     return CommandResults(raw_response=result, readable_output=readable_output, outputs=outputs,
                           outputs_prefix='SophosCentral.DeletedAllowedItem')
@@ -1107,7 +1107,7 @@ def sophos_central_blocked_item_list_command(client: Client, args: dict) -> Comm
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    results = client.list_blocked_item(min(int(args.get('page_size')), 100), args.get('page'))
+    results = client.list_blocked_item(min(int(args.get('page_size', '')), 100), args.get('page'))
     items = results.get('items')
     table_headers = ['id', 'comment', 'fileName', 'sha256', 'path', 'certificateSigner',
                      'createdAt', 'createdByName', 'type', 'updatedAt']
@@ -1116,7 +1116,7 @@ def sophos_central_blocked_item_list_command(client: Client, args: dict) -> Comm
         for item in items:
             outputs.append(create_item_output(item))
 
-    readable_output = f'### Current page: {int(args.get("page"))}\n'
+    readable_output = f'### Current page: {int(args.get("page", ""))}\n'
     readable_output += tableToMarkdown(name=f'Listed {len(outputs)} Blocked Items:', t=outputs,
                                        headers=table_headers, removeNull=True)
     return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.BlockedItem',
@@ -1134,7 +1134,7 @@ def sophos_central_blocked_item_get_command(client: Client, args: dict) -> Comma
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    result = client.get_blocked_item(args.get('blocked_item_id'))
+    result = client.get_blocked_item(args.get('blocked_item_id', ''))
     table_headers = ['id', 'comment', 'fileName', 'sha256', 'path', 'certificateSigner',
                      'createdAt', 'createdByName', 'type', 'updatedAt']
     object_data = {}
@@ -1159,7 +1159,7 @@ def sophos_central_blocked_item_add_command(client: Client, args: dict) -> Comma
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     validate_item_fields(args)
-    result = client.add_blocked_item(args.get('item_type'), args.get('comment'),
+    result = client.add_blocked_item(args.get('item_type', ''), args.get('comment', ''),
                                      args.get('certificate_signer'), args.get('file_name'),
                                      args.get('path'), args.get('sha256'),
                                      args.get('origin_endpoint_id'))
@@ -1186,11 +1186,11 @@ def sophos_central_blocked_item_delete_command(client: Client, args: dict) -> Co
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    result = client.delete_blocked_item(args.get('blocked_item_id'))
-    readable_output = 'Success deleting blocked item: ' + args.get('blocked_item_id')
-    outputs = {'deletedItemId': args.get('blocked_item_id')}
+    result = client.delete_blocked_item(args.get('blocked_item_id', ''))
+    readable_output = f'Success deleting blocked item: {args.get("blocked_item_id", "")}'
+    outputs = {'deletedItemId': args.get('blocked_item_id', '')}
     if not result or not result.get('deleted'):
-        readable_output = 'Failed deleting blocked item: ' + args.get('blocked_item_id')
+        readable_output = f'Failed deleting blocked item: {args.get("blocked_item_id", "")}'
         outputs = {}
     return CommandResults(raw_response=result, readable_output=readable_output, outputs=outputs,
                           outputs_prefix='SophosCentral.DeletedBlockedItem')
@@ -1209,7 +1209,7 @@ def sophos_central_scan_exclusion_list_command(client: Client, args: dict) -> Co
 
     """
     results = client.list_scan_exclusion(args.get('exclusion_type'),
-                                         min(int(args.get('page_size')), 100), args.get('page'))
+                                         min(int(args.get('page_size', '')), 100), args.get('page'))
     items = results.get('items')
     table_headers = ['id', 'value', 'type', 'description', 'comment', 'scanMode']
     outputs = []
@@ -1218,7 +1218,7 @@ def sophos_central_scan_exclusion_list_command(client: Client, args: dict) -> Co
             current_object_data = {field: item.get(field) for field in table_headers}
             outputs.append(current_object_data)
 
-    readable_output = f'### Current page: {int(args.get("page"))}\n'
+    readable_output = f'### Current page: {int(args.get("page", ""))}\n'
     readable_output += tableToMarkdown(name=f'Listed {len(outputs)} Scan Exclusions:', t=outputs,
                                        headers=table_headers, removeNull=True)
     return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.ScanExclusion',
@@ -1237,7 +1237,7 @@ def sophos_central_scan_exclusion_get_command(client: Client, args: dict) -> Com
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    result = client.get_scan_exclusion(args.get('exclusion_id'))
+    result = client.get_scan_exclusion(args.get('exclusion_id', ''))
     table_headers = ['id', 'value', 'type', 'description', 'comment', 'scanMode']
     object_data = {}
     if result:
@@ -1262,7 +1262,7 @@ def sophos_central_scan_exclusion_add_command(client: Client, args: dict) -> Com
 
     """
     result = client.add_scan_exclusion(args.get('comment'), args.get('scan_mode'),
-                                       args.get('exclusion_type'), args.get('value'))
+                                       args.get('exclusion_type', ''), args.get('value', ''))
     table_headers = ['id', 'value', 'type', 'description', 'comment', 'scanMode']
     object_data = {}
     if result:
@@ -1287,7 +1287,7 @@ def sophos_central_scan_exclusion_update_command(client: Client, args: dict) -> 
 
     """
     result = client.update_scan_exclusion(args.get('comment'), args.get('scan_mode'),
-                                          args.get('exclusion_id'), args.get('value'))
+                                          args.get('exclusion_id', ''), args.get('value', ''))
     table_headers = ['id', 'value', 'type', 'description', 'comment', 'scanMode']
     object_data = {}
     if result:
@@ -1310,11 +1310,11 @@ def sophos_central_scan_exclusion_delete_command(client: Client, args: dict) -> 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    result = client.delete_scan_exclusion(args.get('exclusion_id'))
-    readable_output = 'Success deleting scan exclusion: ' + args.get('exclusion_id')
-    outputs = {'deletedExclusionId': args.get('exclusion_id')}
+    result = client.delete_scan_exclusion(args.get('exclusion_id', ''))
+    readable_output = f'Success deleting scan exclusion: {args.get("exclusion_id", "")}'
+    outputs = {'deletedExclusionId': args.get('exclusion_id', '')}
     if not result or not result.get('deleted'):
-        readable_output = 'Failed deleting scan exclusion: ' + args.get('exclusion_id')
+        readable_output = f'Failed deleting scan exclusion: {args.get("exclusion_id", "")}'
         outputs = {}
     return CommandResults(raw_response=result, readable_output=readable_output, outputs=outputs,
                           outputs_prefix='SophosCentral.DeletedScanExclusion')
@@ -1333,8 +1333,8 @@ def sophos_central_exploit_mitigation_list_command(client: Client, args: dict) -
 
     """
     results = client.list_exploit_mitigation(args.get('mitigation_type'),
-                                             min(int(args.get('page_size')), 100), args.get('page'),
-                                             args.get('modified'))
+                                             min(int(args.get('page_size', '')), 100),
+                                             args.get('page'), args.get('modified'))
     items = results.get('items')
     table_headers = ['id', 'name', 'type', 'category', 'paths']
     outputs = []
@@ -1342,7 +1342,7 @@ def sophos_central_exploit_mitigation_list_command(client: Client, args: dict) -
         for item in items:
             current_object_data = {field: item.get(field) for field in table_headers}
             outputs.append(current_object_data)
-    readable_output = f'### Current page: {int(args.get("page"))}\n'
+    readable_output = f'### Current page: {int(args.get("page", ""))}\n'
     readable_output += tableToMarkdown(name=f'Listed {len(outputs)} Exploit Mitigations:',
                                        t=outputs, headers=table_headers, removeNull=True)
     return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.ExploitMitigation',
@@ -1361,7 +1361,7 @@ def sophos_central_exploit_mitigation_get_command(client: Client, args: dict) ->
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    result = client.get_exploit_mitigation(args.get('mitigation_id'))
+    result = client.get_exploit_mitigation(args.get('mitigation_id', ''))
     table_headers = ['id', 'name', 'type', 'category', 'paths']
     object_data = {}
     if result:
@@ -1385,7 +1385,7 @@ def sophos_central_exploit_mitigation_add_command(client: Client, args: dict) ->
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    result = client.add_exploit_mitigation(args.get('path'))
+    result = client.add_exploit_mitigation(args.get('path', ''))
     table_headers = ['id', 'name', 'type', 'category', 'paths']
     object_data = {}
     if result:
@@ -1409,7 +1409,7 @@ def sophos_central_exploit_mitigation_update_command(client: Client, args: dict)
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    result = client.update_exploit_mitigation(args.get('mitigation_id'), args.get('path'))
+    result = client.update_exploit_mitigation(args.get('mitigation_id', ''), args.get('path'))
     table_headers = ['id', 'name', 'type', 'category', 'paths']
     object_data = {}
     if result:
@@ -1432,11 +1432,11 @@ def sophos_central_exploit_mitigation_delete_command(client: Client, args: dict)
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    result = client.delete_exploit_mitigation(args.get('mitigation_id'))
-    readable_output = 'Success deleting exploit mitigation: ' + args.get('mitigation_id')
-    outputs = {'deletedMitigationId': args.get('mitigation_id')}
+    result = client.delete_exploit_mitigation(args.get('mitigation_id', ''))
+    readable_output = f'Success deleting exploit mitigation: {args.get("mitigation_id", "")}'
+    outputs = {'deletedMitigationId': args.get('mitigation_id', '')}
     if not result or not result.get('deleted'):
-        readable_output = 'Failed deleting exploit mitigation: ' + args.get('mitigation_id')
+        readable_output = f'Failed deleting exploit mitigation: {args.get("mitigation_id", "")}'
         outputs = {}
     return CommandResults(raw_response=result, readable_output=readable_output, outputs=outputs,
                           outputs_prefix='SophosCentral.DeletedExploitMitigation')
@@ -1479,7 +1479,7 @@ def sophos_central_detected_exploit_list_command(client: Client, args: dict) -> 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    results = client.list_detected_exploit(min(int(args.get('page_size')), 100),
+    results = client.list_detected_exploit(min(int(args.get('page_size', '')), 100),
                                            args.get('page'), args.get('thumbprint_not_in'))
     items = results.get('items')
     table_headers = ['id', 'description', 'thumbprint', 'count', 'firstSeenAt', 'lastSeenAt']
@@ -1488,7 +1488,7 @@ def sophos_central_detected_exploit_list_command(client: Client, args: dict) -> 
         for item in items:
             current_object_data = create_detected_exploit_output(item)
             outputs.append(current_object_data)
-    readable_output = f'### Current page: {int(args.get("page"))}\n'
+    readable_output = f'### Current page: {int(args.get("page", ""))}\n'
     readable_output += tableToMarkdown(name=f'Listed {len(outputs)} Detected Exploits:', t=outputs,
                                        headers=table_headers, removeNull=True)
     return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.DetectedExploit',
@@ -1506,7 +1506,7 @@ def sophos_central_detected_exploit_get_command(client: Client, args: dict) -> C
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    result = client.get_detected_exploit(args.get('detected_exploit_id'))
+    result = client.get_detected_exploit(args.get('detected_exploit_id', ''))
     table_headers = ['id', 'description', 'thumbprint', 'count', 'firstSeenAt', 'lastSeenAt']
     object_data = {}
     if result:
@@ -1519,8 +1519,9 @@ def sophos_central_detected_exploit_get_command(client: Client, args: dict) -> C
 
 
 def fetch_incidents(client: Client, last_run: Dict[str, int],
-                    first_fetch_time: str, fetch_severity: List[str],
-                    fetch_category: List[str], max_fetch: str) -> Tuple[Dict[str, int], List[dict]]:
+                    first_fetch_time: str, fetch_severity: Optional[List[str]],
+                    fetch_category: Optional[List[str]],
+                    max_fetch: Optional[str]) -> Tuple[Dict[str, int], List[dict]]:
     """
     Fetch incidents (alerts) each minute (by default).
     Args:
@@ -1537,7 +1538,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     last_fetch_timestamp = last_run.get('last_fetch', None)
     fetch_category = None if not fetch_category else fetch_category
     fetch_severity = None if not fetch_severity else fetch_severity
-    max_fetch = None if not max_fetch else int(max_fetch)
+    limit = None if not max_fetch else int(max_fetch)
 
     if last_fetch_timestamp:
         last_fetch_date = datetime.fromtimestamp(last_fetch_timestamp / 1000)
@@ -1549,7 +1550,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     incidents = []
     next_run = last_fetch
     alerts = client.search_alert(last_fetch.strftime(DATE_FORMAT)[:-4] + 'Z', None, None,
-                                 fetch_category, None, fetch_severity, None, max_fetch)
+                                 fetch_category, None, fetch_severity, None, limit)
     data_fields = ['id', 'description', 'severity', 'raisedAt', 'allowedActions', 'managedAgentId',
                    'category', 'type']
     for alert in alerts.get('items', []):
@@ -1604,16 +1605,16 @@ def retrieve_jwt_token(client_id: str, client_secret: str, integration_context: 
     Returns:
         bearer_token (str): JWT token for required commands.
     """
-    bearer_token = integration_context.get('bearer_token')
-    valid_until = integration_context.get('valid_until')
+    bearer_token = integration_context.get('bearer_token', '')
+    valid_until = integration_context.get('valid_until', '')
     time_now = int(time.time())
     if bearer_token and valid_until:
         if time_now < valid_until:
             return bearer_token
 
-    bearer_token = get_jwt_token(client_id, client_secret)
-    if bearer_token:
-        bearer_token = bearer_token.get('access_token')
+    bearer_token_dict = get_jwt_token(client_id, client_secret)
+    if bearer_token_dict:
+        bearer_token = str(bearer_token_dict.get('access_token', ''))
     integration_context = {'bearer_token': bearer_token, 'valid_until': time_now + 600}
     demisto.setIntegrationContext(integration_context)
     return bearer_token
@@ -1649,7 +1650,7 @@ def main():
 
         if demisto.command() == 'test-module':
             result = test_module(client)
-            demisto.results(result)
+            return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
             next_run, incidents = fetch_incidents(
