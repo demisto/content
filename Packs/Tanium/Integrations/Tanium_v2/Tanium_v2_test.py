@@ -313,7 +313,7 @@ data_test_parse_action_parameters = [
     ('key1=value1', [{'key': 'key1', 'value': 'value1'}]),
     ('key1=value1=value1', [{'key': 'key1', 'value': 'value1=value1'}]),
     ('key1=value1=value1;key2=value2', [{'key': 'key1', 'value': 'value1=value1'}, {'key': 'key2', 'value': 'value2'}]),
-    ('key1=value1=value1;key2=valu;e2', [{'key': 'key1', 'value': 'value1=value1'},{'key': 'key2', 'value': 'valu;e2'}]),
+    ('key1=value1=value1;key2=valu;e2', [{'key': 'key1', 'value': 'value1=value1'}, {'key': 'key2', 'value': 'valu;e2'}]),
     ('key1=value1=value1;key2=ab=;c', [{'key': 'key1', 'value': 'value1=value1'}, {'key': 'key2', 'value': 'ab=;c'}])
 
 ]
