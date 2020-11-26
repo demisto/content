@@ -323,11 +323,22 @@ data_test_parse_action_parameters = [
 def test_parse_action_parameters(parameters, accepted_result):
     """Tests parse_action_parameters function
     Given
-        string which contains keys and values separated by '=' and ';'.
+        A string representing a key=value list separated by ';'
+        1. parameters = 'key1=value1'
+        2. parameters = 'key1=value1=value1'
+        3. parameters = 'key1=value1=value1;key2=value2'
+        4. parameters = 'key1=value1=value1;key2=valu;e2'
+        5. parameters = key1=value1=value1;key2=ab=;c'
+
     When
-        - When calling the "parse_action_parameters" function to extract it to a dictionary
+        When calling the "parse_action_parameters" function to extract it to a dictionary
     Then
-        - validate that everything is extracted properly even if there is within the value "=" or ";"
+        validate that everything is extracted properly even if there is within the value "=" or ";"
+        1. Ensure result = [{'key': 'key1', 'value': 'value1'}]
+        2. Ensure result = [{'key': 'key1', 'value': 'value1=value1'}]
+        3. Ensure result = [{'key': 'key1', 'value': 'value1=value1'}, {'key': 'key2', 'value': 'value2'}]
+        4. Ensure result = [{'key': 'key1', 'value': 'value1=value1'}, {'key': 'key2', 'value': 'valu;e2'}]
+        5. Ensure result = [{'key': 'key1', 'value': 'value1=value1'}, {'key': 'key2', 'value': 'ab=;c'}]
     """
     client = Client(BASE_URL, 'username', 'password', 'domain')
     result = client.parse_action_parameters(parameters)

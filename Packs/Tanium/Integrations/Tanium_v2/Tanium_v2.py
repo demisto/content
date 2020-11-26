@@ -78,12 +78,12 @@ class Client(BaseClient):
 
     def parse_action_parameters(self, parameters: str) -> List[Any]:
         """
-        get a string which contains keys and values separated by '=' and ';' And returns them as a list of dictionaries
+        Receives a string representing a key=value list separated by ';', and returns them as a list of dictionaries
         Args:
-            parameters(str): string which contains keys and values
+            parameters (str): string which contains keys and values
 
         Returns:
-            parameter_conditions(List): list of dictionaries
+            parameter_conditions (List): list of dictionaries
         """
         parameters = parameters.split(';')
         parameter_conditions: List[Dict[str, str]] = list()
