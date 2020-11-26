@@ -3,7 +3,6 @@ from __future__ import print_function
 import ast
 import os
 import json
-import signal
 import string
 import time
 import unicodedata
@@ -11,7 +10,8 @@ from pprint import pformat
 
 import urllib3
 import demisto_client.demisto_api
-from subprocess import call, Popen, PIPE, check_call, check_output, CalledProcessError, STDOUT
+from subprocess import call, check_call, check_output, CalledProcessError, STDOUT
+
 
 VALID_FILENAME_CHARS = '-_.() %s%s' % (string.ascii_letters, string.digits)
 PROXY_PROCESS_INIT_TIMEOUT = 20
@@ -80,7 +80,7 @@ class AMIConnection:
     """
 
     REMOTE_MACHINE_USER = 'ec2-user'
-    REMOTE_HOME = '/home/{}/'.format(REMOTE_MACHINE_USER)
+    REMOTE_HOME = f'/home/{REMOTE_MACHINE_USER}/'
     LOCAL_SCRIPTS_DIR = '/home/circleci/project/Tests/scripts/'
     CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
     UPLOAD_MOCKS_SCRIPT = 'upload_mocks.sh'
@@ -166,14 +166,14 @@ class MITMProxy:
         tmp_folder (string): path to a temporary folder for log/mock files before pushing to git.
         current_folder (string): the current folder to use for mock/log files.
         ami (AMIConnection): Wrapper for AMI communication.
-        process (Popen): object representation of the Proxy process (used to track the proxy process status).
         empty_files (list): List of playbooks that have empty mock files (indicating no usage of mock mechanism).
         rerecorded_tests (list): List of playbook ids that failed on mock playback but succeeded on new recording.
     """
 
     PROXY_PORT = '9997'
     MOCKS_TMP_PATH = '/tmp/Mocks/'
-    MOCKS_GIT_PATH = 'content-test-data/'
+    MOCKS_GIT_PATH = f'{AMIConnection.REMOTE_HOME}content-test-data/'
+    TIME_TO_WAIT_FOR_PROXY_SECONDS = 30
 
     def __init__(self,
                  public_ip,
@@ -183,10 +183,8 @@ class MITMProxy:
         self.current_folder = self.repo_folder = repo_folder
         self.tmp_folder = tmp_folder
         self.logging_manager = logging_manager
-
         self.ami = AMIConnection(self.public_ip)
 
-        self.process = None
         self.empty_files = []
         self.failed_tests_count = 0
         self.successful_tests_count = 0
@@ -195,6 +193,8 @@ class MITMProxy:
         self.failed_rerecord_tests = []
         self.rerecorded_tests = []
         silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
+        script_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'timestamp_replacer.py')
+        self.ami.copy_file(script_filepath)
 
     def configure_proxy_in_demisto(self, username, password, server, proxy=''):
         client = demisto_client.configure(base_url=server, username=username,
@@ -227,6 +227,18 @@ class MITMProxy:
 
     def get_mock_file_size(self, filepath):
         return self.ami.check_output(['stat', '-c', '%s', filepath]).strip()
+
+    @staticmethod
+    def get_script_mode(is_record: bool) -> str:
+        """
+        Returns the string describing script mode for the SCRIPT_MODE env variable needed for the mitmdump initialization
+        Args:
+            is_record: A boolean indicating this is record mode or not
+
+        Returns:
+            'record' if is_record is True else 'playback'
+        """
+        return 'record' if is_record else 'playback'
 
     def has_mock_file(self, playbook_id):
         command = ["[", "-f", os.path.join(self.current_folder, get_mock_file_path(playbook_id)), "]"]
@@ -343,96 +355,137 @@ class MITMProxy:
             path (string): path override for the mock/log files.
             record (bool): Select proxy mode (record/playback)
         """
-        if self.process:
-            raise Exception("Cannot start proxy - already running.")
+        if self.is_proxy_listening():
+            self.logging_manager.debug('proxy service is already running, stopping it')
+            self.ami.call(['sudo', 'systemctl', 'stop', 'mitmdump'])
+        self.logging_manager.debug(f'Attempting to start proxy in {self.get_script_mode(record)} mode')
+        self.prepare_proxy_start(path, playbook_id, record)
+        # Start proxy server
+        self._start_proxy_and_wait_until_its_up(is_record=record)
 
+    def _start_proxy_and_wait_until_its_up(self, is_record: bool) -> None:
+        """
+        Starts mitmdump service and wait for it to listen to port 9997 with timeout of 5 seconds
+        Args:
+            is_record (bool):  Indicates whether this is a record run or not
+        """
+        self._start_mitmdump_service()
+        was_proxy_up = self.wait_until_proxy_is_listening()
+        if was_proxy_up:
+            self.logging_manager.debug(f'Proxy service started in {self.get_script_mode(is_record)} mode')
+        else:
+            self.logging_manager.error(f'Proxy failed to start after {self.TIME_TO_WAIT_FOR_PROXY_SECONDS} seconds')
+            self.get_mitmdump_service_status()
+
+    def _start_mitmdump_service(self) -> None:
+        """
+        Starts mitmdump service on the remote service
+        """
+        self.ami.call(['sudo', 'systemctl', 'start', 'mitmdump'])
+
+    def get_mitmdump_service_status(self) -> None:
+        """
+        Safely extract the current mitmdump status and logs it
+        """
+        try:
+            output = self.ami.check_output('systemctl status mitmdump'.split(), stderr=STDOUT)
+            self.logging_manager.debug(f'mitmdump service status output:\n{output.decode()}')
+        except CalledProcessError as exc:
+            self.logging_manager.debug(f'mitmdump service status output:\n{exc.output.decode()}')
+
+    def prepare_proxy_start(self,
+                            path: str,
+                            playbook_id: str,
+                            record: bool) -> bool:
+        """
+        Writes proxy server run configuration options to the remote host, the details of which include:
+        - Creating new tmp directory on remote machine if in record mode and moves the problematic keys file in to it
+        - Creating the mitmdump_rc file that includes the script mode, keys file path, mock file path and log file path
+          for the mitmdump service and puts it in '/home/ec2-user/mitmdump_rc' in the remote machine.
+        - starts the systemd mitmdump service
+
+        Args:
+            path: the path to the temp folder in which the record files should be created
+            playbook_id: The ID of the playbook that is tested
+            record: Indicates whether this is a record run or not
+        """
         path = path or self.current_folder
-        self.logging_manager.debug(f'Attempting to start proxy in {"record" if record else "playback"} mode')
+        folder_path = get_folder_path(playbook_id)
+
+        repo_problem_keys_path = os.path.join(self.repo_folder, folder_path, 'problematic_keys.json')
+        current_problem_keys_path = os.path.join(path, folder_path, 'problematic_keys.json')
+        log_file_path = os.path.join(path, get_log_file_path(playbook_id, record))
+        mock_file_path = os.path.join(path, get_mock_file_path(playbook_id))
+
+        file_content = f'export KEYS_FILE_PATH="{current_problem_keys_path if record else repo_problem_keys_path}"\n'
+        file_content += f'export SCRIPT_MODE={self.get_script_mode(record)}\n'
+        file_content += f'export MOCK_FILE_PATH="{mock_file_path}"\n'
+        file_content += f'export LOG_FILE_PATH="{log_file_path}"\n'
+
         # Create mock files directory
-        silence_output(self.ami.call, ['mkdir', os.path.join(path, get_folder_path(playbook_id))], stderr='null')
-
-        repo_problem_keys_filepath = os.path.join(
-            self.repo_folder, get_folder_path(playbook_id), 'problematic_keys.json'
-        )
-        current_problem_keys_filepath = os.path.join(path, get_folder_path(playbook_id), 'problematic_keys.json')
-
+        silence_output(self.ami.call, ['mkdir', os.path.join(path, folder_path)], stderr='null')
         # when recording, copy the `problematic_keys.json` for the test to current temporary directory if it exists
         # that way previously recorded or manually added keys will only be added upon and not wiped with an overwrite
         if record:
-            silence_output(
-                self.ami.call, ['mv', repo_problem_keys_filepath, current_problem_keys_filepath], stdout='null'
-            )
+            try:
+                silence_output(self.ami.call,
+                               ['mv', repo_problem_keys_path, current_problem_keys_path],
+                               stdout='null')
+            except CalledProcessError as e:
+                self.logging_manager.debug(f'Failed to move problematic_keys.json with exit code {e.returncode}')
 
-        script_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'timestamp_replacer.py')
-        remote_script_path = self.ami.copy_file(script_filepath)
+        return self._write_mitmdump_rc_file_to_host(file_content)
 
-        # if recording
-        # record with detect_timestamps and then rewrite mock file
-        if record:
-            actions = '-s {} '.format(remote_script_path)
-            actions += '--set script_mode=record '
-            actions += '--set detect_timestamps=true --set keys_filepath={} --save-stream-file'.format(
-                current_problem_keys_filepath
-            )
-        else:
-            actions = '-s {} '.format(remote_script_path)
-            actions += '--set script_mode=playback '
-            actions += '--set keys_filepath={} --server-replay-kill-extra --server-replay'.format(
-                repo_problem_keys_filepath
-            )
+    def _write_mitmdump_rc_file_to_host(self,
+                                        file_content: str) -> bool:
+        """
+        Does all needed preparation for starting the proxy service which include:
+        - Creating the mitmdump_rc file that includes the script mode, keys file path, mock file path and log file path
+          for the mitmdump service and puts it in '/home/ec2-user/mitmdump_rc' in the remote machine.
 
-        log_file = os.path.join(path, get_log_file_path(playbook_id, record))
-        # Handle proxy log output
-        debug_opt = f" | sudo tee -a {log_file}"
+        Args:
+            file_content: The content of the mitmdump_rc file that includes the script mode, keys file path,
+            mock file path and log file path
 
-        # all mitmproxy/mitmdump commands should have the 'source .bash_profile && ' prefix to ensure the PATH
-        # is correct when executing the command over ssh
-        # Configure proxy server
-        command = "source .bash_profile && mitmdump --ssl-insecure --verbose --listen-port {} {} {}{}".format(
-            self.PROXY_PORT, actions, os.path.join(path, get_mock_file_path(playbook_id)), debug_opt
-        )
-        command = command.split()
-
-        # Start proxy server
-        self.process = Popen(self.ami.add_ssh_prefix(command, "-t"), stdout=PIPE, stderr=PIPE)
-        self.process.poll()
-        if self.process.returncode is not None:
-            self.logging_manager.exception("Proxy process terminated unexpectedly.\n"
-                                           f"Exit code: {self.process.returncode}\noutputs:\n"
-                                           f"STDOUT\n{self.process.stdout.read()}"
-                                           f"\n\nSTDERR\n{self.process.stderr.read()}")
-        log_file_exists = False
-        seconds_since_init = 0
-        # Make sure process is up and running
-        while not log_file_exists and seconds_since_init < PROXY_PROCESS_INIT_TIMEOUT:
-            # Check if log file exist
-            log_file_exists = silence_output(self.ami.call, ['ls', log_file], stdout='null', stderr='null') == 0
-            time.sleep(PROXY_PROCESS_INIT_INTERVAL)
-            seconds_since_init += PROXY_PROCESS_INIT_INTERVAL
-        if not log_file_exists:
-            self.stop()
-            raise Exception("Proxy process took to long to go up.")
-        self.logging_manager.debug(f'Proxy process up and running. Took {seconds_since_init} seconds')
-
-        # verify that mitmdump process is listening on port 9997
+        Returns:
+            True if file was successfully copied to the server, else False
+        """
         try:
-            self.logging_manager.debug('verifying that mitmdump is listening on port 9997')
-            lsof_cmd = ['sudo', 'lsof', '-iTCP:9997', '-sTCP:LISTEN']
-            lsof_cmd_output = self.ami.check_output(lsof_cmd).decode().strip()
-            self.logging_manager.debug(f'{lsof_cmd_output=}')
+            self.ami.call(['echo', f"'{file_content}'", '>', os.path.join(AMIConnection.REMOTE_HOME, 'mitmdump_rc')])
+            return True
         except CalledProcessError:
-            self.logging_manager.error('No process listening on port 9997')
+            self.logging_manager.exception(
+                f'Could not copy arg file for mitmdump service to server {self.ami.public_ip},')
+        return False
+
+    def wait_until_proxy_is_listening(self):
+        """
+        Checks if the mitmdump service is listening, and raises an exception if 30 seconds pass without positive answer
+        """
+        for i in range(self.TIME_TO_WAIT_FOR_PROXY_SECONDS):
+            proxy_is_listening = self.is_proxy_listening()
+            if proxy_is_listening:
+                return True
+            time.sleep(1)
+        return False
+
+    def is_proxy_listening(self) -> bool:
+        """
+        Runs 'sudo lsof -iTCP:9997 -sTCP:LISTEN' on the remote machine and returns answer according to the results
+        Returns:
+            True if the ssh command return exit code 0 and False otherwise
+        """
+        try:
+            self.ami.check_output(['sudo', 'lsof', '-iTCP:9997', '-sTCP:LISTEN'])
+            return True
+        except CalledProcessError:
+            return False
 
     def stop(self):
-        if not self.process:
-            raise Exception("Cannot stop proxy - not running.")
-
-        self.logging_manager.debug('proxy.stop() was called')
-        self.process.send_signal(signal.SIGINT)  # Terminate proxy process
+        self.logging_manager.debug('Stopping mitmdump service')
+        if not self.is_proxy_listening():
+            self.logging_manager.debug('proxy service was already down.')
+            self.get_mitmdump_service_status()
+        else:
+            self.ami.call(['sudo', 'systemctl', 'stop', 'mitmdump'])
         self.ami.call(["rm", "-rf", "/tmp/_MEI*"])  # Clean up temp files
-
-        # Handle logs
-        self.logging_manager.debug(
-            f'proxy outputs:\n{self.process.stdout.read().decode()}\n{self.process.stderr.read().decode()}')
-
-        self.process = None

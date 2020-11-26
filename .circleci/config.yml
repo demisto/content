@@ -11,7 +11,7 @@ parameters:
     default: ""
   backward_compatibility:
     type: string
-    default: ""
+    default: "true"
   nightly:
     type: string
     default: ""
@@ -55,7 +55,7 @@ references:
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
-      BACKWARD_COMPATIBILITY: << pipeline.parameters.backward_compatibility >>
+      CHECK_BACKWARD: << pipeline.parameters.backward_compatibility >>
       MEM_CHECK: << pipeline.parameters.mem_check >>
       CONTRIB_BRANCH: << pipeline.parameters.contrib_branch >>
       CONTRIB_PACK_NAME: << pipeline.parameters.contrib_pack_name >>
@@ -236,6 +236,11 @@ references:
         export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
         zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
         rm -f $CIRCLE_ARTIFACTS/server*.log
+        if [ -f $CIRCLE_ARTIFACTS/logs/Run_Tests.log ];
+        then
+            zip -P $PSWD $CIRCLE_ARTIFACTS/logs/Run_Tests.zip $CIRCLE_ARTIFACTS/logs/Run_Tests.log
+            rm -f $CIRCLE_ARTIFACTS/logs/Run_Tests.log
+        fi
       when: always
 
   persist_to_workspace: &persist_to_workspace
@@ -260,7 +265,6 @@ references:
         ./Tests/scripts/pyflake.sh *.py
         find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
 
-        [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
         ./Tests/scripts/validate.sh
 
   run_unit_testing_and_lint: &run_unit_testing_and_lint
@@ -745,6 +749,7 @@ jobs:
                   ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
             - run:
                 name: Run Tests - Server 5.0
+                no_output_timeout: 5h
                 shell: /bin/bash
                 command: |
                   if [ -z $INSTANCE_WAS_CREATED ];
@@ -823,6 +828,7 @@ jobs:
                   ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
             - run:
                 name: Run Tests - 5.5
+                no_output_timeout: 5h
                 shell: /bin/bash
                 command: |
                   if [ -z $INSTANCE_WAS_CREATED ];
@@ -959,7 +965,7 @@ jobs:
                   echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
                   export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
                   echo "Demisto Marketplace filter=$TEMP"
-                  if [[ "$TEMP" == "true" ]];
+                  if [[ "$TEMP" == "true" || -n "${NIGHTLY}" ]];
                     then
                       echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
                       exit 0
