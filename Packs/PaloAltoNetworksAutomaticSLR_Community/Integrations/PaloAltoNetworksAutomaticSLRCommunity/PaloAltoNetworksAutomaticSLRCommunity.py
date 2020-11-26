@@ -1,5 +1,5 @@
 import demistomock as demisto  # noqa: F401
-import requests
+import xmltodict
 from CommonServerPython import *  # noqa: F401
 
 # Copyright (c) 2020
@@ -67,7 +67,7 @@ class PanOSXMLAPI(BaseClient):
 	def get_system_info(self):
 		return self.xmlapi_request_op('<show><system><info></info></system></show>')
 	
-	def xmlapi_request_op(self, cmd, xml_object=False):
+	def xmlapi_request_op(self, cmd, response_type='response', no_validate=False):
 		
 		# Map and construct query
 		params = {
@@ -81,47 +81,43 @@ class PanOSXMLAPI(BaseClient):
 			'POST',
 			'api',
 			params=params,
-			resp_type='text',
+			resp_type=response_type,
 			proxies=self.proxies,
 			timeout=self.params['ngfw_timeout']
 		)
 		
-		# Validate response from the API
-		result = self.xmlapi_request_validate(response)
-		
-		if result is True:
-			if xml_object is True:
-				xml = ET.fromstring(response)
-				return xml
-			else:
-				return response
+		if no_validate is True:
+			return response
 		else:
-			raise Exception(
-				'Could not validate API response! [panos_xmlapi_request_op() -> panos_xmlapi_request_validate()]')
+			# Validate response from the API
+			result = self.xmlapi_request_validate(response)
+			
+			if result is True:
+				return response
+			else:
+				raise Exception(
+					'Could not validate API response! [panos_xmlapi_request_op() -> panos_xmlapi_request_validate()]')
 	
 	def xmlapi_request_validate(self, response):
 		
 		# Load result into an XML object
-		xml = ET.fromstring(response)
+		result = xmltodict.parse(response.content)
 		
 		# Get API response status
-		status = xml.attrib['status']
+		status = result['response']['@status']
 		
 		if self.params['ngfw_verbose'] is True:
 			demisto.log('Got execution status back from API: ' + str(status))
-			demisto.log(str(response))
+			demisto.log(str(response.text))
 		
 		if "success" in status:
 			return True
 		else:
 			
-			message = None
-			
-			for _ in xml.findall('msg'):
-				message = xml.find('line').text
+			message = result['response']['msg']['line']
 			
 			raise Exception('API call encountered an error, received "' + str(
-				status) + '" as status code with error message: ' + str(message))
+				status) + ' " as status code with error message: ' + str(message))
 	
 	def get_stats_init_job_id(self):
 		
@@ -135,7 +131,7 @@ class PanOSXMLAPI(BaseClient):
 			'POST',
 			'api',
 			params=params,
-			resp_type='text',
+			resp_type='response',
 			proxies=self.proxies,
 			timeout=self.params['ngfw_timeout']
 		)
@@ -143,8 +139,8 @@ class PanOSXMLAPI(BaseClient):
 		result = self.xmlapi_request_validate(response)
 		
 		if result is True:
-			xml = ET.fromstring(response)
-			job = xml.find('./result/job').text
+			result = xmltodict.parse(response.content)
+			job = result['response']['result']['job']
 			return job
 		else:
 			raise Exception('Could not validate API response! [get_stats_init_job_id() -> xmlapi_request_validate()]')
@@ -163,7 +159,7 @@ class PanOSXMLAPI(BaseClient):
 			'POST',
 			'api',
 			params=params,
-			resp_type='text',
+			resp_type='response',
 			proxies=self.proxies,
 			timeout=self.params['ngfw_timeout']
 		)
@@ -171,9 +167,10 @@ class PanOSXMLAPI(BaseClient):
 		result = self.xmlapi_request_validate(response)
 		
 		if result is True:
-			xml = ET.fromstring(response)
-			status = xml.find('./result/job/status').text
-			progress = xml.find('./result/job/progress').text
+			resp = xmltodict.parse(response.content)
+			
+			status = resp['response']['result']['job']['status']
+			progress = resp['response']['result']['job']['progress']
 			
 			result = {
 				'status': status,
@@ -188,9 +185,10 @@ class PanOSXMLAPI(BaseClient):
 		
 		# Get firewall system name, serial number
 		system_info = self.get_system_info()
-		xml = ET.fromstring(str(system_info))
-		system_name = xml.find('./result/system/devicename').text
-		system_serial = xml.find('./result/system/serial').text
+		
+		resp = xmltodict.parse(system_info.content)
+		system_name = resp['response']['result']['system']['devicename']
+		system_serial = resp['response']['result']['system']['serial']
 		
 		time_stamp = time.strftime(DATE_FORMAT)
 		output_file = str(system_name) + '-' + str(system_serial) + '-' + str(time_stamp) + '-stats_dump.tar.gz'
@@ -364,12 +362,12 @@ class PanwCSP(BaseClient):
 def test_module(xmlapi):
 	# TODO: Rewrite test-module to be more relevant
 	response = xmlapi.get_system_info()
-	xml = ET.fromstring(response)
+	result = xmltodict.parse(response.content)
 	
-	system_name = xml.find('./result/system/hostname').text
-	system_serial = xml.find('./result/system/serial').text
+	hostname = result['response']['result']['system']['hostname']
+	serial = result['response']['result']['system']['serial']
 	
-	if system_name is not None and system_serial is not None:
+	if hostname is not None and serial is not None:
 		return demisto.results('ok')
 	else:
 		raise Exception('test_module() failed!')
@@ -379,36 +377,16 @@ def ngfw_get_system_info(xmlapi):
 	# response = json.loads(xml2json(xmlapi.get_system_info()))
 	
 	response = xmlapi.get_system_info()
-	xml = ET.fromstring(response)
+	result = xmltodict.parse(response.content)
 	
-	system_name = ''
-	system_serial = ''
-	sw_version = ''
-	
-	for elem in xml.findall('./result'):
-		system_name = elem.find('./system/hostname')
-		system_serial = elem.find('./system/serial')
-		sw_version = elem.find('./system/sw-version')
-	
-	if system_name is None:
-		raise Exception('Could not get value of system_name')
-	else:
-		name = system_name.text
-	
-	if system_serial is None:
-		raise Exception('Could not get value of system_name')
-	else:
-		serial = system_serial.text
-	
-	if sw_version is None:
-		raise Exception('Could not get value of system_name')
-	else:
-		version = sw_version.text
+	hostname = result['response']['result']['system']['hostname']
+	serial = result['response']['result']['system']['serial']
+	software = result['response']['result']['system']['sw-version']
 	
 	result = {
-		'hostname': name,
+		'hostname': hostname,
 		'serial': serial,
-		'software': version
+		'software': software
 	}
 	
 	readable_output = tableToMarkdown('Firewall Information', result)
