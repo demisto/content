@@ -144,7 +144,7 @@ def get_managed_accounts():
 
         })
 
-    entry_context = {'BeyondTrust.Account(val.AccountId && val.AccountId === obj.AccountId)': managed_accounts}
+    entry_context = {'BeyondTrust.Account(val.AccountID === obj.AccountID)': managed_accounts}
 
     return_outputs(tableToMarkdown('BeyondTrust Managed Accounts', data, headers, removeNull=True), entry_context,
                    managed_accounts)
