@@ -625,11 +625,11 @@ def get_file(entry_id):
     return file_name, file_bytes.decode('utf-8')
 
 
-def test_module(client: Client, params: dict, last_run: dict) -> str:
+def test_module(client: Client, params: dict) -> str:
     if params.get('isFetch', False):
         offset_in_minutes = int(params['time_zone'])
         last_fetch = get_fetch_time(
-            last_run, params.get('fetch_time', '3 days'),
+            {}, params.get('fetch_time', '3 days'),
             offset_in_minutes
         )
         fetch_incidents(client, params, last_fetch)
@@ -1182,7 +1182,7 @@ def main():
             demisto.setLastRun({'last_fetch': next_fetch})
             demisto.incidents(incidents)
         elif command == 'test-module':
-            demisto.results(test_module(client, params, demisto.getLastRun()))
+            demisto.results(test_module(client, params))
         elif command in commands:
             return commands[command](client, demisto.args())
         else:
