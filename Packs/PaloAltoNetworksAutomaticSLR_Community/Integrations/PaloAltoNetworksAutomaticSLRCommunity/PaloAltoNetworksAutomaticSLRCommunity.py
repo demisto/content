@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 import requests
+import xml.etree.ElementTree as ET
 from CommonServerPython import *  # noqa: F401
 
 # Copyright (c) 2020
