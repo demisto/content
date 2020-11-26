@@ -141,3 +141,12 @@ def test_module(mocker):
     mocker.patch('JiraV2.run_query', return_value={})
     result = module()
     assert result == 'ok'
+
+
+def test_get_remote_data(mocker):
+    from JiraV2 import get_remote_data_command
+    mocker.patch(
+        'JiraV2.get_issue',
+        return_value=('', '', {'fields': {'updated': '2020-11-25T16:29:37.277764067Z'}})
+    )
+    get_remote_data_command('id', '0')
