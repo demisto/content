@@ -53,10 +53,11 @@ class PanOSXMLAPI(BaseClient):
 		
 		# If using a custom port (e.g. when GlobalProtect Clientless and management are enabled on the same interface)
 		if self.params['ngfw_port'] == '443':
-			super().__init__(self.params['ngfw_host'] + '/api/', self.params['ngfw_tls_verify'])
+			base = self.params['ngfw_host'] + '/api/'
+			super().__init__(base, self.params['ngfw_tls_verify'])
 		else:
-			super().__init__(self.params['ngfw_host'].rstrip('/:') + ':'
-			                 + self.params['ngfw_port'] + '/api/', self.params['ngfw_tls_verify'])
+			base = self.params['ngfw_host'].rstrip('/:') + ':' + self.params['ngfw_port'] + '/api/'
+			super().__init__(base, self.params['ngfw_tls_verify'])
 		
 		# Use the XSOAR system proxy to route requests
 		if proxy is True:
@@ -227,8 +228,8 @@ class PanOSXMLAPI(BaseClient):
 class PanwCSP(BaseClient):
 	
 	def __init__(self, host, csp_key, verify, timeout, proxy, verbose, account_name=None, deployment_location=None,
-	             geographic_country=None, geographic_region=None, industry=None, language=None, prepared_by=None,
-	             requested_by=None, send_to=None):
+				geographic_country=None, geographic_region=None, industry=None, language=None, prepared_by=None,
+				requested_by=None, send_to=None):
 		
 		self.params = {
 			'csp_host': host,
@@ -349,11 +350,11 @@ class PanwCSP(BaseClient):
 		
 		return response
 	
-	def dump_csp_params(self, type='init'):
+	def dump_csp_params(self, req_type='init'):
 		
-		if 'init' in type:
+		if 'init' in req_type:
 			return self.params
-		elif 'slr' in type:
+		elif 'slr' in req_type:
 			return self.slr_params
 		else:
 			raise Exception('Invalid type passed to function, valid types are: init, slr')
@@ -404,8 +405,13 @@ def get_integration_params(csp, xmlapi):
 	slr_params = csp.dump_csp_params('slr')
 	ngfw_params = xmlapi.dump_ngfw_params()
 	
-	raw_result = {**csp_params, **ngfw_params, **slr_params, 'system_proxy': demisto.params().get('proxy'),
-	              'system_verbose': demisto.params().get('system_debug')}
+	raw_result = {
+		**csp_params,
+		**ngfw_params,
+		**slr_params,
+		'system_proxy': demisto.params().get('proxy'),
+		'system_verbose': demisto.params().get('system_debug')
+	}
 	
 	readable_output = tableToMarkdown('Integration Parameters', raw_result)
 	
@@ -432,7 +438,6 @@ def ngfw_generate_stats_dump(xmlapi):
 
 def ngfw_get_stats_dump_status(xmlapi, job_id):
 	state = False
-	result = None
 	
 	while not state:
 		demisto.log('Checking status for job ID: `' + str(job_id) + '`')
@@ -488,10 +493,7 @@ def upload_stats_to_panw(csp, input_file):
 	
 	send_to = demisto.params().get('slr_send_to')
 	slr_id = result['Id']
-	readable_output = 'Successfully uploaded "' + \
-	                  str(file_data[
-		                      'file_friendly_name']) + '" to Palo Alto Networks! The SLR Report will be emailed to ' + \
-	                  str(send_to) + ' (SLR Reference ID: `' + str(slr_id) + '`)'
+	readable_output = 'Success! The SLR Report will be emailed to ' + str(send_to) + ' (SLR ID: `' + str(slr_id) + '`)'
 	
 	context = {
 		'id': slr_id,
@@ -538,7 +540,12 @@ def main():
 			requests.packages.urllib3.disable_warnings()
 		
 		# Establish PANOS XMLAPI Class Connector
-		xmlapi = PanOSXMLAPI(ngfw_host, ngfw_port, ngfw_api_key, ngfw_tls_verify, ngfw_timeout, system_proxy,
+		xmlapi = PanOSXMLAPI(ngfw_host,
+		                     ngfw_port,
+		                     ngfw_api_key,
+		                     ngfw_tls_verify,
+		                     ngfw_timeout,
+		                     system_proxy,
 		                     system_verbose)
 		
 		# Establish Palo Alto Networks Customer Support Portal (CSP) Class Connector
