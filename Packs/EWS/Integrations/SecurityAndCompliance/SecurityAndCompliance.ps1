@@ -1056,6 +1056,8 @@ class SecurityAndComplianceClient {
             } elseif ($action -eq "Purge") {
                 $cmd_params.Purge = $true
                 $cmd_params.PurgeType = $purge_type
+                $cmd_params.Confirm = $false
+                $cmd_params.Force = $true
             } else {
                 throw "New action must include valid action - Preview/Purge"
             }
@@ -1241,8 +1243,8 @@ function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     $exchange_location = ArgToList $kwargs.exchange_location
     $exchange_location_exclusion = ArgToList $kwargs.exchange_location_exclusion
     $public_folder_location = ArgToList $kwargs.public_folder_location
-    $share_point_location = ArgToList $kwargs.exchange_location
-    $share_point_location_exclusion = ArgToList $kwargs.exchange_location_exclusion
+    $share_point_location = ArgToList $kwargs.share_point_location
+    $share_point_location_exclusion = ArgToList $kwargs.share_point_location_exclusion
     # Raw response
     $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.case, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
                                       $exchange_location, $exchange_location_exclusion, $public_folder_location, $share_point_location, $share_point_location_exclusion)
@@ -1327,7 +1329,7 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
         $script:SEARCH_ENTRY_CONTEXT = ParseSearchToEntryContext -search $raw_response -limit $kwargs.limit -all_results $all_results
     }
     # Human readable - Basic info
-    $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, RunBy
+    $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, RunBy, Status
     $human_readable = TableToMarkdown $md_columns  "$script:INTEGRATION_NAME - '$($kwargs.search_name)' search"
     # Human readable - Statistics
     $parsed_results = $entry_context[$script:SEARCH_ENTRY_CONTEXT].SuccessResults

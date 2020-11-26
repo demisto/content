@@ -73,6 +73,7 @@ script:
       description: Comma-separated list of mailboxes/distribution groups to include, or you can use the value "All" to include all. 
       isArray: true
       name: exchange_location
+      defaultValue: 'All'
       required: false
       secret: false
     - default: false
@@ -88,7 +89,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of SharePoint online sites to include. You can identify the sites by their URL value, or you can use the value "All" to include all sites. 
+      description: Comma-separated list of SharePoint online sites to include. You can identify the sites by their URL value, or you can use the value "All" to include all sites.
       isArray: true
       name: share_point_location
       required: false
@@ -584,7 +585,7 @@ script:
         - "Preview"
         - "Purge"
     - default: false
-      description: 'Purge type. Possible values are: "Soft Delete" and "Hard Delete". Default is "SoftDelete".'
+      description: 'Purge type. Possible values are: "Soft Delete" and "HardDelete". Default is "SoftDelete".'
       isArray: false
       name: purge_type
       required: false
@@ -830,7 +831,7 @@ script:
       description: Whether to print the results in the War Room. Default is "false".
       isArray: false
       name: results
-      required: true
+      required: false
       secret: false
       auto: PREDEFINED
       defaultValue: 'false'
