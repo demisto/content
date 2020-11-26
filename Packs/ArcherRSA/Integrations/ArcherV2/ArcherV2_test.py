@@ -28,9 +28,19 @@ XML_FOR_TEST = '<?xml version="1.0" encoding="utf-8"?>' + \
 GET_LEVEL_RES = [{"IsSuccessful": True, "RequestedObject": {"Id": 123}}]
 
 FIELD_DEFINITION_RES = [
-    {"IsSuccessful": True, "RequestedObject": {"Id": 1, "Type": 7, "Name": "External Links", "IsRequired": False}},
-    {"IsSuccessful": True, "RequestedObject": {"Id": 2, "Type": 1, "Name": "Device Name", "IsRequired": True,
-                                               "RelatedValuesListId": 8}}]
+    {
+        "IsSuccessful": True,
+        "RequestedObject": {
+            "Id": 1, "Type": 7, "Name": "External Links", "IsRequired": False
+        }
+    },
+    {
+        "IsSuccessful": True,
+        "RequestedObject": {
+            "Id": 2, "Type": 1, "Name": "Device Name", "IsRequired": True, "RelatedValuesListId": 8
+        }
+    }
+]
 
 GET_LEVELS_BY_APP = [
     {'level': 123, 'mapping': {'1': {
@@ -40,24 +50,29 @@ GET_LEVELS_BY_APP = [
             'IsRequired': True, 'RelatedValuesListId': 8}
     }}]
 
-GET_FIElD_DEFINITION_RES = {"RequestedObject":
-                                {"RelatedValuesListId": 62},
-                            "IsSuccessful": True,
-                            "ValidationMessages": []}
+GET_FIElD_DEFINITION_RES = {
+    "RequestedObject": {"RelatedValuesListId": 62},
+    "IsSuccessful": True,
+    "ValidationMessages": []
+}
 
-VALUE_LIST_RES = {"RequestedObject": {
-    "Children": [
-        {"Data": {"Id": 471, "Name": "Low", "IsSelectable": True}},
-        {"Data": {"Id": 472, "Name": "Medium", "IsSelectable": True}},
-        {"Data": {"Id": 473, "Name": "High", "IsSelectable": True}}]},
-    "IsSuccessful": True, "ValidationMessages": []}
+VALUE_LIST_RES = {
+    "RequestedObject": {
+        "Children": [
+            {"Data": {"Id": 471, "Name": "Low", "IsSelectable": True}},
+            {"Data": {"Id": 472, "Name": "Medium", "IsSelectable": True}},
+            {"Data": {"Id": 473, "Name": "High", "IsSelectable": True}}]},
+    "IsSuccessful": True, "ValidationMessages": []
+}
 
-VALUE_LIST_RES_FOR_SOURCE = {"RequestedObject": {
-    "Children": [
-        {"Data": {"Id": 471, "Name": "ArcSight", "IsSelectable": True}},
-        {"Data": {"Id": 472, "Name": "Medium", "IsSelectable": True}},
-        {"Data": {"Id": 473, "Name": "High", "IsSelectable": True}}]},
-    "IsSuccessful": True, "ValidationMessages": []}
+VALUE_LIST_RES_FOR_SOURCE = {
+    "RequestedObject": {
+        "Children": [
+            {"Data": {"Id": 471, "Name": "ArcSight", "IsSelectable": True}},
+            {"Data": {"Id": 472, "Name": "Medium", "IsSelectable": True}},
+            {"Data": {"Id": 473, "Name": "High", "IsSelectable": True}}]},
+    "IsSuccessful": True, "ValidationMessages": []
+}
 
 VALUE_LIST_FIELD_DATA = {
     "FieldId": 304, "ValuesList": [
@@ -65,9 +80,11 @@ VALUE_LIST_FIELD_DATA = {
         {"Id": 472, "Name": "Medium", "IsSelectable": True},
         {"Id": 473, "Name": "High", "IsSelectable": True}]}
 
-RES_WITH_ERRORS = {'ValidationMessages': [
-    {'ResourcedMessage': 'The Type field is a required field.'},
-    {'ResourcedMessage': 'The Device Name field is a required field.'}]}
+RES_WITH_ERRORS = {
+    'ValidationMessages': [
+        {'ResourcedMessage': 'The Type field is a required field.'},
+        {'ResourcedMessage': 'The Device Name field is a required field.'}]
+}
 
 GET_RECORD_RES_failed = {'ValidationMessages': [{'ResourcedMessage': 'No resource found.'}]}
 
