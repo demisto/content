@@ -885,7 +885,16 @@ def get_value_list_command(client: Client, args: Dict[str, str]):
     return_outputs(markdown, context, {})
 
 
-def upload_file_command(client: Client, args: Dict[str, str]):
+def upload_file_command(client: Client, args: Dict[str, str]) -> str:
+    """Uploading a file to archer as an attachment
+
+    Arguments:
+        client: A client to use in order to send the api call
+        args: demisto args
+
+    Returns:
+        An attachment id from Archer
+    """
     entry_id = args.get('entryId')
     file_name, file_bytes = get_file(entry_id)
     body = {'AttachmentName': file_name, 'AttachmentBytes': file_bytes}
@@ -1130,7 +1139,6 @@ def get_fetch_time(last_fetch: dict, first_fetch_time: str, offset: int = 0) -> 
             start_fetch = start_fetch - timedelta(minutes=offset)
     start_fetch = start_fetch.replace(tzinfo=None)
     return start_fetch.strftime(OCCURRED_FORMAT)
-    # return format_time(start_fetch, european_time)
 
 
 def main():
