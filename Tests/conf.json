@@ -3281,8 +3281,7 @@
         "Test-BPA_Integration": "Issue 28236",
         "CanaryTools Test": "Issue 30796",
         "Generic Webhook - Test": "Issue 30797",
-        "VxStream Test": "Issue 29280",
-        "palo_alto_firewall_test_pb": "Issue 27501"
+        "VxStream Test": "Issue 29280"
     },
     "skipped_integrations": {
 
