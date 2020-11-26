@@ -957,6 +957,21 @@ def get_incidents_command(client, args):
     )
 
 
+def get_endpoint_and_file_context(incident):
+    endpoint_context = {
+        'IPAddress': incident.get('host_ip')
+    }
+
+    file_context = {
+        'Name': incident.get('file_name'),
+        'SHA1': incident.get('file_sha256'),
+        'Path': incident.get('action_file_path'),
+        'MD5': incident.get('action_file_md5')
+    }
+
+    return endpoint_context, file_context
+
+
 def get_incident_extra_data_command(client, args):
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
@@ -1000,6 +1015,7 @@ def get_incident_extra_data_command(client, args):
     })
 
     context_output = {f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': incident}
+    endpoint_context, file_context = get_endpoint_and_file_context(incident)
     if account_context_output:
         context_output['Account(val.Username==obj.Username)'] = account_context_output
     if endpoint_context_output:
@@ -1397,6 +1413,18 @@ def get_audit_management_logs_command(client, args):
     )
 
 
+def create_endpoint_context(audit_logs):
+    endpoints = []
+    for log in audit_logs:
+        endpoints.append({
+            'ID': log.get('ENDPOINTID'),
+            'Hostname': log.get('ENDPOINTNAME'),
+            'Domain': log.get('DOMAIN')
+        })
+
+    return endpoints
+
+
 def get_audit_agent_reports_command(client, args):
     endpoint_ids = argToList(args.get('endpoint_ids'))
     endpoint_names = argToList(args.get('endpoint_names'))
@@ -1445,10 +1473,13 @@ def get_audit_agent_reports_command(client, args):
         sort_order=sort_order
     )
 
+    endpoint_context = create_endpoint_context(audit_logs)
+
     return (
         tableToMarkdown('Audit Agent Reports', audit_logs),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.AuditAgentReports': audit_logs
+            f'{INTEGRATION_CONTEXT_BRAND}.AuditAgentReports': audit_logs,
+            'Endpoint(val.ID && val.ID == obj.ID)': endpoint_context
         },
         audit_logs
     )
