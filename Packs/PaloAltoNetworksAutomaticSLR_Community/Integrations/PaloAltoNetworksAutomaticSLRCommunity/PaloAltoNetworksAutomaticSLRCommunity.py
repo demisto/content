@@ -390,10 +390,25 @@ def ngfw_get_system_info(xmlapi):
 		system_serial = elem.find('./system/serial')
 		sw_version = elem.find('./system/sw-version')
 	
+	if system_name is None:
+		raise Exception('Could not get value of system_name')
+	else:
+		name = system_name.text
+	
+	if system_serial is None:
+		raise Exception('Could not get value of system_name')
+	else:
+		serial = system_serial.text
+	
+	if sw_version is None:
+		raise Exception('Could not get value of system_name')
+	else:
+		version = sw_version.text
+	
 	result = {
-		'hostname': str(system_name.text),
-		'serial': str(system_serial.text),
-		'software': str(sw_version.text)
+		'hostname': name,
+		'serial': serial,
+		'software': version
 	}
 	
 	readable_output = tableToMarkdown('Firewall Information', result)
