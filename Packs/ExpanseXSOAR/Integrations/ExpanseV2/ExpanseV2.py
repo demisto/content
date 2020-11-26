@@ -138,13 +138,19 @@ class Client(BaseClient):
 
             params = None
 
+    def _get_utcnow(self) -> datetime:
+        """
+        Used to allow mocking for Unit Tests
+        """
+        return datetime.utcnow()
+
     def authenticate(self) -> None:
         """
         Perform authentication using API_KEY,
         stores token and stored timestamp in integration context,
         retrieves new token when expired
         """
-        current_utc_timestamp = int(datetime.utcnow().timestamp())
+        current_utc_timestamp = int(self._get_utcnow().timestamp())
         token_expiration = current_utc_timestamp + TOKEN_DURATION
 
         stored_token = demisto.getIntegrationContext()
@@ -937,7 +943,9 @@ def update_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults
     issue_update = client.update_issue(issue_id, update_type, value)
 
     return CommandResults(
-        outputs_prefix="Expanse.IssueUpdate", outputs_key_field="id", outputs=issue_update
+        outputs_prefix="Expanse.IssueUpdate",
+        outputs_key_field="id",
+        outputs={**issue_update, "issueId": issue_id}  # this adds the issue id to the resulting dict
     )
 
 
