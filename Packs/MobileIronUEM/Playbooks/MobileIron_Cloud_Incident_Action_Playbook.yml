@@ -1,0 +1,295 @@
+description: General Incident Actions Playbook
+id: MobileIron Cloud Incident Action Playbook
+inputs: []
+name: MobileIron Cloud Incident Action Playbook
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ed143101-77f4-4d49-866e-3d0db1f5f649
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: ed143101-77f4-4d49-866e-3d0db1f5f649
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      FORCE CHECKIN:
+      - "6"
+      RETIRE DEVICE:
+      - "4"
+      SEND MESSAGE:
+      - "7"
+      UNLOCK DEVICE:
+      - "3"
+      WIPE DEVICE:
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Device specific actions
+      id: 27ac70a2-e645-4565-8d38-24286959086f
+      iscommand: false
+      name: Select Action
+      type: condition
+      version: -1
+    taskid: 27ac70a2-e645-4565-8d38-24286959086f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${incident.deviceid}
+      platform:
+        simple: ${incident.os}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Unlock device action
+      id: f16bc630-54f4-480e-87c4-acc188633e60
+      iscommand: true
+      name: UNLOCK DEVICE
+      script: '|||mobileiron-cloud-unlock-device'
+      type: regular
+      version: -1
+    taskid: f16bc630-54f4-480e-87c4-acc188633e60
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device-id: {}
+      device_id:
+        simple: ${incident.deviceid}
+      platform:
+        simple: ${incident.os}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retire device action
+      id: bd78c017-0fd5-4111-8d02-b86bb5204359
+      iscommand: true
+      name: RETIRE DEVICE
+      script: '|||mobileiron-cloud-retire-device'
+      type: regular
+      version: -1
+    taskid: bd78c017-0fd5-4111-8d02-b86bb5204359
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${incident.deviceid}
+      platform:
+        simple: ${incident.os}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Wipe device action
+      id: 77706b31-1956-40dd-8b91-e42b7ce9f375
+      iscommand: true
+      name: WIPE DEVICE
+      script: '|||mobileiron-cloud-wipe-device'
+      type: regular
+      version: -1
+    taskid: 77706b31-1956-40dd-8b91-e42b7ce9f375
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${incident.deviceid}
+      platform:
+        simple: ${incident.os}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Force check-in action
+      id: 2ed041c6-a0db-4515-8b58-7fab63294962
+      iscommand: true
+      name: FORCE CHECKIN
+      script: '|||mobileiron-cloud-force-check-in'
+      type: regular
+      version: -1
+    taskid: 2ed041c6-a0db-4515-8b58-7fab63294962
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${incident.deviceid}
+      platform:
+        simple: ${incident.os}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Send message action
+      id: 8baa8296-fbe1-4dfc-810b-7774c6d9eaa7
+      iscommand: true
+      name: SEND MESSAGE
+      script: '|||mobileiron-cloud-send-message'
+      type: regular
+      version: -1
+    taskid: 8baa8296-fbe1-4dfc-810b-7774c6d9eaa7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 99e5c1a0-7d5a-40c7-8c53-ff65852f7cc4
+      iscommand: true
+      name: CLOSE
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 99e5c1a0-7d5a-40c7-8c53-ff65852f7cc4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_6_FORCE CHECKIN": 0.35
+    },
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 2100,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

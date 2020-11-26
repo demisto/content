@@ -1,0 +1,22 @@
+## MobileIron Core - Getting Started
+
+1. Log in to the MobileIron Core Admin console
+2. Open the `Users` top section
+3. Click on the `create local user` button. It is recommended to create a new user for the demisto integration specifically and not reuse
+an existing one.
+4. Make sure you enter all the details and keep note of the User ID (ex. demisto-api-user) and the password specifically.
+5. Click on the `Admins` top section
+6. Add the user you just created as an admin to the instance.
+6. When setting up the Demisto integration use User ID as the username and the password you defined as the MobileIron tenant credentials
+7. Click the `Test` button and ensure the connection can be established
+
+Refer to the API documentation at the MobileIron community for more details on setting up the API user.
+
+### MobileIron Cloud - Spaces
+
+In case you are dividing the devices into different spaces, it is important to make sure the integration
+points to the correct `Partition ID (Device Space ID)`.
+ 
+ You 
+should leave this value blank if you are not using spaces or you want the integration to automatically resolve the 
+default space id.  

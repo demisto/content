@@ -1,0 +1,22 @@
+{
+ "autorun": true,
+ "color": "#EC1D3A",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "MobileIron Core Device Incident",
+ "layout": "3272733e-a21a-49b4-8685-700ecfc68165",
+ "locked": false,
+ "name": "MobileIron Core Device Incident",
+ "playbookId": "MobileIron Core Incident Action Playbook",
+ "readonly": false,
+ "reputationCalc": 0,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}
