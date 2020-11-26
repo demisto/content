@@ -385,10 +385,10 @@ def ngfw_get_system_info(xmlapi):
 	system_serial = None
 	sw_version = None
 	
-	for _ in xml.findall('./result'):
-		system_name = xml.find('./result/system/hostname').text
-		system_serial = xml.find('./result/system/serial').text
-		sw_version = xml.find('./result/system/sw-version').text
+	for elem in xml.findall('./result'):
+		system_name = elem.find('./system/hostname').text
+		system_serial = elem.find('./system/serial').text
+		sw_version = elem.find('./system/sw-version').text
 	
 	result = {
 		'hostname': system_name,
