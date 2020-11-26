@@ -1,4 +1,5 @@
 from requests_oauthlib import OAuth1
+from dateparser import parse
 
 from CommonServerPython import *
 
@@ -688,10 +689,11 @@ def get_remote_data_command(id: str, lastUpdate: str) -> GetRemoteDataResponse:
     _, _, issue_raw_response = get_issue(issue_id=id)
 
     # Timestamp - Issue last modified in jira server side
-    jira_modified_date: datetime = parse_date_string(dict_safe_get(issue_raw_response,
-                                                                   ['fields', 'updated'], "", str))
+    jira_modified_date: datetime = parse(
+        str(dict_safe_get(issue_raw_response, ['fields', 'updated'], "", str))
+    ).replace(tzinfo=None)
     # Timestamp - Issue last sync in demisto server side
-    incident_modified_date: datetime = parse_date_string(lastUpdate)
+    incident_modified_date: datetime = parse(lastUpdate).replace(tzinfo=None)
 
     # Update incident only if issue modified in Jira server-side after the last sync
     if jira_modified_date > incident_modified_date:
