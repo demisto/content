@@ -162,9 +162,6 @@ inputs:
   description: The SHA256 hash value for the file to retrieve.
   playbookInputQuery:
 outputs:
-- contextPath: File
-  description: File sample object
-  type: string
 - contextPath: File.Size
   description: The size of the file.
   type: number
@@ -188,6 +185,15 @@ outputs:
   type: string
 - contextPath: File.SSDeep
   description: The SSDeep of the file.
+  type: string
+- contextPath: File.Extension
+  description: The file extension.
+  type: string
+- contextPath: File.EntryID
+  description: The file entry ID.
+  type: string
+- contextPath: File.Name
+  description: The file name.
   type: string
 tests:
 - Account Enrichment - Generic v2.1 - Test

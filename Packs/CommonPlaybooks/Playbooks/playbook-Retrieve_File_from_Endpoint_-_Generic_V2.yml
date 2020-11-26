@@ -207,12 +207,6 @@ inputs:
   description: The ID of the agent in the relevant integration (such as EDR).
   playbookInputQuery:
 outputs:
-- contextPath: File
-  description: File sample object
-  type: string
-- contextPath: 'File '
-  description: The file to sample.
-  type: string
 - contextPath: File.Size
   description: The size of the file.
   type: number
@@ -234,8 +228,17 @@ outputs:
 - contextPath: File.SHA512
   description: The SHA512 hash of the file.
   type: string
+- contextPath: File.EntryID
+  description: File entry ID.
+  type: string
+- contextPath: File.Extension
+  description: The file extension.
+  type: string
+- contextPath: File.Name
+  description: The file name.
+  type: string
 - contextPath: File.SSDeep
-  description: The SSDeep of the file.
+  description: The file SSDeep.
   type: string
 fromversion: 5.0.0
 tests:

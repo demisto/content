@@ -8,17 +8,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * GenericPolling
 
 ### Integrations
-* integration-Carbon_Black_Enterprise_Live_Response
 * carbonblackliveresponse
+* integration-Carbon_Black_Enterprise_Live_Response
 
 ### Scripts
 * Exists
 
 ### Commands
+* cb-get-file-from-endpoint
+* cb-session-create
 * cb-list-sessions
 * cb-session-close
-* cb-session-create
-* cb-get-file-from-endpoint
 
 ## Playbook Inputs
 ---
@@ -33,17 +33,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| File  | The file to sample. | string |
-| CbLiveResponse.File.Size | File size. | number |
-| CbLiveResponse.File.SHA1 | File SHA1. | string |
-| CbLiveResponse.File.SHA256 | File SHA256. | string |
-| CbLiveResponse.File.Name | File name. | string |
-| CbLiveResponse.File.SSDeep | File SSDeep. | string |
-| CbLiveResponse.File.EntryID | File EntryID. | string |
-| CbLiveResponse.File.Info | File info. | string |
-| CbLiveResponse.File.Type | File type. | string |
-| CbLiveResponse.File.MD5 | File MD5. | string |
-| CbLiveResponse.File.Extension | File extension. | string |
+| File.Size | The size of the file. | number |
+| File.Type | The type of the file. | string |
+| File.Info | General information of the file. | string |
+| File.MD5 | The MD5 hash of the file. | string |
+| File.SHA1 | The SHA1 hash of the file. | string |
+| File.SHA256 | The SHA256 hash of the file. | string |
+| File.SHA512 | The SHA512 hash of the file. | string |
+| File.SSDeep | The file SSDeep. | string |
+| File.Name | The file name. | string |
+| File.EntryID | File entry ID. | string |
+| File.Extension | The file extension. | string |
 
 ## Playbook Image
 ---

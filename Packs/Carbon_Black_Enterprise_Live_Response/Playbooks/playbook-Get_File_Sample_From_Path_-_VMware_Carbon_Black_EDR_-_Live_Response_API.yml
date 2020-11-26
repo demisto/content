@@ -463,38 +463,38 @@ inputs:
     C:\users\folder\file.txt
   playbookInputQuery:
 outputs:
-- contextPath: 'File '
-  description: The file to sample.
-  type: string
-- contextPath: CbLiveResponse.File.Size
-  description: File size.
+- contextPath: File.Size
+  description: The size of the file.
   type: number
-- contextPath: CbLiveResponse.File.SHA1
-  description: File SHA1.
+- contextPath: File.Type
+  description: The type of the file.
   type: string
-- contextPath: CbLiveResponse.File.SHA256
-  description: File SHA256.
+- contextPath: File.Info
+  description: General information of the file.
   type: string
-- contextPath: CbLiveResponse.File.Name
-  description: File name.
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
   type: string
-- contextPath: CbLiveResponse.File.SSDeep
-  description: File SSDeep.
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
   type: string
-- contextPath: CbLiveResponse.File.EntryID
-  description: File EntryID.
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
   type: string
-- contextPath: CbLiveResponse.File.Info
-  description: File info.
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
   type: string
-- contextPath: CbLiveResponse.File.Type
-  description: File type.
+- contextPath: File.SSDeep
+  description: The file SSDeep.
   type: string
-- contextPath: CbLiveResponse.File.MD5
-  description: File MD5.
+- contextPath: File.Name
+  description: The file name.
   type: string
-- contextPath: CbLiveResponse.File.Extension
-  description: File extension.
+- contextPath: File.EntryID
+  description: File entry ID.
+  type: string
+- contextPath: File.Extension
+  description: The file extension.
   type: string
 tests:
 - Carbon Black Live Response Test

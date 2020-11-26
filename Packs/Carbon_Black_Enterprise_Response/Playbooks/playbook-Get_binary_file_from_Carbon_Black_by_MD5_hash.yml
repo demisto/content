@@ -193,44 +193,38 @@ inputs:
   description: 'MD5 of the binary file to be retrieved '
   playbookInputQuery:
 outputs:
-- contextPath: File.InternalName
-  description: The internal name.
+- contextPath: File.Size
+  description: The size of the file.
+  type: number
+- contextPath: File.Type
+  description: The type of the file.
   type: string
-- contextPath: File.ServerAddedTimestamp
-  description: The timestamp when the server was added.
-  type: string
-- contextPath: File.Name
-  description: The binary name.
-  type: string
-- contextPath: File.Extension
-  description: The binary extension.
-  type: string
-- contextPath: File.Timestamp
-  description: The binary timestamp.
-  type: string
-- contextPath: File.Hostname
-  description: The binary hostname.
-  type: string
-- contextPath: File.Description
-  description: The binary description.
-  type: string
-- contextPath: File.LastSeen
-  description: LThe lst time the binary was seen.
-  type: string
-- contextPath: File.Path
-  description: The binary path.
-  type: string
-- contextPath: File.ProductName
-  description: The product name.
-  type: string
-- contextPath: File.OS
-  description: The OS.
+- contextPath: File.Info
+  description: General information of the file.
   type: string
 - contextPath: File.MD5
-  description: The MD5 hash of the binary.
+  description: The MD5 hash of the file.
   type: string
-- contextPath: File.Company
-  description: Name of the company that released a binary.
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: string
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: string
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: string
+- contextPath: File.SSDeep
+  description: The file SSDeep.
+  type: string
+- contextPath: File.Name
+  description: The file name.
+  type: string
+- contextPath: File.EntryID
+  description: File entry ID.
+  type: string
+- contextPath: File.Extension
+  description: The file extension.
   type: string
 tests:
 - Carbon Black Response Test

@@ -35,8 +35,6 @@ This playbook does not use any commands.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| File | The file to sample. | string |
-| File  | The file to sample. | string |
 | File.Size | The size of the file. | number |
 | File.Type | The type of the file. | string |
 | File.Info | General information of the file.  | string |
@@ -44,7 +42,10 @@ This playbook does not use any commands.
 | File.SHA1 | The SHA1 hash of the file. | string |
 | File.SHA256 | The SHA256 hash of the file. | string |
 | File.SHA512 | The SHA512 hash of the file. | string |
-| File.SSDeep | The SSDeep of the file. | string |
+| File.EntryID | The file entry ID. | string |
+| File.Extension | The file extension. | string |
+| File.Name | The file name. | string |
+| File.SSDeep | File SSDeep. | string |
 
 ## Playbook Image
 ---

@@ -6,8 +6,8 @@ This playbook retrieves a file sample from an endpoint using the following playb
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Get File Sample From Path - Generic V2
 * Get File Sample By Hash - Generic v3
+* Get File Sample From Path - Generic V2
 
 ### Integrations
 This playbook does not use any integrations.
@@ -35,8 +35,6 @@ This playbook does not use any commands.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| File | File sample object | string |
-| File  | The file to sample. | string |
 | File.Size | The size of the file. | number |
 | File.Type | The type of the file. | string |
 | File.Info | General information of the file. | string |
@@ -44,7 +42,10 @@ This playbook does not use any commands.
 | File.SHA1 | The SHA1 hash of the file. | string |
 | File.SHA256 | The SHA256 hash of the file. | string |
 | File.SHA512 | The SHA512 hash of the file. | string |
-| File.SSDeep | The SSDeep of the file. | string |
+| File.EntryID | File entry ID. | string |
+| File.Extension | The file extension. | string |
+| File.Name | The file name. | string |
+| File.SSDeep | The file SSDeep. | string |
 
 ## Playbook Image
 ---

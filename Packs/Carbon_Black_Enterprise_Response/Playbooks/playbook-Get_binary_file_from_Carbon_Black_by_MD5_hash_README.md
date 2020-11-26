@@ -27,19 +27,17 @@ This playbook does not use any sub-playbooks.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| File.InternalName | The internal name. | string |
-| File.ServerAddedTimestamp | The timestamp when the server was added. | string |
-| File.Name | The binary name. | string |
-| File.Extension | The binary extension. | string |
-| File.Timestamp | The binary timestamp. | string |
-| File.Hostname | The binary hostname. | string |
-| File.Description | The binary description. | string |
-| File.LastSeen | LThe lst time the binary was seen. | string |
-| File.Path | The binary path. | string |
-| File.ProductName | The product name. | string |
-| File.OS | The OS. | string |
-| File.MD5 | The MD5 hash of the binary. | string |
-| File.Company | Name of the company that released a binary. | string |
+| File.Size | The size of the file. | number |
+| File.Type | The type of the file. | string |
+| File.Info | General information of the file. | string |
+| File.MD5 | The MD5 hash of the file. | string |
+| File.SHA1 | The SHA1 hash of the file. | string |
+| File.SHA256 | The SHA256 hash of the file. | string |
+| File.SHA512 | The SHA512 hash of the file. | string |
+| File.SSDeep | The file SSDeep. | string |
+| File.Name | The file name. | string |
+| File.EntryID | File entry ID. | string |
+| File.Extension | The file extension. | string |
 
 ## Playbook Image
 ---
