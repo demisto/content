@@ -52,9 +52,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.11.0"
+      CONTENT_VERSION: "20.11.1"
       SERVER_VERSION: "6.0.0"
-      GIT_SHA1: "dd304e3091c9d0ef1b5ab8ec6ebcdc1b7be15cdf" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "8068abfc3865fcfd9c6efd4002982ba1fd91885c" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -401,6 +401,7 @@ references:
           demisto-sdk upload -i Packs/HelloWorld/Layouts/layoutscontainer-Hello_World_Test_Layout.json --insecure
           demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_Incident_Test.json --insecure
           demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert_Test.json --insecure
+          demisto-sdk upload -i Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json --insecure
 
 
   sdk_nightly_jobs: &sdk_nightly_jobs
@@ -1006,7 +1007,7 @@ jobs:
             GCS_BUILD_BUCKET="marketplace-ci-build"
             GCS_MARKET_BUCKET="marketplace-dist"
 
-            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb $GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}"
+            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}"
             rm $GCS_PATH
           when: on_success
       - *store_artifacts
@@ -1145,7 +1146,7 @@ jobs:
           name: Unlock HelloWorld integration and playbook
           command: python3 Tests/sdknightly/unlock_entity.py integration HelloWorld
       - run:
-          name: Create and upload incident type, incident field and a layout to Cortex XSOAR
+          name: Create and upload incident type, incident field, mapper and a layout to Cortex XSOAR
           command: python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $CIRCLE_ARTIFACTS
       - *upload_entities_to_cortex_xsoar
       - run:
@@ -1155,6 +1156,7 @@ jobs:
             demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
             demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Incident Test" --insecure -f
             demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Alert Test" --insecure -f
+            demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Test - Incoming Mapper" --insecure -f
       - run:
           name: Format the entities
           command: demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
