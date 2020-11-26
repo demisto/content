@@ -85,8 +85,8 @@ class Client(BaseClient):
                 add_to_the_previous_pram = f';{param}'
                 continue
             parameter_conditions.append({
-                'key': param.partition('=')[0],
-                'value': param.partition('=')[-1]})
+                'key': param.split('=', 1)[0],
+                'value': param.split('=', 1)[1]})
         return parameter_conditions
 
     def add_parameters_to_question(self, question_response, parameters):

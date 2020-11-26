@@ -153,14 +153,14 @@ CREATE_ACTION_WITH_PARAMETERS_RES = {
     'package_spec':
         {'source_id': 12345,
          'parameters': [{
-             'key': '$1',
-             'value': 'true'
+             'key': '$3',
+             'value': 'otherValue'
          }, {
              'key': '$2',
              'value': 'value'
          }, {
-             'key': '$3',
-             'value': 'otherValue'}]},
+             'key': '$1',
+             'value': 'true'}]},
     'name': 'action-name via Demisto API',
     'target_group': {
         'name': 'target-group-name'},
