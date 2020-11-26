@@ -90,7 +90,7 @@ def tag_user_on_pr(reviewers: set, pr_number: str, pack: str, pack_files: set, g
         sys.exit(1)
 
 
-def get_pr_tagged_reviewers(pr_number, github_token, verify_ssl):
+def get_pr_tagged_reviewers(pr_number, github_token, verify_ssl, pack):
     result_tagged_reviewers = set()
 
     comments_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues/{pr_number}/comments"
@@ -104,7 +104,7 @@ def get_pr_tagged_reviewers(pr_number, github_token, verify_ssl):
 
     comments_info = response.json()
     github_actions_bot_comments = [c.get('body', '') for c in comments_info if c.get('user', {}).get(
-        'login') == "github-actions[bot]" and PR_COMMENT_PREFIX in c.get('body', '')]
+        'login') == "github-actions[bot]" and f"### Your contributed {pack} {PR_COMMENT_PREFIX}\n" in c.get('body', '')]
 
     for comment in github_actions_bot_comments:
         tagged_reviewers = [line.lstrip("- @").rstrip("\n").lower() for line in comment.split('\n') if
@@ -118,10 +118,10 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
     modified_packs, modified_files = get_pr_modified_files_and_packs(pr_number=pr_number, github_token=github_token,
                                                                      verify_ssl=verify_ssl)
     pr_author = get_pr_author(pr_number=pr_number, github_token=github_token, verify_ssl=verify_ssl)
-    tagged_packs_reviewers = get_pr_tagged_reviewers(pr_number=pr_number, github_token=github_token,
-                                                     verify_ssl=verify_ssl)
 
     for pack in modified_packs:
+        tagged_packs_reviewers = get_pr_tagged_reviewers(pr_number=pr_number, github_token=github_token,
+                                                         verify_ssl=verify_ssl, pack=pack)
         reviewers = set()
         pack_metadata_path = os.path.join(PACKS_FULL_PATH, pack, PACK_METADATA)
 
