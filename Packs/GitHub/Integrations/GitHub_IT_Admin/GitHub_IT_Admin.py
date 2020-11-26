@@ -11,11 +11,6 @@ DEFAULT_INCOMING_MAPPER = "User Profile - GitHub (Incoming)"
 
 
 class Client(BaseClient):
-    """
-    Client will implement the service API,
-    and should not contain any Demisto logic.
-    Should only do requests and return data.
-    """
 
     def __init__(self, base_url, token, org, headers, ok_codes=None, verify=True, proxy=False):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers)
@@ -30,7 +25,7 @@ class Client(BaseClient):
 
     def http_request(self, method, url_suffix, params=None, data=None, ok_codes=None, resp_type='json'):
         if not ok_codes:
-            ok_codes=self.ok_codes
+            ok_codes = self.ok_codes
         res = self._http_request(
             method,
             url_suffix,
@@ -116,36 +111,10 @@ def github_handle_error(e):
         return error_code, error_message
 
 
-def test_module(client, args):
-    """
-    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
-
-    Args:
-        client: GitHub client
-
-    Returns:
-        'ok' if test passed, anything else will fail the test.
-    """
-
-    """result = client.http_request(method,url_suffix)
-    if res.status_code == 200:
-        return 'ok'
-    else:
-        raise Exception"""
-
-    uri = f'scim/v2/organizations/{encode_string_results(client.org)}/Users/1234'
-    res = client.http_request(method='GET', url_suffix=uri)
-    res_text = res.text
-    if 'documentation_url' in res_text:
-        errortext = "URL or Organization Name " + str(client.org) + " Not Found."
-        raise Exception(str(res.status_code) + " " + str(errortext))
-    else:
-        uri = ""
-        res = client.http_request(method='GET', url_suffix=uri)
-        if res.status_code == 200:
-            return 'ok', None, None
-        else:
-            raise Exception(f"{res.status_code} - {res.text}")
+def test_module(client):
+    uri = ""
+    client.http_request(method='GET', url_suffix=uri)
+    return 'ok'
 
 
 def get_user_command(client, args, mapper_in):
@@ -364,7 +333,7 @@ def main():
     mapper_in = params.get('mapper-in', DEFAULT_INCOMING_MAPPER)
     mapper_out = params.get('mapper-out', DEFAULT_OUTGOING_MAPPER)
     is_create_enabled = params.get("create-user-enabled")
-    is_enable_disable_enabled = params.get("disable-user-enabled")
+    is_disable_enabled = params.get("disable-user-enabled")
     is_update_enabled = demisto.params().get("update-user-enabled")
     create_if_not_exists = demisto.params().get("create-if-not-exists")
 
@@ -391,7 +360,7 @@ def main():
             ok_codes=(200, 201, 204)
         )
         if command == 'test-module':
-            test_module(client, args)
+            return_results(test_module(client))
 
         elif command == 'iam-get-user':
             user_profile = get_user_command(client, args, mapper_in)
@@ -407,7 +376,7 @@ def main():
             return_results(user_profile)
 
         elif command == 'iam-disable-user':
-            user_profile = disable_user_command(client, args, mapper_out, is_enable_disable_enabled)
+            user_profile = disable_user_command(client, args, mapper_out, is_disable_enabled)
             return_results(user_profile)
 
         elif command == 'iam-enable-user':
@@ -418,9 +387,9 @@ def main():
         #elif command == 'get-mapping-fields':
          #   return_results(get_mapping_fields_command(client))
 
-    except Exception:
+    except Exception as e:
         # For any other integration command exception, return an error
-        return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
+        return_error(f'Failed to execute {command} command. Exception: {e}. Traceback: {traceback.format_exc()}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

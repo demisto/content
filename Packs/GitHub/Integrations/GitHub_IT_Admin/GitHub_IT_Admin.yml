@@ -34,8 +34,8 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Enable/Disable User Commands Enabled
-  name: enable-disable-user-enabled
+  display: Disable User Commands Enabled
+  name: disable-user-enabled
   required: false
   type: 8
 - defaultvalue: 'true'

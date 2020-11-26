@@ -6,7 +6,7 @@
   "User Profile": {
    "dontMapEventToLabels": true,
    "internalMapping": {
-    "emails": {
+    "email": {
      "complex": null,
      "simple": "email"
     },

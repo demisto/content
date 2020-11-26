@@ -1,5 +1,8 @@
+Note: This integration should be used along with our IAM premium pack. For further details, visit our IAM pack documentation.
 GitHub Integration consists of a set of API endpoints that allow customers to automate provisioning of GitHub organization membership.
 This integration was integrated and tested with version v2 of GitHub IT Admin
+For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
+
 ## Configure GitHub IT Admin on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -11,427 +14,228 @@ This integration was integrated and tested with version v2 of GitHub IT Admin
 | url | GitHub URL https://&lt;domain&gt;.github.com/ | True |
 | token | token | True |
 | insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
-| org | organization name | False |
-| customMappingCreateUser | Custom Mapping for Create User | False |
-| customMappingUpdateUser | Custom Mapping for UpdateUser | False |
+| create-user-enabled | Create User Command Enabled | False |
+| update-user-enabled | Update User Command Enabled | False |
+| disable-user-enabled | Disable User Commands Enabled | False |
+| mapper-in | Incoming Mapper | True |
+| mapper-out | Outgoing Mapper | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
+* To allow the integration to access the mapper from within the code, as required by the ILM pack, both mappers have to be configured in their proper respective fields and not in the "Mapper (outgoing)" dropdown list selector.
+
+
+4. Click **Test** to check that you are able to connect to the integration.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### get-user
+### iam-create-user
 ***
-Get a user detail
+Creates a user.
 
 
 #### Base Command
 
-`get-user`
+`iam-create-user`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scim | SCIM content in JSON format | Required | 
+| user-profile | User Profile indicator details. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GetUser | unknown | Command context path | 
-| GetUser.active | boolean | Gives the active status of user. Can be true of false. | 
-| GetUser.brand | string | Name of the Integration | 
-| GetUser.details | string | Gives the user Profile information if the API is success else error message | 
-| GetUser.email | string | Value of email ID passed as argument | 
-| GetUser.errorCode | number | HTTP error response code | 
-| GetUser.errorMessage | string | Reason why the API is failed | 
-| GetUser.id | string | Value of id passed as argument | 
-| GetUser.instanceName | string | Name of the instance used for testing | 
-| GetUser.success | boolean | Status of the result. Can be true or false. | 
-| GetUser.userName | string | Value of username passed as argument | 
+| IAM.Vendor.active | Boolean | If true, the employee's status is active, otherwise false. | 
+| IAM.Vendor.brand | String | Name of the integration. | 
+| IAM.Vendor.details | string | Indicates if the API was successful or provides error information. | 
+| IAM.Vendor.email | String | The employee's email address. | 
+| IAM.Vendor.errorCode | Number | HTTP error response code. | 
+| IAM.Vendor.errorMessage | String | Reason why the API failed. | 
+| IAM.Vendor.id | String | The employee's user ID in the app. | 
+| IAM.Vendor.instanceName | string | Name of the integration instance. | 
+| IAM.Vendor.success | Boolean | Indicates if the command executed successfully. | 
+| IAM.Vendor.username | String | The employee's username in the app. | 
 
 
 #### Command Example
-```!get-user scim={"id":"83695e8e-c68c-11ea-9fde-b2f42c33cd6b"} using=GitHubITAdmin```
-
-#### Context Example
-```
-{
-    "GetUser": {
-        "active": true,
-        "brand": "GitHub IT Admin",
-        "details": {
-            "active": true,
-            "emails": [
-                {
-                    "primary": true,
-                    "type": "work",
-                    "value": "mona.octocat@okta.example.com"
-                },
-                {
-                    "type": "home",
-                    "value": "XoarOkat123@okta.example.com"
-                }
-            ],
-            "externalId": null,
-            "id": "83695e8e-c68c-11ea-9fde-b2f42c33cd6b",
-            "meta": {
-                "created": "2020-07-15T04:15:39.000-07:00",
-                "lastModified": "2020-07-15T04:15:39.000-07:00",
-                "location": "https://api.github.com/scim/v2/organizations/test-sso-scim/Users/83695e8e-c68c-11ea-9fde-b2f42c33cd6b",
-                "resourceType": "User"
-            },
-            "name": {
-                "familyName": "Xoar12345",
-                "givenName": "cotex1235"
-            },
-            "schemas": [
-                "urn:ietf:params:scim:schemas:core:2.0:User"
-            ],
-            "userName": "Xoar.test1234995@paloaltonetworks.com"
-        },
-        "email": "mona.octocat@okta.example.com",
-        "errorCode": null,
-        "errorMessage": null,
-        "id": "83695e8e-c68c-11ea-9fde-b2f42c33cd6b",
-        "instanceName": "GitHubITAdmin",
-        "success": true,
-        "username": "Xoar.test1234995@paloaltonetworks.com"
-    }
-}
-```
+```!iam-create-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\", \"lastname\":\"Test\",\"firstname\":\"Demisto\"} ```
 
 #### Human Readable Output
+### Create User Results (GitHub IT Admin)
+|brand|instanceName|success|active|id|username|email|details|
+|---|---|---|---|---|---|---|---|
+| GitHub IT Admin | GitHub IT Admin_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | testdemisto2@paloaltonetworks.com | testdemisto2@paloaltonetworks.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:54:30.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br/>credentials: {"provider": {"type": "OKTA", "name": "OKTA"}}<br/>_links: {"suspend": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/suspend", "method": "POST"}, "schema": {"href": "https://panw-test.oktapreview.com/api/v1/meta/schemas/user/osc8zfz6plq7b0r830h7"}, "resetPassword": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/reset_password", "method": "POST"}, "reactivate": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/reactivate", "method": "POST"}, "self": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7"}, "type": {"href": "https://panw-test.oktapreview.com/api/v1/meta/types/user/oty8zfz6plq7b0r830h7"}, "deactivate": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/deactivate", "method": "POST"}} |
 
->### Get GitHub User:
->|brand|instanceName|success|active|id|username|email|details|
->|---|---|---|---|---|---|---|---|
->| GitHub IT Admin | GitHubITAdmin | true | true | 83695e8e-c68c-11ea-9fde-b2f42c33cd6b | Xoar.test1234995@paloaltonetworks.com | mona.octocat@okta.example.com | schemas: urn:ietf:params:scim:schemas:core:2.0:User<br/>id: 83695e8e-c68c-11ea-9fde-b2f42c33cd6b<br/>externalId: null<br/>userName: Xoar.test1234995@paloaltonetworks.com<br/>name: {"givenName": "cotex1235", "familyName": "Xoar12345"}<br/>emails: {'value': 'mona.octocat@okta.example.com', 'type': 'work', 'primary': True},<br/>{'value': 'XoarOkat123@okta.example.com', 'type': 'home'}<br/>active: true<br/>meta: {"resourceType": "User", "created": "2020-07-15T04:15:39.000-07:00", "lastModified": "2020-07-15T04:15:39.000-07:00", "location": "https://api.github.com/scim/v2/organizations/test-sso-scim/Users/83695e8e-c68c-11ea-9fde-b2f42c33cd6b"} |
 
 
-### create-user
+### iam-update-user
 ***
-Creates a user
+Updates an existing user with the data passed in the user-profile argument.
 
 
 #### Base Command
 
-`create-user`
+`iam-update-user`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scim | SCIM content in JSON format | Required | 
-| customMapping | An optional custom mapping that takes custom values in the SCIM data into the integration. | Optional | 
+| user-profile | A User Profile indicator. | Required | 
+| create-if-not-exists | When true, the user will be created when the passed User Profile doesn't exist in Active Directory. Default is 'true'. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CreateUser | Unknown | Command context path | 
-| CreateUser.active | boolean | Gives the active status of user. Can be true of false. | 
-| CreateUser.brand | string | Name of the Integration | 
-| CreateUser.details | string | Gives the raw response from API | 
-| CreateUser.email | string | Value of email ID passed as argument | 
-| CreateUser.errorCode | number | HTTP error response code | 
-| CreateUser.errorMessage | string | Reason why the API is failed | 
-| CreateUser.instanceName | string | Name of the instance used for testing | 
-| CreateUser.id | string | Value of id passed as argument | 
-| CreateUser.success | boolean | Status of the result. Can be true or false. | 
-| CreateUser.username | string | Value of username passed as argument | 
+| IAM.Vendor.active | Boolean | If true, indicates that the employee's status is active. | 
+| IAM.Vendor.brand | String | Name of the integration. | 
+| IAM.Vendor.details | string | Indicates if the API was successful or provides error information. | 
+| IAM.Vendor.email | String | The employee's email address. | 
+| IAM.Vendor.errorCode | Number | HTTP error response code. | 
+| IAM.Vendor.errorMessage | String | Reason why the API failed. | 
+| IAM.Vendor.id | String | The employee's user ID in the app. | 
+| IAM.Vendor.instanceName | string | Name of the integration instance. | 
+| IAM.Vendor.success | Boolean | True indicates that the command was executed successfully. | 
+| IAM.Vendor.username | String | The employee's username in the app. | 
 
 
 #### Command Example
-```!create-user scim={"userName":"cortexXoar27July123@paloaltonetworks.com","name":{"familyName":"cortex27123","givenName":"XoarJuly123"},"emails":[{"value":"cotexXoar27July123@paloaltonetworks.com","type":"work","primary":true}]} using=GitHubITAdmin```
-
-#### Context Example
-```
-{
-    "CreateUser": {
-        "active": true,
-        "brand": "GitHub IT Admin",
-        "details": {
-            "active": true,
-            "emails": [
-                {
-                    "primary": true,
-                    "type": "work",
-                    "value": "cotexXoar27July123@paloaltonetworks.com"
-                }
-            ],
-            "externalId": null,
-            "id": "9d0311e2-d004-11ea-8e50-4722a13dac29",
-            "meta": {
-                "created": "2020-07-27T05:28:02.000-07:00",
-                "lastModified": "2020-07-27T05:28:02.000-07:00",
-                "location": "https://api.github.com/scim/v2/organizations/test-sso-scim/Users/9d0311e2-d004-11ea-8e50-4722a13dac29",
-                "resourceType": "User"
-            },
-            "name": {
-                "familyName": "cortex27123",
-                "givenName": "XoarJuly123"
-            },
-            "schemas": [
-                "urn:ietf:params:scim:schemas:core:2.0:User"
-            ],
-            "userName": "cortexXoar27July123@paloaltonetworks.com"
-        },
-        "email": "cotexXoar27July123@paloaltonetworks.com",
-        "errorCode": null,
-        "errorMessage": null,
-        "id": "9d0311e2-d004-11ea-8e50-4722a13dac29",
-        "instanceName": "GitHubITAdmin",
-        "success": true,
-        "username": "cortexXoar27July123@paloaltonetworks.com"
-    }
-}
-```
+```!iam-update-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\", \"firstname\":\"Demisto-Test\"}```
 
 #### Human Readable Output
+### Update User Results (GitHub IT Admin)
+|brand|instanceName|success|active|id|username|email|details|
+|---|---|---|---|---|---|---|---|
+| GitHub IT Admin | GitHub IT Admin_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | testdemisto2@paloaltonetworks.com | testdemisto2@paloaltonetworks.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "Demisto-Test", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto2@paloaltonetworks.com"}<br/>credentials: {"provider": {"type": "OKTA", "name": "OKTA"}}<br/>_links: {"suspend": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/suspend", "method": "POST"}, "schema": {"href": "https://panw-test.oktapreview.com/api/v1/meta/schemas/user/osc8zfz6plq7b0r830h7"}, "resetPassword": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/reset_password", "method": "POST"}, "reactivate": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/reactivate", "method": "POST"}, "self": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7"}, "type": {"href": "https://panw-test.oktapreview.com/api/v1/meta/types/user/oty8zfz6plq7b0r830h7"}, "deactivate": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/deactivate", "method": "POST"}} |
 
->### Create GitHub User:
->|brand|instanceName|success|active|id|username|email|details|
->|---|---|---|---|---|---|---|---|
->| GitHub IT Admin | GitHubITAdmin | true | true | 9d0311e2-d004-11ea-8e50-4722a13dac29 | cortexXoar27July123@paloaltonetworks.com | cotexXoar27July123@paloaltonetworks.com | schemas: urn:ietf:params:scim:schemas:core:2.0:User<br/>id: 9d0311e2-d004-11ea-8e50-4722a13dac29<br/>externalId: null<br/>userName: cortexXoar27July123@paloaltonetworks.com<br/>name: {"givenName": "XoarJuly123", "familyName": "cortex27123"}<br/>emails: {'value': 'cotexXoar27July123@paloaltonetworks.com', 'type': 'work', 'primary': True}<br/>active: true<br/>meta: {"resourceType": "User", "created": "2020-07-27T05:28:02.000-07:00", "lastModified": "2020-07-27T05:28:02.000-07:00", "location": "https://api.github.com/scim/v2/organizations/test-sso-scim/Users/9d0311e2-d004-11ea-8e50-4722a13dac29"} |
 
 
-### update-user
+### iam-get-user
 ***
-Update a user
+Retrieves a single user resource.
 
 
 #### Base Command
 
-`update-user`
+`iam-get-user`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| oldScim | Old SCIM content in JSON format | Required | 
-| newScim | New SCIM content in JSON format | Required | 
-| customMapping | An optional custom mapping that takes custom values in the SCIM data into the integration. | Optional | 
+| user-profile | A User Profile indicator. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| UpdateUser | Unknown | Command context path | 
-| UpdateUser.active | boolean | Gives the active status of user. Can be true of false. | 
-| UpdateUser.brand | string | Name of the Integration | 
-| UpdateUser.details | string | Gives the raw response from API | 
-| UpdateUser.email | string | Value of email ID passed as argument | 
-| UpdateUser.errorCode | number | HTTP error response code | 
-| UpdateUser.errorMessage | string | Reason why the API is failed | 
-| UpdateUser.id | string | Value of id passed as argument | 
-| UpdateUser.instanceName | string | Name of the instance used for testing | 
-| UpdateUser.success | boolean | Status of the result. Can be true or false. | 
-| UpdateUser.username | string | Value of username passed as argument | 
+| IAM.Vendor.active | Boolean | When true, indicates that the employee's status is active. | 
+| IAM.Vendor.brand | String | Name of the integration. | 
+| IAM.Vendor.details | string | Indicates if the API was successful or provides error information. | 
+| IAM.Vendor.email | String | The employee's email address. | 
+| IAM.Vendor.errorCode | Number | HTTP error response code. | 
+| IAM.Vendor.errorMessage | String | Reason why the API failed. | 
+| IAM.Vendor.id | String | The employee's user ID in the app. | 
+| IAM.Vendor.instanceName | string | Name of the integration instance. | 
+| IAM.Vendor.success | Boolean | When true, indicates that the command was executed successfully. | 
+| IAM.Vendor.username | String | The employee's username in the app. | 
 
 
 #### Command Example
-```!update-user oldScim={"id":"83695e8e-c68c-11ea-9fde-b2f42c33cd6b"} newScim={"emails":[{"value":"XoarOkat12345@okta.example.com","type":"home"}]} using=GitHubITAdmin```
-
-#### Context Example
-```
-{
-    "UpdateUser": {
-        "active": true,
-        "brand": "GitHub IT Admin",
-        "details": {
-            "active": true,
-            "emails": [
-                {
-                    "primary": true,
-                    "type": "work",
-                    "value": "mona.octocat@okta.example.com"
-                },
-                {
-                    "type": "home",
-                    "value": "XoarOkat12345@okta.example.com"
-                }
-            ],
-            "externalId": null,
-            "id": "83695e8e-c68c-11ea-9fde-b2f42c33cd6b",
-            "meta": {
-                "created": "2020-07-15T04:15:39.000-07:00",
-                "lastModified": "2020-07-15T04:15:39.000-07:00",
-                "location": "https://api.github.com/scim/v2/organizations/test-sso-scim/Users/83695e8e-c68c-11ea-9fde-b2f42c33cd6b",
-                "resourceType": "User"
-            },
-            "name": {
-                "familyName": "Xoar12345",
-                "givenName": "cotex1235"
-            },
-            "schemas": [
-                "urn:ietf:params:scim:schemas:core:2.0:User"
-            ],
-            "userName": "Xoar.test1234995@paloaltonetworks.com"
-        },
-        "email": null,
-        "errorCode": null,
-        "errorMessage": null,
-        "id": "83695e8e-c68c-11ea-9fde-b2f42c33cd6b",
-        "instanceName": "GitHubITAdmin",
-        "success": true,
-        "username": null
-    }
-}
-```
+```!iam-get-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}```
 
 #### Human Readable Output
+### Get User Results (GitHub IT Admin)
+|brand|instanceName|success|active|id|username|email|details|
+|---|---|---|---|---|---|---|---|
+| GitHub IT Admin | GitHub IT Admin_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | testdemisto2@paloaltonetworks.com | testdemisto2@paloaltonetworks.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "Demisto-Test", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto2@paloaltonetworks.com"}<br/>credentials: {"provider": {"type": "OKTA", "name": "OKTA"}}<br/>_links: {"suspend": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/suspend", "method": "POST"}, "schema": {"href": "https://panw-test.oktapreview.com/api/v1/meta/schemas/user/osc8zfz6plq7b0r830h7"}, "resetPassword": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/reset_password", "method": "POST"}, "reactivate": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/reactivate", "method": "POST"}, "self": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7"}, "type": {"href": "https://panw-test.oktapreview.com/api/v1/meta/types/user/oty8zfz6plq7b0r830h7"}, "deactivate": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7/lifecycle/deactivate", "method": "POST"}} |
 
->### Updated GitHub User:
->|brand|instanceName|success|active|id|details|
->|---|---|---|---|---|---|
->| GitHub IT Admin | GitHubITAdmin | true | true | 83695e8e-c68c-11ea-9fde-b2f42c33cd6b | schemas: urn:ietf:params:scim:schemas:core:2.0:User<br/>id: 83695e8e-c68c-11ea-9fde-b2f42c33cd6b<br/>externalId: null<br/>userName: Xoar.test1234995@paloaltonetworks.com<br/>name: {"givenName": "cotex1235", "familyName": "Xoar12345"}<br/>emails: {'value': 'mona.octocat@okta.example.com', 'type': 'work', 'primary': True},<br/>{'value': 'XoarOkat12345@okta.example.com', 'type': 'home'}<br/>active: true<br/>meta: {"resourceType": "User", "created": "2020-07-15T04:15:39.000-07:00", "lastModified": "2020-07-15T04:15:39.000-07:00", "location": "https://api.github.com/scim/v2/organizations/test-sso-scim/Users/83695e8e-c68c-11ea-9fde-b2f42c33cd6b"} |
 
 
-### disable-user
+
+### iam-disable-user
 ***
-Disable a user
+Delete an active user.
 
 
 #### Base Command
 
-`disable-user`
+`iam-disable-user`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scim | SCIM content in JSON format | Required | 
+| user-profile | A User Profile indicator. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DisableUser | Unknown | Command context path | 
-| DisableUser.active | boolean | Gives the active status of user. Can be true of false. | 
-| DisableUser.brand | string | Name of the Integration | 
-| DisableUser.details | string | Gives the raw response from API in case of error | 
-| DisableUser.email | string | Value of email ID passed as argument | 
-| DisableUser.errorCode | number | HTTP error response code | 
-| DisableUser.errorMessage | string | Reason why the API is failed | 
-| DisableUser.id | string | Value of id passed as argument | 
-| DisableUser.instanceName | string | Name the instance used for testing | 
-| DisableUser.success | boolean | Status of the result. Can be true or false. | 
-| DisableUser.username | string | Value of username passed as argument | 
+| IAM.Vendor.active | Boolean | When true, indicates that the employee's status is active. | 
+| IAM.Vendor.brand | String | Name of the integration. | 
+| IAM.Vendor.details | string | Indicates if the API was successful or provides error information. | 
+| IAM.Vendor.email | String | The employee's email address. | 
+| IAM.Vendor.errorCode | Number | HTTP error response code. | 
+| IAM.Vendor.errorMessage | String | Reason why the API failed. | 
+| IAM.Vendor.id | String | The employee's user ID in the app. | 
+| IAM.Vendor.instanceName | string | Name of the integration instance. | 
+| IAM.Vendor.success | Boolean | When true, indicates that the command was executed successfully. | 
+| IAM.Vendor.username | String | The employee's username in the app. | 
 
 
 #### Command Example
-```!disable-user scim={"id":"034fde2c-d004-11ea-893c-7ff712fe8044"} using=GitHubITAdmin```
-
-#### Context Example
-```
-{
-    "DisableUser": {
-        "active": false,
-        "brand": "GitHub IT Admin",
-        "details": null,
-        "email": null,
-        "errorCode": null,
-        "errorMessage": null,
-        "id": "034fde2c-d004-11ea-893c-7ff712fe8044",
-        "instanceName": "GitHubITAdmin",
-        "success": true,
-        "username": null
-    }
-}
-```
+```!iam-disable-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}```
 
 #### Human Readable Output
+### Disable User Results (GitHub IT Admin)
+|brand|instanceName|success|active|id|username|email|details|
+|---|---|---|---|---|---|---|---|
+| GitHub IT Admin | GitHub IT Admin_instance_1 | true | false | 00uujxnbh3uJw4tWA0h7 | testdemisto2@paloaltonetworks.com | testdemisto2@paloaltonetworks.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "Demisto-Test", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto2@paloaltonetworks.com"}<br/>credentials: {"provider": {"type": "OKTA", "name": "OKTA"}}<br/>_links: {"self": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7"}} |
 
->### Disable GitHub User:
->|brand|instanceName|success|active|id|
->|---|---|---|---|---|
->| GitHub IT Admin | GitHubITAdmin | true | false | 034fde2c-d004-11ea-893c-7ff712fe8044 |
 
 
-### enable-user
+### iam-enable-user
 ***
-Enable a user
+Create a deprovisioned user.
 
 
 #### Base Command
 
-`enable-user`
+`iam-enable-user`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scim | SCIM content in JSON format | Required | 
+| user-profile | A User Profile indicator. | Required | 
+| create-if-not-exists | When true, the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| EnableUser | unknown | Command context path | 
-| EnableUser.active | boolean | Gives the active status of user. Can be true of false | 
-| EnableUser.brand | string | Name of the Integration | 
-| EnableUser.details | string | Gives the response from API | 
-| EnableUser.email | string | Value of email ID passed as argument | 
-| EnableUser.errorCode | number | HTTP error response code | 
-| EnableUser.errorMessage | string | Reason why the API is failed | 
-| EnableUser.id | string | Value of id passed as argument | 
-| EnableUser.instanceName | string | Name the instance used for testing | 
-| EnableUser.success | boolean | Status of the result. Can be true or false | 
-| EnableUser.username | string | Value of username passed as argument | 
+| IAM.Vendor.active | Boolean | When true, indicates that the employee's status is active. | 
+| IAM.Vendor.brand | String | Name of the integration. | 
+| IAM.Vendor.details | string | Indicates if the API was successful or provides error information. | 
+| IAM.Vendor.email | String | The employee's email address. | 
+| IAM.Vendor.errorCode | Number | HTTP error response code. | 
+| IAM.Vendor.errorMessage | String | Reason why the API failed. | 
+| IAM.Vendor.id | String | The employee's user ID in the app. | 
+| IAM.Vendor.instanceName | string | Name of the integration instance. | 
+| IAM.Vendor.success | Boolean | When true, indicates that the command was executed successfully. | 
+| IAM.Vendor.username | String | The employee's username in the app. | 
 
 
 #### Command Example
-```!enable-user scim={"userName":"cortexXoar271July12@paloaltonetworks.com","name":{"familyName":"cortex27112","givenName":"XoarJuly112"},"emails":[{"value":"cotexXoar27July112@paloaltonetworks.com","type":"work","primary":true}]} using=GitHubITAdmin```
-
-#### Context Example
-```
-{
-    "EnableUser": {
-        "active": true,
-        "brand": "GitHub IT Admin",
-        "details": {
-            "active": true,
-            "emails": [
-                {
-                    "primary": true,
-                    "type": "work",
-                    "value": "cotexXoar27July112@paloaltonetworks.com"
-                }
-            ],
-            "externalId": null,
-            "id": "a132f566-d004-11ea-9e06-cf16a1980fc8",
-            "meta": {
-                "created": "2020-07-27T05:28:09.000-07:00",
-                "lastModified": "2020-07-27T05:28:09.000-07:00",
-                "location": "https://api.github.com/scim/v2/organizations/test-sso-scim/Users/a132f566-d004-11ea-9e06-cf16a1980fc8",
-                "resourceType": "User"
-            },
-            "name": {
-                "familyName": "cortex27112",
-                "givenName": "XoarJuly112"
-            },
-            "schemas": [
-                "urn:ietf:params:scim:schemas:core:2.0:User"
-            ],
-            "userName": "cortexXoar271July12@paloaltonetworks.com"
-        },
-        "email": "cotexXoar27July112@paloaltonetworks.com",
-        "errorCode": null,
-        "errorMessage": null,
-        "id": "a132f566-d004-11ea-9e06-cf16a1980fc8",
-        "instanceName": "GitHubITAdmin",
-        "success": true,
-        "username": "cortexXoar271July12@paloaltonetworks.com"
-    }
-}
-```
+```!iam-enable-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}```
 
 #### Human Readable Output
+### Enable User Results (GitHub IT Admin)
+|brand|instanceName|success|active|id|username|email|details|
+|---|---|---|---|---|---|---|---|
+| GitHub IT Admin | GitHub IT Admin_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | testdemisto2@paloaltonetworks.com | testdemisto2@paloaltonetworks.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: DEPROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "Demisto-Test", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto2@paloaltonetworks.com"}<br/>credentials: {"provider": {"type": "OKTA", "name": "OKTA"}}<br/>_links: {"self": {"href": "https://panw-test.oktapreview.com/api/v1/users/00uujxnbh3uJw4tWA0h7"}} |
 
->### Create GitHub User:
->|brand|instanceName|success|active|id|username|email|details|
->|---|---|---|---|---|---|---|---|
->| GitHub IT Admin | GitHubITAdmin | true | true | a132f566-d004-11ea-9e06-cf16a1980fc8 | cortexXoar271July12@paloaltonetworks.com | cotexXoar27July112@paloaltonetworks.com | schemas: urn:ietf:params:scim:schemas:core:2.0:User<br/>id: a132f566-d004-11ea-9e06-cf16a1980fc8<br/>externalId: null<br/>userName: cortexXoar271July12@paloaltonetworks.com<br/>name: {"givenName": "XoarJuly112", "familyName": "cortex27112"}<br/>emails: {'value': 'cotexXoar27July112@paloaltonetworks.com', 'type': 'work', 'primary': True}<br/>active: true<br/>meta: {"resourceType": "User", "created": "2020-07-27T05:28:09.000-07:00", "lastModified": "2020-07-27T05:28:09.000-07:00", "location": "https://api.github.com/scim/v2/organizations/test-sso-scim/Users/a132f566-d004-11ea-9e06-cf16a1980fc8"} |
 
