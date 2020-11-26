@@ -1,0 +1,40 @@
+{
+   "items":[
+      {
+         "id":"a28c7ee1-8ad9-4b5c-8f15-4d913436ce18",
+         "createdAt":"2020-11-11T08:18:09.971Z",
+         "updatedAt":"2020-11-11T08:18:09.971Z",
+         "properties":{
+            "fileName":"testfile",
+            "sha256":"04BC382643BD49C5ADF1A7C763CF91A2C6840601DCA0757CA40F5D390BAEF45B"
+         },
+         "comment":"new before demo",
+         "type":"sha256"
+      },
+      {
+         "id":"718e991d-a99f-4193-b263-4eeebcac46fe",
+         "createdAt":"2020-11-10T12:10:49.384Z",
+         "updatedAt":"2020-11-10T12:10:49.384Z",
+         "properties":{
+            "certificateSigner":"notme"
+         },
+         "comment":"fordemo",
+         "type":"certificateSigner"
+      },
+      {
+         "id":"f047c584-949a-4a59-aebd-9999ce323c1d",
+         "createdAt":"2020-11-08T14:00:18.574Z",
+         "updatedAt":"2020-11-08T14:00:18.574Z",
+         "properties":{
+            "path":"c:\\test2.exe"
+         },
+         "comment":"Test-Noam",
+         "type":"path"
+      }
+   ],
+   "pages":{
+      "current":1,
+      "size":3,
+      "maxSize":100
+   }
+}
