@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
 	{
-            "integrations": "Sophos Central",
+            "integrations": "sophos_central",
             "playbookID": "playbook-SophosCentral_Test",
             "fromversion": "5.0.0"
         },
