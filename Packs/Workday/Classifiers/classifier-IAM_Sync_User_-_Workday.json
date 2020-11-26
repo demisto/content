@@ -118,7 +118,7 @@
     },
     "Prehire Flag": {
      "complex": null,
-     "simple": "Hide_from_GAL"
+     "simple": "Prehire_Flag"
     },
     "Rehired Employee": {
      "complex": null,
