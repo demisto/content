@@ -1,5 +1,5 @@
 import demistomock as demisto  # noqa: F401
-# import xmltodict
+import xmltodict
 from CommonServerPython import *  # noqa: F401
 
 # Copyright (c) 2020
