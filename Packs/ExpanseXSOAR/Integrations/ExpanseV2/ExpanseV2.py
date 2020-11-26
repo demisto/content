@@ -1411,7 +1411,7 @@ def manage_asset_tags_command(client: Client, args: Dict[str, Any]) -> CommandRe
         [tag_ids.append(t['id']) for t in client.list_tags() if t['name'] in tag_names]
     tags: List[str] = list(set(tag_ids))
     if len(tags) < 1:
-        raise ValueError('Must provide tag IDs or names')
+        raise ValueError('Must provide valid tag IDs or names')
 
     client.manage_asset_tags(mapped_asset_type, operation_type, asset_id, tags)
     return CommandResults(
@@ -1729,7 +1729,7 @@ def ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ip_data_list: List[Dict[str, Any]] = []
 
     for ip in ips:
-        ip_data = next(client.get_ips(params={'inetSearch': f"{ip}"}), None)
+        ip_data = next(client.get_ips(params={'inetSearch': f"{ip}", "limit": 1}), None)
         if ip_data is None:
             continue
 
