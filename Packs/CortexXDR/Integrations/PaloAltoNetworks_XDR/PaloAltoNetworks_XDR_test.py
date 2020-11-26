@@ -1373,3 +1373,31 @@ def test_sort_by_key__main_key_and_fallback_key_and_additional():
     ]
 
     assert expected_result == sort_by_key(list_to_sort, "main_key", "fallback_key")
+
+
+def test_get_modified_remote_data_command(requests_mock):
+    """
+    Given:
+        - an XDR client
+        - arguments - lastUpdate time
+        - raw incidents (result of client.get_incidents)
+    When
+        - running get_modified_remote_data_command
+    Then
+        - the method is returning a list of incidents IDs that were modified
+    """
+    from PaloAltoNetworks_XDR import get_modified_remote_data_command, Client
+
+    get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'lastUpdate': '2020-11-18T13:16:52.005381+02:00'
+    }
+
+    response = get_modified_remote_data_command(client, args)
+
+    assert response.modified_incident_ids == ['1', '2']
