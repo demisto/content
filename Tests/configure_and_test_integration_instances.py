@@ -1174,7 +1174,7 @@ def instance_testing(build: Build, all_module_instances, pre_update):
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
-        testing_client = build.servers[0].reconnect_client
+        testing_client = build.servers[0].reconnect_client()
         # If there is a failure, __test_integration_instance will print it
         success, _ = __test_integration_instance(testing_client, instance)
         if not success:
