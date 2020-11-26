@@ -153,14 +153,14 @@ CREATE_ACTION_WITH_PARAMETERS_RES = {
     'package_spec':
         {'source_id': 12345,
          'parameters': [{
-             'key': '$3',
-             'value': 'otherValue'
+             'key': '$1',
+             'value': 'true'
          }, {
              'key': '$2',
              'value': 'value'
          }, {
-             'key': '$1',
-             'value': 'true'}]},
+             'key': '$3',
+             'value': 'otherValue'}]},
     'name': 'action-name via Demisto API',
     'target_group': {
         'name': 'target-group-name'},
@@ -312,15 +312,23 @@ def test_get_question_result_invalid_input():
 data_test_parse_action_parameters = [
     ('key1=value1', [{'key': 'key1', 'value': 'value1'}]),
     ('key1=value1=value1', [{'key': 'key1', 'value': 'value1=value1'}]),
-    ('key1=value1=value1;key2=value2', [{'key': 'key2', 'value': 'value2'}, {'key': 'key1', 'value': 'value1=value1'}]),
-    ('key1=value1=value1;key2=valu;e2', [{'key': 'key2', 'value': 'valu;e2'}, {'key': 'key1', 'value': 'value1=value1'}]),
-    ('key1=value1=value1;key2=ab=;c', [{'key': 'key2', 'value': 'ab=;c'}, {'key': 'key1', 'value': 'value1=value1'}])
+    ('key1=value1=value1;key2=value2', [{'key': 'key1', 'value': 'value1=value1'}, {'key': 'key2', 'value': 'value2'}]),
+    ('key1=value1=value1;key2=valu;e2', [{'key': 'key1', 'value': 'value1=value1'},{'key': 'key2', 'value': 'valu;e2'}]),
+    ('key1=value1=value1;key2=ab=;c', [{'key': 'key1', 'value': 'value1=value1'}, {'key': 'key2', 'value': 'ab=;c'}])
 
 ]
 
 
 @ pytest.mark.parametrize('parameters, accepted_result', data_test_parse_action_parameters)
 def test_parse_action_parameters(parameters, accepted_result):
+    """Tests parse_action_parameters function
+    Given
+        string which contains keys and values separated by '=' and ';'.
+    When
+        - When calling the "parse_action_parameters" function to extract it to a dictionary
+    Then
+        - validate that everything is extracted properly even if there is within the value "=" or ";"
+    """
     client = Client(BASE_URL, 'username', 'password', 'domain')
     result = client.parse_action_parameters(parameters)
     assert result == accepted_result
