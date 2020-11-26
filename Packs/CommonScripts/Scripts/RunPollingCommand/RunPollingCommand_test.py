@@ -33,6 +33,10 @@ IDS_ARGS = [
         ('ids', ['a', 'b', 'c'], u'arg1, arg2,arg3', [u'value1', u'value2', u'value3']),
         {'ids': 'a,b,c', 'arg1': 'value1', 'arg2': 'value2', 'arg3': 'value3'},
     ),
+    (
+        ('ids', ['a', 'b', 'c'], 'arg1, arg2,arg3', ['value1', 'value2', 'value3']),
+        {'ids': 'a,b,c', 'arg1': 'value1', 'arg2': 'value2', 'arg3': 'value3'},
+    )
 ]
 
 
