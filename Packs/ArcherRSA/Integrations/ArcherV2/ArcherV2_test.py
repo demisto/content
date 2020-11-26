@@ -232,8 +232,7 @@ def test_get_record_success(requests_mock):
 
 def test_record_to_incident():
     client = Client(BASE_URL, '', '', '', '')
-    incident, incident_created_time = client.record_to_incident(INCIDENT_RECORD, 75, 'Date/Time Reported')
-    assert incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ') == '2018-03-26T10:03:32Z'
+    incident = client.record_to_incident(INCIDENT_RECORD, 75, 'Date/Time Reported')
     assert incident['name'] == 'RSA Archer Incident: 227602'
     assert incident['occurred'] == '2018-03-26T10:03:32Z'
 

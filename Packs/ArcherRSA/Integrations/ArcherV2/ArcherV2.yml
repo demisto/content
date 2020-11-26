@@ -34,19 +34,24 @@ configuration:
   name: applicationId
   required: true
   type: 0
-- defaultvalue: Date Created
+- defaultvalue: Date/Time Occurred
   display: Application date field for fetch
   hidden: false
   name: applicationDateField
   required: true
   type: 0
+- display: Use European Time format (dd/mm/yyyy) instead of the American one
+  name: useEuropeanTime
+  defaultvalue: "false"
+  type: 8
+  required: false
 - defaultvalue: '10'
   display: Maximum number of incidents to pull per fetch
   hidden: false
   name: fetch_limit
   required: false
   type: 0
-- defaultvalue: 10 minutes
+- defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
     months, 1 year)
   hidden: false
@@ -522,10 +527,6 @@ script:
     description: prints Archer's integration cache.
     execution: false
     name: archer-print-cache
-  - deprecated: false
-    description: Test fetch incidents.
-    execution: false
-    name: archer-fetch-test
   dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: true
