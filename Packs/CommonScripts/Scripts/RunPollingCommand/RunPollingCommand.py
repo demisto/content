@@ -38,4 +38,3 @@ def main(args):
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main(demisto.args())
-    # main({key: val.encode('utf-8') for key, val in demisto.args().items()})

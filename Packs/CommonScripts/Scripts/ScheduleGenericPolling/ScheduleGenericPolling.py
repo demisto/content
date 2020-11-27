@@ -1,17 +1,9 @@
-import json
-import random
-import re
-import string
-from datetime import datetime, timedelta
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
 # Returns a comma-separated string representation of a list
 # Possible inputs: null, int, str, bytes, ["","",...], [int, int], 'a,b,...', '"a","b",...', '["","",...]'
-
-
 def parseIds(idsArg):
     if idsArg is None:
         return
@@ -46,12 +38,12 @@ if interval <= 0 or timeout <= 0:
 if not demisto.dt(demisto.context(), dt):
     if not demisto.dt(demisto.context(), re.sub('\(.*\)', '', dt)):
         return_error("Incorrect dt path: no ids found")
-    demisto.results(
-        "Warning: no ids matching the dt condition were found.\nVerify that the condition is correct and that all ids have finished running.")
+    demisto.results("Warning: no ids matching the dt condition were found.\nVerify that the condition is correct and "
+                    "that all ids have finished running.")
 
 res = demisto.executeCommand("ScheduleCommand", {
-    'command': '''!GenericPollingScheduledTask pollingCommand="%s" pollingCommandArgName="%s"%s ids="%s" pendingIds="%s" interval="%s" timeout="%s" tag="%s"
-                additionalPollingCommandArgNames="%s" additionalPollingCommandArgValues="%s"'''
+    'command': '''!GenericPollingScheduledTask pollingCommand="%s" pollingCommandArgName="%s"%s ids="%s" pendingIds="%s"
+     interval="%s" timeout="%s" tag="%s" additionalPollingCommandArgNames="%s" additionalPollingCommandArgValues="%s"'''
                % (pollingCommand, pollingCommandArgName, playbookId, ids.replace('"', r'\"'), dt.replace('"', r'\"'),
                   interval, timeout, tag, args_names, args_values),
     'cron': '*/{} * * * *'.format(interval),
@@ -59,4 +51,3 @@ res = demisto.executeCommand("ScheduleCommand", {
 })
 if isError(res[0]):
     return_error(res)
-
