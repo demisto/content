@@ -390,32 +390,6 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def fetch_incidents_command(client: Client, first_fetch_time: int, args: Dict[str, Any]) -> CommandResults:
-    events_limit = arg_to_int(
-        arg=args.get('events_limit'),
-        arg_name='events_limit',
-        required=False
-    )
-    min_severity = int(args.get('min_severity', 2))
-    start_time = args.get('from_date')
-
-    if not events_limit or events_limit > MAX_EVENTS_TO_FETCH:
-        events_limit = MAX_EVENTS_TO_FETCH
-
-    next_run, incidents = fetch_incidents(client,
-                                          last_run={},
-                                          first_fetch_time=first_fetch_time,
-                                          events_limit=events_limit,
-                                          min_severity=min_severity
-                                          )
-    readable_output = tableToMarkdown(f'Cognni {len(incidents)} incidents', incidents)
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Cognni.incidents',
-        outputs=incidents
-    )
-
-
 def fetch_incidents(client: Client, last_run: Dict[str, int],
                     first_fetch_time: Optional[int],
                     events_limit: int,
@@ -636,10 +610,7 @@ def main() -> None:
             headers=headers,
             proxy=proxy)
 
-        if demisto.command() == 'cognni-fetch-incidents':
-            return_results(fetch_incidents_command(client, first_fetch_time, demisto.args()))
-
-        elif demisto.command() == 'fetch-incidents':
+        if demisto.command() == 'fetch-incidents':
             min_severity = demisto.params().get('min_severity', None)
 
             max_fetch = arg_to_int(

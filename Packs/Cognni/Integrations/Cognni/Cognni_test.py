@@ -145,33 +145,6 @@ def test_get_insight_with_special_characters(requests_mock):
     assert response.raw_response['id'] is None
 
 
-def test_fetch_incidents_command(requests_mock):
-    """Tests the cognni-fetch-incidents command
-    """
-    from Cognni import Client, fetch_incidents_command
-
-    mock_response = util_load_json('test_data/fetch_incidents.json')
-    requests_mock.post('https://localhost/intelligence/data/graphql',
-                       json=mock_response)
-
-    client = Client(
-        base_url='https://localhost',
-        verify=False,
-        headers={
-            'Authorization': 'Bearer some_api_key'
-        }
-    )
-
-    first_fetch_time = 1600000000000
-    args = {
-        "min_severity": 0
-    }
-    response = fetch_incidents_command(client, first_fetch_time, args)
-
-    assert response.outputs_prefix == 'Cognni.incidents'
-    assert len(response.raw_response) == 8
-
-
 def test_get_event(requests_mock):
     """Tests the get event command
     """
@@ -278,7 +251,7 @@ def test_get_insight_with_unknown_id(requests_mock):
 
 
 def test_fetch_insights(requests_mock):
-    """Tests the fetch-insight command
+    """Tests the fetch-insights command
     """
     from Cognni import Client, fetch_insights_command
 
