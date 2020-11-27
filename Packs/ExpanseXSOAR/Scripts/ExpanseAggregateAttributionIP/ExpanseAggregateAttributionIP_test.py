@@ -20,6 +20,18 @@ RESULT = [
 
 
 def test_aggregate_command():
+    """
+    Given:
+        - previous list aggregated IPs
+        - new data source with IP/sightings information
+        - merged aggregated data with new information
+        - list of internal ip networks
+    When
+        - merging new sightings to existing aggregated data
+    Then
+        - data is merged
+        - expected output is returned
+    """
     result = ExpanseAggregateAttributionIP.aggregate_command({
         'input': INPUT,
         'current': CURRENT,
