@@ -1607,12 +1607,14 @@ class Pack(object):
         finally:
             return task_status, uploaded_integration_images
 
-    def copy_integration_images(self, production_bucket, build_bucket):
+    def copy_integration_images(self, production_bucket, build_bucket, current_commit_hash, previous_commit_hash):
         """ Copies all pack's integration images from the build bucket to the production bucket
 
         Args:
             production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
             build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
+            current_commit_hash (str): The last commit hash of head.
+            previous_commit_hash (str): The previous commit to diff with.
 
         Returns:
             bool: Whether the operation succeeded.
@@ -1702,7 +1704,7 @@ class Pack(object):
         finally:
             return task_status, author_image_storage_path
 
-    def copy_author_image(self, production_bucket, build_bucket):
+    def copy_author_image(self, production_bucket, build_bucket, current_commit_hash, previous_commit_hash):
         """ Copies pack's author image from the build bucket to the production bucket
 
         Searches for `Author_image.png`, In case no such image was found, default Base pack image path is used and
@@ -1711,6 +1713,8 @@ class Pack(object):
         Args:
             production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
             build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
+            current_commit_hash (str): The last commit hash of head.
+            previous_commit_hash (str): The previous commit to diff with.
 
         Returns:
             bool: Whether the operation succeeded.
