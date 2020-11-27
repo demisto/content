@@ -142,6 +142,14 @@ EXAMPLE_INCIDENT = [
 
 
 def test_latlon_to_yx():
+    """
+    Given:
+        - coordinates (lat, lon)
+    When
+        - translating lon/lat into image x/y
+    Then
+        - x/y coordinates are calculated
+    """
     assert ExpanseGenerateIssueMap.lat_to_y(90) is None
     assert ExpanseGenerateIssueMap.lat_to_y(-90) is None
 
@@ -164,6 +172,14 @@ def test_latlon_to_yx():
 
 
 def test_calc_clusters(mocker):
+    """
+    Given:
+        - list of issue coordinates
+    When
+        - calculating grouping of points in clusters
+    Then
+        - points are grouped in clusters
+    """
     mocker.patch('ExpanseGenerateIssueMap.lat_to_y', side_effect=lambda y: y)
     mocker.patch('ExpanseGenerateIssueMap.lon_to_x', side_effect=lambda x: x)
 
@@ -174,6 +190,15 @@ def test_calc_clusters(mocker):
 
 
 def test_extract_geolocation(mocker):
+    """
+    Given:
+        - none
+    When
+        - extracting coordinate from list of incidents
+    Then
+        - demisto.getIncidents is invoked
+        - coordinates are extracted
+    """
     def executeCommand(name, args=None):
         if name != 'getIncidents':
             raise ValueError(f'Unimplemented command called: {name}')
@@ -202,6 +227,15 @@ def test_extract_geolocation(mocker):
 
 
 def test_generate_map_command(mocker):
+    """
+    Given:
+        - none
+    When
+        - generating a world map image with issues
+    Then
+        - commands returns with no errors
+        - markdown document is generated
+    """
     eg_mock = mocker.patch('ExpanseGenerateIssueMap.extract_geolocation', return_value=[])
 
     result = ExpanseGenerateIssueMap.generate_map_command({'from': "fake-from", "to": "fake-to"})
