@@ -12,10 +12,15 @@ args:
   required: false
   secret: false
 - default: false
-  description: "Use TCP for the query (default: False)"
+  description: "Use TCP for the query (default: false)"
   isArray: false
   name: use_tcp
   secret: false
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
 - default: false
   description: "Comma separated list of query types (default: CNAME,NS,A,AAAA)"
   isArray: false
