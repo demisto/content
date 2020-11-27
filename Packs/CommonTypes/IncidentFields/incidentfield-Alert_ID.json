@@ -6,7 +6,7 @@
 	"cliName": "alertid",
 	"closeForm": false,
 	"columns": null,
-	"content": false,
+	"content": true,
 	"defaultRows": null,
 	"description": "Alert ID as received from the integration JSON",
 	"editForm": true,
