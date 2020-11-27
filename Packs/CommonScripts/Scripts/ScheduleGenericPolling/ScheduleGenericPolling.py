@@ -40,12 +40,7 @@ args_names = [name.strip() for name in argToList(additionalPollingCommandArgName
 args_values = [value.strip() for value in argToList(additionalPollingCommandArgNames)]
 
 if interval <= 0 or timeout <= 0:
-    demisto.results({
-        'Type': entryTypes['error'],
-        'ContensFormat': formats['text'],
-        'Contents': "Interval and timeout must be positive numbers"
-    })
-    sys.exit(2)
+    return_error("Interval and timeout must be positive numbers")
 
 # Verify correct dt path (does not verify condition!)
 if not demisto.dt(demisto.context(), dt):
@@ -63,5 +58,5 @@ res = demisto.executeCommand("ScheduleCommand", {
     'times': 1
 })
 if isError(res[0]):
-    demisto.results(res)
-    sys.exit(1)
+    return_error(res)
+
