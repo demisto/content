@@ -1,6 +1,6 @@
 Rapidly detect, analyse and respond to security threats with mnemonic’s leading Managed Detection and Response (MDR) service.
 
-This integration was integrated and tested with version 1.0.0 of mnemonic MDR.
+This integration was integrated and tested with version 5.0.1 argus-toolbelt ([PyPi](https://pypi.org/project/argus-toolbelt)).
 ## Configure ArgusManagedDefence on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
