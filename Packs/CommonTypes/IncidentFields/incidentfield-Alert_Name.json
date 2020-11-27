@@ -6,7 +6,7 @@
 	"cliName": "alertname",
 	"closeForm": false,
 	"columns": null,
-	"content": false,
+	"content": true,
 	"defaultRows": null,
 	"description": "Alert name as received from the integration JSON",
 	"editForm": true,
