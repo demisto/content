@@ -24,7 +24,7 @@ def test_fetch_incidents(requests_mock):
         }
     )
 
-    first_fetch_time = 1600000000000
+    first_fetch_time = 1600000000
     last_run = {}
     min_severity = 0
     next_run, incidents = fetch_incidents(client=client,
