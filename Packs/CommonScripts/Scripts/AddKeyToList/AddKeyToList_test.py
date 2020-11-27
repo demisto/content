@@ -9,6 +9,16 @@ MOCK_VALUE = "TestValue"
 
 
 def test_add_new_key_in_empty_list(mocker):
+    """
+    Given:
+        - a starting empty list
+        - a key and value pair
+    When
+        - adding a key/value to an empty list
+    Then
+        - key/value successfully added (list contains only the key/value)
+        - success message is returned
+    """
     MOCKED_START_LIST: Dict = {}
     MOCKED_END_LIST: Dict = {
         MOCK_KEY_NAME: MOCK_VALUE
@@ -39,6 +49,16 @@ def test_add_new_key_in_empty_list(mocker):
 
 
 def test_add_new_key_in_nonempty_list(mocker):
+    """
+    Given:
+        - a starting list with one existing key/value pair
+        - a key and value pair (different from the existing one)
+    When
+        - adding a key/value to a nonempty list
+    Then
+        - key/value successfully added (list contains both old and new key/value pairs)
+        - success message is returned
+    """
     MOCKED_START_LIST: Dict = {
         "ExistingKey": "ExistingValue"
     }
@@ -72,6 +92,18 @@ def test_add_new_key_in_nonempty_list(mocker):
 
 
 def test_replace_key_in_existing_list(mocker):
+    """
+    Given:
+        - a starting list with one existing key/value pair
+        - a key and value pair (same key but differnt value from the existing one)
+        - append is false
+        - allow duplicate values is false
+    When
+        - replacing value for an existing key in a nonempty list
+    Then
+        - value for key successfully replaced (list contains only new key/value pair)
+        - success message is returned
+    """
     MOCKED_START_LIST: Dict = {
         MOCK_KEY_NAME: "OldValue"
     }
@@ -104,6 +136,18 @@ def test_replace_key_in_existing_list(mocker):
 
 
 def test_no_change_same_value_same_key_no_dup_in_existing_list(mocker):
+    """
+    Given:
+        - a starting list with one existing key/value pair
+        - a key and value pair (same as the existing one)
+        - append is true
+        - allow duplicate values is false
+    When
+        - adding a key/value to a nonempty list that already contains same key/value
+    Then
+        - list is not changed
+        - return message says that list wasn't changed as value already exists for key
+    """
     MOCKED_START_LIST: Dict = {
         MOCK_KEY_NAME: MOCK_VALUE
     }
@@ -131,6 +175,18 @@ def test_no_change_same_value_same_key_no_dup_in_existing_list(mocker):
 
 
 def test_append_value_to_existing_key_in_existing_list(mocker):
+    """
+    Given:
+        - a starting list with one existing key/value pair
+        - a key and value pair (same key as the existing one, different value)
+        - append is true
+        - allow duplicate values is false
+    When
+        - adding a key/value to a nonempty list that already contains same key with a different value
+    Then
+        - value for the key is transformed into a list containing both old and new value
+        - success message is returned
+    """
     MOCKED_START_LIST: Dict = {
         MOCK_KEY_NAME: "OldValue"
     }
@@ -163,6 +219,18 @@ def test_append_value_to_existing_key_in_existing_list(mocker):
 
 
 def test_append_value_to_existing_list_key_in_existing_list(mocker):
+    """
+    Given:
+        - a starting list with one existing key/value pair (value is a list with 2 items)
+        - a key and value pair (same key as the existing one, different value)
+        - append is true
+        - allow duplicate values is false
+    When
+        - adding a key/value to a nonempty list that already contains same key with a list of values (different from input one)
+    Then
+        - new value for the key is appended to the existing list for that key
+        - success message is returned
+    """
     MOCKED_START_LIST: Dict = {
         MOCK_KEY_NAME: ["OldValue1", "OldValue2"]
     }
@@ -195,6 +263,18 @@ def test_append_value_to_existing_list_key_in_existing_list(mocker):
 
 
 def test_no_append_existing_value_same_list_key_no_dup_in_existing_list(mocker):
+    """
+    Given:
+        - a starting list with one existing key/value pair (value is a list with 2 items)
+        - a key and value pair (same key as the existing one, value is already in the existing list)
+        - append is true
+        - allow duplicate values is false
+    When
+        - adding a key/value to a nonempty list that already contains same key with a list of values (including the input one)
+    Then
+        - list is not changed
+        - return message says that list wasn't changed as value already exists for key
+    """
     MOCKED_START_LIST: Dict = {
         MOCK_KEY_NAME: ["OldValue", MOCK_VALUE]
     }
@@ -222,6 +302,18 @@ def test_no_append_existing_value_same_list_key_no_dup_in_existing_list(mocker):
 
 
 def test_append_duplicate_value_to_existing_key_in_existing_list(mocker):
+    """
+    Given:
+        - a starting list with one existing key/value pair
+        - a key and value pair (same key as the existing one)
+        - append is true
+        - allow duplicate values is true
+    When
+        - adding a key/value to a nonempty list that already contains same key with the same value and dups allowed
+    Then
+        - value for the key is changed in a list that contains the same value twice
+        - return success message
+    """
     MOCKED_START_LIST: Dict = {
         MOCK_KEY_NAME: MOCK_VALUE
     }

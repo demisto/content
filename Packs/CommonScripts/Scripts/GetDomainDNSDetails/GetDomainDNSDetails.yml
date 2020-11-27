@@ -21,6 +21,7 @@ args:
   isArray: false
   name: qtype
   secret: false
+  defaultValue: CNAME,NS,A,AAAA
 comment: Returns DNS details for a domain
 commonfields:
   id: GetDomainDNSDetails

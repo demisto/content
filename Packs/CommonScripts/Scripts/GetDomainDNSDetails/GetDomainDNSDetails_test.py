@@ -33,6 +33,15 @@ class MockResolver():
 
 
 def test_make_query(mocker):
+    """
+    Given:
+        - dns resolver object
+        - arguments: domain and query type (CNAME)
+    When
+        - testing function used in the script (not exposed)
+    Then
+        - CNAME of the domain is returned
+    """
     resolver = cast('dns.resolver.Resolver', MockResolver())
     answer = make_query(resolver, "example.com", "CNAME", False)
 
@@ -43,6 +52,15 @@ def test_make_query(mocker):
 
 
 def test_get_domain_dns_details_command(mocker):
+    """
+    Given:
+        - arguments: domain and dns servers
+    When
+        - resolving domain with default queries (CNAME, A, AAA)
+    Then
+        - resolution is performed
+        - expected output is returned to context in DomainDNSDetails
+    """
     mocker.patch('dns.resolver.Resolver', side_effect=MockResolver)
     args = {
         'domain': 'developers.paloaltonetworks.com',

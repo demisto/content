@@ -24,9 +24,10 @@ def remove_key_from_list(list_name: str, key_name: str) -> str:
         raise ValueError(f'Cannot retrieve list {list_name}')
 
     list_data: Dict = {}
-    if len(res[0]['Contents']) > 0:
+    data: str = res[0]['Contents']
+    if data and len(data) > 0:
         try:
-            list_data = json.loads(res[0]['Contents'])
+            list_data = json.loads(data)
         except json.decoder.JSONDecodeError as e:
             raise ValueError(f'List does not contain valid JSON data: {e}')
 

@@ -13,6 +13,16 @@ def load_test_data(json_path):
 
 
 def test_copy_no_note_entries(mocker):
+    """
+    Given:
+        - empty set of source notes
+        - arguments (target incident id, tags (empty list))
+    When
+        - copying note entries (empty set) from current incident to target
+    Then
+        - no notes are copied
+        - a human readable message saying that no notes are found is returned
+    """
     mock_source_entries = {}
 
     mock_target_entries = mock_source_entries
@@ -41,6 +51,16 @@ def test_copy_no_note_entries(mocker):
 
 
 def test_copy_all_note_entries(mocker):
+    """
+    Given:
+        - an existing nonempty set of source notes
+        - arguments (target incident id, tags (empty list))
+    When
+        - copying note entries  from current incident to target
+    Then
+        - all notes are copied
+        - a human readable message saying that 2 notes were copied is returned
+    """
     mock_source_entries = load_test_data("test_data/entries.json")
 
     mock_target_entries = [e for e in mock_source_entries if isinstance(e, dict) and 'Note' in e and e['Note'] is True]
@@ -71,6 +91,16 @@ def test_copy_all_note_entries(mocker):
 
 
 def test_copy_tagged_note_entries(mocker):
+    """
+    Given:
+        - an existing set of source notes
+        - arguments (target incident id, tags ("Tag1"))
+    When
+        - copying only note entries with tag Tag1 from current incident to target
+    Then
+        - notes with tag Tag1 are copied
+        - a human readable message saying that tagged notes were copied is returned
+    """
     mock_source_entries = load_test_data("test_data/entries.json")
 
     mock_target_entries = [

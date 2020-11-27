@@ -22,9 +22,9 @@ def copy_notes_to_target_incident(args: Dict[str, Any]) -> CommandResults:
     md: str = ''
 
     if isinstance(entries, list) and len(entries) > 0:
-        for n in entries:
-            if 'Note' in n and n['Note'] is True:
-                note_entries.append(n)
+        for entry in entries:
+            if entry.get('Note') is True:
+                note_entries.append(entry)
 
         if len(note_entries) > 0:
             demisto.executeCommand("addEntries", {"id": target_incident, "entries": note_entries})

@@ -8,6 +8,15 @@ MOCK_KEY_NAME = "TestKey"
 
 
 def test_remove_nonexisting_key_in_nonempty_list(mocker):
+    """
+    Given:
+        - a nonempty list with some value
+        - a key that doesn't exist in the list
+    When
+        - trying to remove a key that doesn't exist in the list
+    Then
+        - a message saying the key was not found is returned
+    """
     MOCKED_START_LIST: Dict = {
         "AnotherKey": "SomeValue"
     }
@@ -32,6 +41,15 @@ def test_remove_nonexisting_key_in_nonempty_list(mocker):
 
 
 def test_remove_nonexisting_key_in_empty_list(mocker):
+    """
+    Given:
+        - an empty list
+        - a key that doesn't exist in the list
+    When
+        - trying to remove a key
+    Then
+        - a message saying the key was not found is returned
+    """
     MOCKED_START_LIST: Dict = {}
 
     def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -54,6 +72,16 @@ def test_remove_nonexisting_key_in_empty_list(mocker):
 
 
 def test_remove_existing_key(mocker):
+    """
+    Given:
+        - a nonempty list with 2 values
+        - a key that exists in the list
+    When
+        - trying to remove a key exists exist in the list
+    Then
+        - requested key is removed from list
+        - list is left with only one item
+    """
     MOCKED_START_LIST: Dict = {
         MOCK_KEY_NAME: "Value",
         "AnotherKey": "AnotherValue"
@@ -84,6 +112,16 @@ def test_remove_existing_key(mocker):
 
 
 def test_remove_existing_last_key(mocker):
+    """
+    Given:
+        - a nonempty list with 1 value
+        - a key that exists in the list (the only one that exists)
+    When
+        - trying to remove the last key of the list
+    Then
+        - requested key is removed from list
+        - list is empty
+    """
     MOCKED_START_LIST: Dict = {
         MOCK_KEY_NAME: "Value"
     }
