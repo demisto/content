@@ -843,6 +843,25 @@ def test_eml_contains_htm_attachment_empty_file(mocker):
     assert results[0]['EntryContext']['Email'][0]['AttachmentNames'] == ['unknown_file_name0', 'SomeTest.HTM']
 
 
+def test_eml_contains_htm_attachment_empty_file_max_depth(mocker):
+    """
+    Given: An email containing both an empty text file and a base64 encoded htm file.
+    When: Parsing a valid email file with max_depth=1.
+    Then: One entry containing the command results will be returned to the war room.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'max_depth': 1})
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('eml_contains_emptytxt_htm_file.eml'))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+
+
 def test_double_dots_removed(mocker):
     """
     Fixes: https://github.com/demisto/etc/issues/27229
@@ -880,3 +899,28 @@ def test_only_parts_of_object_email_saved(mocker):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email']['AttachmentNames'] == ['logo5.png', 'logo2.png']
+
+
+def test_pkcs7_mime(mocker):
+    """
+    Given: An email file smime2.p7m of type application/pkcs7-mime and info -
+    MIME entity text, ISO-8859 text, with very long lines, with CRLF line terminators
+    When: Parsing the email.
+    Then: The email is parsed correctly.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('smime2.p7m',
+                                                          info='MIME entity text, ISO-8859 text, with very long lines,'
+                                                               ' with CRLF line terminators'))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['Subject'] == 'Testing signed multipart email'

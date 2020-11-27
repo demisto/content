@@ -1,6 +1,7 @@
 import os
 import shutil
 import dateparser
+from urllib import parse
 from typing import List, Tuple, Dict, Callable, Any, Union, Optional
 
 from CommonServerPython import *
@@ -359,6 +360,9 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
                 ticket_fields[arg] = inv_states.get(input_arg, input_arg)
             elif arg == 'approval':
                 ticket_fields[arg] = inv_approval.get(input_arg, input_arg)
+            elif arg == 'change_type':
+                # this change is required in order to use type 'Standard' as well.
+                ticket_fields['type'] = input_arg
             else:
                 ticket_fields[arg] = input_arg
         elif template_name and arg in template_name:
@@ -416,6 +420,26 @@ def split_fields(fields: str = '') -> dict:
                 dic_fields[field[0]] = field[1]
 
     return dic_fields
+
+
+def build_query_for_request_params(query):
+    """Split query that contains '&' to a list of queries.
+
+    Args:
+        query: query (Example: "id=5&status=1")
+
+    Returns:
+        List of sub queries. (Example: ["id=5", "status=1"])
+    """
+
+    if '&' in query:
+        query_params = []  # type: ignore
+        query_args = parse.parse_qsl(query)
+        for arg in query_args:
+            query_params.append(parse.urlencode([arg]))  # type: ignore
+        return query_params
+    else:
+        return query
 
 
 class Client(BaseClient):
@@ -770,9 +794,10 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
+
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
-            query_params['sysparm_query'] = sys_param_query
+            query_params['sysparm_query'] = build_query_for_request_params(sys_param_query)
         if system_params:
             query_params.update(system_params)
         return self.send_request(f'table/{table_name}', 'GET', params=query_params)

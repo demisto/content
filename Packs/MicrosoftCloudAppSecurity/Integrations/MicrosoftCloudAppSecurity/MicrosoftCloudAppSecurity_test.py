@@ -83,11 +83,11 @@ def test_list_activities_command(requests_mock):
                       '97134000_15600_97ee2049-893e-4c9d-a312-08d82b46faf7',
                       json=activities["ACTIVITIES_BY_ID_DATA"])
     res = list_activities_command(client_mocker, {'activity_id': '97134000_15600_97ee2049-893e-4c9d-a312-08d82b46faf7'})
-    assert res.outputs[0] == activities["ACTIVITIES_BY_ID_DATA_CONTEXT"]
-    assert isinstance(res.indicators[0], Common.IP)
-    assert res.indicators[0].ip == '8.8.8.8'
-    assert res.indicators[0].geo_latitude == 32.0679
-    assert res.indicators[0].geo_longitude == 34.7604
+    assert res[0].outputs[0] == activities["ACTIVITIES_BY_ID_DATA_CONTEXT"]
+    assert isinstance(res[0].indicator, Common.IP)
+    assert res[0].indicator.ip == '8.8.8.8'
+    assert res[0].indicator.geo_latitude == 32.0679
+    assert res[0].indicator.geo_longitude == 34.7604
 
 
 def test_list_files_command(requests_mock):
@@ -145,3 +145,12 @@ def test_alerts_to_incidents_and_fetch_start_from(requests_mock):
     assert res_incidents == [{'name': 'block1', 'occurred': '2020-10-22T16:58:23Z',
                               'rawJSON': '{"_id": "5f919e55b0703c2f5a23d9d7", "timestamp": 1603385903000, '
                               '"title": "block1"}'}]
+
+    requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/',
+                      json=[])
+    res_incidents, fetch_start_time, new_last_fetch_id = \
+        alerts_to_incidents_and_fetch_start_from([], 1602771392519, {"last_fetch": 1603365903,
+                                                 "last_fetch_id": "5f919e55b0703c2f5a23d9d8"})
+    assert fetch_start_time == 1602771392519
+    assert new_last_fetch_id == "5f919e55b0703c2f5a23d9d8"
+    assert res_incidents == []

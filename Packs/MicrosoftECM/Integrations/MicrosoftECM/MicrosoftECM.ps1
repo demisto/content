@@ -28,6 +28,63 @@ $SCRIPT_EXECUTION_STATUS = @{
 	"1" = "Succeeded"
 	"2" = "Failed"
 }
+
+$IPV4_REGEX = "^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
+
+<#
+.DESCRIPTION
+This function converts a null or string variable to boolean
+
+.PARAMETER arg
+The argument that should be converted
+
+.OUTPUTS
+Return the boolean representation of the argument
+#>
+Function ArgToBool()
+{
+	param(
+		[Parameter()]
+		[AllowEmptyString()]
+		[string]$arg
+	)
+	if (!$arg)
+	{
+		return $false
+	}
+	else
+	{
+		return $arg.ToLower() -eq "true"
+	}
+}
+
+<#
+.DESCRIPTION
+This function converts a null or string variable to integer
+
+.PARAMETER arg
+The argument that should be converted
+
+.OUTPUTS
+Return the number representation of the argument
+#>
+Function ArgToInteger()
+{
+	param(
+		[Parameter()]
+		[AllowEmptyString()] [string]$arg,
+		[Parameter()] [Int32]$defaultValue
+	)
+	if ($null -eq $arg -Or "" -eq $arg)
+	{
+		return $defaultValue
+	}
+	else
+	{
+		return $arg -as [int]
+	}
+}
+
 <#
 .DESCRIPTION
 This function converts a datetime object onto ISO format string
@@ -96,66 +153,6 @@ Function ValidateGetCollectionListParams()
 		$result = "collection_name"
 	}
 	Return $result
-}
-<#
-.DESCRIPTION
-This function Verifies only one of the following arguments was actually given and throws an exception if not.
-For more info see https://docs.microsoft.com/en-us/powershell/module/ConfigurationManager/Get-CMDevice?view=sccm-ps
-
-.PARAMETER collection_id
-Specifies a collection ID
-
-.PARAMETER collection_name
-Specifies a collection name
-
-.PARAMETER device_name
-Specifies the name of the device
-
-.PARAMETER resource_id
-Specifies the resource ID of a device
-
-.OUTPUTS
-Return the used parameters or throws an exception if parameter set cannot be resolved
-#>
-Function ValidateGetDeviceListParams()
-{
-	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPositionalParameters", "")]
-	param(
-		[Parameter()] [string]$CollectionID,
-		[Parameter()] [string]$CollectionName,
-		[Parameter()] [string]$DeviceName,
-		[Parameter()] [string]$resourceID
-	)
-	if ($DeviceName)
-	{
-		AssertNoMoreThenExpectedParametersGiven "device_name parameter can be resolved only with collection_name or collection_id" 0 $resourceID
-		if ($CollectionName)
-		{
-			AssertNoMoreThenExpectedParametersGiven "device_name parameter can be resolved with collection_name or collection_id, not both" 0 $CollectionID
-			return "device_name&collection_name"
-		}
-		elseif ($CollectionID)
-		{
-			return "device_name&collection_id"
-		}
-		return "device_name"
-	}
-	if ($CollectionID)
-	{
-		AssertNoMoreThenExpectedParametersGiven "collection_id parameter can be resolved only with device_name" 0 $CollectionName $resourceID
-		return "collection_id"
-	}
-	if ($CollectionName)
-	{
-		AssertNoMoreThenExpectedParametersGiven "collection_name parameter can be resolved only with device_name" 0 $CollectionID $resourceID
-		return "collection_name"
-	}
-	if ($resourceID)
-	{
-		AssertNoMoreThenExpectedParametersGiven "resource_id must be resolved with no other parameter" 0 $CollectionID $CollectionName $DeviceName
-		return "resource_id"
-	}
-	return ""
 }
 <#
 .DESCRIPTION
@@ -264,9 +261,9 @@ Function ParseCollectionObject($Collections)
 				[PSCustomObject]@{
 					Name = $_.Name
 					ID = $_.CollectionID
-					Type = $COLLECTION_TYPE_MAPPING.Get_Item("$($_.CollectionType)")
+					Type = $COLLECTION_TYPE_MAPPING.Get_Item("$( $_.CollectionType )")
 					Comment = $_.Comment
-					CurrentStatus = $COLLECTION_CURRENT_STATUS_MAPPING.Get_Item("$($_.CurrentStatus)")
+					CurrentStatus = $COLLECTION_CURRENT_STATUS_MAPPING.Get_Item("$( $_.CurrentStatus )")
 					CollectionRules = ($_.CollectionRules -Join ",")
 					HasProvisionedMember = "$( $_.HasProvisionedMember )"
 					IncludeExcludeCollectionsCount = "$( $_.IncludeExcludeCollectionsCount )"
@@ -309,18 +306,27 @@ Function ParseScriptInvocationResults()
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPositionalParameters", "")]
 	param(
 		[Parameter()] [PSCustomObject]$result,
-		[Parameter()] [string]$HumanReadableTitle
+		[Parameter()] [string]$HumanReadableTitle,
+		[Parameter()] [bool]$ShouldPollResults,
+		[Parameter()] [Int32]$timeoutSeconds
 	)
 	if ($result)
 	{
-		$output = [PSCustomObject]@{
-			"MicrosoftECM.ScriptsInvocation(val.OperationID && val.OperationID === obj.OperationID)" = [PSCustomObject]@{
-				OperationID = $result.OperationID
-				ReturnValue = "$( $result.ReturnValue )"
-			}
+		if ($ShouldPollResults)
+		{
+			$operationID = $result.OperationID
+			InvocationResults $operationID $timeoutSeconds
 		}
-		$MDOutput = $output."MicrosoftECM.ScriptsInvocation(val.OperationID && val.OperationID === obj.OperationID)" | TableToMarkdown -Name $HumanReadableTitle
-		ReturnOutputs -ReadableOutput $MDOutput -Outputs $output -RawResponse $result | Out-Null
+		else
+		{
+			$output = [PSCustomObject]@{
+				"MicrosoftECM.ScriptsInvocation(val.OperationID && val.OperationID === obj.OperationID)" = [PSCustomObject]@{
+					OperationID = $result.OperationID
+				}
+			}
+			$MDOutput = $output."MicrosoftECM.ScriptsInvocation(val.OperationID && val.OperationID === obj.OperationID)" | TableToMarkdown -Name $HumanReadableTitle
+			ReturnOutputs -ReadableOutput $MDOutput -Outputs $output -RawResponse $result | Out-Null
+		}
 	}
 	else
 	{
@@ -346,7 +352,7 @@ Function ParseScriptObject($script)
 		$output = [PSCustomObject]@{
 			"MicrosoftECM.Scripts(val.ScriptGuid && val.ScriptGuid === obj.ScriptGuid)" = $script | ForEach-Object {
 				[PSCustomObject]@{
-					ApprovalState = $SCRIPT_APPROVAL_STATE.Get_Item("$($_.ApprovalState)")
+					ApprovalState = $SCRIPT_APPROVAL_STATE.Get_Item("$( $_.ApprovalState )")
 					Approver = $_.Approver
 					Author = $_.Author
 					Comment = $_.Comment
@@ -419,24 +425,32 @@ Function ExecuteServiceScript()
 		# Checking if script exists in the configuration ConfigurationManager
 		$CMPSSuppressFastNotUsedCheck = $true
 		$Script = Get-CMScript -ScriptName $ScriptName
-		if (!$Script)
+		if ($script)
 		{
-			Try
-			{
-				$script = New-CMScript -ScriptText $ScriptText -ScriptName $ScriptName
-			}
-			catch
-			{
-				throw "Failed to create script $ScriptName. Error: [$( $_.Exception.Message )]"
-			}
 			try
 			{
-				Approve-CMScript -ScriptGuid $script.ScriptGuid -Comment "XSOAR StartService script"
+				Remove-CMScript -InputObject $script -Force
 			}
 			catch
 			{
-				throw "Failed to approve script $ScriptName. Error: [$( $_.Exception.Message )]"
+				throw "Failed to Remove old script $ScriptName. Error: [$( $_.Exception.Message )]"
 			}
+		}
+		Try
+		{
+			$script = New-CMScript -ScriptText $ScriptText -ScriptName $ScriptName
+		}
+		catch
+		{
+			throw "Failed to create script $ScriptName. Error: [$( $_.Exception.Message )]"
+		}
+		try
+		{
+			Approve-CMScript -ScriptGuid $script.ScriptGuid -Comment "$ScriptName script"
+		}
+		catch
+		{
+			throw "Failed to approve script $ScriptName. Error: [$( $_.Exception.Message )]"
 		}
 		try
 		{
@@ -475,64 +489,24 @@ Function GetLastLogOnUser()
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
 		Set-Location "$( $SiteCode ):"
-		Get-CMResource -ResourceType System -Fast | Where-Object { $_.Name -eq $deviceName }
+		Get-CMDevice -Name $deviceName -Resource |Select-Object IPAddresses, Name, LastLogonTimestamp, LastLogonUserName
 	}
 	if ($device)
 	{
 		$output = [PSCustomObject]@{
 			"MicrosoftECM.LastLogOnUser" = [PSCustomObject]@{
-				CreationDate = ParseDateTimeObjectToIso $device.CreationDate
-				IP = ($device.IPAddresses | Out-String).Replace("`n", " ")
-				Name = $device.Name
+				IPAddresses = $device.IPAddresses
+				DeviceName = $device.Name
 				LastLogonTimestamp = ParseDateTimeObjectToIso $device.LastLogonTimestamp
 				LastLogonUserName = $device.LastLogonUserName
 			}
 		}
-		$MDOutput = $output."MicrosoftECM.LastLogOnUser" | TableToMarkdown -Name "Last log gon user on $deviceName"
+		$MDOutput = $output."MicrosoftECM.LastLogOnUser" | TableToMarkdown -Name "Last log on user on $deviceName"
 		ReturnOutputs -ReadableOutput $MDOutput -Outputs $Output -RawResponse $device | Out-Null
 	}
 	else
 	{
 		throw "Could not find a computer with the name $deviceName"
-	}
-}
-
-Function GetPrimaryUser()
-{
-	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPositionalParameters", "")]
-	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
-	param(
-		[Parameter()] [string]$DeviceName
-	)
-	$userDeviceAffinity = Invoke-Command $global:Session -ArgumentList $deviceName, $global:siteCode -ErrorAction Stop -ScriptBlock {
-		param($deviceName, $siteCode)
-		Set-Location $env:SMS_ADMIN_UI_PATH\..\
-		Import-Module .\ConfigurationManager.psd1
-		Set-Location "$( $SiteCode ):"
-		$device = Get-CMDevice -Name $deviceName -Fast
-		if (!$device)
-		{
-			throw "Could not find a computer with the name $computerName"
-		}
-		Get-CMUserDeviceAffinity -DeviceName $deviceName
-	}
-	if ($userDeviceAffinity)
-	{
-		$output = [PSCustomObject]@{
-			'MicrosoftECM.PrimaryUsers' = $userDeviceAffinity | ForEach-Object {
-				[PSCustomObject]@{
-					MachineName = $_.ResourceName
-					UserName = $_.UniqueUserName
-				}
-			}
-		}
-		$MDOutput = $output."MicrosoftECM.PrimaryUsers" | TableToMarkdown -Name "Primary users on $deviceName"
-		ReturnOutputs -ReadableOutput $MDOutput -Outputs $output -RawResponse $userDeviceAffinity | Out-Null
-	}
-	else
-	{
-		$MDOutput = "### Primary users on $computerName`nNo results found."
-		ReturnOutputs $MDOutput | Out-Null
 	}
 }
 
@@ -580,16 +554,13 @@ Function GetDeviceList()
 	param(
 		[Parameter()] [string]$CollectionID,
 		[Parameter()] [string]$CollectionName,
-		[Parameter()] [string]$DeviceName,
-		[Parameter()] [string]$resourceID
+		[Parameter()] [Int32]$limit
 	)
-	$usedParameterName = ValidateGetDeviceListParams $CollectionID $CollectionName $DeviceName $resourceID
+	AssertNoMoreThenExpectedParametersGiven "Can only use one of the following parameters: collection_id, collection_name" 1 $CollectionID $CollectionName
 	$parameters = @{
-		usedParameterName = $usedParameterName
 		collection_id = $CollectionID
 		collection_name = $CollectionName
-		device_name = $DeviceName
-		resource_id = $resourceID
+		limit = $limit
 	}
 	$Devices = Invoke-Command $global:Session -ArgumentList $parameters, $global:siteCode -ErrorAction Stop -ScriptBlock {
 		param($parameters, $siteCode)
@@ -597,29 +568,17 @@ Function GetDeviceList()
 		Import-Module .\ConfigurationManager.psd1
 		Set-Location "$( $SiteCode ):"
 		$CMPSSuppressFastNotUsedCheck = $true
-		switch ($parameters.usedParameterName)
+		if ($parameters.CollectionID)
 		{
-			"device_name" {
-				Get-CMDevice -Name $parameters.device_name
-			}
-			"device_name&collection_name" {
-				Get-CMDevice -CollectionName $parameters.collection_name -Name $parameters.device_name
-			}
-			"device_name&collection_id" {
-				Get-CMDevice -CollectionId $parameters.collection_id -Name $parameters.device_name
-			}
-			"collection_id" {
-				Get-CMDevice -CollectionId $parameters.collection_id
-			}
-			"collection_name" {
-				Get-CMDevice -CollectionName $parameters.collection_name
-			}
-			"resource_id" {
-				Get-CMDevice -ResourceId $parameters.resource_id
-			}
-			default {
-				Get-CMDevice
-			}
+			(Get-CMDevice -CollectionId $parameters.collection_id)[0..$parameters.limit] | Select-Object Name, ResourceID
+		}
+		elseif ($parameters.CollectionName)
+		{
+			(Get-CMDevice -CollectionName $parameters.collection_name)[0..$parameters.limit] | Select-Object Name, ResourceID
+		}
+		else
+		{
+			(Get-CMDevice)[0..$parameters.limit] | Select-Object Name, ResourceID
 		}
 	}
 	if ($Devices)
@@ -627,25 +586,8 @@ Function GetDeviceList()
 		$output = [PSCustomObject]@{
 			"MicrosoftECM.Devices(val.ResourceID && val.ResourceID === obj.ResourceID)" = $Devices | ForEach-Object {
 				[PSCustomObject]@{
-					Name = $_.Name
-					ClientVersion = $_.ClientVersion
-					CurrentLogonUser = $_.CurrentLogonUser
-					DeviceAccessState = $_.DeviceAccessState
-					DeviceCategory = $_.DeviceCategory
-					DeviceOS = $_.DeviceOS
-					DeviceOSBuild = $_.DeviceOSBuild
-					Domain = $_.Domain
-					IsActive = "$( $_.IsActive )"
-					LastActiveTime = ParseDateTimeObjectToIso $_.LastActiveTime
-					LastHardwareScan = ParseDateTimeObjectToIso $_.LastHardwareScan
-					LastInstallationError = ParseDateTimeObjectToIso $_.LastInstallationError
-					LastLogonUser = $_.LastLogonUser
-					LastMPServerName = $_.LastMPServerName
-					MACAddress = $_.MACAddress
-					PrimaryUser = $_.PrimaryUser
+					DeviceName = $_.Name
 					ResourceID = $_.ResourceID
-					SiteCode = $_.SiteCode
-					Status = $_.Status
 				}
 			}
 		}
@@ -740,7 +682,9 @@ Function InvokeScript()
 		[Parameter()] [string]$scriptGuid,
 		[Parameter()] [string]$CollectionID,
 		[Parameter()] [string]$CollectionName,
-		[Parameter()] [string]$DeviceName
+		[Parameter()] [string]$DeviceName,
+		[Parameter()] [bool]$ShouldPollResults,
+		[Parameter()] [Int32]$timeoutSeconds
 	)
 	AssertNoMoreThenExpectedParametersGiven "Can only use one of the following parameters: collection_id, collection_name, device_name" 1 $CollectionID $CollectionName $DeviceName
 	If (!($CollectionID -Or $CollectionName -Or $DeviceName))
@@ -768,7 +712,7 @@ Function InvokeScript()
 		}
 		$scriptInvocation
 	}
-	ParseScriptInvocationResults $InvokedScript "Script Invocation Result"
+	ParseScriptInvocationResults $InvokedScript "Script Invocation Result" $ShouldPollResults $timeoutSeconds
 }
 
 Function ApproveScript()
@@ -796,24 +740,36 @@ Function InvocationResults()
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSReviewUnusedParameter", "")]
 	param(
-		[Parameter()] [string]$operationID
+		[Parameter()] [string]$operationID,
+		[Parameter()] [Int32]$timeoutSeconds
 	)
-	$InvocationResults = Invoke-Command $global:Session -ArgumentList $global:SiteCode, $operationID -ErrorAction Stop -ScriptBlock {
-		param($SiteCode, $operationID)
+	$InvocationResults = Invoke-Command $global:Session -ArgumentList $global:SiteCode, $operationID, $timeoutSeconds -ErrorAction Stop -ScriptBlock {
+		param($SiteCode, $operationID, $timeoutSeconds)
+		if ($timeoutSeconds)
+		{
+			$job = start-job -scriptblock {
+				Do
+				{
+					$result = Get-CimInstance -Namespace "root\SMS\site_$SiteCode" -ClassName SMS_ScriptsExecutionStatus  | Where-Object { $_.ClientOperationId -eq $operationID }
+				} until ($null -ne $result)
+			}
+			wait-job $job -timeout $timeoutSeconds
+			remove-job -force $job
+		}
 		Get-CimInstance -Namespace "root\SMS\site_$SiteCode" -ClassName SMS_ScriptsExecutionStatus  | Where-Object { $_.ClientOperationId -eq $operationID }
 	}
 	if ($InvocationResults)
 	{
 		$output = [PSCustomObject]@{
-			"MicrosoftECM.ScriptsInvocationResults(val.TaskID && val.TaskID === obj.TaskID)" = $InvocationResults | ForEach-Object {
+			"MicrosoftECM.ScriptsInvocationResults(val.OperationId === obj.OperationId && val.ResourceId === obj.ResourceId)" = $InvocationResults | ForEach-Object {
 				[PSCustomObject]@{
-					ClientOperationId = $_.ClientOperationId
+					OperationId = $_.ClientOperationId
 					CollectionId = $_.CollectionId
 					CollectionName = $_.CollectionName
 					DeviceName = $_.DeviceName
 					ResourceId = $_.ResourceId
 					LastUpdateTime = ParseDateTimeObjectToIso $_.LastUpdateTime
-					ScriptExecutionState = $SCRIPT_EXECUTION_STATUS.Get_Item("$($_.ScriptExecutionState)")
+					ScriptExecutionState = $SCRIPT_EXECUTION_STATUS.Get_Item("$( $_.ScriptExecutionState )")
 					ScriptExitCode = "$( $_.ScriptExitCode )"
 					ScriptGuid = $_.ScriptGuid
 					ScriptLastModifiedDate = ParseDateTimeObjectToIso $_.ScriptLastModifiedDate
@@ -825,14 +781,18 @@ Function InvocationResults()
 				}
 			}
 		}
-		$MDOutput = $output."MicrosoftECM.ScriptsInvocationResults(val.TaskID && val.TaskID === obj.TaskID)" | TableToMarkdown -Name "Script Invocation Results"
-		ReturnOutputs -ReadableOutput $MDOutput -Outputs $output -RawResponse $Devices | Out-Null
 	}
 	else
 	{
-		$MDOutput = "### Script Invocation Results`nNo results found"
-		ReturnOutputs $MDOutput | Out-Null
+		$output = [PSCustomObject]@{
+			"MicrosoftECM.ScriptsInvocationResults(val.OperationId === obj.OperationId && val.ResourceId === obj.ResourceId)" = [PSCustomObject]@{
+				OperationId = $operationID
+				ScriptExecutionState = 'Pending'
+			}
+		}
 	}
+	$MDOutput = $output."MicrosoftECM.ScriptsInvocationResults(val.OperationId === obj.OperationId && val.ResourceId === obj.ResourceId)" | TableToMarkdown -Name "Script Invocation Results"
+	ReturnOutputs -ReadableOutput $MDOutput -Outputs $output -RawResponse $Devices | Out-Null
 }
 Function CreateDeviceCollection()
 {
@@ -1012,12 +972,15 @@ Function StartService()
 		[Parameter()] [string]$serviceName,
 		[Parameter()] [string]$CollectionID,
 		[Parameter()] [string]$CollectionName,
-		[Parameter()] [string]$DeviceName
+		[Parameter()] [string]$DeviceName,
+		[Parameter()] [bool]$ShouldPollResults,
+		[Parameter()] [Int32]$timeoutSeconds
 	)
-	$scriptText = "Get-Service $serviceName | Start-Service -PassThru -ErrorAction Stop"
+	$escapedServiceName = $serviceName.Replace("'", "''")
+	$scriptText = "Get-Service '$escapedServiceName' -ErrorAction Stop | Start-Service -PassThru -ErrorAction Stop"
 	$scriptName = "XSOAR StartService"
 	$result = ExecuteServiceScript $DeviceName $CollectionID $CollectionName $scriptText $scriptName
-	ParseScriptInvocationResults $result "StartService script Invocation Result"
+	ParseScriptInvocationResults $result "StartService script Invocation Result" $ShouldPollResults $timeoutSeconds
 }
 
 Function RestartService()
@@ -1027,12 +990,15 @@ Function RestartService()
 		[Parameter()] [string]$serviceName,
 		[Parameter()] [string]$CollectionID,
 		[Parameter()] [string]$CollectionName,
-		[Parameter()] [string]$DeviceName
+		[Parameter()] [string]$DeviceName,
+		[Parameter()] [bool]$ShouldPollResults,
+		[Parameter()] [Int32]$timeoutSeconds
 	)
-	$scriptText = "Get-Service $serviceName | Restart-Service -PassThru -ErrorAction Stop"
+	$escapedServiceName = $serviceName.Replace("'", "''")
+	$scriptText = "Get-Service '$escapedServiceName' -ErrorAction Stop | Restart-Service -PassThru -ErrorAction Stop"
 	$scriptName = "XSOAR RestartService"
 	$result = ExecuteServiceScript $DeviceName $CollectionID $CollectionName $scriptText $scriptName
-	ParseScriptInvocationResults $result "RestartService script Invocation Result"
+	ParseScriptInvocationResults $result "RestartService script Invocation Result" $ShouldPollResults $timeoutSeconds
 }
 
 Function StopService()
@@ -1042,12 +1008,330 @@ Function StopService()
 		[Parameter()] [string]$serviceName,
 		[Parameter()] [string]$CollectionID,
 		[Parameter()] [string]$CollectionName,
-		[Parameter()] [string]$DeviceName
+		[Parameter()] [string]$DeviceName,
+		[Parameter()] [bool]$ShouldPollResults,
+		[Parameter()] [Int32]$timeoutSeconds
 	)
-	$scriptText = "Get-Service $serviceName | Stop-Service -PassThru -ErrorAction Stop"
+	$escapedServiceName = $serviceName.Replace("'", "''")
+	$scriptText = "Get-Service '$escapedServiceName' -ErrorAction Stop | Stop-Service -PassThru -ErrorAction Stop"
 	$scriptName = "XSOAR StopService"
 	$result = ExecuteServiceScript $DeviceName $CollectionID $CollectionName $scriptText $scriptName
-	ParseScriptInvocationResults $result "StopService script Invocation Result"
+	ParseScriptInvocationResults $result "StopService script Invocation Result" $ShouldPollResults $timeoutSeconds
+}
+
+
+Function GetDeviceAsCollectionMember()
+{
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPositionalParameters", "")]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseUsingScopeModifierInNewRunspaces", "")]
+	param(
+		[Parameter()] [string]$deviceNames,
+		[Parameter()] [string]$resourceIDs
+	)
+	AssertNoMoreThenExpectedParametersGiven "Can only use one of the following parameters: device_names, resource_ids" 1 $deviceNames $resourceIDs
+	if (!$deviceNames -And !$resourceIDs)
+	{
+		throw "Please use one of the following parameters: device_names, resource_ids"
+	}
+	$deviceNamesList = ArgToList $deviceNames
+	$resourceIDsList = ArgToList $resourceIDs
+	$devices = Invoke-Command $global:Session -ArgumentList $global:siteCode, $deviceNamesList, $resourceIDsList -ErrorAction Stop -ScriptBlock {
+		param($siteCode, $deviceNamesList, $resourceIDsList)
+		$jobs = @()
+		if ($deviceNamesList)
+		{
+			ForEach ($deviceName in $deviceNamesList)
+			{
+				$jobs += start-job -ArgumentList $deviceName, $SiteCode -scriptblock {
+					Set-Location $env:SMS_ADMIN_UI_PATH\..\
+					Import-Module .\ConfigurationManager.psd1
+					Set-Location "$( $args[1] ):"
+					Get-CMDevice -Name $args[0] -CollectionMember | Select-Object Name, ClientVersion, DeviceOS, ResourceID, IsActive, LastActiveTime, LastClientCheckTime, LastDDR, LastHardwareScan, LastPolicyRequest, Domain, PrimaryUser, Status, MACAddress, IsVirtualMachine, IsDecommissioned, IsClient, IsBlocked, ExchangeServer, DeviceThreatLevel, CurrentLogonUser, LastLogonUser, DeviceOSBuild, ADLastLogonTime, SiteCode
+				}
+			}
+		}
+		if ($resourceIDsList)
+		{
+			ForEach ($resourceID in $resourceIDsList)
+			{
+				$jobs += start-job -ArgumentList $resourceID, $SiteCode -scriptblock {
+					Set-Location $env:SMS_ADMIN_UI_PATH\..\
+					Import-Module .\ConfigurationManager.psd1
+					Set-Location "$( $args[1] ):"
+					Get-CMDevice -ResourceId $args[0] -CollectionMember | Select-Object Name, ClientVersion, DeviceOS, ResourceID, IsActive, LastActiveTime, LastClientCheckTime, LastDDR, LastHardwareScan, LastPolicyRequest, Domain, PrimaryUser, Status, MACAddress, IsVirtualMachine, IsDecommissioned, IsClient, IsBlocked, ExchangeServer, DeviceThreatLevel, CurrentLogonUser, LastLogonUser, DeviceOSBuild, ADLastLogonTime, SiteCode
+				}
+			}
+		}
+		$devices = Receive-Job -Job $jobs -Wait -AutoRemoveJob
+		$devices
+	}
+	if ($devices)
+	{
+		$outputToContext = $devices | ForEach-Object {
+			[PSCustomObject]@{
+				DeviceName = $_.Name
+				ResourceID = $_.ResourceID
+				CollectionMemberDetails = [PSCustomObject]@{
+					ClientVersion = $_.ClientVersion
+					DeviceOS = $_.DeviceOS
+					IsActive = $_.IsActive
+					LastActiveTime = ParseDateTimeObjectToIso $_.LastActiveTime
+					LastClientCheckTime = ParseDateTimeObjectToIso $_.LastClientCheckTime
+					LastDDR = ParseDateTimeObjectToIso $_.LastDDR
+					LastHardwareScan = ParseDateTimeObjectToIso $_.LastHardwareScan
+					LastPolicyRequest = ParseDateTimeObjectToIso $_.LastPolicyRequest
+					Domain = $_.Domain
+					PrimaryUser = $_.PrimaryUser
+					Status = $_.Status
+					IsVirtualMachine = $_.IsVirtualMachine
+					IsDecommissioned = $_.IsDecommissioned
+					IsClient = $_.IsClient
+					IsBlocked = $_.IsBlocked
+					ExchangeServer = $_.ExchangeServer
+					DeviceThreatLevel = $_.DeviceThreatLevel
+					CurrentLogonUser = $_.CurrentLogonUser
+					LastLogonUser = $_.LastLogonUser
+					DeviceOSBuild = $_.DeviceOSBuild
+					ADLastLogonTime = $_.ADLastLogonTime
+					SiteCode = $_.SiteCode
+				}
+			}
+		}
+		$outputToHumanReadable = $devices | ForEach-Object {
+			[PSCustomObject]@{
+				DeviceName = $_.Name
+				ResourceID = $_.ResourceID
+				ClientVersion = $_.ClientVersion
+				DeviceOS = $_.DeviceOS
+				IsActive = $_.IsActive
+				LastActiveTime = ParseDateTimeObjectToIso $_.LastActiveTime
+				LastClientCheckTime = ParseDateTimeObjectToIso $_.LastClientCheckTime
+				LastDDR = ParseDateTimeObjectToIso $_.LastDDR
+				LastHardwareScan = ParseDateTimeObjectToIso $_.LastHardwareScan
+				LastPolicyRequest = ParseDateTimeObjectToIso $_.LastPolicyRequest
+				Domain = $_.Domain
+				PrimaryUser = $_.PrimaryUser
+				Status = $_.Status
+				IsVirtualMachine = $_.IsVirtualMachine
+				IsDecommissioned = $_.IsDecommissioned
+				IsClient = $_.IsClient
+				IsBlocked = $_.IsBlocked
+				ExchangeServer = $_.ExchangeServer
+				DeviceThreatLevel = $_.DeviceThreatLevel
+				CurrentLogonUser = $_.CurrentLogonUser
+				LastLogonUser = $_.LastLogonUser
+				DeviceOSBuild = $_.DeviceOSBuild
+				ADLastLogonTime = $_.ADLastLogonTime
+				SiteCode = $_.SiteCode
+			}
+		}
+		$MDOutput = $outputToHumanReadable | TableToMarkdown -Name "Device As Collection Member"
+		$output = [PSCustomObject]@{ "MicrosoftECM.Devices(val.DeviceName && val.DeviceName === obj.DeviceName)" = $outputToContext }
+		ReturnOutputs -ReadableOutput $MDOutput -Outputs $output -RawResponse $devices | Out-Null
+	}
+	else
+	{
+		$MDOutput = "### Devices As Collection Member`nNo results found."
+		ReturnOutputs $MDOutput | Out-Null
+	}
+}
+
+Function GetDeviceAsResource()
+{
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPositionalParameters", "")]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseUsingScopeModifierInNewRunspaces", "")]
+	param(
+		[Parameter()] [string]$deviceNames,
+		[Parameter()] [string]$resourceIDs
+	)
+	AssertNoMoreThenExpectedParametersGiven "Can only use one of the following parameters: device_names, resource_ids" 1 $deviceNames $resourceIDs
+	if (!$deviceNames -And !$resourceIDs)
+	{
+		throw "Please use one of the following parameters: device_names, resource_ids"
+	}
+	$deviceNamesList = ArgToList $deviceNames
+	$resourceIDsList = ArgToList $resourceIDs
+	$devices = Invoke-Command $global:Session -ArgumentList $global:siteCode, $deviceNamesList, $resourceIDsList -ErrorAction Stop -ScriptBlock {
+		param($siteCode, $deviceNamesList, $resourceIDsList)
+		$jobs = @()
+		if ($deviceNamesList)
+		{
+			ForEach ($deviceName in $deviceNamesList)
+			{
+				$jobs += start-job -ArgumentList $deviceName, $SiteCode -scriptblock {
+					Set-Location $env:SMS_ADMIN_UI_PATH\..\
+					Import-Module .\ConfigurationManager.psd1
+					Set-Location "$( $args[1] ):"
+					$CMPSSuppressFastNotUsedCheck = $true
+					Get-CMDevice -Name $args[0] -Resource | Select-Object Name, AgentName, ResourceId, ADSiteName, AgentSite, AgentTime, CPUType, DistinguishedName, FullDomainName, IPAddresses, NetbiosName, UserAccountControl, LastLogonUserName, LastLogonUserDomain, LastLogonTimestamp, OperatingSystemNameandVersion, VirtualMachineHostName, VirtualMachineType, DNSForestGuid, HardwareID
+				}
+			}
+		}
+		if ($resourceIDsList)
+		{
+			ForEach ($resourceID in $resourceIDsList)
+			{
+				$jobs += start-job -ArgumentList $resourceID, $SiteCode -scriptblock {
+					Set-Location $env:SMS_ADMIN_UI_PATH\..\
+					Import-Module .\ConfigurationManager.psd1
+					Set-Location "$( $args[1] ):"
+					$CMPSSuppressFastNotUsedCheck = $true
+					Get-CMDevice -ResourceId $args[0] -Resource | Select-Object Name, AgentName, ResourceId, ADSiteName, AgentSite, AgentTime, CPUType, DistinguishedName, FullDomainName, IPAddresses, NetbiosName, UserAccountControl, LastLogonUserName, LastLogonUserDomain, LastLogonTimestamp, OperatingSystemNameandVersion, VirtualMachineHostName, VirtualMachineType, DNSForestGuid, HardwareID
+				}
+			}
+		}
+		$devices = Receive-Job -Job $jobs -Wait -AutoRemoveJob
+		$devices
+	}
+	if ($devices)
+	{
+		$outputToContext = $devices | ForEach-Object {
+			[PSCustomObject]@{
+				DeviceName = $_.Name
+				ResourceID = $_.ResourceId
+				ResourceDetails = [PSCustomObject]@{
+					AgentName = $_.AgentName
+					ADSiteName = $_.ADSiteName
+					AgentSite = $_.AgentSite
+					AgentTime = $_.AgentTime | Foreach-Object { ParseDateTimeObjectToIso $_ }
+					CPUType = $_.CPUType
+					DistinguishedName = $_.DistinguishedName
+					FullDomainName = $_.FullDomainName
+					IPv4Addresses = $_.IPAddresses | Where-Object {$_ -match $IPV4_REGEX}
+					IPv6Addresses = $_.IPAddresses | Where-Object {$_ -notmatch $IPV4_REGEX}
+					NetbiosName = $_.NetbiosName
+					UserAccountControl = $_.UserAccountControl
+					LastLogonUserName = $_.LastLogonUserName
+					LastLogonUserDomain = $_.LastLogonUserDomain
+					LastLogonTimestamp = ParseDateTimeObjectToIso $_.LastLogonTimestamp
+					OperatingSystemNameandVersion = $_.OperatingSystemNameandVersion
+					VirtualMachineHostName = $_.VirtualMachineHostName
+					VirtualMachineType = $_.VirtualMachineType
+					DNSForestGuid = $_.DNSForestGuid
+					HardwareID = $_.HardwareID
+				}
+			}
+		}
+		$outputToHumanReadable = $devices | ForEach-Object {
+			[PSCustomObject]@{
+				DeviceName = $_.Name
+				ResourceID = $_.ResourceId
+				AgentName = $_.AgentName
+				ADSiteName = $_.ADSiteName
+				AgentSite = $_.AgentSite
+				AgentTime = $_.AgentTime | Foreach-Object { ParseDateTimeObjectToIso $_ }
+				CPUType = $_.CPUType
+				DistinguishedName = $_.DistinguishedName
+				FullDomainName = $_.FullDomainName
+				IPv4Addresses = $_.IPAddresses | Where-Object {$_ -match $IPV4_REGEX}
+				IPv6Addresses = $_.IPAddresses | Where-Object {$_ -notmatch $IPV4_REGEX}
+				NetbiosName = $_.NetbiosName
+				UserAccountControl = $_.UserAccountControl
+				LastLogonUserName = $_.LastLogonUserName
+				LastLogonUserDomain = $_.LastLogonUserDomain
+				LastLogonTimestamp = ParseDateTimeObjectToIso $_.LastLogonTimestamp
+				OperatingSystemNameandVersion = $_.OperatingSystemNameandVersion
+				VirtualMachineHostName = $_.VirtualMachineHostName
+				VirtualMachineType = $_.VirtualMachineType
+				DNSForestGuid = $_.DNSForestGuid
+				HardwareID = $_.HardwareID
+			}
+		}
+		$MDOutput = $outputToHumanReadable | TableToMarkdown -Name "Device As Resource"
+		$output = [PSCustomObject]@{ "MicrosoftECM.Devices(val.ResourceID && val.ResourceID === obj.ResourceID)" = $outputToContext }
+		ReturnOutputs -ReadableOutput $MDOutput -Outputs $output -RawResponse $devices | Out-Null
+	}
+	else
+	{
+		$MDOutput = "### Devices As Resource`nNo results found."
+		ReturnOutputs $MDOutput | Out-Null
+	}
+}
+
+Function GetUserDeviceAffinity()
+{
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPositionalParameters", "")]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseUsingScopeModifierInNewRunspaces", "")]
+	param(
+		[Parameter()] [string]$deviceNames,
+		[Parameter()] [string]$resourceIDs,
+		[Parameter()] [string]$userNames
+	)
+	AssertNoMoreThenExpectedParametersGiven "Can only use one of the following parameters: device_names, resource_ids, user_names" 1 $deviceNames $resourceIDs $userNames
+	if (!$deviceNames -And !$resourceIDs -And !$userNames)
+	{
+		throw "Please use one of the following parameters: device_names, resource_ids, user_names"
+	}
+	$deviceNamesList = ArgToList $deviceNames
+	$resourceIDsList = ArgToList $resourceIDs
+	$userNamesList = ArgToList $userNames
+	$result = Invoke-Command $global:Session -ArgumentList $deviceNamesList, $resourceIDsList, $userNamesList, $global:siteCode -ErrorAction Stop -ScriptBlock {
+		param($deviceNamesList, $resourceIDsList, $userNamesList, $siteCode)
+		$jobs = @()
+		if ($deviceNamesList)
+		{
+			ForEach ($deviceName in $deviceNamesList)
+			{
+				$jobs += start-job -ArgumentList $deviceName, $SiteCode -scriptblock {
+					Set-Location $env:SMS_ADMIN_UI_PATH\..\
+					Import-Module .\ConfigurationManager.psd1
+					Set-Location "$( $args[1] ):"
+					Get-CMUserDeviceAffinity -DeviceName $args[0] | Select-Object ResourceName, UniqueUserName, ResourceID, IsActive, CreationTime, RelationshipResourceID
+				}
+			}
+		}
+		if ($resourceIDsList)
+		{
+			ForEach ($resourceID in $resourceIDsList)
+			{
+				$jobs += start-job -ArgumentList $resourceID, $SiteCode -scriptblock {
+					Set-Location $env:SMS_ADMIN_UI_PATH\..\
+					Import-Module .\ConfigurationManager.psd1
+					Set-Location "$( $args[1] ):"
+					Get-CMUserDeviceAffinity -DeviceId $args[0] | Select-Object ResourceName, UniqueUserName, ResourceID, IsActive, CreationTime, RelationshipResourceID
+				}
+			}
+		}
+		if ($userNamesList)
+		{
+			ForEach ($userName in $userNamesList)
+			{
+				$jobs += start-job -ArgumentList $userName, $SiteCode -scriptblock {
+					Set-Location $env:SMS_ADMIN_UI_PATH\..\
+					Import-Module .\ConfigurationManager.psd1
+					Set-Location "$( $args[1] ):"
+					Get-CMUserDeviceAffinity -UserName $args[0] | Select-Object ResourceName, UniqueUserName, ResourceID, IsActive, CreationTime, RelationshipResourceID
+				}
+			}
+		}
+		$results = Receive-Job -Job $jobs -Wait -AutoRemoveJob
+		$results
+	}
+	if ($result)
+	{
+		$output = $result | ForEach-Object {
+			[PSCustomObject]@{
+				DeviceName = $_.ResourceName
+				UserName = $_.UniqueUserName
+				ResourceID = $_.ResourceID
+				IsActive = $_.IsActive
+				RelationshipResourceID = $_.RelationshipResourceID
+				CreationTime = ParseDateTimeObjectToIso $_.CreationTime
+			}
+		}
+		$MDOutput = $output | TableToMarkdown -Name "User Device Affinity"
+		$output = [PSCustomObject]@{ "MicrosoftECM.UserDeviceAffinity(val.RelationshipResourceID && val.RelationshipResourceID === obj.RelationshipResourceID)" = $output }
+		ReturnOutputs -ReadableOutput $MDOutput -Outputs $output -RawResponse $result | Out-Null
+	}
+	else
+	{
+		$MDOutput = "### Devices As Resource`nNo results found."
+		ReturnOutputs $MDOutput | Out-Null
+	}
 }
 
 Function TestModule()
@@ -1097,10 +1381,6 @@ function Main
 				$deviceName = $demisto.Args()['device_name']
 				GetLastLogOnUser $deviceName | Out-Null
 			}
-			"ms-ecm-user-get-primary" {
-				$deviceName = $demisto.Args()['device_name']
-				GetPrimaryUser $deviceName | Out-Null
-			}
 			"ms-ecm-get-installed-softwares" {
 				$deviceName = $demisto.Args()['device_name']
 				ListInstalledSoftwares $deviceName | Out-Null
@@ -1114,9 +1394,8 @@ function Main
 			"ms-ecm-device-list" {
 				$CollectionID = $demisto.Args()['collection_id']
 				$CollectionName = $demisto.Args()['collection_name']
-				$DeviceName = $demisto.Args()['device_name']
-				$resourceID = $demisto.Args()['resource_id']
-				GetDeviceList $CollectionID $CollectionName $DeviceName $resourceID
+				$limit = (ArgToInteger $demisto.Args()['limit'] 100) - 1
+				GetDeviceList $CollectionID $CollectionName $limit
 			}
 			"ms-ecm-script-list" {
 				$author = $demisto.Args()['author']
@@ -1134,7 +1413,9 @@ function Main
 				$CollectionID = $demisto.Args()['collection_id']
 				$CollectionName = $demisto.Args()['collection_name']
 				$DeviceName = $demisto.Args()['device_name']
-				InvokeScript $scriptGuid $CollectionID $CollectionName $DeviceName
+				$ShouldPollResults = ArgToBool $demisto.Args()['poll_results']
+				$timeoutSeconds = ArgToInteger $demisto.Args()['timeout'] 30
+				InvokeScript $scriptGuid $CollectionID $CollectionName $DeviceName $ShouldPollResults $timeoutSeconds
 			}
 			"ms-ecm-script-invocation-results" {
 				$operationID = $demisto.Args()['operation_id']
@@ -1183,21 +1464,43 @@ function Main
 				$CollectionID = $demisto.Args()['collection_id']
 				$CollectionName = $demisto.Args()['collection_name']
 				$DeviceName = $demisto.Args()['device_name']
-				StartService $serviceName $CollectionID $CollectionName $DeviceName
+				$ShouldPollResults = ArgToBool $demisto.Args()['poll_results']
+				$timeoutSeconds = ArgToInteger $demisto.Args()['timeout'] 30
+				StartService $serviceName $CollectionID $CollectionName $DeviceName $ShouldPollResults $timeoutSeconds
 			}
 			"ms-ecm-service-restart" {
 				$serviceName = $demisto.Args()['service_name']
 				$CollectionID = $demisto.Args()['collection_id']
 				$CollectionName = $demisto.Args()['collection_name']
 				$DeviceName = $demisto.Args()['device_name']
-				RestartService $serviceName $CollectionID $CollectionName $DeviceName
+				$ShouldPollResults = ArgToBool $demisto.Args()['poll_results']
+				$timeoutSeconds = ArgToInteger $demisto.Args()['timeout'] 30
+				RestartService $serviceName $CollectionID $CollectionName $DeviceName $ShouldPollResults $timeoutSeconds
 			}
 			"ms-ecm-service-stop" {
 				$serviceName = $demisto.Args()['service_name']
 				$CollectionID = $demisto.Args()['collection_id']
 				$CollectionName = $demisto.Args()['collection_name']
 				$DeviceName = $demisto.Args()['device_name']
-				StopService $serviceName $CollectionID $CollectionName $DeviceName
+				$ShouldPollResults = ArgToBool $demisto.Args()['poll_results']
+				$timeoutSeconds = ArgToInteger $demisto.Args()['timeout'] 30
+				StopService $serviceName $CollectionID $CollectionName $DeviceName $ShouldPollResults $timeoutSeconds
+			}
+			"ms-ecm-device-get-collection-member" {
+				$deviceNames = $demisto.Args()['device_names']
+				$resourceIDs = $demisto.Args()['resource_ids']
+				GetDeviceAsCollectionMember $deviceNames $resourceIDs
+			}
+			"ms-ecm-device-get-resource" {
+				$deviceNames = $demisto.Args()['device_names']
+				$resourceIDs = $demisto.Args()['resource_ids']
+				GetDeviceAsResource $deviceNames $resourceIDs
+			}
+			"ms-ecm-get-user-device-affinity" {
+				$deviceNames = $demisto.Args()['device_names']
+				$resourceIDs = $demisto.Args()['resource_ids']
+				$userNames = $demisto.Args()['user_names']
+				GetUserDeviceAffinity $deviceNames $resourceIDs $userNames
 			}
 		}
 	}

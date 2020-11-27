@@ -2,19 +2,14 @@
     "name": "Farsight DNSDB",
     "description": "Query Farsight DNSDB service",
     "support": "partner",
-    "currentVersion": "2.1.0",
+    "currentVersion": "2.1.1",
     "author": "Farsight Security, Inc.",
     "url": "https://www.farsightsecurity.com",
     "email": "support@farsightsecurity.com",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "dns",
-        "pdns",
-        "passive dns",
-        "dnsdb"
-    ],
+    "tags": [],
     "githubUser": [
         "farsightsec",
         "dnsdb"
@@ -33,5 +28,6 @@
     },
     "displayedImages": [
         "CommonScripts"
-    ]
+    ],
+    "certification": "certified"
 }

@@ -40,7 +40,6 @@ class Client(BaseClient):
                               reputation: List = None, alert_type: List = None, alert_category: List = None,
                               workflow: List = None, device_name: List = None, process_name: List = None,
                               sort_field: str = None, sort_order: str = None, limit: str = None) -> Dict:
-
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/alerts/_search'
         body = {
             'criteria': assign_params(
@@ -77,7 +76,6 @@ class Client(BaseClient):
 
     def alert_workflow_update_request(self, alert_id: str = None, state: str = None, comment: str = None,
                                       remediation_state: str = None) -> Dict:
-
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/alerts/{alert_id}/workflow'
         body = assign_params(
             state=state,
@@ -91,7 +89,6 @@ class Client(BaseClient):
                              last_contact_time: Dict[str, Optional[Any]] = None, ad_group_id: List = None,
                              policy_id: List = None, target_priority: List = None, limit: int = None,
                              sort_field: str = None, sort_order: str = None) -> Dict:
-
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/devices/_search'
 
         body = {
@@ -117,7 +114,6 @@ class Client(BaseClient):
         return self._http_request('POST', suffix_url, json_data=body)
 
     def device_quarantine_request(self, device_id: List = None) -> None:
-
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/device_actions'
 
         body = {
@@ -209,38 +205,31 @@ class Client(BaseClient):
         self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
     def list_watchlists_request(self) -> Dict:
-
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists'
         return self._http_request('GET', suffix_url)
 
     def get_watchlist_by_id_request(self, watchlist_id: str = None) -> Dict:
-
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}'
         return self._http_request('GET', suffix_url)
 
     def delete_watchlist_request(self, watchlist_id: str = None) -> None:
-
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}'
         self._http_request('DELETE', suffix_url, resp_type='content')
 
     def watchlist_alert_status_request(self, watchlist_id: str = None) -> Dict:
-
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}/alert'
         return self._http_request('GET', suffix_url)
 
     def enable_watchlist_alert_request(self, watchlist_id: str = None) -> Dict:
-
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}/alert'
         return self._http_request('PUT', suffix_url)
 
     def disable_watchlist_alert_request(self, watchlist_id: str = None) -> None:
-
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}/alert'
         self._http_request('DELETE', suffix_url, resp_type='content')
 
     def create_watchlist_request(self, watchlist_name: str = None, description: str = None, tags_enabled: bool = None,
                                  alerts_enabled: bool = None, report_ids: List = None, classifier: Dict = None) -> Dict:
-
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists'
         body = assign_params(
             name=watchlist_name,
@@ -256,7 +245,6 @@ class Client(BaseClient):
     def update_watchlist_request(self, watchlist_id: str = None, watchlist_name: str = None, description: str = None,
                                  tags_enabled: bool = None, alerts_enabled: bool = None, report_ids: List = None,
                                  classifier: Dict = None) -> Dict:
-
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}'
         body = assign_params(
             name=watchlist_name,
@@ -269,32 +257,27 @@ class Client(BaseClient):
         return self._http_request('PUT', suffix_url, json_data=body)
 
     def get_ignore_ioc_status_request(self, report_id: str = None, ioc_id: str = None) -> Dict:
-
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id})/iocs/{ioc_id}/ignore'
 
         return self._http_request('GET', suffix_url)
 
     def ignore_ioc_request(self, report_id: str = None, ioc_id: str = None) -> Dict:
-
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}/iocs/{ioc_id}/ignore'
 
         return self._http_request('PUT', suffix_url)
 
     def reactivate_ioc_request(self, report_id: str = None, ioc_id: str = None) -> None:
-
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id})/iocs/{ioc_id}/ignore'
 
         self._http_request('DELETE', suffix_url, resp_type='content')
 
     def get_report_request(self, report_id: str = None) -> Dict:
-
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}'
 
         return self._http_request('GET', suffix_url)
 
     def create_report_request(self, title: str = None, description: str = None, tags: List = None, severity: int = None,
                               iocs: Dict = None, timestamp: int = None) -> Dict:
-
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports'
 
         body = assign_params(
@@ -308,24 +291,20 @@ class Client(BaseClient):
         return self._http_request('POST', suffix_url, json_data=body)
 
     def ignore_report_request(self, report_id: str = None) -> Dict:
-
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}/ignore'
 
         return self._http_request('PUT', suffix_url)
 
     def reactivate_report_request(self, report_id: str = None) -> None:
-
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}/ignore'
 
         self._http_request('DELETE', suffix_url, resp_type='content')
 
     def get_report_ignore_status_request(self, report_id: str = None) -> Dict:
-
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}/ignore'
         return self._http_request('GET', suffix_url)
 
     def remove_report_request(self, report_id: str = None) -> None:
-
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}'
 
         self._http_request('DELETE', suffix_url, resp_type='content')
@@ -333,7 +312,6 @@ class Client(BaseClient):
     def update_report_request(self, report_id: str = None, title: str = None, description: str = None,
                               severity: int = None, iocs: Dict = None, tags: List = None,
                               timestamp: int = None) -> Dict:
-
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}'
         body = assign_params(
             title=title,
@@ -346,7 +324,6 @@ class Client(BaseClient):
         return self._http_request('PUT', suffix_url, json_data=body)
 
     def get_file_device_summary_request(self, sha256: str = None) -> Dict:
-
         suffix_url = f'ubs/v1/orgs/{self.cb_org_key}/sha256/{sha256}/summary/device'
         return self._http_request('GET', suffix_url)
 
@@ -355,7 +332,6 @@ class Client(BaseClient):
         return self._http_request('GET', suffix_url)
 
     def get_file_request(self, sha256: List = None, expiration_seconds: int = None) -> Dict:
-
         suffix_url = f'/ubs/v1/orgs/{self.cb_org_key}/file/_download'
         body = assign_params(
             sha256=sha256,
@@ -365,9 +341,75 @@ class Client(BaseClient):
         return self._http_request('POST', suffix_url, json_data=body)
 
     def get_file_path_request(self, sha256: str = None) -> Dict:
-
         suffix_url = f'/ubs/v1/orgs/{self.cb_org_key}/sha256/{sha256}/summary/file_path'
         return self._http_request('GET', suffix_url)
+
+    def create_search_process_request(self, process_hash: str, process_name: str, event_id: str, query: str,
+                                      limit: int, start_time: str = None,
+                                      end_time: str = None, start: int = 0) -> dict:
+        if not process_hash and not process_name and not event_id and not query:
+            raise Exception("To perform an process search, please provide at least one of the following: "
+                            "'process_hash', 'process_name', 'event_id' or 'query'")
+        suffix_url = f'/api/investigate/v2/orgs/{self.cb_org_key}/processes/search_jobs'
+        process_hash_list = argToList(process_hash)
+        process_name_list = argToList(process_name)
+        body = assign_params(criteria=assign_params(
+            process_hash=process_hash_list,
+            process_name=process_name_list,
+            event_id=event_id,
+        ),
+            query=query,
+            rows=limit,
+            start=start,
+
+        )
+        timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
+        start_iso = parse_date_range(start_time, date_format=timestamp_format)[0]
+        if end_time:
+            end_iso = parse_date_range(end_time, date_format=timestamp_format)[0]
+        else:
+            end_iso = datetime.now().strftime(timestamp_format)
+        time_range = {
+            "end": end_iso,
+            "start": start_iso
+        }
+        body['time_range'] = time_range
+        return self._http_request('POST', suffix_url, json_data=body)
+
+    def get_search_process_request(self, job_id) -> dict:
+        suffix_url = f'/api/investigate/v2/orgs/{self.cb_org_key}/processes/search_jobs/{job_id}/results'
+
+        return self._http_request('GET', suffix_url)
+
+    def create_search_event_by_process_request(self, process_guid: str, event_type: str,
+                                               query: str, limit: int, start_time: str, end_time: str = None,
+                                               start: int = 0) -> dict:
+        if event_type and event_type not in ['filemod', 'netconn', 'regmod', 'modload', 'crossproc', 'childproc']:
+            raise Exception("Only the following event types can be searched: "
+                            "'filemod', 'netconn', 'regmod', 'modload', 'crossproc', 'childproc'")
+        if not event_type and not query:
+            raise Exception("To perform an event search, please provide either event_type or query.")
+        suffix_url = f'api/investigate/v2/orgs/{self.cb_org_key}/events/{process_guid}/_search'
+        body = assign_params(
+            criteria=assign_params(event_type=argToList(event_type)),
+            query=query,
+            rows=limit,
+            start=start
+        )
+        timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
+        start_iso = parse_date_range(start_time, date_format=timestamp_format)[0]
+        if end_time:
+            end_iso = parse_date_range(end_time, date_format=timestamp_format)[0]
+        else:
+            end_iso = datetime.now().strftime(timestamp_format)
+        time_range = {
+            "end": end_iso,
+            "start": start_iso
+        }
+        body['time_range'] = time_range
+
+        response = self._http_request('POST', suffix_url, json_data=body)
+        return response
 
 
 def test_module(client):
@@ -385,7 +427,6 @@ def test_module(client):
 
 
 def alert_list_command(client: Client, args: Dict) -> Union[CommandResults, str]:
-
     group_results = args.get('group_results')
     minimum_severity = args.get('minimum_severity')
     create_time = assign_params(
@@ -448,7 +489,6 @@ def alert_list_command(client: Client, args: Dict) -> Union[CommandResults, str]
 
 
 def alert_workflow_update_command(client: Client, args: Dict) -> CommandResults:
-
     alert_id = args.get('alert_id')
     state = args.get('state')
     comment = args.get('comment')
@@ -539,7 +579,6 @@ def list_devices_command(client: Client, args: Dict) -> Union[CommandResults, st
 
 
 def device_quarantine_command(client: Client, args: Dict) -> str:
-
     device_id = argToList(args.get('device_id'))
     client.device_quarantine_request(device_id)
 
@@ -554,7 +593,6 @@ def device_unquarantine_command(client: Client, args: Dict) -> str:
 
 
 def device_bypass_command(client: Client, args: Dict) -> str:
-
     device_id = argToList(args.get('device_id'))
     client.device_bypass_request(device_id)
 
@@ -592,7 +630,6 @@ def device_policy_update_command(client: Client, args: Dict) -> str:
 
 
 def list_watchlists_command(client: Client) -> Union[CommandResults, str]:
-
     contents = []
     headers = ['ID', 'Name', 'Description', 'create_timestamp', 'Alerts_enabled', 'Tags_enabled', 'Report_ids',
                'Last_update_timestamp', 'Classifier']
@@ -626,7 +663,6 @@ def list_watchlists_command(client: Client) -> Union[CommandResults, str]:
 
 
 def get_watchlist_by_id_command(client: Client, args: Dict) -> CommandResults:
-
     watchlist_id = args.get('watchlist_id')
     result = client.get_watchlist_by_id_request(watchlist_id)
     headers = ['ID', 'Name', 'Description', 'create_timestamp', 'Alerts_enabled', 'Tags_enabled', 'Report_ids',
@@ -680,7 +716,6 @@ def disable_watchlist_alert_command(client: Client, args: Dict) -> str:
 
 
 def create_watchlist_command(client: Client, args: Dict) -> CommandResults:
-
     watchlist_name = args.get('watchlist_name')
     description = args.get('description')
     tags_enabled = args.get('tags_enabled')
@@ -773,7 +808,6 @@ def update_watchlist_command(client: Client, args: Dict) -> CommandResults:
 
 
 def get_report_command(client: Client, args: Dict) -> CommandResults:
-
     report_id = args.get('report_id')
     result = client.get_report_request(report_id)
     headers = ['ID', 'Title', 'Timestamp', 'Description', 'Severity', 'Link', 'IOCs_v2', 'Tags', 'Visibility']
@@ -836,7 +870,6 @@ def get_ignore_ioc_status_command(client: Client, args: Dict) -> str:
 
 
 def ignore_ioc_command(client: Client, args: Dict) -> str:
-
     report_id = args.get('report_id')
     ioc_id = args.get('ioc_id')
 
@@ -846,7 +879,6 @@ def ignore_ioc_command(client: Client, args: Dict) -> str:
 
 
 def reactivate_ioc_command(client: Client, args: Dict) -> str:
-
     report_id = args.get('report_id')
     ioc_id = args.get('ioc_id')
 
@@ -856,7 +888,6 @@ def reactivate_ioc_command(client: Client, args: Dict) -> str:
 
 
 def create_report_command(client: Client, args: Dict) -> CommandResults:
-
     title = args.get('title')
     description = args.get('description')
     tags = argToList(args.get('tags'))
@@ -929,7 +960,7 @@ def ignore_report_command(client: Client, args: Dict) -> str:
     client.ignore_report_request(report_id)
 
     return f'The report with report_id "{report_id}" and all contained IOCs will not match future events ' \
-        f'for any watchlist.'
+           f'for any watchlist.'
 
 
 def reactivate_report_command(client: Client, args: Dict) -> str:
@@ -1029,7 +1060,6 @@ def update_report_command(client: Client, args: Dict) -> CommandResults:
 
 
 def get_file_device_summary(client: Client, args: Dict) -> CommandResults:
-
     sha256 = args.get('sha256')
     result = client.get_file_device_summary_request(sha256)
     readable_output = tableToMarkdown('The file device summary', result)
@@ -1170,8 +1200,92 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
                                                      '%Y-%m-%dT%H:%M:%S.000Z')
         latest_alert_id = alert_id
 
-    return incidents, \
-        {'last_fetched_alert_create_time': latest_alert_create_date, 'last_fetched_alert_id': latest_alert_id}
+    res = {'last_fetched_alert_create_time': latest_alert_create_date, 'last_fetched_alert_id': latest_alert_id}
+    return incidents, res
+
+
+def process_search_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Gets arguments for a process search task, and returns the task's id and status.
+    """
+    process_name = args.get('process_name', '')
+    process_hash = args.get('process_hash', '')
+    event_id = args.get('event_id', '')
+    query = args.get('query', '')
+    start_time = str(args.get('start_time', '1 day'))
+    end_time = str(args.get('end_time', ''))
+    limit = args.get('limit')
+    if not limit:
+        limit = 20
+    try:
+        limit = int(limit)
+    except ValueError:
+        raise ValueError("Please provide a number as limit.")
+
+    raw_respond = client.create_search_process_request(process_name=process_name, process_hash=process_hash,
+                                                       event_id=event_id, query=query, limit=limit,
+                                                       start_time=start_time, end_time=end_time)
+    readable_output = f"job_id is {raw_respond.get('job_id')}."
+    output = {'job_id': raw_respond.get('job_id'), 'status': 'In Progress'}
+    return CommandResults(outputs_prefix='CarbonBlackEEDR.SearchProcess', raw_response=raw_respond,
+                          outputs=output, outputs_key_field='job_id', readable_output=readable_output)
+
+
+def event_by_process_search_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Gets arguments for an event-by-process search task, and returns the task's results.
+    """
+    process_guid = args.get('process_guid', '')
+    event_type = args.get('event_type', '')
+    query = args.get('query', '')
+    limit = args.get('limit', 20)
+    start = args.get('start', 0)
+    start_time = str(args.get('start_time', '1 day'))
+    end_time = str(args.get('end_time', ''))
+
+    if str(limit).isdigit():
+        limit = int(limit)
+    else:
+        raise ValueError("Please provide a number as limit.")
+
+    if str(start).isdigit():
+        start = int(start)
+    else:
+        raise ValueError("Please provide a number as a start index.")
+
+    result = client.create_search_event_by_process_request(
+        process_guid=process_guid, event_type=event_type,
+        query=query, limit=limit, start_time=start_time, end_time=end_time, start=start)
+
+    readable = tableToMarkdown(name="Results Found.", t=result.get('results'), removeNull=True)
+    found_num_readable = f"Total of {result.get('num_found')} items found. "
+    found_num_readable += f"Showing items {start} - {min(start + limit - 1, result.get('num_found'))}." if result.get(
+        'num_found') else ""
+    readable += found_num_readable
+
+    return CommandResults(outputs_prefix='CarbonBlackEEDR.SearchEvent',
+                          outputs=result.get('results'), outputs_key_field='event_guid',
+                          raw_response=result, readable_output=readable)
+
+
+def process_search_get_command(client: Client, args: Dict) -> List[CommandResults]:
+    """
+    Gets a process search task's id, and returns the task's results.
+    """
+    job_ids = argToList(args.get('job_id'))
+    job_result_list = []
+    for job in job_ids:
+        raw_result = client.get_search_process_request(job_id=job)
+        status = 'Completed' if raw_result.get('contacted') == raw_result.get('completed') else 'In Progress'
+        output = {'status': status, 'job_id': job, 'results': raw_result.get('results')}
+        title = f"{status} Search Results:"
+        headers = ["process_hash", "process_name", "device_name", "device_timestamp", "process_pid", "process_username"]
+        human_readable = tableToMarkdown(name=title, t=output.get('results'), removeNull=True, headers=headers)
+        job_result_list.append(CommandResults(outputs_prefix='CarbonBlackEEDR.SearchProcess',
+                                              outputs=output, outputs_key_field='job_id',
+                                              raw_response=raw_result,
+                                              readable_output=human_readable))
+    return job_result_list
 
 
 def main():
@@ -1305,6 +1419,16 @@ def main():
 
         elif demisto.command() == 'cb-eedr-file-paths':
             return_results(get_file_path_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-process-search':
+            return_results(process_search_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-process-search-results':
+            for command_result_item in process_search_get_command(client, demisto.args()):
+                return_results(command_result_item)
+
+        elif demisto.command() == 'cb-eedr-events-by-process-get':
+            return_results(event_by_process_search_command(client, demisto.args()))
 
     # Log exceptions
     except Exception as e:

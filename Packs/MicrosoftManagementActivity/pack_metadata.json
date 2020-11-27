@@ -2,7 +2,7 @@
     "name": "Microsoft Management Activity API (O365/Azure Events)",
     "description": "An integration for Microsoft's management activity API, which enables you to fetch content records and manage your subscriptions.",
     "support": "xsoar",
-    "currentVersion": "1.1.1",
+  "currentVersion": "1.1.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
