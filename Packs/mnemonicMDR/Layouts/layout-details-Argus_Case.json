@@ -1,16 +1,16 @@
 {
-	"TypeName": "Argus Case",
-	"kind": "details",
-	"typeId": "Argus Case",
+    "TypeName": "Argus Case",
+    "kind": "details",
+    "typeId": "Argus Case",
     "version": -1,
     "fromVersion": "5.0.0",
     "toVersion": "5.9.9",
     "layout": {
         "TypeName": "",
-		"id": "Argus Case",
-		"kind": "details",
-		"name": "",
-		"system": false,
+        "id": "Argus Case",
+        "kind": "details",
+        "name": "",
+        "system": false,
         "tabs": [
             {
                 "id": "summary",
@@ -455,6 +455,9 @@
                 "name": "Canvas",
                 "type": "canvas"
             }
-        ]
-    }
+        ],
+        "typeId": "Argus Case",
+        "version": -1
+    },
+    "description": ""
 }
