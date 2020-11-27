@@ -26,6 +26,22 @@ def util_load_raw(path):
 
 
 def test_match_ip_in_cidr_indicators(mocker):
+    """
+    Given:
+        - inputs for the report:
+          - list of users
+          - list of ips
+          - list of devices
+          - list of prisma cloud observations
+          - shadow it reasons suggestions
+          - incident data: ip, port, provider
+          - public cloud info: cloud provider region and service
+          - expanse data: business units, asset tags, issue tags
+    When
+        - Generating the attribution report in the Expanse Playbook
+    Then
+        - The proper markdown report is generated
+    """
     mock_users = util_load_json('test_data/expanse_users.json')
     mock_ips = util_load_json('test_data/expanse_ips.json')
     mock_devices = util_load_json('test_data/expanse_devices.json')

@@ -54,6 +54,15 @@ ASSET_DOMAIN = {
 
 
 def test_refresh_issue_assets_command(mocker):
+    """
+    Given:
+        - current incident with iprange, domain and certificate assets
+    When
+        - Refreshing Expanse assets for an incident
+    Then
+        - commands are invoked to refresh asset data
+        - incident is updated with the refreshed asset data
+    """
     def executeCommand(name, args):
         if name == "expanse-get-domain" and args['domain'] == 'fakeDomain':
             return [{'Contents': ASSET_DOMAIN}]
