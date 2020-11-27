@@ -7,31 +7,6 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_ping(requests_mock):
-    """Tests the ping command
-    """
-    from Cognni import Client, ping_command
-
-    mock_response = util_load_json('test_data/ping_response.json')
-    requests_mock.post('https://localhost/intelligence/data/graphql',
-                       json=mock_response)
-
-    client = Client(
-        base_url='https://localhost',
-        verify=False,
-        headers={
-            'Authorization': 'Bearer some_api_key'
-        }
-    )
-
-    response = ping_command(client)
-
-    # assert response.outputs[0] == mock_response
-    assert response.outputs_prefix == 'Cognni.ping'
-    assert response.readable_output == '## ping: pong'
-    # assert response.raw_response['ping'] == 'pong'
-
-
 def test_fetch_incidents(requests_mock):
     """Tests the fetch-incidents function
     """
