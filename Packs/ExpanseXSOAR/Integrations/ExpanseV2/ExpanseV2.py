@@ -635,6 +635,57 @@ def timestamp_us_to_datestring_utc(ts: int, date_format: str = DATE_FORMAT) -> s
     return ds
 
 
+def format_cidr_data(cidrs: List[Dict[str, Any]]) -> CommandResults:
+    class ExpanseCIDR(Common.Indicator):
+        def __init__(self, indicator: str):
+            self.indicator = indicator
+
+        def to_context(self):
+            return {
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
+                    'Score': Common.DBotScore.NONE,
+                    'Vendor': 'ExpanseV2',
+                    'Type': 'CIDR',
+                    'Indicator': self.indicator
+                }
+            }
+
+    cidr_data_list: List[Dict[str, Any]] = []
+    cidr_standard_list: List[Common.Indicator] = []
+
+    for cidr_data in cidrs:
+        cidr_data['cidr'] = ','.join(range_to_cidrs(cidr_data['startAddress'], cidr_data['endAddress'])) if (
+            'startAddress' in cidr_data
+            and 'endAddress' in cidr_data
+        ) else None
+
+        if not cidr_data['cidr']:
+            continue
+
+        cidr_context_excluded_fields: List[str] = ['startAddress', 'endAddress']
+        cidr_data_list.append({
+            k: cidr_data[k]
+            for k in cidr_data if k not in cidr_context_excluded_fields
+        })
+
+        # We can't use Common.DBotScore here because CIDR is not one of the well known
+        # Indicator types
+        cidr_standard_context = ExpanseCIDR(cidr_data['cidr'])
+        cidr_standard_list.append(cidr_standard_context)
+
+    readable_output = tableToMarkdown(
+        'Expanse IP Range List', cidr_data_list) if len(cidr_standard_list) > 0 else "## No IP Ranges found"
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Expanse.IPRange',
+        outputs_key_field='id',
+        outputs=cidr_data_list if len(cidr_data_list) > 0 else None,
+        indicators=cidr_standard_list if len(cidr_standard_list) > 0 else None
+    )
+
+
 def format_domain_data(domains: List[Dict[str, Any]]) -> CommandResults:
     class DomainGlob(Common.Domain):
         def to_context(self):
@@ -1436,10 +1487,9 @@ def get_iprange_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     total_results, max_page_size = calculate_limits(args.get('limit', None))
 
-    outputs: Iterator[Any] = iter([])
-    ip_ranges: List = []
+    outputs: List[Dict[str, Any]]
     if id_ is not None:
-        outputs = iter([client.get_iprange_by_id(id_, include)])
+        outputs = [client.get_iprange_by_id(id_, include)]
     else:
         params: Dict = {
             "include": include,
@@ -1462,28 +1512,14 @@ def get_iprange_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         if len(tag_names) != 0:
             params['tag-names'] = ','.join(tag_names)
 
-        outputs = client.get_ipranges(params=params)
+        outputs = list(
+            islice(
+                client.get_ipranges(params=params),
+                total_results
+            )
+        )
 
-    for o in outputs:
-        o['cidr'] = ','.join(range_to_cidrs(o['startAddress'], o['endAddress'])) if (
-            'startAddress' in o
-            and 'endAddress' in o
-        ) else None
-
-        cidr_context_excluded_fields: List[str] = ['startAddress', 'endAddress']
-        ip_ranges.append({
-            k: o[k]
-            for k in o if k not in cidr_context_excluded_fields
-        })
-        if len(ip_ranges) >= total_results:
-            break
-
-    return CommandResults(
-        outputs_prefix="Expanse.IPRange",
-        outputs_key_field="id",
-        readable_output="## No IP Ranges found" if len(ip_ranges) == 0 else None,
-        outputs=ip_ranges if len(ip_ranges) > 0 else None
-    )
+    return(format_cidr_data(outputs))
 
 
 def get_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1715,6 +1751,10 @@ def domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if len(domains) == 0:
         raise ValueError('domain(s) not specified')
 
+    # trim down the list to the max number of supported results
+    if len(domains) > MAX_RESULTS:
+        domains = domains[:MAX_RESULTS]
+
     domain_data: List[Dict[str, Any]] = []
 
     for domain in domains:
@@ -1722,7 +1762,7 @@ def domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         if not d or not isinstance(d, dict):
             continue
         if 'domain' not in d:
-            d['domain'] = 'domain'
+            d['domain'] = domain
         domain_data.append(d)
 
     return format_domain_data(domain_data)
@@ -1732,6 +1772,10 @@ def ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('ip(s) not specified')
+
+    # trim down the list to the max number of supported results
+    if len(ips) > MAX_RESULTS:
+        ips = ips[:MAX_RESULTS]
 
     ip_standard_list: List[Common.IP] = []
     ip_data_list: List[Dict[str, Any]] = []
@@ -1767,27 +1811,13 @@ def ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Expanse.IP',
-        outputs_key_field='IP',
+        outputs_key_field='id',
         outputs=ip_data_list if len(ip_data_list) > 0 else None,
         indicators=ip_standard_list if len(ip_standard_list) > 0 else None
     )
 
 
 def cidr_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    class ExpanseCIDR(Common.Indicator):
-        def __init__(self, indicator: str):
-            self.indicator = indicator
-
-        def to_context(self):
-            return {
-                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
-                    'Score': Common.DBotScore.NONE,
-                    'Vendor': 'ExpanseV2',
-                    'Type': 'CIDR',
-                    'Indicator': self.indicator
-                }
-            }
     cidrs = argToList(args.get('cidr'))
     if len(cidrs) == 0:
         raise ValueError('cidr(s) not specified')
@@ -1798,43 +1828,16 @@ def cidr_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     include = handle_iprange_include(args.get('include'), 'include')
 
-    cidr_data_list: List[Dict[str, Any]] = []
-    cidr_standard_list: List[Common.Indicator] = []
+    cidr_data: List[Dict[str, Any]] = []
 
     for cidr in cidrs:
-        cidr_data = next(client.get_ipranges(params={'inet': cidr, 'include': include, 'limit': 1}), None)
-        if cidr_data is None:
+        c = next(client.get_ipranges(params={'inet': cidr, 'include': include, 'limit': 1}), None)
+
+        if not c or not isinstance(c, dict):
             continue
+        cidr_data.append(c)
 
-        cidr_data['cidr'] = ','.join(range_to_cidrs(cidr_data['startAddress'], cidr_data['endAddress'])) if (
-            'startAddress' in cidr_data
-            and 'endAddress' in cidr_data
-        ) else None
-
-        if not cidr_data['cidr']:
-            continue
-
-        cidr_context_excluded_fields: List[str] = ['startAddress', 'endAddress']
-        cidr_data_list.append({
-            k: cidr_data[k]
-            for k in cidr_data if k not in cidr_context_excluded_fields
-        })
-
-        # We can't use Common.DBotScore here because CIDR is not one of the well known
-        # Indicator types
-        cidr_standard_context = ExpanseCIDR(cidr_data['cidr'])
-        cidr_standard_list.append(cidr_standard_context)
-
-    readable_output = tableToMarkdown(
-        'Expanse IP Range List', cidr_data_list) if len(cidr_standard_list) > 0 else "## No IP Ranges found"
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Expanse.IPRange',
-        outputs_key_field='IP',
-        outputs=cidr_data_list if len(cidr_data_list) > 0 else None,
-        indicators=cidr_standard_list if len(cidr_standard_list) > 0 else None
-    )
+    return format_cidr_data(cidr_data)
 
 
 def list_risk_rules_command(client: Client, args: Dict[str, Any]) -> CommandResults:
