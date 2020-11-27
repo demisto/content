@@ -387,29 +387,6 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def ping_command(client: Client) -> CommandResults:
-    """cognni-ping command: Prints ping
-
-    :type client: ``Client``
-    :param client: Cognni client to use
-
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains the ping response
-
-    :rtype: ``CommandResults``
-    """
-
-    result = client.ping()
-    readable_output = f'## ping: {result["ping"]}'
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Cognni.ping',
-        raw_response={},
-        outputs={}
-    )
-
-
 def fetch_incidents_command(client: Client, first_fetch_time: int, args: Dict[str, Any]) -> CommandResults:
     events_limit = arg_to_int(
         arg=args.get('events_limit'),
@@ -629,6 +606,7 @@ def main() -> None:
         arg_name='First fetch time',
         required=True
     )
+    
     assert isinstance(first_fetch_time, int)
     proxy = demisto.params().get('proxy', False)
 
