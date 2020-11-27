@@ -10,10 +10,29 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "Alerts",
+        "Attack",
+        "Forensics",
+        "Incident Handling",
+        "Incident Response",
+        "Malware",
+        "Security",
+        "Security Analytics",
+        "Threat Intelligence"
+    ],
+    "useCases": [
+        "Breach Notification",
+        "Case Management",
+        "Hunting",
+        "Incident Response",
+        "Malware",
+        "Threat Intelligence Management"
+    ],
     "keywords": [
-        "mnemonic", "Argus", "MDR"
+        "mnemonic",
+        "Argus",
+        "MDR"
     ],
     "githubUser": []
 }
