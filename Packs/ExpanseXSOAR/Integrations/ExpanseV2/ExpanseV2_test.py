@@ -173,14 +173,14 @@ def test_fetch_incidents(requests_mock, mocker):
         'last_issue_id': MOCK_LAST_FETCH_ID
     }
 
-    next_run, result = fetch_incidents(client, max_incidents=int(MOCK_LIMIT), last_run=last_run, business_units=MOCK_BU, 
+    next_run, result = fetch_incidents(client, max_incidents=int(MOCK_LIMIT), last_run=last_run, business_units=MOCK_BU,
                                        first_fetch=None, priority=None, activity_status=None, progress_status=None,
                                        issue_types=None, tags=None, mirror_direction=None, sync_tags=False,
                                        fetch_details=None, fetch_behavior=None)
-    
+
     assert next_run == {
         'last_fetch': datestring_to_timestamp_us(MOCK_NEXT_FETCH_TIME),
-        'last_issue_id': MOCK_NEXT_FETCH_ID        
+        'last_issue_id': MOCK_NEXT_FETCH_ID
     }
     assert len(result) == int(MOCK_LIMIT)
     assert result == mock_incidents
@@ -476,6 +476,7 @@ def test_expanse_list_tags(requests_mock):
 
 def test_expanse_get_iprange(requests_mock):
     from ExpanseV2 import Client, get_iprange_command
+    from CommonServerPython import Common
 
     MOCK_BU = "BU 1 Dev,BU 2 Prod"
     MOCK_LIMIT = "2"
@@ -501,6 +502,8 @@ def test_expanse_get_iprange(requests_mock):
         del d["startAddress"]
         del d["endAddress"]
     assert result.outputs == mock_ipranges_output["data"][: int(MOCK_LIMIT)]
+    assert isinstance(result.indicators[0], Common.Indicator)
+    assert result.indicators[0].indicator == mock_ipranges_output["data"][0]["cidr"]
 
 
 def test_expanse_create_tag(requests_mock):
@@ -1016,7 +1019,7 @@ def test_expanse_unassign_multiple_tags_from_certificate(mocker, requests_mock):
 def test_expanse_get_certificate_by_id(requests_mock):
     from ExpanseV2 import Client, get_certificate_command
 
-    MOCK_MD5HASH = "zjgruhp5zhqLTvOsvgZGYw=="
+    MOCK_MD5HASH = "mock_md5_hash"
     mock_cert = util_load_json("test_data/expanse_certificate.json")
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
@@ -1120,7 +1123,7 @@ def test_ip(requests_mock):
 
     result = ip_command(client, {"ip": MOCK_IP})
     assert result.outputs_prefix == "Expanse.IP"
-    assert result.outputs_key_field == "IP"
+    assert result.outputs_key_field == "id"
     assert result.outputs == mock_ip_data["data"]
     assert isinstance(result.indicators[0], Common.IP)
     assert result.indicators[0].ip == MOCK_IP
@@ -1152,7 +1155,7 @@ def test_cidr(requests_mock):
     result = cidr_command(client, {"cidr": MOCK_INET, "include": MOCK_INCLUDE})
 
     assert result.outputs_prefix == "Expanse.IPRange"
-    assert result.outputs_key_field == "IP"
+    assert result.outputs_key_field == "id"
     # output has CIDR, doesn't have startAddress and endAddress
     mock_cidr_output = copy.deepcopy(mock_cidr)
     for d in mock_cidr_output["data"]:
