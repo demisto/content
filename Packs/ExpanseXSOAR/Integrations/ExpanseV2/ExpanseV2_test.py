@@ -13,6 +13,16 @@ def util_load_json(path):
 
 
 def test_authentication_notcached(mocker, requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - a valid API Key
+    When
+        - No token is stored in the integration context
+    Then
+        - the authentication is performed
+        - the token and expiration is stored in the cache
+    """
     from ExpanseV2 import Client
     import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
     from datetime import datetime
@@ -44,6 +54,16 @@ def test_authentication_notcached(mocker, requests_mock):
 
 
 def test_authentication_invalid_token(mocker, requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - an invalid API Key
+    When
+        - No token is stored in the integration context
+    Then
+        - the authentication is performed and fails
+        - an error is returned
+    """
     from ExpanseV2 import Client
     import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 
@@ -58,6 +78,16 @@ def test_authentication_invalid_token(mocker, requests_mock):
 
 
 def test_authentication_cached_valid(mocker, requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - a valid API Key
+    When
+        - A valid, not expired, token is stored in the integration context
+    Then
+        - the authentication is not performed
+        - the cached token is used
+    """
     from ExpanseV2 import Client
     import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
     from datetime import datetime
@@ -89,6 +119,16 @@ def test_authentication_cached_valid(mocker, requests_mock):
 
 
 def test_authentication_cached_expired(mocker, requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - a valid API Key
+    When
+        - An expired token is stored in the integration context
+    Then
+        - the authentication is performed
+        - the new token is stored
+    """
     from ExpanseV2 import Client
     import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
     from datetime import datetime
@@ -124,6 +164,23 @@ def test_authentication_cached_expired(mocker, requests_mock):
 
 
 def test_fetch_incidents(requests_mock, mocker):
+    """
+    Given:
+        - an Expanse client
+        - a stored first fetch time
+        - a stored last incident id
+        - max_fetch set to 2
+        - filter based on business units
+    When
+        - Fetching incidents
+    Then
+        - first page of expanse issues is is read (max_fetch+1, which means positions 1 to 3 from the file)
+        - incidents are skipped until the stored last incident id is found
+        - the next good incident is returned (position 3 is saved)
+        - another page is required and read (positions 4 to 6 from the file)
+        - the first incident is also returned (position 4)
+        - other incidents are not returned as we have reached the requested max_fetch (2)
+    """
     from ExpanseV2 import Client, fetch_incidents, datestring_to_timestamp_us
 
     MOCK_LAST_FETCH_TIME = "2020-09-28T17:55:57.610230Z"
@@ -233,7 +290,7 @@ def test_get_remote_data_command_no_update(requests_mock):
     Given:
         - an Expanse client
         - arguments (id and lastUpdate time set to a lower than incident modification time)
-        - no (get-issue-updates empty results)
+        - no updates (get-issue-updates empty results)
     When
         - running get_remote_data_command with no changes to make
     Then
@@ -262,6 +319,16 @@ def test_get_remote_data_command_no_update(requests_mock):
 
 
 def test_update_issue_command(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (issue_id, type of update, update value)
+    When
+        - running !expanse-update-issue
+    Then
+        - the issue is updated with the corresponding update type and value
+        - the Expanse.IssueUpdate context is returned
+    """
     from ExpanseV2 import Client, update_issue_command
     import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 
@@ -299,6 +366,17 @@ def test_update_issue_command(requests_mock):
 
 
 def test_update_remote_system_command(mocker, requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - incident changes (a comment and 3 field changes)
+    When
+        - outgoing mirroring triggered by a change in the incident
+    Then
+        - a comment is created in the Expanse issue
+        - the Expanse issue is updated with the corresponding updates type and values
+        - the returned result corresponds to the Expanse issue id
+    """
     from ExpanseV2 import Client, update_remote_system_command
     import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 
@@ -353,6 +431,15 @@ def test_update_remote_system_command(mocker, requests_mock):
 
 
 def test_expanse_get_issue(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (issue_id)
+    When
+        - running !expanse-get-issue
+    Then
+        - the issue is retrieved and returned in the Context
+    """
     from ExpanseV2 import Client, get_issue_command
 
     MOCK_ISSUE_ID = "62089967-7b41-3d49-a21d-d12753d8fd91"
@@ -369,6 +456,15 @@ def test_expanse_get_issue(requests_mock):
 
 
 def test_expanse_get_issues(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (businessunit, limit, sort)
+    When
+        - running !expanse-get-issues
+    Then
+        - the issues are retrieved and returned to the context
+    """
     from ExpanseV2 import Client, get_issues_command
 
     MOCK_BU = "testcorp123 Dev,BU2 Prod"
@@ -390,6 +486,15 @@ def test_expanse_get_issues(requests_mock):
 
 
 def test_expanse_get_issue_comments_command(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (issue_id, limit)
+    When
+        - running !expanse-get-issue-comments
+    Then
+        - the issue comments are retrieved and returned to the context
+    """
     from ExpanseV2 import Client, get_issue_comments_command
 
     MOCK_ISSUE_ID = "a827f1a5-f223-4bf6-80e0-e8481bce8e2c"
@@ -410,6 +515,15 @@ def test_expanse_get_issue_comments_command(requests_mock):
 
 
 def test_expanse_get_issue_updates_command(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (issue_id, limit)
+    When
+        - running !expanse-get-issue-updates
+    Then
+        - the issue updates are retrieved and returned to the context
+    """
     from ExpanseV2 import Client, get_issue_updates_command
 
     MOCK_ISSUE_ID = "a827f1a5-f223-4bf6-80e0-e8481bce8e2c"
@@ -427,6 +541,15 @@ def test_expanse_get_issue_updates_command(requests_mock):
 
 
 def test_expanse_list_businessunits_command(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (limit)
+    When
+        - running !expanse-list-businessunits
+    Then
+        - the business units are retrieved and returned to the context
+    """
     from ExpanseV2 import Client, list_businessunits_command
 
     MOCK_LIMIT = "2"
@@ -443,6 +566,15 @@ def test_expanse_list_businessunits_command(requests_mock):
 
 
 def test_expanse_list_providers(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (limit)
+    When
+        - running !expanse-list-providers
+    Then
+        - the providers are retrieved and returned to the context
+    """
     from ExpanseV2 import Client, list_providers_command
 
     MOCK_LIMIT = "8"
@@ -459,6 +591,15 @@ def test_expanse_list_providers(requests_mock):
 
 
 def test_expanse_list_tags(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (limit)
+    When
+        - running !expanse-list-tags
+    Then
+        - the tags are retrieved and returned to the context
+    """
     from ExpanseV2 import Client, list_tags_command
 
     MOCK_LIMIT = "2"
@@ -475,6 +616,17 @@ def test_expanse_list_tags(requests_mock):
 
 
 def test_expanse_get_iprange(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (businessunit names, limit)
+    When
+        - running !expanse-get-ip-range
+    Then
+        - the IP ranges are retrieved and returned to the context
+        - startAddress/endAddress are overridden and the corresponding CIDR is returned instead
+        - DBotScore is present
+    """
     from ExpanseV2 import Client, get_iprange_command
     from CommonServerPython import Common
 
@@ -507,6 +659,16 @@ def test_expanse_get_iprange(requests_mock):
 
 
 def test_expanse_create_tag(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (tag name, tag description)
+    When
+        - running !expanse-create-tag
+    Then
+        - A new tag is created in Expanse
+        - the tag information is returned to the Context as Expanse.Tag
+    """
     from ExpanseV2 import Client, create_tag_command
 
     MOCK_TAGNAME = "xsoar-test-tag1"
@@ -525,6 +687,17 @@ def test_expanse_create_tag(requests_mock):
 
 
 def test_expanse_assign_single_tag_to_iprange(mocker, requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (single tag name, ip range asset ID)
+    When
+        - running !expanse-assign-tags-to-iprange
+    Then
+        - The corresponding tag ID from the tag is retrieved via API
+        - The tag ID is assigned to the IP range
+        - "Operation Complete" is returned as human readable output
+    """
     from ExpanseV2 import Client, manage_asset_tags_command
 
     OP_TYPE = "ASSIGN"
@@ -562,6 +735,17 @@ def test_expanse_assign_single_tag_to_iprange(mocker, requests_mock):
 
 
 def test_expanse_unassign_single_tag_from_iprange(requests_mock, mocker):
+    """
+    Given:
+        - an Expanse client
+        - arguments (single tag name, ip range asset ID)
+    When
+        - running !expanse-unassign-tags-from-iprange
+    Then
+        - The corresponding tag ID from the tag is retrieved via API
+        - The tag ID is unassigned from the IP range
+        - "Operation Complete" is returned as human readable output
+    """
     from ExpanseV2 import Client, manage_asset_tags_command
 
     OP_TYPE = "UNASSIGN"
@@ -599,6 +783,18 @@ def test_expanse_unassign_single_tag_from_iprange(requests_mock, mocker):
 
 
 def test_expanse_assign_multiple_tags_to_iprange(mocker, requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (1 tag id, 2 tag names, ip range asset ID)
+    When
+        - running !expanse-assign-tags-to-iprange
+    Then
+        - The corresponding 2 tag IDs from 2 the tag names are retrieved via API
+        - The found tag IDs are merged with the provided one (total 3)
+        - The 3 tag IDs are assigned to the IP range
+        - "Operation Complete" is returned as human readable output
+    """
     from ExpanseV2 import Client, manage_asset_tags_command
 
     OP_TYPE = "ASSIGN"
@@ -644,6 +840,18 @@ def test_expanse_assign_multiple_tags_to_iprange(mocker, requests_mock):
 
 
 def test_expanse_unassign_multiple_tags_from_iprange(mocker, requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (1 tag id, 2 tag names, ip range asset ID)
+    When
+        - running !expanse-unassign-tags-from-iprange
+    Then
+        - The corresponding 2 tag IDs from 2 the tag names are retrieved via API
+        - The found tag IDs are merged with the provided one (total 3)
+        - The 3 tag IDs are unassigned from the IP range
+        - "Operation Complete" is returned as human readable output
+    """
     from ExpanseV2 import Client, manage_asset_tags_command
 
     OP_TYPE = "UNASSIGN"
@@ -689,6 +897,17 @@ def test_expanse_unassign_multiple_tags_from_iprange(mocker, requests_mock):
 
 
 def test_expanse_assign_single_tag_to_domain(mocker, requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (single tag name, domain asset ID)
+    When
+        - running !expanse-assign-tags-to-domain
+    Then
+        - The corresponding tag ID from the tag is retrieved via API
+        - The tag ID is assigned to the domain
+        - "Operation Complete" is returned as human readable output
+    """
     from ExpanseV2 import Client, manage_asset_tags_command
 
     OP_TYPE = "ASSIGN"
@@ -726,6 +945,17 @@ def test_expanse_assign_single_tag_to_domain(mocker, requests_mock):
 
 
 def test_expanse_unassign_single_tag_from_domain(requests_mock, mocker):
+    """
+    Given:
+        - an Expanse client
+        - arguments (single tag name, domain asset ID)
+    When
+        - running !expanse-unassign-tags-from-domain
+    Then
+        - The corresponding tag ID from the tag is retrieved via API
+        - The tag ID is unassigned from the domain
+        - "Operation Complete" is returned as human readable output
+    """
     from ExpanseV2 import Client, manage_asset_tags_command
 
     OP_TYPE = "UNASSIGN"
@@ -763,6 +993,18 @@ def test_expanse_unassign_single_tag_from_domain(requests_mock, mocker):
 
 
 def test_expanse_assign_multiple_tags_to_domain(mocker, requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (1 tag id, 2 tag names, domain asset ID)
+    When
+        - running !expanse-assign-tags-to-domain
+    Then
+        - The corresponding 2 tag IDs from 2 the tag names are retrieved via API
+        - The found tag IDs are merged with the provided one (total 3)
+        - The 3 tag IDs are assigned to the domain
+        - "Operation Complete" is returned as human readable output
+    """
     from ExpanseV2 import Client, manage_asset_tags_command
 
     OP_TYPE = "ASSIGN"
@@ -808,6 +1050,18 @@ def test_expanse_assign_multiple_tags_to_domain(mocker, requests_mock):
 
 
 def test_expanse_unassign_multiple_tags_from_domain(mocker, requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (1 tag id, 2 tag names, ip range asset ID)
+    When
+        - running !expanse-unassign-tags-from-domain
+    Then
+        - The corresponding 2 tag IDs from 2 the tag names are retrieved via API
+        - The found tag IDs are merged with the provided one (total 3)
+        - The 3 tag IDs are unassigned from the domain
+        - "Operation Complete" is returned as human readable output
+    """
     from ExpanseV2 import Client, manage_asset_tags_command
 
     OP_TYPE = "UNASSIGN"
@@ -853,6 +1107,17 @@ def test_expanse_unassign_multiple_tags_from_domain(mocker, requests_mock):
 
 
 def test_expanse_assign_single_tag_to_certificate(mocker, requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (single tag name, certificate asset ID)
+    When
+        - running !expanse-assign-tags-to-certificate
+    Then
+        - The corresponding tag ID from the tag is retrieved via API
+        - The tag ID is assigned to the certificate
+        - "Operation Complete" is returned as human readable output
+    """
     from ExpanseV2 import Client, manage_asset_tags_command
 
     OP_TYPE = "ASSIGN"
@@ -890,6 +1155,17 @@ def test_expanse_assign_single_tag_to_certificate(mocker, requests_mock):
 
 
 def test_expanse_unassign_single_tag_from_certificate(requests_mock, mocker):
+    """
+    Given:
+        - an Expanse client
+        - arguments (single tag name, certificate asset ID)
+    When
+        - running !expanse-unassign-tags-from-certificate
+    Then
+        - The corresponding tag ID from the tag is retrieved via API
+        - The tag ID is unassigned from the certificate
+        - "Operation Complete" is returned as human readable output
+    """
     from ExpanseV2 import Client, manage_asset_tags_command
 
     OP_TYPE = "UNASSIGN"
@@ -927,6 +1203,18 @@ def test_expanse_unassign_single_tag_from_certificate(requests_mock, mocker):
 
 
 def test_expanse_assign_multiple_tags_to_certificate(mocker, requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (1 tag id, 2 tag names, certificate asset ID)
+    When
+        - running !expanse-assign-tags-to-certificate
+    Then
+        - The corresponding 2 tag IDs from 2 the tag names are retrieved via API
+        - The found tag IDs are merged with the provided one (total 3)
+        - The 3 tag IDs are assigned to the certificate
+        - "Operation Complete" is returned as human readable output
+    """
     from ExpanseV2 import Client, manage_asset_tags_command
 
     OP_TYPE = "ASSIGN"
@@ -972,6 +1260,18 @@ def test_expanse_assign_multiple_tags_to_certificate(mocker, requests_mock):
 
 
 def test_expanse_unassign_multiple_tags_from_certificate(mocker, requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (1 tag id, 2 tag names, certificate asset ID)
+    When
+        - running !expanse-unassign-tags-from-certificate
+    Then
+        - The corresponding 2 tag IDs from 2 the tag names are retrieved via API
+        - The found tag IDs are merged with the provided one (total 3)
+        - The 3 tag IDs are unassigned from the certificate
+        - "Operation Complete" is returned as human readable output
+    """
     from ExpanseV2 import Client, manage_asset_tags_command
 
     OP_TYPE = "UNASSIGN"
@@ -1017,6 +1317,17 @@ def test_expanse_unassign_multiple_tags_from_certificate(mocker, requests_mock):
 
 
 def test_expanse_get_certificate_by_id(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (md5 hash)
+    When
+        - running !expanse-get-certificate with a hash
+    Then
+        - the Certificate is retrieved and returned to the context as Expanse.Certificate
+        - the Certificate standard context is present
+        - DBotScore is present
+    """
     from ExpanseV2 import Client, get_certificate_command
 
     MOCK_MD5HASH = "mock_md5_hash"
@@ -1030,9 +1341,21 @@ def test_expanse_get_certificate_by_id(requests_mock):
     assert result.outputs_prefix == "Expanse.Certificate"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_cert
+    #  XXX TODO command is being refactored
 
 
 def test_expanse_get_certificate_by_query(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (businessunits, limit)
+    When
+        - running !expanse-get-certificate with a query
+    Then
+        - the Certificates are retrieved and returned to the context as Expanse.Certificate
+        - the Certificate standard context is present
+        - DBotScore is present
+    """
     from ExpanseV2 import Client, get_certificate_command
 
     MOCK_BU = "Test Company Dev,Test Company Prod"
@@ -1050,13 +1373,36 @@ def test_expanse_get_certificate_by_query(requests_mock):
     assert result.outputs_prefix == "Expanse.Certificate"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_certs["data"][: int(MOCK_LIMIT)]
+    # XXX TODO command is being refactored
 
 
 def test_expanse_certificate(requests_mock):
-    pass
+    """
+    Given:
+        - an Expanse client
+        - arguments (certificate hash)
+    When
+        - running !certificate
+    Then
+        - the certificate is retrieved and returned to the context as Expanse.Certificate
+        - the Certificate standard context is present
+        - DBotScore is present
+    """
+    pass  # XXX TODO command is being refactored
 
 
 def test_expanse_get_domain(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (businessunit names, limit)
+    When
+        - running !expanse-get-domain
+    Then
+        - the domains are retrieved and returned to the context as Expanse.Domain
+        - Domain standard context is present
+        - DBotScore is present
+    """
     from ExpanseV2 import Client, get_domain_command
     from CommonServerPython import Common, DBotScoreType
 
@@ -1086,6 +1432,17 @@ def test_expanse_get_domain(requests_mock):
 
 
 def test_domain(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (single domain)
+    When
+        - running !domain
+    Then
+        - the domain is retrieved and returned to the context as Expanse.Domain
+        - Domain standard context is present
+        - DBotScore is present
+    """
     from ExpanseV2 import Client, domain_command
     from CommonServerPython import Common, DBotScoreType
 
@@ -1111,6 +1468,17 @@ def test_domain(requests_mock):
 
 
 def test_ip(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (single ip address)
+    When
+        - running !ip
+    Then
+        - the IP is retrieved and returned to the context as Expanse.IP
+        - IP standard context is present
+        - DBotScore is present
+    """
     from ExpanseV2 import Client, ip_command
     from CommonServerPython import Common, DBotScoreType
 
@@ -1135,6 +1503,17 @@ def test_ip(requests_mock):
 
 
 def test_cidr(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - arguments (single CIDR)
+    When
+        - running !cidr
+    Then
+        - the CIDR (from Expanse IP ranges) is retrieved and returned to the context as Expanse.IPRange
+        - startAddress/endAddress are overridden and the corresponding CIDR is returned instead
+        - DBotScore is present
+    """
     from ExpanseV2 import Client, cidr_command
     from CommonServerPython import Common
 
@@ -1167,8 +1546,26 @@ def test_cidr(requests_mock):
 
 
 def test_expanse_get_risky_flows(mocker):
-    pass
+    """
+    Given:
+        - an Expanse client
+        - arguments (ip, limit)
+    When
+        - running !expanse-get-risky-flows
+    Then
+        - the Risky Flows for the IP from Behavior are retrieved and returned to the context
+    """
+    pass  # XXX TODO need access APIs
 
 
 def test_expanse_list_risk_rules(mocker):
-    pass
+    """
+    Given:
+        - an Expanse client
+        - arguments (limit)
+    When
+        - running !expanse-list-risk-rules
+    Then
+        - the risk rules are retrieved and returned to the context
+    """
+    pass  # XXX TODO need access to APIs
