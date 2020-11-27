@@ -240,10 +240,6 @@
                     "complex": null,
                     "simple": "latestEvidence"
                 },
-                "Expanse Latest Evidence Geolocation": {
-                    "complex": null,
-                    "simple": "latestEvidence.geolocation"
-                },
                 "Expanse ML Features": {
                     "complex": null,
                     "simple": "ml_features"
