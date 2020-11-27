@@ -1,5 +1,6 @@
 # import demistomock as demisto
 from CommonServerPython import *
+from datetime import datetime
 
 import urllib3
 import dateparser
@@ -13,6 +14,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_EVENTS_TO_FETCH = 50
 COGNNI_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
+SUNDAY_ISO_WEEKDAY = 7
 
 ''' CLIENT CLASS '''
 
@@ -57,49 +59,50 @@ class Client(BaseClient):
 
     def fetch_events(self, min_severity: int, start_time: str, events_limit: int, offset: int) -> List[Dict[str, Any]]:
         query = """
-            query($severityValue:String!, $pagination:Pagination)
-{events(
-    filter:
-  {coordinates: [
-  {
-      x:{
-            type: None,
-            value: "none"
-        },
-        y: {
-            type: Severity,
-            value: $severityValue
-        },
-        z: {
-            type:Week,
-            values:[\""""+start_time+"""\"]
+            query($severityValue:String!, $pagination:Pagination) {
+              events(
+                filter: {
+                  coordinates: [
+                    {
+                      x: {
+                        type: None,
+                        value: "none"
+                      },
+                      y: {
+                        type: Severity,
+                        value: $severityValue
+                      },
+                      z: {
+                        type:Week,
+                        values:[\"""" + start_time + """\"]
+                      }
+                    }
+                ]
+                  pagination: $pagination
+                }
+            ) {
+                eventId: id
+                description
+                severity
+                sourceApplication
+                date
+                items {
+                    itemId: id
+                    externalId
+                    type
+                    name
+                    clusterUID
+                    data
+                    createdAt
+                    labels {
+                        name
+                    }
+                }
+                insights {
+                    name
+                }
+            }
         }
-  }]
-   pagination: $pagination
-  })
-    {
-      eventId:id
-     description
-     severity
-      sourceApplication
-      date
-     items {
-       itemId: id
-       externalId
-       type
-       name
-       clusterUID
-       data
-       createdAt
-       labels {
-         name
-        }
-      }
-      insights {
-        name
-      }
-    }
-}
         """
 
         variables = {
@@ -463,24 +466,27 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     else:
         last_fetch = int(last_fetch)
 
-    if offset is None:
-        offset = 0
-
     latest_created_time = cast(int, last_fetch)
+
+    if offset is None or (
+        datetime.utcnow().isoweekday() == SUNDAY_ISO_WEEKDAY
+            and datetime.utcfromtimestamp(latest_created_time).isoweekday() != SUNDAY_ISO_WEEKDAY):
+        offset = 0
 
     events = client.fetch_events(
         events_limit=events_limit,
         offset=offset,
-        start_time=timestamp_to_datestring(last_fetch),
+        start_time=timestamp_to_datestring(timestamp=latest_created_time * 1000, is_utc=True),
         min_severity=min_severity
     )
 
     if last_fetch:
+        last_fetch_ms = last_fetch * 1000
         new_events = list(filter(lambda event: date_to_timestamp(
             date_str_or_dt=event.get('date'),
             date_format='%Y-%m-%dT%H:%M:%S.000Z'
-        ) > last_fetch,
-                                 events))
+        ) > last_fetch_ms,
+            events))
     else:
         new_events = events
 
@@ -490,10 +496,10 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
 
     latest_event = find_latest_event(new_events)
     if latest_event:
-        latest_created_time = date_to_timestamp(
+        latest_created_time = int(date_to_timestamp(
             date_str_or_dt=latest_event.get('date', latest_created_time),
             date_format='%Y-%m-%dT%H:%M:%S.000Z'
-        )
+        ) / 1000)
 
     incidents = convert_events_to_incidents(new_events)
 
@@ -606,7 +612,6 @@ def main() -> None:
         arg_name='First fetch time',
         required=True
     )
-    
     assert isinstance(first_fetch_time, int)
     proxy = demisto.params().get('proxy', False)
 
