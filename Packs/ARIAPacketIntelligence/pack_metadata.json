@@ -1,7 +1,7 @@
 {
     "name": "ARIAPacketIntelligence",
     "description": "Manage Packet Intelligence rules in response to incidents. Instantly block conversations, redirect packets, generate alerts, or perform other actions.",
-    "support": "xsoar",
+    "support": "partner",
     "currentVersion": "2.0.0",
     "author": "ARIA Cybersecurity Solutions",
     "url": "https://www.ariacybersecurity.com/cybersecurity-products/aria-packet-intelligence",
@@ -12,5 +12,6 @@
     ],
     "tags": ["Alerts", "Incident Response", "Network", "Security", "Threat Intelligence"],
     "useCases": ["Incident Response", "Threat Intelligence Management"],
+    "certification": "certified",
     "keywords": ["Block", "Redirect", "Alert", "PI", "SDS", "ARIA"]
 }
