@@ -44,8 +44,7 @@ def main() -> None:
                 raise ValueError(f'Headers are not in valid JSON format: {e}')
 
         transport = RequestsHTTPTransport(**request_params)
-        if not params.get('proxy'):
-            transport.session.trust_env = False
+        handle_proxy()
         client = Client(transport=transport, fetch_schema_from_transport=True)
 
         demisto.debug(f'Command being called is {command}')
