@@ -11,46 +11,41 @@ class ParameterError(Exception):
     pass
 
 
-#
-# Remediation Configuration String (RCS) that use to select SIA.
-#
+"""
+Remediation Configuration String (RCS) that use to select SIA.
+"""
 
 class RCS:
-    #
-    # Define class members
-    #
+    """
+    Define class members
 
-    #
-    # Define class methods
-    #
+    Define class methods
 
-    #
-    # Private methods
-    #
+    Private methods
 
-    #
-    # constructor
-    #
+    constructor
+    """
+
     def __init__(self, rcs=None):
         self.rcs = rcs
         if self.rcs is None:
             self.rcs = "PIdevice@all"
 
-        #
-        # Used to indicate which RET types currently supported
-        #
+        """
+        Used to indicate which RET types currently supported
+        """
         self.RET_functions = {"drop": self._parse_RET_drop}
 
-    #
-    # destructor
-    #
+    """
+    destructor
+    """
     def __del__(self):
         return 0
 
-    #
-    # Parse a drop command and return its representation
-    # for being put into a NRDO action / rule.
-    #
+    """
+    Parse a drop command and return its representation
+    for being put into a NRDO action / rule.
+    """
     def _parse_RET_drop(self, rcs):
         if rcs is None:
             return None, None
@@ -69,9 +64,9 @@ class RCS:
 
         return RET_drop, rcsp.group(1)
 
-    #
-    # Parse a SIA simple name
-    #
+    """
+    Parse a SIA simple name
+    """
     def _parse_RDL_RD_name(self, rcs):
         if rcs is None:
             return None, None, "failed: RD name rcs none"
@@ -92,9 +87,9 @@ class RCS:
 
         return RD_name, rcs, "success: {0}".format(rcsp.group(1))
 
-    #
-    # Parse a FQN
-    #
+    """
+    Parse a FQN
+    """
     def _parse_RDL_RD_FQN(self, rcs):
         if rcs is None:
             return None, None, "failed: RD fqn rcs none"
@@ -115,9 +110,9 @@ class RCS:
 
         return RD_fqn, rcs, "success: {0}".format(rcsp.group(1))
 
-    #
-    # Parse a security domain name SDN
-    #
+    """
+    Parse a security domain name SDN
+    """
     def _parse_RDL_RD_SDN(self, rcs):
         if rcs is None:
             return None, None, "failed: RD sd rcs none"
@@ -138,9 +133,9 @@ class RCS:
 
         return RD_sdn, rcs, "success: {0}".format(rcsp.group(1))
 
-    #
-    # Parse an RGN label as a name
-    #
+    """
+    Parse an RGN label as a name
+    """
     def _parse_RDL_RD_RGN_name(self, rcs):
         if rcs is None:
             return None, None, "failed: RD rgn name rcs none"
@@ -157,9 +152,9 @@ class RCS:
 
         return rcsp.group(1), rcsp.group(2), "success"
 
-    #
-    # Parse an RGN label as a list of names
-    #
+    """
+    Parse an RGN label as a list of names
+    """
     def _parse_RDL_RD_RGN_list(self, rcs):
         if rcs is None:
             return None, None, "failed: RD rgn list rcs none"
@@ -219,9 +214,9 @@ class RCS:
 
         return names, rcs, "success: {0}".format(names)
 
-    #
-    # Parse an RGN label as asterik
-    #
+    """
+    Parse an RGN label as asterik
+    """
     def _parse_RDL_RD_RGN_asterik(self, rcs):
         if rcs is None:
             return None, None, "failed: RD rgn asterik rcs none"
@@ -234,9 +229,9 @@ class RCS:
 
         return "*", rcsp.group(1), "success"
 
-    #
-    # Parse an RGN
-    #
+    """
+    Parse an RGN
+    """
     def _parse_RDL_RD_RGN_label(self, rcs):
         if rcs is None:
             return None, None, "failed: RD label rgn rcs none"
@@ -290,9 +285,9 @@ class RCS:
 
         return label, rcs, "success"
 
-    #
-    # Parse an RGN
-    #
+    """
+    Parse an RGN
+    """
     def _parse_RDL_RD_RGN(self, rcs):
         if rcs is None:
             return None, None, "failed: RD rgn rcs none"
@@ -347,13 +342,13 @@ class RCS:
 
         return RGN, rcs, "success"
 
-    #
-    # parse the RDL component of the RCS:
-    #
-    #   RDL      :: PIdevice@[<RD><RD_LIST>*]
-    #   RD       :: name | SDN | RGN | FQN
-    #   RD_LIST  :: , <RD>
-    #
+    """
+     parse the RDL component of the RCS:
+    
+       RDL      :: PIdevice@[<RD><RD_LIST>*]
+       RD       :: name | SDN | RGN | FQN
+       RD_LIST  :: , <RD>
+    """
     def _parse_RDL(self, rcs):
         if rcs is None:
             return None, None, "failed: rcs is none"
@@ -516,13 +511,13 @@ class RCS:
 
         return RDL, None, "success: {0}".format(len(RDL))
 
-    #
-    # parse the RET component of the RCS:
-    #
-    #   RET      :: Remediation@<ret><ret_list>
-    #   ret      :: drop() | alert(...) | redirect(...) | serviceChain(...)
-    #   SDN_LIST :: , <ret>
-    #
+    """
+     parse the RET component of the RCS:
+    
+       RET      :: Remediation@<ret><ret_list>
+       ret      :: drop() | alert(...) | redirect(...) | serviceChain(...)
+       SDN_LIST :: , <ret>
+    """
     def _parse_RET(self, rcs):
         if rcs is None:
             return None, None, "failure: RET RCS none"
@@ -567,10 +562,10 @@ class RCS:
             elif rcs == "":
                 return None, None, "failure: RET RCS empty"
 
-            #
-            # call the RET type parser to create
-            # its PI object.
-            #
+            """
+             call the RET type parser to create
+             its PI object.
+            """
             obj, rcs = RET_parse_func(rcs)
             if obj is None:
                 return None, None, "failure: RET func obj none"
@@ -617,13 +612,13 @@ class RCS:
 
         return RET, rcs, "success: {0}".format(len(RET))
 
-    #
-    # parse the SDL component of the RCS:
-    #
-    #   SDL      :: securityDomain@<SDN><SDN_LIST>*
-    #   SDN      :: <a-zA-Z0-9_><a-zA-Z0-9_>*
-    #   SDN_LIST :: , <SDN>
-    #
+    """
+     parse the SDL component of the RCS:
+    
+       SDL      :: securityDomain@<SDN><SDN_LIST>*
+       SDN      :: <a-zA-Z0-9_><a-zA-Z0-9_>*
+       SDN_LIST :: , <SDN>
+    """
     def _parse_SDL(self, rcs):
         if rcs is None:
             return None, None, "failure: RCS is none"
@@ -693,17 +688,17 @@ class RCS:
 
         return SDL, rcs, "success: {0}".format(len(SDL))
 
-    #
-    # Parse out the components of the RCS: [SDL] | [RET] | RDL
-    # and return all three. If the optional component is
-    # not found then it returns None but if keyword is
-    # found nothing else then returns empty.
-    #
-    # The fourth result returned is if there is remaining characters
-    # in the original RCS then its returned.
-    #
-    # Returns info in fifth result
-    #
+    """
+     Parse out the components of the RCS: [SDL] | [RET] | RDL
+     and return all three. If the optional component is
+     not found then it returns None but if keyword is
+     found nothing else then returns empty.
+    
+     The fourth result returned is if there is remaining characters
+     in the original RCS then its returned.
+    
+     Returns info in fifth result
+    """
     def _parse(self, rcs):
         if rcs is None:
             return None, None, None, None, "failed: RCS is none"
@@ -744,10 +739,10 @@ class RCS:
 
         return SDL, RET, RDL, rcs_next, "success"
 
-    #
-    # Returns true if the RCS provided at object instantiation
-    # time is a valid RCS value, otherwise it returns false.
-    #
+    """
+     Returns true if the RCS provided at object instantiation
+     time is a valid RCS value, otherwise it returns false.
+    """
     def _valid(self, rcs):
         if rcs is None:
             return False
@@ -764,25 +759,25 @@ class RCS:
 
         return True
 
-    #
-    # Public methods
-    #
+    """
+    Public methods
+    """
 
-    #
-    # Returns true if the RCS provided at object instantiation
-    # time is a valid RCS value, otherwise it returns false.
-    #
+    """
+    Returns true if the RCS provided at object instantiation
+    time is a valid RCS value, otherwise it returns false.
+    """
     def valid(self):
         if not self._valid(self.rcs):
             return False
 
         return True
 
-    #
-    # Allows setting the RCS string to act on, this will only
-    # set it if the string is already empty.  Otherwise it
-    # should use modify.
-    #
+    """
+    Allows setting the RCS string to act on, this will only
+    set it if the string is already empty.  Otherwise it
+    should use modify.
+    """
     def set(self, rcs):
         if self.rcs is None:
             if not self._valid(rcs):
@@ -793,10 +788,10 @@ class RCS:
 
         return True
 
-    #
-    # Allows changing the RCS string after its been previsouly
-    # set or not.
-    #
+    """
+    Allows changing the RCS string after its been previsouly
+    set or not.
+    """
     def modify(self, rcs):
         if not self._valid(rcs):
             return False
@@ -805,16 +800,16 @@ class RCS:
 
         return True
 
-    #
-    # Assuming the securtiy domain component of the RCS is valid
-    # then it returns the parsed out security domain component if
-    # it exists. It will return it as a list of security domain
-    # object name strings.
-    #
-    # If there is an error in parsing the security domain component
-    # null is returned.  If it was not provided then "all"
-    # list is returned.
-    #
+    """
+    Assuming the securtiy domain component of the RCS is valid
+    then it returns the parsed out security domain component if
+    it exists. It will return it as a list of security domain
+    object name strings.
+    
+    If there is an error in parsing the security domain component
+    null is returned.  If it was not provided then "all"
+    list is returned.
+    """
     def security_domain(self):
         SDL, RET, RDL, rcs, rmsg = self._parse(self.rcs)
         if RDL is None:
@@ -822,13 +817,13 @@ class RCS:
 
         return SDL, True
 
-    #
-    # Assuming the RCS is valid
-    # then return the RDL
-    #
-    # If there is an error in parsing the RDL component is
-    # returned as a NULL.
-    #
+    """
+    Assuming the RCS is valid
+    then return the RDL
+    
+    If there is an error in parsing the RDL component is
+    returned as a NULL.
+    """
     def remediation_device_list(self):
         SDL, RET, RDL, rcs, rmsg = self._parse(self.rcs)
         if RDL is None:
@@ -836,15 +831,15 @@ class RCS:
 
         return RDL, True
 
-    #
-    # Assuming the securtiy domain component of the RCS is valid
-    #
-    # Assuming the RCS is valid
-    # then return the remediation action instruction.
-    #
-    # If there is an error in parsing the RET component is
-    # returned as a NULL.
-    #
+    """
+    Assuming the securtiy domain component of the RCS is valid
+    
+    Assuming the RCS is valid
+    then return the remediation action instruction.
+    
+    If there is an error in parsing the RET component is
+    returned as a NULL.
+    """
     def remediation_instruction(self):
         SDL, RET, RDL, rcs, rmsg = self._parse(self.rcs)
         if RDL is None:
