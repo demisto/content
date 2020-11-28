@@ -21,9 +21,6 @@ class RCS:
 
     Define class methods
 
-    Private methods
-
-    constructor
     """
 
     def __init__(self, rcs=None):
@@ -36,9 +33,6 @@ class RCS:
         """
         self.RET_functions = {"drop": self._parse_RET_drop}
 
-    """
-    destructor
-    """
     def __del__(self):
         return 0
 
@@ -758,10 +752,6 @@ class RCS:
         # print("ARIA: remediation configuraton string (RCS) is valid (rcs={0})".format(rcs_save))
 
         return True
-
-    """
-    Public methods
-    """
 
     """
     Returns true if the RCS provided at object instantiation
