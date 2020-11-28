@@ -26,10 +26,8 @@ playbookId = ' playbookId="{}"'.format(args['playbookId']) if 'playbookId' in ar
 interval = int(demisto.get(args, 'interval'))
 timeout = int(demisto.get(args, 'timeout'))
 
-additionalPollingCommandArgNames = demisto.getArg('additionalPollingCommandArgNames')
-additionalPollingCommandArgNames = demisto.getArg('additionalPollingCommandArgValues')
-args_names = [name.strip() for name in argToList(additionalPollingCommandArgNames)]
-args_values = [value.strip() for value in argToList(additionalPollingCommandArgNames)]
+args_names = [name.strip() for name in argToList(demisto.getArg('additionalPollingCommandArgNames'))]
+args_values = [value.strip() for value in argToList(demisto.getArg('additionalPollingCommandArgValues'))]
 
 if interval <= 0 or timeout <= 0:
     return_error("Interval and timeout must be positive numbers")
