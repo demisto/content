@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import pytest
 from RunPollingCommand import prepare_arg_dict
 
@@ -34,8 +36,8 @@ IDS_ARGS = [
         {'ids': 'a,b,c', 'arg1': 'value1', 'arg2': 'value2', 'arg3': 'value3'},
     ),
     (
-        ('ids', ['a', 'b', 'c'], 'arg1, arg2,arg3', ['value1', 'value2', 'value3']),
-        {'ids': 'a,b,c', 'arg1': 'value1', 'arg2': 'value2', 'arg3': 'value3'},
+        ('ids', ['שלום'], 'arg1, arg2,arg3', ['value1', 'value2', 'value3']),
+        {'ids': 'שלום', 'arg1': 'value1', 'arg2': 'value2', 'arg3': 'value3'},
     )
 ]
 
