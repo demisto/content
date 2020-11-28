@@ -39,13 +39,24 @@ if not demisto.dt(demisto.context(), dt):
     demisto.results("Warning: no ids matching the dt condition were found.\nVerify that the condition is correct and "
                     "that all ids have finished running.")
 
-res = demisto.executeCommand("ScheduleCommand", {
-    'command': '''!GenericPollingScheduledTask pollingCommand="%s" pollingCommandArgName="%s"%s ids="%s" pendingIds="%s"
-     interval="%s" timeout="%s" tag="%s" additionalPollingCommandArgNames="%s" additionalPollingCommandArgValues="%s"'''
-               % (pollingCommand, pollingCommandArgName, playbookId, ids.replace('"', r'\"'), dt.replace('"', r'\"'),
-                  interval, timeout, tag, args_names, args_values),
-    'cron': '*/{} * * * *'.format(interval),
-    'times': 1
-})
+res = demisto.executeCommand("ScheduleCommand",
+                             {
+                                 'command': '''!GenericPollingScheduledTask pollingCommand="{0}" 
+                                     pollingCommandArgName="{1}"{2} ids="{3}" pendingIds="{4}" interval="{5}" 
+                                     timeout="{6}" tag="{7}" additionalPollingCommandArgNames="{8}" 
+                                     additionalPollingCommandArgValues="{9}"'''.format(
+                                     pollingCommand,
+                                     pollingCommandArgName,
+                                     playbookId,
+                                     ids.replace('"', r'\"'),
+                                     dt.replace('"', r'\"'),
+                                     interval,
+                                     timeout,
+                                     tag,
+                                     args_names,
+                                     args_values),
+                                 'cron': '*/{} * * * *'.format(interval),
+                                 'times': 1
+                             })
 if isError(res[0]):
     return_error(res)
