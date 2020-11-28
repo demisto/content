@@ -36,8 +36,8 @@ IDS_ARGS = [
         {'ids': 'a,b,c', 'arg1': 'value1', 'arg2': 'value2', 'arg3': 'value3'},
     ),
     (
-        ('ids', ['שלום'], 'arg1, arg2,arg3', ['value1', 'value2', 'value3']),
-        {'ids': 'שלום', 'arg1': 'value1', 'arg2': 'value2', 'arg3': 'value3'},
+        ('ids', ['שלום'], 'היי, arg2,arg3', ['ביי', 'value2', 'value3']),
+        {'ids': 'שלום', 'היי': 'ביי', 'arg2': 'value2', 'arg3': 'value3'},
     )
 ]
 
