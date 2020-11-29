@@ -71,7 +71,7 @@ script:
     name: umbrella-domain-event-add
   - arguments:
     - default: false
-      description: Number of page which should be retured, if non selected the default
+      description: Number of page which should be returned, if non selected the default
         is 1.
       isArray: false
       name: page
