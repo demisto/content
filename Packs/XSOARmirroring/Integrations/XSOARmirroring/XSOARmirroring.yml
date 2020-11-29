@@ -13,7 +13,7 @@ configuration:
   required: false
 - display: XSOAR Server URL
   name: url
-  defaultvalue: https://127.0.0.1
+  defaultvalue: https://host.docker.internal:443
   type: 0
   required: true
   additionalinfo: The URL of the XSOAR server to which you are connecting.
@@ -73,16 +73,10 @@ configuration:
   - Incoming And Outgoing
   required: false
   type: 15
-- display: Mirror to identical incident type
-  additionalinfo: Enable this option to mirror the incident to the exact same fields in this system(in case they exist).
-  name: mirror_identically
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Disable mirroring for incidents came from this integration
+- display: Disable fetching for incidents came from this integration
   additionalinfo: Enable this option to disable mirroring of incidents came from the integration of XSOAR Mirroring. This adds `-sourceBrand:“XSOAR Mirroring”` to your query.
   name: disable_from_same_integration
-  defaultvalue: ""
+  defaultvalue: "true"
   type: 8
   required: false
 - display: Trust any certificate (not secure)

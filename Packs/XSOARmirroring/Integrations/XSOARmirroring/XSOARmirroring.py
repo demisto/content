@@ -1,5 +1,5 @@
-import demistomock as demisto
-from CommonServerPython import *
+# import demistomock as demisto
+# from CommonServerPython import *
 import json
 import requests
 import traceback
@@ -13,6 +13,12 @@ requests.packages.urllib3.disable_warnings()
 
 
 MAX_INCIDENTS_TO_FETCH = 100
+FIELDS_TO_COPY_FROM_REMOTE_INCIDENT = [
+    'name', 'rawName', 'severity', 'occurred', 'modified', 'roles', 'type', 'rawType', 'status', 'reason', 'created',
+    'closed', 'sla', 'labels', 'attachment', 'details', 'openDuration', 'lastOpen', 'owner', 'closeReason',
+    'rawCloseReason', 'closeNotes', 'playbookId', 'dueDate', 'reminder', 'runStatus', 'notifyTime', 'phase',
+    'rawPhase', 'CustomFields', 'category', 'rawCategory'
+]
 
 MIRROR_DIRECTION = {
     'None': None,
@@ -316,28 +322,19 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     )
 
     for incident in incidents:
-        incident['dbotMirrorDirection'] = MIRROR_DIRECTION[mirror_direction]  # type: ignore
-        incident['dbotMirrorInstance'] = demisto.integrationInstance()
-        incident['dbotMirrorTags'] = mirror_tag
-        incident['dbotMirrorId'] = incident['id']
+        incident_result = dict()
+        incident_result['dbotMirrorDirection'] = MIRROR_DIRECTION[mirror_direction]  # type: ignore
+        incident_result['dbotMirrorInstance'] = demisto.integrationInstance()
+        incident_result['dbotMirrorTags'] = mirror_tag if mirror_tag else None
+        incident_result['dbotMirrorId'] = incident['id']
 
-        if mirror_identically:
-            incident_result = incident.copy()
-            incident_result['rawJSON'] = json.dumps(incident)
-            demisto.info(json.dumps(incident_result))
-            del incident_result['id']
+        for key, value in incident.items():
+            if key in FIELDS_TO_COPY_FROM_REMOTE_INCIDENT:
+                incident_result[key] = value
 
-        else:
-            incident_result = {
-                'name': incident.get('name', 'XSOAR Mirror'),
-                'occurred': incident.get('occurred'),
-                'rawJSON': json.dumps(incident),
-                'type': incident.get('type'),
-                'severity': incident.get('severity', 1),
-            }
+        incident_result['rawJSON'] = json.dumps(incident)
 
         incidents_result.append(incident_result)
-
         incident_created_time = arg_to_timestamp(
             arg=incident.get('created'),  # type: ignore
             arg_name='created',
