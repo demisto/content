@@ -94,7 +94,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'Id of the domain. '
+      description: ID of the domain.
       isArray: false
       name: id
       required: false
