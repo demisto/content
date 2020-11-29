@@ -10,8 +10,6 @@ import requests
 import traceback
 import copy
 
-from base64 import b64decode
-from hashlib import sha256
 from typing import (
     Any, Dict, Optional, Iterator,
     Tuple, Union, cast,
@@ -781,6 +779,80 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> CommandResults:
         outputs_key_field='domain',
         outputs=domain_data_list if len(domain_data_list) > 0 else None,
         indicators=domain_standard_list if len(domain_standard_list) > 0 else None
+    )
+
+
+def format_certificate_data(certificates: List[Dict[str, Any]]) -> CommandResults:
+    # XXX - should we dump the full timeline of the certificate inside the details?
+    class ExpanseCertificate(Common.Indicator):
+        CONTEXT_PATH = 'Certificate(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
+            'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512)'
+
+        def __init__(self, md5: str, pem: Optional[str] = None):
+            self.md5 = md5
+            self.pem = pem
+
+        def to_context(self):
+            result: Dict[str, Any] = {
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
+                    'Score': Common.DBotScore.NONE,
+                    'Vendor': 'ExpanseV2',
+                    'Type': 'ExpanseCertificate',
+                    'Indicator': self.md5
+                },
+            }
+
+            standard_context = {
+                'MD5': self.md5,
+            }
+
+            if self.pem is not None:
+                standard_context['PEM'] = self.pem
+
+            result.update({
+                ExpanseCertificate.CONTEXT_PATH: standard_context
+            })
+
+            return result
+
+    certificate_standard_list: List[Common.Indicator] = []
+    certificate_data_list: List[Dict[str, Any]] = []
+
+    for certificate in certificates:
+        md5_hash = certificate.get('certificate', {}).get('md5Hash')
+        if md5_hash is None:
+            continue
+
+        pem = None
+        if (details := certificate.get('details')) is not None:
+            if (base64Encoded := details.get('base64Encoded')) is not None:
+                pem_lines = '\n'.join([base64Encoded[i:i + 64] for i in range(0, len(base64Encoded), 64)])
+                pem = f"-----BEGIN CERTIFICATE-----\n{pem_lines}\n-----END CERTIFICATE-----"
+
+        # We can't use Common.DBotScore here because ExpanseCertificate is not one of the well known
+        # Indicator types
+        certificate_standard_context = ExpanseCertificate(
+            md5=base64.urlsafe_b64decode(md5_hash).hex(),
+            pem=pem
+        )
+        certificate_standard_list.append(certificate_standard_context)
+
+        certificate_context_excluded_fields: List[str] = []
+        certificate_data_list.append({
+            k: certificate[k]
+            for k in certificate if k not in certificate_context_excluded_fields
+        })
+
+    readable_output = tableToMarkdown(
+        'Expanse Certificate List', certificate_data_list) if len(certificate_data_list) > 0 else "## No Certificates found"
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Expanse.Certificate',
+        outputs_key_field='id',
+        outputs=certificate_data_list if len(certificate_data_list) > 0 else None,
+        indicators=certificate_standard_list if len(certificate_standard_list) > 0 else None
     )
 
 
@@ -1594,25 +1666,28 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def get_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    pem_md5_hash: Optional[str] = args.pop('pem_md5_hash', None)
+    md5_hash: Optional[str] = args.pop('md5_hash', None)
     last_observed_date: Optional[str] = args.pop('last_observed_date', None)
 
-    if pem_md5_hash is not None and len(args) != 0:
-        raise ValueError("The only argument allowed with pem_md5_hash is last_observed_date")
+    if md5_hash is not None and len(args) != 0:
+        raise ValueError("The only argument allowed with md5_hash is last_observed_date")
 
     total_results, max_page_size = calculate_limits(args.get('limit', None))
 
-    if pem_md5_hash is not None:
+    if md5_hash is not None:
+        # we try to convert it as hex, and if we fail we trust it's a base64 encoded
+        # MD5 hash
+        try:
+            if len(ba_hash := bytearray.fromhex(md5_hash)) == 16:
+                md5_hash = base64.urlsafe_b64encode(ba_hash).decode('ascii')
+        except ValueError:
+            pass
+
         output = client.get_certificate_by_md5_hash(
-            md5_hash=pem_md5_hash,
+            md5_hash=md5_hash,
             last_observed_date=last_observed_date
         )
-        return CommandResults(
-            outputs_prefix="Expanse.Certificate",
-            outputs_key_field="id",
-            readable_output="## No Certificates found" if not output else None,
-            outputs=output if output else None
-        )
+        return format_certificate_data(certificates=[output])
 
     params: Dict[str, Any] = {
         "limit": max_page_size
@@ -1669,12 +1744,8 @@ def get_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResu
             total_results
         )
     )
-    return CommandResults(
-        outputs_prefix="Expanse.Certificate",
-        outputs_key_field="id",
-        readable_output="## No Certificates found" if len(cert_data) == 0 else None,
-        outputs=cert_data if len(cert_data) > 0 else None
-    )
+
+    return format_certificate_data(certificates=cert_data)
 
 
 def get_domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1731,71 +1802,24 @@ def get_domains_for_certificate_command(client: Client, args: Dict[str, Any]) ->
 
 
 def expanse_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    # XXX - should we dump the full timeline of the certificate inside the details?
-    class ExpanseCertificate(Common.Indicator):
-        def __init__(self, indicator: str):
-            self.indicator = indicator
+    md5_hashes = argToList(args.get('md5_hash'))
+    if len(md5_hashes) == 0:
+        raise ValueError('md5_hash(es) not specified')
 
-        def to_context(self):
-            return {
-                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
-                    'Score': Common.DBotScore.NONE,
-                    'Vendor': 'ExpanseV2',
-                    'Type': 'ExpanseCertificate',
-                    'Indicator': self.indicator
-                }
-            }
+    if len(md5_hashes) > MAX_RESULTS:
+        md5_hashes = md5_hashes[:MAX_RESULTS]
 
-    pem_md5_hashes = argToList(args.get('pem_md5_hash'))
-    if len(pem_md5_hashes) == 0:
-        raise ValueError('pem_md5_hash(s) not specified')
+    certificate_data: List[Dict[str, Any]] = []
 
-    certificate_standard_list: List[Common.Indicator] = []
-    certificate_data_list: List[Dict[str, Any]] = []
+    for md5_hash in md5_hashes:
+        c = client.get_certificate_by_md5_hash(md5_hash=md5_hash)
+        if not c or not isinstance(c, dict):
+            continue
+        if 'MD5' not in c:
+            c['MD5'] = md5_hash
+        certificate_data.append(c)
 
-    for pem_md5_hash in pem_md5_hashes:
-        certificate_data = client.get_certificate_by_md5_hash(md5_hash=pem_md5_hash)
-        certificate_data['pemMD5Hash'] = pem_md5_hash
-
-        # We can't use Common.DBotScore here because ExpanseCertificate is not one of the well known
-        # Indicator types
-        certificate_standard_context = ExpanseCertificate(pem_md5_hash)
-        certificate_standard_list.append(certificate_standard_context)
-
-        if 'certificate' in certificate_data:
-            details = certificate_data['details']
-
-            if 'base64Encoded' in details:
-                try:
-                    cert_der = b64decode(details['base64Encoded'])
-                    sha256_fingerprint = sha256(cert_der).hexdigest()
-                    certificate_data['sha256Fingerprint'] = sha256_fingerprint
-                except ValueError:
-                    pass
-
-            if 'recentIps' in details:
-                certificate_data['feedrelatedindicators'] = [
-                    {'value': rip['ip'], 'type': 'IP', 'description': ""}
-                    for rip in details['recentIps'] if 'ip' in rip
-                ]
-
-        certificate_context_excluded_fields: List[str] = []
-        certificate_data_list.append({
-            k: certificate_data[k]
-            for k in certificate_data if k not in certificate_context_excluded_fields
-        })
-
-    readable_output = tableToMarkdown(
-        'ExpanseCertificate List', certificate_data_list) if len(certificate_data_list) > 0 else "## No Certificates found"
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Expanse.ExpanseCertificate',
-        outputs_key_field='pemMD5Hash',
-        outputs=certificate_data_list if len(certificate_data_list) > 0 else None,
-        indicators=certificate_standard_list if len(certificate_standard_list) > 0 else None
-    )
+    return format_certificate_data(certificate_data)
 
 
 def domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
