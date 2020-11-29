@@ -199,12 +199,14 @@ def test_filter_versions():
         'node_names': '7',
         'version_hashes': '8',
         'baseline_version_ids': '9',
-        'time_detected_range': '10,11',
-        'time_received_range': '12,13',
-        'limit': '14',
-        'start': '15',
+        'time_detected_range': '2020-11-24T17:07:27Z,2020-11-24T17:07:27Z',
+        'time_received_range': '2020-11-24T17:07:27Z,2020-11-24T17:07:27Z',
+        'limit': '10',
+        'start': '11',
     }
     filter_version = filter_versions(params)
     expected_filter = 'ruleId=1&ruleName=2&nodeId=3&id=4&elementId=5&elementName=6&nodeLabel=7&hash=8&baselineVersion' \
-                      '=9&timeDetectedRange=10,11&timeReceivedRange=12,13&pageLimit=14&pageStart=15'
+                      '=9&timeDetectedRange=2020-11-24T17:07:27Z,' \
+                      '2020-11-24T17:07:27Z&timeReceivedRange=2020-11-24T17:07:27Z,' \
+                      '2020-11-24T17:07:27Z&pageLimit=10&pageStart=11 '
     assert expected_filter in filter_version
