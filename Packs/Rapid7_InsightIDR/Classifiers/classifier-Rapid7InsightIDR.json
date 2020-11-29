@@ -3,21 +3,8 @@
 	"name": "Rapid7 InsightIDR - Classifier",
 	"type": "classification",
 	"description": "Classifies Rapid7 InsightIDR incidents",
-	"defaultIncidentType": "",
-	"keyTypeMap": {
-		"ALERT": "Rapid7_InsightIDR_Incident_Type",
-		"HUNT": "Hunt",
-		"MANUAL": "Job"
-	},
-	"transformer": {
-		"complex": {
-			"accessor": "",
-			"filters": [],
-			"root": "source",
-			"transformers": []
-		},
-		"simple": ""
-	},
+	"defaultIncidentType": "Rapid7 InsightIDR Alert",
+	"keyTypeMap": {},
 	"version": -1,
 	"fromVersion": "6.0.0"
 }
