@@ -540,8 +540,12 @@ def generate_field_value(client, field_name, field_data, field_val):
     # for example: {"Area Reference(s)":[20]}
     elif field_type == 9:
         list_cross_reference = []
-        for content in field_val:
-            list_cross_reference.append({'ContentID': content})
+        if isinstance(field_val, list):
+            for content in field_val:
+                list_cross_reference.append({'ContentID': content})
+
+        else:
+            list_cross_reference = [{'ContentID': field_val}]
         return 'Value', list_cross_reference
 
     elif field_type == 19:
