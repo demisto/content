@@ -39,6 +39,7 @@ gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$INDEX_PATH" "$LOCAL_INDEX_PATH" > "$CI
 echo "Finished copying successfully."
 
 # ====== Testing explicitly against other index.json files for demo ====
+mkdir index
 echo "Following index file will be used:"
 echo '{
     "revision": "187903",
@@ -118,9 +119,9 @@ echo '{
         }
     ],
     "commit": "700f295f963369b340dc161284fa278ae87e090a"
-}' | tee index.json
+}' | tee index/index.json
 
-zip index_test.zip index.json
+zip index_test.zip -r index
 LOCAL_INDEX_PATH="./index_test.zip"
 
 # ====== SAVE MASTER COMMIT HISTORY ======
