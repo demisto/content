@@ -2787,7 +2787,7 @@ def test_arg_to_int__valid_numbers():
     assert result == 3
 
 
-def test_arg_to_int__valid_numbers():
+def test_arg_to_int__invalid_numbers():
     """
     Given
         invalid numbers

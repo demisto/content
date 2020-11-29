@@ -2800,7 +2800,7 @@ def arg_to_number(arg, arg_name, required=False):
     :rtype: ``Optional[int]``
     """
 
-    if arg is None:
+    if arg is None or arg == '':
         if required is True:
             raise ValueError('Missing "{}"'.format(arg_name))
         return None
