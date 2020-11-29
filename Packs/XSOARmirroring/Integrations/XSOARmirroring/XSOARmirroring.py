@@ -324,7 +324,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     for incident in incidents:
         incident_result = dict()
         incident_result['dbotMirrorDirection'] = MIRROR_DIRECTION[mirror_direction]  # type: ignore
-        incident_result['dbotMirrorInstance'] = demisto.integrationInstance()
+        incident['dbotMirrorInstance'] = demisto.integrationInstance()
         incident_result['dbotMirrorTags'] = mirror_tag if mirror_tag else None
         incident_result['dbotMirrorId'] = incident['id']
 
@@ -699,29 +699,6 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
     return new_incident_id
 
 
-def get_modified_remote_data_command(client, args):
-    remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = remote_args.last_update  # In the first run, this value will be set to 1 minute earlier
-
-    demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
-
-    last_fetch_milliseconds = last_update * 1000
-    created_filter = timestamp_to_datestring(last_fetch_milliseconds)
-    demisto.debug(f'Fetching incidents since last fetch: {created_filter}')
-    incidents = client.search_incidents(
-        query=f'created:>="{created_filter}"',
-        max_results=max_results,
-        start_time=last_fetch_milliseconds
-    )
-
-    modified_incident_ids = list()
-    for raw_incident in incidents:
-        incident_id = raw_incident.get('id')
-        modified_incident_ids.append(incident_id)
-
-    return GetModifiedRemoteDataResponse(modified_incident_ids)
-
-
 def main() -> None:
     api_key = demisto.params().get('apikey')
     base_url = demisto.params().get('url')
@@ -791,9 +768,6 @@ def main() -> None:
 
         elif demisto.command() == 'update-remote-system':
             return_results(update_remote_system_command(client, demisto.args(), mirror_tags))
-
-        elif demisto.command() == 'get-modified-remote-data':
-            return_results(get_modified_remote_data_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
