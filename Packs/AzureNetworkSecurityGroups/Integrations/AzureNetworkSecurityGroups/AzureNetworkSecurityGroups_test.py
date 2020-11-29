@@ -1,6 +1,5 @@
 import json
 import io
-import pytest
 import demistomock as demisto
 from AzureNetworkSecurityGroups import AzureNSGClient
 
@@ -62,9 +61,9 @@ def test_create_rule_command(mocker):
     """
     from AzureNetworkSecurityGroups import create_rule_command
     client = mock_client(mocker, util_load_json("test_data/list_network_groups_result.json"))
-    result = create_rule_command(client, security_group_name='securityGroup', security_rule_name='test_rule',
-                                 direction='Inbound', action='Allow', protocol='Any', source='Any',
-                                  source_ports='900-1000', destination_ports='1,2,3,4-6')
+    create_rule_command(client, security_group_name='securityGroup', security_rule_name='test_rule',
+                        direction='Inbound', action='Allow', protocol='Any', source='Any',
+                        source_ports='900-1000', destination_ports='1,2,3,4-6')
     properties = client.http_request.call_args_list[0][1].get('data').get('properties')
     assert properties.get('protocol') == '*'
     assert properties.get('sourceAddressPrefix') == '*'
@@ -83,9 +82,9 @@ def test_update_rule_command(mocker):
     """
     from AzureNetworkSecurityGroups import update_rule_command
     client = mock_client(mocker, util_load_json("test_data/get_rule_result.json"))
-    results = update_rule_command(client, security_group_name='securityGroup', security_rule_name='wow',
-                                 direction='Inbound', action='Allow', protocol='Any', source='Any',
-                                  source_ports='900-1000', destination_ports='1,2,3,4-6')
+    update_rule_command(client, security_group_name='securityGroup', security_rule_name='wow', direction='Inbound',
+                        action='Allow', protocol='Any', source='Any', source_ports='900-1000',
+                        destination_ports='1,2,3,4-6')
     properties = client.http_request.call_args_list[1][1].get('data').get('properties')
     assert 'destinationPortRange' not in properties.keys()
     assert 'destinationPortRanges' in properties.keys()

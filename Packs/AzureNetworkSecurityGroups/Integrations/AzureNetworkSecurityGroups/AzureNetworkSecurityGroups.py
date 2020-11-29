@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 import urllib3
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import List, Union
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -38,7 +38,6 @@ class AzureNSGClient:
             'redirect_uri': redirect_uri,
             'token_retrieval_url': 'https://login.microsoftonline.com/{tenant_id}/oauth2/token',
             'grant_type': AUTHORIZATION_CODE,  # disable-secrets-detection
-            'app_name': '',  #TODO: Do we need an appname?
             'base_url': base_url,
             'verify': verify,
             'proxy': proxy,
@@ -53,17 +52,18 @@ class AzureNSGClient:
         self.ms_client = MicrosoftClient(**client_args)
 
     @logger
-    def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None, resp_type='json'):
+    def http_request(self, method: str, url_suffix: str = None, full_url: str = None, params: dict = None,
+                     data: dict = None, resp_type: str = 'json') -> requests.Response:
         if not params:
             params = {}
         if not full_url:
             params['api-version'] = API_VERSION
 
-        return self.ms_client.http_request(method=method,  # disable-secrets-detection
-                                          url_suffix=url_suffix,
-                                          full_url=full_url,
-                                          json_data=data,
-                                          params=params,
+        return self.ms_client.http_request(method=method,
+                                           url_suffix=url_suffix,
+                                           full_url=full_url,
+                                           json_data=data,
+                                           params=params,
                                            resp_type=resp_type)
 
     @logger
@@ -79,7 +79,7 @@ class AzureNSGClient:
         return self.http_request('DELETE', f'/{security_group}/securityRules/{rule_name}', resp_type='response')
 
     @logger
-    def create_rule(self,security_group: str, rule_name: str, properties: dict):
+    def create_rule(self, security_group: str, rule_name: str, properties: dict):
         return self.http_request('PUT', f'/{security_group}/securityRules/{rule_name}', data={"properties": properties})
 
     @logger
@@ -105,7 +105,8 @@ def format_rule(rule_json: Union[dict, List], security_rule_name: str):
     Returns:
         CommandResults for the rule
     """
-    # We want to flatten the rules `properties` key as this is the more important key and we'd like to be able to display it nicely
+    # We want to flatten the rules `properties` key as this is the more important key and we'd like
+    # to be able to display it nicely
     if isinstance(rule_json, dict):
         rule_json.update(rule_json.pop('properties', {}))
     if isinstance(rule_json, list):
@@ -120,12 +121,11 @@ def format_rule(rule_json: Union[dict, List], security_rule_name: str):
                           readable_output=hr)
 
 
-
 ''' COMMAND FUNCTIONS '''
 
 
 @logger
-def list_groups_command(client: AzureNSGClient) -> dict:
+def list_groups_command(client: AzureNSGClient) -> CommandResults:
     """
 
     Args:
@@ -150,7 +150,7 @@ def list_groups_command(client: AzureNSGClient) -> dict:
 
 
 @logger
-def list_rules_command(client: AzureNSGClient, security_group_name: str) -> dict:
+def list_rules_command(client: AzureNSGClient, security_group_name: str) -> CommandResults:
     """
 
     Args:
@@ -160,9 +160,8 @@ def list_rules_command(client: AzureNSGClient, security_group_name: str) -> dict
     Returns:
         a list of  rules for the security group
     """
-    #TODO: in the yml, check isArray
     security_groups = argToList(security_group_name)
-    rules = []
+    rules: List = list()
     for group in security_groups:
         rules_returned = client.list_rules(group)
         rules.extend(rules_returned.get('value', []))
@@ -170,7 +169,7 @@ def list_rules_command(client: AzureNSGClient, security_group_name: str) -> dict
 
 
 @logger
-def delete_rule_command(client: AzureNSGClient, security_group_name: str, security_rule_name: str) -> dict:
+def delete_rule_command(client: AzureNSGClient, security_group_name: str, security_rule_name: str) -> str:
     """
 
     Args:
@@ -185,6 +184,8 @@ def delete_rule_command(client: AzureNSGClient, security_group_name: str, securi
         raise ValueError(f"Rule {security_rule_name} not found.")
     if rule_deleted.status_code == 202:
         return f"Rule {security_rule_name} deleted."
+    else:
+        return f"Rule {security_rule_name} was not deleted. Got back the following reulst:\n{rule_deleted.content}"
 
 
 @logger
@@ -195,13 +196,13 @@ def create_rule_command(client: AzureNSGClient, security_group_name: str, securi
 
     # The reason for using 'Any' as default instead of '*' is to adhere to the standards in the UI.
     properties = {
-            "protocol": '*' if protocol == 'Any' else protocol,
-            "sourceAddressPrefix": '*' if source == 'Any' else source,
-            "destinationAddressPrefix": '*' if destination == 'Any' else destination,
-            "access": action,
-            "priority": priority,
-            "direction": direction,
-        }
+        "protocol": '*' if protocol == 'Any' else protocol,
+        "sourceAddressPrefix": '*' if source == 'Any' else source,
+        "destinationAddressPrefix": '*' if destination == 'Any' else destination,
+        "access": action,
+        "priority": priority,
+        "direction": direction,
+    }
     source_ports_list = argToList(source_ports)
     if len(source_ports_list) > 1:
         properties["sourcePortRanges"] = source_ports_list
@@ -284,7 +285,7 @@ def get_rule_command(client: AzureNSGClient, security_group_name: str, security_
 
 
 @logger
-def test_connection(client, params):
+def test_connection(client: AzureNSGClient, params: dict) -> str:
     if params.get('self_deployed', False) and not params.get('auth_code'):
         return_error('You must enter an authorization code in a self-deployed configuration.')
     client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
@@ -317,7 +318,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
     try:
         client = AzureNSGClient(
-            #TODO: After demo maybe can remove self-deployed values
+            # TODO: After demo maybe can remove self-deployed values
             self_deployed=params.get('self_deployed', False),
             app_id=params.get('app_id', ''),
             tenant_id=params.get('tenant_id', ''),
@@ -339,7 +340,6 @@ def main() -> None:
             'azure-nsg-auth-start': start_auth,
             'azure-nsg-auth-complete': complete_auth,
         }
-        demisto.debug(f"Integration Context: -=-=-=-=-==-\n{demisto.getIntegrationContext()}") #TODO remove
         if command == 'test-module':
             if params.get('self_deployed'):
                 raise ValueError("Please use `!azure-nsg-test` instead")
@@ -357,10 +357,9 @@ def main() -> None:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
-from MicrosoftApiModule import *
+from MicrosoftApiModule import *  # noqa: E402
 
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
