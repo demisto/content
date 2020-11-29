@@ -343,9 +343,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters apps by status, user.id or group.id expression.
+      defaultValue: '0'
+      description: Page number (0-based).
       isArray: false
-      name: filter
+      name: page
       required: false
       secret: false
     - default: false
@@ -369,6 +370,9 @@ script:
     - contextPath: Okta.Application.Label
       description: Label of the application.
       type: string
+    - contextPath: Okta.Application.Logo
+      description: Logo of the application.
+      type: string
   - arguments:
     - default: false
       description: IAM configuration data.
@@ -385,10 +389,19 @@ script:
     execution: false
     name: okta-iam-get-configuration
     outputs:
-    - contextPath: Okta.IAMConfiguration.applicationid
+    - contextPath: Okta.IAMConfiguration.ApplicationID
       description: An Okta application ID.
       type: String
-    - contextPath: Okta.IAMConfiguration.instance
+    - contextPath: Okta.IAMConfiguration.Name
+      description: Name of the Okta application.
+      type: String
+    - contextPath: Okta.IAMConfiguration.Label
+      description: Label of the Okta application.
+      type: String
+    - contextPath: Okta.IAMConfiguration.Logo
+      description: Logo of the application.
+      type: String
+    - contextPath: Okta.IAMConfiguration.Instance
       description: An XSOAR IAM integration instance name.
       type: String
   dockerimage: demisto/python3:3.8.6.13358

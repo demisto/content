@@ -299,7 +299,7 @@ Returns a list of Okta applications data.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Search for applications by their names. | Optional | 
-| filter | Filters apps by status, user.id or group.id expression. | Optional | 
+| page | Page number (0-based). Default is 0. | Optional | 
 | limit | Maximum number of apps to retrieve (maximal value is 200). Default is 50. | Optional | 
 
 
@@ -310,19 +310,19 @@ Returns a list of Okta applications data.
 | Okta.Application.ID | string | ID of the application. | 
 | Okta.Application.Name | string | Name of the application. | 
 | Okta.Application.Label | string | Label of the application. | 
+| Okta.Application.Logo | string | Logo of the application. | 
 
 
 #### Command Example
 ``` !okta-iam-list-applications limit=5 query="Workday" ```
 
 #### Human Readable Output
-### Okta Applications
-|ID|Name|Label|
-|---|---|---|
-| 0ob8zlypk6GVPRr2T0h7 | workday | Workday - Preview |
-| 0oabz0ozy5dDpEKyA0h7 | workday | Workday - Prod |
-| 0oae3ioe51sQ64Aui2h7 | workday | Workday - Impl1 |
-
+### Okta Applications (1 - 3)
+|ID|Name|Label|Logo|
+|---|---|---|---|
+| 0ob8zlypk6GVPRr2T0h7 | workday | Workday - Preview | ![](https://op1static.oktacdn.com/fs/bcg/4/gfsnda403rf16Qe790h7) |
+| 0oabz0ozy5dDpEKyA0h7 | workday | Workday - Prod - DryRun | ![](https://op1static.oktacdn.com/fs/bcg/4/gfsnda403rf16Qe790h7) |
+| 0oae3ioe51sQ64Aui2h7 | workday | Workday - Impl1 | ![](https://op1static.oktacdn.com/fs/bcg/4/gfsnda403rf16Qe790h7) |
 
 ### okta-iam-get-configuration
 ***
@@ -340,8 +340,11 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.IAMConfiguration.applicationid | String | An Okta application ID. | 
-| Okta.IAMConfiguration.instance | String | An XSOAR IAM integration instance name. | 
+| Okta.IAMConfiguration.ApplicationID | String | An Okta application ID. | 
+| Okta.IAMConfiguration.Name | String | Name of the Okta application. | 
+| Okta.IAMConfiguration.Label | String | Label of the Okta application. | 
+| Okta.IAMConfiguration.Logo | String | Logo of the application. | 
+| Okta.IAMConfiguration.Instance | String | An XSOAR IAM integration instance name. | 
 
 
 #### Command Example
@@ -349,9 +352,6 @@ There are no input arguments for this command.
 
 #### Human Readable Output
 ### Okta IAM Configuration
-|applicationid|instance|
-|---|---|
-| 0oc8zlypk6GVPRr2G0h7 | ServiceNow IAM_Instance_1 |
-| 0oabz0ovy5eDpEKyA0h7 | Salesforce IAM_Instance_1 |
-
-
+|ApplicationID|Instance|Label|Logo|Name|
+|---|---|---|---|---|
+| 0oc8zlypk6GVPRr2G0h7 | ServiceNow IAM_instance_1 | ServiceNow | ![](https://op1static.oktacdn.com/fs/bcg/4/gfskliw1i51ScX6pf0h7) | servicenow |

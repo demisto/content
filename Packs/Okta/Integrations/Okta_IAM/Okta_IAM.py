@@ -123,18 +123,49 @@ class Client(BaseClient):
         )
         return res.status_code == 200  # True if user is assigned to app, false otherwise
 
-    def list_apps(self, query, query_filter, limit):
+    def list_apps(self, query, page, limit):
         query_params = {
             'q': encode_string_results(query),
-            'filter': encode_string_results(query_filter),
             'limit': encode_string_results(limit)
         }
+
+        curr_page = 0
+        apps_batch, next_page = self.list_apps_batch(url_suffix='/apps', params=query_params)
+
+        while apps_batch and curr_page != page:
+            curr_page += 1
+            apps_batch, next_page = self.list_apps_batch(full_url=next_page)
+
+        if not apps_batch:
+            apps_batch = []
+        return apps_batch
+
+    def list_apps_batch(self, url_suffix='', params=None, full_url=''):
+        """ Gets a batch of apps from Okta.
+            Args:
+                url_suffix (str): The apps API endpoint.
+                params (dict): The API query params.
+                full_url (str): The full url retrieved from the last API call.
+
+            Return:
+                apps_batch (dict): The logs batch.
+                next_page (str): URL for next API call (equals '' on last batch).
+        """
+        if not url_suffix and not full_url:
+            return None, None
+
         res = self._http_request(
             method='GET',
-            url_suffix='/apps',
-            params=query_params
+            url_suffix=url_suffix,
+            params=params,
+            full_url=full_url,
+            resp_type='response'
         )
-        return res
+
+        logs_batch = res.json()
+        next_page = res.links.get('next', {}).get('url')
+
+        return logs_batch, next_page
 
     def get_logs(self, last_run_time=None, time_now=None, query_filter=None, auto_generate_filter=False, context=None):
         logs = []
@@ -485,10 +516,10 @@ def get_app_user_assignment_command(client, args):
 
 def list_apps_command(client, args):
     query = args.get('query')
-    query_filter = args.get('filter')
+    page = int(args.get('page'))
     limit = min(int(args.get('limit')), 200)
 
-    applications = client.list_apps(query, query_filter, limit)
+    applications = client.list_apps(query, page, limit)
 
     outputs = []
 
@@ -496,23 +527,30 @@ def list_apps_command(client, args):
         outputs.append({
             'ID': app.get('id'),
             'Name': app.get('name'),
-            'Label': app.get('label')
+            'Label': app.get('label'),
+            'Logo': f"![]({app.get('_links', {}).get('logo', [{}])[0].get('href')})"
         })
+
+    from_idx = page * limit + 1
+    to_idx = from_idx + len(applications) - 1
+    idx_range = f'{from_idx} - {to_idx}' if from_idx != to_idx else str(from_idx)
+    title = f'Okta Applications ({idx_range})'
 
     return CommandResults(
         outputs=outputs,
         outputs_prefix='Okta.Application',
         outputs_key_field='ID',
-        readable_output=tableToMarkdown('Okta Applications', outputs, headers=['ID', 'Name', 'Label'])
+        readable_output=tableToMarkdown(title, outputs, headers=['ID', 'Name', 'Label', 'Logo'])
     )
 
 
 def get_configuration(context):
     iam_configuration = context.get('IAMConfiguration', [])
+
     return CommandResults(
         outputs=iam_configuration,
         outputs_prefix='Okta.IAMConfiguration',
-        outputs_key_field='applicationid',
+        outputs_key_field='ApplicationID',
         readable_output=tableToMarkdown('Okta IAM Configuration', iam_configuration)
     )
 
