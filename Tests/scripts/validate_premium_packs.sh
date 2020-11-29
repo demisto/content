@@ -121,7 +121,7 @@ echo '{
 }' | tee index.json
 
 zip index_test.zip index.json
-LOCAL_INDEX_PATH = "./index_test.zip"
+LOCAL_INDEX_PATH="./index_test.zip"
 
 # ====== SAVE MASTER COMMIT HISTORY ======
 
