@@ -312,11 +312,15 @@ class TestArcherV2:
         assert field_key == 'Value'
         assert field_value == {"UserList": [{"ID": 20}], "GroupList": [{"ID": 30}]}
 
-    def test_generate_field_cross_reference_input(self):
+    @pytest.mark.parametrize('field_value, result', [
+        ([1, 2], [{"ContentID": 1}, {"ContentID": 2}]),
+        (1234, [{"ContentID": 1234}])
+    ])
+    def test_generate_field_cross_reference_input(self, field_value, result):
         client = Client(BASE_URL, '', '', '', '')
-        field_key, field_value = generate_field_value(client, "", {'Type': 9}, [1, 2])
+        field_key, field_value = generate_field_value(client, "", {'Type': 9}, field_value)
         assert field_key == 'Value'
-        assert field_value == [{"ContentID": 1}, {"ContentID": 2}]
+        assert field_value == result
 
     def test_generate_field_ip_address_input(self):
         client = Client(BASE_URL, '', '', '', '')
