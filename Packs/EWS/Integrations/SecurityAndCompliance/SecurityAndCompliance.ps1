@@ -169,16 +169,16 @@ function ParseSuccessResults([string]$success_results, [int]$limit, [bool]$all_r
         $lines = $success_results.Split([Environment]::NewLine)
 
         if ($limit -ne -1) {
-            $limit_min = ($limit, $lines.Count | Measure-Object -Minimum).Minimum
+            $limit = ($limit, $lines.Count | Measure-Object -Minimum).Minimum
         } else {
-            $limit = $lines.Count - 1
+            $limit = $lines.Count
         }
 
         # Results limit
         $results_count = 0
         # Lines iterator
         $lines_scanned = 0
-        while ($results_count -lt $limit_min -and $lines_scanned -lt $lines.Count) {
+        while ($results_count -lt $limit -and $lines_scanned -lt $lines.Count) {
             if ($lines[$lines_scanned] -match 'Location: (\S+), Item count: (\d+), Total size: (\d+)')
             {
                 if ($matches[2] -ne 0 -or $all_results){
@@ -210,28 +210,26 @@ function ParseSuccessResults([string]$success_results, [int]$limit, [bool]$all_r
     #>
 }
 
-function ParseResults([string]$results, [int]$limit) {
+function ParseResults([string]$results, [int]$limit = -1) {
     $parsed_results = New-Object System.Collections.Generic.List[System.Object]
-    if ($limit -ne 0) {
-        $lines = $results.Split(",")
-        if ($limit -ne -1) {
-            $limit = ($limit, $lines.Count | Measure-Object -Minimum).Minimum
-            $lines = $lines
+    $lines = $results.Split(",")
+    # Results limit
+    foreach ($line in $lines)
+    {
+        if ($limit -ne -1 -and $parsed_results.Count -ge $limit){
+            break
         }
-        foreach ($line in $lines)
+        if ($line -match "Location: (\S+); Sender: ([\S ]+); Subject: ([\S ]+); Type: (\S+); Size: (\d+); Received Time: ([\S\d ]+); Data Link: ([^\}]+)")
         {
-            if ($line -match "Location: (\S+); Sender: ([\S ]+); Subject: ([\S ]+); Type: (\S+); Size: (\d+); Received Time: ([\S\d ]+); Data Link: ([^\}]+)")
-            {
-                $parsed_results.Add(@{
-                    "Location" = $matches[1]
-                    "Sender" = $matches[2]
-                    "Subject" = $matches[3]
-                    "Type" = $matches[4]
-                    "Size" = $matches[5]
-                    "ReceivedTime" = $matches[6]
-                    "DataLink" = $matches[7]
-                })
-            }
+            $parsed_results.Add(@{
+                "Location" = $matches[1]
+                "Sender" = $matches[2]
+                "Subject" = $matches[3]
+                "Type" = $matches[4]
+                "Size" = $matches[5]
+                "ReceivedTime" = $matches[6]
+                "DataLink" = $matches[7]
+            })
         }
     }
 
@@ -251,7 +249,7 @@ function ParseResults([string]$results, [int]$limit) {
     #>
 }
 
-function ParseSearchToEntryContext([psobject]$search, [int]$limit = 0, [bool]$all_results = $false) {
+function ParseSearchToEntryContext([psobject]$search, [int]$limit = -1, [bool]$all_results = $false) {
     return @{
         "AllowNotFoundExchangeLocationsEnabled" = $search.AllowNotFoundExchangeLocationsEnabled
         "AzureBatchFrameworkEnabled" = $search.AzureBatchFrameworkEnabled
@@ -312,7 +310,7 @@ function ParseSearchToEntryContext([psobject]$search, [int]$limit = 0, [bool]$al
     #>
 }
 
-function ParseSearchActionToEntryContext([psobject]$search_action, [int]$limit = 0) {
+function ParseSearchActionToEntryContext([psobject]$search_action, [int]$limit = -1) {
     return @{
         "Action" = $search_action.Action
         "AllowNotFoundExchangeLocationsEnabled" = $search_action.AllowNotFoundExchangeLocationsEnabled
@@ -956,10 +954,7 @@ class SecurityAndComplianceClient {
             $this.CreateSession()
             # Import and Execute command
             Import-PSSession -Session $this.session -CommandName Get-ComplianceSearch -AllowClobber
-            if ($limit -eq -1) {
-                $limit = "unlimited"
-            }
-            $response = Get-ComplianceSearch -Identity $search_name -ResultSize $limit
+            $response = Get-ComplianceSearch -Identity $search_name
 
             return $response
         }
@@ -1159,7 +1154,7 @@ class SecurityAndComplianceClient {
             if ($limit -eq -1) {
                 $limit = "unlimited"
             }
-            $response = Get-ComplianceSearchAction -Identity $search_action_name -ResultSize $limit
+            $response = Get-ComplianceSearchAction -Identity $search_action_name
 
             return $response
         }
@@ -1337,9 +1332,10 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
         $human_readable += TableToMarkdown $parsed_results "Search statistics"
     }
     # Results file export
-    if ($export -and $parsed_results) {
-        if ($parsed_results.Count -ne 0){
-            $file_entry = FileResult "$($kwargs.search_name)_search.json" $($parsed_results | ConvertTo-Json)
+    if ($export) {
+        $parsed_results_all = ParseSuccessResults -success_results $raw_response.SuccessResults -limit -1 -all_results $true
+        if ($parsed_results_all.Count -ne 0){
+            $file_entry = FileResult "$($kwargs.search_name)_search.json" $($parsed_results_all | ConvertTo-Json)
         }
     }
 
@@ -1418,9 +1414,10 @@ function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
         $human_readable += TableToMarkdown $parsed_results "Search action results"
     }
     # Results file export
-    if ($export -and $parsed_results) {
-        if ($parsed_results.Count -ne 0){
-            $file_entry = FileResult "$($kwargs.search_action_name)_search_action.json" $($parsed_results | ConvertTo-Json)
+    if ($export) {
+        $parsed_results_all = ParseResults -results $raw_response.Results -limit -1
+        if ($parsed_results_all.Count -ne 0){
+            $file_entry = FileResult "$($kwargs.search_action_name)_search_action.json" $($parsed_results_all | ConvertTo-Json)
         }
     }
 
