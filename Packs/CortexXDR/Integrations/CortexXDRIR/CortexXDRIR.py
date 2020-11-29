@@ -2055,8 +2055,29 @@ def get_mapping_fields_command():
     return mapping_response
 
 
+def get_modified_remote_data_command(client, args):
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update  # In the first run, this value will be set to 1 minute earlier
+
+    demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
+
+    last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
+    last_update_without_ms = last_update_utc.isoformat().split('.')[0]
+
+    raw_incidents = client.get_incidents(gte_modification_time=last_update_without_ms, limit=100)
+
+    modified_incident_ids = list()
+    for raw_incident in raw_incidents:
+        incident_id = raw_incident.get('incident_id')
+        modified_incident_ids.append(incident_id)
+
+    return GetModifiedRemoteDataResponse(modified_incident_ids)
+
+
 def get_remote_data_command(client, args):
     remote_args = GetRemoteDataArgs(args)
+    demisto.debug(f'Performing get-remote-data command with incident id: {remote_args.remote_incident_id}')
+
     incident_data = {}
     try:
         incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
@@ -2668,6 +2689,9 @@ def main():
 
         elif demisto.command() == 'xdr-action-status-get':
             return_outputs(*action_status_get_command(client, args))
+
+        elif demisto.command() == 'get-modified-remote-data':
+            return_results(get_modified_remote_data_command(client, demisto.args()))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':

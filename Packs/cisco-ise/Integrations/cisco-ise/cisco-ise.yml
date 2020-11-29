@@ -9,7 +9,7 @@ configuration:
   type: 0
 - display: Server port (e.g., 9060)
   name: serverPort
-  required: true
+  required: false
   type: 0
 - display: Cisco ISE username
   name: credentials
@@ -307,9 +307,31 @@ script:
       description: The endpoint description.
       type: String
     - contextPath: CiscoISE.Endpoint.Link
-      description: 'The link for the endpoint '
+      description: The link for the endpoint.
       type: String
-  dockerimage: demisto/python3:3.7.4.977
+  - arguments:
+    - description: The MAC address from which to remove the policy.
+      name: mac_address
+      required: true
+    - description: The name of the policy to remove from the endpoint.
+      name: policy_name
+      required: true
+    description: Removes an Adapative Network Control policy from an endpoint.
+    name: cisco-ise-remove-policy
+    outputs:
+    - contextPath: CiscoISE.Endpoint.MACAddress
+      description: The MAC address of the endpoint.
+      type: string
+    - contextPath: CiscoISE.Endpoint.PolicyName
+      description: The policy name that was removed from the endpoint.
+      type: string
+  - arguments:
+    - description: IP address to query in ISE platform.
+      name: ip_address
+      required: true
+    description: Queries an IP address and returns its session data from an active endpoint.
+    name: cisco-ise-get-session-data-by-ip
+  dockerimage: demisto/python3:3.8.6.13358
   isfetch: false
   runonce: false
   script: '-'

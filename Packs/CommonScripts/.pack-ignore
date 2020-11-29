@@ -1,2 +1,5 @@
 [file:GetDuplicatesMlv2.yml]
 ignore=SC100
+
+[file:playbook-Delete_Context_Subplaybook_Test.yml]
+ignore=auto-test
