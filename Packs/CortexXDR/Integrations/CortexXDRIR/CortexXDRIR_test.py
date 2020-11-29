@@ -1344,7 +1344,7 @@ def test_get_script_metadata_command(requests_mock):
 def test_get_script_code_command(requests_mock):
     """
         Given:
-            - A script_uid
+            - A script_uid.
         When:
             - Requesting the code of a specific script in the script library.
         Then:
