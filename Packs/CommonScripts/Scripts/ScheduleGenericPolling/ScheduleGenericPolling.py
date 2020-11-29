@@ -41,9 +41,9 @@ if not demisto.dt(demisto.context(), dt):
 
 res = demisto.executeCommand("ScheduleCommand",
                              {
-                                 'command': '''!GenericPollingScheduledTask pollingCommand="{0}" 
-                                     pollingCommandArgName="{1}"{2} ids="{3}" pendingIds="{4}" interval="{5}" 
-                                     timeout="{6}" tag="{7}" additionalPollingCommandArgNames="{8}" 
+                                 'command': '''!GenericPollingScheduledTask pollingCommand="{0}"
+                                     pollingCommandArgName="{1}"{2} ids="{3}" pendingIds="{4}" interval="{5}"
+                                     timeout="{6}" tag="{7}" additionalPollingCommandArgNames="{8}"
                                      additionalPollingCommandArgValues="{9}"'''.format(
                                      pollingCommand,
                                      pollingCommandArgName,
