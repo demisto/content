@@ -10,7 +10,6 @@ script: >-
 
   if (args.bodyType === 'html') {
       bodyType = 'html';
-
   }
 
 
