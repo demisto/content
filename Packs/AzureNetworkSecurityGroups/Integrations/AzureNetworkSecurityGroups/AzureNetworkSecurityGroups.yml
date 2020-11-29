@@ -12,37 +12,12 @@ configuration:
 - display: Subscription ID
   hidden: false
   name: subscription_id
-  required: false
+  required: true
   type: 0
 - display: Resource Group Name
   hidden: false
   name: resource_group_name
-  required: false
-  type: 0
-- display: Use a self-deployed Azure application
-  hidden: false
-  name: self_deployed
-  required: false
-  type: 8
-- display: Authorization code (for self-deployed mode)
-  hidden: false
-  name: auth_code
-  required: false
-  type: 4
-- display: App Secret (for self-deployed mode)
-  hidden: false
-  name: app_secret
-  required: false
-  type: 4
-- display: Tenant ID (for self-deployed mode)
-  hidden: false
-  name: tenant_id
-  required: false
-  type: 4
-- display: Application redirect URI (for self-deployed mode)
-  hidden: false
-  name: redirect_uri
-  required: false
+  required: true
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
@@ -458,8 +433,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the rule
-      isArray: false
+      description: The name of the rule. Could also be a comma-seperated list of rules.
+      isArray: true
       name: security_rule_name
       required: false
       secret: false

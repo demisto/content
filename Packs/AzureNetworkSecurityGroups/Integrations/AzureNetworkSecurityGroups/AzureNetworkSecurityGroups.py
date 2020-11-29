@@ -83,7 +83,7 @@ class AzureNSGClient:
         return self.http_request('PUT', f'/{security_group}/securityRules/{rule_name}', data={"properties": properties})
 
     @logger
-    def get_rule(self,security_group: str, rule_name: str):
+    def get_rule(self, security_group: str, rule_name: str):
         try:
             return self.http_request('GET', f'/{security_group}/securityRules/{rule_name}')
         except Exception as e:
@@ -95,7 +95,7 @@ class AzureNSGClient:
 '''HELPER FUNCTIONS'''
 
 
-def format_rule(rule_json: dict, security_rule_name: str):
+def format_rule(rule_json: Union[dict, List], security_rule_name: str):
     """
     format the rule and create the commandResult object with it
     Args:
@@ -105,9 +105,14 @@ def format_rule(rule_json: dict, security_rule_name: str):
     Returns:
         CommandResults for the rule
     """
-    rule_json.update(rule_json.pop('properties', {}))
+    # We want to flatten the rules `properties` key as this is the more important key and we'd like to be able to display it nicely
+    if isinstance(rule_json, dict):
+        rule_json.update(rule_json.pop('properties', {}))
+    if isinstance(rule_json, list):
+        for rule in rule_json:
+            rule.update(rule.pop('properties', {}))
 
-    hr = tableToMarkdown(f"Rule {security_rule_name}", rule_json, removeNull=True)
+    hr = tableToMarkdown(f"Rules {security_rule_name}", rule_json, removeNull=True)
 
     return CommandResults(outputs_prefix='AzureNSG.Rules',
                           outputs_key_field='id',
@@ -161,17 +166,7 @@ def list_rules_command(client: AzureNSGClient, security_group_name: str) -> dict
     for group in security_groups:
         rules_returned = client.list_rules(group)
         rules.extend(rules_returned.get('value', []))
-
-
-    # We want to flatten the rules `properties` key as this is the more important key and we'd like to be able to display it nicely
-    for rule in rules:
-        rule.update(rule.pop('properties', {}))
-    hr = tableToMarkdown(f"Rules in {security_group_name}", rules, removeNull=True)
-
-    return CommandResults(outputs_prefix='AzureNSG.Rules',
-                          outputs_key_field='id',
-                          outputs=rules,
-                          readable_output=hr)
+    return format_rule(rules, f"in {security_group_name}")
 
 
 @logger
@@ -230,7 +225,7 @@ def create_rule_command(client: AzureNSGClient, security_group_name: str, securi
 def update_rule_command(client: AzureNSGClient, security_group_name: str, security_rule_name: str, direction: str = None,
                         action: str = None, protocol: str = None, source: str = None, source_ports: str = None,
                         destination: str = None, destination_ports: str = None, priority: str = None,
-                        description: str = None):
+                        description: str = None) -> CommandResults:
     """
     Update an existing rule.
 
@@ -281,8 +276,11 @@ def update_rule_command(client: AzureNSGClient, security_group_name: str, securi
 
 @logger
 def get_rule_command(client: AzureNSGClient, security_group_name: str, security_rule_name: str):
-    rule = client.get_rule(security_group_name, security_rule_name)
-    return format_rule(rule, security_rule_name)
+    rules = []
+    rule_list = argToList(security_rule_name)
+    for rule in rule_list:
+        rules.append(client.get_rule(security_group_name, rule))
+    return format_rule(rules, security_rule_name)
 
 
 @logger
@@ -305,7 +303,7 @@ def start_auth(client: AzureNSGClient) -> CommandResults:
 @logger
 def complete_auth(client: AzureNSGClient):
     client.ms_client.get_access_token()
-    return 'Authorization completed successfully.'
+    return '✅ Authorization completed successfully.'
 
 
 ''' MAIN FUNCTION '''
@@ -319,6 +317,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
     try:
         client = AzureNSGClient(
+            #TODO: After demo maybe can remove self-deployed values
             self_deployed=params.get('self_deployed', False),
             app_id=params.get('app_id', ''),
             tenant_id=params.get('tenant_id', ''),
@@ -342,7 +341,11 @@ def main() -> None:
         }
         demisto.debug(f"Integration Context: -=-=-=-=-==-\n{demisto.getIntegrationContext()}") #TODO remove
         if command == 'test-module':
-            raise Exception("Please use !azure-nsg-test instead")
+            if params.get('self_deployed'):
+                raise ValueError("Please use `!azure-nsg-test` instead")
+            raise ValueError("Please run `!azure-nsg-auth-start` and `!azure-nsg-auth-complete` to log in."
+                             " For more details press the (?) button.")
+
         if command == 'azure-nsg-test':
             return_results(test_connection(client, params))
         else:

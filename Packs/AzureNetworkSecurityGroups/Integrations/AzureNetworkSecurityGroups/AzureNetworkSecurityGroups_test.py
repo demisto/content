@@ -2,21 +2,20 @@ import json
 import io
 import pytest
 import demistomock as demisto
-from AzureNetworkSecurityGroups import Client
+from AzureNetworkSecurityGroups import AzureNSGClient
 
 
 def mock_client(mocker, http_request_result=None):
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={'current_refresh_token': 'refresh_token'})
-    client = Client(
+    client = AzureNSGClient(
         self_deployed=True,
-        refresh_token='refresh_token',
-        auth_and_token_url='auth_id',
+        app_id='app_id',
+        tenant_id='tenant_id',
         redirect_uri='redirect_uri',
-        enc_key='enc_key',
+        app_secret='app_secret',
         auth_code='auth_code',
         subscription_id='subscriptionID',
         resource_group_name='resourceGroupName',
-        workspace_name='workspaceName',
         verify=False,
         proxy=False
     )
@@ -41,7 +40,7 @@ def test_format_rule():
     cr = format_rule(rule, "RuleName")
     assert cr.raw_response['name'] == 'wow'
     assert cr.raw_response['sourceAddressPrefix'] == '8.1.2.3'
-    assert '### Rule RuleName' in cr.readable_output
+    assert '### Rules RuleName' in cr.readable_output
 
 
 def test_list_groups_command(mocker):
@@ -113,5 +112,5 @@ def test_get_rule(mocker):
     from AzureNetworkSecurityGroups import get_rule_command
     client = mock_client(mocker, util_load_json("test_data/get_rule_result.json"))
     result = get_rule_command(client, 'groupName', 'wow')
-    assert '### Rule wow' in result.readable_output
-    assert result.outputs.get('name') == 'wow'
+    assert '### Rules wow' in result.readable_output
+    assert result.outputs[0].get('name') == 'wow'
