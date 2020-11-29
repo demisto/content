@@ -241,7 +241,8 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
 
 def upload_index_to_storage(index_folder_path: str, extract_destination_path: str, index_blob: Any,
                             build_number: str, private_packs: list, current_commit_hash: str,
-                            index_generation: int, is_private: bool = False):
+                            index_generation: int, is_private: bool = False, force_upload: bool = False,
+                            previous_commit_hash: str = None):
     """
     Upload updated index zip to cloud storage.
 
@@ -253,15 +254,25 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     :param current_commit_hash: last commit hash of head.
     :param index_generation: downloaded index generation.
     :param is_private: Indicates if upload is private.
+    :param force_upload: Indicates if force upload or not.
+    :param previous_commit_hash: The previous commit hash to diff with.
     :returns None.
 
     """
+    if force_upload:
+        # If we force upload we don't want to update the commit in the index.json file,
+        # this is to be able to identify all changed packs in the next upload
+        commit = previous_commit_hash
+    else:
+        # Otherwise, update the index with the current commit hash (the commit of the upload)
+        commit = current_commit_hash
+
     with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json"), "w+") as index_file:
         index = {
             'revision': build_number,
             'modified': datetime.utcnow().strftime(Metadata.DATE_FORMAT),
             'packs': private_packs,
-            'commit': current_commit_hash
+            'commit': commit
         }
         json.dump(index, index_file, indent=4)
 
@@ -459,7 +470,7 @@ def get_content_git_client(content_repo_path: str):
 
 
 def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket_upload_flow: bool,
-                            force_previous_commit: str, is_private_build: bool = False, circle_branch: str = "master"):
+                            is_private_build: bool = False, circle_branch: str = "master"):
     """ Returns recent commits hashes (of head and remote master)
 
     Args:
@@ -467,25 +478,14 @@ def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket
         index_folder_path (str): the path to the local index folder
         is_bucket_upload_flow (bool): indicates whether its a run of bucket upload flow or regular build
         is_private_build (bool): indicates whether its a run of private build or not
-        force_previous_commit (str): if exists, this should be the commit to diff with
         circle_branch (str): CircleCi branch of current build
 
     Returns:
         str: last commit hash of head.
         str: previous commit depending on the flow the script is running
     """
-    head_commit = content_repo.head.commit.hexsha
-    if force_previous_commit:
-        try:
-            previous_commit = content_repo.commit(force_previous_commit).hexsha
-            logging.info(f"Using force commit hash {previous_commit} to diff with.")
-            return head_commit, previous_commit
-        except Exception as e:
-            logging.critical(f'Force commit {force_previous_commit} does not exist in content repo. Additional '
-                             f'info:\n {e}')
-            sys.exit(1)
-    return head_commit, get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, is_private_build,
-                                            circle_branch)
+    return content_repo.head.commit.hexsha, get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow,
+                                                                is_private_build, circle_branch)
 
 
 def update_index_with_priced_packs(private_storage_bucket: Any, extract_destination_path: str,
@@ -729,9 +729,9 @@ def option_handler():
     parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
                         help='Should remove test playbooks from content packs or not.', default=True)
     parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', type=str2bool, required=True)
-    parser.add_argument('-fc', '--force_previous_commit', help='A commit to be used as the previous commit to diff with')
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
     parser.add_argument('-c', '--circle_branch', help="CircleCi branch of current build", required=True)
+    parser.add_argument('-f', '--force_upload', help="is force upload build?", type=str2bool, required=True)
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -918,9 +918,9 @@ def main():
     storage_base_path = option.storage_base_path
     remove_test_playbooks = option.remove_test_playbooks
     is_bucket_upload_flow = option.bucket_upload
-    force_previous_commit = option.force_previous_commit
     private_bucket_name = option.private_bucket_name
     circle_branch = option.circle_branch
+    force_upload = option.force_upload
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -936,8 +936,7 @@ def main():
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
     current_commit_hash, previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
-                                                                        is_bucket_upload_flow, force_previous_commit,
-                                                                        circle_branch)
+                                                                        is_bucket_upload_flow, circle_branch)
 
     # detect packs to upload
     pack_names = get_packs_names(target_packs, previous_commit_hash)
@@ -1080,7 +1079,8 @@ def main():
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path=index_folder_path, extract_destination_path=extract_destination_path,
                             index_blob=index_blob, build_number=build_number, private_packs=private_packs,
-                            current_commit_hash=current_commit_hash, index_generation=index_generation)
+                            current_commit_hash=current_commit_hash, index_generation=index_generation,
+                            force_upload=force_upload, previous_commit_hash=previous_commit_hash)
 
     # upload id_set.json to bucket
     upload_id_set(storage_bucket, id_set_path)
