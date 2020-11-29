@@ -120,7 +120,7 @@ def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
 def test_get_incident_extra_data(requests_mock):
     from PaloAltoNetworks_XDR import get_incident_extra_data_command, Client
 
-    get_incident_extra_data_response = load_test_data('./test_data/get_incident_extra_data.json')
+    get_incident_extra_data_response = load_test_data('./test_data/get_incident_extra_data_host_id_array.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/',
                        json=get_incident_extra_data_response)
 

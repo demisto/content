@@ -968,7 +968,8 @@ def get_incident_extra_data_command(client, args):
     raw_alerts = raw_incident.get('alerts').get('data')
     alerts = clear_trailing_whitespace(raw_alerts)
     for alert in alerts:
-        alert['host_ip'] = alert['host_ip'].split(',')
+        split_host_ip = alert['host_ip'].split(',')
+        alert['host_ip'] = split_host_ip if len(split_host_ip) > 1 else alert['host_ip']
     file_artifacts = raw_incident.get('file_artifacts').get('data')
     network_artifacts = raw_incident.get('network_artifacts').get('data')
 
