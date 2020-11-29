@@ -1337,10 +1337,10 @@ def test_expanse_get_certificate_by_id(requests_mock):
 
     requests_mock.get(f"https://example.com/api/v2/assets/certificates/{MOCK_MD5HASH}", json=mock_cert)
 
-    result = get_certificate_command(client, {"pem_md5_hash": MOCK_MD5HASH})
+    result = get_certificate_command(client, {"md5_hash": MOCK_MD5HASH})
     assert result.outputs_prefix == "Expanse.Certificate"
     assert result.outputs_key_field == "id"
-    assert result.outputs == mock_cert
+    assert result.outputs == [mock_cert]
     #  XXX TODO command is being refactored
 
 
