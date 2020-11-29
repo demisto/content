@@ -1,5 +1,5 @@
 This integration allows you to manage and interact with Microsoft security and compliance content search.
-This integration was integrated and tested with Security & Compliance Center. (Powershell live version 7.0.3 )
+This integration was integrated and tested with [Security & Compliance Center](https://docs.microsoft.com/en-us/powershell/module/exchange/?view=exchange-ps#policy-and-compliance-content-search). 
 
 ## Use Cases
 
@@ -12,6 +12,34 @@ This integration was integrated and tested with Security & Compliance Center. (P
 * O365 - Security And Compliance - Search Action - Delete
 * O365 - Security And Compliance - Search Action - Preview
 * O365 - Security And Compliance - Search And Delete
+
+
+
+## Permissions in the Security & Compliance Center
+
+>  To access the Security & Compliance Center, users need to be a global administrator or a member of one or more Security & Compliance Center role groups.
+
+Login into the [Security & Compliance Center](https://ps.compliance.protection.outlook.com):
+
+1. Side menu -> Permissions:
+
+   ![side-menu](../../doc_imgs/security-and-compliance-side-menu.png)
+
+2. Choose existing role `Compliance Administrator`:
+
+   ![image-20201129135216851](../../doc_imgs/security-and-compliance-roles.png)
+
+3. Edit `Compliance Administrator` role:
+
+   ![roles-edit-1](../../doc_imgs/security-and-compliance-edit-1.png)
+
+4. Add the user you intend to be used in the integration:
+
+   ![roles-edit-2](../../doc_imgs/security-and-compliance-edit-2.png)
+
+   ![roles-edit-3](../../doc_imgs/security-and-compliance-edit-3.png)
+
+   
 
 ## Configure SecurityAndCompliance on Cortex XSOAR
 
@@ -1075,4 +1103,12 @@ Gets compliance search action from the Security & Compliance Center.
 >| Preview | 11/29/2020 7:24:05 AM | 11/29/2020 7:23:50 AM | example\_Preview | XSOAR-user | example | Completed
 
 
+
+## Known Limitations
+
+* Security and compliance integrations doesn't support `Security and compliance` on-premise .
+* Each security and compliance command create PSSession (Powershell session) - security and compliance powershell limit the number of concurrent sessions to 3, Its affects the behavior of muiltiple playbooks running concurrently, Therefor its recommend to retry task on fail when using the integration commands in playbooks.
+* Proxy isn't supported due to Microsoft [limitation](https://github.com/PowerShell/PowerShell/issues/9721).
+
+###  
 
