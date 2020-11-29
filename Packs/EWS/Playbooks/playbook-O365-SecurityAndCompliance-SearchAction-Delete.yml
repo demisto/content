@@ -4,8 +4,8 @@ name: O365 - Security And Compliance - Search Action - Delete
 description: |-
   This playbook perform:
   1. Create new compliance search action Purge - Hard or Soft.
-  2. Wait for complaince search action complete.
-  3. Retieve delete search action.
+  2. Wait for compliance search action complete.
+  3. Retrieve delete search action.
 starttaskid: "0"
 tasks:
   "0":
