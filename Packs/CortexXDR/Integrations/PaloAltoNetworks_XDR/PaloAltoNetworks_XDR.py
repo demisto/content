@@ -967,6 +967,8 @@ def get_incident_extra_data_command(client, args):
     incident_id = incident.get('incident_id')
     raw_alerts = raw_incident.get('alerts').get('data')
     alerts = clear_trailing_whitespace(raw_alerts)
+    for alert in alerts:
+        alert['host_ip'] = alert['host_ip'].split(',')
     file_artifacts = raw_incident.get('file_artifacts').get('data')
     network_artifacts = raw_incident.get('network_artifacts').get('data')
 
