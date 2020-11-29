@@ -55,10 +55,9 @@ configuration:
   required: false
   additionalinfo: Only entries with these tags are retrieved from the XSOAR server.
     If no tags are listed, no entries are retrieved.
-- additionalinfo: Choose the tag to add to an entry to mirror it as an entry to the
-    other XSOAR instance.
+- additionalinfo: Choose the tags to filter the enties you wish to send to the other XSOAR instance.
   defaultvalue: ""
-  display: Outgoing Entry Tag
+  display: Outgoing Entry Tags
   hidden: false
   name: mirror_tag
   required: false
@@ -145,6 +144,6 @@ script:
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-defaultmapperin: XSOAR-Mirror-Incoming-mapper
+defaultmapperin: XSOAR-Incoming-Mapper
 tests:
 - No tests (auto formatted)
