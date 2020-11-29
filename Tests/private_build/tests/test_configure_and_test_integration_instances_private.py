@@ -64,6 +64,7 @@ class BuildMock:
         self.id_set = {}
         self.test_pack_path = ''
         self.pack_ids_to_install = []
+        self.service_account = None
 
 
 def test_find_needed_test_playbook_paths():
