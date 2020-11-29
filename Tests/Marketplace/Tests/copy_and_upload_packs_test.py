@@ -56,7 +56,7 @@ class TestHelperFunctions:
                - Verify that we get the expected dictionary
        """
         from Tests.Marketplace.copy_and_upload_packs import get_successful_and_failed_packs
-        file = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE.value)
+        file = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
 
         # Case 1: assert file does not exist
         successful, failed = get_successful_and_failed_packs(file)
@@ -73,32 +73,32 @@ class TestHelperFunctions:
         # Case 3: assert valid file
         with open(file, "w") as f:
             f.write(json.dumps({
-                f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}": {
-                    f"{BucketUploadFlow.FAILED_PACKS.value}": {
+                f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}": {
+                    f"{BucketUploadFlow.FAILED_PACKS}": {
                         "TestPack2": {
-                            f"{BucketUploadFlow.STATUS.value}": "status2",
-                            f"{BucketUploadFlow.AGGREGATED.value}": False
+                            f"{BucketUploadFlow.STATUS}": "status2",
+                            f"{BucketUploadFlow.AGGREGATED}": False
                         }
                     },
-                    f"{BucketUploadFlow.SUCCESSFUL_PACKS.value}": {
+                    f"{BucketUploadFlow.SUCCESSFUL_PACKS}": {
                         "TestPack1": {
-                            f"{BucketUploadFlow.STATUS.value}": "status1",
-                            f"{BucketUploadFlow.AGGREGATED.value}": True
+                            f"{BucketUploadFlow.STATUS}": "status1",
+                            f"{BucketUploadFlow.AGGREGATED}": True
                         }
                     }
                 }
             }))
         successful, failed = get_successful_and_failed_packs(file)
         assert successful == {"TestPack1": {
-            f"{BucketUploadFlow.STATUS.value}": "status1",
-            f"{BucketUploadFlow.AGGREGATED.value}": True
+            f"{BucketUploadFlow.STATUS}": "status1",
+            f"{BucketUploadFlow.AGGREGATED}": True
         }}
         successful_list = [*successful]
         ans = 'TestPack1' in successful_list
         assert ans
         assert failed == {"TestPack2": {
-            f"{BucketUploadFlow.STATUS.value}": "status2",
-            f"{BucketUploadFlow.AGGREGATED.value}": False}
+            f"{BucketUploadFlow.STATUS}": "status2",
+            f"{BucketUploadFlow.AGGREGATED}": False}
         }
         failed_list = [*failed]
         ans = 'TestPack2' in failed_list

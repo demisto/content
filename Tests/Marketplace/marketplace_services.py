@@ -28,7 +28,7 @@ IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported']  # files to ignore
 IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
 
 
-class BucketUploadFlow(enum.Enum):
+class BucketUploadFlow(object):
     """ Bucket Upload Flow constants
 
     """
@@ -1796,16 +1796,16 @@ class Pack(object):
 
         Args:
             packs_results_file_path: The path to the pack_results.json file
-            packs_type: can be BucketUploadFlow.FAILED_PACKS.value or BucketUploadFlow.SUCCESSFUL_PACKS.value
+            packs_type: can be BucketUploadFlow.FAILED_PACKS or BucketUploadFlow.SUCCESSFUL_PACKS
 
         """
         packs_results_file = load_json(packs_results_file_path)
-        upload_packs_dict = packs_results_file.get(BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE.value, {})
+        upload_packs_dict = packs_results_file.get(BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, {})
         packs_type_dict = upload_packs_dict.get(packs_type, {})
         packs_type_dict.update({
             self._pack_name: {
-                BucketUploadFlow.STATUS.value: PackStatus[self._status].value,
-                BucketUploadFlow.AGGREGATED.value: self._aggregation_str if self._aggregated and self._aggregation_str
+                BucketUploadFlow.STATUS: PackStatus[self._status].value,
+                BucketUploadFlow.AGGREGATED: self._aggregation_str if self._aggregated and self._aggregation_str
                 else "False"
             }
         })
@@ -1813,10 +1813,10 @@ class Pack(object):
             upload_packs_dict[packs_type].update(packs_type_dict)
         else:
             upload_packs_dict[packs_type] = packs_type_dict
-        if BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE.value in packs_results_file:
-            packs_results_file[BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE.value].update(upload_packs_dict)
+        if BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE in packs_results_file:
+            packs_results_file[BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE].update(upload_packs_dict)
         else:
-            packs_results_file[BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE.value] = upload_packs_dict
+            packs_results_file[BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE] = upload_packs_dict
         json_write(packs_results_file_path, packs_results_file)
 
     def add_to_failed(self, packs_results_file_path: str):
@@ -1826,7 +1826,7 @@ class Pack(object):
             packs_results_file_path: The path to the pack_results.json file
 
         """
-        self.add_to_packs_results(packs_results_file_path, BucketUploadFlow.FAILED_PACKS.value)
+        self.add_to_packs_results(packs_results_file_path, BucketUploadFlow.FAILED_PACKS)
 
     def add_to_successful(self, packs_results_file_path: str):
         """ Adds the pack to the successful section in the packs_results.json file
@@ -1835,7 +1835,7 @@ class Pack(object):
             packs_results_file_path: The path to the pack_results.json file
 
         """
-        self.add_to_packs_results(packs_results_file_path, BucketUploadFlow.SUCCESSFUL_PACKS.value)
+        self.add_to_packs_results(packs_results_file_path, BucketUploadFlow.SUCCESSFUL_PACKS)
 
 
 # HELPER FUNCTIONS

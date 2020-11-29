@@ -853,34 +853,34 @@ def store_successful_and_failed_packs_in_ci_artifacts(circle_artifacts_path, suc
 
     """
     packs_results = dict()
-    packs_results[BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value] = dict()
+    packs_results[BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING] = dict()
 
     if failed_packs:
         failed_packs_dict = {
-            BucketUploadFlow.FAILED_PACKS.value: {
+            BucketUploadFlow.FAILED_PACKS: {
                 pack.name: {
-                    BucketUploadFlow.STATUS.value: PackStatus[pack.status].value,
-                    BucketUploadFlow.AGGREGATED.value: pack.aggregation_str if pack.aggregated and pack.aggregation_str
+                    BucketUploadFlow.STATUS: PackStatus[pack.status].value,
+                    BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
                     else "False"
                 } for pack in failed_packs
             }
         }
-        packs_results[BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value].update(failed_packs_dict)
+        packs_results[BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING].update(failed_packs_dict)
 
     if successful_packs:
         successful_packs_dict = {
-            BucketUploadFlow.SUCCESSFUL_PACKS.value: {
+            BucketUploadFlow.SUCCESSFUL_PACKS: {
                 pack.name: {
-                    BucketUploadFlow.STATUS.value: PackStatus[pack.status].value,
-                    BucketUploadFlow.AGGREGATED.value: pack.aggregation_str if pack.aggregated and pack.aggregation_str
+                    BucketUploadFlow.STATUS: PackStatus[pack.status].value,
+                    BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
                     else "False"
                 } for pack in successful_packs
             }
         }
-        packs_results[BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value].update(successful_packs_dict)
+        packs_results[BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING].update(successful_packs_dict)
 
     if packs_results:
-        json_write(os.path.join(circle_artifacts_path, BucketUploadFlow.PACKS_RESULTS_FILE.value), packs_results)
+        json_write(os.path.join(circle_artifacts_path, BucketUploadFlow.PACKS_RESULTS_FILE), packs_results)
 
 
 def main():

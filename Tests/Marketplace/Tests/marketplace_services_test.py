@@ -1227,38 +1227,38 @@ class TestAddToPacksResultsFile:
 
     """
     FILE_AFTER_PREPARE_CONTENT = {
-        f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}": {
-            f"{BucketUploadFlow.SUCCESSFUL_PACKS.value}": {
+        f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}": {
+            f"{BucketUploadFlow.SUCCESSFUL_PACKS}": {
                 "A": {
-                    f"{BucketUploadFlow.STATUS.value}": PackStatus.SUCCESS.value,
-                    f"{BucketUploadFlow.AGGREGATED.value}": "[1.0.0, 1.0.1] => 1.0.1"
+                    f"{BucketUploadFlow.STATUS}": PackStatus.SUCCESS.value,
+                    f"{BucketUploadFlow.AGGREGATED}": "[1.0.0, 1.0.1] => 1.0.1"
                 },
                 "B": {
-                    f"{BucketUploadFlow.STATUS.value}": PackStatus.SUCCESS.value,
-                    f"{BucketUploadFlow.AGGREGATED.value}": "[1.0.0, 1.0.1] => 1.0.1"
+                    f"{BucketUploadFlow.STATUS}": PackStatus.SUCCESS.value,
+                    f"{BucketUploadFlow.AGGREGATED}": "[1.0.0, 1.0.1] => 1.0.1"
                 }
             }
         }
     }
 
     FILE_AFTER_ONE_UPLOAD = {
-        f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}": FILE_AFTER_PREPARE_CONTENT[
-            f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}"],
-        f"{BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE.value}": {
-            f"{BucketUploadFlow.SUCCESSFUL_PACKS.value}": {
+        f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}": FILE_AFTER_PREPARE_CONTENT[
+            f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}"],
+        f"{BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE}": {
+            f"{BucketUploadFlow.SUCCESSFUL_PACKS}": {
                 "A": {
-                    f"{BucketUploadFlow.STATUS.value}": PackStatus.SUCCESS.value,
-                    f"{BucketUploadFlow.AGGREGATED.value}": "[1.0.0, 1.0.1] => 1.0.1"
+                    f"{BucketUploadFlow.STATUS}": PackStatus.SUCCESS.value,
+                    f"{BucketUploadFlow.AGGREGATED}": "[1.0.0, 1.0.1] => 1.0.1"
                 }
             }
         }
     }
 
     FILE_AT_THE_END_OF_UPLOAD = {
-        f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}": FILE_AFTER_PREPARE_CONTENT[
-            f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}"],
-        f"{BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE.value}": FILE_AFTER_PREPARE_CONTENT[
-            f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}"]
+        f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}": FILE_AFTER_PREPARE_CONTENT[
+            f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}"],
+        f"{BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE}": FILE_AFTER_PREPARE_CONTENT[
+            f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}"]
     }
 
     @pytest.mark.parametrize("start_file, end_file, pack_to_add", [
@@ -1276,11 +1276,11 @@ class TestAddToPacksResultsFile:
            Then:
                - Verify that the file content is what we expect
        """
-        packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE.value)
+        packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
         json_write(packs_results_file_path, start_file)
         pack_to_add._status = PackStatus.SUCCESS.name
         pack_to_add._aggregated = True
         pack_to_add._aggregation_str = "[1.0.0, 1.0.1] => 1.0.1"
-        pack_to_add.add_to_packs_results(packs_results_file_path, BucketUploadFlow.SUCCESSFUL_PACKS.value)
+        pack_to_add.add_to_packs_results(packs_results_file_path, BucketUploadFlow.SUCCESSFUL_PACKS)
         packs_results_file = load_json(packs_results_file_path)
         assert packs_results_file == end_file

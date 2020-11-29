@@ -200,10 +200,10 @@ def get_successful_and_failed_packs(packs_results_file_path: str) -> Tuple[dict,
     """
     if os.path.exists(packs_results_file_path):
         packs_results_file = load_json(packs_results_file_path)
-        successful_packs_dict = packs_results_file.get(BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value, {}) \
-            .get(BucketUploadFlow.SUCCESSFUL_PACKS.value, {})
-        failed_packs_dict = packs_results_file.get(BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value, {}) \
-            .get(BucketUploadFlow.FAILED_PACKS.value, {})
+        successful_packs_dict = packs_results_file.get(BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, {}) \
+            .get(BucketUploadFlow.SUCCESSFUL_PACKS, {})
+        failed_packs_dict = packs_results_file.get(BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, {}) \
+            .get(BucketUploadFlow.FAILED_PACKS, {})
         return successful_packs_dict, failed_packs_dict
     return {}, {}
 
@@ -330,8 +330,7 @@ def main():
         download_and_extract_index(build_bucket, extract_destination_path)
 
     # Get the successful and failed packs file from Prepare Content step in Create Instances job if there are
-    packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path),
-                                           BucketUploadFlow.PACKS_RESULTS_FILE.value)
+    packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
     pc_successful_packs_dict, pc_failed_packs_dict = get_successful_and_failed_packs(packs_results_file_path)
 
     # Check if needs to upload or not

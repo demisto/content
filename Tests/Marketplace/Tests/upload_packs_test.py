@@ -504,12 +504,12 @@ class TestStoreInCircleCIArtifacts:
 
     """
     FAILED_PACK_DICT = {
-        f'{BucketUploadFlow.STATUS.value}': PackStatus.FAILED_UPLOADING_PACK.value,
-        f'{BucketUploadFlow.AGGREGATED.value}': 'False'
+        f'{BucketUploadFlow.STATUS}': PackStatus.FAILED_UPLOADING_PACK.value,
+        f'{BucketUploadFlow.AGGREGATED}': 'False'
     }
     SUCCESSFUL_PACK_DICT = {
-        f'{BucketUploadFlow.STATUS.value}': PackStatus.SUCCESS.value,
-        f'{BucketUploadFlow.AGGREGATED.value}': '[1.0.0, 1.0.1] => 1.0.1'
+        f'{BucketUploadFlow.STATUS}': PackStatus.SUCCESS.value,
+        f'{BucketUploadFlow.AGGREGATED}': '[1.0.0, 1.0.1] => 1.0.1'
     }
 
     @staticmethod
@@ -543,14 +543,14 @@ class TestStoreInCircleCIArtifacts:
         successful_packs = self.get_successful_packs()
         failed_packs = self.get_failed_packs()
         store_successful_and_failed_packs_in_ci_artifacts(tmp_path, successful_packs, failed_packs)
-        packs_results_file = load_json(os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE.value))
+        packs_results_file = load_json(os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE))
         assert packs_results_file == {
-            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}': {
-                f'{BucketUploadFlow.FAILED_PACKS.value}': {
+            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}': {
+                f'{BucketUploadFlow.FAILED_PACKS}': {
                     'C': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT,
                     'D': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT
                 },
-                f'{BucketUploadFlow.SUCCESSFUL_PACKS.value}': {
+                f'{BucketUploadFlow.SUCCESSFUL_PACKS}': {
                     'A': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT,
                     'B': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT
                 }
@@ -569,10 +569,10 @@ class TestStoreInCircleCIArtifacts:
        """
         successful_packs = self.get_successful_packs()
         store_successful_and_failed_packs_in_ci_artifacts(tmp_path, successful_packs, [])
-        packs_results_file = load_json(os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE.value))
+        packs_results_file = load_json(os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE))
         assert packs_results_file == {
-            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}': {
-                f'{BucketUploadFlow.SUCCESSFUL_PACKS.value}': {
+            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}': {
+                f'{BucketUploadFlow.SUCCESSFUL_PACKS}': {
                     'A': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT,
                     'B': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT
                 }
@@ -591,10 +591,10 @@ class TestStoreInCircleCIArtifacts:
        """
         failed_packs = self.get_failed_packs()
         store_successful_and_failed_packs_in_ci_artifacts(tmp_path, [], failed_packs)
-        packs_results_file = load_json(os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE.value))
+        packs_results_file = load_json(os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE))
         assert packs_results_file == {
-            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING.value}': {
-                f'{BucketUploadFlow.FAILED_PACKS.value}': {
+            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}': {
+                f'{BucketUploadFlow.FAILED_PACKS}': {
                     'C': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT,
                     'D': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT
                 }
