@@ -25,12 +25,19 @@ class Client(BaseClient):
 
     def delete_domains(self, domain_name: str, domain_id: str):
         res = ''
-        if domain_id:
-            res = self._http_request('DELETE', f"domains/{domain_id}?customerKey={self.api_key}",
-                                     return_empty_response=True)
-        if domain_name:
-            res = self._http_request('DELETE', f"domains?customerKey={self.api_key}&where[name]={domain_name}",
-                                     return_empty_response=True)
+        try:
+            if domain_id:
+                res = self._http_request('DELETE', f"domains/{domain_id}?customerKey={self.api_key}",
+                                         return_empty_response=True)
+            if domain_name:
+                res = self._http_request('DELETE', f"domains?customerKey={self.api_key}&where[name]={domain_name}",
+                                         return_empty_response=True)
+        except Exception as e:
+            if e.res.status_code == 400:
+                raise DemistoException('Domain for delete command does not exist, Please insert an existing domain '
+                                       'name or id.')
+            if e.res.status_code ==401
+
         return res
 
     def add_event_to_domain(self, event: dict):
@@ -38,7 +45,7 @@ class Client(BaseClient):
                                   return_empty_response=True)
 
 
-def domains_list_suffix(page: Optional[str] = '', limit: Optional[str] = '', request: Optional[str] = '') -> str:
+def prepare_suffix(page: Optional[str] = '', limit: Optional[str] = '', request: Optional[str] = '') -> str:
     """
     Create the relevant suffix for the domains command,
      Either there is a complete request that should be sent or page and limit arguments.
@@ -81,7 +88,7 @@ def domains_list_command(client: Client, args: dict) -> CommandResults:
     """
     page = args.get('page', '')
     limit = args.get('limit', '')
-    suffix = domains_list_suffix(page=page, limit=limit)
+    suffix = prepare_suffix(page=page, limit=limit)
     response = client.get_domains_list(suffix=suffix)
     domains_list = create_domain_list(client, response)
     domains_list = domains_list[:int(limit)]
@@ -89,7 +96,7 @@ def domains_list_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='CiscoUmbrellaEnforcement.Domains',
-        outputs_key_field='',
+        outputs_key_field='Domains',
         outputs=domains_list
     )
 
@@ -102,8 +109,8 @@ def domain_event_add_command(client: Client, args: dict) -> str:
     """
     alert_time = args.get('alert_time')
     device_id = args.get('device_id')
-    dst_domain = args.get('dst_domain')
-    dst_url = args.get('dst_url')
+    dst_domain = args.get('destination_domain')
+    dst_url = args.get('destination_url')
     device_version = args.get('device_version')
 
     new_event = {
@@ -119,10 +126,10 @@ def domain_event_add_command(client: Client, args: dict) -> str:
 
     response = client.add_event_to_domain(new_event)
     if response.get('id'):
-        ActionResult = f"New event was added successfully, The id is {str(response.get('id'))}."
+        action_result = f"New event was added successfully, The id is {str(response.get('id'))}."
     else:
-        ActionResult = "New event's addition failed."
-    return ActionResult
+        action_result = "New event's addition failed."
+    return action_result
 
 
 def domain_delete_command(client: Client, args: dict) -> str:
@@ -150,7 +157,7 @@ def test_module(client: Client) -> str:
     :param client: Cisco Umbrella Client for the api request.
     :return: 'ok' if there is a connection with the api and exception otherwise.
     """
-    client.get_domains_list(domains_list_suffix())
+    client.get_domains_list(prepare_suffix())
     return 'ok'
 
 
