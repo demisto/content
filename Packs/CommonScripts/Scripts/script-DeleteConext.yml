@@ -16,7 +16,6 @@ script: >
 
   var shouldDeleteAll = (args.all === 'yes');
 
-
   var isSubPlaybookKey = (args.subplaybook === 'yes');
 
   if (args.subplaybook === 'auto') {
