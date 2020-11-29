@@ -114,13 +114,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Time detected range of element versions to fetch.  comma seperated.
+      description: "Time detected range of element versions to fetch.  comma seperated.\
+        \ \nThe first argument should be the start of the range and the second is\
+        \ the range.\nThe format of the start and end can be either relative e.g.\
+        \ \"2 days, 1 day\" or date time \"2020-11-24T17:07:27Z,2020-11-25T17:07:27Z\""
       isArray: true
       name: time_detetcted_range
       required: false
       secret: false
     - default: false
-      description: Time received range of element versions to fetch.
+      description: |-
+        Time received range of element versions to fetch. comma seperated.
+        The first argument should be the start of the range and the second is the range.
+        The format of the start and end can be either relative e.g. "2 days, 1 day" or date time "2020-11-24T17:07:27Z,2020-11-25T17:07:27Z"
       isArray: true
       name: time_received_range
       required: false

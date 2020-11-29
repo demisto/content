@@ -13,6 +13,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_REG = '[0-9]+-[0-9]+-[0-9]+[0-9]+T[0-9]+:[0-9]+:[0-9]+Z'
 
 ''' CLIENT CLASS '''
 
@@ -132,14 +133,25 @@ def filter_versions(args: dict) -> str:
             filters += f"baselineVersion={baseline_version}&"
     if args.get('time_detected_range'):
         start, end = argToList(args.get('time_detected_range'))
-        start = parse_date_range(start, date_format=DATE_FORMAT)[0]
-        end = parse_date_range(end, date_format=DATE_FORMAT)[0]
+        if not re.search(DATE_REG, start) and not re.search(DATE_REG, end):
+            try:
+                start = parse_date_range(start, date_format=DATE_FORMAT)[0]
+                end = parse_date_range(end, date_format=DATE_FORMAT)[0]
+            except Exception:
+                raise DemistoException(f"Please insert time range in relative format e.g. '1 day', '2 days' or in "
+                                       f"date format {DATE_FORMAT}")
         filters += f"timeDetectedRange={start},{end}&"
+
     if args.get('time_received_range'):
         start, end = argToList(args.get('time_received_range'))
-        start = parse_date_range(start, date_format=DATE_FORMAT)[0]
-        end = parse_date_range(end, date_format=DATE_FORMAT)[0]
-        filters += f"timeReceivedRange={start},{end}&"
+        if not re.search(DATE_REG, start) and not re.search(DATE_REG, end):
+            try:
+                start = parse_date_range(start, date_format=DATE_FORMAT)[0]
+                end = parse_date_range(end, date_format=DATE_FORMAT)[0]
+            except Exception:
+                raise DemistoException(f"Please insert time range in relative format e.g. '1 day', '2 days' or in "
+                                       f"date format {DATE_FORMAT}")
+        filters += f"timeDetectedRange={start},{end}&"
     if args.get('limit'):
         filters += f"pageLimit={args.get('limit')}&"
     if args.get('start'):
