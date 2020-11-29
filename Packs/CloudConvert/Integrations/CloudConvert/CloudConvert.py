@@ -169,13 +169,23 @@ class Client(BaseClient):
         Returns:
              request response, containing the data of the file
         """
-        return self._http_request(
-            method='GET',
-            url_suffix=None,
-            full_url=url,
-            headers={'Content-Type': 'application/json'},
-            resp_type='text',
-        )
+
+        # Saving the headers of this client instance
+        # The HTTP request that gets the file data needs to have no headers
+        # Passing an empty dictionary to _http_request cause it to use this client's headers by default
+        session_headers = self._headers
+        self._headers = {}
+        try:
+            results = self._http_request(
+                method='GET',
+                url_suffix=None,
+                full_url=url,
+                headers={},
+                resp_type='response',
+            )
+            return results.content
+        finally:
+            self._headers = session_headers
 
 
 @logger
