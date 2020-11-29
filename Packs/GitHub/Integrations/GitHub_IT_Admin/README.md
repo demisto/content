@@ -157,7 +157,7 @@ Retrieves a single user resource.
 
 ### iam-disable-user
 ***
-Delete an active user.
+Deletes an active user.
 
 
 #### Base Command

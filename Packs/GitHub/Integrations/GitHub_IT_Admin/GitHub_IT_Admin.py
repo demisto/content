@@ -14,14 +14,10 @@ class Client(BaseClient):
 
     def __init__(self, base_url, token, org, headers, ok_codes=None, verify=True, proxy=False):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers)
-        self.token = token
         self.org = org
-        self.headers = headers
-        self.headers['Authorization'] = 'Bearer ' + self.token
 
     def get_user(self, input_type, user_term):
 
-        user_term = "\"" + user_term + "\""
         uri = f'scim/v2/organizations/{self.org}/' \
               f'Users?filter={input_type} eq {user_term}'
 
@@ -56,8 +52,7 @@ class Client(BaseClient):
 
     def get_user_id_by_mail(self, email):
         user_id = ""
-        user_term = "\"" + email + "\""
-        uri = f'scim/v2/organizations/{self.org}/Users?filter=emails eq {user_term}'
+        uri = f'scim/v2/organizations/{self.org}/Users?filter=emails eq {email}'
 
         res = self._http_request(
             method='GET',
@@ -138,12 +133,12 @@ def get_user_command(client, args, mapper_in):
         return iam_user_profile
 
 
-def create_user_command(client, args, mapper_out, is_command_enabled):
+def create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled):
     try:
         user_profile = args.get("user-profile")
         iam_user_profile = IAMUserProfile(user_profile=user_profile)
 
-        if not is_command_enabled:
+        if not is_create_enabled:
             iam_user_profile.set_result(action=IAMActions.CREATE_USER,
                                         skip=True,
                                         skip_reason='Command is disabled.')
@@ -153,6 +148,10 @@ def create_user_command(client, args, mapper_out, is_command_enabled):
             user_id = client.get_user_id_by_mail(email)
 
             if user_id:
+                # if user exists - update it
+                create_if_not_exists = False
+                update_user_command(client, args, mapper_out, is_update_enabled,
+                                    is_create_enabled, create_if_not_exists)
                 _, error_message = IAMErrors.USER_ALREADY_EXISTS
                 iam_user_profile.set_result(action=IAMActions.CREATE_USER,
                                             skip=True,
@@ -200,7 +199,7 @@ def update_user_command(client, args, mapper_out, is_update_enabled, is_create_e
             if not user_id:
                 # user doesn't exists
                 if create_if_not_exists:
-                    iam_user_profile = create_user_command(client, args, mapper_out, is_create_enabled)
+                    iam_user_profile = create_user_command(client, args, mapper_out, is_create_enabled, False)
                 else:
                     error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
                     iam_user_profile.set_result(action=IAMActions.UPDATE_USER,
@@ -298,6 +297,21 @@ def convert_scheme_to_dict(user_scheme):
     return user_dict
 
 
+def get_mapping_fields_command():
+    scheme = [
+        "userName",
+        "familyName",
+        "givenName",
+        "email"
+    ]
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
+
+    for field in scheme:
+        incident_type_scheme.add_field(field, "Field")
+
+    return GetMappingFieldsResponse([incident_type_scheme])
+
+
 def main():
 
     params = demisto.params()
@@ -322,6 +336,7 @@ def main():
     headers = {
         'accept': 'application/json',
         'content-type': 'application/json',
+        'Authorization': f'Bearer {token}'
     }
 
     proxy = demisto.params().get('proxy', False)
@@ -332,7 +347,6 @@ def main():
     try:
         client = Client(
             base_url=base_url,
-            token=token,
             org=org,
             verify=verify_certificate,
             proxy=proxy,
@@ -347,7 +361,7 @@ def main():
             return_results(user_profile)
 
         elif command == 'iam-create-user':
-            user_profile = create_user_command(client, args, mapper_out, is_create_enabled)
+            user_profile = create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled)
             return_results(user_profile)
 
         elif command == 'iam-update-user':
@@ -359,13 +373,8 @@ def main():
             user_profile = disable_user_command(client, args, mapper_out, is_disable_enabled)
             return_results(user_profile)
 
-        elif command == 'iam-enable-user':
-            # no enable - using create
-            user_profile = create_user_command(client, args, mapper_out, is_create_enabled)
-            return_results(user_profile)
-
-        #elif command == 'get-mapping-fields':
-         #   return_results(get_mapping_fields_command(client))
+        elif command == 'get-mapping-fields':
+            return_results(get_mapping_fields_command())
 
     except Exception as e:
         # For any other integration command exception, return an error

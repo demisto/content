@@ -1,7 +1,7 @@
 from requests import Session
 from requests.models import Response
 import demistomock as demisto
-from GitHub_IT_Admin import Client, IAMUserProfile, get_user_command, create_user_command, update_user_command, disable_user_command
+from GitHub_IT_Admin import Client, IAMUserProfile, get_user_command, create_user_command, update_user_command
 
 from CommonServerPython import IAMActions, IAMErrors
 
@@ -43,6 +43,7 @@ GITHUB_UPDATE_USER_OUTPUT = {'schemas': ['urn:ietf:paramsListResponse'], 'totalR
 def get_outputs_from_user_profile(user_profile):
     entry_context = user_profile.to_entry()
     outputs = entry_context.get('Contents')
+
     return outputs
 
 
