@@ -129,24 +129,6 @@ script:
     - contextPath: Cognni.insights.severity
       description: severity
       type: Number
-  - arguments:
-    - default: false
-      description: Fetch incidents starting from that date
-      isArray: false
-      name: from_date
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
-      description: Minimum severity of incidents to fetch
-      isArray: false
-      name: min_severity
-      required: false
-      secret: false
-    deprecated: false
-    description: Fetch incidents
-    execution: false
-    name: cognni-fetch-incidents
   dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: true
