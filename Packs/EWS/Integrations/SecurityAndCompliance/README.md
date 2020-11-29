@@ -14,7 +14,6 @@ This integration was integrated and tested with [Security & Compliance Center](h
 * O365 - Security And Compliance - Search And Delete
 
 
-
 ## Permissions in the Security & Compliance Center
 
 >  To access the Security & Compliance Center, users need to be a global administrator or a member of one or more Security & Compliance Center role groups.
@@ -67,7 +66,7 @@ Login into the [Security & Compliance Center](https://ps.compliance.protection.o
             >## Security And Compliance - Authorize instructions
             >
             >1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **XXXXXXX** to authenticate.
-            >2. Run the following command **!o365-sc-complete-auth** in the War Room.
+            >2. Run the following command **!o365-sc-auth-complete** in the War Room.
 
             
 
@@ -114,7 +113,7 @@ There is no context output for this command.
 
 >## Security And Compliance - Authorize instructions
 >1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **XXXXXXX** to authenticate.
->2. Run the following command **!o365-sc-complete-auth** in the War Room.
+>2. Run the following command **!o365-sc-auth-complete** in the War Room.
 
 
 ### o365-sc-auth-complete
