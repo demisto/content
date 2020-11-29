@@ -254,7 +254,7 @@ def test_module(client: Client, first_fetch_time: int) -> str:
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
                     first_fetch_time: Optional[int], query: Optional[str], mirror_direction: str,
-                    mirror_tag: List[str], mirror_identically: Optional[bool]) -> Tuple[Dict[str, int], List[dict]]:
+                    mirror_tag: List[str]) -> Tuple[Dict[str, int], List[dict]]:
     """This function retrieves new incidents every interval (default is 1 minute).
 
     :type client: ``Client``
@@ -284,10 +284,6 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     :type mirror_tag: ``List[str]``
     :param mirror_tag:
         The tags that you will mirror out of the incident.
-
-    :type mirror_identically: ``Optional[bool]``
-    :param mirror_identically:
-        Enable this option to mirror the incident to the exact same fields in this system(in case they exist).
 
     :return:
         A tuple containing two elements:
