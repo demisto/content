@@ -71,7 +71,7 @@ echo '{
         },
         {
             "id": "HelloWorldPremium",
-            "price": 10,
+            "price": 0,
             "vendorId": "38DHG14",
             "vendorName": "VendorXSOAR"
         },
@@ -118,7 +118,7 @@ echo '{
             "vendorName": "RiskIQ"
         }
     ],
-    "commit": "700f295f963369b340dc161284fa278ae87e090a"
+    "commit": "invalidCommitHash"
 }' | tee index/index.json
 
 zip index_test.zip -r index
