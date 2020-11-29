@@ -785,7 +785,7 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> CommandResults:
 def format_certificate_data(certificates: List[Dict[str, Any]]) -> CommandResults:
     # XXX - should we dump the full timeline of the certificate inside the details?
     class ExpanseCertificate(Common.Indicator):
-        CONTEXT_PATH = 'Certificate(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
+        CONTEXT_PATH = 'ExpanseCertificate(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
             'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512)'
 
         def __init__(self, md5: str, pem: Optional[str] = None):
