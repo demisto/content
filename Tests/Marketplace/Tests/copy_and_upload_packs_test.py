@@ -153,6 +153,8 @@ class TestRegex:
          "CommonReports/1.0.1/CommonReports.zip"),
         (f"{BUILD_BASE_PATH}/{BUILD_PATTERN}/Whois/1.1.6/Whois.zip",
          "Whois/1.1.6/Whois.zip"),
+        (f"{BUILD_BASE_PATH}/{BUILD_PATTERN}/Blockade.io/1.0.0/Blockade.io.zip",
+         "Blockade.io/1.0.0/Blockade.io.zip"),
         (f"{GCPConfig.GCS_PUBLIC_URL}/oproxy-dev.appspot.com/wow/content/packs/TIM-wow_a/99.98.99/TIM-wow_a.zip",
          "TIM-wow_a/99.98.99/TIM-wow_a.zip")
     ])
