@@ -151,7 +151,7 @@ def filter_versions(args: dict) -> str:
             except Exception:
                 raise DemistoException(f"Please insert time range in relative format e.g. '1 day', '2 days' or in "
                                        f"date format {DATE_FORMAT}")
-        filters += f"timeDetectedRange={start},{end}&"
+        filters += f"timeReceivedRange={start},{end}&"
     if args.get('limit'):
         filters += f"pageLimit={args.get('limit')}&"
     if args.get('start'):
