@@ -295,7 +295,7 @@ class Client(BaseClient):
                 include=include
             )
         elif asset_type == 'Certificate':
-            data = self.get_certificate_by_pem_md5_hash(asset_id)
+            data = self.get_certificate_by_md5_hash(asset_id)
         elif asset_type == 'Domain':
             data = self.get_domain_by_domain(domain=asset_id)
         else:
@@ -358,7 +358,7 @@ class Client(BaseClient):
             raise e
         return result
 
-    def get_certificate_by_pem_md5_hash(self, pem_md5_hash: str, last_observed_date: Optional[str] = None) -> Dict[str, Any]:
+    def get_certificate_by_md5_hash(self, md5_hash: str, last_observed_date: Optional[str] = None) -> Dict[str, Any]:
         params = {}
 
         if last_observed_date is not None:
@@ -366,7 +366,7 @@ class Client(BaseClient):
 
         result: Dict = self._http_request(
             method='GET',
-            url_suffix=f'/v2/assets/certificates/{pem_md5_hash}',
+            url_suffix=f'/v2/assets/certificates/{md5_hash}',
             raise_on_status=True,
             params=params
         )
@@ -1603,8 +1603,8 @@ def get_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResu
     total_results, max_page_size = calculate_limits(args.get('limit', None))
 
     if pem_md5_hash is not None:
-        output = client.get_certificate_by_pem_md5_hash(
-            pem_md5_hash=pem_md5_hash,
+        output = client.get_certificate_by_md5_hash(
+            md5_hash=pem_md5_hash,
             last_observed_date=last_observed_date
         )
         return CommandResults(
@@ -1677,6 +1677,59 @@ def get_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
+def get_domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    cn_search = args.get('common_name')
+    if cn_search is None:
+        raise ValueError("common_name argument is required")
+
+    max_certificates, certificates_max_page_size = calculate_limits(args.get('limit', None))
+    max_domains, domains_max_page_size = calculate_limits(args.get('domains_limit', None))
+    ips_base_params = {
+        "limit": domains_max_page_size
+    }
+
+    certificates_search_params = {
+        "commonNameSearch": cn_search,
+        "limit": certificates_max_page_size
+    }
+
+    matching_ips: List[Dict[str, Any]] = []
+
+    certificates = islice(client.get_certificates(certificates_search_params), max_certificates)
+    for certificate in certificates:
+        md5_hash = certificate.get('certificate', {}).get('md5Hash')
+        if md5_hash is None:
+            continue
+
+        certificate_details = client.get_certificate_by_md5_hash(md5_hash=md5_hash)
+        if certificate_details is None:
+            continue
+
+        for recent_ip in certificate_details.get('details', {}).get('recentIps', []):
+            ip_address = recent_ip.get('ip')
+            if ip_address is None:
+                continue
+
+            ips_search_params = {
+                'inetSearch': ip_address,
+                'assetType': 'DOMAIN'
+            }
+            ips_search_params.update(ips_base_params)
+
+            matching_ips.extend(islice(client.get_ips(ips_search_params), max_domains))
+
+    readable_output = tableToMarkdown(
+        f"Expanse Domains matching Certificate Common Name: {cn_search}",
+        matching_ips) if len(matching_ips) > 0 else "## No Domains found"
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Expanse.IP',
+        outputs_key_field=['ip', 'type', 'assetKey', 'assetType'],
+        outputs=matching_ips if len(matching_ips) > 0 else None
+    )
+
+
 def expanse_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     # XXX - should we dump the full timeline of the certificate inside the details?
     class ExpanseCertificate(Common.Indicator):
@@ -1702,7 +1755,7 @@ def expanse_certificate_command(client: Client, args: Dict[str, Any]) -> Command
     certificate_data_list: List[Dict[str, Any]] = []
 
     for pem_md5_hash in pem_md5_hashes:
-        certificate_data = client.get_certificate_by_pem_md5_hash(pem_md5_hash=pem_md5_hash)
+        certificate_data = client.get_certificate_by_md5_hash(md5_hash=pem_md5_hash)
         certificate_data['pemMD5Hash'] = pem_md5_hash
 
         # We can't use Common.DBotScore here because ExpanseCertificate is not one of the well known
@@ -1811,7 +1864,7 @@ def ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Expanse.IP',
-        outputs_key_field='id',
+        outputs_key_field=['ip', 'type', 'assetKey', 'assetType'],
         outputs=ip_data_list if len(ip_data_list) > 0 else None,
         indicators=ip_standard_list if len(ip_standard_list) > 0 else None
     )
@@ -2053,6 +2106,9 @@ def main() -> None:
 
         elif demisto.command() == "expanse-get-certificate":
             return_results(get_certificate_command(client, demisto.args()))
+
+        elif demisto.command() == "expanse-get-domains-for-certificate":
+            return_results(get_domains_for_certificate_command(client, demisto.args()))
 
         elif demisto.command() == "expanse-certificate":
             return_results(expanse_certificate_command(client, demisto.args()))
