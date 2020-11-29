@@ -36,7 +36,7 @@
                     "action": "BLOCKED",
                     "action_pretty": "Prevented (Blocked)",
                     "description": "Suspicious executable detected",
-                    "host_ip": "1.1.1.1.",
+                    "host_ip": "1.1.1.1, 2.2.2.2",
                     "host_name": "AAAAAA",
                     "user_name": "Administrator",
                     "event_type": "Process Execution",

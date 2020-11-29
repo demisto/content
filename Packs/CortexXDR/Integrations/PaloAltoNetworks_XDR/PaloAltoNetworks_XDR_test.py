@@ -133,9 +133,12 @@ def test_get_incident_extra_data(requests_mock):
     _, outputs, _ = get_incident_extra_data_command(client, args)
 
     expected_incident = get_incident_extra_data_response.get('reply').get('incident')
+    excepted_alert = get_incident_extra_data_response.get('reply').get('alerts').get('data').copy()
+
+    excepted_alert[0]['host_ip'] = excepted_alert[0].get('host_ip').split(',')
 
     expected_incident.update({
-        'alerts': get_incident_extra_data_response.get('reply').get('alerts').get('data'),
+        'alerts': excepted_alert,
         'network_artifacts': get_incident_extra_data_response.get('reply').get('network_artifacts').get('data', []),
         'file_artifacts': get_incident_extra_data_response.get('reply').get('file_artifacts').get('data')
     })
