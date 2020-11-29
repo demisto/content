@@ -308,14 +308,8 @@ def test_generate_field_users_groups_input():
 
 
 data_test_generate_field_cross_reference_input = [
-    (
-        [1, 2],
-        [{"ContentID": 1}, {"ContentID": 2}]
-    ),
-    (
-         1234,
-         [{"ContentID": 1234}]
-    )
+    ([1, 2], [{"ContentID": 1}, {"ContentID": 2}]),
+    (1234, [{"ContentID": 1234}])
 ]
 
 
