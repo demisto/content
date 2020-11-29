@@ -8,7 +8,7 @@
    "internalMapping": {
     "Email": {
      "complex": null,
-     "simple": "emails"
+     "simple": "email"
     },
     "Given Name": {
      "complex": null,

@@ -12,7 +12,7 @@
     },
     "givenName": {
      "complex": null,
-     "simple": "name"
+     "simple": "givenname"
     },
     "familyName": {
      "complex": null,
@@ -20,7 +20,7 @@
     },
     "userName": {
      "complex": null,
-     "simple": "email"
+     "simple": "username"
     }
    }
   }
