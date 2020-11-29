@@ -39,6 +39,15 @@ class Client(BaseClient):
 
 
 def domains_list_suffix(page: Optional[str] = '', limit: Optional[str] = '', request: Optional[str] = '') -> str:
+    """
+    Create the relevant suffix for the domains command,
+     Either there is a complete request that should be sent or page and limit arguments.
+    :param page: The number of the requested page for domains command.
+    :param limit: The limit of the queries to return from the domains command.
+    :param request: Full request to send to API, Used when running the domains list command and there is a large number
+                    of queries which are then returned with paging and have a next page request built already.
+    :return: (str) with the suffix.
+    """
     suffix = ''
     if request:
         suffix = request
@@ -50,6 +59,11 @@ def domains_list_suffix(page: Optional[str] = '', limit: Optional[str] = '', req
 
 
 def create_domain_list(client: Client, response: dict) -> list:
+    """
+    :param client: Cisco Umbrella Client for the api request.
+    :param response: the first response of the domains api call.
+    :return: list of all of the domains from the api.
+    """
     full_domains_list = []
     while response:
         response_data = response.get('data', [])
@@ -61,11 +75,16 @@ def create_domain_list(client: Client, response: dict) -> list:
 
 
 def domains_list_command(client: Client, args: dict) -> CommandResults:
-    page = args.get('page')
-    limit = args.get('limit')
+    """
+    :param client: Cisco Umbrella Client for the api request.
+    :param args: args from the user for the command.
+    """
+    page = args.get('page', '')
+    limit = args.get('limit', '')
     suffix = domains_list_suffix(page=page, limit=limit)
     response = client.get_domains_list(suffix=suffix)
     domains_list = create_domain_list(client, response)
+    domains_list = domains_list[:int(limit)]
     readable_output = tableToMarkdown(t=domains_list, name='List of Domains', headers=['Domain'])
     return CommandResults(
         readable_output=readable_output,
@@ -77,7 +96,9 @@ def domains_list_command(client: Client, args: dict) -> CommandResults:
 
 def domain_event_add_command(client: Client, args: dict) -> str:
     """
-        PARSE AND VALIDATE INTEGRATION PARAMS
+    :param client: Cisco Umbrella Client for the api request.
+    :param args: args from the user for the command.
+    :returns (str) confirmation or error regarding adding a new domain.
     """
     alert_time = args.get('alert_time')
     device_id = args.get('device_id')
@@ -105,6 +126,11 @@ def domain_event_add_command(client: Client, args: dict) -> str:
 
 
 def domain_delete_command(client: Client, args: dict) -> str:
+    """
+    :param client: Cisco Umbrella Client for the api request.
+    :param args: args from the user for the command.
+    :returns (str) confirmation or error regarding deleting a domain.
+    """
     domain_name = args.get('name', '')
     domain_id = args.get('id', '')
     if not domain_name and not domain_id:
@@ -120,6 +146,10 @@ def domain_delete_command(client: Client, args: dict) -> str:
 
 
 def test_module(client: Client) -> str:
+    """
+    :param client: Cisco Umbrella Client for the api request.
+    :return: 'ok' if there is a connection with the api and exception otherwise.
+    """
     client.get_domains_list(domains_list_suffix())
     return 'ok'
 

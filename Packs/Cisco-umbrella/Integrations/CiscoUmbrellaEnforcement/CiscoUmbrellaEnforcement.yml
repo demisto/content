@@ -39,31 +39,31 @@ script:
       description: Alert time of the new event.
       isArray: false
       name: alert_time
-      required: false
+      required: true
       secret: false
     - default: false
       description: Device ID of the new event.
       isArray: false
       name: device_id
-      required: false
+      required: true
       secret: false
     - default: false
       description: Destination domain of the new event.
       isArray: false
       name: dst_domain
-      required: false
+      required: true
       secret: false
     - default: false
       description: "Destination url\t of the new event."
       isArray: false
       name: dst_url
-      required: false
+      required: true
       secret: false
     - default: false
       description: Device version for the new event.
       isArray: false
       name: device_version
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Posts a Malware event to the API for processing and optionally adding
@@ -79,6 +79,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '50'
       description: The limit of queries per page.
       isArray: false
       name: limit
