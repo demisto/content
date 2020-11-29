@@ -30,7 +30,7 @@ from Tests.test_integration import __get_integration_config, __test_integration_
 from Tests.test_content import extract_filtered_tests, get_server_numeric_version
 from Tests.update_content_data import update_content
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
-    install_all_content_packs, upload_zipped_packs
+    install_all_content_packs, upload_zipped_packs, install_all_content_packs_for_nightly
 from Tests.tools import update_server_configuration
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 
@@ -157,6 +157,7 @@ class Build:
         self.tests_to_run = self.fetch_tests_list(options.tests_to_run)
         self.content_root = options.content_root
         self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
+        self.service_account = options.service_account
 
     @staticmethod
     def fetch_tests_list(tests_to_run_path: str):
@@ -224,6 +225,16 @@ def options_handler():
                         default='./Tests/filter_file.txt')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
                         default='./Tests/content_packs_to_install.txt')
+    # disable-secrets-detection-start
+    parser.add_argument('-sa', '--service_account',
+                        help=("Path to gcloud service account, is for circleCI usage. "
+                              "For local development use your personal account and "
+                              "authenticate using Google Cloud SDK by running: "
+                              "`gcloud auth application-default login` and leave this parameter blank. "
+                              "For more information go to: "
+                              "https://googleapis.dev/python/google-api-core/latest/auth.html"),
+                        required=False)
+    # disable-secrets-detection-end
     options = parser.parse_args()
 
     return options
@@ -1036,12 +1047,14 @@ def get_pack_ids_to_install():
         #  END CHANGE ON LOCAL RUN  #
 
 
-def nightly_install_packs(build, install_method=install_all_content_packs, pack_path=None):
+def nightly_install_packs(build, install_method=install_all_content_packs, pack_path=None, service_account=None):
     threads_list = []
 
     # For each server url we install pack/ packs
     for thread_index, server in enumerate(build.servers):
         kwargs = {'client': server.client, 'host': server.host}
+        if service_account:
+            kwargs['service_account'] = service_account
         if pack_path:
             kwargs['pack_path'] = pack_path
         threads_list.append(Thread(target=install_method, kwargs=kwargs))
@@ -1049,7 +1062,8 @@ def nightly_install_packs(build, install_method=install_all_content_packs, pack_
 
 
 def install_nightly_pack(build):
-    nightly_install_packs(build, install_method=install_all_content_packs)
+    nightly_install_packs(build, install_method=install_all_content_packs_for_nightly,
+                          service_account=build.service_account)
     create_nightly_test_pack()
     nightly_install_packs(build, install_method=upload_zipped_packs,
                           pack_path=f'{Build.test_pack_target}/test_pack.zip')
