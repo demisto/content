@@ -916,12 +916,18 @@ class Pack(object):
         prod_pack_zip_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
         build_pack_zip_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
         build_pack_zip_blob = build_bucket.blob(build_pack_zip_path)
-        copied_blob = build_bucket.copy_blob(
-            blob=build_pack_zip_blob, destination_bucket=production_bucket, new_name=prod_pack_zip_path
-        )
-        copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
-        self.public_storage_path = copied_blob.public_url
-        task_status = copied_blob.exists()
+
+        try:
+            copied_blob = build_bucket.copy_blob(
+                blob=build_pack_zip_blob, destination_bucket=production_bucket, new_name=prod_pack_zip_path
+            )
+            copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
+            self.public_storage_path = copied_blob.public_url
+            task_status = copied_blob.exists()
+        except Exception as e:
+            pack_suffix = os.path.join(self._pack_name, latest_version, f'{self._pack_name}.zip')
+            logging.exception(f"Failed copying {pack_suffix}. Additional Info: {str(e)}")
+            return False, False
 
         if not task_status:
             logging.error(f"Failed in uploading {self._pack_name} pack to production gcs.")
@@ -1640,18 +1646,23 @@ class Pack(object):
                                               prefix=os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name)
                                           )
                                           if is_integration_image(os.path.basename(f.name))]
+
         for integration_image_blob in build_integration_images_blobs:
             image_name = os.path.basename(integration_image_blob.name)
             logging.info(f"Uploading {self._pack_name} pack integration image: {image_name}")
             # We upload each image object taken from the build bucket into the production bucket
-            copied_blob = build_bucket.copy_blob(
-                blob=integration_image_blob, destination_bucket=production_bucket,
-                new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, image_name)
-            )
-            task_status = task_status and copied_blob.exists()
-            if not task_status:
-                logging.error(f"Upload {self._pack_name} integration image: {integration_image_blob.name} blob to "
-                              f"{copied_blob.name} blob failed.")
+            try:
+                copied_blob = build_bucket.copy_blob(
+                    blob=integration_image_blob, destination_bucket=production_bucket,
+                    new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, image_name)
+                )
+                task_status = task_status and copied_blob.exists()
+                if not task_status:
+                    logging.error(f"Upload {self._pack_name} integration image: {integration_image_blob.name} blob to "
+                                  f"{copied_blob.name} blob failed.")
+            except Exception as e:
+                logging.exception(f"Failed copying {image_name}. Additional Info: {str(e)}")
+                return False
 
         if not task_status:
             logging.error(f"Failed to upload {self._pack_name} pack integration images.")
@@ -1737,11 +1748,16 @@ class Pack(object):
         build_author_image_blob = build_bucket.blob(build_author_image_path)
 
         if build_author_image_blob.exists():
-            copied_blob = build_bucket.copy_blob(
-                blob=build_author_image_blob, destination_bucket=production_bucket,
-                new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
-            )
-            task_status = task_status and copied_blob.exists()
+            try:
+                copied_blob = build_bucket.copy_blob(
+                    blob=build_author_image_blob, destination_bucket=production_bucket,
+                    new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
+                )
+                task_status = task_status and copied_blob.exists()
+            except Exception as e:
+                logging.exception(f"Failed copying {Pack.AUTHOR_IMAGE_NAME}. Additional Info: {str(e)}")
+                return False
+
         elif self.support_type == Metadata.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
             logging.info((f"Skipping uploading of {self._pack_name} pack author image "
                           f"and use default {GCPConfig.BASE_PACK} pack image"))

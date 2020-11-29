@@ -82,8 +82,8 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
             logging.error(f"Downloaded build index generation: {build_index_generation}")
             logging.error(f"Current build index generation: {build_current_index_generation}")
             sys.exit(1)
-    except Exception:
-        logging.exception(f"Failed in uploading {GCPConfig.INDEX_NAME}")
+    except Exception as e:
+        logging.exception(f"Failed copying {GCPConfig.INDEX_NAME}. Additional Info: {str(e)}")
         sys.exit(1)
     finally:
         shutil.rmtree(index_folder_path)
@@ -223,14 +223,16 @@ def copy_id_set(production_bucket: Bucket, build_bucket: Bucket):
         logging.error(f"id_set.json file does not exists in build bucket in path: {build_id_set_path}")
 
     prod_id_set_path = os.path.join(os.path.dirname(GCPConfig.STORAGE_BASE_PATH), 'id_set.json')
-    copied_blob = build_bucket.copy_blob(
-        blob=build_id_set_blob, destination_bucket=production_bucket, new_name=prod_id_set_path
-    )
-
-    if not copied_blob.exists():
-        logging.error(f"Failed to upload id_set.json to {prod_id_set_path}")
-    else:
-        logging.success("Finished uploading id_set.json to storage.")
+    try:
+        copied_blob = build_bucket.copy_blob(
+            blob=build_id_set_blob, destination_bucket=production_bucket, new_name=prod_id_set_path
+        )
+        if not copied_blob.exists():
+            logging.error(f"Failed to upload id_set.json to {prod_id_set_path}")
+        else:
+            logging.success("Finished uploading id_set.json to storage.")
+    except Exception as e:
+        logging.exception(f"Failed copying ID Set. Additional Info: {str(e)}")
 
 
 def verify_copy(successful_packs: list, pc_successful_packs_dict: dict):
