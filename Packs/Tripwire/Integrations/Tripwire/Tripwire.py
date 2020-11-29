@@ -493,7 +493,6 @@ def main() -> None:
             return_results(commands[command](client, demisto.args()))
         elif command == 'test-module':
             return_results(test_module(client, demisto.params()))
-
         elif command == 'fetch-incidents':
             max_fetch = params.get('max_fetch', 10)
             next_run, incidents = fetch_incidents(client=client, params=demisto.params(), max_results=max_fetch)
