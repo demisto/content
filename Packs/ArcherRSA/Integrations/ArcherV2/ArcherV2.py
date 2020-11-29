@@ -889,7 +889,7 @@ def upload_file_command(client: Client, args: Dict[str, str]) -> str:
     """Uploading a file to archer as an attachment
 
     Arguments:
-        client: A client to use in order to send the api call
+        client: A client to use in order to send the api callarcher-get-file
         args: demisto args
 
     Returns:
@@ -1076,12 +1076,12 @@ def print_cache_command(client: Client, args: Dict[str, str]):
 def fetch_incidents(
         client: Client, params: dict, from_time: str
 ) -> Tuple[list, str]:
-    """Fetches incidents
+    """Fetches incidents.
 
     Args:
-        client:
-        params:
-        from_time:
+        client: Client derived from BaseClient
+        params: demisto.params dict.
+        from_time: Time to start the fetch from
 
     Returns:
         next_run object, incidents
