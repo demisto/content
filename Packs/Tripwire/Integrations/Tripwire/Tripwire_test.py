@@ -208,5 +208,5 @@ def test_filter_versions():
     expected_filter = 'ruleId=1&ruleName=2&nodeId=3&id=4&elementId=5&elementName=6&nodeLabel=7&hash=8&baselineVersion' \
                       '=9&timeDetectedRange=2020-11-24T17:07:27Z,' \
                       '2020-11-24T17:07:27Z&timeReceivedRange=2020-11-24T17:07:27Z,' \
-                      '2020-11-24T17:07:27Z&pageLimit=10&pageStart=11 '
+                      '2020-11-24T17:07:27Z&pageLimit=10&pageStart=11'
     assert expected_filter in filter_version
