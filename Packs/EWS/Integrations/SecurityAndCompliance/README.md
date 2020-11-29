@@ -21,26 +21,29 @@ This integration was integrated and tested with Security & Compliance Center. (P
 
 3. Authentication / Authorization methods:
 
-    1. OAuth2.0 authorization (recommended):
-    
-          1. Click **Add instance** to create and configure a new integration instance.
-    
-             | **Parameter** | **Description**                                          | **Required** |
-             | ------------- | -------------------------------------------------------- | ------------ |
-             | url           | Search and Compliance URL                                | True         |
-             | credentials   | Fill **only** Email (aka UPN), Password should be empty. | False        |
-             | insecure      | Trust any certificate \(not secure\)                     | False        |
-    
-          2. Open playground -  War-room:
-    
-             1. Run command ```!o365-sc-auth-start``` and follow the instructions, Expected out put:
-    
-                ## Security And Compliance - Authorize instructions
-    
-                1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **XXXXXXX** to authenticate.
-                2. Run the following command **!o365-sc-complete-auth** in the War Room.
-    
-             2. Test - OAuth2.0 authorization, Run command  ```!o365-sc-auth-test```. 
+   1. OAuth2.0 authorization (recommended):
+
+         1. Click **Add instance** to create and configure a new integration instance.
+
+            | **Parameter** | **Description**                                          | **Required** |
+            | ------------- | -------------------------------------------------------- | ------------ |
+            | url           | Search and Compliance URL                                | True         |
+            | credentials   | Fill **only** Email (aka UPN), Password should be empty. | False        |
+            | insecure      | Trust any certificate \(not secure\)                     | False        |
+
+         2. Open playground -  War-room:
+
+            1. Run command ```!o365-sc-auth-start``` and follow the instructions, Expected out put:
+
+
+            >## Security And Compliance - Authorize instructions
+            >
+            >1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **XXXXXXX** to authenticate.
+            >2. Run the following command **!o365-sc-complete-auth** in the War Room.
+
+            
+
+            2. Test - OAuth2.0 authorization, Run command  ```!o365-sc-auth-test```. 
 
    2. Basic authentication (Not recommended):
 
