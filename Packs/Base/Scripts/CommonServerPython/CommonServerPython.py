@@ -2912,6 +2912,10 @@ def return_results(results):
         demisto.results(results.to_entry())
         return
 
+    if isinstance(results, GetModifiedRemoteDataResponse):
+        demisto.results(results.to_entry())
+        return
+
     demisto.results(results)
 
 
@@ -4367,7 +4371,7 @@ class DemistoException(Exception):
 class GetRemoteDataArgs:
     """get-remote-data args parser
     :type args: ``dict``
-    :param args: arguments for the command of the command.
+    :param args: arguments for the command.
 
     :return: No data returned
     :rtype: ``None``
@@ -4375,6 +4379,19 @@ class GetRemoteDataArgs:
 
     def __init__(self, args):
         self.remote_incident_id = args['id']
+        self.last_update = args['lastUpdate']
+
+
+class GetModifiedRemoteDataArgs:
+    """get-modified-remote-data args parser
+    :type args: ``dict``
+    :param args: arguments for the command.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, args):
         self.last_update = args['lastUpdate']
 
 
@@ -4421,6 +4438,28 @@ class GetRemoteDataResponse:
         if self.mirrored_object:
             demisto.info('Updating object {}'.format(self.mirrored_object["id"]))
             return [self.mirrored_object] + self.entries
+
+
+class GetModifiedRemoteDataResponse:
+    """get-modified-remote-data response parser
+    :type modified_incident_ids: ``list``
+    :param modified_incident_ids: The incidents that were modified since the last check.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, modified_incident_ids):
+        self.modified_incident_ids = modified_incident_ids
+
+    def to_entry(self):
+        """Extracts the response
+
+        :return: List of incidents to run the get-remote-data command on.
+        :rtype: ``list``
+        """
+        demisto.info('Modified incidents: {}'.format(self.modified_incident_ids))
+        return {'Contents': self.modified_incident_ids, 'Type': EntryType.NOTE, 'ContentsFormat': EntryFormat.JSON}
 
 
 class SchemeTypeMapping:
