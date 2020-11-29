@@ -141,3 +141,25 @@ def test_module(mocker):
     mocker.patch('JiraV2.run_query', return_value={})
     result = module()
     assert result == 'ok'
+
+
+def test_get_remote_data(mocker):
+    """
+    Given:
+        - Jira v2 client
+        - An update for the issue
+
+    When:
+        - Running get-remote-date
+
+    Then:
+        - Verify the `updated` field is set as expected
+    """
+    from JiraV2 import get_remote_data_command
+    updated_date = '2020-11-25T16:29:37.277764067Z'
+    mocker.patch(
+        'JiraV2.get_issue',
+        return_value=('', '', {'fields': {'updated': updated_date}})
+    )
+    res = get_remote_data_command('id', '0')
+    assert res.mirrored_object['updated'] == updated_date
