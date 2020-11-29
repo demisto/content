@@ -53,7 +53,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: "Destination url\t of the new event."
+      description: "Destination url of the new event."
       isArray: false
       name: dst_url
       required: true
