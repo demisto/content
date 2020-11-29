@@ -8,7 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username (Password for basic authentication only)
+- display: Email (Password for basic authentication only)
   name: credentials
   defaultvalue: ""
   type: 9
