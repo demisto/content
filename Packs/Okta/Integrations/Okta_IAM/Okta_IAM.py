@@ -224,12 +224,12 @@ def get_query_filter(context):
     query_filter = '(eventType eq "application.user_membership.add" ' \
                    'or eventType eq "application.user_membership.remove") and'
 
-    iam_settings = get_configuration(context)
-    if not iam_settings:
+    iam_configuration = context.get('IAMConfiguration', [])
+    if not iam_configuration:
         raise DemistoException(exception_msg)
 
-    for row in iam_settings:
-        application_ids.append(row['applicationid'])
+    for row in iam_configuration:
+        application_ids.append(row['ApplicationID'])
 
     query_suffix = '(' + ' or '.join([f'target.id co "{app_id}"' for app_id in application_ids]) + ')'
 
