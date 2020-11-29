@@ -22,8 +22,8 @@ class Client(BaseClient):
     def get_user(self, input_type, user_term):
 
         user_term = "\"" + user_term + "\""
-        uri = f'scim/v2/organizations/{encode_string_results(self.org)}/' \
-              f'Users?filter={encode_string_results(input_type)} eq {encode_string_results(user_term)}'
+        uri = f'scim/v2/organizations/{self.org}/' \
+              f'Users?filter={input_type} eq {user_term}'
 
         return self._http_request(
             method='GET',
@@ -31,23 +31,23 @@ class Client(BaseClient):
         )
 
     def create_user(self, data):
-        uri = f'scim/v2/organizations/{encode_string_results(self.org)}/Users'
+        uri = f'scim/v2/organizations/{self.org}/Users'
         return self._http_request(
             method='POST',
             url_suffix=uri,
-            data=data,
+            json_data=data,
         )
 
     def update_user(self, user_term, data):
-        uri = f'scim/v2/organizations/{encode_string_results(self.org)}/Users/{encode_string_results(user_term)}'
+        uri = f'scim/v2/organizations/{self.org}/Users/{user_term}'
         return self._http_request(
             method='PUT',
             url_suffix=uri,
-            data=data,
+            json_data=data,
         )
 
     def disable_user(self, data):
-        uri = f'scim/v2/organizations/{encode_string_results(self.org)}/Users/{encode_string_results(data)}'
+        uri = f'scim/v2/organizations/{self.org}/Users/{data}'
         return self._http_request(
             method='DELETE',
             url_suffix=uri,
@@ -57,8 +57,7 @@ class Client(BaseClient):
     def get_user_id_by_mail(self, email):
         user_id = ""
         user_term = "\"" + email + "\""
-        uri = f'scim/v2/organizations/{encode_string_results(self.org)}/' \
-              f'Users?filter={encode_string_results("emails")} eq {encode_string_results(user_term)}'
+        uri = f'scim/v2/organizations/{self.org}/Users?filter=emails eq {user_term}'
 
         res = self._http_request(
             method='GET',
@@ -103,8 +102,8 @@ def get_user_command(client, args, mapper_in):
     try:
         user_profile = args.get("user-profile")
         iam_user_profile = IAMUserProfile(user_profile=user_profile)
-        email = iam_user_profile.get_attribute('email')
 
+        email = iam_user_profile.get_attribute('email')
         res = client.get_user('emails', email)
 
         if res.get('totalResults', 0) == 0:
@@ -143,7 +142,6 @@ def create_user_command(client, args, mapper_out, is_command_enabled):
     try:
         user_profile = args.get("user-profile")
         iam_user_profile = IAMUserProfile(user_profile=user_profile)
-        email = iam_user_profile.get_attribute('email')
 
         if not is_command_enabled:
             iam_user_profile.set_result(action=IAMActions.CREATE_USER,
@@ -151,7 +149,9 @@ def create_user_command(client, args, mapper_out, is_command_enabled):
                                         skip_reason='Command is disabled.')
 
         else:
+            email = iam_user_profile.get_attribute('email')
             user_id = client.get_user_id_by_mail(email)
+
             if user_id:
                 _, error_message = IAMErrors.USER_ALREADY_EXISTS
                 iam_user_profile.set_result(action=IAMActions.CREATE_USER,
@@ -185,9 +185,7 @@ def create_user_command(client, args, mapper_out, is_command_enabled):
 
 def update_user_command(client, args, mapper_out, is_update_enabled, is_create_enabled, create_if_not_exists):
     try:
-        #user_profile = args.get("user-profile")
-        user_profile = {'email': 'TestID@paloaltonetworks.com'}
-
+        user_profile = args.get("user-profile")
         iam_user_profile = IAMUserProfile(user_profile=user_profile)
 
         if not is_update_enabled:
@@ -196,12 +194,7 @@ def update_user_command(client, args, mapper_out, is_update_enabled, is_create_e
                                         skip_reason='Command is disabled.')
 
         else:
-            iam_user_profile = IAMUserProfile(user_profile=user_profile)
-            github_user = {'familyName': 'J13', 'givenName': 'MJ22', 'userName': 'TestID@paloaltonetworks.com',
-                           'email': 'TestID@paloaltonetworks.com'}
-            #github_user = iam_user_profile.map_object(mapper_name=mapper_out)
-
-            email = github_user.get('email')
+            email = iam_user_profile.get_attribute('email')
             user_id = client.get_user_id_by_mail(email)
 
             if not user_id:
@@ -215,6 +208,7 @@ def update_user_command(client, args, mapper_out, is_update_enabled, is_create_e
                                                 skip=True,
                                                 skip_reason=error_message)
             else:
+                github_user = iam_user_profile.map_object(mapper_name=mapper_out)
                 github_user_schema = generate_user_scheme(github_user)
                 res = client.update_user(user_term=user_id, data=github_user_schema)
                 iam_user_profile.set_result(success=True,
