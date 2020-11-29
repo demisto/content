@@ -3,11 +3,6 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "Rapid7 InsightIDR",
-            "playbookID": "playbook-InsightIDR-test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "GSuiteAdmin",
             "playbookID": "GSuiteAdmin-Test",
             "fromversion": "5.0.0"
