@@ -28,8 +28,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Cisco OpenDNS Integration , add and remove domain  to/from Custom Integration
-  List
+description: Add and remove domain in Cisco OpenDNS.
 display: Cisco Umbrella Enforcement
 name: CiscoUmbrellaEnforcement
 script:
