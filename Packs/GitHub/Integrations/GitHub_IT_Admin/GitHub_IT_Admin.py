@@ -17,25 +17,7 @@ class Client(BaseClient):
         self.token = token
         self.org = org
         self.headers = headers
-        self.ok_codes = ok_codes
-        self.session = requests.Session()
-        if not proxy:
-            self.session.trust_env = False
         self.headers['Authorization'] = 'Bearer ' + self.token
-
-    def http_request(self, method, url_suffix, params=None, data=None, ok_codes=None, resp_type='json'):
-        if not ok_codes:
-            ok_codes = self.ok_codes
-        res = self._http_request(
-            method,
-            url_suffix,
-            params=params,
-            json_data=data,
-            ok_codes=ok_codes,
-            resp_type=resp_type
-        )
-
-        return res
 
     def get_user(self, input_type, user_term):
 
@@ -43,14 +25,14 @@ class Client(BaseClient):
         uri = f'scim/v2/organizations/{encode_string_results(self.org)}/' \
               f'Users?filter={encode_string_results(input_type)} eq {encode_string_results(user_term)}'
 
-        return self.http_request(
+        return self._http_request(
             method='GET',
             url_suffix=uri,
         )
 
     def create_user(self, data):
         uri = f'scim/v2/organizations/{encode_string_results(self.org)}/Users'
-        return self.http_request(
+        return self._http_request(
             method='POST',
             url_suffix=uri,
             data=data,
@@ -58,7 +40,7 @@ class Client(BaseClient):
 
     def update_user(self, user_term, data):
         uri = f'scim/v2/organizations/{encode_string_results(self.org)}/Users/{encode_string_results(user_term)}'
-        return self.http_request(
+        return self._http_request(
             method='PUT',
             url_suffix=uri,
             data=data,
@@ -66,7 +48,7 @@ class Client(BaseClient):
 
     def disable_user(self, data):
         uri = f'scim/v2/organizations/{encode_string_results(self.org)}/Users/{encode_string_results(data)}'
-        return self.http_request(
+        return self._http_request(
             method='DELETE',
             url_suffix=uri,
             resp_type='text'
@@ -78,7 +60,7 @@ class Client(BaseClient):
         uri = f'scim/v2/organizations/{encode_string_results(self.org)}/' \
               f'Users?filter={encode_string_results("emails")} eq {encode_string_results(user_term)}'
 
-        res = self.http_request(
+        res = self._http_request(
             method='GET',
             url_suffix=uri
         )
@@ -113,7 +95,7 @@ def github_handle_error(e):
 
 def test_module(client):
     uri = ""
-    client.http_request(method='GET', url_suffix=uri)
+    client._http_request(method='GET', url_suffix=uri)
     return 'ok'
 
 
@@ -203,7 +185,9 @@ def create_user_command(client, args, mapper_out, is_command_enabled):
 
 def update_user_command(client, args, mapper_out, is_update_enabled, is_create_enabled, create_if_not_exists):
     try:
-        user_profile = args.get("user-profile")
+        #user_profile = args.get("user-profile")
+        user_profile = {'email': 'TestID@paloaltonetworks.com'}
+
         iam_user_profile = IAMUserProfile(user_profile=user_profile)
 
         if not is_update_enabled:
@@ -213,7 +197,9 @@ def update_user_command(client, args, mapper_out, is_update_enabled, is_create_e
 
         else:
             iam_user_profile = IAMUserProfile(user_profile=user_profile)
-            github_user = iam_user_profile.map_object(mapper_name=mapper_out)
+            github_user = {'familyName': 'J13', 'givenName': 'MJ22', 'userName': 'TestID@paloaltonetworks.com',
+                           'email': 'TestID@paloaltonetworks.com'}
+            #github_user = iam_user_profile.map_object(mapper_name=mapper_out)
 
             email = github_user.get('email')
             user_id = client.get_user_id_by_mail(email)
