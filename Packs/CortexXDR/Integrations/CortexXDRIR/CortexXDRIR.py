@@ -14,6 +14,9 @@ from operator import itemgetter
 import copy
 
 # Disable insecure warnings
+from Packs.Base.Scripts.CommonServerPython.CommonServerPython import GetModifiedRemoteDataArgs, \
+    GetModifiedRemoteDataResponse
+
 urllib3.disable_warnings()
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"

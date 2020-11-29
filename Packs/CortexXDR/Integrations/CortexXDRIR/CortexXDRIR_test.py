@@ -1668,7 +1668,7 @@ def test_get_modified_remote_data_command(requests_mock):
     Then
         - the method is returning a list of incidents IDs that were modified
     """
-    from PaloAltoNetworks_XDR import get_modified_remote_data_command, Client
+    from CortexXDRIR import get_modified_remote_data_command, Client
 
     get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
