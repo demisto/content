@@ -2487,9 +2487,9 @@ script:
     execution: false
     arguments:
     - default: false
-      description: MD5 Hash of the certificate pem
+      description: MD5 Hash of the certificate
       isArray: false
-      name: pem_md5_hash
+      name: md5_hash
       required: false
       secret: false
     - default: false
@@ -2607,9 +2607,9 @@ script:
   - name: expanse-certificate
     arguments:
     - default: true
-      description: The pem MD5 hash of the certificate to enrich.
+      description: The MD5 hash of the certificate to enrich.
       isArray: true
-      name: pem_md5_hash
+      name: md5_hash
       required: false
       secret: false
     deprecated: false
