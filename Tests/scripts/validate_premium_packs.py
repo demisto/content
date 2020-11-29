@@ -39,6 +39,23 @@ def options_handler():
     return options
 
 
+def log_message_if_statement(statement, error_message, success_message=None):
+    """Log error message if statement is false, Log success otherwise
+
+    Args:
+        statement: The boolean statement to check.
+        error_message: The error message to log if statement is false
+        success_message: The success message to log if statement is true
+
+    Returns: The statements boolean value.
+    """
+    if not statement:
+        logging.error(error_message)
+    elif success_message is not None:
+        logging.success(success_message)
+    return statement
+
+
 def unzip_index_and_return_index_file(index_zip_path):
     """Unzip index.zip and return the extracted index.json path
 
@@ -73,13 +90,25 @@ def check_and_return_index_data(index_file_path):
     logging.info("Found index data in index file. Checking...")
     logging.debug(f"Index data is:\n {index_data}")
 
-    assert len(index_data["packs"]) != 0, "Found 0 packs in index file."
-    for pack in index_data["packs"]:
-        assert pack["id"] != "", "There is a missing pack id."
-        assert pack["price"] > 0, f"The price on the pack {pack['id']} is 0 or less"
+    packs_list_exists = log_message_if_statement(statement=(len(index_data["packs"]) != 0),
+                                                 error_message="Found 0 packs in index file."
+                                                               "\nAborting the rest of the check.")
+    if not packs_list_exists:
+        return False
 
-    logging.success(f"{index_file_path} file was found valid")
-    return index_data
+    packs_are_valid = True
+    for pack in index_data["packs"]:
+        id_exists = log_message_if_statement(statement=(pack["id"] != ""),
+                                             error_message="There is a missing pack id.")
+        price_is_valid = log_message_if_statement(statement=(pack["price"] > 0),
+                                                  error_message=f"The price on the pack {pack['id']} is 0 or less")
+        if (not id_exists) or (not price_is_valid):
+            packs_are_valid = False
+
+    log_message_if_statement(statement=packs_are_valid,
+                             error_message=f"The packs in the {index_file_path} file were found invalid.",
+                             success_message=f"{index_file_path} file was found valid")
+    return packs_are_valid, index_data
 
 
 def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
@@ -89,7 +118,7 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
     Request is identical to checking the premium box through the marketplace GUI.
 
     Args:
-        client: The demisto client to preform request on.
+        client: The demisto client to the preform request on.
         request_timeout: Timeout of API request
 
     Returns:
@@ -134,21 +163,38 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
 def verify_server_paid_packs_by_index(server_paid_packs, index_data_packs):
     """Compare two pack dictionaries and assert id's and prices are identical.
 
-    Raise AssertionError if the lists differ.
+    Log errors if the lists differ.
 
     Args:
         server_paid_packs: Dictionary of packs to check.
         index_data_packs: Dictionary of packs to compare to.
+
+    Return:
+        True if all packs are identical, False otherwise.
     """
     # Sorting both lists by id
-    sorted_server_packs = sorted(server_paid_packs, key=lambda i: i['id'])
-    sorted_index_packs = sorted(index_data_packs, key=lambda i: i['id'])
+    sorted_server_packs = sorted(server_paid_packs, key=lambda pack: pack['id'])
+    sorted_index_packs = sorted(index_data_packs, key=lambda pack: pack['id'])
 
+    packs_identical = True
     # Checking lists are the same.
     for (server_pack, index_pack) in zip(sorted_server_packs, sorted_index_packs):
-        assert server_pack["id"] == index_pack["id"]
-        assert server_pack["price"] == index_pack["price"]
-        logging.success(f'Pack: {server_pack["id"]} is valid.')
+        ids_match = log_message_if_statement(statement=(server_pack["id"] == index_pack["id"]),
+                                             error_message=f'server pack id {server_pack["id"]} '
+                                                           f'does not match index pack id {index_pack["id"]}')
+        if ids_match:
+            prices_match = log_message_if_statement(statement=(server_pack["price"] == index_pack["price"]),
+                                                    error_message=f'server pack price {server_pack["price"]} '
+                                                                  f'for pack id {server_pack["id"]} '
+                                                                  f'does not match the pack price '
+                                                                  f'found in the index file {index_pack["price"]}',
+                                                    success_message=f'Pack: {server_pack["id"]} is valid.')
+            if not prices_match:
+                packs_identical = False
+        else:
+            packs_identical = False
+
+    return packs_identical
 
 
 def check_commit_in_master_history(index_commit_hash, master_history_path):
@@ -158,29 +204,34 @@ def check_commit_in_master_history(index_commit_hash, master_history_path):
         index_commit_hash: commit hash
         master_history_path: path to a file with all the master's commit hash history separated by \n
 
-    Returns: None
+    Returns: True if commit hash is in master history, False otherwise.
     """
 
     with open(master_history_path, 'r') as master_history_file:
         master_history = master_history_file.read()
         master_commits = master_history.split('\n')
 
-    assert index_commit_hash in master_commits, f'Commit hash {index_commit_hash} is not in master history'
-
-    logging.success("Commit hash in index file is valid.")
+    return log_message_if_statement(statement=(index_commit_hash in master_commits),
+                                    error_message=f'Commit hash {index_commit_hash} is not in master history',
+                                    success_message="Commit hash in index file is valid.")
 
 
 def main():
     install_logging('Validate Premium Packs.log')
-    logging.info('Retrieving the index fle')
+    logging.info('Retrieving the index file')
     options = options_handler()
     index_file_path = unzip_index_and_return_index_file(options.index_path)
 
     # Validate index.json file
-    index_data = check_and_return_index_data(index_file_path)
+    index_is_valid, index_data = check_and_return_index_data(index_file_path)
 
     # Validate commit hash in master history
-    check_commit_in_master_history(index_data["commit"], options.master_history)
+    commit_hash_is_valid = check_commit_in_master_history(index_data["commit"], options.master_history)
+
+    if (not index_is_valid) or (not commit_hash_is_valid):
+        logging.debug('Index content is invalid. Aborting.')
+        os.remove(index_file_path)
+        sys.exit(1)
 
     # Get the host by the ami env
     hosts, _ = Build.get_servers(ami_env=options.ami_env)
@@ -190,18 +241,23 @@ def main():
     username: str = secret_conf_file.get('username')
     password: str = secret_conf_file.get('userPassword')
 
-    # Check the marketplace
-    for host in hosts:
-        server = Server(host=host, user_name=username, password=password)
-        paid_packs = get_paid_packs(client=server.client)
-        if paid_packs is not None:
-            logging.info(f'Verifying premium packs in {host}')
-            verify_server_paid_packs_by_index(paid_packs, index_data["packs"])
-            logging.success(f'All premium packs in host: {host} are valid')
-        else:
+    # Check the marketplace in the first host
+    host = hosts[0]
+    server = Server(host=host, user_name=username, password=password)
+    paid_packs = get_paid_packs(client=server.client)
+    if paid_packs is not None:
+        logging.info(f'Verifying premium packs in {host}')
+        paid_packs_are_identical = verify_server_paid_packs_by_index(paid_packs, index_data["packs"])
+        log_message_if_statement(statement=paid_packs_are_identical,
+                                 error_message=f'Test failed on host: {host}.',
+                                 success_message=f'All premium packs in host: {host} are valid')
+        if not paid_packs_are_identical:
             os.remove(index_file_path)
-            logging.error(f'Missing premium packs in host: {host}')
             sys.exit(1)
+    else:
+        os.remove(index_file_path)
+        logging.error(f'Missing premium packs in host: {host}')
+        sys.exit(1)
 
     os.remove(index_file_path)
 
