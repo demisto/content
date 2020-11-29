@@ -2807,7 +2807,11 @@ def arg_to_number(arg, arg_name, required=False):
     if isinstance(arg, str):
         if arg.isdigit():
             return int(arg)
-        raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
+
+        try:
+            return float(arg)
+        except Exception:
+            raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
     if isinstance(arg, int):
         return arg
     raise ValueError('Invalid number: "{}"'.format(arg_name))

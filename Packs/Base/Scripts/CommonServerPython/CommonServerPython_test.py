@@ -2784,7 +2784,7 @@ def test_arg_to_int__valid_numbers():
         arg_name='foo',
         required=True)
 
-    assert result == 3
+    assert result == 4
 
 
 def test_arg_to_int__invalid_numbers():
