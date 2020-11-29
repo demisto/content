@@ -1431,6 +1431,63 @@ def test_expanse_get_domain(requests_mock):
     assert result.indicators[1].domain == mock_domain_data["data"][1]["domain"]
 
 
+def test_get_domains_for_certificate(requests_mock):
+    """
+    Given:
+        - an Expanse client
+        - Comman Name of the certificates to look for
+    When
+        - running !expanse-get-domain
+    Then
+        - context prefix should be Expanse.IP and keys should be ip, type, assetType, assetKey
+        - outputs should be the IP data collected from all the asset IP of type DOMAIN where the IP
+          should be one of the recent IPs of the certificate
+    """
+    from ExpanseV2 import Client, get_domains_for_certificate_command
+
+    CN_SEARCH = "*.0mizwwr0v7.gw.panclouddev.com"
+    MOCK_LIMIT = "1"
+    mock_certificate_data = util_load_json("test_data/expanse_get_domains_for_certificate_certificate.json")
+    mock_cdetailed_data = util_load_json("test_data/expanse_get_domains_for_certificate_cdetailed.json")
+    # we load response for only one IP query
+    mock_ips_data = util_load_json("test_data/expanse_get_domains_for_certificate_ip.json")
+
+    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+
+    requests_mock.get(
+        f"https://example.com/api/v2/assets/certificates?limit={MOCK_LIMIT}&commonNameSearch={CN_SEARCH}",
+        json=mock_certificate_data)
+    md5_hash = mock_certificate_data['data'][0]['certificate']['md5Hash']
+    requests_mock.get(
+        f"https://example.com/api/v2/assets/certificates/{md5_hash}", json=mock_cdetailed_data
+    )
+    for rip in mock_cdetailed_data['details']['recentIps']:
+        ip_address = rip.get('ip')
+
+        response = {
+            'data': [],
+            "pagination": {
+                "next": None,
+                "pref": None
+            },
+            "meta": {
+                "totalCount": 0
+            }
+        }
+        if ip_address == mock_ips_data['data'][0]['ip']:
+            response = mock_ips_data
+
+        requests_mock.get(
+            f"https://example.com/api/v2/assets/ips?inetSearch={ip_address}&assetType=DOMAIN&limit={MOCK_LIMIT}",
+            json=response)
+
+    result = get_domains_for_certificate_command(
+        client, {"common_name": CN_SEARCH, "limit": MOCK_LIMIT, "domains_limit": MOCK_LIMIT})
+    assert result.outputs_prefix == "Expanse.IP"
+    assert result.outputs_key_field == ['ip', 'type', 'assetKey', 'assetType']
+    assert result.outputs == [mock_ips_data['data'][0]]
+
+
 def test_domain(requests_mock):
     """
     Given:
@@ -1491,7 +1548,7 @@ def test_ip(requests_mock):
 
     result = ip_command(client, {"ip": MOCK_IP})
     assert result.outputs_prefix == "Expanse.IP"
-    assert result.outputs_key_field == "id"
+    assert result.outputs_key_field == ['ip', 'type', 'assetKey', 'assetType']
     assert result.outputs == mock_ip_data["data"]
     assert isinstance(result.indicators[0], Common.IP)
     assert result.indicators[0].ip == MOCK_IP
