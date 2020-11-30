@@ -2033,7 +2033,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 'ContentsFormat': EntryFormat.JSON
             })
 
-    demisto.debug(f'Pull result is {ticket}')
+    demisto.debug(f'Pull result is {ticket} test bla bla')
     return [ticket] + entries
 
 

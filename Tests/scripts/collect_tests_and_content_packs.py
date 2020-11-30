@@ -1033,7 +1033,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
                                                conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
     """Create a test list that should run"""
-
+    logging.info(files_string)
     (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
      modified_metadata_list, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
 
@@ -1043,8 +1043,10 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
     if 'README.md' in files_string and ('.py', '.json', 'yml' not in files_string):
+        logging.info('im here')
         create_filter_envs_file(from_version, to_version, readme_only=True)
     else:
+        logging.info('#################')
         create_filter_envs_file(from_version, to_version)
 
     tests = set([])
@@ -1184,6 +1186,7 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
             'Demisto GA': False,
             'Demisto 6.0': False,
         }
+
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
     with open("./Tests/filter_envs.json", "w") as filter_envs_file:
         json.dump(envs_to_test, filter_envs_file)
