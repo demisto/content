@@ -328,14 +328,19 @@ class Client(BaseClient):
         )
 
     def get_iprange_by_id(self, iprange_id: str, include: str) -> Dict[str, Any]:
-        result: Dict = self._http_request(
-            method='GET',
-            url_suffix=f'/v2/ip-range/{iprange_id}',
-            raise_on_status=True,
-            params={
-                'include': include
-            }
-        )
+        try:
+            result: Dict = self._http_request(
+                method='GET',
+                url_suffix=f'/v2/ip-range/{iprange_id}',
+                raise_on_status=True,
+                params={
+                    'include': include
+                }
+            )
+        except DemistoException as e:
+            if str(e).startswith('Error in API call [404]') or str(e).startswith('Error in API call [400]'):
+                return {}
+            raise e
         return result
 
     def get_domain_by_domain(self, domain: str, last_observed_date: Optional[str] = None) -> Dict[str, Any]:
@@ -362,12 +367,17 @@ class Client(BaseClient):
         if last_observed_date is not None:
             params['minRecentIpLastObservedDate'] = last_observed_date
 
-        result: Dict = self._http_request(
-            method='GET',
-            url_suffix=f'/v2/assets/certificates/{md5_hash}',
-            raise_on_status=True,
-            params=params
-        )
+        try:
+            result: Dict = self._http_request(
+                method='GET',
+                url_suffix=f'/v2/assets/certificates/{md5_hash}',
+                raise_on_status=True,
+                params=params
+            )
+        except DemistoException as e:
+            if str(e).startswith('Error in API call [404]') or str(e).startswith('Error in API call [400]'):
+                return {}
+            raise e
         return result
 
     def get_ipranges(self, params: Dict[str, Any]) -> Iterator[Any]:
