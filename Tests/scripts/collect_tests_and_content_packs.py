@@ -1043,14 +1043,11 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
     for file in files_string:
-        logging.info(len(files_string))
-        if file.endswith('README.md') or file.endswith('_README.md') and len(files_string) == 1:
-        # if not file.endswith('.py') and not file.endswith('.json') and not file.endswith('.yml'):
-            # if 'README.md' in files_string and ('.py', '.json', 'yml' not in files_string):
-            #     logging.info('im here')
+        # if file.endswith('README.md') or file.endswith('_README.md'):
+        if not file.endswith('.py') and not file.endswith('.json') and not file.endswith('.yml') and 'README.md' \
+                in files_string:
             create_filter_envs_file(from_version, to_version, readme_only=True)
     else:
-        logging.info('#################')
         create_filter_envs_file(from_version, to_version)
 
     tests = set([])
@@ -1231,7 +1228,8 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
             changed_files = get_list_of_files_in_the_pack(path_to_pack)
             files_string = changed_files_to_string(changed_files)
         elif branch_name != 'master':
-            files_string = tools.run_command("git diff --name-status origin/master...{0} -- grep Packs".format(branch_name))
+            files_string = tools.run_command("git diff --name-status origin/master...{0} -- grep Packs"
+                                             .format(branch_name))
             # Checks if the build is for contributor PR and if so add it's pack.
             if os.getenv('CONTRIB_BRANCH'):
                 packs_diff = tools.run_command("git diff --name-status HEAD -- Packs")
@@ -1240,7 +1238,8 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
             commit_string = tools.run_command("git log -n 2 --pretty='%H'")
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
-            files_string = tools.run_command("git diff --name-status {}...{} -- grep Packs".format(second_last_commit, last_commit))
+            files_string = tools.run_command("git diff --name-status {}...{} -- grep Packs".format(second_last_commit,
+                                                                                                   last_commit))
         logging.debug(f'Files string: {files_string}')
         minimum_server_version = AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
 
