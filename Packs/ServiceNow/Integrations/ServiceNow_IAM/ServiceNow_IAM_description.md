@@ -1,3 +1,6 @@
+## Prerequisites
+To use ServiceNow in XSOAR, ensure your user account has the `rest_api_explorer`, `web_service_admin` roles or any other role required to permit working with the `sys_user` table. These roles are required in order to make API calls. However, they may not suffice for viewing records in some tables.
+
 ## Enable/Disable CRUD Commands
 You can select which CRUD commands are enabled in the integration instance configuration settings. By default, all commands are enabled.
 
