@@ -1,4 +1,5 @@
 !checkpoint-login-and-get-session-id
+!checkpoint-mds-login-and-get-session-id
 
 !checkpoint-host-list limit=5
 !checkpoint-host-get identifier=host_test
