@@ -1,0 +1,14 @@
+{
+    "name": "Ja3er",
+    "description": "Query for hashes of JA3 fingerprints",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Matt Houston",
+    "url": "",
+    "email": "",
+    "created": "2020-11-30T21:23:11Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
