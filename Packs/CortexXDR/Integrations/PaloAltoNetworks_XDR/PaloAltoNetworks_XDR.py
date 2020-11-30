@@ -969,7 +969,7 @@ def get_incident_extra_data_command(client, args):
     raw_alerts = raw_incident.get('alerts').get('data')
     context_alerts = clear_trailing_whitespace(raw_alerts)
     for alert in context_alerts:
-        alert['host_ip_list'] = alert.get('host_ip', '').split(',')
+        alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
     hr_alerts = copy.deepcopy(context_alerts)
     for alert in hr_alerts:
         del alert['host_ip']
