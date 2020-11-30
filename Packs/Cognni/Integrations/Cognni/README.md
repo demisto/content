@@ -1,5 +1,12 @@
-Cognni Integration
-This integration was integrated and tested with version xx of Cognni
+The Cognni connector offers a quick and simple integration with Demisto 
+in order to provide ongoing insights into how your important information is used. 
+With Cognni, you can autonomously detect information-specific incidents 
+based on contextual factors, and automatically compile insights to investigate 
+how incidents occur. This intelligence provides the details you need to remediate 
+incidents, fast enough to make a difference.
+
+This integration was integrated and tested with version 1.0 of Cognni
+
 ## Configure Cognni on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
