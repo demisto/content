@@ -15,8 +15,8 @@ import ast
 import sys
 import os
 
-from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig
-from Tests.Marketplace.copy_and_upload_packs import download_and_extract_index
+from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig, CONTENT_ROOT_PATH
+from Tests.Marketplace.upload_packs import download_and_extract_index, get_content_git_client
 from Tests.configure_and_test_integration_instances import Build, Server
 from Tests.scripts.utils.log_util import install_logging
 from Tests.test_content import get_json_file
@@ -180,6 +180,7 @@ def get_paid_packs_page(client: demisto_client, page: int = 0, size: int = DEFAU
     logging.error(f'Failed to retrieve premium packs - with status code {status_code}\n{message}\n')
     return None
 
+
 def get_premium_packs(client: demisto_client, request_timeout: int = 999999):
     """
 
@@ -197,15 +198,15 @@ def get_premium_packs(client: demisto_client, request_timeout: int = 999999):
     if total <= DEFAULT_PAGE_SIZE:
         return server_packs
     if total % DEFAULT_PAGE_SIZE == 0:
-        pages_until_all = int(total/DEFAULT_PAGE_SIZE)
+        pages_until_all = int(total / DEFAULT_PAGE_SIZE)
     else:
         pages_until_all = int(total / DEFAULT_PAGE_SIZE) + 1
 
     for page in range(1, pages_until_all + 1):
         next_server_packs, _ = get_paid_packs_page(client=client,
-                                                  page=page,
-                                                  size=DEFAULT_PAGE_SIZE,
-                                                  request_timeout=request_timeout)
+                                                   page=page,
+                                                   size=DEFAULT_PAGE_SIZE,
+                                                   request_timeout=request_timeout)
         server_packs.update(next_server_packs)
     return server_packs
 
@@ -273,26 +274,27 @@ def verify_server_paid_packs_by_index(server_paid_packs, index_data_packs):
     return all(all_index_packs_in_server, all_server_packs_in_index)
 
 
-def check_commit_in_master_history(index_commit_hash, master_history_path):
+def get_hexsha(commit):
+    return commit.hexsha
+
+
+def check_commit_in_master_history(index_commit_hash):
     """Assert commit hash is in master history.
 
     Args:
         index_commit_hash: commit hash
-        master_history_path: path to a file with all the master's commit hash history separated by \n
 
     Returns: True if commit hash is in master history, False otherwise.
     """
-
-    with open(master_history_path, 'r') as master_history_file:
-        master_history = master_history_file.read()
-        master_commits = master_history.split('\n')
+    content_repo = get_content_git_client(CONTENT_ROOT_PATH)
+    master_commits = list(map(get_hexsha, list(content_repo.iter_commits("master"))))
 
     return log_message_if_statement(statement=(index_commit_hash in master_commits),
                                     error_message=f'Commit hash {index_commit_hash} is not in master history',
                                     success_message="Commit hash in index file is valid.")
 
 
-def get_and_validate_index_json(service_account, production_bucket_name, extract_path, master_history):
+def get_and_validate_index_json(service_account, production_bucket_name, extract_path):
     """
 
     Args:
@@ -322,7 +324,7 @@ def get_and_validate_index_json(service_account, production_bucket_name, extract
                              success_message=f"{index_file_path} file was found valid")
 
     # Validate commit hash in master history
-    commit_hash_is_valid = check_commit_in_master_history(index_data.get("commit", ""), master_history)
+    commit_hash_is_valid = check_commit_in_master_history(index_data.get("commit", ""))
     return all(index_is_valid, commit_hash_is_valid), index_data
 
 
@@ -348,8 +350,7 @@ def main():
 
     index_is_valid, index_data = get_and_validate_index_json(service_account=options.service_account,
                                                              production_bucket_name=options.production_bucket_name,
-                                                             extract_path=options.extract_path,
-                                                             master_history=options.master_history)
+                                                             extract_path=options.extract_path)
     if not index_is_valid:
         logging.critical('Index content is invalid. Aborting.')
         sys.exit(1)
