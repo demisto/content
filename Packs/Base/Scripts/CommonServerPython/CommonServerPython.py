@@ -2809,7 +2809,7 @@ def arg_to_number(arg, arg_name, required=False):
             return int(arg)
 
         try:
-            return float(arg)
+            return int(float(arg))
         except Exception:
             raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
     if isinstance(arg, int):
