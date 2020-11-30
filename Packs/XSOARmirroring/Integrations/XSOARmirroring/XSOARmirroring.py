@@ -1,5 +1,5 @@
-# import demistomock as demisto
-# from CommonServerPython import *
+import demistomock as demisto
+from CommonServerPython import *
 import json
 import requests
 import traceback
