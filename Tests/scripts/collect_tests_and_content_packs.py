@@ -1043,9 +1043,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
     for file in files_string:
-        # if file.endswith('README.md') or file.endswith('_README.md'):
-        if not file.endswith('.py') and not file.endswith('.json') and not file.endswith('.yml') and 'README.md' \
-                in files_string:
+        logging.info(type(files_string))
+        # Check if only README file in file string, if so, no need to create the servers.
+        if not file.endswith('.py') and not file.endswith('.json') and not file.endswith('.yml'):
             create_filter_envs_file(from_version, to_version, readme_only=True)
         else:
             create_filter_envs_file(from_version, to_version)
@@ -1180,6 +1180,7 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
         'Demisto 6.0': is_runnable_in_server_version(from_version, ga, to_version),
     }
 
+    # If readme only, no need to create the test environments.
     if readme_only:
         envs_to_test = {
             'Demisto PreGA': False,
