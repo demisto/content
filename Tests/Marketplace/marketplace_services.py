@@ -1807,54 +1807,51 @@ class Pack(object):
         else:
             return False, str()
 
-    def add_to_packs_results(self, packs_results_file_path: str, packs_type: str):
-        """ Adds the pack to the correct section in the packs_results.json file
-
-        Args:
-            packs_results_file_path: The path to the pack_results.json file
-            packs_type: can be BucketUploadFlow.FAILED_PACKS or BucketUploadFlow.SUCCESSFUL_PACKS
-
-        """
-        packs_results_file = load_json(packs_results_file_path)
-        upload_packs_dict = packs_results_file.get(BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, {})
-        packs_type_dict = upload_packs_dict.get(packs_type, {})
-        packs_type_dict.update({
-            self._pack_name: {
-                BucketUploadFlow.STATUS: PackStatus[self._status].value,
-                BucketUploadFlow.AGGREGATED: self._aggregation_str if self._aggregated and self._aggregation_str
-                else "False"
-            }
-        })
-        if packs_type in upload_packs_dict:
-            upload_packs_dict[packs_type].update(packs_type_dict)
-        else:
-            upload_packs_dict[packs_type] = packs_type_dict
-        if BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE in packs_results_file:
-            packs_results_file[BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE].update(upload_packs_dict)
-        else:
-            packs_results_file[BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE] = upload_packs_dict
-        json_write(packs_results_file_path, packs_results_file)
-
-    def add_to_failed(self, packs_results_file_path: str):
-        """ Adds the pack to the failed section in the packs_results.json file
-
-        Args:
-            packs_results_file_path: The path to the pack_results.json file
-
-        """
-        self.add_to_packs_results(packs_results_file_path, BucketUploadFlow.FAILED_PACKS)
-
-    def add_to_successful(self, packs_results_file_path: str):
-        """ Adds the pack to the successful section in the packs_results.json file
-
-        Args:
-            packs_results_file_path: The path to the pack_results.json file
-
-        """
-        self.add_to_packs_results(packs_results_file_path, BucketUploadFlow.SUCCESSFUL_PACKS)
-
 
 # HELPER FUNCTIONS
+
+
+def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: str, stage: str, successful_packs: list,
+                                                      failed_packs: list):
+    """ Adds the pack to the correct section in the packs_results.json file
+
+    Args:
+        packs_results_file_path (str): The path to the pack_results.json file
+        stage (str): can be BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING or
+        BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
+        failed_packs (list): The list of all failed packs
+        successful_packs (list): The list of all successful packs
+
+    """
+    packs_results = load_json(packs_results_file_path)
+    packs_results[stage] = dict()
+
+    if failed_packs:
+        failed_packs_dict = {
+            BucketUploadFlow.FAILED_PACKS: {
+                pack.name: {
+                    BucketUploadFlow.STATUS: PackStatus[pack.status].value,
+                    BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
+                    else "False"
+                } for pack in failed_packs
+            }
+        }
+        packs_results[stage].update(failed_packs_dict)
+
+    if successful_packs:
+        successful_packs_dict = {
+            BucketUploadFlow.SUCCESSFUL_PACKS: {
+                pack.name: {
+                    BucketUploadFlow.STATUS: PackStatus[pack.status].value,
+                    BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
+                    else "False"
+                } for pack in successful_packs
+            }
+        }
+        packs_results[stage].update(successful_packs_dict)
+
+    if packs_results:
+        json_write(packs_results_file_path, packs_results)
 
 
 def load_json(file_path: str) -> dict:
@@ -1868,7 +1865,7 @@ def load_json(file_path: str) -> dict:
 
     """
     try:
-        if file_path:
+        if file_path and os.path.exists(file_path):
             with open(file_path, 'r') as json_file:
                 result = json.load(json_file)
         else:

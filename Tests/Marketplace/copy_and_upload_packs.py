@@ -11,7 +11,7 @@ from google.cloud.storage import Blob, Bucket
 
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, \
-    IGNORED_FILES, PACKS_FOLDER, BucketUploadFlow, load_json
+    IGNORED_FILES, PACKS_FOLDER, BucketUploadFlow, load_json, store_successful_and_failed_packs_in_ci_artifacts
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, get_packs_summary
 
 LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/packs/([A-Za-z0-9-_]+/\d+\.\d+\.\d+/'
@@ -350,28 +350,24 @@ def main():
         task_status, pack_status = pack.is_failed_to_upload(pc_failed_packs_dict)
         if task_status:
             pack.status = pack_status
-            pack.add_to_failed(packs_results_file_path)
             pack.cleanup()
             continue
 
         task_status, user_metadata = pack.load_user_metadata()
         if not task_status:
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
-            pack.add_to_failed(packs_results_file_path)
             pack.cleanup()
             continue
 
         task_status = pack.copy_integration_images(production_bucket, build_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
-            pack.add_to_failed(packs_results_file_path)
             pack.cleanup()
             continue
 
         task_status = pack.copy_author_image(production_bucket, build_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
-            pack.add_to_failed(packs_results_file_path)
             pack.cleanup()
             continue
 
@@ -379,7 +375,6 @@ def main():
         task_status = pack.create_local_changelog(build_index_folder_path)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
-            pack.add_to_failed(packs_results_file_path)
             pack.cleanup()
             continue
 
@@ -393,12 +388,10 @@ def main():
 
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
-            pack.add_to_failed(packs_results_file_path)
             pack.cleanup()
             continue
 
         pack.status = PackStatus.SUCCESS.name
-        pack.add_to_successful(packs_results_file_path)
 
     # upload core packs json to bucket
     upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket)
@@ -412,6 +405,11 @@ def main():
 
     # get the lists of packs divided by their status
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+
+    # Store successful and failed packs list in CircleCI artifacts
+    store_successful_and_failed_packs_in_ci_artifacts(
+        packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, successful_packs, failed_packs
+    )
 
     # verify that the successful from Prepare content and are the ones that were copied
     verify_copy(successful_packs, pc_successful_packs_dict)

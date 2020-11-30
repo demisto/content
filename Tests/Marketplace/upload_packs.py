@@ -14,7 +14,7 @@ from zipfile import ZipFile
 from typing import Any, Tuple, Union
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
-    get_packs_statistics_dataframe, json_write, BucketUploadFlow, load_json
+    get_packs_statistics_dataframe, BucketUploadFlow, load_json, store_successful_and_failed_packs_in_ci_artifacts
 from demisto_sdk.commands.common.tools import run_command, str2bool
 
 from Tests.scripts.utils.log_util import install_logging
@@ -843,46 +843,6 @@ def get_packs_summary(packs_list):
     return successful_packs, skipped_packs, failed_packs
 
 
-def store_successful_and_failed_packs_in_ci_artifacts(circle_artifacts_path, successful_packs, failed_packs):
-    """ Saves successful and failed packs to circle ci env - to be used in Upload Packs To Marketplace job (Bucket Upload flow)
-
-    Args:
-        circle_artifacts_path (str): The path to the circle artifacts dir path
-        failed_packs (list): The list of all failed packs
-        successful_packs (list): The list of all successful packs
-
-    """
-    packs_results = dict()
-    packs_results[BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING] = dict()
-
-    if failed_packs:
-        failed_packs_dict = {
-            BucketUploadFlow.FAILED_PACKS: {
-                pack.name: {
-                    BucketUploadFlow.STATUS: PackStatus[pack.status].value,
-                    BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
-                    else "False"
-                } for pack in failed_packs
-            }
-        }
-        packs_results[BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING].update(failed_packs_dict)
-
-    if successful_packs:
-        successful_packs_dict = {
-            BucketUploadFlow.SUCCESSFUL_PACKS: {
-                pack.name: {
-                    BucketUploadFlow.STATUS: PackStatus[pack.status].value,
-                    BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
-                    else "False"
-                } for pack in successful_packs
-            }
-        }
-        packs_results[BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING].update(successful_packs_dict)
-
-    if packs_results:
-        json_write(os.path.join(circle_artifacts_path, BucketUploadFlow.PACKS_RESULTS_FILE), packs_results)
-
-
 def main():
     install_logging('Prepare Content Packs For Testing.log')
     option = option_handler()
@@ -1070,8 +1030,10 @@ def main():
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
-    store_successful_and_failed_packs_in_ci_artifacts(os.path.dirname(packs_artifacts_path), successful_packs,
-                                                      failed_packs)
+    packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
+    store_successful_and_failed_packs_in_ci_artifacts(
+        packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs
+    )
 
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs, not is_bucket_upload_flow)
