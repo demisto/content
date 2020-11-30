@@ -1787,7 +1787,7 @@ def main():
     params = demisto.params()
     username = params.get('username', {}).get('identifier')
     password = params.get('username', {}).get('password')
-    domain = ""
+    domain = ''
     if command == 'checkpoint-mds-login-and-get-session-id':
         domain = params.get('domain', {}).get('domain')
 
