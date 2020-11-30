@@ -19,9 +19,9 @@ def get_html_representation(entity: str, potentially_isolated: str) -> str:
 
 def main() -> None:
     try:
-        entity = demisto.args().get('indicator').get('CustomFields', {}).get('chronicleassetip', '')
-        potentially_isolated = demisto.args().get('indicator').get('CustomFields', {}) \
-            .get('chroniclepotentiallyblockedip', 'No')
+        indicator_custom_fields = demisto.args().get('indicator').get('CustomFields', {})
+        entity = indicator_custom_fields.get('chronicleassetip', '')
+        potentially_isolated = indicator_custom_fields.get('chroniclepotentiallyblockedip', 'No')
         html = get_html_representation(entity, potentially_isolated)
 
         demisto.results({

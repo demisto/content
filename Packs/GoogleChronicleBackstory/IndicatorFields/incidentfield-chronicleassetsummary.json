@@ -18,7 +18,10 @@
  "content": true,
  "group": 2,
  "hidden": false,
- "associatedToAll": true,
+ "associatedTypes": [
+  "ChronicleAsset"
+ ],
+ "associatedToAll": false,
  "unmapped": false,
  "unsearchable": false,
  "caseInsensitive": true,
