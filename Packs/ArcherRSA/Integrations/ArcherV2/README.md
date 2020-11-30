@@ -406,6 +406,19 @@ Gets information about a content record in the given application
 ***
 Creates a new content record in the given application.
 
+In this command when creating a new record, it is important to pay attention to the way the values are sent through the argument - *fieldsToValues*.
+
+when field type is *Values List* - example: {"Type": \["Switch"], fieldname: \[value1, value2]}
+
+when field type is *External Links* - example: {"Patch URL": \[{"value":"github", "link": "https://github.com"}]}
+
+when field type is *Users/Groups List* - example: {"Policy Owner":{"users":ֿ \[20],"groups": \[30]}}
+
+when field type is *Cross- Reference* - for example: {"Area Reference(s)": \[20]}
+
+In other cases the value can be sent as is.
+
+To know what the type of the value you are using, you can use `archer-get-application-fields` command with the `applicationId` to get the list of all *FieldType* by *FieldName*.
 
 #### Base Command
 

@@ -1,5 +1,5 @@
 import pytest
-from GoogleCloudFunctions import resolve_default_project_id
+from GoogleCloudFunctions import resolve_default_project_id, functions_list_command
 
 
 @pytest.mark.parametrize('project, credentials_json, expected_output,expected_exception', [
@@ -28,3 +28,31 @@ def test_format_parameters():
     bad_parameters = "oh:no,bad"
     with pytest.raises(ValueError):
         format_parameters(bad_parameters)
+
+
+class GoogleClientMock:
+    def __init__(self, region='region', project='project', functions=None):
+        if functions is None:
+            functions = []
+        self.region = region
+        self.project = project
+        self.functions = functions
+
+    def functions_list(self, region, project_id):
+        return {'functions': self.functions}
+
+
+def test_no_functions():
+    """
+    Given:
+        - Google client without functions
+
+    When:
+        - Running functions-list command
+
+    Then:
+        - Ensure expected human readable response is returned
+    """
+    client = GoogleClientMock()
+    hr, _, _ = functions_list_command(client, {})
+    assert hr == 'No functions found.'
