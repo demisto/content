@@ -1,8 +1,6 @@
 import pytest
-import os
 from unittest.mock import patch
-from Tests.Marketplace.upload_packs import get_packs_names, store_successful_and_failed_packs_in_ci_artifacts, load_json
-from Tests.Marketplace.marketplace_services import Pack, BucketUploadFlow, PackStatus
+from Tests.Marketplace.upload_packs import get_packs_names
 
 
 # disable-secrets-detection-start
