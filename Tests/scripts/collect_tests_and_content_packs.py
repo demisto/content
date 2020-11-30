@@ -1042,13 +1042,12 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     ).union(modified_metadata_list)
 
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
-    for file in files_string:
-        logging.info(type(files_string))
-        # Check if only README file in file string, if so, no need to create the servers.
-        if not file.endswith('.py') and not file.endswith('.json') and not file.endswith('.yml'):
-            create_filter_envs_file(from_version, to_version, readme_only=True)
-        else:
-            create_filter_envs_file(from_version, to_version)
+
+    # Check if only README file in file string, if so, no need to create the servers.
+    if not files_string.endswith('.py') and not files_string.endswith('.json') and not files_string.endswith('.yml'):
+        create_filter_envs_file(from_version, to_version, readme_only=True)
+    else:
+        create_filter_envs_file(from_version, to_version)
 
     tests = set([])
     packs_to_install = set([])
