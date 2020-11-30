@@ -9,6 +9,7 @@ CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
 echo $GCS_MARKET_KEY > $GCS_PATH
 
 GCS_MARKET_BUCKET="marketplace-dist"
+SECRET_CONF_PATH="./conf_secret.json"
 
 # ====== RUN VALIDATIONS ======
 
