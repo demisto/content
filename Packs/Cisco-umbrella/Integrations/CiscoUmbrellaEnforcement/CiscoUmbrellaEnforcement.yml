@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Cisco Umbrella Enforcement v2
+  id: Cisco Umbrella Enforcement
   version: -1
 configuration:
 - defaultvalue: https://s-platform.api.opendns.com
@@ -21,8 +21,8 @@ configuration:
   required: false
   type: 8
 description: Add and remove domain in Cisco OpenDNS.
-display: Cisco Umbrella Enforcement v2
-name: Cisco Umbrella Enforcement v2
+display: Cisco Umbrella Enforcement
+name: Cisco Umbrella Enforcement
 script:
   commands:
   - arguments:
