@@ -1431,7 +1431,7 @@ def test_expanse_get_domain(requests_mock):
     assert result.indicators[1].domain == mock_domain_data["data"][1]["domain"]
 
 
-def test_get_domains_for_certificate(requests_mock):
+def test_get_associated_domains(requests_mock):
     """
     Given:
         - an Expanse client
@@ -1443,14 +1443,15 @@ def test_get_domains_for_certificate(requests_mock):
         - outputs should be the IP data collected from all the asset IP of type DOMAIN where the IP
           should be one of the recent IPs of the certificate
     """
-    from ExpanseV2 import Client, get_domains_for_certificate_command
+    from ExpanseV2 import Client, get_associated_domains_command
+    from CommonServerPython import Common, DBotScoreType
 
     CN_SEARCH = "*.0mizwwr0v7.gw.panclouddev.com"
     MOCK_LIMIT = "1"
-    mock_certificate_data = util_load_json("test_data/expanse_get_domains_for_certificate_certificate.json")
-    mock_cdetailed_data = util_load_json("test_data/expanse_get_domains_for_certificate_cdetailed.json")
+    mock_certificate_data = util_load_json("test_data/expanse_get_associated_domains_certificate.json")
+    mock_cdetailed_data = util_load_json("test_data/expanse_get_associated_domains_cdetailed.json")
     # we load response for only one IP query
-    mock_ips_data = util_load_json("test_data/expanse_get_domains_for_certificate_ip.json")
+    mock_ips_data = util_load_json("test_data/expanse_get_associated_domains_ip.json")
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
@@ -1481,11 +1482,22 @@ def test_get_domains_for_certificate(requests_mock):
             f"https://example.com/api/v2/assets/ips?inetSearch={ip_address}&assetType=DOMAIN&limit={MOCK_LIMIT}",
             json=response)
 
-    result = get_domains_for_certificate_command(
+    result = get_associated_domains_command(
         client, {"common_name": CN_SEARCH, "limit": MOCK_LIMIT, "domains_limit": MOCK_LIMIT})
-    assert result.outputs_prefix == "Expanse.IP"
-    assert result.outputs_key_field == ['ip', 'type', 'assetKey', 'assetType']
-    assert result.outputs == [mock_ips_data['data'][0]]
+    assert result.outputs_prefix == "Expanse.AssociatedDomain"
+    assert result.outputs_key_field == 'name'
+    assert result.outputs == [{
+        'name': mock_ips_data['data'][0]['domain'],
+        'IP': [mock_ips_data['data'][0]['ip']],
+        'certificate': [mock_certificate_data['data'][0]['certificate']['md5Hash']]
+    }]
+    assert isinstance(result.indicators[0], Common.Domain)
+    assert result.indicators[0].domain == mock_ips_data['data'][0]['domain']
+    assert isinstance(result.indicators[0].dbot_score, Common.DBotScore)
+    assert result.indicators[0].dbot_score.indicator == mock_ips_data['data'][0]['domain']
+    assert result.indicators[0].dbot_score.integration_name == "ExpanseV2"
+    assert result.indicators[0].dbot_score.score == Common.DBotScore.NONE
+    assert result.indicators[0].dbot_score.indicator_type == DBotScoreType.DOMAIN
 
 
 def test_domain(requests_mock):

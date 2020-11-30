@@ -2412,13 +2412,18 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-  - name: expanse-get-domains-for-certificate
+  - name: expanse-get-associated-domains
     arguments:
-    - default: true
+    - default: false
       description: The certificate common name. Fuzzy matching is done on this name, however query times can grow quite large when searching for short strings. Ex. "*.myhost.com" is a better search term than "host"
       isArray: false
       name: common_name
-      required: true
+      required: false
+      secret: false
+    - default: false
+      description: The IP address to search domains for.
+      name: ip
+      required: false
       secret: false
     - default: false
       description: Maximum number of matching certificates to retrieve
@@ -2436,50 +2441,14 @@ script:
     description: Returns all domains which have been seen with the specified certificate.
     execution: false
     outputs:
-    - contextPath: Expanse.IP.assetKey
-      description: ''
+    - contextPath: Expanse.AssociatedDomain.name
+      description: Name of the domain
       type: String
-    - contextPath: Expanse.IP.assetType
-      description: ''
+    - contextPath: Expanse.AssociatedDomain.IP
+      description: IP Address the domain resolved to
       type: String
-    - contextPath: Expanse.IP.businessUnits.id
-      description: ''
-      type: String
-    - contextPath: Expanse.IP.businessUnits.name
-      description: ''
-      type: String
-    - contextPath: Expanse.IP.businessUnits.tenantId
-      description: ''
-      type: String
-    - contextPath: Expanse.IP.commonName
-      description: ''
-      type: String
-    - contextPath: Expanse.IP.domain
-      description: ''
-      type: String
-    - contextPath: Expanse.IP.ip
-      description: ''
-      type: String
-    - contextPath: Expanse.IP.lastObserved
-      description: ''
-      type: Date
-    - contextPath: Expanse.IP.provider.id
-      description: ''
-      type: String
-    - contextPath: Expanse.IP.provider.name
-      description: ''
-      type: String
-    - contextPath: Expanse.IP.tenant.id
-      description: ''
-      type: String
-    - contextPath: Expanse.IP.tenant.name
-      description: ''
-      type: String
-    - contextPath: Expanse.IP.tenant.tenantId
-      description: ''
-      type: String
-    - contextPath: Expanse.IP.type
-      description: ''
+    - contextPath: Expanse.AssociatedDomain.certificate
+      description: Expanse ID of the certificate associated to this domain
       type: String
   - name: expanse-get-certificate
     description: Get certificate details by certificate md5 hash or search certificates
