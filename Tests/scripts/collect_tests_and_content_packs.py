@@ -1040,6 +1040,8 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
         modified_files_with_relevant_tests + modified_tests_list + changed_common + sample_tests
     ).union(modified_metadata_list)
 
+    logging.info(f'all_modified_files_paths: {all_modified_files_paths}')
+
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
 
     create_filter_envs_file(from_version, to_version)
