@@ -1171,7 +1171,7 @@ def safe_lock_integrations(test_timeout: int,
         print_msg = f'Attempting to lock integrations {integration_names}, with timeout {test_timeout}'
     else:
         print_msg = 'No integrations to lock'
-    logging_manager.info(print_msg)
+    logging_manager.debug(print_msg)
     try:
         storage_client = storage.Client()
         locked = lock_integrations(filtered_integrations_details, test_timeout, storage_client)
@@ -1230,7 +1230,7 @@ def lock_integrations(integrations_details: list,
         workflow_id, build_number, lock_timeout = lock_file.download_as_string().decode().split(':')
         if not lock_expired(lock_file, lock_timeout) and workflow_still_running(workflow_id):
             # there is a locked integration for which the lock is not expired - test cannot be executed at the moment
-            logging_manager.info(
+            logging_manager.warning(
                 f'Could not lock integration {integration}, another lock file was exist with '
                 f'build number: {build_number}, timeout: {lock_timeout}, last update at {lock_file.updated}.\n'
                 f'Delaying test execution')
@@ -1285,7 +1285,7 @@ def create_lock_files(integrations_generation_number: dict,
         try:
             blob.upload_from_string(f'{WORKFLOW_ID}:{CIRCLE_BUILD_NUM}:{test_timeout + 30}',
                                     if_generation_match=generation_number)
-            logging_manager.info(f'integration {integration} locked')
+            logging_manager.debug(f'integration {integration} locked')
             locked_integrations.append(integration)
         except PreconditionFailed:
             # if this exception occurs it means that another build has locked this integration
@@ -1315,7 +1315,7 @@ def unlock_integrations(integrations_details: list,
             _, build_number, _ = lock_file.download_as_string().decode().split(':')
             if build_number == CIRCLE_BUILD_NUM:
                 lock_file.delete(if_generation_match=lock_file.generation)
-                logging_manager.info(
+                logging_manager.debug(
                     f'Integration {integration} unlocked')
         except PreconditionFailed:
             logging_manager.error(f'Could not unlock integration {integration} precondition failure')

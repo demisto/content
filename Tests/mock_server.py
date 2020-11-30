@@ -257,9 +257,9 @@ class MITMProxy:
         dst_folder = os.path.join(self.repo_folder, get_folder_path(playbook_id))
 
         if not self.has_mock_file(playbook_id):
-            self.logging_manager.info('Mock file not created!')
+            self.logging_manager.debug('Mock file not created!')
         elif self.get_mock_file_size(src_filepath) == '0':
-            self.logging_manager.info('Mock file is empty, ignoring.')
+            self.logging_manager.debug('Mock file is empty, ignoring.')
             self.empty_files.append(playbook_id)
         else:
             # Move to repo folder
@@ -274,9 +274,8 @@ class MITMProxy:
         self.logging_manager.debug(f'problem_keys_filepath="{problem_keys_filepath}"')
         problem_key_file_exists = ["[", "-f", problem_keys_filepath, "]"]
         if not self.ami.call(problem_key_file_exists) == 0:
-            err_msg = 'Error: The problematic_keys.json file was not written to the file path' \
-                      f' "{problem_keys_filepath}" when recording the "{playbook_id}" test playbook'
-            self.logging_manager.error.add_print_job(err_msg)
+            self.logging_manager.debug('Error: The problematic_keys.json file was not written to the file path'
+                                       f' "{problem_keys_filepath}" when recording the "{playbook_id}" test playbook')
             return
         problem_keys = json.loads(self.ami.check_output(['cat', problem_keys_filepath]))
 
@@ -307,13 +306,13 @@ class MITMProxy:
             try:
                 check_output(self.ami.add_ssh_prefix(split_command, ssh_options='-t'), stderr=STDOUT)
             except CalledProcessError as e:
-                self.logging_manager.error(
+                self.logging_manager.debug(
                     'There may have been a problem when filtering timestamp data from the mock file.')
                 err_msg = f'command `{command}` exited with return code [{e.returncode}]'
                 err_msg = f'{err_msg} and the output of "{e.output}"' if e.output else err_msg
                 if e.stderr:
                     err_msg += f'STDERR: {e.stderr}'
-                self.logging_manager.error(err_msg)
+                self.logging_manager.debug(err_msg)
             else:
                 self.logging_manager.debug('Success!')
 
@@ -322,14 +321,14 @@ class MITMProxy:
             diff_cmd = f'diff -sq {cleaned_mock_filepath} {mock_file_path}'
             try:
                 diff_cmd_output = self.ami.check_output(diff_cmd.split()).decode().strip()
-                self.logging_manager.debug(f'diff_cmd_output={diff_cmd_output}')
+                self.logging_manager.debug(f'{diff_cmd_output=}')
                 if diff_cmd_output.endswith('are identical'):
                     self.logging_manager.debug('cleaned mock file and original mock file are identical')
                 else:
                     self.logging_manager.debug('looks like the cleaning process did something!')
 
             except CalledProcessError:
-                self.logging_manager.exception(f'command `{diff_cmd}` failed')
+                self.logging_manager.debug('looks like the cleaning process did something!')
 
             self.logging_manager.debug('Replace old mock with cleaned one.')
             mv_cmd = f'mv {cleaned_mock_filepath} {mock_file_path}'
@@ -350,7 +349,7 @@ class MITMProxy:
             raise Exception("Cannot start proxy - already running.")
 
         path = path or self.current_folder
-        self.logging_manager.info(f'Attempting to start proxy in {"record" if record else "playback"} mode')
+        self.logging_manager.debug(f'Attempting to start proxy in {"record" if record else "playback"} mode')
         # Create mock files directory
         silence_output(self.ami.call, ['mkdir', os.path.join(path, get_folder_path(playbook_id))], stderr='null')
 
@@ -430,7 +429,7 @@ class MITMProxy:
         if not self.process:
             raise Exception("Cannot stop proxy - not running.")
 
-        self.logging_manager.info('proxy.stop() was called')
+        self.logging_manager.debug('proxy.stop() was called')
         self.process.send_signal(signal.SIGINT)  # Terminate proxy process
         self.ami.call(["rm", "-rf", "/tmp/_MEI*"])  # Clean up temp files
 
