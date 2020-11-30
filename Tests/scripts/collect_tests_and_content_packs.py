@@ -1042,7 +1042,10 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
 
-    create_filter_envs_file(from_version, to_version)
+    if 'README.md' in files_string and ('.py', '.json', 'yml' not in files_string):
+        create_filter_envs_file(from_version, to_version, readme_only=True)
+    else:
+        create_filter_envs_file(from_version, to_version)
 
     tests = set([])
     packs_to_install = set([])
@@ -1204,7 +1207,7 @@ def changed_files_to_string(changed_files):
     return '\n'.join(files_with_status)
 
 
-def create_test_file(is_nightly, skip_save=False, path_to_pack='', readme_only=False):
+def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
         packs_to_install = set(filter(should_test_content_pack, os.listdir(PACKS_DIR)))
@@ -1236,15 +1239,11 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', readme_only=F
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
                                                                              minimum_server_version)
-        if 'README.md' in files_string and ('.py', '.json', 'yml') not in files_string:
-            readme_only = True
-            tests_string = ''
-            packs_to_install = ''
 
     tests_string = '\n'.join(tests)
     packs_to_install_string = '\n'.join(packs_to_install)
 
-    if not skip_save or readme_only:
+    if not skip_save:
         logging.info("Creating filter_file.txt")
         with open("./Tests/filter_file.txt", "w") as filter_file:
             filter_file.write(tests_string)
