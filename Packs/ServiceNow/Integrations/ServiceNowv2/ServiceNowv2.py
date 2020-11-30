@@ -9,6 +9,8 @@ from CommonServerPython import *
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
+
 TICKET_STATES = {
     'incident': {
         '1': '1 - New',
@@ -2201,7 +2203,8 @@ def main():
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
         else:
-            raise NotImplementedError(f'Command "{command}" is not implemented.')
+            raise_exception = True
+            raise NotImplementedError(f'{COMMAND_NOT_IMPLEMENTED_MSG}: {demisto.command()}')
     except Exception as err:
         LOG(err)
         LOG.print_log()
