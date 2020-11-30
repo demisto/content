@@ -1040,10 +1040,8 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
         modified_files_with_relevant_tests + modified_tests_list + changed_common + sample_tests
     ).union(modified_metadata_list)
 
-    logging.info(f'all_modified_files_paths: {all_modified_files_paths}')
-
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
-
+    logging.info(all_modified_files_paths)
     create_filter_envs_file(from_version, to_version)
 
     tests = set([])
@@ -1238,7 +1236,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', readme_only=F
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
                                                                              minimum_server_version)
-        if 'README.md' in files_string and ('.py', '.json', 'yml') not in files_string:
+        if 'README.md' in files_string and ('.py', '.json', 'yml' not in files_string):
             readme_only = True
             tests_string = ''
             packs_to_install = ''
