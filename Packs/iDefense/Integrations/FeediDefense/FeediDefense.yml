@@ -60,8 +60,8 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
-  display: ""
   name: feedExpirationInterval
+  display: ''
   required: false
   type: 1
 - defaultvalue: '240'
@@ -69,6 +69,24 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
+- additionalinfo: Incremental feeds pull only new or modified indicators that have
+    been sent from the integration. As the determination if the indicator is new or
+    modified happens on the 3rd-party vendor's side, and only indicators that are
+    new or modified are sent to Cortex XSOAR, all indicators coming from these feeds
+    are labeled new or modified.
+  defaultvalue: 'true'
+  display: Incremental Feed
+  hidden: false
+  name: feedIncremental
+  required: false
+  type: 8
+- additionalinfo: How far back in time to go when performing the first fetch
+  defaultvalue: '14'
+  display: First fetch timestamp (number of days)
+  hidden: false
+  name: fetch_time
+  required: false
+  type: 0
 - additionalinfo: Which indicator types to fetch
   display: Indicator Type
   name: indicator_type
@@ -81,7 +99,6 @@ configuration:
 - additionalinfo: Severity of the indicator. From which value to fetch indicators.
   defaultvalue: '1'
   display: Indicator Severity
-  hidden: false
   name: severity
   options:
   - '1'
@@ -91,15 +108,16 @@ configuration:
   - '5'
   required: false
   type: 15
-- additionalinfo: 'Threat Type denotes the type of threats the indicator has been associated with.'
+- additionalinfo: Threat Type denotes the type of threats the indicator has been associated
+    with.
   display: Threat Type
   hidden: false
   name: threat_type
   options:
-  - 'Vulnerability'
-  - 'Cyber Crime'
-  - 'Cyber Espionage'
-  - 'Hacktivism'
+  - Vulnerability
+  - Cyber Crime
+  - Cyber Espionage
+  - Hacktivism
   required: false
   type: 16
 - additionalinfo: Confidence about the indicator detailes. Choose from which value
@@ -109,7 +127,8 @@ configuration:
   name: confidence_from
   required: false
   type: 0
-- additionalinfo: 'A malware family is a classification of malicious files and tools based on certain behaviors and static properties'
+- additionalinfo: A malware family is a classification of malicious files and tools
+    based on certain behaviors and static properties
   display: Malware Family
   hidden: false
   name: malware_family
@@ -163,5 +182,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- Feed iDefense Test
 fromversion: 5.5.0

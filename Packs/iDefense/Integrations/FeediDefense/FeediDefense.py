@@ -2,17 +2,31 @@ from typing import Dict, Union
 from CommonServerPython import *
 from JSONFeedApiModule import *  # noqa: E402
 
+try:
+    FETCH_TIME = int(demisto.params().get('fetch_time'))
+except ValueError:
+    FETCH_TIME = 14
+
 
 def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
-    if not limit:
-        limit = 50000
+    current_datetime = datetime.now()
+
     params: dict = feed.get('filters', {})
     current_indicator_type = feed.get('indicator_type')
     integration_context = get_integration_context()
     page_number = integration_context.get(f'{current_indicator_type}_page', 1)
+    last_fetch = integration_context.get('fetch_time')
+    params['end_date'] = current_datetime.isoformat() + 'Z'
+    params['start_date'] = last_fetch if last_fetch else \
+        (current_datetime - timedelta(days=FETCH_TIME)).isoformat() + 'Z'
+    params['page_size'] = 200
+
+    if not limit:
+        limit = 10000
+        set_integration_context({'fetch_time': current_datetime})
 
     more_indicators = True
-    params['page_size'] = 200
+
     result: list = []
     while more_indicators:
         params['page'] = page_number
@@ -30,11 +44,12 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
         try:
             r.raise_for_status()
             data = r.json()
-            result.extend(jmespath.search(expression=feed.get('extractor'), data=data))
+            if data.get('total_size'):
+                result.extend(jmespath.search(expression=feed.get('extractor'), data=data))
             more_indicators = data.get('more')
             page_number += 1
-            if not more_indicators:
-                set_integration_context({f'{current_indicator_type}_page': 1})
+            # if not more_indicators:
+            # set_integration_context({f'{current_indicator_type}_page': 1})
             if len(result) >= limit:
                 set_integration_context({f'{current_indicator_type}_page': page_number})  # When reach the limit for
                 # one fetching, save next page number in order to start from him at the next fetch
@@ -74,7 +89,7 @@ def create_fetch_configuration(indicators_type: list, filters: dict, params: dic
     common_conf = {'extractor': 'results',
                    'indicator': 'display_text',
                    'insecure': params.get('insecure', False),
-                   'build_iterator_paging': custom_build_iterator,
+                   'custom_build_iterator': custom_build_iterator,
                    'filters': filters}
 
     indicators_configuration = {}
@@ -102,8 +117,9 @@ def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
 
     filters: Dict[str, Optional[Union[str, list]]] = build_feed_filters(params)
-    indicators_type: List[str] = params.get('indicator_type', ['IP', 'Domain', 'URL'])
-
+    indicators_type: list = params.get('indicator_type', []) if len(params.get('indicator_type', [])) \
+        else ['IP', 'Domain', 'URL']
+    demisto.debug(f"Tal indicator type is {indicators_type}")
     params['feed_name_to_config'] = create_fetch_configuration(indicators_type, filters, params)
 
     params['headers'] = {"Content-Type": "application/json",

@@ -98,9 +98,9 @@ class Client:
 
 def test_module(client: Client, limit) -> str:
     for feed_name, feed in client.feed_name_to_config.items():
-        build_iterator_paging = feed.get('build_iterator_paging')
-        if build_iterator_paging:
-            build_iterator_paging(client, feed, limit)
+        custom_build_iterator = feed.get('custom_build_iterator')
+        if custom_build_iterator:
+            custom_build_iterator(client, feed, limit)
         else:
             client.build_iterator(feed)
     return 'ok'
@@ -119,13 +119,11 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
     indicators = []
     feeds_results = {}
     for feed_name, feed in client.feed_name_to_config.items():
-        build_iterator_paging = feed.get('build_iterator_paging')
-        if build_iterator_paging:
-            demisto.debug("Got a custom function to handle with pagination, "
-                          "Going to use this function instead build_iterator function")
-            indicators_from_feed = build_iterator_paging(client, feed, limit, **kwargs)
+        custom_build_iterator = feed.get('custom_build_iterator')
+        if custom_build_iterator:
+            indicators_from_feed = custom_build_iterator(client, feed, limit, **kwargs)
             if not isinstance(indicators_from_feed, list):
-                raise Exception("Custom function to handle with pagination must have a list as a return type")
+                raise Exception("Custom function to handle with pagination must return a list type")
             feeds_results[feed_name] = indicators_from_feed
         else:
             feeds_results[feed_name] = client.build_iterator(feed, **kwargs)
@@ -168,7 +166,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             indicator['rawJSON'] = item
 
             indicators.append(indicator)
-            if limit and len(indicator) % limit == 0:  # We have a limitation only when get-indicators command is
+            if limit and len(indicators) % limit == 0:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
                 break
 
