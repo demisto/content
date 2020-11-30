@@ -9,8 +9,6 @@ from CommonServerPython import *
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
-
 TICKET_STATES = {
     'incident': {
         '1': '1 - New',
@@ -2033,7 +2031,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 'ContentsFormat': EntryFormat.JSON
             })
 
-    demisto.debug(f'Pull result is {ticket} test bla bla')
+    demisto.debug(f'Pull result is {ticket}')
     return [ticket] + entries
 
 
@@ -2055,7 +2053,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     """
     parsed_args = UpdateRemoteSystemArgs(args)
     if parsed_args.delta:
-        demisto.debug(f'Got the following delta keys - {str(list(parsed_args.delta.keys()))}')
+        demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
 
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
@@ -2203,9 +2201,7 @@ def main():
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
         else:
-            raise_exception = True
-            raise NotImplementedError(f'{COMMAND_NOT_IMPLEMENTED_MSG}: {demisto.command()}')
-
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as err:
         LOG(err)
         LOG.print_log()
