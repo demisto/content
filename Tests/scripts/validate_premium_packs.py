@@ -15,9 +15,12 @@ import ast
 import sys
 import os
 
+from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig
+from Tests.Marketplace.copy_and_upload_packs import download_and_extract_index
 from Tests.configure_and_test_integration_instances import Build, Server
 from Tests.scripts.utils.log_util import install_logging
 from Tests.test_content import get_json_file
+from pprint import pformat
 
 INDEX_FILE_PATH = 'index.json'
 
@@ -32,10 +35,19 @@ def options_handler():
                         required=True)
     parser.add_argument('--master_history', help='Path to a file that contains the master history commit hashes',
                         required=True)
-    parser.add_argument('-s', '--secret', help='Path to secret conf file')
+    parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
+    parser.add_argument('-pb', '--production_bucket_name', help="Production bucket name", required=True)
+    parser.add_argument('-sa', '--service_account',
+                        help=("Path to gcloud service account, is for circleCI usage. "
+                              "For local development use your personal account and "
+                              "authenticate using Google Cloud SDK by running: "
+                              "`gcloud auth application-default login` and leave this parameter blank. "
+                              "For more information go to: "
+                              "https://googleapis.dev/python/google-api-core/latest/auth.html"),
+                        required=True)
+    parser.add_argument('-s', '--secret', help='Path to secret conf file', required=True)
 
     options = parser.parse_args()
-
     return options
 
 
@@ -73,24 +85,21 @@ def unzip_index_and_return_index_file(index_zip_path):
     return f"./{extracted_path}"
 
 
-def check_and_return_index_data(index_file_path):
+def check_index_data(index_data):
     """Check index.json file inside the index.zip archive in the cloud.
 
     Validate no missing ids are found and that all packs have a positive price.
 
     Args:
-        index_file_path: The path to the index.json.
+        index_data: The path to the index.json.
 
     Returns: Dict with the index data.
 
     """
-    with open(index_file_path, 'r') as index_file:
-        index_data = json.load(index_file)
-
     logging.info("Found index data in index file. Checking...")
-    logging.debug(f"Index data is:\n {index_data}")
+    logging.debug(f"Index data is:\n {pformat(index_data)}")
 
-    packs_list_exists = log_message_if_statement(statement=(len(index_data["packs"]) != 0),
+    packs_list_exists = log_message_if_statement(statement=(len(index_data.get("packs", [])) != 0),
                                                  error_message="Found 0 packs in index file."
                                                                "\nAborting the rest of the check.")
     if not packs_list_exists:
@@ -98,17 +107,29 @@ def check_and_return_index_data(index_file_path):
 
     packs_are_valid = True
     for pack in index_data["packs"]:
-        id_exists = log_message_if_statement(statement=(pack["id"] != ""),
-                                             error_message="There is a missing pack id.")
-        price_is_valid = log_message_if_statement(statement=(pack["price"] > 0),
-                                                  error_message=f"The price on the pack {pack['id']} is 0 or less")
-        if (not id_exists) or (not price_is_valid):
+        pack_is_good = verify_pack(pack)
+        if not pack_is_good:
             packs_are_valid = False
 
-    log_message_if_statement(statement=packs_are_valid,
-                             error_message=f"The packs in the {index_file_path} file were found invalid.",
-                             success_message=f"{index_file_path} file was found valid")
-    return packs_are_valid, index_data
+    return packs_are_valid
+
+
+def verify_pack(pack):
+    """
+
+    Args:
+        pack:
+
+    Returns:
+
+    """
+    id_exists = log_message_if_statement(statement=(pack.get("id", "") != ""),
+                                         error_message="There is a missing pack id.",
+                                         success_message=f"Found pack with a valid id: {pack['id']}.")
+    price_is_valid = log_message_if_statement(statement=(pack.get("price", -1) > 0),
+                                              error_message=f"The price on the pack {pack['id']} is 0 or less.",
+                                              success_message=f"The price on the pack {pack['id']} is valid.")
+    return all(id_exists, price_is_valid)
 
 
 def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
@@ -137,7 +158,7 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
             'general': ["generalFieldPaid"]
         }
 
-    logging.info(f'Getting premium packs from server {client.api_client.configuration.host}:\n')
+    logging.info(f'Getting premium packs from server {client.api_client.configuration.host}:')
 
     # make the pack installation request
     response_data, status_code, _ = demisto_client.generic_request_func(client,
@@ -148,9 +169,8 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
                                                                         _request_timeout=request_timeout)
 
     if status_code == 200:
-        logging.debug(f'Got response data {response_data}')
+        logging.debug(f'Got response data {pformat(response_data)}')
         response = ast.literal_eval(response_data)
-        logging.debug(f'Response dict is {response}')
         logging.info('Got premium packs from server.')
         return response["packs"]
 
@@ -158,6 +178,29 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
     message = result_object.get('message', '')
     logging.error(f'Failed to retrieve premium packs - with status code {status_code}\n{message}\n')
     return None
+
+
+def verify_pack_in_list(pack, pack_list, pack_list_name="pack list"):
+    """Verify pack is in the pack list with same id and price.
+
+    Args:
+        pack: (Dict) pack containing an id and a price.
+        pack_list: (List[Dict]) list of packs containing id and a price.
+        pack_list_name: Name of the list for better logs.
+
+    Returns: True if pack is in list, False otherwise.
+    """
+    for pack_from_list in pack_list:
+        if pack["id"] == pack_from_list["id"]:
+            price_matches = log_message_if_statement(statement=(pack["price"] == pack_from_list["price"]),
+                                                     error_message=f'Price in pack {pack["id"]} does not match the'
+                                                                   f' price in the list. '
+                                                                   f'{pack["price"]} != {pack_from_list["price"]}',
+                                                     success_message=f'Pack {pack["id"]} is valid.')
+            return price_matches
+
+    logging.error(f'Pack {pack["id"]} is not in {pack_list_name}')
+    return False
 
 
 def verify_server_paid_packs_by_index(server_paid_packs, index_data_packs):
@@ -172,29 +215,32 @@ def verify_server_paid_packs_by_index(server_paid_packs, index_data_packs):
     Return:
         True if all packs are identical, False otherwise.
     """
-    # Sorting both lists by id
-    sorted_server_packs = sorted(server_paid_packs, key=lambda pack: pack['id'])
-    sorted_index_packs = sorted(index_data_packs, key=lambda pack: pack['id'])
 
-    packs_identical = True
-    # Checking lists are the same.
-    for (server_pack, index_pack) in zip(sorted_server_packs, sorted_index_packs):
-        ids_match = log_message_if_statement(statement=(server_pack["id"] == index_pack["id"]),
-                                             error_message=f'server pack id {server_pack["id"]} '
-                                                           f'does not match index pack id {index_pack["id"]}')
-        if ids_match:
-            prices_match = log_message_if_statement(statement=(server_pack["price"] == index_pack["price"]),
-                                                    error_message=f'server pack price {server_pack["price"]} '
-                                                                  f'for pack id {server_pack["id"]} '
-                                                                  f'does not match the pack price '
-                                                                  f'found in the index file {index_pack["price"]}',
-                                                    success_message=f'Pack: {server_pack["id"]} is valid.')
-            if not prices_match:
-                packs_identical = False
-        else:
-            packs_identical = False
+    logging.info('Verifying all premium server packs are in the index.json')
+    missing_server_packs = []
+    for server_pack in server_paid_packs:
+        server_pack_in_index = verify_pack_in_list(server_pack, index_data_packs, "index packs")
+        if not server_pack_in_index:
+            missing_server_packs.append(server_pack)
 
-    return packs_identical
+    all_server_packs_in_index = log_message_if_statement(statement=(len(missing_server_packs) == 0),
+                                                         error_message=f'The following premium server packs were'
+                                                                       f' not found exactly the same as in the index'
+                                                                       f' packs:\n{pformat(missing_server_packs)}')
+
+    logging.info('Verifying all premium index packs are in the server')
+    missing_index_packs = []
+    for index_pack in index_data_packs:
+        index_pack_in_server = verify_pack_in_list(index_pack, server_paid_packs, "premium server packs")
+        if not index_pack_in_server:
+            missing_index_packs.append(index_pack)
+
+    all_index_packs_in_server = log_message_if_statement(statement=(len(missing_index_packs) == 0),
+                                                         error_message=f'The following index packs were'
+                                                                       f' not found exactly the same as in the server'
+                                                                       f' packs:\n{pformat(missing_index_packs)}')
+
+    return all(all_index_packs_in_server, all_server_packs_in_index)
 
 
 def check_commit_in_master_history(index_commit_hash, master_history_path):
@@ -216,50 +262,90 @@ def check_commit_in_master_history(index_commit_hash, master_history_path):
                                     success_message="Commit hash in index file is valid.")
 
 
-def main():
-    install_logging('Validate Premium Packs.log')
+def get_and_validate_index_json(service_account, production_bucket_name, extract_path, master_history):
+    """
+
+    Args:
+        service_account:
+        production_bucket_name:
+        extract_path:
+        master_history:
+
+    Returns:
+
+    """
+    logging.info('Downloading and extracting index.zip from the cloud')
+    storage_client = init_storage_client(service_account)
+    production_bucket = storage_client.bucket(production_bucket_name)
+    index_folder_path, build_index_blob, build_index_generation = \
+        download_and_extract_index(production_bucket, extract_path)
+
     logging.info('Retrieving the index file')
-    options = options_handler()
-    index_file_path = unzip_index_and_return_index_file(options.index_path)
+    index_file_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
+    with open(index_file_path, 'r') as index_file:
+        index_data = json.load(index_file)
 
     # Validate index.json file
-    index_is_valid, index_data = check_and_return_index_data(index_file_path)
+    index_is_valid = check_index_data(index_data)
+    log_message_if_statement(statement=index_is_valid,
+                             error_message=f"The packs in the {index_file_path} file were found invalid.",
+                             success_message=f"{index_file_path} file was found valid")
 
     # Validate commit hash in master history
-    commit_hash_is_valid = check_commit_in_master_history(index_data["commit"], options.master_history)
+    commit_hash_is_valid = check_commit_in_master_history(index_data.get("commit", ""), master_history)
+    return all(index_is_valid, commit_hash_is_valid), index_data
 
-    if (not index_is_valid) or (not commit_hash_is_valid):
-        logging.debug('Index content is invalid. Aborting.')
-        os.remove(index_file_path)
-        sys.exit(1)
 
+def connect_to_server(ami_env, secret):
+    """
+
+    Args:
+        ami_env:
+        secret:
+
+    Returns:
+
+    """
     # Get the host by the ami env
-    hosts, _ = Build.get_servers(ami_env=options.ami_env)
+    hosts, _ = Build.get_servers(ami_env=ami_env)
 
     logging.info('Retrieving the credentials for Cortex XSOAR server')
-    secret_conf_file = get_json_file(path=options.secret)
+    secret_conf_file = get_json_file(path=secret)
     username: str = secret_conf_file.get('username')
     password: str = secret_conf_file.get('userPassword')
 
-    # Check the marketplace in the first host
+    # Only return the first host
     host = hosts[0]
     server = Server(host=host, user_name=username, password=password)
-    paid_packs = get_paid_packs(client=server.client)
-    if paid_packs is not None:
-        logging.info(f'Verifying premium packs in {host}')
-        paid_packs_are_identical = verify_server_paid_packs_by_index(paid_packs, index_data["packs"])
-        log_message_if_statement(statement=paid_packs_are_identical,
-                                 error_message=f'Test failed on host: {host}.',
-                                 success_message=f'All premium packs in host: {host} are valid')
-        if not paid_packs_are_identical:
-            os.remove(index_file_path)
-            sys.exit(1)
-    else:
-        os.remove(index_file_path)
-        logging.error(f'Missing premium packs in host: {host}')
+    return server
+
+
+def main():
+    install_logging('Validate Premium Packs.log')
+    options = options_handler()
+
+    index_is_valid, index_data = get_and_validate_index_json(service_account=options.service_account,
+                                                             production_bucket_name=options.production_bucket_name,
+                                                             extract_path=options.extract_path,
+                                                             master_history=options.master_history)
+
+    if not index_is_valid:
+        logging.critical('Index content is invalid. Aborting.')
         sys.exit(1)
 
-    os.remove(index_file_path)
+    server = connect_to_server(options.ami_env, options.secret)
+    paid_packs = get_paid_packs(client=server.client)
+    if paid_packs is not None:
+        logging.info(f'Verifying premium packs in {server.host}')
+        paid_packs_are_identical = verify_server_paid_packs_by_index(paid_packs, index_data["packs"])
+        log_message_if_statement(statement=paid_packs_are_identical,
+                                 error_message=f'Test failed on host: {server.host}.',
+                                 success_message=f'All premium packs in host: {server.host} are valid')
+        if not paid_packs_are_identical:
+            sys.exit(1)
+    else:
+        logging.critical(f'Missing all premium packs in host: {server.host}')
+        sys.exit(1)
 
 
 if __name__ == '__main__':
