@@ -24,6 +24,7 @@ class Client(BaseClient):
             response_data = response.get('data', [])
             for domain in response_data:
                 domain.pop('lastSeenAt')
+                domain['IsDeleted'] = False
                 domains_list.append(domain)
             response_next_page = response.get('meta', {}).get('next', '')
             response = self.get_domain_request(response_next_page) if response_next_page else {}
@@ -117,6 +118,7 @@ def domain_delete_command(client: Client, args: dict) -> CommandResults:
     :param args: args from the user for the command.
     :returns (str) confirmation or error regarding deleting a domain.
     """
+    response = {}
     domain_name = args.get('name', '')
     domain_id = args.get('id', '')
     if not domain_name and not domain_id:
@@ -126,17 +128,21 @@ def domain_delete_command(client: Client, args: dict) -> CommandResults:
     try:
         response = client.delete_domains(domain_id=domain_id, domain_name=domain_name)
     except DemistoException as e:
-        if e.res.status_code == 400:
+        if e.res.get('statusCode') == 404:
             return CommandResults(
-                readable_output='Domain for delete command does not exist, Please insert an existing domain name or id.'
+                readable_output='The domain was not found in the list, Please insert an existing domain name or id.'
             )
-    old_context = demisto.dt(demisto.context(), f'CiscoUmbrellaEnforcement.Domains(val.id === {domain_id})')
-    demisto.info(f"old context {str(old_context)}")
+    if domain_name:
+        old_context = demisto.dt(demisto.context(), f'CiscoUmbrellaEnforcement.Domains(val.name == "{domain_name}")')
+    else:
+        old_context = demisto.dt(demisto.context(), f'CiscoUmbrellaEnforcement.Domains(val.id == "{domain_id}")')
+
+    demisto.info(f'old context {str(old_context)} and domain name is {domain_name} and domain id is {domain_id}')
     if old_context:
         if isinstance(old_context, list):
             old_context = old_context[0]
         old_context['IsDeleted'] = True
-    if int(response.status_code) == 204:
+    if response and int(response.status_code) == 204:
         message = f"{domain_name if domain_name else domain_id} Domain was removed from blacklist"
     else:
         message = f"{domain_name if domain_name else domain_id} Domain not in the blacklist or Error"

@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 22176103-0a11-4e85-8b19-f8b2ac87d65f
+    taskid: d3fa006e-3d3c-4dfd-89e4-58681de95c5d
     type: start
     task:
-      id: 22176103-0a11-4e85-8b19-f8b2ac87d65f
+      id: d3fa006e-3d3c-4dfd-89e4-58681de95c5d
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: c112916b-3e19-427c-8fce-4652d0cc3872
+    taskid: 2b57d819-ee2d-4daa-8fa1-c980f2ef8f3d
     type: regular
     task:
-      id: c112916b-3e19-427c-8fce-4652d0cc3872
+      id: 2b57d819-ee2d-4daa-8fa1-c980f2ef8f3d
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -63,10 +63,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: a8b63b87-72a0-46a6-841b-43b2af0e05a4
+    taskid: 63a0c12d-50f5-4098-8171-afca23bb31c6
     type: regular
     task:
-      id: a8b63b87-72a0-46a6-841b-43b2af0e05a4
+      id: 63a0c12d-50f5-4098-8171-afca23bb31c6
       version: -1
       name: umbrella-domain-event-add
       script: '|||umbrella-domain-event-add'
@@ -79,14 +79,14 @@ tasks:
     scriptarguments:
       alert_time:
         simple: "2013-02-08T09:30:26.0Z"
+      destination_domain:
+        simple: test1.com
+      destination_url:
+        simple: test1.com
       device_id:
         simple: ba6a59f4-e692-4724-ba36-c28132c761de
       device_version:
         simple: 13.7a
-      dst_domain:
-        simple: test1.com
-      dst_url:
-        simple: test1.com
     separatecontext: false
     view: |-
       {
@@ -102,10 +102,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 44d01ed4-4637-4fd5-86c1-b33d418b08eb
+    taskid: 2d281e0c-b8fe-4215-8fe0-b55653fa538c
     type: regular
     task:
-      id: 44d01ed4-4637-4fd5-86c1-b33d418b08eb
+      id: 2d281e0c-b8fe-4215-8fe0-b55653fa538c
       version: -1
       name: umbrella-domains-list
       script: '|||umbrella-domains-list'
@@ -130,10 +130,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 13f64eab-3b7a-4ee0-8273-1a36bf9837b8
+    taskid: 4023161b-846a-4492-8025-5f8fe4bb856f
     type: condition
     task:
-      id: 13f64eab-3b7a-4ee0-8273-1a36bf9837b8
+      id: 4023161b-846a-4492-8025-5f8fe4bb856f
       version: -1
       name: Verify Outputs
       type: condition
@@ -149,7 +149,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: CiscoUmbrellaEnforcement.Domains
+              simple: CiscoUmbrellaEnforcement.Domains.name
             iscontext: true
           right:
             value:
@@ -168,19 +168,20 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 8d56aebc-3647-4c7f-8dd4-63c7d2554f85
+    taskid: f2e3ccdd-e8d0-4b4a-8b66-9e91ad30c681
     type: regular
     task:
-      id: 8d56aebc-3647-4c7f-8dd4-63c7d2554f85
+      id: f2e3ccdd-e8d0-4b4a-8b66-9e91ad30c681
       version: -1
       name: umbrella-domain-delete
+      description: Delete domain.
       script: '|||umbrella-domain-delete'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "8"
     scriptarguments:
       id: {}
       name:
@@ -200,10 +201,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 04696be3-6427-4add-8fac-5808573eab1b
+    taskid: 7bb77f4e-670d-43b4-87e8-a0d61bc101a6
     type: title
     task:
-      id: 04696be3-6427-4add-8fac-5808573eab1b
+      id: 7bb77f4e-670d-43b4-87e8-a0d61bc101a6
       version: -1
       name: Test Done
       type: title
@@ -211,72 +212,6 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: a1c602e1-ab1c-444b-8f78-252ac3df968d
-    type: regular
-    task:
-      id: a1c602e1-ab1c-444b-8f78-252ac3df968d
-      version: -1
-      name: umbrella-domains-list
-      script: '|||umbrella-domains-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: 06dffdd4-89b2-4986-86c0-3c85899c7c82
-    type: condition
-    task:
-      id: 06dffdd4-89b2-4986-86c0-3c85899c7c82
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: notContainsGeneral
-          left:
-            value:
-              simple: CiscoUmbrellaEnforcement.domain
-            iscontext: true
-          right:
-            value:
-              simple: test1.com
     view: |-
       {
         "position": {
@@ -289,14 +224,52 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "8":
+    id: "8"
+    taskid: 5190877d-7ae8-418b-85fa-d3eeeaf5987b
+    type: condition
+    task:
+      id: 5190877d-7ae8-418b-85fa-d3eeeaf5987b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoUmbrellaEnforcement.Domains.IsDeleted
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
-        "width": 380,
-        "x": 50,
+        "height": 1260,
+        "width": 390,
+        "x": 40,
         "y": 50
       }
     }

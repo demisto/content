@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Cisco Umbrella Enforcement
+  id: Cisco Umbrella Enforcement v2
   version: -1
 configuration:
 - defaultvalue: https://s-platform.api.opendns.com
@@ -21,8 +21,8 @@ configuration:
   required: false
   type: 8
 description: Add and remove domain in Cisco OpenDNS.
-display: Cisco Umbrella Enforcement
-name: Cisco Umbrella Enforcement
+display: Cisco Umbrella Enforcement v2
+name: Cisco Umbrella Enforcement v2
 script:
   commands:
   - arguments:
@@ -81,9 +81,15 @@ script:
     execution: false
     name: umbrella-domains-list
     outputs:
-    - contextPath: CiscoUmbrellaEnforcement.Domains
-      description: Domain list.
+    - contextPath: CiscoUmbrellaEnforcement.Domains.name
+      description: Domains name
       type: String
+    - contextPath: CiscoUmbrellaEnforcement.Domains.id
+      description: Domains id.
+      type: Number
+    - contextPath: CiscoUmbrellaEnforcement.Domains.IsDeleted
+      description: IsDeleted set true if the domain has been deleted from list.
+      type: Boolean
   - arguments:
     - default: false
       description: ID of the domain.
@@ -101,6 +107,7 @@ script:
     description: Delete domain.
     execution: false
     name: umbrella-domain-delete
+    outputs:
   dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: false
