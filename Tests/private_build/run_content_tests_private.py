@@ -382,7 +382,7 @@ def manage_tests(tests_settings: SettingsTester):
 
 
 def main():
-    install_logging('Run Tests.log')
+    install_logging('Run_Tests.log')
     tests_settings = options_handler()
     manage_tests(tests_settings)
 

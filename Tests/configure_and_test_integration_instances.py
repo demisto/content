@@ -1237,7 +1237,7 @@ def set_marketplace_url(servers, branch_name, ci_build_number):
 
 
 def main():
-    install_logging('Install Content And Configure Integrations On Server.log')
+    install_logging('Install_Content_And_Configure_Integrations_On_Server.log')
     build = Build(options_handler())
 
     configure_servers_and_restart(build)

@@ -76,7 +76,7 @@ def load_test_data_from_conf_json():
 
 
 def generate_pack_tests_configuration(pack_name, existing_test_playbooks):
-    install_logging('Update Tests step.log', include_process_name=True)
+    install_logging('Update_Tests_step.log', include_process_name=True)
     pack_integrations = []
     pack_test_playbooks = []
 
@@ -123,7 +123,7 @@ def update_new_conf_json(future):
 
 
 def main():
-    install_logging('Update Tests step.log', include_process_name=True)
+    install_logging('Update_Tests_step.log', include_process_name=True)
     existing_test_playbooks = load_test_data_from_conf_json()
     with ProcessPool(max_workers=os.cpu_count(), max_tasks=100) as pool:
         for pack_name in os.listdir(PACKS_DIR):

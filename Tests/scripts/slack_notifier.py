@@ -322,7 +322,7 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
 
 
 def main():
-    install_logging('Slack Notifier.log')
+    install_logging('Slack_Notifier.log')
     options = options_handler()
     nightly = options.nightly
     url = options.url

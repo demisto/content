@@ -162,7 +162,7 @@ class MITMProxy:
     """Manager for MITM Proxy and the mock file structure.
 
     Attributes:
-        demisto_api_key: API key for demisto API.
+        logging_manager: Logging module to use
         public_ip (string): The IP of the AMI instance.
         repo_folder (string): path to the local clone of the content-test-data git repo.
         tmp_folder (string): path to a temporary folder for log/mock files before pushing to git.
@@ -223,7 +223,7 @@ class MITMProxy:
         }
         response = demisto_client.generic_request_func(self=client, path='/system/config',
                                                        method='POST', body=data)
-        self.logging_manager.debug(f'Server configurations before proxy server configurations:\n{pformat(response)}')
+        self.logging_manager.debug(f'Server configurations response:\n{pformat(response)}')
 
         return response
 
@@ -422,7 +422,7 @@ class MITMProxy:
             self.logging_manager.debug('verifying that mitmdump is listening on port 9997')
             lsof_cmd = ['sudo', 'lsof', '-iTCP:9997', '-sTCP:LISTEN']
             lsof_cmd_output = self.ami.check_output(lsof_cmd).decode().strip()
-            self.logging_manager.debug(f'lsof_cmd_output={lsof_cmd_output}')
+            self.logging_manager.debug(f'{lsof_cmd_output=}')
         except CalledProcessError:
             self.logging_manager.error('No process listening on port 9997')
 
