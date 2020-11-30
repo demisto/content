@@ -10,7 +10,6 @@ import dateparser
 import urllib3
 import traceback
 from operator import itemgetter
-import copy
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -970,16 +969,14 @@ def get_incident_extra_data_command(client, args):
     context_alerts = clear_trailing_whitespace(raw_alerts)
     for alert in context_alerts:
         alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
-    hr_alerts = copy.deepcopy(context_alerts)
-    for alert in hr_alerts:
-        del alert['host_ip']
     file_artifacts = raw_incident.get('file_artifacts').get('data')
     network_artifacts = raw_incident.get('network_artifacts').get('data')
 
     readable_output = [tableToMarkdown('Incident {}'.format(incident_id), incident)]
 
-    if len(hr_alerts) > 0:
-        readable_output.append(tableToMarkdown('Alerts', hr_alerts, headers=[key for key in hr_alerts[0] if key != 'host_ip'))
+    if len(context_alerts) > 0:
+        readable_output.append(tableToMarkdown('Alerts', context_alerts,
+                                               headers=[key for key in context_alerts[0] if key != 'host_ip']))
     else:
         readable_output.append(tableToMarkdown('Alerts', []))
 
