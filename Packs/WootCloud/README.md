@@ -9,4 +9,5 @@ By automating time-intensive, manual processes and operational workflows, and de
     • WootCloud runs algorithms to correlate anomalies and events with detailed information
     • Creates highly curated super anomalies with relevant accurate information.
 
-    This event information can be ingested or fetched on demand and be used in building more powerful playbooks for further actions and responses. It can be filtered based on severity and type for granularity.
+    This event information can be ingested or fetched on demand and be used in building more powerful playbooks for further actions and responses. 
+    It can be filtered based on severity and type for granularity.
