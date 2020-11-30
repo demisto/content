@@ -424,8 +424,7 @@ def main():
         content_repo = get_content_git_client(CONTENT_ROOT_PATH)
         current_commit_hash, remote_previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
                                                                                    is_bucket_upload_flow=False,
-                                                                                   is_private_build=True,
-                                                                                   force_previous_commit="")
+                                                                                   is_private_build=True)
     else:
         current_commit_hash, remote_previous_commit_hash = "", ""
         content_repo = None
