@@ -1156,7 +1156,8 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
     return min_from_version.vstring, max_to_version.vstring
 
 
-def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=None, one_before_ga=None, ga=None):
+def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=None, one_before_ga=None, ga=None,
+                            readme_only=False):
     """Create a file containing all the envs we need to run for the CI"""
     # always run master and PreGA
     one_before_ga = one_before_ga or AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
@@ -1172,6 +1173,14 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
         'Demisto GA': is_runnable_in_server_version(from_version, one_before_ga, to_version),
         'Demisto 6.0': is_runnable_in_server_version(from_version, ga, to_version),
     }
+
+    if readme_only:
+        envs_to_test = {
+            'Demisto PreGA': False,
+            'Demisto Marketplace': False,
+            'Demisto GA': False,
+            'Demisto 6.0': False,
+        }
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
     with open("./Tests/filter_envs.json", "w") as filter_envs_file:
         json.dump(envs_to_test, filter_envs_file)
@@ -1195,7 +1204,7 @@ def changed_files_to_string(changed_files):
     return '\n'.join(files_with_status)
 
 
-def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
+def create_test_file(is_nightly, skip_save=False, path_to_pack='', readme_only=False):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
         packs_to_install = set(filter(should_test_content_pack, os.listdir(PACKS_DIR)))
@@ -1227,10 +1236,15 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
                                                                              minimum_server_version)
+        if 'README.md' in files_string and ('.py', '.json', 'yml') not in files_string:
+            readme_only = True
+            tests_string = ''
+            packs_to_install = ''
+
     tests_string = '\n'.join(tests)
     packs_to_install_string = '\n'.join(packs_to_install)
 
-    if not skip_save:
+    if not skip_save or readme_only:
         logging.info("Creating filter_file.txt")
         with open("./Tests/filter_file.txt", "w") as filter_file:
             filter_file.write(tests_string)
