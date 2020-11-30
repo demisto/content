@@ -118,7 +118,7 @@ class Client(BaseClient):
 
         return okta_fields
 
-    def check_app_user_assignment(self, application_id, user_id):
+    def get_app_user_assignment(self, application_id, user_id):
         uri = f'/apps/{application_id}/users/{user_id}'
         res = self._http_request(
             method='GET',
@@ -126,7 +126,7 @@ class Client(BaseClient):
             resp_type='response',
             ok_codes=(200, 404)
         )
-        return res.status_code == 200  # True if user is assigned to app, false otherwise
+        return res
 
     def list_apps(self, query, page, limit):
         query_params = {
@@ -510,7 +510,10 @@ def get_app_user_assignment_command(client, args):
     user_id = args.get('user_id')
     application_id = args.get('application_id')
 
-    is_user_assigned_to_app = client.check_app_user_assignment(application_id, user_id)
+    res = client.get_app_user_assignment(application_id, user_id)
+    raw_response = res.json()
+
+    is_user_assigned_to_app = res.status_code == 200
 
     outputs = {
         'UserID': user_id,
@@ -518,11 +521,21 @@ def get_app_user_assignment_command(client, args):
         'IsAssigned': is_user_assigned_to_app
     }
 
+    readable_output = tableToMarkdown('App User Assignment', outputs,
+                                      headers=['UserID', 'AppID', 'IsAssigned'],
+                                      headerTransform=pascalToSpace)
+
+    if is_user_assigned_to_app:
+        outputs['ProfileInApp'] = res.get('profile')
+        profile_readable = tableToMarkdown('Profile in App', res.get('profile'), removeNull=True)
+        readable_output += f'\n{profile_readable}'
+
     return CommandResults(
         outputs=outputs,
         outputs_prefix='Okta.AppUserAssignment',
         outputs_key_field=['UserID', 'AppID'],
-        readable_output=tableToMarkdown('App User Assignment', outputs, headerTransform=pascalToSpace)
+        readable_output=readable_output,
+        raw_response=raw_response
     )
 
 

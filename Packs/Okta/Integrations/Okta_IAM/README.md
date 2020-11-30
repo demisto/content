@@ -273,6 +273,7 @@ Gets a specific user assignment for an application by id.
 | Okta.AppUserAssignment.UserID | string | ID of the user. | 
 | Okta.AppUserAssignment.AppID | string | ID of the application. | 
 | Okta.AppUserAssignment.IsAssigned | boolean | True if the user is assigned to the application, false otherwise. | 
+| Okta.AppUserAssignment.ProfileInApp | unknown | The user profile data in the application. | 
 
 
 #### Command Example

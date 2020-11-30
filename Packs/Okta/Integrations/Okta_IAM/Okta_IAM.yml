@@ -335,6 +335,9 @@ script:
     - contextPath: Okta.AppUserAssignment.IsAssigned
       description: True if the user is assigned to the application, false otherwise.
       type: boolean
+    - contextPath: Okta.AppUserAssignment.ProfileInApp
+      description: The user profile data in the application.
+      type: unknown
   - arguments:
     - default: false
       description: Search for applications by their names.
