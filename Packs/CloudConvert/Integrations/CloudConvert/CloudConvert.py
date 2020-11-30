@@ -82,7 +82,7 @@ class Client(BaseClient):
                 files=file_dict,
                 empty_valid_codes=[201, 204],
                 return_empty_response=True,
-                data=params,
+                data=params
             )
 
         # As shown, this operation has two requests

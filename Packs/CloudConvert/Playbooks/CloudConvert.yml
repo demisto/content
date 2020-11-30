@@ -608,3 +608,4 @@ outputs:
 - contextPath: CloudConvert.InfoFile
   description: Resulted file details if exported as war room entry
   type: string
+fromversion: 5.0.0
