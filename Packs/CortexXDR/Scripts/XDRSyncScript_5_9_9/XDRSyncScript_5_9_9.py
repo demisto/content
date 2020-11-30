@@ -360,10 +360,6 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
                 "Incident in XDR was modified, updating incident in Demisto accordingly.\n\n{}".format(
                     demisto_update_args), None)
 
-        # if playbook_to_run:
-        #     demisto.executeCommand("setPlaybook", {"name": playbook_to_run})
-        # else:
-
         # rerun the current playbook
         demisto.executeCommand("setPlaybook", {})
 
