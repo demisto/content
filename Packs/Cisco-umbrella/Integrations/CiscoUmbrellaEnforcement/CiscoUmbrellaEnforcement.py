@@ -143,9 +143,9 @@ def domain_delete_command(client: Client, args: dict) -> CommandResults:
             old_context = old_context[0]
         old_context['IsDeleted'] = True
     if response and int(response.status_code) == 204:
-        message = f"{domain_name if domain_name else domain_id} Domain was removed from blacklist"
+        message = f"{domain_name if domain_name else domain_id} domain was removed from blacklist"
     else:
-        message = f"{domain_name if domain_name else domain_id} Domain not in the blacklist or Error"
+        message = f"{domain_name if domain_name else domain_id} domain not in the blacklist or Error"
     return CommandResults(
         readable_output=message,
         outputs_prefix='CiscoUmbrellaEnforcement.Domains',
