@@ -1043,7 +1043,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
     for file in files_string:
-        if not file.endswith('.py') and not file.endswith('.json') and not file.endswith('.yml') in files_string:
+        if (file.endswith('.py') and file.endswith('.json') and file.endswith('.yml')) not in files_string:
     # if 'README.md' in files_string and ('.py', '.json', 'yml' not in files_string):
     #     logging.info('im here')
             create_filter_envs_file(from_version, to_version, readme_only=True)
