@@ -1047,8 +1047,8 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
         if not file.endswith('.py') and not file.endswith('.json') and not file.endswith('.yml') and 'README.md' \
                 in files_string:
             create_filter_envs_file(from_version, to_version, readme_only=True)
-    else:
-        create_filter_envs_file(from_version, to_version)
+        else:
+            create_filter_envs_file(from_version, to_version)
 
     tests = set([])
     packs_to_install = set([])
