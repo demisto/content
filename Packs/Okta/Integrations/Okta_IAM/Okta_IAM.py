@@ -527,7 +527,7 @@ def get_app_user_assignment_command(client, args):
 
     if is_user_assigned_to_app:
         outputs['ProfileInApp'] = raw_response.get('profile')
-        profile_readable = tableToMarkdown('Profile in App', res.get('profile'), removeNull=True)
+        profile_readable = tableToMarkdown('Profile in App', raw_response.get('profile'), removeNull=True)
         readable_output += f'\n{profile_readable}'
 
     return CommandResults(
