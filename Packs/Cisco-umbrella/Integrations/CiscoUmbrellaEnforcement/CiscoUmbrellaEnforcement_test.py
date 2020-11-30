@@ -1,4 +1,4 @@
-from CiscoUmbrellaEnforcement import domains_list_suffix
+from CiscoUmbrellaEnforcement import prepare_suffix
 
 
 def test_domains_list_suffix():
@@ -17,11 +17,7 @@ def test_domains_list_suffix():
     """
     page = '1'
     limit = '50'
-    request = '"https://s-platform.api.opendns.com/1.0/domains?customerKey=XXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX&page=2' \
-              '&limit=200" '
-    suffix = domains_list_suffix(page='', limit='', request=request)
-    assert suffix == request
-    suffix = domains_list_suffix(page=page, limit='', request='')
+    suffix = prepare_suffix(page=page, limit='')
     assert 'page=1' in suffix
-    suffix = domains_list_suffix(page=page, limit=limit, request='')
+    suffix = prepare_suffix(page=page, limit=limit)
     assert 'page=1' in suffix and 'limit=50' in suffix

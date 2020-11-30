@@ -16,28 +16,30 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, ok_codes=(200, 202, 204))
         self.api_key = api_key
 
-    def get_domains_list(self, suffix: Optional[str] = '', request: Optional[str] = ''):
-        if request:
-            res = self._http_request('GET', full_url=request)
-        else:
-            res = self._http_request('GET', url_suffix=f"domains?customerKey={self.api_key}&{suffix}")
-        return res
+    def get_domains_list(self, page: str = '', limit: str = '') -> list:
+        domains_list: list = []
+        response = self.get_domain_request(
+            f'{self._base_url}domains?customerKey={self.api_key}&{prepare_suffix(page=page, limit=limit)}')
+        while response and len(domains_list) < int(limit):
+            response_data = response.get('data', [])
+            for domain in response_data:
+                domain.pop('lastSeenAt')
+                domains_list.append(domain)
+            response_next_page = response.get('meta', {}).get('next', '')
+            response = self.get_domain_request(response_next_page) if response_next_page else {}
+        return domains_list
+
+    def get_domain_request(self, request: str):
+        return self._http_request('GET', url_suffix='', full_url=request)
 
     def delete_domains(self, domain_name: str, domain_id: str):
         res = ''
-        try:
-            if domain_id:
-                res = self._http_request('DELETE', f"domains/{domain_id}?customerKey={self.api_key}",
-                                         return_empty_response=True)
-            if domain_name:
-                res = self._http_request('DELETE', f"domains?customerKey={self.api_key}&where[name]={domain_name}",
-                                         return_empty_response=True)
-        except Exception as e:
-            if e.res.status_code == 400:
-                raise DemistoException('Domain for delete command does not exist, Please insert an existing domain '
-                                       'name or id.')
-            if e.res.status_code ==401
-
+        if domain_id:
+            res = self._http_request('DELETE', f"domains/{domain_id}?customerKey={self.api_key}",
+                                     return_empty_response=True)
+        if domain_name:
+            res = self._http_request('DELETE', f"domains?customerKey={self.api_key}&where[name]={domain_name}",
+                                     return_empty_response=True)
         return res
 
     def add_event_to_domain(self, event: dict):
@@ -45,40 +47,20 @@ class Client(BaseClient):
                                   return_empty_response=True)
 
 
-def prepare_suffix(page: Optional[str] = '', limit: Optional[str] = '', request: Optional[str] = '') -> str:
+def prepare_suffix(page: Optional[str] = '', limit: Optional[str] = '') -> str:
     """
     Create the relevant suffix for the domains command,
      Either there is a complete request that should be sent or page and limit arguments.
     :param page: The number of the requested page for domains command.
     :param limit: The limit of the queries to return from the domains command.
-    :param request: Full request to send to API, Used when running the domains list command and there is a large number
-                    of queries which are then returned with paging and have a next page request built already.
     :return: (str) with the suffix.
     """
     suffix = ''
-    if request:
-        suffix = request
     if page:
         suffix += f'page={page}&'
     if limit:
         suffix += f'limit={limit}&'
     return suffix
-
-
-def create_domain_list(client: Client, response: dict) -> list:
-    """
-    :param client: Cisco Umbrella Client for the api request.
-    :param response: the first response of the domains api call.
-    :return: list of all of the domains from the api.
-    """
-    full_domains_list = []
-    while response:
-        response_data = response.get('data', [])
-        for domain in response_data:
-            full_domains_list.append(domain.get('name'))
-        response_next_page = response.get('meta', {}).get('next', '')
-        response = client.get_domains_list(response_next_page) if response_next_page else {}
-    return full_domains_list
 
 
 def domains_list_command(client: Client, args: dict) -> CommandResults:
@@ -88,16 +70,13 @@ def domains_list_command(client: Client, args: dict) -> CommandResults:
     """
     page = args.get('page', '')
     limit = args.get('limit', '')
-    suffix = prepare_suffix(page=page, limit=limit)
-    response = client.get_domains_list(suffix=suffix)
-    domains_list = create_domain_list(client, response)
-    domains_list = domains_list[:int(limit)]
-    readable_output = tableToMarkdown(t=domains_list, name='List of Domains', headers=['Domain'])
+    response = client.get_domains_list(page=page, limit=limit)
+    readable_output = tableToMarkdown(t=response, name='List of Domains', headers=['id', 'name'])
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='CiscoUmbrellaEnforcement.Domains',
-        outputs_key_field='Domains',
-        outputs=domains_list
+        outputs_key_field='id',
+        outputs=response
     )
 
 
@@ -124,15 +103,15 @@ def domain_event_add_command(client: Client, args: dict) -> str:
         "providerName": "Security Platform"
     }
 
-    response = client.add_event_to_domain(new_event)
-    if response.get('id'):
-        action_result = f"New event was added successfully, The id is {str(response.get('id'))}."
+    response: dict = client.add_event_to_domain(new_event)
+    if id := str(response.get('id')):
+        action_result = f"New event was added successfully, The id is {id}."
     else:
         action_result = "New event's addition failed."
     return action_result
 
 
-def domain_delete_command(client: Client, args: dict) -> str:
+def domain_delete_command(client: Client, args: dict) -> CommandResults:
     """
     :param client: Cisco Umbrella Client for the api request.
     :param args: args from the user for the command.
@@ -144,12 +123,29 @@ def domain_delete_command(client: Client, args: dict) -> str:
         raise DemistoException(
             'Both domain name and domain id do not exist, Please supply one of them in order to set the domain to '
             'delete command')
-    response = client.delete_domains(domain_id=domain_id, domain_name=domain_name)
+    try:
+        response = client.delete_domains(domain_id=domain_id, domain_name=domain_name)
+    except DemistoException as e:
+        if e.res.status_code == 400:
+            return CommandResults(
+                readable_output='Domain for delete command does not exist, Please insert an existing domain name or id.'
+            )
+    old_context = demisto.dt(demisto.context(), f'CiscoUmbrellaEnforcement.Domains(val.id === {domain_id})')
+    demisto.info(f"old context {str(old_context)}")
+    if old_context:
+        if isinstance(old_context, list):
+            old_context = old_context[0]
+        old_context['IsDeleted'] = True
     if int(response.status_code) == 204:
         message = f"{domain_name if domain_name else domain_id} Domain was removed from blacklist"
     else:
         message = f"{domain_name if domain_name else domain_id} Domain not in the blacklist or Error"
-    return message
+    return CommandResults(
+        readable_output=message,
+        outputs_prefix='CiscoUmbrellaEnforcement.Domains',
+        outputs_key_field='id',
+        outputs=old_context
+    )
 
 
 def test_module(client: Client) -> str:
@@ -157,7 +153,7 @@ def test_module(client: Client) -> str:
     :param client: Cisco Umbrella Client for the api request.
     :return: 'ok' if there is a connection with the api and exception otherwise.
     """
-    client.get_domains_list(prepare_suffix())
+    client.get_domains_list(limit='1', page='1')
     return 'ok'
 
 

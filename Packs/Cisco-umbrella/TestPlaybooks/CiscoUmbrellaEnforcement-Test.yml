@@ -1,6 +1,6 @@
-id: CiscoUmbrellaEnforcement-Test
+id: Cisco Umbrella Enforcement-Test
 version: -1
-name: CiscoUmbrellaEnforcement-Test
+name: Cisco Umbrella Enforcement-Test
 starttaskid: "0"
 tasks:
   "0":
