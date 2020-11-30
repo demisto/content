@@ -39,7 +39,7 @@ class Client(BaseClient):
         Returns:
             Response dictionary
         """
-        return self.get_network_lists()
+        return self.get_network_lists(extended=False, include_elements=False)
 
     def get_network_lists(self,
                           search: str = None,
