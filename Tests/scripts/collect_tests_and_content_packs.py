@@ -1042,9 +1042,11 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     ).union(modified_metadata_list)
 
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
-    if 'README.md' in files_string and ('.py', '.json', 'yml' not in files_string):
-        logging.info('im here')
-        create_filter_envs_file(from_version, to_version, readme_only=True)
+    for file in files_string:
+        if not file.endswith('.py') and not file.endswith('.json') and not file.endswith('.yml') in files_string:
+    # if 'README.md' in files_string and ('.py', '.json', 'yml' not in files_string):
+    #     logging.info('im here')
+            create_filter_envs_file(from_version, to_version, readme_only=True)
     else:
         logging.info('#################')
         create_filter_envs_file(from_version, to_version)
