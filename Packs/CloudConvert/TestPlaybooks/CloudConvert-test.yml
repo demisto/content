@@ -1,6 +1,5 @@
 id: CloudConvert-test
-version: 31
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: CloudConvert-test
 description: Use this playbook to convert files using Cloud Convert
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "46"
@@ -325,6 +325,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1204,26 +1205,26 @@ inputs:
     simple: https://raw.githubusercontent.com/demisto/content/master/TestData/pdfworking.pdf
   required: false
   description: This is the url of the uploaded file
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: entry_id
   value: {}
   required: false
   description: This is the entry id of the uploaded file
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: output_format
   value:
     simple: jpg
   required: true
   description: |
     This is the desired output format
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: download_via
   value:
     simple: war_room_entry
   required: true
   description: |
     The method for downloading the resulted file, url or entry
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 sourceplaybookid: 27d078f8-e515-4cfc-83d7-30ab49a8b38e
 fromversion: 5.0.0
