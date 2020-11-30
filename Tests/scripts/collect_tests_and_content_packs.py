@@ -1221,7 +1221,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', readme_only=F
             changed_files = get_list_of_files_in_the_pack(path_to_pack)
             files_string = changed_files_to_string(changed_files)
         elif branch_name != 'master':
-            files_string = tools.run_command("git diff --name-status origin/master...{0} | grep '^Packs'".format(branch_name))
+            files_string = tools.run_command("git diff --name-status origin/master...{0} -- grep Packs".format(branch_name))
             # Checks if the build is for contributor PR and if so add it's pack.
             if os.getenv('CONTRIB_BRANCH'):
                 packs_diff = tools.run_command("git diff --name-status HEAD -- Packs")
@@ -1230,7 +1230,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', readme_only=F
             commit_string = tools.run_command("git log -n 2 --pretty='%H'")
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
-            files_string = tools.run_command("git diff --name-status {}...{} | grep '^Packs'".format(second_last_commit, last_commit))
+            files_string = tools.run_command("git diff --name-status {}...{} -- grep Packs".format(second_last_commit, last_commit))
         logging.debug(f'Files string: {files_string}')
         minimum_server_version = AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
 
