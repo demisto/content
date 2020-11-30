@@ -11,7 +11,7 @@ from google.cloud.storage import Blob, Bucket
 
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, \
-    IGNORED_FILES, PACKS_FOLDER, PACKS_RESULTS_FILE
+    IGNORED_FILES, PACKS_FOLDER, PACKS_RESULTS_FILE, CONTENT_ROOT_PATH, get_recent_commits_data, get_content_git_client
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, load_json, \
     get_packs_summary
 
@@ -336,6 +336,11 @@ def main():
     # Check if needs to upload or not
     check_if_need_to_upload(pc_successful_packs_dict, pc_failed_packs_dict)
 
+    # content repo client initialized
+    content_repo = get_content_git_client(CONTENT_ROOT_PATH)
+    current_commit_hash, previous_commit_hash = get_recent_commits_data(content_repo, build_index_folder_path,
+                                                                        is_bucket_upload_flow=True)
+
     # Detect packs to upload
     pack_names = get_pack_names(target_packs)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
@@ -357,13 +362,15 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.copy_integration_images(production_bucket, build_bucket)
+        task_status = pack.copy_integration_images(production_bucket, build_bucket, current_commit_hash,
+                                                   previous_commit_hash, content_repo)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status = pack.copy_author_image(production_bucket, build_bucket)
+        task_status = pack.copy_author_image(production_bucket, build_bucket, current_commit_hash,
+                                             previous_commit_hash, content_repo)
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             pack.cleanup()

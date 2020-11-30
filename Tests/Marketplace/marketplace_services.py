@@ -5,6 +5,7 @@ import subprocess
 import fnmatch
 import re
 import shutil
+import git
 import yaml
 import google.auth
 from google.cloud import storage
@@ -19,7 +20,9 @@ from distutils.version import LooseVersion
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
-from typing import Tuple
+from Tests.Marketplace.upload_packs import load_json
+from typing import Tuple, Any
+import sys
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
@@ -1134,7 +1137,8 @@ class Pack(object):
                 return task_status
         else:
             task_status = False
-            logging.error(f"{self._pack_name} index changelog file is missing in build bucket path: {build_changelog_index_path}")
+            logging.error(
+                f"{self._pack_name} index changelog file is missing in build bucket path: {build_changelog_index_path}")
 
         return task_status and self.is_changelog_exists()
 
@@ -1607,41 +1611,60 @@ class Pack(object):
         finally:
             return task_status, uploaded_integration_images
 
-    def copy_integration_images(self, production_bucket, build_bucket):
-        """ Copies all pack's integration images from the build bucket to the production bucket
+    def copy_integration_images(self, production_bucket, build_bucket, current_commit_hash, previous_commit_hash,
+                                content_repo):
+        """ Detects if a pack's integration image has been added/modified and copies it accordingly
+        from the build bucket to the production bucket.
 
         Args:
             production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
             build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
+            current_commit_hash (str): The last commit hash of head.
+            previous_commit_hash (str): The previous commit to diff with.
+            content_repo (git.repo.base.Repo): content repo object.
 
         Returns:
             bool: Whether the operation succeeded.
 
         """
         task_status = True
+        num_copied_images = 0
+        err_msg = f"Failed copying {self._pack_name} pack integrations images."
 
-        build_integration_images_blobs = [f for f in
-                                          build_bucket.list_blobs(
-                                              prefix=os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name)
-                                          )
-                                          if is_integration_image(os.path.basename(f.name))]
-        for integration_image_blob in build_integration_images_blobs:
-            image_name = os.path.basename(integration_image_blob.name)
-            logging.info(f"Uploading {self._pack_name} pack integration image: {image_name}")
-            # We upload each image object taken from the build bucket into the production bucket
-            copied_blob = build_bucket.copy_blob(
-                blob=integration_image_blob, destination_bucket=production_bucket,
-                new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, image_name)
-            )
-            task_status = task_status and copied_blob.exists()
-            if not task_status:
-                logging.error(f"Upload {self._pack_name} integration image: {integration_image_blob.name} blob to "
-                              f"{copied_blob.name} blob failed.")
+        try:
+            current_commit = content_repo.commit(current_commit_hash)
+            previous_commit = content_repo.commit(previous_commit_hash)
+
+            for file in current_commit.diff(previous_commit):
+                image_name = os.path.basename(file.a_path)
+                if self.is_integration_image(file.a_path):
+                    build_bucket_image_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, image_name)
+                    build_bucket_image_blob = build_bucket.blob(build_bucket_image_path)
+                    if not build_bucket_image_blob.exists():
+                        logging.error(f"Found changed/added integration image {image_name} in content repo but "
+                                      f"{build_bucket_image_path} does not exist in build bucket")
+                        task_status = False
+                    else:
+                        copied_blob = build_bucket.copy_blob(
+                            blob=build_bucket_image_blob, destination_bucket=production_bucket,
+                            new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, image_name)
+                        )
+                        if not copied_blob.exists():
+                            logging.error(
+                                f"Copy {self._pack_name} integration image: {build_bucket_image_blob.name} blob to "
+                                f"{copied_blob.name} blob failed.")
+                            task_status = False
+                        else:
+                            num_copied_images += 1
+
+        except Exception as e:
+            logging.exception(f"{err_msg}. Additional Info: {str(e)}")
+            return False
 
         if not task_status:
-            logging.error(f"Failed to upload {self._pack_name} pack integration images.")
+            logging.error(err_msg)
         else:
-            logging.success(f"Uploaded {len(build_integration_images_blobs)} images for {self._pack_name} pack.")
+            logging.success(f"Copied {num_copied_images} images for {self._pack_name} pack.")
 
         return task_status
 
@@ -1702,46 +1725,61 @@ class Pack(object):
         finally:
             return task_status, author_image_storage_path
 
-    def copy_author_image(self, production_bucket, build_bucket):
-        """ Copies pack's author image from the build bucket to the production bucket
+    def copy_author_image(self, production_bucket, build_bucket, current_commit_hash, previous_commit_hash,
+                          content_repo):
+        """ Detects if a pack's author image has been added/modified and copies it accordingly
+        from the build bucket to the production bucket.
 
-        Searches for `Author_image.png`, In case no such image was found, default Base pack image path is used and
-        it's gcp path is returned.
+        Searches for `Author_image.png`, In case no such image was found, default Base pack image path is used.
 
         Args:
             production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
             build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
+            current_commit_hash (str): The last commit hash of head.
+            previous_commit_hash (str): The previous commit to diff with.
+            content_repo (git.repo.base.Repo): content repo object.
 
         Returns:
             bool: Whether the operation succeeded.
 
         """
-        task_status = True
+        err_msg = f"Failed copying {self._pack_name} pack author image."
 
-        build_author_image_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
-        build_author_image_blob = build_bucket.blob(build_author_image_path)
+        try:
+            current_commit = content_repo.commit(current_commit_hash)
+            previous_commit = content_repo.commit(previous_commit_hash)
+            author_images_paths = [file.a_path for file in current_commit.diff(previous_commit) if
+                                   self.is_author_image(file.a_path)]
+            if not author_images_paths:
+                logging.info(f"No changes in {Pack.AUTHOR_IMAGE_NAME} in {self._pack_name} pack were detected.")
+                return True
+            elif len(author_images_paths) > 1:
+                logging.error(f"More than one {Pack.AUTHOR_IMAGE_NAME} of {self._pack_name} pack was detected.")
+                return False
+            else:
+                build_author_image_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name,
+                                                       Pack.AUTHOR_IMAGE_NAME)
+                build_author_image_blob = build_bucket.blob(build_author_image_path)
 
-        if build_author_image_blob.exists():
-            copied_blob = build_bucket.copy_blob(
-                blob=build_author_image_blob, destination_bucket=production_bucket,
-                new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
-            )
-            task_status = task_status and copied_blob.exists()
-        elif self.support_type == Metadata.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
-            logging.info((f"Skipping uploading of {self._pack_name} pack author image "
-                          f"and use default {GCPConfig.BASE_PACK} pack image"))
-            return task_status
-        else:
-            logging.info(f"Skipping uploading of {self._pack_name} pack author image. The pack is defined as "
-                         f"{self.support_type} support type")
-            return task_status
+                if build_author_image_blob.exists():
+                    copied_blob = build_bucket.copy_blob(
+                        blob=build_author_image_blob, destination_bucket=production_bucket,
+                        new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
+                    )
+                    if not copied_blob.exists():
+                        logging.error(err_msg)
+                        return False
+                    else:
+                        logging.success(f"Copied successfully {self._pack_name} pack author image")
+                        return True
+                else:
+                    logging.error(f"Found changed/added author image in content repo for {self._pack_name} pack but "
+                                  f"image does not exist in build bucket in path {build_author_image_path}.")
+                    return False
 
-        if not task_status:
-            logging.error(f"Failed uploading {self._pack_name} pack author image.")
-        else:
-            logging.success(f"Uploaded successfully {self._pack_name} pack author image")
-
-        return task_status
+        except Exception as e:
+            logging.exception(f"{err_msg}. Additional Info: {str(e)}")
+            return False
 
     def cleanup(self):
         """ Finalization action, removes extracted pack folder.
@@ -1776,20 +1814,134 @@ class Pack(object):
         else:
             return False, str()
 
+    def is_integration_image(self, file_path: str):
+        """ Indicates whether a file_path in pack directory (in the bucket) is an integration image or not
+
+        Args:
+            file_path (str): The file path
+
+        Returns:
+            bool: True if the file is an integration image or False otherwise
+
+        """
+        return file_path.startswith(os.path.join(PACKS_FOLDER, self._pack_name)) and file_path.endswith('.png') and \
+               'image' in os.path.basename(file_path.lower()) and os.path.basename(file_path) != Pack.AUTHOR_IMAGE_NAME
+
+    def is_author_image(self, file_path: str):
+        """ Indicates whether a file_path in pack directory (in the bucket) is an author image or not
+
+        Args:
+            file_path (str): The file path
+
+        Returns:
+            bool: True if the file is an author image or False otherwise
+
+        """
+        return file_path.startswith(os.path.join(PACKS_FOLDER, self._pack_name)) and \
+               os.path.basename(file_path) == Pack.AUTHOR_IMAGE_NAME
 
 # HELPER FUNCTIONS
 
-def is_integration_image(file_name):
-    """ Indicates whether a file_name in pack directory (in the bucket) is an integration image or not
+
+def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, is_private_build, circle_branch):
+    """ If running in bucket upload workflow we want to get the commit in the index which is the index
+    We've last uploaded to production bucket. Otherwise, we are in a commit workflow and the diff should be from the
+    head of origin/master
 
     Args:
-        file_name (str): The file name
+        content_repo (git.repo.base.Repo): content repo object.
+        index_folder_path (str): the path to the local index folder
+        is_bucket_upload_flow (bool): indicates whether its a run of bucket upload flow or regular build
+        is_private_build (bool): indicates whether its a run of private build or not
+        circle_branch (str): CircleCi branch of current build
 
     Returns:
-        bool: True if the file is an integration image or False otherwise
+        str: previous commit depending on the flow the script is running
 
     """
-    return file_name.endswith('.png') and 'author' not in file_name.lower()
+    if is_bucket_upload_flow:
+        return get_last_upload_commit_hash(content_repo, index_folder_path)
+    elif is_private_build:
+        previous_master_head_commit = content_repo.commit('origin/master~1').hexsha
+        logging.info(f"Using origin/master HEAD~1 commit hash {previous_master_head_commit} to diff with.")
+        return previous_master_head_commit
+    else:
+        if circle_branch == 'master':
+            head_str = "HEAD~1"
+            # if circle branch is master than current commit is origin/master HEAD, so we need to diff with HEAD~1
+            previous_master_head_commit = content_repo.commit('origin/master~1').hexsha
+        else:
+            head_str = "HEAD"
+            # else we are on a regular branch and the diff should be done with origin/master HEAD
+            previous_master_head_commit = content_repo.commit('origin/master').hexsha
+        logging.info(f"Using origin/master {head_str} commit hash {previous_master_head_commit} to diff with.")
+        return previous_master_head_commit
+
+
+def get_last_upload_commit_hash(content_repo, index_folder_path):
+    """
+    Returns the last origin/master commit hash that was uploaded to the bucket
+    Args:
+        content_repo (git.repo.base.Repo): content repo object.
+        index_folder_path: The path to the index folder
+
+    Returns:
+        The commit hash
+    """
+
+    inner_index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
+    if not os.path.exists(inner_index_json_path):
+        logging.critical(f"{GCPConfig.INDEX_NAME}.json not found in {GCPConfig.INDEX_NAME} folder")
+        sys.exit(1)
+    else:
+        inner_index_json_file = load_json(inner_index_json_path)
+        if 'commit' in inner_index_json_file:
+            last_upload_commit_hash = inner_index_json_file['commit']
+            logging.info(f"Retrieved the last commit that was uploaded to production: {last_upload_commit_hash}")
+        else:
+            logging.critical(f"No commit field in {GCPConfig.INDEX_NAME}.json, content: {str(inner_index_json_file)}")
+            sys.exit(1)
+
+    try:
+        last_upload_commit = content_repo.commit(last_upload_commit_hash).hexsha
+        logging.info(f"Using commit hash {last_upload_commit} from index.json to diff with.")
+        return last_upload_commit
+    except Exception as e:
+        logging.critical(f'Commit {last_upload_commit_hash} in {GCPConfig.INDEX_NAME}.json does not exist in content '
+                         f'repo. Additional info:\n {e}')
+        sys.exit(1)
+
+
+def get_content_git_client(content_repo_path: str):
+    """ Initializes content repo client.
+
+    Args:
+        content_repo_path (str): content repo full path
+
+    Returns:
+        git.repo.base.Repo: content repo object.
+
+    """
+    return git.Repo(content_repo_path)
+
+
+def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket_upload_flow: bool,
+                            is_private_build: bool = False, circle_branch: str = "master"):
+    """ Returns recent commits hashes (of head and remote master)
+
+    Args:
+        content_repo (git.repo.base.Repo): content repo object.
+        index_folder_path (str): the path to the local index folder
+        is_bucket_upload_flow (bool): indicates whether its a run of bucket upload flow or regular build
+        is_private_build (bool): indicates whether its a run of private build or not
+        circle_branch (str): CircleCi branch of current build
+
+    Returns:
+        str: last commit hash of head.
+        str: previous commit depending on the flow the script is running
+    """
+    return content_repo.head.commit.hexsha, get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow,
+                                                                is_private_build, circle_branch)
 
 
 def init_storage_client(service_account=None):
