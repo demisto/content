@@ -336,7 +336,7 @@ def extract_credentials_from_secret(secret_path):
 
     """
     logging.info('Retrieving the credentials for Cortex XSOAR server')
-    secret_conf_file = get_json_file(path=secret)
+    secret_conf_file = get_json_file(path=secret_path)
     username: str = secret_conf_file.get('username')
     password: str = secret_conf_file.get('userPassword')
     return username, password
@@ -357,7 +357,7 @@ def main():
     # Get the first host by the ami env
     hosts, _ = Build.get_servers(ami_env=options.ami_env)
     host = hosts[0]
-    username, password = connect_to_server(options.secret)
+    username, password = extract_credentials_from_secret(options.secret)
     server = Server(host=host, user_name=username, password=password)
 
     # Verify premium packs in the server
