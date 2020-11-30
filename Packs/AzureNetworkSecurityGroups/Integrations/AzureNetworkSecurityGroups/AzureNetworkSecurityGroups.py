@@ -41,7 +41,7 @@ class AzureNSGClient:
             'base_url': base_url,
             'verify': verify,
             'proxy': proxy,
-            'resource': 'https://management.core.windows.net',
+            'resource': 'https://management.core.windows.net',   # disable-secrets-detection
             'tenant_id': tenant_id,
             'ok_codes': (200, 201, 202, 204)
         }
@@ -302,7 +302,12 @@ def start_auth(client: AzureNSGClient) -> CommandResults:
 
 
 @logger
-def complete_auth(client: AzureNSGClient):
+def complete_auth(client: AzureNSGClient, refresh_token: str = None):
+    if refresh_token:
+        # For test purposes if a refresh token is passed, set it in the integration context
+        integration_context = demisto.getIntegrationContext()
+        integration_context.update(current_refresh_token=refresh_token)
+        demisto.setIntegrationContext(integration_context)
     client.ms_client.get_access_token()
     return '✅ Authorization completed successfully.'
 

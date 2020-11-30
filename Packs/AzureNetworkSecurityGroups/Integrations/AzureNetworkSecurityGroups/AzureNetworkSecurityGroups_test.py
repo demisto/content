@@ -38,7 +38,7 @@ def test_format_rule():
     rule = util_load_json("test_data/get_rule_result.json")
     cr = format_rule(rule, "RuleName")
     assert cr.raw_response['name'] == 'wow'
-    assert cr.raw_response['sourceAddressPrefix'] == '8.1.2.3'
+    assert cr.raw_response['sourceAddressPrefix'] == '3.2.3.2'
     assert '### Rules RuleName' in cr.readable_output
 
 
