@@ -1,4 +1,4 @@
-Use the Microsoft Graph Files integration to enable your app get authorized access to files in OneDrive, SharePoint, and MS Teams across your entire organization. This integration requires admin consent.
+Use the Microsoft Graph Files integration to enable your app to get authorized access to files in OneDrive, SharePoint, and MS Teams across your entire organization. This integration requires admin consent.
 This integration was integrated and tested with version xx of Microsoft_Graph_Files
 ## Configure Microsoft_Graph_Files on Cortex XSOAR
 
@@ -33,8 +33,8 @@ Deletes an item from OneDrive.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | object_type | The MS Graph resource. Can be "drives", "groups", "sites", or "users". | Required | 
-| object_type_id | MS Graph resource id.<br/>For resource type 'drive': In order to get a list of all drives that exist in your site, use the following command: msgraph-list-drives-in-site<br/>For resource type 'group': In order to get a list of all groups that exist configure 'Microsoft Graph Groups' integration and use the following command: msgraph-groups-list-groups.<br/>For resource type 'sites': In order to get a list of all sites use the following command: msgraph-list-sharepoint-sites.<br/>For resource type 'users': In order to get a list of all users that exist, configure 'Microsoft Graph User' integration and use the following command: msgraph-user-list. | Required | 
-| item_id | The ID of the item to delete.<br/>In order to get the id of the file you want to delete you can use the msgraph-list-drive-content command. | Required | 
+| object_type_id | MS Graph resource ID.<br/> For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command. | Required | 
+| item_id | The ID of the item to delete.<br/>In order to get the ID of the file you want to delete you can use the msgraph-list-drive-content command. | Required | 
 
 
 #### Context Output
@@ -52,7 +52,7 @@ There is no context output for this command.
 
 ### msgraph-upload-new-file
 ***
-Uploads a file from Demisto to the specified MS Graph resource.
+Uploads a file from Cortex XSOAR to the specified MS Graph resource.
 
 
 #### Base Command
@@ -63,10 +63,10 @@ Uploads a file from Demisto to the specified MS Graph resource.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | object_type | The MS Graph resource. Can be "drives", "groups", "sites", or "users". | Required | 
-| object_type_id | MS Graph resource id.<br/>For resource type 'drive': In order to get a list of all drives that exist in your site, use the following command: msgraph-list-drives-in-site<br/>For resource type 'group': In order to get a list of all groups that exist, configure 'Microsoft Graph Groups' integration and use the following command: msgraph-groups-list-groups.<br/>For resource type 'sites': In order to get a list of all sites. use the following command: msgraph-list-sharepoint-sites.<br/>For resource type 'users': In order to get a list of all users that exist, configure 'Microsoft Graph User' integration and use the following command: msgraph-user-list. | Required | 
-| parent_id | The ID of the folder in which to upload the file.<br/>In order to get the id of a folder, you can use the msgraph-list-drive-content command. | Required | 
+| object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command. | Required | 
+| parent_id | The ID of the folder in which to upload the file.<br/>In order to get the ID of a folder, you can use the msgraph-list-drive-content command. | Required | 
 | file_name | A name for the file to upload. | Required | 
-| entry_id | The Demisto entry ID of the file. | Required | 
+| entry_id | The Cortex XSOAR entry ID of the file. | Required | 
 
 
 #### Context Output
@@ -162,9 +162,9 @@ Replaces the content of the file in the specified MS Graph resource.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | object_type | The MS Graph resource. Can be "drives", "groups", "sites", or "users". | Required | 
-| object_type_id | MS Graph resource id.<br/>For resource type 'drive': In order to get a list of all drives that exist in your site, use the following command: msgraph-list-drives-in-site<br/>For resource type 'group': In order to get a list of all groups that exist configure 'Microsoft Graph Groups' integration and use the following command: msgraph-groups-list-groups.<br/>For resource type 'sites': In order to get a list of all sites use the following command: msgraph-list-sharepoint-sites.<br/>For resource type 'users': In order to get a list of all users that exist, configure 'Microsoft Graph User' integration and use the following command: msgraph-user-list. | Required | 
-| item_id | The MS Graph item ID of the file you want to replace.<br/>In order to get the id of the file you want to replace you can use the msgraph-list-drive-content command. | Required | 
-| entry_id | The Demisto entry ID of the replacing file. | Required | 
+| object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command. | Required | 
+| item_id | The MS Graph item ID of the file you want to replace.<br/>In order to get the ID of the file you want to replace you can use the msgraph-list-drive-content command. | Required | 
+| entry_id | The Cortex XSOAR entry ID of the replacing file. | Required | 
 
 
 #### Context Output
@@ -262,8 +262,8 @@ Creates a new folder in a drive with the specified parent item or path.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | object_type | The MS Graph resource. Can be "drives", "groups", "sites", or "users". | Required | 
-| object_type_id | MS Graph resource id.<br/>For resource type 'drive': In order to get a list of all drives that exist in your site, use the following command: msgraph-list-drives-in-site<br/>For resource type 'group': In order to get a list of all groups that exist configure 'Microsoft Graph Groups' integration and use the following command: msgraph-groups-list-groups.<br/>For resource type 'sites': In order to get a list of all sites use the following command: msgraph-list-sharepoint-sites.<br/>For resource type 'users': In order to get a list of all users that exist, configure 'Microsoft Graph User' integration and use the following command: msgraph-user-list. | Required | 
-| parent_id | The ID of the parent in which to upload the new folder.<br/>Parent can be either 'root' or another folder.<br/>In order to get the required folder id you can use the msgraph-list-drive-content command | Required | 
+| object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command. | Required | 
+| parent_id | The ID of the parent in which to upload the new folder.<br/>Parent can be either 'root' or another folder.<br/>In order to get the required folder ID you can use the msgraph-list-drive-content command. | Required | 
 | folder_name | The name of the new folder. | Required | 
 
 
@@ -354,9 +354,9 @@ Returns the list of document libraries (drives) available for a target site.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| site_id | The ID of the site for which to return available drive resources.<br/>In order to find a list of all sites you can use the msgraph-list-sharepoint-sites command | Optional | 
+| site_id | The ID of the site for which to return available drive resources.<br/>To find a list of all sites, use the msgraph-list-sharepoint-sites command. | Optional | 
 | limit | The maximum number of results to return. | Optional | 
-| next_page_url | The URL for the next results page.<br/>If a next page of results exists, you will find it in Demisto context under MsGraphFiles.ListDrives.OdataNextLink | Optional | 
+| next_page_url | The URL for the next results page.<br/>If a next page of results exists, you will find it in Cortex XSOAR context under MsGraphFiles.ListDrives.OdataNextLink. | Optional | 
 
 
 #### Context Output
@@ -433,10 +433,10 @@ Returns a list of files and folders in the specified drive.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | object_type | The MS Graph resource. Can be "drives", "groups", "sites", or "users". | Required | 
-| object_type_id | MS Graph resource id.<br/>For resource type 'drive': In order to get a list of all drives that exist in your site, use the following command: msgraph-list-drives-in-site<br/>For resource type 'group': In order to get a list of all groups that exist configure 'Microsoft Graph Groups' integration and use the following command: msgraph-groups-list-groups.<br/>For resource type 'sites': In order to get a list of all sites use the following command: msgraph-list-sharepoint-sites.<br/>For resource type 'users': In order to get a list of all users that exist, configure 'Microsoft Graph User' integration and use the following command: msgraph-user-list. | Required | 
-| item_id | The Ms Graph item ID.<br/>It can be either 'root' or another folder.<br/>Passing a folder Id retrieves files from a specified folder.<br/>The default is 'root': retrieve content in the root of the drive.<br/><br/>In order to get the required folder id you can use this command and leave this argument empty in order to get a list of folders that are located in the root.<br/><br/>If your folder is nested inside another folder, pass the parent id found when running this commant without 'item_id', to this argument to get the required folder id. | Optional | 
+| object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command. | Required | 
+| item_id | The MS Graph item ID.<br/>It can be either 'root' or another folder.<br/>Passing a folder ID retrieves files from a specified folder.<br/>The default is 'root': retrieve content in the root of the drive.<br/><br/>In order to get the required folder ID you can use this command and leave this argument empty in order to get a list of folders that are located in the root.<br/><br/>If your folder is nested inside another folder, pass the parent ID found when running this command without 'item_id', to this argument to get the required folder ID. | Optional | 
 | limit | The maximum number of results to return. | Optional | 
-| next_page_url | The URL for the next results page.<br/>If a next page of results exists, you will find it in Demisto context under MsGraphFiles.ListChildren.OdataNextLink | Optional | 
+| next_page_url | The URL for the next results page.<br/>If a next page of results exists, you will find it in Cortex XSOAR context under MsGraphFiles.ListChildren.OdataNextLink. | Optional | 
 
 
 #### Context Output
@@ -596,8 +596,8 @@ Downloads the file contents of the drive item.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | object_type | The MS Graph resource. Can be "drives", "groups", "sites", or "users". | Required | 
-| object_type_id | MS Graph resource id.<br/>For resource type 'drive': In order to get a list of all drives that exist in your site, use the following command: msgraph-list-drives-in-site<br/>For resource type 'group': In order to get a list of all groups that exist configure 'Microsoft Graph Groups' integration and use the following command: msgraph-groups-list-groups.<br/>For resource type 'sites': In order to get a list of all sites use the following command: msgraph-list-sharepoint-sites.<br/>For resource type 'users': In order to get a list of all users that exist, configure 'Microsoft Graph User' integration and use the following command: msgraph-user-list. | Required | 
-| item_id | The MS Graph item ID.<br/>In order to get the id of the file you want to download you can use the msgraph-list-drive-content command. | Required | 
+| object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command. | Required | 
+| item_id | The MS Graph item ID.<br/>In order to get the ID of the file you want to download you can use the msgraph-list-drive-content command. | Required | 
 
 
 #### Context Output
@@ -610,7 +610,7 @@ Downloads the file contents of the drive item.
 | File.SHA512 | String | The SHA512 hash of the file. | 
 | File.Name | String | The file name. | 
 | File.SSDeep | String | The SSDeep hash of the file. | 
-| File.EntryID | Unknown | The Demisto file ID. | 
+| File.EntryID | Unknown | The Cortex XSOAR file ID. | 
 | File.Info | String | Information about the file. | 
 | File.Type | String | The file type. | 
 | File.MD5 | String | The MD5 hash of the file. | 
