@@ -68,11 +68,11 @@ configuration:
   required: false
   type: 13
 - defaultvalue: 'false'
-  display: Automatically generate fetch query filter
+  display: Query only application events configured in IAM Configuration
   name: auto_generate_query_filter
   required: false
   type: 8
-- display: Fetch Query Filter
+- display: Fetch Query Filter (Okta system log events)
   name: fetch_query_filter
   required: false
   type: 0

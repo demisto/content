@@ -26,8 +26,8 @@ For more information, please refer to the [Identity Lifecycle Management article
 | isFetch | Fetch incidents | False |
 | incidentFetchInterval | Incidents Fetch Interval | False |
 | incidentType | Incident type | False |
-| auto_generate_query_filter | Automatically generate fetch query filter | False |
-| fetch_query_filter | Fetch Query Filter | True |
+| auto_generate_query_filter | Query only application events configured in IAM Configuration | False |
+| fetch_query_filter | Fetch Query Filter (Okta system log events) | True |
 | first_fetch | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
 
 * To allow the integration to access the mapper from within the code, as required by the ILM pack, both mappers have to be configured in their proper respective fields and not in the "Mapper (outgoing)" dropdown list selector.

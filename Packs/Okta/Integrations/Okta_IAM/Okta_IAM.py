@@ -26,6 +26,11 @@ ERROR_CODES_TO_RETURN_ERROR = [
     'E0000047',  # rate limit - resets after 1 minute
 ]
 
+FETCH_QUERY_EXCEPTION_MSG = 'If you marked the "Query only application events configured in IAM Configuration" ' \
+                            'checkbox in the instance configuration, you must add an IAM Configuration before ' \
+                            'fetching logs from Okta. Alternatively, you can unmark this checkbox and provide the ' \
+                            '"Fetch Query Filter" parameter instead.'
+
 '''CLIENT CLASS'''
 
 
@@ -227,13 +232,13 @@ class Client(BaseClient):
 
 def get_query_filter(context):
     application_ids = []
-    exception_msg = 'You must configure AppInstance mapping before fetching logs from Okta.'
+
     query_filter = '(eventType eq "application.user_membership.add" ' \
                    'or eventType eq "application.user_membership.remove") and'
 
     iam_configuration = context.get('IAMConfiguration', [])
     if not iam_configuration:
-        raise DemistoException(exception_msg)
+        raise DemistoException(FETCH_QUERY_EXCEPTION_MSG)
 
     for row in iam_configuration:
         application_ids.append(row['ApplicationID'])
@@ -307,21 +312,15 @@ def get_error_details(res):
     return error_msg
 
 
-def get_incident_title(entry):
-    default_title = 'Okta Event'
-    incident_title = entry.get('displayMessage', default_title)
-
-    user_name = demisto.dt(entry, 'target(val.type == "User").displayName')
-    if user_name and len(user_name) > 0:
-        incident_title += f' ({user_name[0]})'
-
-    return incident_title
-
-
 '''COMMAND FUNCTIONS'''
 
 
-def test_module(client, first_fetch_str):
+def test_module(client, is_fetch, fetch_query_filter, auto_generate_query_filter, context, first_fetch_str):
+    if is_fetch:
+        if auto_generate_query_filter:
+            get_query_filter(context)  # will raise an exception if configuration doesn't exist
+        elif not fetch_query_filter:
+            raise DemistoException(FETCH_QUERY_EXCEPTION_MSG)
     try:
         dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)
     except AttributeError:
@@ -594,7 +593,7 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter
     """
 
     incidents = last_run.get('incidents', [])
-    last_run_full_url = last_run.get('last_run_full_url', [])
+    last_run_full_url = last_run.get('last_run_full_url')
 
     first_fetch = dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)
     last_run_time = last_run.get('last_run_time', first_fetch)  # if last_run_time is undefined, use first_fetch
@@ -606,10 +605,7 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter
                                                         query_filter, auto_generate_filter, context)
         for entry in log_events:
             # mapping is done at the classification and mapping stage
-            incident = {
-                'rawJSON': json.dumps(entry),
-                'name': get_incident_title(entry)
-            }
+            incident = {'rawJSON': json.dumps(entry)}
             incidents.append(incident)
 
     next_run = {
@@ -638,10 +634,12 @@ def main():
     is_update_enabled = demisto.params().get("update-user-enabled")
     create_if_not_exists = demisto.params().get("create-if-not-exists")
 
+    is_fetch = params.get('isFetch')
     first_fetch_str = params.get('first_fetch')
     fetch_limit = int(params.get('max_fetch'))
     auto_generate_query_filter = params.get('auto_generate_query_filter')
     fetch_query_filter = params.get('fetch_query_filter')
+    context = demisto.getIntegrationContext()
 
     headers = {
         'Content-Type': 'application/json',
@@ -681,7 +679,7 @@ def main():
 
     try:
         if command == 'test-module':
-            test_module(client, first_fetch_str)
+            test_module(client, is_fetch, fetch_query_filter, auto_generate_query_filter, context, first_fetch_str)
 
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command(client))
@@ -693,7 +691,6 @@ def main():
             return_results(list_apps_command(client, args))
 
         elif command == 'okta-iam-get-configuration':
-            context = demisto.getIntegrationContext()
             return_results(get_configuration(context))
 
         elif command == 'okta-iam-set-configuration':
