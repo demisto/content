@@ -2205,6 +2205,7 @@ def main():
         else:
             raise_exception = True
             raise NotImplementedError(f'{COMMAND_NOT_IMPLEMENTED_MSG}: {demisto.command()}')
+
     except Exception as err:
         LOG(err)
         LOG.print_log()
