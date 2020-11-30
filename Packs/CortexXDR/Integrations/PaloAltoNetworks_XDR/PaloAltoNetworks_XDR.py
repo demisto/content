@@ -979,7 +979,7 @@ def get_incident_extra_data_command(client, args):
     readable_output = [tableToMarkdown('Incident {}'.format(incident_id), incident)]
 
     if len(hr_alerts) > 0:
-        readable_output.append(tableToMarkdown('Alerts', hr_alerts))
+        readable_output.append(tableToMarkdown('Alerts', hr_alerts, headers=[key for key in hr_alerts[0] if key != 'host_ip'))
     else:
         readable_output.append(tableToMarkdown('Alerts', []))
 
