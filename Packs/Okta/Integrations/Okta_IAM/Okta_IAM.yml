@@ -69,10 +69,15 @@ configuration:
   type: 13
 - defaultvalue: 'false'
   display: Query only application events configured in IAM Configuration
+  additionalinfo: Configure an "IAM - Configuration" incident to specify the Okta apps you wish to sync to XSOAR.
+    Further information about IAM configration is detailed in the description (the "?" icon).
   name: auto_generate_query_filter
   required: false
   type: 8
 - display: Fetch Query Filter (Okta system log events)
+  additionalinfo: 'Use a query filter expression in SCIM format. Note: make sure the "Query only application events
+    configured in IAM Configuration" is unchecked in order to use this parameter. See description (the "?" icon)
+    to learn more about the filter parameter.'
   name: fetch_query_filter
   required: false
   type: 0

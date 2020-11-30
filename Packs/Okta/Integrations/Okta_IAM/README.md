@@ -31,12 +31,19 @@ For more information, please refer to the [Identity Lifecycle Management article
 | first_fetch | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
 
 * To allow the integration to access the mapper from within the code, as required by the ILM pack, both mappers have to be configured in their proper respective fields and not in the "Mapper (outgoing)" dropdown list selector.
-* Mark the `Automatically generate fetch query filter` checkbox once you've entered all your Okta application IDs in the IAM Configuration incident.
-* Generate the `Fetch Query Filter` parameter for okta logs API to retrieve only applications configured in XSOAR. In order to generate the filter, go to Okta's System Log and use the advanced search to retrieve only desired logs.
-  For example, to retrieve only additions/removal of users to/from an application with ID "0oae3ioe51sQ64Aui2h7", you will need to use the following filter: `(eventType eq "application.user_membership.add" or eventType eq "application.user_membership.remove") and target.id co "0oae3ioe51sQ64Aui2h7"`.
-  For more information about the filtering syntax, visit [Okta's API docs](https://developer.okta.com/docs/reference/api-overview/#filtering).
 
 4. Click **Test** to check that you are able to connect to the integration.
+
+## Fetch incidents using an "IAM - Configuration" incident
+When the "Query only application events configured in IAM Configuration" checkbox is marked, the query filter expression for Okta's logs API request will be automatically generated, such that only events of addition/removal of users to/from **configured applications** will be retrieved. In this case, it is required to create an "IAM - configration" incident and connect at least one Okta application to an IAM instance in XSOAR in order to fetch incident from Okta.
+
+## Fetch incidents using a manual query filter expression
+**Note: We recommend to use the above method to generate the fetch-incidents query filter.** Use the following method for debugging purposes.
+Unmark the "Query only application events configured in IAM Configuration" checkbox if you wish to use a custom fetch query filter expression, in SCIM syntax. 
+For example: `(eventType eq "application.user_membership.add" or eventType eq "application.user_membership.remove") and target.id eq "0oar418fvkm67MWGd0h7"`
+You may also use the advanced search in Okta's System Logs to generate the filter expression.
+For more details, visit [Okta API reference](https://developer.okta.com/docs/reference/api/system-log/#expression-filter).
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

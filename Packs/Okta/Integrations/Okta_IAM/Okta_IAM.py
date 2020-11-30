@@ -556,10 +556,12 @@ def list_apps_command(client, args):
             'Logo': f"![]({app.get('_links', {}).get('logo', [{}])[0].get('href')})"
         })
 
-    from_idx = page * limit + 1
-    to_idx = from_idx + len(applications) - 1
-    idx_range = f'{from_idx} - {to_idx}' if from_idx != to_idx else str(from_idx)
-    title = f'Okta Applications ({idx_range})'
+    title = 'Okta Applications'
+
+    if applications:
+        from_idx = page * limit + 1
+        to_idx = from_idx + len(applications) - 1
+        title += f' ({from_idx} - {to_idx})'
 
     return CommandResults(
         outputs=outputs,
