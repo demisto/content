@@ -321,7 +321,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
         incident_result = dict()
         incident_result['dbotMirrorDirection'] = MIRROR_DIRECTION[mirror_direction]  # type: ignore
         incident['dbotMirrorInstance'] = demisto.integrationInstance()
-        incident_result['dbotMirrorTags'] = mirror_tag if mirror_tag else None
+        incident_result['dbotMirrorTags'] = mirror_tag if mirror_tag else None  # type: ignore
         incident_result['dbotMirrorId'] = incident['id']
 
         for key, value in incident.items():
@@ -744,8 +744,7 @@ def main() -> None:
                 first_fetch_time=first_fetch_time,
                 query=query,
                 mirror_direction=demisto.params().get('mirror_direction'),
-                mirror_tag=list(mirror_tags),
-                mirror_identically=demisto.params().get('mirror_identically')
+                mirror_tag=list(mirror_tags)
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
