@@ -4355,6 +4355,8 @@ def prettify_log(log: dict):
         pretty_log['TimeGenerated'] = log['time_generated']
     if 'url_category_list' in log:
         pretty_log['URLCategoryList'] = log['url_category_list']
+    if 'vsys' in log:
+        pretty_log['Vsys'] = log['vsys']
 
     return pretty_log
 

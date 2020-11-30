@@ -14,8 +14,8 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, Pa
     IGNORED_FILES, PACKS_FOLDER, BucketUploadFlow, load_json, store_successful_and_failed_packs_in_ci_artifacts
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, get_packs_summary
 
-LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/packs/([A-Za-z0-9-_]+/\d+\.\d+\.\d+/'
-                              r'[A-Za-z0-9-_]+\.zip$)')
+LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/packs/([A-Za-z0-9-_.]+/\d+\.\d+\.\d+/'
+                              r'[A-Za-z0-9-_.]+\.zip$)')
 
 
 def get_pack_names(target_packs: str) -> set:
