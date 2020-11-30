@@ -2263,6 +2263,49 @@ Login to CheckPoint and get the session id
 >|---|
 >| LoUhF29pRkJsBiIWlMdBFy1LhHWXzE0VJT_lWpz4v0k |
 
+### checkpoint-mds-login-and-get-session-id
+***
+Login to CheckPoint MDS and get the session id
+
+
+#### Base Command
+
+`checkpoint-mds-login-and-get-session-id`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | Name of domain to log in to. | Mandatory | 
+| session_timeout | Session expiration timeout in seconds. Default 600 seconds. Session timeout range is between 600 to 3600 seconds. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.Login.session-id | String | Session ID | 
+
+
+#### Command Example
+```!checkpoint-mds-login-and-get-session-id```
+
+#### Context Example
+```
+{
+    "CheckPoint": {
+        "Login": {
+            "session-id": "LoUhF29pRkJsBiIWlMdBFy1LhHWXzE0VJT_lWpz4v0k"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CheckPoint session data:
+>|session-id|
+>|---|
+>| LoUhF29pRkJsBiIWlMdBFy1LhHWXzE0VJT_lWpz4v0k |
 
 ### checkpoint-logout
 ***
