@@ -12,12 +12,13 @@ import copy
 
 from typing import (
     Any, Dict, Optional, Iterator,
-    Tuple, Union, cast,
+    Tuple, Union, cast, Set
 )
 
 from itertools import islice
 from dateparser import parse
 from datetime import datetime, timezone
+from collections import defaultdict
 import ipaddress
 
 # Disable insecure warnings
@@ -862,7 +863,8 @@ def format_certificate_data(certificates: List[Dict[str, Any]]) -> CommandResult
         outputs_prefix='Expanse.Certificate',
         outputs_key_field='id',
         outputs=certificate_data_list if len(certificate_data_list) > 0 else None,
-        indicators=certificate_standard_list if len(certificate_standard_list) > 0 else None
+        indicators=certificate_standard_list if len(certificate_standard_list) > 0 else None,
+        ignore_auto_extract=True,
     )
 
 
@@ -1758,14 +1760,19 @@ def get_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResu
     return format_certificate_data(certificates=cert_data)
 
 
-def get_domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_associated_domains_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     cn_search = args.get('common_name')
-    if cn_search is None:
-        raise ValueError("common_name argument is required")
+    ip_search = args.get('ip')
+
+    if ip_search is not None and cn_search is not None:
+        raise ValueError("only one of common_name and ip arguments should be specified")
+
+    if cn_search is None and ip_search is None:
+        raise ValueError("one of common_name or ip arguments should be specified")
 
     max_certificates, certificates_max_page_size = calculate_limits(args.get('limit', None))
     max_domains, domains_max_page_size = calculate_limits(args.get('domains_limit', None))
-    ips_base_params = {
+    ips_base_params: Dict[str, Any] = {
         "limit": domains_max_page_size
     }
 
@@ -1774,40 +1781,74 @@ def get_domains_for_certificate_command(client: Client, args: Dict[str, Any]) ->
         "limit": certificates_max_page_size
     }
 
-    matching_ips: List[Dict[str, Any]] = []
+    matching_domains: Dict[str, Dict[str, Any]] = {}
+    ips_to_query: Dict[str, Set[str]] = defaultdict(set)
 
-    certificates = islice(client.get_certificates(certificates_search_params), max_certificates)
-    for certificate in certificates:
-        md5_hash = certificate.get('certificate', {}).get('md5Hash')
-        if md5_hash is None:
-            continue
+    if ip_search is not None:
+        ips_to_query[ip_search].clear()  # create an empty set
 
-        certificate_details = client.get_certificate_by_md5_hash(md5_hash=md5_hash)
-        if certificate_details is None:
-            continue
-
-        for recent_ip in certificate_details.get('details', {}).get('recentIps', []):
-            ip_address = recent_ip.get('ip')
-            if ip_address is None:
+    if cn_search is not None:
+        certificates = islice(client.get_certificates(certificates_search_params), max_certificates)
+        for certificate in certificates:
+            md5_hash = certificate.get('certificate', {}).get('md5Hash')
+            if md5_hash is None:
                 continue
 
-            ips_search_params = {
-                'inetSearch': ip_address,
-                'assetType': 'DOMAIN'
-            }
-            ips_search_params.update(ips_base_params)
+            certificate_details = client.get_certificate_by_md5_hash(md5_hash=md5_hash)
+            if certificate_details is None:
+                continue
 
-            matching_ips.extend(islice(client.get_ips(ips_search_params), max_domains))
+            for recent_ip in certificate_details.get('details', {}).get('recentIps', []):
+                ip_address = recent_ip.get('ip')
+                if ip_address is None:
+                    continue
+
+                ips_to_query[ip_address].add(md5_hash)
+
+    for ip2q in ips_to_query.keys():
+        ips_search_params: Dict[str, Any] = {
+            'inetSearch': ip2q,
+            'assetType': 'DOMAIN'
+        }
+        ips_search_params.update(ips_base_params)
+
+        for ipdomain in islice(client.get_ips(ips_search_params), max_domains):
+            if (domain := ipdomain.get('domain')) is None:
+                continue
+
+            if domain not in matching_domains:
+                matching_domains[domain] = {
+                    'name': domain,
+                    'IP': [],
+                    'certificate': []
+                }
+
+            matching_domains[domain]['IP'].append(ip2q)
+            matching_domains[domain]['certificate'].extend(list(ips_to_query[ip2q]))
 
     readable_output = tableToMarkdown(
         f"Expanse Domains matching Certificate Common Name: {cn_search}",
-        matching_ips) if len(matching_ips) > 0 else "## No Domains found"
+        list(matching_domains.values()) if len(matching_domains) > 0 else "## No Domains found",
+        headers=['name', 'IP', 'certificate']
+    )
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Expanse.IP',
-        outputs_key_field=['ip', 'type', 'assetKey', 'assetType'],
-        outputs=matching_ips if len(matching_ips) > 0 else None
+        outputs_prefix='Expanse.AssociatedDomain',
+        outputs_key_field='name',
+        outputs=list(
+            matching_domains.values()) if len(matching_domains) > 0 else None,
+        indicators=[
+            Common.Domain(
+                d,
+                Common.DBotScore(
+                    d,
+                    DBotScoreType.DOMAIN,
+                    "ExpanseV2",
+                    Common.DBotScore.NONE
+                )
+            ) for d in matching_domains.keys()
+        ] if len(matching_domains) > 0 else None,
     )
 
 
@@ -1822,6 +1863,14 @@ def expanse_certificate_command(client: Client, args: Dict[str, Any]) -> Command
     certificate_data: List[Dict[str, Any]] = []
 
     for md5_hash in md5_hashes:
+        # we try to convert it as hex, and if we fail we trust it's a base64 encoded
+        # MD5 hash
+        try:
+            if len(ba_hash := bytearray.fromhex(md5_hash)) == 16:
+                md5_hash = base64.urlsafe_b64encode(ba_hash).decode('ascii')
+        except ValueError:
+            pass
+
         c = client.get_certificate_by_md5_hash(md5_hash=md5_hash)
         if not c or not isinstance(c, dict):
             continue
@@ -2141,8 +2190,8 @@ def main() -> None:
         elif demisto.command() == "expanse-get-certificate":
             return_results(get_certificate_command(client, demisto.args()))
 
-        elif demisto.command() == "expanse-get-domains-for-certificate":
-            return_results(get_domains_for_certificate_command(client, demisto.args()))
+        elif demisto.command() == "expanse-get-associated-domains":
+            return_results(get_associated_domains_command(client, demisto.args()))
 
         elif demisto.command() == "expanse-certificate":
             return_results(expanse_certificate_command(client, demisto.args()))
