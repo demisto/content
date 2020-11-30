@@ -264,7 +264,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         # this is to be able to identify all changed packs in the next upload
         commit = previous_commit_hash
         logging.info('Force upload flow - Index commit hash shuould not be changed')
-        logging.debug('commit hash is: {commit}')
+        logging.debug(f'commit hash is: {commit}')
     else:
         # Otherwise, update the index with the current commit hash (the commit of the upload)
         commit = current_commit_hash
