@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 
 MAIL_STRING = """Delivered-To: to@test1.com
@@ -90,7 +90,7 @@ def test_generate_search_query():
                                                                                             'FROM',
                                                                                             'domain2.com',
                                                                                             'SINCE',
-                                                                                            now]
+                                                                                            now - timedelta(days=1)]
 
 
 def test_generate_labels():

@@ -246,7 +246,7 @@ def fetch_mails(client: IMAPClient,
             continue
         # The search query filters emails by day, not by exact date
         email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
-        if not first_fetch_time or email_message_object.date > first_fetch_time:
+        if email_message_object.date > first_fetch_time:
             mails_fetched.append(email_message_object)
     return mails_fetched, messages
 
@@ -291,7 +291,7 @@ def generate_search_query(latest_created_time: Optional[datetime],
         # Removing Parenthesis and quotes
         messages_query = messages_query.strip('()').replace('"', '')
     # Creating a list of the OR query words
-    messages_query_list = messages_query.split() + ['SINCE', latest_created_time]  # type: ignore[list-item]
+    messages_query_list = messages_query.split() + ['SINCE', latest_created_time - timedelta(days=1)]  # type: ignore[list-item]
     return messages_query_list
 
 
