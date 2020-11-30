@@ -23,6 +23,7 @@ from Tests.test_content import get_json_file
 from pprint import pformat
 
 INDEX_FILE_PATH = 'index.json'
+DEFAULT_PAGE_SIZE = 50
 
 
 def options_handler():
@@ -41,9 +42,7 @@ def options_handler():
                         help=("Path to gcloud service account, is for circleCI usage. "
                               "For local development use your personal account and "
                               "authenticate using Google Cloud SDK by running: "
-                              "`gcloud auth application-default login` and leave this parameter blank. "
-                              "For more information go to: "
-                              "https://googleapis.dev/python/google-api-core/latest/auth.html"),
+                              "`gcloud auth application-default login` and leave this parameter blank. "),
                         required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file', required=True)
 
@@ -132,7 +131,7 @@ def verify_pack(pack):
     return all(id_exists, price_is_valid)
 
 
-def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
+def get_paid_packs_page(client: demisto_client, page: int = 0, size: int = DEFAULT_PAGE_SIZE, request_timeout: int = 999999):
     """Get premium packs from client.
 
     Trigger an API request to demisto server.
@@ -140,6 +139,8 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
 
     Args:
         client: The demisto client to the preform request on.
+        page:
+        size:
         request_timeout: Timeout of API request
 
     Returns:
@@ -148,8 +149,8 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
     """
     request_data = \
         {
-            'page': 0,
-            'size': 50,
+            'page': page,
+            'size': size,
             'sort':
                 [{
                     'field': 'updated',
@@ -172,12 +173,41 @@ def get_paid_packs(client: demisto_client, request_timeout: int = 999999):
         logging.debug(f'Got response data {pformat(response_data)}')
         response = ast.literal_eval(response_data)
         logging.info('Got premium packs from server.')
-        return response["packs"]
+        return response["packs"], response["total"]
 
     result_object = ast.literal_eval(response_data)
     message = result_object.get('message', '')
     logging.error(f'Failed to retrieve premium packs - with status code {status_code}\n{message}\n')
     return None
+
+def get_premium_packs(client: demisto_client, request_timeout: int = 999999):
+    """
+
+    Args:
+        client:
+        request_timeout:
+
+    Returns:
+
+    """
+    server_packs, total = get_paid_packs_page(client=client,
+                                              page=0,
+                                              size=DEFAULT_PAGE_SIZE,
+                                              request_timeout=request_timeout)
+    if total <= DEFAULT_PAGE_SIZE:
+        return server_packs
+    if total % DEFAULT_PAGE_SIZE == 0:
+        pages_until_all = int(total/DEFAULT_PAGE_SIZE)
+    else:
+        pages_until_all = int(total / DEFAULT_PAGE_SIZE) + 1
+
+    for page in range(1, pages_until_all + 1):
+        next_server_packs, _ = get_paid_packs_page(client=client,
+                                                  page=page,
+                                                  size=DEFAULT_PAGE_SIZE,
+                                                  request_timeout=request_timeout)
+        server_packs.update(next_server_packs)
+    return server_packs
 
 
 def verify_pack_in_list(pack, pack_list, pack_list_name="pack list"):
@@ -296,28 +326,20 @@ def get_and_validate_index_json(service_account, production_bucket_name, extract
     return all(index_is_valid, commit_hash_is_valid), index_data
 
 
-def connect_to_server(ami_env, secret):
+def extract_credentials_from_secret(secret_path):
     """
 
     Args:
-        ami_env:
-        secret:
+        secret_path:
 
     Returns:
 
     """
-    # Get the host by the ami env
-    hosts, _ = Build.get_servers(ami_env=ami_env)
-
     logging.info('Retrieving the credentials for Cortex XSOAR server')
     secret_conf_file = get_json_file(path=secret)
     username: str = secret_conf_file.get('username')
     password: str = secret_conf_file.get('userPassword')
-
-    # Only return the first host
-    host = hosts[0]
-    server = Server(host=host, user_name=username, password=password)
-    return server
+    return username, password
 
 
 def main():
@@ -328,13 +350,18 @@ def main():
                                                              production_bucket_name=options.production_bucket_name,
                                                              extract_path=options.extract_path,
                                                              master_history=options.master_history)
-
     if not index_is_valid:
         logging.critical('Index content is invalid. Aborting.')
         sys.exit(1)
 
-    server = connect_to_server(options.ami_env, options.secret)
-    paid_packs = get_paid_packs(client=server.client)
+    # Get the first host by the ami env
+    hosts, _ = Build.get_servers(ami_env=options.ami_env)
+    host = hosts[0]
+    username, password = connect_to_server(options.secret)
+    server = Server(host=host, user_name=username, password=password)
+
+    # Verify premium packs in the server
+    paid_packs = get_premium_packs(client=server.client)
     if paid_packs is not None:
         logging.info(f'Verifying premium packs in {server.host}')
         paid_packs_are_identical = verify_server_paid_packs_by_index(paid_packs, index_data["packs"])
