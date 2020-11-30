@@ -36,11 +36,12 @@ def download_private_id_set_from_gcp():
 
     index_blob = storage_bucket.blob(STORAGE_ID_SET_PATH)
     os.remove(file_path)
+    if not os.path.exists(ARTIFACTS_PATH):
+        os.mkdir(ARTIFACTS_PATH)
+    index_blob.download_to_filename(f'{ARTIFACTS_PATH}/private_id_set.json')
 
-    index_blob.download_to_filename(ARTIFACTS_PATH)
-
-    if os.path.exists(ARTIFACTS_PATH):
-        return ARTIFACTS_PATH
+    if os.path.exists(f'{ARTIFACTS_PATH}/private_id_set.json'):
+        return f'{ARTIFACTS_PATH}/private_id_set.json'
 
     return ''
 
