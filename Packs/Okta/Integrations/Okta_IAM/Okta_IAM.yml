@@ -76,7 +76,7 @@ configuration:
   name: fetch_query_filter
   required: false
   type: 0
-- defaultvalue: 7 days
+- defaultvalue: 0 minutes
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   required: false

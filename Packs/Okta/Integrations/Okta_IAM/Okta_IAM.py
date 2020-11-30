@@ -41,7 +41,7 @@ class Client(BaseClient):
     def get_user(self, email):
         uri = 'users'
         query_params = {
-            'filter': encode_string_results(f'profile.login eq "{email}"')
+            'filter': f'profile.login eq "{email}"'
         }
 
         res = self._http_request(
@@ -125,8 +125,8 @@ class Client(BaseClient):
 
     def list_apps(self, query, page, limit):
         query_params = {
-            'q': encode_string_results(query),
-            'limit': encode_string_results(limit)
+            'q': query,
+            'limit': limit
         }
 
         curr_page = 0
@@ -167,7 +167,8 @@ class Client(BaseClient):
 
         return logs_batch, next_page
 
-    def get_logs(self, last_run_time=None, time_now=None, query_filter=None, auto_generate_filter=False, context=None):
+    def get_logs(self, next_page=None, last_run_time=None, time_now=None,
+                 query_filter=None, auto_generate_filter=False, context=None):
         logs = []
 
         uri = 'logs'
@@ -176,23 +177,29 @@ class Client(BaseClient):
             query_filter = get_query_filter(context)
 
         params = {
-            'filter': encode_string_results(query_filter),
-            'since': encode_string_results(last_run_time),
-            'until': encode_string_results(time_now)
+            'filter': query_filter,
+            'since': last_run_time,
+            'until': time_now
         }
-        logs_batch, next_page = self.get_logs_batch(url_suffix=uri, params=params)
+        logs_batch, next_page = self.get_logs_batch(url_suffix=uri, params=params, full_url=next_page)
 
-        while logs_batch:
-            logs.extend(logs_batch)
-            logs_batch, next_page = self.get_logs_batch(full_url=next_page)
-        return logs
+        try:
+            while logs_batch:
+                logs.extend(logs_batch)
+                logs_batch, next_page = self.get_logs_batch(full_url=next_page)
+        except DemistoException as e:
+            # in case of too many API calls, we return what we got and save the next_page for next fetch
+            if not is_rate_limit_error(e):
+                raise e
+
+        return logs, next_page
 
     def get_logs_batch(self, url_suffix='', params=None, full_url=''):
         """ Gets a batch of logs from Okta.
             Args:
                 url_suffix (str): The logs API endpoint.
                 params (dict): The API query params.
-                full_url (str): The full url retrieved from the last API call.
+                full_url (str): The full url retrieved from the last API call. Preferred over url_suffix if not empty.
 
             Return:
                 logs_batch (dict): The logs batch.
@@ -236,6 +243,12 @@ def get_query_filter(context):
     query_filter += query_suffix
 
     return query_filter
+
+
+def is_rate_limit_error(e):
+    if hasattr(e, 'res') and e.res is not None:
+        return e.res.status_code == 429
+    return False
 
 
 def handle_exception(user_profile, e, action):
@@ -581,6 +594,7 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter
     """
 
     incidents = last_run.get('incidents', [])
+    last_run_full_url = last_run.get('last_run_full_url', [])
 
     first_fetch = dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)
     last_run_time = last_run.get('last_run_time', first_fetch)  # if last_run_time is undefined, use first_fetch
@@ -588,7 +602,8 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter
 
     demisto.debug(f'Okta: Fetching logs from {last_run_time} to {time_now}.')
     if not incidents:
-        log_events = client.get_logs(last_run_time, time_now, query_filter, auto_generate_filter, context)
+        log_events, last_run_full_url = client.get_logs(last_run_full_url, last_run_time, time_now,
+                                                        query_filter, auto_generate_filter, context)
         for entry in log_events:
             # mapping is done at the classification and mapping stage
             incident = {
@@ -599,7 +614,8 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter
 
     next_run = {
         'incidents': incidents[fetch_limit:],
-        'last_run_time': time_now
+        'last_run_time': time_now,
+        'last_run_full_url': last_run_full_url
     }
 
     return incidents[:fetch_limit], next_run
