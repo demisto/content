@@ -1033,7 +1033,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
                                                conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
     """Create a test list that should run"""
-    logging.info(f'files_string - {files_string}')
+
     (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
      modified_metadata_list, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
 
@@ -1042,6 +1042,8 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     ).union(modified_metadata_list)
 
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
+    if 'README.md' in files_string and ('.py', '.json', 'yml' not in files_string):
+        create_filter_envs_file(from_version, to_version, readme_only=True)
 
     create_filter_envs_file(from_version, to_version)
 
@@ -1237,15 +1239,15 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', readme_only=F
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
                                                                              minimum_server_version)
-        if 'README.md' in files_string and ('.py', '.json', 'yml' not in files_string):
-            readme_only = True
-            tests_string = ''
-            packs_to_install = ''
+        # if 'README.md' in files_string and ('.py', '.json', 'yml' not in files_string):
+        #     readme_only = True
+        #     tests_string = ''
+        #     packs_to_install = ''
 
     tests_string = '\n'.join(tests)
     packs_to_install_string = '\n'.join(packs_to_install)
 
-    if not skip_save or readme_only:
+    if not skip_save:
         logging.info("Creating filter_file.txt")
         with open("./Tests/filter_file.txt", "w") as filter_file:
             filter_file.write(tests_string)
