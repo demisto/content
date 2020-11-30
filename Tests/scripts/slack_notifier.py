@@ -126,8 +126,8 @@ def get_attachments_for_unit_test(build_url, is_sdk_build=False):
 def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_file_path=None):
     steps_fields = get_entities_fields(entity_title="Failed Steps")
     color = 'good' if not steps_fields else 'danger'
-    title = f'{BucketUploadFlow.BUCKET_UPLOAD_BUILD_TITLE.value} - Success' if not steps_fields \
-        else f'{BucketUploadFlow.BUCKET_UPLOAD_BUILD_TITLE.value} - Failure'
+    title = f'{BucketUploadFlow.BUCKET_UPLOAD_BUILD_TITLE} - Success' if not steps_fields \
+        else f'{BucketUploadFlow.BUCKET_UPLOAD_BUILD_TITLE} - Failure'
 
     if job_name and color == 'danger':
         steps_fields = [{
@@ -136,15 +136,15 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
             "short": False
         }] + steps_fields
 
-    if job_name and job_name == BucketUploadFlow.UPLOAD_JOB_NAME.value:
+    if job_name and job_name == BucketUploadFlow.UPLOAD_JOB_NAME:
         if os.path.exists(packs_results_file_path):
             try:
                 with open(packs_results_file_path, 'r') as json_file:
                     packs_results_file = json.load(json_file)
                 if packs_results_file:
                     successful_packs = packs_results_file.get(
-                        BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE.value, {}
-                    ).get(BucketUploadFlow.SUCCESSFUL_PACKS.value, {})
+                        BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, {}
+                    ).get(BucketUploadFlow.SUCCESSFUL_PACKS, {})
                     if successful_packs:
                         steps_fields += [{
                             "title": "Successful Packs:",
@@ -152,12 +152,12 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
                             "short": False
                         }]
                     failed_packs = packs_results_file.get(
-                        BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE.value, {}
-                    ).get(BucketUploadFlow.FAILED_PACKS.value, {})
+                        BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, {}
+                    ).get(BucketUploadFlow.FAILED_PACKS, {})
                     if failed_packs:
                         steps_fields += [{
                             "title": "Failed Packs:",
-                            "value": "\n".join([f"{pack_name}: {pack_data.get(BucketUploadFlow.STATUS.value)}"
+                            "value": "\n".join([f"{pack_name}: {pack_data.get(BucketUploadFlow.STATUS)}"
                                                 for pack_name, pack_data in failed_packs.items()]),
                             "short": False
                         }]
@@ -302,7 +302,7 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
         elif test_type == SDK_FAILED_STEPS_TYPE:
             print_color('Starting Slack notifications about SDK nightly build - test playbook', LOG_COLORS.GREEN)
             content_team_attachments = get_attachments_for_all_steps(build_url, build_title=SDK_BUILD_TITLE)
-        elif test_type == BucketUploadFlow.BUCKET_UPLOAD_TYPE.value:
+        elif test_type == BucketUploadFlow.BUCKET_UPLOAD_TYPE:
             print_color('Starting Slack notifications about upload to production bucket build', LOG_COLORS.GREEN)
             content_team_attachments = get_attachments_for_bucket_upload_flow(
                 build_url=build_url, job_name=job_name, packs_results_file_path=packs_results_file
@@ -338,8 +338,8 @@ def main():
     elif bucket_upload:
         slack_notifier(url, slack, test_type,
                        packs_results_file=os.path.join(
-                           circle_artifacts_path, BucketUploadFlow.PACKS_RESULTS_FILE.value
-                       ), job_name=job_name)
+                           circle_artifacts_path, BucketUploadFlow.PACKS_RESULTS_FILE), job_name=job_name
+                       )
     elif test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
         slack_notifier(url, slack, test_type)
     else:

@@ -28,7 +28,7 @@ IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported']  # files to ignore
 IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
 
 
-class BucketUploadFlow(enum.Enum):
+class BucketUploadFlow(object):
     """ Bucket Upload Flow constants
 
     """
@@ -916,12 +916,18 @@ class Pack(object):
         prod_pack_zip_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
         build_pack_zip_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
         build_pack_zip_blob = build_bucket.blob(build_pack_zip_path)
-        copied_blob = build_bucket.copy_blob(
-            blob=build_pack_zip_blob, destination_bucket=production_bucket, new_name=prod_pack_zip_path
-        )
-        copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
-        self.public_storage_path = copied_blob.public_url
-        task_status = copied_blob.exists()
+
+        try:
+            copied_blob = build_bucket.copy_blob(
+                blob=build_pack_zip_blob, destination_bucket=production_bucket, new_name=prod_pack_zip_path
+            )
+            copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
+            self.public_storage_path = copied_blob.public_url
+            task_status = copied_blob.exists()
+        except Exception as e:
+            pack_suffix = os.path.join(self._pack_name, latest_version, f'{self._pack_name}.zip')
+            logging.exception(f"Failed copying {pack_suffix}. Additional Info: {str(e)}")
+            return False, False
 
         if not task_status:
             logging.error(f"Failed in uploading {self._pack_name} pack to production gcs.")
@@ -995,8 +1001,8 @@ class Pack(object):
         if len(pack_versions_dict) > 1:
             # In case that there is more than 1 new release notes file, wrap all release notes together for one
             # changelog entry
-            aggregation_str = f"{[lv.vstring for lv in found_versions if lv > changelog_latest_rn_version]} => " \
-                              f"{latest_release_notes}"
+            aggregation_str = f"{', '.join(lv.vstring for lv in found_versions if lv > changelog_latest_rn_version)}]"\
+                              f" => {latest_release_notes}"
             logging.info(f"Aggregating ReleaseNotes versions: {aggregation_str}")
             release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
             self._aggregated = True
@@ -1640,18 +1646,23 @@ class Pack(object):
                                               prefix=os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name)
                                           )
                                           if is_integration_image(os.path.basename(f.name))]
+
         for integration_image_blob in build_integration_images_blobs:
             image_name = os.path.basename(integration_image_blob.name)
             logging.info(f"Uploading {self._pack_name} pack integration image: {image_name}")
             # We upload each image object taken from the build bucket into the production bucket
-            copied_blob = build_bucket.copy_blob(
-                blob=integration_image_blob, destination_bucket=production_bucket,
-                new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, image_name)
-            )
-            task_status = task_status and copied_blob.exists()
-            if not task_status:
-                logging.error(f"Upload {self._pack_name} integration image: {integration_image_blob.name} blob to "
-                              f"{copied_blob.name} blob failed.")
+            try:
+                copied_blob = build_bucket.copy_blob(
+                    blob=integration_image_blob, destination_bucket=production_bucket,
+                    new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, image_name)
+                )
+                task_status = task_status and copied_blob.exists()
+                if not task_status:
+                    logging.error(f"Upload {self._pack_name} integration image: {integration_image_blob.name} blob to "
+                                  f"{copied_blob.name} blob failed.")
+            except Exception as e:
+                logging.exception(f"Failed copying {image_name}. Additional Info: {str(e)}")
+                return False
 
         if not task_status:
             logging.error(f"Failed to upload {self._pack_name} pack integration images.")
@@ -1737,11 +1748,16 @@ class Pack(object):
         build_author_image_blob = build_bucket.blob(build_author_image_path)
 
         if build_author_image_blob.exists():
-            copied_blob = build_bucket.copy_blob(
-                blob=build_author_image_blob, destination_bucket=production_bucket,
-                new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
-            )
-            task_status = task_status and copied_blob.exists()
+            try:
+                copied_blob = build_bucket.copy_blob(
+                    blob=build_author_image_blob, destination_bucket=production_bucket,
+                    new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
+                )
+                task_status = task_status and copied_blob.exists()
+            except Exception as e:
+                logging.exception(f"Failed copying {Pack.AUTHOR_IMAGE_NAME}. Additional Info: {str(e)}")
+                return False
+
         elif self.support_type == Metadata.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
             logging.info((f"Skipping uploading of {self._pack_name} pack author image "
                           f"and use default {GCPConfig.BASE_PACK} pack image"))
@@ -1791,54 +1807,51 @@ class Pack(object):
         else:
             return False, str()
 
-    def add_to_packs_results(self, packs_results_file_path: str, packs_type: str):
-        """ Adds the pack to the correct section in the packs_results.json file
-
-        Args:
-            packs_results_file_path: The path to the pack_results.json file
-            packs_type: can be BucketUploadFlow.FAILED_PACKS.value or BucketUploadFlow.SUCCESSFUL_PACKS.value
-
-        """
-        packs_results_file = load_json(packs_results_file_path)
-        upload_packs_dict = packs_results_file.get(BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE.value, {})
-        packs_type_dict = upload_packs_dict.get(packs_type, {})
-        packs_type_dict.update({
-            self._pack_name: {
-                BucketUploadFlow.STATUS.value: PackStatus[self._status].value,
-                BucketUploadFlow.AGGREGATED.value: self._aggregation_str if self._aggregated and self._aggregation_str
-                else "False"
-            }
-        })
-        if packs_type in upload_packs_dict:
-            upload_packs_dict[packs_type].update(packs_type_dict)
-        else:
-            upload_packs_dict[packs_type] = packs_type_dict
-        if BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE.value in packs_results_file:
-            packs_results_file[BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE.value].update(upload_packs_dict)
-        else:
-            packs_results_file[BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE.value] = upload_packs_dict
-        json_write(packs_results_file_path, packs_results_file)
-
-    def add_to_failed(self, packs_results_file_path: str):
-        """ Adds the pack to the failed section in the packs_results.json file
-
-        Args:
-            packs_results_file_path: The path to the pack_results.json file
-
-        """
-        self.add_to_packs_results(packs_results_file_path, BucketUploadFlow.FAILED_PACKS.value)
-
-    def add_to_successful(self, packs_results_file_path: str):
-        """ Adds the pack to the successful section in the packs_results.json file
-
-        Args:
-            packs_results_file_path: The path to the pack_results.json file
-
-        """
-        self.add_to_packs_results(packs_results_file_path, BucketUploadFlow.SUCCESSFUL_PACKS.value)
-
 
 # HELPER FUNCTIONS
+
+
+def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: str, stage: str, successful_packs: list,
+                                                      failed_packs: list):
+    """ Adds the pack to the correct section in the packs_results.json file
+
+    Args:
+        packs_results_file_path (str): The path to the pack_results.json file
+        stage (str): can be BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING or
+        BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
+        failed_packs (list): The list of all failed packs
+        successful_packs (list): The list of all successful packs
+
+    """
+    packs_results = load_json(packs_results_file_path)
+    packs_results[stage] = dict()
+
+    if failed_packs:
+        failed_packs_dict = {
+            BucketUploadFlow.FAILED_PACKS: {
+                pack.name: {
+                    BucketUploadFlow.STATUS: PackStatus[pack.status].value,
+                    BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
+                    else "False"
+                } for pack in failed_packs
+            }
+        }
+        packs_results[stage].update(failed_packs_dict)
+
+    if successful_packs:
+        successful_packs_dict = {
+            BucketUploadFlow.SUCCESSFUL_PACKS: {
+                pack.name: {
+                    BucketUploadFlow.STATUS: PackStatus[pack.status].value,
+                    BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
+                    else "False"
+                } for pack in successful_packs
+            }
+        }
+        packs_results[stage].update(successful_packs_dict)
+
+    if packs_results:
+        json_write(packs_results_file_path, packs_results)
 
 
 def load_json(file_path: str) -> dict:
@@ -1852,7 +1865,7 @@ def load_json(file_path: str) -> dict:
 
     """
     try:
-        if file_path:
+        if file_path and os.path.exists(file_path):
             with open(file_path, 'r') as json_file:
                 result = json.load(json_file)
         else:
