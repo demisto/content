@@ -1044,7 +1044,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
 
     # Check if only README file in file string, if so, no need to create the servers.
-    if '.py' and '.json' and '.yml' not in files_string:
+    files = [s for s in files_string.split('\n') if s]
+    readme = all(map(lambda s: 'README.md' in s, files))
+    if readme:
         create_filter_envs_file(from_version, to_version, readme_only=True)
     else:
         create_filter_envs_file(from_version, to_version)
