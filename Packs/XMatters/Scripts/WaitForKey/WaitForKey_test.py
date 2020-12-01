@@ -1,5 +1,6 @@
 # Test runner for WaitForKey
 
+import pytest
 from WaitForKey import main
 import demistomock as demisto
 

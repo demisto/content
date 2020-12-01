@@ -1,6 +1,8 @@
+import demistomock as demisto
+from CommonServerPython import *
 from typing import Dict, Any
 import traceback
-import demistomock as demisto
+
 
 ''' COMMAND FUNCTION '''
 
