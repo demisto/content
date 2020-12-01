@@ -199,8 +199,10 @@ def test_filter_versions():
         'node_names': '7',
         'version_hashes': '8',
         'baseline_version_ids': '9',
-        'time_detected_range': '2020-11-24T17:07:27Z,2020-11-24T17:07:27Z',
-        'time_received_range': '2020-11-24T17:07:27Z,2020-11-24T17:07:27Z',
+        'start_detected_time': '2020-11-24T17:07:27Z',
+        'end_detected_time': '2020-11-24T17:07:27Z',
+        'start_received_time': '2020-11-24T17:07:27Z',
+        'end_received_time': '2020-11-24T17:07:27Z',
         'limit': '10',
         'start': '11',
     }

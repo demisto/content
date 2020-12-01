@@ -98,6 +98,25 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def prepare_time_range(start: str, end: str = ''):
+    if not end:
+        end = datetime.utcnow().strftime(DATE_FORMAT)
+    if not re.search(DATE_REG, start):
+        try:
+            start = parse_date_range(start, date_format=DATE_FORMAT)[0]
+        except Exception:
+            raise DemistoException(f"Please insert start time in relative format e.g. '1 day', '2 days' or in "
+                                   f"date format {DATE_FORMAT}")
+    if not re.search(DATE_REG, end):
+        try:
+            end = parse_date_range(end, date_format=DATE_FORMAT)[0]
+        except Exception:
+            raise DemistoException(f"Please insert end time in relative format e.g. '1 day', '2 days' or in "
+                                   f"date format {DATE_FORMAT}")
+
+    return start, end
+
+
 def filter_versions(args: dict) -> str:
     """
     :param args: (dict) args of the command .
@@ -131,27 +150,12 @@ def filter_versions(args: dict) -> str:
     if args.get('baseline_version_ids'):
         for baseline_version in argToList(args.get('baseline_version_ids')):
             filters += f"baselineVersion={baseline_version}&"
-    if args.get('start_detected_time') and args.get('end_detected_time'):
-        start = args.get('start_detected_time')
-        end = args.get('end_detected_time')
-        if not re.search(DATE_REG, start) and not re.search(DATE_REG, end):
-            try:
-                start = parse_date_range(start, date_format=DATE_FORMAT)[0]
-                end = parse_date_range(end, date_format=DATE_FORMAT)[0]
-            except Exception:
-                raise DemistoException(f"Please insert time range in relative format e.g. '1 day', '2 days' or in "
-                                       f"date format {DATE_FORMAT}")
+    if start := args.get('start_detected_time', ''):
+        start, end = prepare_time_range(start=start, end=args.get('end_detected_time', ''))
         filters += f"timeDetectedRange={start},{end}&"
-    if args.get('start_received_time') and args.get('end_received_time'):
-        start = args.get('start_received_time')
-        end = args.get('end_received_time')
-        if not re.search(DATE_REG, start) and not re.search(DATE_REG, end):
-            try:
-                start = parse_date_range(start, date_format=DATE_FORMAT)[0]
-                end = parse_date_range(end, date_format=DATE_FORMAT)[0]
-            except Exception:
-                raise DemistoException(f"Please insert time range in relative format e.g. '1 day', '2 days' or in "
-                                       f"date format {DATE_FORMAT}")
+    if start := args.get('start_received_time', ''):
+        start, end = prepare_time_range(start=start, end=args.get('end_received_time', ''))
+        filters += f"timeReceivedRange={start},{end}&"
     if args.get('limit'):
         filters += f"pageLimit={args.get('limit')}&"
     if args.get('start'):
