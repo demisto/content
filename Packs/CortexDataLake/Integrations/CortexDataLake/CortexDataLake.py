@@ -1,15 +1,18 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 """ IMPORTS """
-from CommonServerPython import *
-import os
-import requests
-import json
-from pancloud import QueryService, Credentials, exceptions
+
 import base64
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from typing import Dict, Any, List, Tuple, Callable
+import json
+import os
 from tempfile import gettempdir
+from typing import Any, Callable, Dict, List, Tuple
+
+import requests
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from dateutil import parser
-import demistomock as demisto
+from pancloud import Credentials, QueryService, exceptions
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -22,7 +25,7 @@ INSTANCE_ID_CONST = 'instance_id'
 API_URL_CONST = 'api_url'
 REGISTRATION_ID_CONST = 'reg_id'
 ENCRYPTION_KEY_CONST = 'auth_key'
-DEFAULT_API_URL = 'https://api.us.cdl.paloaltonetworks.com'
+DEFAULT_API_URL = 'https://api.nl.cdl.paloaltonetworks.com'
 MINUTES_60 = 60 * 60
 SECONDS_30 = 30
 FETCH_TABLE_HR_NAME = {
