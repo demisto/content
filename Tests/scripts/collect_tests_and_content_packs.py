@@ -1029,6 +1029,25 @@ def filter_tests(tests: set, id_set: json) -> set:
     return tests_without_non_supported
 
 
+def is_documentation_changes_only(files_string: str) -> bool:
+    """
+
+    Args:
+        files_string: The modified files.
+
+    Returns: True is only documentation related files has been changed else False.
+
+    """
+    # Check if only README file in file string, if so, no need to create the servers.
+    files = [s for s in files_string.split('\n') if s]
+    documentation_changes_only = \
+        all(map(lambda s: s.endswith('.md') or s.endswith('.png') or s.endswith('.jpg') or s.endswith('.mp4'), files))
+    if documentation_changes_only:
+        return True
+    else:
+        return False
+
+
 def get_test_list_and_content_packs_to_install(files_string, branch_name, minimum_server_version='0',
                                                conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
@@ -1043,9 +1062,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
 
     # Check if only README file in file string, if so, no need to create the servers.
-    files = [s for s in files_string.split('\n') if s]
-    documentation_changes_only = \
-        all(map(lambda s: s.endswith('.md') or s.endswith('.png') or s.endswith('.jpg') or s.endswith('.mp4'), files))
+    documentation_changes_only = is_documentation_changes_only(files_string)
     create_filter_envs_file(from_version, to_version, documentation_changes_only=bool(documentation_changes_only))
 
     tests = set([])
