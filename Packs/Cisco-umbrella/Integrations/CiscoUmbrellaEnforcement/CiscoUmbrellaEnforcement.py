@@ -1,8 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-''' IMPORTS '''
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -20,28 +18,29 @@ class Client(BaseClient):
         domains_list: list = []
         response = self.get_domain_request(
             f'{self._base_url}domains?customerKey={self.api_key}&{prepare_suffix(page=page, limit=limit)}')
-        while response and len(domains_list) < int(limit):
+        limit = int(limit)
+        while response and len(domains_list) < limit:
             response_data = response.get('data', [])
             for domain in response_data:
                 domain.pop('lastSeenAt')
                 domain['IsDeleted'] = False
                 domains_list.append(domain)
             response_next_page = response.get('meta', {}).get('next', '')
-            response = self.get_domain_request(response_next_page) if response_next_page else {}
+            if response_next_page:
+                response = self.get_domain_request(response_next_page)
+            else:
+                break
         return domains_list
 
     def get_domain_request(self, request: str):
         return self._http_request('GET', url_suffix='', full_url=request)
 
     def delete_domains(self, domain_name: str, domain_id: str):
-        res = ''
-        if domain_id:
-            res = self._http_request('DELETE', f"domains/{domain_id}?customerKey={self.api_key}",
-                                     return_empty_response=True)
-        if domain_name:
-            res = self._http_request('DELETE', f"domains?customerKey={self.api_key}&where[name]={domain_name}",
-                                     return_empty_response=True)
-        return res
+        url_suffix = f"domains/{domain_id}?customerKey={self.api_key}" if domain_id\
+            else f"domains?customerKey={self.api_key}&where[name]={domain_name}"
+        return self._http_request('DELETE', url_suffix,
+                                  return_empty_response=True)
+
 
     def add_event_to_domain(self, event: dict):
         return self._http_request('POST', f"events?customerKey={self.api_key}", json_data=event,
@@ -62,7 +61,6 @@ def prepare_suffix(page: Optional[str] = '', limit: Optional[str] = '') -> str:
     if limit:
         suffix += f'limit={limit}&'
     return suffix
-
 
 def domains_list_command(client: Client, args: dict) -> CommandResults:
     """
@@ -127,30 +125,31 @@ def domain_delete_command(client: Client, args: dict) -> CommandResults:
             'delete command')
     try:
         response = client.delete_domains(domain_id=domain_id, domain_name=domain_name)
-    except DemistoException as e:
-        if e.res.get('statusCode') == 404:
+    except Exception as e:
+        # When deleting a domain by id and the id does not exist.
+        if any (exp in str(e) for exp in ["Domain not in domain list","Not Found"]):
             return CommandResults(
                 readable_output='The domain was not found in the list, Please insert an existing domain name or id.'
             )
     if domain_name:
-        old_context = demisto.dt(demisto.context(), f'CiscoUmbrellaEnforcement.Domains(val.name == "{domain_name}")')
+        curr_context = demisto.dt(demisto.context(), f'CiscoUmbrellaEnforcement.Domains(val.name == "{domain_name}")')
     else:
-        old_context = demisto.dt(demisto.context(), f'CiscoUmbrellaEnforcement.Domains(val.id == "{domain_id}")')
+        curr_context = demisto.dt(demisto.context(), f'CiscoUmbrellaEnforcement.Domains(val.id == "{domain_id}")')
 
-    demisto.info(f'old context {str(old_context)} and domain name is {domain_name} and domain id is {domain_id}')
-    if old_context:
-        if isinstance(old_context, list):
-            old_context = old_context[0]
-        old_context['IsDeleted'] = True
+    if curr_context:
+        if isinstance(curr_context, list):
+            old_context = curr_context[0]
+        curr_context['IsDeleted'] = True
     if response and int(response.status_code) == 204:
         message = f"{domain_name if domain_name else domain_id} domain was removed from blacklist"
     else:
+        # When deleting a domain by name, if name does not exist the returned code is 200 but the response is empty.
         message = f"{domain_name if domain_name else domain_id} domain not in the blacklist or Error"
     return CommandResults(
         readable_output=message,
         outputs_prefix='CiscoUmbrellaEnforcement.Domains',
         outputs_key_field='id',
-        outputs=old_context
+        outputs=curr_context
     )
 
 

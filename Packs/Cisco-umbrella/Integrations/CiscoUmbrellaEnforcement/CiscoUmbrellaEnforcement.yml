@@ -20,7 +20,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Add and remove domain in Cisco OpenDNS.
+description: Add and remove domains in Cisco OpenDNS.
 display: Cisco Umbrella Enforcement
 name: Cisco Umbrella Enforcement
 script:
