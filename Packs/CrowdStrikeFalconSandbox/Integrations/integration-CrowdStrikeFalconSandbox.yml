@@ -218,18 +218,18 @@ script:
     }
 
     function getEnvironments() {
+        var response;
         if (version === 'v1'){
             var res = sendRequest('GET', '/system/state');
             if (res.response_code !== 0) {
                 return entryError(res.response_code, res.response.error);
             }
-            var response = res.response;
-            return response;
+            response = res.response;
         }
         else{//v2
-            var responseBody = sendRequest('GET', '/api/v2/system/environments')
-            return responseBody;
+            response = sendRequest('GET', '/api/v2/system/environments')
         }
+        return response;
     }
 
     function tableFromEnvironments(response) {
