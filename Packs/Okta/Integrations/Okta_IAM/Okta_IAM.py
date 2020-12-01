@@ -27,7 +27,7 @@ ERROR_CODES_TO_RETURN_ERROR = [
 ]
 
 FETCH_QUERY_EXCEPTION_MSG = 'If you marked the "Query only application events configured in IAM Configuration" ' \
-                            'checkbox in the instance configuration, you must add at least one application in
+                            'checkbox in the instance configuration, you must add at least one application in ' \
                             'the IAM Configuration incident before fetching logs from Okta. ' \
                             'Alternatively, you can unmark this checkbox and provide a ' \
                             '"Fetch Query Filter" parameter instead.'
@@ -370,41 +370,6 @@ def get_user_command(client, args, mapper_in):
     return user_profile
 
 
-def enable_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled, create_if_not_exists):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
-    if not is_command_enabled:
-        user_profile.set_result(action=IAMActions.ENABLE_USER,
-                                skip=True,
-                                skip_reason='Command is disabled.')
-    else:
-        try:
-            okta_user = client.get_user(user_profile.get_attribute('email'))
-            if not okta_user:
-                if create_if_not_exists:
-                    user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled)
-                else:
-                    _, error_message = IAMErrors.USER_DOES_NOT_EXIST
-                    user_profile.set_result(action=IAMActions.ENABLE_USER,
-                                            skip=True,
-                                            skip_reason=error_message)
-            else:
-                client.activate_user(okta_user.get('id'))
-                user_profile.set_result(
-                    action=IAMActions.ENABLE_USER,
-                    success=True,
-                    active=True,
-                    iden=okta_user.get('id'),
-                    email=okta_user.get('profile', {}).get('email'),
-                    username=okta_user.get('profile', {}).get('login'),
-                    details=okta_user
-                )
-
-        except Exception as e:
-            handle_exception(user_profile, e, IAMActions.ENABLE_USER)
-
-    return user_profile
-
-
 def disable_user_command(client, args, is_command_enabled):
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
     if not is_command_enabled:
@@ -437,7 +402,7 @@ def disable_user_command(client, args, is_command_enabled):
     return user_profile
 
 
-def create_user_command(client, args, mapper_out, is_command_enabled):
+def create_user_command(client, args, mapper_out, is_command_enabled, is_update_user_enabled):
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.CREATE_USER,
@@ -447,10 +412,9 @@ def create_user_command(client, args, mapper_out, is_command_enabled):
         try:
             okta_user = client.get_user(user_profile.get_attribute('email'))
             if okta_user:
-                _, error_message = IAMErrors.USER_ALREADY_EXISTS
-                user_profile.set_result(action=IAMActions.CREATE_USER,
-                                        skip=True,
-                                        skip_reason=error_message)
+                # if user exists, update its data
+                return update_user_command(client, args, mapper_out, is_update_user_enabled,
+                                           is_create_user_enabled=False, create_if_not_exists=False)
             else:
                 okta_profile = user_profile.map_object(mapper_out)
                 created_user = client.create_user(okta_profile)
@@ -472,6 +436,7 @@ def create_user_command(client, args, mapper_out, is_command_enabled):
 
 def update_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled, create_if_not_exists):
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+    allow_enable = args.get('allow-enable') == 'true'
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.UPDATE_USER,
                                 skip=True,
@@ -481,6 +446,9 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
             okta_user = client.get_user(user_profile.get_attribute('email'))
             if okta_user:
                 user_id = okta_user.get('id')
+                if allow_enable:
+                    client.activate_user(user_id)
+
                 okta_profile = user_profile.map_object(mapper_out)
                 updated_user = client.update_user(user_id, okta_profile)
                 user_profile.set_result(
@@ -494,7 +462,8 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
                 )
             else:
                 if create_if_not_exists:
-                    user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled)
+                    return create_user_command(client, args, mapper_out, is_create_user_enabled,
+                                               is_update_user_enabled=True)
                 else:
                     _, error_message = IAMErrors.USER_DOES_NOT_EXIST
                     user_profile.set_result(action=IAMActions.UPDATE_USER,
@@ -646,7 +615,7 @@ def main():
     args = demisto.args()
 
     is_create_enabled = params.get("create-user-enabled")
-    is_enable_disable_enabled = params.get("enable-disable-user-enabled")
+    is_disable_enabled = params.get("disable-user-enabled")
     is_update_enabled = demisto.params().get("update-user-enabled")
     create_if_not_exists = demisto.params().get("create-if-not-exists")
 
@@ -677,18 +646,14 @@ def main():
         user_profile = get_user_command(client, args, mapper_in)
 
     elif command == 'iam-create-user':
-        user_profile = create_user_command(client, args, mapper_out, is_create_enabled)
+        user_profile = create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled)
 
     elif command == 'iam-update-user':
         user_profile = update_user_command(client, args, mapper_out, is_update_enabled,
                                            is_create_enabled, create_if_not_exists)
 
     elif command == 'iam-disable-user':
-        user_profile = disable_user_command(client, args, is_enable_disable_enabled)
-
-    elif command == 'iam-enable-user':
-        user_profile = enable_user_command(client, args, mapper_out, is_enable_disable_enabled,
-                                           is_create_enabled, create_if_not_exists)
+        user_profile = disable_user_command(client, args, is_disable_enabled)
 
     if user_profile:
         return_results(user_profile)
