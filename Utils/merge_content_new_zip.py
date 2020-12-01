@@ -121,17 +121,17 @@ def download_zip_file_from_gcp(current_feature_branch_zip_file_path, zip_destina
         The new path of the zip file.
     """
 
-    # file_path = "creds.json"
-    # json_content = json.loads(os.environ.get('GCS_ARTIFACTS_KEY'))
-    # with open(file_path, "w") as file:
-    #     json.dump(json_content, file)
-    # os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = file_path
+    file_path = "creds.json"
+    json_content = json.loads(os.environ.get('GCS_ARTIFACTS_KEY'))
+    with open(file_path, "w") as file:
+        json.dump(json_content, file)
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = file_path
     storage_client = storage.Client()
 
     storage_bucket = storage_client.bucket(STORAGE_BUCKET_NAME)
 
     index_blob = storage_bucket.blob(current_feature_branch_zip_file_path)
-    # os.remove(file_path)
+    os.remove(file_path)
     if not os.path.exists(zip_destination_path):
         os.mkdir(zip_destination_path)
     index_blob.download_to_filename(f'{zip_destination_path}/{zip_name}.zip')
