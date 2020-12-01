@@ -45,7 +45,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "14"
     scriptarguments:
       all:
         simple: "yes"
@@ -90,7 +90,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1070
         }
       }
     note: false
@@ -130,7 +130,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1245
         }
       }
     note: false
@@ -164,7 +164,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1070
+          "y": 1420
         }
       }
     note: false
@@ -212,7 +212,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1595
         }
       }
     note: false
@@ -222,10 +222,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: fa01574e-6b4b-452b-8f59-7482cc080e9e
+    taskid: 8b597e5e-6732-4017-8ada-c940febc5083
     type: regular
     task:
-      id: fa01574e-6b4b-452b-8f59-7482cc080e9e
+      id: 8b597e5e-6732-4017-8ada-c940febc5083
       version: -1
       name: Update Rule
       description: Update a security rule. If one does not exist, it'll be created.
@@ -242,7 +242,8 @@ tasks:
       destination: {}
       destination_ports: {}
       direction: {}
-      priority: {}
+      priority:
+        simple: "1234"
       protocol: {}
       security_group_name:
         simple: alerts-nsg
@@ -256,7 +257,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1945
         }
       }
     note: false
@@ -290,7 +291,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2295
         }
       }
     note: false
@@ -324,7 +325,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2470
         }
       }
     note: false
@@ -353,7 +354,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 720
         }
       }
     note: false
@@ -391,7 +392,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 895
         }
       }
     note: false
@@ -445,7 +446,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1770
         }
       }
     note: false
@@ -499,7 +500,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2120
         }
       }
     note: false
@@ -524,7 +525,72 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 2abd8da3-bb7c-4bd0-805a-9f9e247b7bab
+    type: regular
+    task:
+      id: 2abd8da3-bb7c-4bd0-805a-9f9e247b7bab
+      version: -1
+      name: Get Refresh Token
+      description: Connects to the user and client set up in the parameters.
+      script: '|||ms-login-helper-get-refresh-token'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      client_id:
+        simple: d4736600-e3d5-4c97-8e65-57abd2b979fe
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 135d1e42-a913-45a9-8e55-f30e2f8fb53c
+    type: regular
+    task:
+      id: 135d1e42-a913-45a9-8e55-f30e2f8fb53c
+      version: -1
+      name: Finish Logging in
+      description: Run this command to complete the authorization process. Should
+        be used after running the msgraph-auth-start command.
+      script: '|||azure-nsg-auth-complete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      refresh_token:
+        simple: ${MicrosoftLoginHelper.refreshToken}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -537,7 +603,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
+        "height": 2660,
         "width": 492.5,
         "x": 50,
         "y": 50
@@ -546,5 +612,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.0.0
-description: ''
+fromversion: 5.0.0
+description: Test Playbook for Azure NSG

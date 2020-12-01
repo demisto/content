@@ -85,7 +85,8 @@
             "instance_names": [
                 "azure_nsg_prod",
                 "microsoft_admin"
-            ]
+            ],
+            "playbookID": "Azure NSG - Test"
         },
         {
             "integrations": "OpenCTI Feed",
