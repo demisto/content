@@ -243,8 +243,8 @@ script:
     name: akamai-delete-network-list
   - arguments:
     - default: false
-      description: ' A comma-seprated list of network list IDs to activate. For example:
-        list (list1,list2). '
+      description: 'A comma-separated list of network list IDs to activate. For example:
+        list (list1,list2).'
       isArray: true
       name: network_list_ids
       required: true
