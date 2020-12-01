@@ -171,7 +171,8 @@ class DBotScoreType(object):
     URL = 'url'
     CVE = 'cve'
     ACCOUNT = 'account'
-    CIDR = 'cidr'
+    CIDR = 'cidr',
+    DOMAINGLOB = 'domainglob'
     CERTIFICATE = 'certificate'
 
     def __init__(self):
@@ -190,6 +191,7 @@ class DBotScoreType(object):
             DBotScoreType.CVE,
             DBotScoreType.ACCOUNT,
             DBotScoreType.CIDR,
+            DBotScoreType.DOMAINGLOB,
             DBotScoreType.CERTIFICATE
         )
 
@@ -2831,7 +2833,7 @@ class Common(object):
             """
             def __init__(
                 self,
-                issuer: List['Common.GeneralName'],
+                issuer: Optional[List['Common.GeneralName']],
                 serial_number: Optional[str],
                 key_identifier: Optional[str]
             ):
@@ -2840,9 +2842,10 @@ class Common(object):
                 self.key_identifier = key_identifier
 
             def to_context(self):
-                authority_key_identifier_context = {
-                    'Issuer': self.issuer,
-                }
+                authority_key_identifier_context = {}
+
+                if self.issuer:
+                    authority_key_identifier_context['Issuer'] = self.issuer,
 
                 if self.serial_number:
                     authority_key_identifier_context["SerialNumber"] = self.serial_number
@@ -3178,7 +3181,7 @@ class Common(object):
         """
         Certificate indicator - https://xsoar.pan.dev/docs/integrations/context-standards-recommended#certificate
         """
-        CONTEXT_PATH = 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
+        CONTEXT_PATH = 'Certificate(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
                        'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512)'
 
         def __init__(
@@ -3201,6 +3204,7 @@ class Common(object):
             subject_alternative_name: Optional[
                 List[Union[
                     str,
+                    Dict[str, str],
                     'Common.CertificateExtension.SubjectAlternativeName'
                 ]]
             ] = None,  # if None, build automatically from extensions
@@ -3239,11 +3243,18 @@ class Common(object):
             self.signature_algorithm = signature_algorithm
             self.signature = signature
 
+            # if subject_alternative_name is set and is a list
+            # make sure it is a list of strings, dicts of strings or SAN Extensions
             if (
                 subject_alternative_name
                 and isinstance(subject_alternative_name, list)
                 and not all(
                     isinstance(san, str)
+                    or (
+                        isinstance(san, dict)
+                        and all(isinstance(d, str) for d in san.keys())
+                        and all(isinstance(d, str) for d in san.values())
+                    )
                     or isinstance(san, Common.CertificateExtension.SubjectAlternativeName)
                     for san in subject_alternative_name)
             ):
@@ -3270,15 +3281,26 @@ class Common(object):
                 "SubjectDN": self.subject_dn
             }
 
+            san_list: List[Dict[str, str]] = []
             if self.subject_alternative_name:
-                san_list: List[str] = []
                 for san in self.subject_alternative_name:
                     if isinstance(san, str):
+                        san_list.append({
+                            'Value': san
+                        })
+                    elif isinstance(san, dict):
                         san_list.append(san)
                     elif(isinstance(san, Common.CertificateExtension.SubjectAlternativeName)):
-                        san_list.append(san.get_value())
-                if san_list:
-                    certificate_context['SubjectAlternativeName'] = san_list
+                        san_list.append(san.to_context())
+            elif self.extensions:  # autogenerate it from extensions
+                for ext in self.extensions:
+                    if ext.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME:
+                        ext_context = ext.to_context()
+                        if 'Value' in ext_context:
+                            san_list.append(ext_context['Value'])
+
+            if san_list:
+                certificate_context['SubjectAlternativeName'] = san_list
 
             if self.name:
                 certificate_context["Name"] = self.name
