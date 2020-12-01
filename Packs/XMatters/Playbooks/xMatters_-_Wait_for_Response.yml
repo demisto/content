@@ -212,12 +212,14 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 70f9468c-4a46-4aab-835a-32cd2dfdf2bd
+    taskid: 9ed46ed8-cb0e-4ed8-8168-8de650aab161
     type: regular
     task:
-      id: 70f9468c-4a46-4aab-835a-32cd2dfdf2bd
+      id: 9ed46ed8-cb0e-4ed8-8168-8de650aab161
       version: -1
       name: WaitForKey
+      description: 'This adds a slight delay to ensure the context is updated before
+        continuing. '
       scriptName: WaitForKey
       type: regular
       iscommand: false
