@@ -1,6 +1,4 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
+import traceback
 
 def main():
     try:
@@ -8,10 +6,11 @@ def main():
         context_key = args.get('context_key')
         MAX_ITERATIONS = int(args.get('iterations'))
 
+        demisto_context = demisto.context()
         itr = 0
         done = False
         while not done and itr < MAX_ITERATIONS:
-            if context.get(context_key) is not None:
+            if demisto_context.get(context_key) is not None:
                 done = True
             demisto.executeCommand("Sleep", {"seconds": "1"})
             itr = itr + 1
