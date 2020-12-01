@@ -9,11 +9,6 @@ ARTIFACTS_PATH = '/home/circleci/project/artifacts/'
 
 
 def download_private_id_set_from_gcp():
-    """Save the zip file from the feature branch into artifacts folder.
-
-    Returns:
-        The new path of the zip file.
-    """
 
     file_path = "creds.json"
     json_content = json.loads(os.environ.get('GCS_ARTIFACTS_KEY'))
