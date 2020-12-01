@@ -606,7 +606,7 @@ class RCS:
             return None, None, "failure: RET list empty"
 
         return RET, rcs, "success: {0}".format(len(RET))
-    
+
     """
      parse the SDL component of the RCS:
        SDL      :: securityDomain@<SDN><SDN_LIST>*
