@@ -315,7 +315,6 @@ references:
       name: Merge Id Set And Private Id Iet
       when: always
       command: |
-        demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8
         python3 Tests/Marketplace/merge_private_and_public_id_sets.py
 #        demisto-sdk merge-id-sets -i1 /home/circleci/project/artifacts/private_id_set.json -i2 "/home/circleci/project/artifacts/id_set.json" -o ./Tests/id_set.json
 #        cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
@@ -637,10 +636,10 @@ jobs:
       - *get_contribution_pack
       - *add_ssh_keys
       - *create_id_set
-      - *merge_private_and_public_id_sets
       - *build_content_descriptor
       - *common_server_documentation
       - *create_artifact
+      - *merge_private_and_public_id_sets
       - *update_tests_step
       - *download_configuration
       - when:
