@@ -21,21 +21,12 @@ def option_handler():
     return parser.parse_args()
 
 
-def download_private_id_set_from_gcp():
+def download_private_id_set_from_gcp(index_blob):
     """Save the zip file from the feature branch into artifacts folder.
 
     Returns:
         The new path of the zip file.
     """
-
-    upload_config = option_handler()
-    service_account = upload_config.service_account
-    storage_client = init_storage_client(service_account)
-
-    storage_bucket = storage_client.bucket(STORAGE_BUCKET_NAME)
-
-    index_blob = storage_bucket.blob(STORAGE_ID_SET_PATH)
-
     if not os.path.exists(ARTIFACTS_PATH):
         os.mkdir(ARTIFACTS_PATH)
     index_blob.download_to_filename(f'{ARTIFACTS_PATH}/private_id_set.json')
@@ -47,7 +38,13 @@ def download_private_id_set_from_gcp():
 
 
 def main():
-    private_id_set = download_private_id_set_from_gcp()
+    upload_config = option_handler()
+    service_account = upload_config.service_account
+    storage_client = init_storage_client(service_account)
+    storage_bucket = storage_client.bucket(STORAGE_BUCKET_NAME)
+
+    index_blob = storage_bucket.blob(STORAGE_ID_SET_PATH)
+    private_id_set = download_private_id_set_from_gcp(index_blob)
     return private_id_set
 
 
