@@ -52,6 +52,8 @@ class Client(BaseClient):
         Args:
             search: Only list items that match the specified substring in any network list’s name or list of items.
             list_type: Filters the output to lists of only the given type of network lists if provided, either IP or GEO.
+            extended: Whether to return extended details in the response
+            include_elements: Whether to return all list items.
 
         Returns:
             Json response as dictionary
@@ -290,6 +292,8 @@ def get_network_lists_command(
         client: Client object with request
         search: Only list items that match the specified substring in any network list’s name or list of items.
         list_type: Filters the output to lists of only the given type of network lists if provided, either IP or GEO.
+        extended: Whether to return extended details in the response
+        include_elements: Whether to return all list items.
 
     Returns:
         human readable (markdown format), entry context and raw response
