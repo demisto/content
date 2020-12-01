@@ -170,15 +170,14 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
             if user_id:
                 # if user exists - update it
                 create_if_not_exists = False
-                update_user_command(client, args, mapper_out, is_update_enabled,
-                                    is_create_enabled, create_if_not_exists)
-                _, error_message = IAMErrors.USER_ALREADY_EXISTS
-                iam_user_profile.set_result(action=IAMActions.CREATE_USER,
-                                            skip=True,
-                                            skip_reason=error_message)
+                iam_user_profile = update_user_command(client, args, mapper_out, is_update_enabled,
+                                                       is_create_enabled, create_if_not_exists)
 
             else:
                 github_user = iam_user_profile.map_object(mapper_name=mapper_out)
+                emails = github_user.get("emails")
+                if not isinstance(emails, list):
+                    github_user["emails"] = [emails]
 
                 res = client.create_user(github_user)
                 user_id = res.get('id', None)
@@ -264,8 +263,7 @@ def disable_user_command(client, args, mapper_out, is_disable_enabled):
                                         skip_reason='Command is disabled.')
 
         else:
-            github_user = iam_user_profile.map_object(mapper_name=mapper_out)
-            email = github_user.get('email')
+            email = iam_user_profile.get_attribute('email')
             user_id = client.get_user_id_by_mail(email)
 
             if not user_id:
@@ -279,7 +277,6 @@ def disable_user_command(client, args, mapper_out, is_disable_enabled):
                 iam_user_profile.set_result(success=True,
                                             iden=user_id,
                                             email=email,
-                                            username=github_user.get('userName'),
                                             action=IAMActions.DISABLE_USER,
                                             details=res,
                                             active=False)
