@@ -1,0 +1,7 @@
+!ip ip=192.168.170.60
+!hostname hostname=USERBB02
+!xmcyber-version-get
+!xmcyber-version-supported
+!xmcyber-affected-critical-assets-list entityId=872743867762485580
+!xmcyber-affected-entities-list entityId=872743867762485580
+!xmcyber-entity-get ip=172.0.0.1 hostname=pc-5123 entityId=872743867762485580
