@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 '''IMPORTS'''
 
 
@@ -9,7 +10,7 @@ import hashlib
 import hmac
 import time
 import requests
-import urllib
+import urllib.parse
 import urllib3
 from typing import Any, Dict
 
@@ -35,47 +36,55 @@ REGEX_MAP = {
 ''' CLIENT CLASS '''
 
 
-class Client:
+class Client(BaseClient):
     """
-    Client class to interact with the service API
+        Client to use in the CTIX integration. Overrides BaseClient
     """
-    def __init__(self, base_url: str, access_id: str, secret_key: str) -> None:
+    def __init__(self, base_url: str, access_id: str, secret_key: str, verify: bool, proxies: dict) -> None:
         self.base_url = base_url
         self.access_id = access_id
         self.secret_key = secret_key
+        self.verify = verify
+        self.proxies = proxies
 
     def signature(self, expires: int) -> str:
         to_sign = "%s\n%i" % (self.access_id, expires)
-        return base64.b64encode(hmac.new(
-            self.secret_key.encode("utf-8"), to_sign.encode("utf-8"), hashlib.sha1).digest()
-                                ).decode("utf-8")
+        return base64.b64encode(
+            hmac.new(
+                self.secret_key.encode("utf-8"), to_sign.encode("utf-8"), hashlib.sha1
+            ).digest()
+        ).decode("utf-8")
 
-    def http_request(self, **params):
+    def http_request(self, full_url, **kwargs):
         """
         A wrapper to send requests and handle responses.
         """
         expires = int(time.time() + 5)
-        params["AccessID"] = self.access_id
-        params["Expires"] = expires
-        params["Signature"] = self.signature(expires)
-        url_suffix = "objects/indicator/"
-        url = self.base_url + url_suffix + "?" + urllib.parse.urlencode(params)
-        try:
-            resp = (requests.get(url))
-            status_code = resp.status_code
-            if status_code != 200:
-                return_error('Error in API call to CTIX. Status Code: ' + str(resp.status_code))
-            json_data = resp.json()
-            response = {"data": json_data, "status": status_code}
-            return response
-        except Exception as e:
-            LOG(e)
-            return_error(str(e))
+        kwargs["AccessID"] = self.access_id
+        kwargs["Expires"] = expires
+        kwargs["Signature"] = self.signature(expires)
 
-    def get_ip_details(self, ip: list, enhanced: bool = False) -> Dict[str, Any]:
+        full_url = full_url + "?" + urllib.parse.urlencode(kwargs)
+        resp = (requests.get(full_url, verify=self.verify, proxies=self.proxies))
+        status_code = resp.status_code
+        try:
+            resp.raise_for_status()  # Raising an exception for non-200 status code
+        except requests.exceptions.HTTPError as e:
+            err_msg = 'Error in API call [{}]' \
+                .format(resp.status_code)
+            raise DemistoException(err_msg, e)
+        json_data = resp.json()
+        response = {"data": json_data, "status": status_code}
+        return response
+
+    def test_auth(self):
+        client_url = self.base_url + "ping/"
+        return self.http_request(client_url)
+
+    def get_ip_details(self, ip: list, enhanced=False):
         """Gets the IP Details
 
-        :type ip: ``str``
+        :type ip: ``list``
         :param ip: IP address
 
         :type enhanced: ``bool``
@@ -86,16 +95,19 @@ class Client:
         """
         ip_string = ",".join(ip)
 
-        if enhanced == "True":
+        if enhanced and argToBoolean(enhanced):
             params = {"enhanced_search": ip_string}
         else:
             params = {"q": ip_string}
-        return self.http_request(**params)
 
-    def get_domain_details(self, domain: list, enhanced: bool = False) -> Dict[str, Any]:
+        url_suffix = "objects/indicator/"
+        client_url = self.base_url + url_suffix
+        return self.http_request(full_url=client_url, **params)
+
+    def get_domain_details(self, domain: list, enhanced=False):
         """Gets the Domain Details
 
-        :type domain: ``str``
+        :type domain: ``list``
         :param domain: domain name
 
         :type enhanced: ``bool``
@@ -107,19 +119,20 @@ class Client:
 
         domain_string = ",".join(domain)
 
-        if enhanced == "True":
+        if enhanced and argToBoolean(enhanced):
             params = {"enhanced_search": domain_string}
         else:
             params = {"q": domain_string}
 
-        return self.http_request(**params)
+        url_suffix = "objects/indicator/"
+        client_url = self.base_url + url_suffix
+        return self.http_request(full_url=client_url, **params)
 
-    def get_url_details(self, url: list, enhanced: bool = False) -> Dict[str, Any]:
+    def get_url_details(self, url: list, enhanced=False):
         """Gets the URL Details
 
-        :type url: ``str``
+        :type url: ``list``
         :param url: url name
-
         :type enhanced: ``bool``
         :param enhanced: Enhanced search flag
 
@@ -129,17 +142,19 @@ class Client:
 
         url_string = ",".join(url)
 
-        if enhanced == "True":
+        if enhanced and argToBoolean(enhanced):
             params = {"enhanced_search": url_string}
         else:
             params = {"q": url_string}
 
-        return self.http_request(**params)
+        url_suffix = "objects/indicator/"
+        client_url = self.base_url + url_suffix
+        return self.http_request(full_url=client_url, **params)
 
-    def get_file_details(self, file: list, enhanced: bool = False) -> Dict[str, Any]:
+    def get_file_details(self, file: list, enhanced=False):
         """Gets the File Details
 
-        :type file: ``str``
+        :type file: ``list``
         :param file: file name
 
         :type enhanced: ``bool``
@@ -150,18 +165,20 @@ class Client:
         """
 
         file_string = ",".join(file)
-        if enhanced == "True":
+        if enhanced and argToBoolean(enhanced):
             params = {"enhanced_search": file_string}
         else:
             params = {"q": file_string}
 
-        return self.http_request(**params)
+        url_suffix = "objects/indicator/"
+        client_url = self.base_url + url_suffix
+        return self.http_request(full_url=client_url, **params)
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def to_dbot_score(ctix_score: int) -> Common.DBotScore:
+def to_dbot_score(ctix_score: int) -> int:
     """
     Maps CTIX Score to DBotScore
     """
@@ -169,7 +186,7 @@ def to_dbot_score(ctix_score: int) -> Common.DBotScore:
         dbot_score = Common.DBotScore.NONE  # unknown
     elif ctix_score <= 30:
         dbot_score = Common.DBotScore.GOOD  # good
-    elif ctix_score <=70:
+    elif ctix_score <= 70:
         dbot_score = Common.DBotScore.SUSPICIOUS  # suspicious
     else:
         dbot_score = Common.DBotScore.BAD
@@ -183,8 +200,7 @@ def test_module(client: Client):
     """
     Performs basic get request to get sample ip details.
     """
-    client.get_ip_details(ip="8.208.20.145", enhanced=False)
-
+    client.test_auth()
     # test was successful
     demisto.results('ok')
 
@@ -195,10 +211,14 @@ def ip_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     ip_addresses_string = args.get('ip')
     ip_addresses_array = argToList(ip_addresses_string)
+    invalid_ips = []
 
-    for ip_address in ip_addresses_array: # Check for Valid IP Inputs
+    for ip_address in ip_addresses_array:  # Check for Valid IP Inputs
         if not is_ip_valid(ip_address, accept_v6_ips=True):
-            return_error('{0} is not a valid IP Address.'.format(ip_address))
+            invalid_ips.append(ip_address)
+
+    if invalid_ips:
+        return_warning('The following IP Addresses were found invalid: {}'.format(', '.join(invalid_ips)))
 
     enhanced = args.get('enhanced')
     response = client.get_ip_details(ip_addresses_array, enhanced)
@@ -236,10 +256,15 @@ def domain_details_command(client: Client, args: Dict[str, Any]) -> CommandResul
     """
     domain_string = args.get('domain')
     domain_array = argToList(domain_string)
+    invalid_domains = []
 
     for domain in domain_array:  # Check for Valid Domain Inputs
         if not REGEX_MAP['domain'].match(domain):
-            return_error('{0} is not a valid domain.'.format(domain))
+            invalid_domains.append(domain)
+
+    if invalid_domains:
+        return_warning('The following Domains were found invalid: {}'.format(', '.join(invalid_domains)))
+
     enhanced = args.get('enhanced')
     response = client.get_domain_details(domain_array, enhanced)
     domain_list = response.get("data", {}).get("results", {})
@@ -276,10 +301,14 @@ def url_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     url_string = args.get('url')
     url_array = argToList(url_string)
+    invalid_urls = []
 
     for url in url_array:  # Check for Valid URL Inputs
         if not REGEX_MAP['url'].match(url):
-            return_error('{0} is not a valid url.'.format(url))
+            invalid_urls.append(url)
+    if invalid_urls:
+        return_warning('The following URLs were found invalid: {}'.format(', '.join(invalid_urls)))
+
     enhanced = args.get('enhanced')
     response = client.get_url_details(url_array, enhanced)
     url_list = response.get("data", {}).get("results", {})
@@ -316,16 +345,20 @@ def file_details_command(client: Client, args: Dict[str, Any]) -> CommandResults
     """
     file_string = args.get('file')
     file_array = argToList(file_string)
-
+    invalid_hashes = []
     for file in file_array:  # Check for Valid File Inputs
         if not REGEX_MAP['hash'].match(file):
-            return_error('{0} is not a valid file.'.format(file))
+            invalid_hashes.append(file)
+
+    if invalid_hashes:
+        return_warning('The following Hashes were found invalid: {}'.format(', '.join(invalid_hashes)))
+
     enhanced = args.get('enhanced')
     response = client.get_file_details(file_array, enhanced)
     file_list = response.get("data", {}).get("results", {})
     file_data_list, file_standard_list = [], []
     for file_data in file_list:
-        score = to_dbot_score(file_data.get("score",0))
+        score = to_dbot_score(file_data.get("score", 0))
         dbot_score = Common.DBotScore(
             indicator=file_data.get("name2"),
             indicator_type=DBotScoreType.FILE,
@@ -355,6 +388,9 @@ def main() -> None:
     base_url = demisto.params().get('base_url')
     access_id = demisto.params().get('access_id')
     secret_key = demisto.params().get('secret_key')
+    verify = demisto.params().get('insecure')
+    proxy = demisto.params().get('proxy', False)
+    proxies = handle_proxy() if proxy else {}
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -362,7 +398,10 @@ def main() -> None:
         client = Client(
             base_url=base_url,
             access_id=access_id,
-            secret_key=secret_key)
+            secret_key=secret_key,
+            verify=verify,
+            proxies=proxies,
+        )
 
         if demisto.command() == 'test-module':
             test_module(client)
