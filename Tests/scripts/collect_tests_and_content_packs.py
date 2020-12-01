@@ -1045,10 +1045,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     # Check if only README file in file string, if so, no need to create the servers.
     files = [s for s in files_string.split('\n') if s]
     readme = all(map(lambda s: 'README.md' in s, files))
-    if readme:
-        create_filter_envs_file(from_version, to_version, readme_only=True)
-    else:
-        create_filter_envs_file(from_version, to_version)
+    create_filter_envs_file(from_version, to_version, readme_only=bool(readme))
 
     tests = set([])
     packs_to_install = set([])
@@ -1162,9 +1159,19 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
     return min_from_version.vstring, max_to_version.vstring
 
 
-def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=None, one_before_ga=None, ga=None,
-                            readme_only=False):
-    """Create a file containing all the envs we need to run for the CI"""
+def create_filter_envs_file(from_version: str, to_version: str, two_before_ga: str = None, one_before_ga: str = None,
+                            ga: str = None, readme_only: bool = False):
+    """
+    Create a file containing all the envs we need to run for the CI
+    Args:
+        from_version: Server from_version
+        to_version: Server to_version
+        two_before_ga: Server version two_before_ga
+        one_before_ga: Server version one_before_ga (5.0)
+        ga: Server Version ga (6.0)
+        readme_only: If the build is for readme_only - no need to create instances.
+
+    """
     # always run master and PreGA
     one_before_ga = one_before_ga or AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
     ga = ga or AMI_BUILDS.get('GA', '0').split('-')[0]
