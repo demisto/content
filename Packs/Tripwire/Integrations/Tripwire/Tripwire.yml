@@ -116,7 +116,8 @@ script:
     - default: false
       description: |-
         Start detected time of element versions to fetch.
-        The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z"
+        The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z".
+        When using start time , please make sure to use end time too, if not end time will be set to current time by default.
       isArray: false
       name: start_detected_time
       required: false
@@ -124,7 +125,8 @@ script:
     - default: false
       description: |-
         Start received time of element versions to fetch.
-        The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z"
+        The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z".
+        When using start time , please make sure to use end time too, if not end time will be set to current time by default.
       isArray: false
       name: start_received_time
       required: false
