@@ -45,7 +45,7 @@ class Client(BaseClient):
                           search: str = None,
                           list_type: str = None,
                           extended: bool = True,
-                          include_elements: bool = True
+                          include_elements: bool = True,
                           ) -> dict:
         """
             Get network lists
