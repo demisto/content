@@ -2954,7 +2954,7 @@ class Common(object):
 
             def __init__(
                 self,
-                entry_type: 'Common.CertificateExtension.SignedCertificateTimestamp.EntryType',
+                entry_type: str,
                 version: int,
                 log_id: str,
                 timestamp: str
