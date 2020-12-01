@@ -341,7 +341,6 @@ class RCS:
 
     """
      parse the RDL component of the RCS:
-    
        RDL      :: PIdevice@[<RD><RD_LIST>*]
        RD       :: name | SDN | RGN | FQN
        RD_LIST  :: , <RD>
@@ -510,7 +509,6 @@ class RCS:
 
     """
      parse the RET component of the RCS:
-    
        RET      :: Remediation@<ret><ret_list>
        ret      :: drop() | alert(...) | redirect(...) | serviceChain(...)
        SDN_LIST :: , <ret>
@@ -611,7 +609,6 @@ class RCS:
 
     """
      parse the SDL component of the RCS:
-    
        SDL      :: securityDomain@<SDN><SDN_LIST>*
        SDN      :: <a-zA-Z0-9_><a-zA-Z0-9_>*
        SDN_LIST :: , <SDN>
@@ -686,14 +683,14 @@ class RCS:
         return SDL, rcs, "success: {0}".format(len(SDL))
 
     """
-    Parse out the components of the RCS: [SDL] | [RET] | RDL 
-    and return all three. If the optional component is 
-    not found then it returns None but if keyword is 
+    Parse out the components of the RCS: [SDL] | [RET] | RDL
+    and return all three. If the optional component is
+    not found then it returns None but if keyword is
     found nothing else then returns empty.
-    
-    The fourth result returned is if there is remaining characters 
+
+    The fourth result returned is if there is remaining characters
     in the original RCS then its returned.
-    
+
     Returns info in fifth result
     """
     def _parse(self, rcs):
@@ -798,7 +795,7 @@ class RCS:
     then it returns the parsed out security domain component if
     it exists. It will return it as a list of security domain
     object name strings.
-    
+
     If there is an error in parsing the security domain component
     null is returned.  If it was not provided then "all"
     list is returned.
@@ -813,7 +810,7 @@ class RCS:
     """
     Assuming the RCS is valid
     then return the RDL
-    
+
     If there is an error in parsing the RDL component is
     returned as a NULL.
     """
@@ -827,10 +824,10 @@ class RCS:
 
     """
     Assuming the securtiy domain component of the RCS is valid
-    
+
     Assuming the RCS is valid
     then return the remediation action instruction.
-    
+
     If there is an error in parsing the RET component is
     returned as a NULL.
     """
