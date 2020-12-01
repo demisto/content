@@ -62,7 +62,7 @@ class Client(BaseClient):
             "search": search,
             "listType": list_type,
             "extended": extended,
-            "includeElements": include_elements
+            "includeElements": include_elements,
         }
         return self._http_request(method='GET',
                                   url_suffix='/network-list/v2/network-lists',
