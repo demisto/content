@@ -1,4 +1,6 @@
 from requests_oauthlib import OAuth1
+from dateparser import parse
+from pytz import UTC
 
 from CommonServerPython import *
 
@@ -10,6 +12,7 @@ BASE_URL = demisto.getParam('url').rstrip('/') + '/'
 API_TOKEN = demisto.getParam('APItoken')
 USERNAME = demisto.getParam('username')
 PASSWORD = demisto.getParam('password')
+COMMAND_NOT_IMPELEMENTED_MSG = 'Command not implemented'
 
 HEADERS = {
     'Content-Type': 'application/json',
@@ -688,10 +691,11 @@ def get_remote_data_command(id: str, lastUpdate: str) -> GetRemoteDataResponse:
     _, _, issue_raw_response = get_issue(issue_id=id)
 
     # Timestamp - Issue last modified in jira server side
-    jira_modified_date: datetime = parse_date_string(dict_safe_get(issue_raw_response,
-                                                                   ['fields', 'updated'], "", str))
+    jira_modified_date: datetime = parse(
+        str(dict_safe_get(issue_raw_response, ['fields', 'updated'], "", str))
+    ).replace(tzinfo=UTC)
     # Timestamp - Issue last sync in demisto server side
-    incident_modified_date: datetime = parse_date_string(lastUpdate)
+    incident_modified_date: datetime = parse(lastUpdate).replace(tzinfo=UTC)
 
     # Update incident only if issue modified in Jira server-side after the last sync
     if jira_modified_date > incident_modified_date:
@@ -754,7 +758,12 @@ def main():
         elif demisto.command() == 'get-remote-data':
             return_results(get_remote_data_command(**demisto.args()))
 
+        else:
+            raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
+
     except Exception as err:
+        if isinstance(err, NotImplementedError) and COMMAND_NOT_IMPELEMENTED_MSG in str(err):
+            raise
         return_error(str(err))
 
     finally:
