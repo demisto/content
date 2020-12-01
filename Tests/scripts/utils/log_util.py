@@ -145,6 +145,7 @@ class ParallelLoggingManager:
     >>> logging_manager.critical('critical message', real_time=True)
     >>> logging_manager.success('success message', real_time=True)
     """
+
     def __init__(self, log_file_name):
         """
         Initializes the logging manager:
@@ -172,6 +173,7 @@ class ParallelLoggingManager:
         self.real_time_logger.addHandler(self.file_handler)
         self.real_time_logger.addHandler(self.console_handler)
         self.real_time_logger.setLevel(logging.DEBUG)
+        self.real_time_logger.propagate = False
         self.loggers = {}
         self.listeners = {}
         self.logs_lock = Lock()
@@ -187,8 +189,8 @@ class ParallelLoggingManager:
         log_queue = queue.Queue(-1)
         queue_handler = QueueHandler(log_queue)
         queue_handler.setLevel(logging.DEBUG)
-
         logger = logging.getLogger(thread_name)
+        logger.propagate = False
         logger.setLevel(logging.DEBUG)
         logger.addHandler(queue_handler)
         listener = QueueListener(log_queue, self.console_handler, self.file_handler, respect_handler_level=True)
