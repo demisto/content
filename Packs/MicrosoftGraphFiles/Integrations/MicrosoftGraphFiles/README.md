@@ -1,5 +1,5 @@
 Use the Microsoft Graph Files integration to enable your app to get authorized access to files in OneDrive, SharePoint, and MS Teams across your entire organization. This integration requires admin consent.
-This integration was integrated and tested with version xx of Microsoft_Graph_Files
+
 ## Configure Microsoft_Graph_Files on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
