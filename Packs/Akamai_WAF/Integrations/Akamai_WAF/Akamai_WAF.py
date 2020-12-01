@@ -284,7 +284,7 @@ def get_network_lists_command(
         search: str = None,
         list_type: str = None,
         extended: str = 'true',
-        include_elements: str = 'true'
+        include_elements: str = 'true',
 ) -> Tuple[object, dict, Union[List, Dict]]:
     """Get network lists
 
