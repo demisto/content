@@ -1,32 +1,32 @@
 {
  "description": "",
  "feed": false,
- "id": "ee0bc1e9c-7878-40e0-8598-a65c563d270a",
+ "id": "bb5955000-e398-4b82-885f-9068fda553e8",
  "mapping": {
   "User Profile": {
    "dontMapEventToLabels": true,
    "internalMapping": {
-    "Email": {
+    "email": {
      "complex": null,
      "simple": "email"
     },
-    "Given Name": {
+    "givenName": {
      "complex": null,
-     "simple": "givenName"
+     "simple": "givenname"
     },
-    "Surname": {
+    "familyName": {
      "complex": null,
-     "simple": "familyName"
+     "simple": "surname"
     },
-    "Username": {
+    "userName": {
      "complex": null,
-     "simple": "userName"
+     "simple": "username"
     }
    }
   }
  },
- "name": "User Profile - GitHub (Incoming)",
- "type": "mapping-incoming",
+ "name": "User Profile - Scim (Outgoing)",
+ "type": "mapping-outgoing",
  "version": -1,
  "fromVersion": "6.0.0"
 }

@@ -8,7 +8,6 @@ from CommonServerPython import IAMActions, IAMErrors
 
 def mock_client():
     client = Client(base_url='https://test.com',
-                    token='123456',
                     org='test123',
                     verify=False,
                     headers={})
@@ -55,7 +54,7 @@ def test_create_user_command(mocker):
     mocker.patch.object(client, 'create_user', return_value=GITHUB_CREATE_USER_OUTPUT)
     mocker.patch.object(client, 'get_user_id_by_mail', return_value='')
 
-    iam_user_profile = create_user_command(client, args, 'mapper_out', True)
+    iam_user_profile = create_user_command(client, args, 'mapper_out', True, True)
     outputs = get_outputs_from_user_profile(iam_user_profile)
 
     assert outputs.get('action') == IAMActions.CREATE_USER
@@ -107,8 +106,7 @@ def test_get_user_command__bad_response(mocker):
     bad_response.status_code = 500
     bad_response._content = b'{"errorCode": "mock_error_code", ' \
                             b'"errorSummary": "mock_error_summary", ' \
-                            b'"errorCauses": [{"errorSummary": "reason_1"}, ' \
-                            b'{"errorSummary": "reason_2"}]}'
+                            b'"message": "Not Found"}'
 
     mocker.patch.object(Session, 'request', return_value=bad_response)
 
@@ -117,8 +115,8 @@ def test_get_user_command__bad_response(mocker):
 
     assert outputs.get('action') == IAMActions.GET_USER
     assert outputs.get('success') is False
-    assert outputs.get('errorCode') == 'mock_error_code'
-    assert outputs.get('errorMessage') == 'errorSummary: reason_1\n errorSummary: reason_2'
+    assert outputs.get('errorCode') == 500
+    assert outputs.get('errorMessage') == 'Not Found'
 
 
 def test_create_user_command__user_already_exists(mocker):
@@ -128,7 +126,7 @@ def test_create_user_command__user_already_exists(mocker):
 
     mocker.patch.object(client, 'get_user_id_by_mail', return_value="mock@mock.com")
 
-    iam_user_profile = create_user_command(client, args, 'mapper_out', is_command_enabled=True)
+    iam_user_profile = create_user_command(client, args, 'mapper_out', True, True)
     outputs = get_outputs_from_user_profile(iam_user_profile)
 
     assert outputs.get('action') == IAMActions.CREATE_USER

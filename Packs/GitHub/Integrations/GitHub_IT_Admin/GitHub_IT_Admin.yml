@@ -43,12 +43,12 @@ configuration:
   name: org
   required: true
   type: 0
-- defaultvalue: User Profile - GitHub (Incoming)
+- defaultvalue: User Profile - Scim (Incoming)
   display: Incoming Mapper
   name: mapper_in
   required: true
   type: 0
-- defaultvalue: User Profile - GitHub (Outgoing)
+- defaultvalue: User Profile - Scim (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
   required: true

@@ -6,20 +6,19 @@ import requests
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-DEFAULT_OUTGOING_MAPPER = "User Profile - GitHub (Outgoing)"
-DEFAULT_INCOMING_MAPPER = "User Profile - GitHub (Incoming)"
+DEFAULT_OUTGOING_MAPPER = "User Profile - Scim (Outgoing)"
+DEFAULT_INCOMING_MAPPER = "User Profile - Scim (Incoming)"
 
 
 class Client(BaseClient):
 
-    def __init__(self, base_url, token, org, headers, ok_codes=None, verify=True, proxy=False):
+    def __init__(self, base_url, org, headers, ok_codes=None, verify=True, proxy=False):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers)
         self.org = org
 
     def get_user(self, input_type, user_term):
 
-        uri = f'scim/v2/organizations/{self.org}/' \
-              f'Users?filter={input_type} eq {user_term}'
+        uri = f'scim/v2/organizations/{self.org}/Users?filter={input_type} eq \"{user_term}\"'
 
         return self._http_request(
             method='GET',
@@ -52,7 +51,7 @@ class Client(BaseClient):
 
     def get_user_id_by_mail(self, email):
         user_id = ""
-        uri = f'scim/v2/organizations/{self.org}/Users?filter=emails eq {email}'
+        uri = f"scim/v2/organizations/{self.org}/Users?filter=emails eq \"{email}\""
 
         res = self._http_request(
             method='GET',
@@ -68,17 +67,30 @@ class Client(BaseClient):
 
 
 def github_handle_error(e):
+    """
+    Handles an error from the Github API
+    an error example: Error in API call [401] - Unauthorized
+    {"message": "Bad credentials", "documentation_url": "https://docs.github.com/rest"}
+    The error might contain error_code, error_reason and error_message
+    The error_reason and error_message might be the same but usually, the error_reason adds more information that
+    the error_message doesn't provide
+    examples:
+        error_code = 401
+        error_message = 'Bad credentials'
+        error_reason = 'Unauthorized'
+    :param e: the client object
+    :return: error_code and  error_message
+    """
     try:
-        resp = e.res
-        error_code = resp.get('errorCode', '')
-        error_message = resp.get('errorCauses', str(e))
-        if isinstance(error_message, list):
-            error_list = []
-            for error in error_message:
-                if isinstance(error, dict):
-                    for key, value in error.items():
-                        error_list.append(f'{key}: {value}')
-                error_message = str('\n '.join(error_list))
+        error_code = ""
+        error_message = str(e)
+        if e.res is not None:
+            error_code = e.res.status_code
+            if e.res.json():
+                error_message = e.res.json().get("message", "")
+                error_reason = e.res.reason
+                if error_reason and error_reason != error_message:
+                    error_message += f' {error_reason}'
         return error_code, error_message
 
     except Exception as e:
@@ -88,8 +100,13 @@ def github_handle_error(e):
 
 
 def test_module(client):
-    uri = ""
-    client._http_request(method='GET', url_suffix=uri)
+    """
+    Trying to get a user by a fake id,
+    if the command returns with no errors the connection is ok
+    :param client: the client object
+    :return: ok if got a valid accesses token
+    """
+    client.get_user("id", "1234")
     return 'ok'
 
 
@@ -158,9 +175,9 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
                                             skip_reason=error_message)
 
             else:
-                github_user = iam_user_profile.map_object(mapper_name=mapper_out)
-                github_user_schema = generate_user_scheme(github_user)
-                res = client.create_user(github_user_schema)
+                github_user = iam_user_profile.map_object(mapper_name=mapper_out, scim=True)
+
+                res = client.create_user(github_user)
                 user_id = res.get('id', None)
                 iam_user_profile.set_result(success=True,
                                             iden=user_id,
@@ -207,9 +224,9 @@ def update_user_command(client, args, mapper_out, is_update_enabled, is_create_e
                                                 skip=True,
                                                 skip_reason=error_message)
             else:
-                github_user = iam_user_profile.map_object(mapper_name=mapper_out)
-                github_user_schema = generate_user_scheme(github_user)
-                res = client.update_user(user_term=user_id, data=github_user_schema)
+                github_user = iam_user_profile.map_object(mapper_name=mapper_out, scim=True)
+
+                res = client.update_user(user_term=user_id, data=github_user)
                 iam_user_profile.set_result(success=True,
                                             iden=user_id,
                                             email=github_user.get('email'),
@@ -270,14 +287,6 @@ def disable_user_command(client, args, mapper_out, is_disable_enabled):
                                     action=IAMActions.DISABLE_USER
                                     )
         return iam_user_profile
-
-
-def generate_user_scheme(github_user):
-    scheme = {'name': {'familyName': github_user.get('familyName'),
-                       'givenName': github_user.get('givenName')},
-              'userName': github_user.get('userName'),
-              'emails': [{'type': 'work', 'primary': True, 'value': github_user.get('email')}]}
-    return scheme
 
 
 def convert_scheme_to_dict(user_scheme):
@@ -351,7 +360,7 @@ def main():
             verify=verify_certificate,
             proxy=proxy,
             headers=headers,
-            ok_codes=(200, 201, 204)
+            ok_codes=(200, 201)
         )
         if command == 'test-module':
             return_results(test_module(client))

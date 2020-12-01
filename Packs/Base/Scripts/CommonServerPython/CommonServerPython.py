@@ -4920,11 +4920,25 @@ class IAMUserProfile:
 
         self._vendor_action_results.append(vendor_action_result)
 
-    def map_object(self, mapper_name, mapping_type=None):
+    def generate_user_scheme(self, app_data):
+        """ Generates a user scheme by a constant format. All params are mandatory.
+        :param app_data: (dict) The user data in app
+        :return: (dict) the user data, in the scim format.
+        """
+        family_name = app_data.get('familyName') if app_data.get('familyName') else app_data.get('email')
+        given_name = app_data.get('givenName') if app_data.get('givenName') else app_data.get('email')
+        scheme = {'name': {'familyName': family_name,
+                           'givenName': given_name},
+                  'userName': app_data.get('userName'),
+                  'emails': [{'type': 'work', 'primary': True, 'value': app_data.get('email')}]}
+        return scheme
+
+    def map_object(self, mapper_name, mapping_type=None, scim=False):
         """ Returns the user data, in an application data format.
 
         :param mapper_name: (str) The outgoing mapper from XSOAR to the application.
         :param mapping_type: (str) The mapping type of the mapper (optional).
+        :param scim: (bool) If the output will be scim formatted  (optional).
         :return: (dict) the user data, in the app data format.
         """
         if not mapping_type:
@@ -4932,6 +4946,8 @@ class IAMUserProfile:
         if not self._user_profile:
             raise DemistoException('You must provide the user profile data.')
         app_data = demisto.mapObject(self._user_profile, mapper_name, mapping_type)
+        if scim:
+            app_data = self.generate_user_scheme(app_data)
         return app_data
 
     def update_with_app_data(self, app_data, mapper_name, mapping_type=None):
@@ -4946,3 +4962,4 @@ class IAMUserProfile:
         if not isinstance(app_data, dict):
             app_data = safe_load_json(app_data)
         self._user_profile = demisto.mapObject(app_data, mapper_name, mapping_type)
+
