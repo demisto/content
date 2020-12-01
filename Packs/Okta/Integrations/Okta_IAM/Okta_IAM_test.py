@@ -1,5 +1,5 @@
 from requests import Response, Session
-from Okta_IAM import Client, get_user_command, create_user_command, update_user_command, enable_user_command, \
+from Okta_IAM import Client, get_user_command, create_user_command, update_user_command, \
     disable_user_command, get_mapping_fields_command, get_app_user_assignment_command, fetch_incidents
 from CommonServerPython import IAMErrors, IAMUserProfile, IAMActions, EntryType
 
@@ -7,6 +7,18 @@ from CommonServerPython import IAMErrors, IAMUserProfile, IAMActions, EntryType
 OKTA_USER_OUTPUT = {
     "id": "mock_id",
     "status": "PROVISIONED",
+    "profile": {
+        "firstName": "mock_first_name",
+        "lastName": "mock_last_name",
+        "login": "testdemisto2@paloaltonetworks.com",
+        "email": "testdemisto2@paloaltonetworks.com"
+    }
+}
+
+
+OKTA_DISABLED_USER_OUTPUT = {
+    "id": "mock_id",
+    "status": "DEPROVISIONED",
     "profile": {
         "firstName": "mock_first_name",
         "lastName": "mock_last_name",
@@ -133,7 +145,8 @@ def test_create_user_command__success(mocker):
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'create_user', return_value=OKTA_USER_OUTPUT)
 
-    user_profile = create_user_command(client, args, 'mapper_out', is_command_enabled=True)
+    user_profile = create_user_command(client, args, 'mapper_out',
+                                       is_command_enabled=True, is_update_user_enabled=True)
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.CREATE_USER
@@ -145,29 +158,38 @@ def test_create_user_command__success(mocker):
     assert outputs.get('details', {}).get('profile', {}).get('lastName') == 'mock_last_name'
 
 
-def test_create_user_command__user_already_exists(mocker):
+def test_update_user_command__allow_enable(mocker):
     """
     Given:
         - An Okta IAM client object
-        - A user-profile argument that contains an email of a user
+        - A user-profile argument that contains user data
     When:
-        - The user already exists in Okta
-        - Calling function create_user_command
+        - The user is disabled in Okta
+        - allow-enable argument is true
+        - Calling function update_user_command
     Then:
-        - Ensure the command is considered successful and skipped
+        - Ensure the user is enabled at the end of the command execution.
     """
     client = mock_client()
-    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
+    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'},
+            'allow-enable': 'true'}
 
-    mocker.patch.object(client, 'get_user', return_value=OKTA_USER_OUTPUT)
+    mocker.patch.object(client, 'get_user', return_value=OKTA_DISABLED_USER_OUTPUT)
+    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
+    mocker.patch.object(client, 'activate_user', return_value=None)
+    mocker.patch.object(client, 'update_user', return_value=OKTA_USER_OUTPUT)
 
-    user_profile = create_user_command(client, args, 'mapper_out', is_command_enabled=True)
+    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=False,
+                                       is_create_user_enabled=False, create_if_not_exists=False)
     outputs = get_outputs_from_user_profile(user_profile)
 
-    assert outputs.get('action') == IAMActions.CREATE_USER
+    assert outputs.get('action') == IAMActions.UPDATE_USER
     assert outputs.get('success') is True
-    assert outputs.get('skipped') is True
-    assert outputs.get('reason') == IAMErrors.USER_ALREADY_EXISTS[1]
+    assert outputs.get('active') is True
+    assert outputs.get('id') == 'mock_id'
+    assert outputs.get('username') == 'testdemisto2@paloaltonetworks.com'
+    assert outputs.get('details', {}).get('profile', {}).get('firstName') == 'mock_first_name'
+    assert outputs.get('details', {}).get('profile', {}).get('lastName') == 'mock_last_name'
 
 
 def test_update_user_command__non_existing_user(mocker):
@@ -266,33 +288,6 @@ def test_update_user_command__rate_limit_error(mocker):
     assert outputs.get('action') == IAMActions.UPDATE_USER
     assert outputs.get('success') is False
     assert outputs.get('errorCode') == 'E0000047'
-
-
-def test_enable_user_command__non_existing_user(mocker):
-    """
-    Given:
-        - An Okta IAM client object
-        - A user-profile argument that contains an email of a user
-    When:
-        - create-if-not-exists parameter is unchecked
-        - The user does not exist in Okta
-        - Calling function enable_user_command
-    Then:
-        - Ensure the command is considered successful and skipped
-    """
-    client = mock_client()
-    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
-
-    mocker.patch.object(client, 'get_user', return_value=None)
-
-    user_profile = enable_user_command(client, args, 'mapper_out', is_command_enabled=True,
-                                       is_create_user_enabled=True, create_if_not_exists=False)
-    outputs = get_outputs_from_user_profile(user_profile)
-
-    assert outputs.get('action') == IAMActions.ENABLE_USER
-    assert outputs.get('success') is True
-    assert outputs.get('skipped') is True
-    assert outputs.get('reason') == IAMErrors.USER_DOES_NOT_EXIST[1]
 
 
 def test_disable_user_command__user_is_already_disabled(mocker):
