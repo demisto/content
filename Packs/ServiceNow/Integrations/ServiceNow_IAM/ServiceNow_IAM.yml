@@ -24,17 +24,17 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: '`iam-create-user` Command Enabled'
+  display: iam-create-user Command Enabled
   name: create_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: '`iam-update-user` Command Enabled'
+  display: iam-update-user Command Enabled
   name: update_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: '`iam-disable-user` Command Enabled'
+  display: iam-disable-user Command Enabled
   name: disable_user_enabled
   required: false
   type: 8
