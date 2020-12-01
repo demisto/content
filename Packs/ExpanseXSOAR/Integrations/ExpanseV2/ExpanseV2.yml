@@ -2567,7 +2567,7 @@ script:
     - contextPath: 'Expanse.Certificate.tenant'
       description: ''
       type: Unknown
-  - name: expanse-certificate
+  - name: certificate
     arguments:
     - default: true
       description: The MD5 hash of the certificate to enrich.
