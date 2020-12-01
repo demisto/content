@@ -871,7 +871,7 @@ jobs:
             - *add_ssh_keys
             - *prepare_environment
             - run:
-                name: Collect Instance Role
+                name: Collect Instance Role And Check If Instance Was Created
                 when: always
                 command: |
                   echo 'export INSTANCE_ROLE="Demisto 6.0"' >> $BASH_ENV
@@ -953,7 +953,7 @@ jobs:
             - *add_ssh_keys
             - *prepare_environment
             - run:
-                name: Collect Instance Role
+                name: Collect Instance Role And Check If Instance Was Created
                 when: always
                 command: |
                   echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
