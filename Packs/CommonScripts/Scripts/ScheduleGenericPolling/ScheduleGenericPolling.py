@@ -9,23 +9,27 @@ def parseIds(idsArg):
         return
     if isinstance(idsArg, list):
         return ','.join(map(lambda item: str(item).encode('utf-8'), idsArg))
-    if isinstance(idsArg, str) or isinstance(idsArg, bytes):
+    if isinstance(idsArg, str) or isinstance(idsArg, bytes) or isinstance(idsArg, unicode):
         return ','.join(argToList(idsArg.encode('utf-8')))
     return str(idsArg)
 
 
-args = demisto.args()
-ids = parseIds(args['ids'])
-dt = args['dt']
-pollingCommand = args['pollingCommand']
-pollingCommandArgName = args['pollingCommandArgName']
-tag = args['tag']
-playbookId = ' playbookId="{}"'.format(args['playbookId']) if 'playbookId' in args else ''
-interval = int(demisto.get(args, 'interval'))
-timeout = int(demisto.get(args, 'timeout'))
+def get_arg_and_encode(arg_name):
+    arg = demisto.getArg(arg_name)
+    return arg.encode('utf-8') if type(arg) != int else arg
+
+
+ids = parseIds(demisto.getArg('ids'))
+dt = get_arg_and_encode('dt')
+pollingCommand = demisto.getArg('pollingCommand')
+pollingCommandArgName = demisto.getArg('pollingCommandArgName')
+tag = get_arg_and_encode('tag')
+playbookId = ' playbookId="{}"'.format(demisto.getArg('playbookId') if 'playbookId' in demisto.args() else '')
+interval = int(demisto.getArg('interval'))
+timeout = int(demisto.getArg('timeout'))
 
 args_names = demisto.getArg('additionalPollingCommandArgNames').strip()
-args_values = demisto.getArg('additionalPollingCommandArgValues').strip()
+args_values = get_arg_and_encode('additionalPollingCommandArgValues').strip()
 
 if interval <= 0 or timeout <= 0:
     return_error("Interval and timeout must be positive numbers")
