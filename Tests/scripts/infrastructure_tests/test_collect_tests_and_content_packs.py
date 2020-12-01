@@ -1201,7 +1201,14 @@ def test_remove_tests_for_non_supported_packs(tests_to_filter, should_test_conte
 @pytest.mark.parametrize('files_string, expected_result', [
     ('M	Packs/ServiceNow/Integrations/ServiceNowv2/README.md', True),
     ("""M	Packs/ServiceNow/Integrations/ServiceNowv2/README.md
-    M	Packs/ServiceNow/Integrations/ServiceNowv2/ServiceNowv2.py""", False)
+    M	Packs/ServiceNow/Integrations/ServiceNowv2/ServiceNowv2.py""", False),
+    ("""M Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/ticket-example.png
+    M  Packs/ImageOCR/Integrations/ImageOCR/test_data/bomb.jpg
+    M   Packs/AutoFocus/Integrations/FeedAutofocus/demo_video/AutoFocus_Feed_demo.mp4""", True),
+    ("""M Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/ticket-example.png
+    M  Packs/ImageOCR/Integrations/ImageOCR/test_data/bomb.jpg
+    M   Packs/AutoFocus/Integrations/FeedAutofocus/demo_video/AutoFocus_Feed_demo.mp4,
+     M	Packs/ServiceNow/Integrations/ServiceNowv2/ServiceNowv2.py""", False)
 ])
 def test_is_documentation_only(files_string, expected_result):
     documentation_only = is_documentation_changes_only(files_string)

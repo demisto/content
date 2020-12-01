@@ -1062,7 +1062,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     # Check if only README file in file string, if so, no need to create the servers.
     documentation_changes_only = is_documentation_changes_only(files_string)
-    create_filter_envs_file(from_version, to_version, documentation_changes_only=bool(documentation_changes_only))
+    create_filter_envs_file(from_version, to_version, documentation_changes_only=documentation_changes_only)
 
     tests = set([])
     packs_to_install = set([])
@@ -1186,7 +1186,7 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga: s
         two_before_ga: Server version two_before_ga
         one_before_ga: Server version one_before_ga (5.0)
         ga: Server Version ga (6.0)
-        documentation_changes_only: If the build is for readme_only - no need to create instances.
+        documentation_changes_only: If the build is for documentations changes only - no need to create instances.
 
     """
     # always run master and PreGA
