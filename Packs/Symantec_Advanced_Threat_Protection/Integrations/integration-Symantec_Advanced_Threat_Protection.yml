@@ -62,11 +62,6 @@ configuration:
   defaultvalue: 1 day
   type: 0
   required: false
-- display: Fetch incidents over the server limit
-  name: exceed_server_limit_fetching
-  defaultvalue: "false"
-  type: 8
-  required: false
 script:
   script: >
     var serverUrl = params.url.replace(/[\/]+$/, '') + '/';
@@ -354,14 +349,12 @@ script:
     };
 
 
-    var fetchIncidents = function(type, query, limit, first_fetch_time, exceed_server_limit) {
+    var fetchIncidents = function(type, query, limit, first_fetch_time) {
 
         if (type != 'incidents' && type != 'incidentevents' && type != 'events'){
             throw 'Unknown incident type.';
         }
         var DAY_IN_MILLIS = 24*60*60*1000;
-        var HARD_LIMIT = 10000;
-        var SERVER_LIMIT = 1000;
 
         var lastRun = getLastRun();
         var now = new Date();
@@ -401,25 +394,22 @@ script:
         add(p, 'where', query);
         addTime(p, 'start_time', startTime);
         addTime(p, 'end_time', endTime);
-        limit = limit ? Math.min(parseInt(limit), HARD_LIMIT) : HARD_LIMIT;
-
+        add(p, 'next', next);
+        
+        if (limit) {
+            p.limit = parseInt(limit);
+        }
         var incidents = [];
-        do {
-            add(p, 'next', next);
-            next = null;
-            p.limit = Math.min(limit - incidents.length, SERVER_LIMIT);
-
-            var res = doReq('POST', type, p);
-            if (res.obj.result && res.obj.result.length !== 0) {
-                if (type == 'incidents') {
-                    incidents = incidents.concat(getIncidentsFromIncidentsResult(res.obj.result));
-                } else {
-                    incidents = incidents.concat(getIncidentsFromEventsResult(res.obj.result));
-                }
-                next = 'next' in res.obj ? res.obj.next : null;
+        var res = doReq('POST', type, p);
+        if (res.obj.result && res.obj.result.length !== 0) {
+            if (type == 'incidents') {
+                incidents = incidents.concat(getIncidentsFromIncidentsResult(res.obj.result));
+            } else {
+                incidents = incidents.concat(getIncidentsFromEventsResult(res.obj.result));
             }
-        } while (exceed_server_limit && next && incidents.length < limit);
-
+        }
+        next = 'next' in res.obj ? res.obj.next : null;
+        
         if (next) {
             setLastRun({ time: startTime, next: next, query: query, end_time: endTime });
         } else {
@@ -438,7 +428,7 @@ script:
             return 'ok';
         case 'fetch-incidents':
             return fetchIncidents(params.fetch_incidents_type, params.fetch_incidents_query,
-                params.fetch_incidents_limit, params.first_fetch_time, params.exceed_server_limit_fetching);
+                params.fetch_incidents_limit, params.first_fetch_time);
         case 'satp-appliances':
             return getAppliances();
         case 'satp-command':
