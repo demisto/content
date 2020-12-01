@@ -131,8 +131,9 @@ def filter_versions(args: dict) -> str:
     if args.get('baseline_version_ids'):
         for baseline_version in argToList(args.get('baseline_version_ids')):
             filters += f"baselineVersion={baseline_version}&"
-    if args.get('time_detected_range'):
-        start, end = argToList(args.get('time_detected_range'))
+    if args.get('start_detected_time') and args.get('end_detected_time'):
+        start = args.get('start_detected_time')
+        end = args.get('end_detected_time')
         if not re.search(DATE_REG, start) and not re.search(DATE_REG, end):
             try:
                 start = parse_date_range(start, date_format=DATE_FORMAT)[0]
@@ -141,9 +142,9 @@ def filter_versions(args: dict) -> str:
                 raise DemistoException(f"Please insert time range in relative format e.g. '1 day', '2 days' or in "
                                        f"date format {DATE_FORMAT}")
         filters += f"timeDetectedRange={start},{end}&"
-
-    if args.get('time_received_range'):
-        start, end = argToList(args.get('time_received_range'))
+    if args.get('start_received_time') and args.get('end_received_time'):
+        start = args.get('start_received_time')
+        end = args.get('end_received_time')
         if not re.search(DATE_REG, start) and not re.search(DATE_REG, end):
             try:
                 start = parse_date_range(start, date_format=DATE_FORMAT)[0]
@@ -151,7 +152,6 @@ def filter_versions(args: dict) -> str:
             except Exception:
                 raise DemistoException(f"Please insert time range in relative format e.g. '1 day', '2 days' or in "
                                        f"date format {DATE_FORMAT}")
-        filters += f"timeReceivedRange={start},{end}&"
     if args.get('limit'):
         filters += f"pageLimit={args.get('limit')}&"
     if args.get('start'):
