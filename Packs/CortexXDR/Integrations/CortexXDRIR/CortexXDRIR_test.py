@@ -882,7 +882,7 @@ def test_get_remote_data_command_should_update(requests_mock):
         - the mirrored_object in the GetRemoteDataResponse is the same as the modified raw incident
         - the entries in the GetRemoteDataResponse in empty
     """
-    from PaloAltoNetworks_XDR import get_remote_data_command, Client, sort_all_list_incident_fields
+    from CortexXDRIR import get_remote_data_command, Client, sort_all_list_incident_fields
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
@@ -1449,7 +1449,7 @@ def test_sort_by_key__only_main_key():
     Then
         - resulting list is sorted by main key only.
     """
-    from PaloAltoNetworks_XDR import sort_by_key
+    from CortexXDRIR import sort_by_key
     list_to_sort = [
         {
             "name": "element2",
