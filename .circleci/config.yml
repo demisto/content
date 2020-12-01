@@ -959,7 +959,7 @@ jobs:
                   echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
                   export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
                   echo "Demisto Marketplace filter=$TEMP"
-                  if [[ "$TEMP" == "true" ]];
+                  if [[ "$TEMP" == "true" || -n "${NIGHTLY}" ]];
                     then
                       echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
                       exit 0
