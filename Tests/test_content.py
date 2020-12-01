@@ -12,6 +12,7 @@ import subprocess
 from time import sleep
 import datetime
 from distutils.version import LooseVersion
+from typing import Union, Any
 
 import pytz
 
@@ -153,7 +154,9 @@ class DataKeeperTester:
             self.empty_files.append(playbook_id)
 
 
-def print_test_summary(tests_data_keeper: DataKeeperTester, is_ami: bool = True, logging_module=logging) -> None:
+def print_test_summary(tests_data_keeper: DataKeeperTester,
+                       is_ami: bool = True,
+                       logging_module: Union[Any, ParallelLoggingManager] = logging) -> None:
     """
     Takes the information stored in the tests_data_keeper and prints it in a human readable way.
     Args:
@@ -380,8 +383,7 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, demisto_use
             logging_manager.info(f'------ Test {test_message} end ------\n')
             return
         proxy.failed_tests_count += 1
-        mock_failed_message = "Test failed with mock, recording new mock file. (Mock: Recording)"
-        logging_manager.info(mock_failed_message)
+        logging_manager.warning("Test failed with mock, recording new mock file. (Mock: Recording)")
         rerecord = True
     else:
         logging_manager.info(f'{start_message} (Mock: Recording)')
@@ -640,12 +642,8 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
     test_to_version = t.get('toversion', '99.99.99')
 
     if not (LooseVersion(test_from_version) <= LooseVersion(server_numeric_version) <= LooseVersion(test_to_version)):
-        logging_manager.info(f'------ Test {test_message} start ------')
-
-        warning_message = \
-            f'Test {test_message} ignored due to version mismatch (test versions: {test_from_version}-{test_to_version})'
-        logging_manager.warning(warning_message)
-        logging_manager.info(f'------ Test {test_message} end ------\n')
+        logging_manager.warning(f'Test {test_message} ignored due to version mismatch '
+                                f'(test versions: {test_from_version}-{test_to_version})\n')
         return
 
     placeholders_map = {'%%SERVER_HOST%%': server}
@@ -767,7 +765,6 @@ def execute_testing(tests_settings,
                     is_ami=True):
     server = SERVER_URL.format(server_ip)
     server_numeric_version = tests_settings.serverNumericVersion
-    logging_manager.info(f'Executing tests with the server {server} - and the server ip {server_ip}', real_time=True)
     is_nightly = tests_settings.nightly
     is_memory_check = tests_settings.memCheck
     slack = tests_settings.slack
@@ -863,7 +860,6 @@ def execute_testing(tests_settings,
 
     except Exception:
         logging_manager.exception('~~ Thread failed ~~')
-        logging_manager.execute_logs()
         raise
 
     finally:
@@ -874,7 +870,7 @@ def execute_testing(tests_settings,
             tests_data_keeper.add_proxy_related_test_data(proxy)
 
             if build_name == 'master':
-                logging_manager.info("Pushing new/updated mock files to mock git repo.")
+                logging_manager.debug("Pushing new/updated mock files to mock git repo.", real_time=True)
                 ami.upload_mock_files(build_name, build_number)
 
         if playbook_skipped_integration and build_name == 'master':
@@ -910,7 +906,7 @@ def execute_testing(tests_settings,
             current_file_blob.compose([current_file_blob, new_file_blob])
             new_file_blob.delete()
         except Exception:
-            logging_manager.exception("Failed to save proxy metrics")
+            logging_manager.exception("Failed to save proxy metrics", real_time=True)
 
 
 def update_round_set_and_sleep_if_round_completed(executed_in_current_round: set,
@@ -1063,7 +1059,7 @@ def manage_tests(tests_settings):
         execute_testing(tests_settings, instance_ip, [], all_tests,
                         tests_data_keeper, is_ami=False)
 
-    print_test_summary(tests_data_keeper, tests_settings.isAMI)
+    print_test_summary(tests_data_keeper, tests_settings.isAMI, logging_module=logging_manager)
     logging_manager.execute_logs()
     create_result_files(tests_data_keeper)
 
@@ -1361,7 +1357,7 @@ def lock_expired(lock_file: storage.Blob, lock_timeout: str) -> bool:
 
 def main():
     global logging_manager
-    logging_manager = ParallelLoggingManager('Run Tests.log')
+    logging_manager = ParallelLoggingManager('Run_Tests.log')
     tests_settings = options_handler()
     manage_tests(tests_settings)
 

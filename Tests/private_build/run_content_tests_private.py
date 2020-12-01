@@ -219,11 +219,9 @@ def run_private_test_scenario(tests_settings: SettingsTester, t: dict, default_t
     test_to_version = t.get('toversion', '99.99.99')
 
     if not (LooseVersion(test_from_version) <= LooseVersion(server_numeric_version) <= LooseVersion(test_to_version)):
-        logging.info(f'\n------ Test {test_message} start ------')
         warning_message = f'Test {test_message} ignored due to version mismatch ' \
                           f'(test versions: {test_from_version}-{test_to_version})'
         logging.warning(warning_message)
-        logging.info(f'------ Test {test_message} end ------\n')
         return
 
     placeholders_map = {'%%SERVER_HOST%%': server}
