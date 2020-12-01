@@ -1,0 +1,427 @@
+id: X509Certificate Test Playbook
+version: -1
+name: X509Certificate Test Playbook
+description: Test Playbook for X509Certificate Scripts
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0ba97589-575e-4130-8fe5-a51f4831b6e7
+    type: start
+    task:
+      id: 0ba97589-575e-4130-8fe5-a51f4831b6e7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: d0dac6c9-e54e-4315-8c04-60131b4f1bc6
+    type: regular
+    task:
+      id: d0dac6c9-e54e-4315-8c04-60131b4f1bc6
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 09b14890-6e55-48c9-8be6-6ac4cb38ee68
+    type: regular
+    task:
+      id: 09b14890-6e55-48c9-8be6-6ac4cb38ee68
+      version: -1
+      name: Create Certificate Indicator
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      certificatenames: {}
+      certificatesignature: {}
+      certificatevalidationchecks: {}
+      city: {}
+      costcenter: {}
+      costcentercode: {}
+      countryname: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      department: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainidnname: {}
+      domainname: {}
+      domainreferringips: {}
+      domainreferringsubnets: {}
+      domainstatus: {}
+      email: {}
+      emailaddress: {}
+      entryid: {}
+      expanseassettype: {}
+      expansebusinessunits: {}
+      expansecertificateadvertisementstatus: {}
+      expansecommonname: {}
+      expansedateadded: {}
+      expansednsresolutionstatus: {}
+      expansedomain: {}
+      expansefirstobserved: {}
+      expanseissuerdn: {}
+      expanselastobserved: {}
+      expansemd5hash: {}
+      expanseproperties: {}
+      expanseprovidername: {}
+      expansesans: {}
+      expanseserialnumber: {}
+      expanseservicestatus: {}
+      expansesha256fingerprint: {}
+      expansesourcedomain: {}
+      expansesubjectdn: {}
+      expansetags: {}
+      expansetenantname: {}
+      expansetype: {}
+      expansevalidnotafter: {}
+      expansevalidnotbefore: {}
+      expirationdate: {}
+      extension: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      givenname: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      issuerdn: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      lastseenbysource: {}
+      leadership: {}
+      location: {}
+      locationregion: {}
+      macaddress: {}
+      malwarefamily: {}
+      manageremailaddress: {}
+      managername: {}
+      md5:
+        simple: ${Certificate.MD5}
+      memory: {}
+      merge: {}
+      mobilephone: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      pem:
+        simple: ${Certificate.PEM}
+      personalemail: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      publickey: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relateToIncident: {}
+      relatedIncidents: {}
+      reportedby: {}
+      reputation: {}
+      seenNow: {}
+      serialnumber: {}
+      service: {}
+      sha1:
+        simple: ${Certificate.SHA1}
+      sha256:
+        simple: ${Certificate.SHA256}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source:
+        simple: DBot
+      sourceTimeStamp: {}
+      sourceoriginalseverity: {}
+      spkisha256: {}
+      ssdeep: {}
+      state: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      streetaddress: {}
+      subdomains: {}
+      subjectalternativenames: {}
+      subjectdn: {}
+      surname: {}
+      tags: {}
+      threattypes: {}
+      title: {}
+      trafficlightprotocol: {}
+      type:
+        simple: Certificate
+      updateddate: {}
+      username: {}
+      validitynotafter: {}
+      validitynotbefore: {}
+      value:
+        simple: ${Certificate.SHA256}
+      workphone: {}
+      xdrstatus: {}
+      zipcode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: c14ced02-1e23-4c2f-80c2-76e8b94d5123
+    type: regular
+    task:
+      id: c14ced02-1e23-4c2f-80c2-76e8b94d5123
+      version: -1
+      name: CertificateExtract
+      description: Extract fields from a certificate file and return the standard
+        context
+      scriptName: CertificateExtract
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      input: {}
+      pem:
+        simple: |-
+          -----BEGIN CERTIFICATE-----
+          MIIFezCCBGOgAwIBAgISA/JL4oaGczW5OqvCy9cEQqu6MA0GCSqGSIb3DQEBCwUA
+          MEoxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MSMwIQYDVQQD
+          ExpMZXQncyBFbmNyeXB0IEF1dGhvcml0eSBYMzAeFw0yMDExMDgxODE1NDFaFw0y
+          MTAyMDYxODE1NDFaMBQxEjAQBgNVBAMMCSoucGFuLmRldjCCASIwDQYJKoZIhvcN
+          AQEBBQADggEPADCCAQoCggEBANg20WTL+SVHruVKNy0hLNUlOUeK0EDdEV/rwsqk
+          iT3yIASK2AXzaOF3M8TVU6I/xEKVMnEmduxmSKeGIiF8+0ClKaXRGkt6ErVM6G+f
+          HQOAMNYIOmWe199hRFrKKmH/F9ws366vjQMwP7xUwcQPsSKhirz1VoOpYLBgQ8FO
+          F8IWJuad8wiW6qfRZXEUl9Ta4klekG5/Kp3P/pPnNn65rFYrMCcmaSLymdfcyGpV
+          EtipNc8X5zvryZ3q1sNRG05MSNhtN0FtnuRG99oetzjUP/MhiX+6RqbG2Ou33b+A
+          nOPKsTksDNeSNMPJpd/vxYnjzTeISo10+AuXRrpJ2I9nzhECAwEAAaOCAo8wggKL
+          MA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIw
+          DAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQUuENucz/GeiKrE10fxExRWTUydqMwHwYD
+          VR0jBBgwFoAUqEpqYwR93brm0Tm3pkVl7/Oo7KEwbwYIKwYBBQUHAQEEYzBhMC4G
+          CCsGAQUFBzABhiJodHRwOi8vb2NzcC5pbnQteDMubGV0c2VuY3J5cHQub3JnMC8G
+          CCsGAQUFBzAChiNodHRwOi8vY2VydC5pbnQteDMubGV0c2VuY3J5cHQub3JnLzBG
+          BgNVHREEPzA9ggkqLnBhbi5kZXaCJ2RlbWlzdG8uZGV2ZWxvcGVycy5wYWxvYWx0
+          b25ldHdvcmtzLmNvbYIHcGFuLmRldjBMBgNVHSAERTBDMAgGBmeBDAECATA3Bgsr
+          BgEEAYLfEwEBATAoMCYGCCsGAQUFBwIBFhpodHRwOi8vY3BzLmxldHNlbmNyeXB0
+          Lm9yZzCCAQMGCisGAQQB1nkCBAIEgfQEgfEA7wB2AESUZS6w7s6vxEAH2Kj+KMDa
+          5oK+2MsxtT/TM5a1toGoAAABdalJF6wAAAQDAEcwRQIgY7UA7lCiPYQi2OiML/mg
+          Z7LQyFegVH1tX2dBG23D5tgCIQC9c9UX886gpx4ROpDyHdSd+k0a9BR5dDdyPfj0
+          cRm1LgB1AH0+8viP/4hVaCTCwMqeUol5K8UOeAl/LmqXaJl+IvDXAAABdalJF+MA
+          AAQDAEYwRAIgKMtxuyKPcT0QxAJKN0uNl4jcJn0pdBzHqafHQXni9gYCIGqdT8l5
+          3OEkoiQ17boLs4saRFlg2a2zx0cB4jEPg6/eMA0GCSqGSIb3DQEBCwUAA4IBAQBD
+          Gb01zj3OJ5cntlFldFGzlNDMMrsJxYPNZJfjKr/USMZ/OTjN9snr2HvWnhFTrD8L
+          7HxDbYWXt0dMwQZtA0ZIKrlUIZrxhnyPsehYRrKm9+G8X2n/K6vseCwxxTfIlL2R
+          OvmeIWc8NBxJ6bu/s2xIYuIk07fHOpw537pk8NIZnkeOL9VPwKsAgotCyB+6AQ1f
+          raEqZXkLJYnNYoYh24QVrP9RX/wZdPqDaFAAesTRwiSP7EF/jZpDR9qV97wHHf5Y
+          IS4pZ6GLGp6w0cVySp0mZR2yOtMeb64Dj1egdJQEU5HMnoO3OpTu2l3FzqVZ2TkO
+          DFO4KRA2df7pJLNqY7Db
+          -----END CERTIFICATE-----
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: f92842ca-1c29-4242-83ae-88c0293e0b37
+    type: regular
+    task:
+      id: f92842ca-1c29-4242-83ae-88c0293e0b37
+      version: -1
+      name: Certificate Reputation
+      description: Enrich and calculate reputation of a Certificate indicator.
+      scriptName: CertificateReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      input:
+        simple: ${Certificate.SHA256}
+      update_checks:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 345ed494-22d6-4be2-8c1c-0576fcf6a8c8
+    type: title
+    task:
+      id: 345ed494-22d6-4be2-8c1c-0576fcf6a8c8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 955,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
