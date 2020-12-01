@@ -4959,47 +4959,11 @@ class IAMUserProfile:
 
         self._vendor_action_results.append(vendor_action_result)
 
-    def generate_user_scheme(self, app_data):
-        """ Generates a user scheme by a constant format. All params are mandatory.
-        :param app_data: (dict) The user data in app
-        :return: (dict) the user data, in the scim format.
-        """
-        family_name = app_data.get('surname') if app_data.get('surname') else app_data.get('surname')
-        given_name = app_data.get('givenname') if app_data.get('givenname') else app_data.get('email')
-        scheme = {'name': {'familyName': family_name,
-                           'givenName': given_name},
-                  'userName': app_data.get('username'),
-                  'emails': [{'type': 'work', 'primary': True, 'value': app_data.get('email')}]}
-        return scheme
-
-    def convert_scheme_to_dict(self, app_data):
-        """ Converts a scim outputs to dict.
-        :param app_data: (dict) The scim data in app
-        :return: (dict) the user data as dict
-        """
-        output = {}
-
-        name = app_data.get("name")
-        emails = app_data.get("emails")
-
-        output["userName"] = app_data.get("userName")
-
-        if isinstance(name,dict):
-            output["familyName"] = app_data.get("familyName")
-            output["givenName"] = app_data.get("givenName")
-
-        if isinstance(emails,list):
-            if isinstance(emails[0], dict):
-                output["email"] = emails[0].get("value")
-
-        return output
-
-    def map_object(self, mapper_name, mapping_type=None, scim=False):
+    def map_object(self, mapper_name, mapping_type=None):
         """ Returns the user data, in an application data format.
 
         :param mapper_name: (str) The outgoing mapper from XSOAR to the application.
         :param mapping_type: (str) The mapping type of the mapper (optional).
-        :param scim: (bool) If the output will be scim formatted  (optional).
         :return: (dict) the user data, in the app data format.
         """
         if not mapping_type:
@@ -5007,22 +4971,17 @@ class IAMUserProfile:
         if not self._user_profile:
             raise DemistoException('You must provide the user profile data.')
         app_data = demisto.mapObject(self._user_profile, mapper_name, mapping_type)
-        if scim:
-            app_data = self.generate_user_scheme(app_data)
         return app_data
 
-    def update_with_app_data(self, app_data, mapper_name, mapping_type=None, scim=False):
+    def update_with_app_data(self, app_data, mapper_name, mapping_type=None):
         """ updates the user_profile attribute according to the given app_data
 
         :param app_data: (dict) The user data in app
         :param mapper_name: (str) incoming mapper name
         :param mapping_type: (str) Optional - mapping type
-        :param scim: (bool) If the output will be scim formatted  (optional).
         """
         if not mapping_type:
             mapping_type = IAMUserProfile.INDICATOR_TYPE
         if not isinstance(app_data, dict):
             app_data = safe_load_json(app_data)
-        if scim:
-            app_data = self.convert_scheme_to_dict(app_data)
         self._user_profile = demisto.mapObject(app_data, mapper_name, mapping_type)
