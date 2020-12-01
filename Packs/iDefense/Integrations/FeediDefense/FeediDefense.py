@@ -10,6 +10,18 @@ except ValueError:
 GLOBAL_INTEGRATION_CONTEXT: dict = {}  # Global variable in order to hold one dictionary that manage all indicator types
 
 
+def _update_global_integration_context(key: str = None, value: str = None) -> None:
+    global GLOBAL_INTEGRATION_CONTEXT
+    if not key and not value:
+        GLOBAL_INTEGRATION_CONTEXT = get_integration_context()
+    else:
+        GLOBAL_INTEGRATION_CONTEXT[key] = value
+
+
+def _get_global_integration_context(key: str) -> Optional[Any]:
+    return GLOBAL_INTEGRATION_CONTEXT.get(key)
+
+
 def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
     """
     Implement the http_request with api that works with pagination and filtering. Uses GLOBAL_INTEGRATION_CONTEXT to
@@ -25,8 +37,8 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
     current_datetime = datetime.now()
     params: dict = feed.get('filters', {})
     current_indicator_type = feed.get('indicator_type', '')
-    GLOBAL_INTEGRATION_CONTEXT = get_integration_context()
-    last_fetch = GLOBAL_INTEGRATION_CONTEXT.get(f'{current_indicator_type}_fetch_time')
+    _update_global_integration_context()
+    last_fetch = _get_global_integration_context(f'{current_indicator_type}_fetch_time')
     page_number = 1
     params['end_date'] = current_datetime.isoformat() + 'Z'
     params['start_date'] = last_fetch if last_fetch else \
@@ -35,7 +47,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
 
     if not limit:
         limit = 10000
-        GLOBAL_INTEGRATION_CONTEXT[current_indicator_type + '_fetch_time'] = str(params['end_date'])
+        _update_global_integration_context(current_indicator_type + '_fetch_time', str(params['end_date']))
         set_integration_context(GLOBAL_INTEGRATION_CONTEXT)
 
     more_indicators = True
