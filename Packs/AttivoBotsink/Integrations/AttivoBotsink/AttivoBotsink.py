@@ -336,7 +336,7 @@ if demisto.command() == 'fetch-incidents':
 
     for event in events['eventdata']:
         event_date = event['timeStamp']
-        date_obj = datetime.strptime(event_date, date_pattern)
+        date_obj = parse_date_string(event_date, date_pattern)
         event_timestamp = int((date_obj - datetime(1970, 1, 1)).total_seconds()) * 1000 + date_obj.microsecond / 1000
         new_last_run = max(new_last_run, event_timestamp)
 
