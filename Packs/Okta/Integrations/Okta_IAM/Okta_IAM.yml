@@ -36,7 +36,7 @@ configuration:
   type: 8
 - defaultvalue: 'true'
   display: Automatically create user if not found in update and enable commands
-  name: create-if-not-exists
+  name: create-if-does-not-exist
   required: false
   type: 8
 - defaultvalue: User Profile - Okta (Incoming)
@@ -70,13 +70,13 @@ configuration:
 - defaultvalue: 'false'
   display: Query only application events configured in IAM Configuration
   additionalinfo: Configure an "IAM - Configuration" incident to specify the Okta apps you wish to sync to XSOAR.
-    Further information about IAM configration is detailed in the description (the "?" icon).
+    Further information about IAM configration is detailed in the Help (the "?" icon).
   name: auto_generate_query_filter
   required: false
   type: 8
 - display: Fetch Query Filter (Okta system log events)
   additionalinfo: 'Use a query filter expression in SCIM format. Note: make sure the "Query only application events
-    configured in IAM Configuration" is unchecked in order to use this parameter. See description (the "?" icon)
+    configured in IAM Configuration" is unchecked to use this parameter. See the Help (the "?" icon)
     to learn more about the filter parameter.'
   name: fetch_query_filter
   required: false
@@ -105,7 +105,7 @@ script:
     name: iam-create-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: Indicates if the employee's status is active. True if active, otherwise false.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -149,7 +149,7 @@ script:
     name: iam-update-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: If true the employee's status in the 3rd party integration is active, otherwise false.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -192,7 +192,7 @@ script:
     name: iam-get-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: If true, the employee's status in the 3rd party integration is active, otherwise false.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
