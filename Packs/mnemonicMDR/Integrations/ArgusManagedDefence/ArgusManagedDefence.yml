@@ -6689,7 +6689,29 @@ script:
     - contextPath: Argus.ObservationsIP.data.address.address
       description: Argus
       type: String
-  dockerimage: demisto/argus-toolbelt:1.0.0.13909
+  - deprecated: false
+    description: Returns the list of fields for an incident type
+    execution: false
+    name: get-mapping-fields
+  - arguments:
+    - default: false
+      description: 'Argus Case ID '
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
+      description: Time or timestamp case was last updated.
+      isArray: false
+      name: last_updated
+      required: false
+      secret: false
+    deprecated: false
+    description: Get remote data from a remote incident. This method does not update
+      the current incident, and should be used for debugging purposes.
+    execution: false
+    name: get-remote-data
+  dockerimage: demisto/argus-toolbelt:1.0.0.14035
   feed: false
   isfetch: true
   longRunning: false

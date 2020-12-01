@@ -126,6 +126,22 @@ def test_fetch_incidents(requests_mock):
     assert next_run.get("start_time") == 1
 
 
+def test_get_remote_data_command(requests_mock):
+    raise NotImplementedError
+
+
+def test_get_modified_remote_data_command(requests_mock):
+    raise NotImplementedError
+
+
+def test_update_remote_system_command(requests_mock):
+    raise NotImplementedError
+
+
+def test_get_mapping_fields_command(requests_mock):
+    raise NotImplementedError
+
+
 def test_fetch_incidents_increment_timestamp(requests_mock):
     from ArgusManagedDefence import fetch_incidents
 
