@@ -1624,11 +1624,12 @@ def checkpoint_verify_policy_command(client: Client, policy_package: str) -> Com
 
 def checkpoint_login_and_get_sid_command(base_url: str, username: str, password: str,
                                          verify_certificate: bool,
-                                         session_timeout: int) -> CommandResults:
+                                         session_timeout: int, domain='') -> CommandResults:
     """login to checkpoint admin account using username and password."""
+    
     response = requests.post(base_url + 'login', verify=verify_certificate,
                              headers={'Content-Type': 'application/json'},
-                             json={'user': username, 'password': password,
+                             json={'user': username, 'password': password,'domain': domain,
                                    'session-timeout': session_timeout}).json()
     printable_result = {'session-id': response.get('sid')}
     readable_output = tableToMarkdown('CheckPoint session data:', printable_result)
@@ -1642,28 +1643,6 @@ def checkpoint_login_and_get_sid_command(base_url: str, username: str, password:
     )
     return command_results
   
-  def checkpoint_mds_login_and_get_sid_command(base_url: str, username: str, password: str,
-                                         domain: str, verify_certificate: bool,
-                                         session_timeout: int) -> CommandResults:
-    """login to checkpoint admin account using username and password."""
-    response = requests.post(base_url + 'login', verify=verify_certificate,
-                             headers={'Content-Type': 'application/json'},
-                             json={'user': username, 'password': password,
-                                   'domain': domain,
-                                   'session-timeout': session_timeout}).json()
-    printable_result = {'session-id': response.get('sid')}
-    readable_output = tableToMarkdown('CheckPoint session data:', printable_result)
-
-    command_results = CommandResults(
-        outputs_prefix='CheckPoint.Login',
-        outputs_key_field='uid',
-        readable_output=readable_output,
-        outputs=printable_result,
-        raw_response=response
-    )
-    return command_results
-
-
 def build_member_data(result: dict, readable_output: str, printable_result: dict):
     """helper function. Builds the member data for group endpoints."""
     members = result.get('members')
@@ -1787,9 +1766,7 @@ def main():
     params = demisto.params()
     username = params.get('username', {}).get('identifier')
     password = params.get('username', {}).get('password')
-    domain = ''
-    if command == 'checkpoint-mds-login-and-get-session-id':
-        domain = params.get('domain', {}).get('domain')
+    """ Does domain come in as part of **demisto.args() ? domain = params.get('domain', {}).get('domain')"""
 
     server = params['server']
     port = params['port']
@@ -1810,11 +1787,6 @@ def main():
                 return_results(test_module(base_url, sid, verify_certificate))
                 checkpoint_logout_command(base_url, sid, verify_certificate)
                 return
-        elif command == 'checkpoint-mds-login-and-get-session-id':
-            return_results(checkpoint_mds_login_and_get_sid_command(base_url, username, password,
-                                                                domain, verify_certificate,
-                                                                **demisto.args()))
-            return
         elif command == 'checkpoint-login-and-get-session-id':
             return_results(checkpoint_login_and_get_sid_command(base_url, username, password,
                                                                 verify_certificate,
