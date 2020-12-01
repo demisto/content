@@ -1766,8 +1766,7 @@ def main():
     params = demisto.params()
     username = params.get('username', {}).get('identifier')
     password = params.get('username', {}).get('password')
-    """ Does domain come in as part of **demisto.args() ? domain = params.get('domain', {}).get('domain')"""
-
+    
     server = params['server']
     port = params['port']
     base_url = f'https://{server}:{port}/web_api/'
