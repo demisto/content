@@ -3534,7 +3534,8 @@
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
         "QRadar": "Playbooks has parallel steps which are causing inconsistent results",
-        "MISP V2": "Issue 26905"
+        "MISP V2": "Issue 26905",
+        "Cisco Umbrella Enforcement": "due to proxy failure on first recording."
     },
     "parallel_integrations": [
         "SNDBOX",
