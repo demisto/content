@@ -84,7 +84,6 @@ class AMIConnection:
     LOCAL_SCRIPTS_DIR = '/home/circleci/project/Tests/scripts/'
     CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
     UPLOAD_MOCKS_SCRIPT = 'upload_mocks.sh'
-    MOCK_KEY_FILE = 'id_rsa_f5256ae5ac4b84fb60541482f1e96cf9'
 
     def __init__(self, public_ip):
         self.public_ip = public_ip
@@ -154,8 +153,7 @@ class AMIConnection:
         self.run_script(self.UPLOAD_MOCKS_SCRIPT, build_name, build_number)
 
     def clone_mock_data(self):
-        remote_key_filepath = self.copy_file(os.path.join('/home/circleci/.ssh/', self.MOCK_KEY_FILE))
-        self.run_script(self.CLONE_MOCKS_SCRIPT, remote_key_filepath)
+        self.run_script(self.CLONE_MOCKS_SCRIPT)
 
 
 class MITMProxy:
