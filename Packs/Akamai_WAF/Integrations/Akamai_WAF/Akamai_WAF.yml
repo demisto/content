@@ -318,7 +318,7 @@ script:
     name: akamai-remove-element-from-network-list
   - arguments:
     - default: false
-      description: ' A comma-separated list of network list IDs for which to get the
+      description: 'A comma-separated list of network list IDs for which to get the
         activation status. For example: (support list - list1,list2).'
       isArray: true
       name: network_list_ids
