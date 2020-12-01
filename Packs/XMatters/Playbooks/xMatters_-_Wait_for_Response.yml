@@ -1,5 +1,6 @@
-id: xMatters - Wait for Response
-version: -1
+id: deeb234b-0c7e-4f09-83fb-e2e10fb8f608
+version: 148
+vcShouldKeepItemLegacyProdMachine: false
 name: xMatters - Wait for Response
 description: Trigger an xMatters workflow to notify a user for a response.
 starttaskid: "0"
@@ -14,7 +15,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -89,7 +89,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "7"
     separatecontext: false
     view: |-
       {
@@ -114,7 +114,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -196,7 +195,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -210,16 +208,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "10":
-    id: "10"
-    taskid: 9ed46ed8-cb0e-4ed8-8168-8de650aab161
+  "7":
+    id: "7"
+    taskid: 16d81b73-b1d8-47d4-88af-ece5e3bef377
     type: regular
     task:
-      id: 9ed46ed8-cb0e-4ed8-8168-8de650aab161
+      id: 16d81b73-b1d8-47d4-88af-ece5e3bef377
       version: -1
       name: WaitForKey
-      description: 'This adds a slight delay to ensure the context is updated before
-        continuing. '
+      description: This adds a slight delay to ensure the context is updated before
+        continuing.
       scriptName: WaitForKey
       type: regular
       iscommand: false
@@ -263,25 +261,25 @@ inputs:
   required: false
   description: 'The targeted recipients in xMatters. Either the targetName or UUID.
     Can be comma separated list. '
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: subject
   value:
     simple: ${incident.name}
   required: false
   description: A short description of the incident.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: body
   value:
     simple: ${incident.details}
   required: false
   description: A detailed description of the incident.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: incident_id
   value:
     simple: ${incident.id}
   required: false
   description: The ID of the incident.
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: XMatters.RequestId
   description: The request_id from xMatters
@@ -289,6 +287,4 @@ outputs:
 - contextPath: XMatters.UserResponseOut
   description: The User's response from the notification.
   type: string
-tests:
-- xMatters-Test
 fromversion: 5.5.0

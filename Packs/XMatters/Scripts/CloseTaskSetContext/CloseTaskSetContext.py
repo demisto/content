@@ -1,6 +1,6 @@
 from typing import Dict, Any
 import traceback
-
+import demistomock as demisto
 
 ''' COMMAND FUNCTION '''
 
