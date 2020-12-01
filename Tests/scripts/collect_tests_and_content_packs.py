@@ -1029,7 +1029,15 @@ def filter_tests(tests: set, id_set: json) -> set:
     return tests_without_non_supported
 
 
-def is_documentation_changes_only(files_string) -> bool:
+def is_documentation_changes_only(files_string: str) -> bool:
+    """
+
+    Args:
+        files_string: The modified files.
+
+    Returns: True is only documentation related files has been changed else False.
+
+    """
     # Check if only README file in file string, if so, no need to create the servers.
     files = [s for s in files_string.split('\n') if s]
     documentation_changes_only = \
