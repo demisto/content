@@ -99,11 +99,10 @@ class TestConf(object):
                 pack = tools.get_pack_name(int_path)
                 if pack:
                     packs.add(pack)
-            except TypeError as e:
+            except TypeError:
                 err_msg = f'Error occurred when trying to determine the pack of integration "{integration}"'
                 err_msg += f' with path "{int_path}"' if int_path else ''
-                err_msg += f'\nERROR: "{e}"'
-                tools.print_color(err_msg, tools.LOG_COLORS.YELLOW)
+                logging.exception(err_msg)
         return packs
 
     def get_test_playbooks_configured_with_integration(self, integration_id):
@@ -1253,7 +1252,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
 
 
 if __name__ == "__main__":
-    install_logging('Collect Tests And Content Packs.log')
+    install_logging('Collect_Tests_And_Content_Packs.log')
     logging.info("Starting creation of test filter file")
 
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')
