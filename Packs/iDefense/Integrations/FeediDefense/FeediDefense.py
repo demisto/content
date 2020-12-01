@@ -7,15 +7,27 @@ try:
 except ValueError:
     FETCH_TIME = 14
 
+GLOBAL_INTEGRATION_CONTEXT: dict = {}  # Global variable in order to hold one dictionary that manage all indicator types
+
 
 def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
-    current_datetime = datetime.now()
+    """
+    Implement the http_request with api that works with pagination and filtering. Uses GLOBAL_INTEGRATION_CONTEXT to
+    save last fetch time to each indicator type
+    Args:
+        client: Client manage all http requests
+        feed: dictionary holds all data needed to the specific service (Services- IP, Domain, URL)
+        limit: maximum number of indicators to fetch
 
+    Returns:
+        list of indicators returned from api. Each indicator is represented in dictionary
+    """
+    current_datetime = datetime.now()
     params: dict = feed.get('filters', {})
-    current_indicator_type = feed.get('indicator_type')
-    integration_context = get_integration_context()
-    page_number = integration_context.get(f'{current_indicator_type}_page', 1)
-    last_fetch = integration_context.get('fetch_time')
+    current_indicator_type = feed.get('indicator_type', '')
+    GLOBAL_INTEGRATION_CONTEXT = get_integration_context()
+    last_fetch = GLOBAL_INTEGRATION_CONTEXT.get(f'{current_indicator_type}_fetch_time')
+    page_number = 1
     params['end_date'] = current_datetime.isoformat() + 'Z'
     params['start_date'] = last_fetch if last_fetch else \
         (current_datetime - timedelta(days=FETCH_TIME)).isoformat() + 'Z'
@@ -23,11 +35,12 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
 
     if not limit:
         limit = 10000
-        set_integration_context({'fetch_time': current_datetime})
+        GLOBAL_INTEGRATION_CONTEXT[current_indicator_type + '_fetch_time'] = str(params['end_date'])
+        set_integration_context(GLOBAL_INTEGRATION_CONTEXT)
 
     more_indicators = True
-
     result: list = []
+
     while more_indicators:
         params['page'] = page_number
         r = requests.get(
@@ -48,11 +61,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
                 result.extend(jmespath.search(expression=feed.get('extractor'), data=data))
             more_indicators = data.get('more')
             page_number += 1
-            # if not more_indicators:
-            # set_integration_context({f'{current_indicator_type}_page': 1})
             if len(result) >= limit:
-                set_integration_context({f'{current_indicator_type}_page': page_number})  # When reach the limit for
-                # one fetching, save next page number in order to start from him at the next fetch
                 break
 
         except ValueError as VE:
@@ -114,12 +123,12 @@ def build_feed_filters(params: dict) -> Dict[str, Optional[Union[str, list]]]:
 
 
 def main():
+
     params = {k: v for k, v in demisto.params().items() if v is not None}
 
     filters: Dict[str, Optional[Union[str, list]]] = build_feed_filters(params)
     indicators_type: list = params.get('indicator_type', []) if len(params.get('indicator_type', [])) \
         else ['IP', 'Domain', 'URL']
-    demisto.debug(f"Tal indicator type is {indicators_type}")
     params['feed_name_to_config'] = create_fetch_configuration(indicators_type, filters, params)
 
     params['headers'] = {"Content-Type": "application/json",
