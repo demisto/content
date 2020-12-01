@@ -1029,6 +1029,17 @@ def filter_tests(tests: set, id_set: json) -> set:
     return tests_without_non_supported
 
 
+def is_documentation_changes_only(files_string) -> bool:
+    # Check if only README file in file string, if so, no need to create the servers.
+    files = [s for s in files_string.split('\n') if s]
+    documentation_changes_only = \
+        all(map(lambda s: s.endswith('.md') or s.endswith('.png') or s.endswith('.jpg') or s.endswith('.mp4'), files))
+    if documentation_changes_only:
+        return True
+    else:
+        return False
+
+
 def get_test_list_and_content_packs_to_install(files_string, branch_name, minimum_server_version='0',
                                                conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
@@ -1042,11 +1053,8 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     ).union(modified_metadata_list)
 
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
-
-    # Check if only README file in file string, if so, no need to create the servers.
-    files = [s for s in files_string.split('\n') if s]
-    readme = all(map(lambda s: 'README.md' in s, files))
-    create_filter_envs_file(from_version, to_version, readme_only=bool(readme))
+    documentation_changes_only = is_documentation_changes_only(files_string)
+    create_filter_envs_file(from_version, to_version, readme_only=bool(documentation_changes_only))
 
     tests = set([])
     packs_to_install = set([])
