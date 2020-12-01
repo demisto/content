@@ -4,7 +4,7 @@
 	"details": null,
 	"detailsV2": null,
 	"edit": null,
-	"fromServerVersion": "6.0.0",
+	"fromServerVersion": "",
 	"group": "indicator",
 	"id": "19bbdb14-b844-454f-8cc4-333852ef2c5a",
 	"indicatorsDetails": {
@@ -797,7 +797,7 @@
 	"locked": false,
 	"mobile": null,
 	"name": "Expanse Certificate Layout",
-	"packID": "",
+	"packID": "4e7e4282-613f-49db-8727-7abba575f7b7",
 	"propagationLabels": [
 		"all"
 	],
