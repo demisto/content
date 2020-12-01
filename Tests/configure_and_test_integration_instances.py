@@ -22,8 +22,8 @@ from Tests.scripts.utils.log_util import install_logging
 from paramiko.client import SSHClient, AutoAddPolicy
 import demisto_client
 from ruamel import yaml
-from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS, run_threads_list, \
-    run_command, get_yaml, str2bool, format_version, find_type
+from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml,\
+    str2bool, format_version, find_type
 from demisto_sdk.commands.common.constants import FileType
 from Tests.test_integration import __get_integration_config, __test_integration_instance, \
     __disable_integrations_instances
@@ -436,7 +436,7 @@ def change_placeholders_to_values(placeholders_map, config_item):
     return json.loads(item_as_string)
 
 
-def set_integration_params(integrations, secret_params, instance_names, placeholders_map):
+def set_integration_params(integrations, secret_params, instance_names, placeholders_map, logging_module=logging):
     """
     For each integration object, fill in the parameter values needed to configure an instance from
     the secret_params taken from our secret configuration file. Because there may be a number of
@@ -459,6 +459,7 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
             configuration values.
         placeholders_map: (dict)
              Dict that holds the real values to be replaced for each placeholder.
+        logging_module (Union[ParallelLoggingManager,logging]): The logging module to use
 
     Returns:
         (bool): True if integrations params were filled with secret configuration values, otherwise false
@@ -485,9 +486,9 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
                                                for optional_integration in integration_params]
                     failed_match_instance_msg = 'There are {} instances of {}, please select one of them by using' \
                                                 ' the instance_name argument in conf.json. The options are:\n{}'
-                    print_error(failed_match_instance_msg.format(len(integration_params),
-                                                                 integration['name'],
-                                                                 '\n'.join(optional_instance_names)))
+                    logging_module.error(failed_match_instance_msg.format(len(integration_params),
+                                                                          integration['name'],
+                                                                          '\n'.join(optional_instance_names)))
                     return False
 
             integration['params'] = matched_integration_params.get('params', {})
@@ -810,75 +811,6 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
     return testing_status
 
 
-def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number, is_nightly, is_private):
-    """Sets custom marketplace GCP bucket based on branch name and build number
-
-    Args:
-        client (demisto_client): The configured client to use.
-        prints_manager (ParallelPrintsManager): Print manager object
-        branch_name (str): GitHub branch name
-        ci_build_number (str): CI build number
-        is_nightly: Whether this is a nightly build
-        is_private: Whether this is a private build
-
-    Returns:
-        response_data: The response data
-        status_code: The response status code
-    """
-    host = client.api_client.configuration.host
-    installed_content_message = \
-        '\nMaking "POST" request to server - "{}" to set GCP bucket server configuration.'.format(host)
-    prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
-
-    # make request to update server configs
-    # disable-secrets-detection-start
-    server_configuration = {
-        'content.pack.verify': 'false',
-        'marketplace.initial.sync.delay': '0',
-        'content.pack.ignore.missing.warnings.contentpack': 'true'
-    }
-    if is_private:
-        server_configuration['marketplace.bootstrap.bypass.url'] = 'https://storage.googleapis.com/marketplace-ci-build'
-        server_configuration['marketplace.gcp.path'] = f'content/builds/{branch_name}/{ci_build_number}/content/packs'
-        server_configuration['jobs.marketplacepacks.schedule'] = '1m'
-        server_configuration[
-            'marketplace.premium.gateway.service.url'] = 'https://xsoar-premium-content-team-gateway.demisto.works'
-    elif not is_nightly:
-        server_configuration['marketplace.bootstrap.bypass.url'] = \
-            f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{branch_name}/{ci_build_number}'
-    error_msg = "Failed to set GCP bucket server config - with status code "
-    # disable-secrets-detection-end
-    return update_server_configuration(client, server_configuration, error_msg)
-
-
-def set_docker_hardening_for_build(client, prints_manager):
-    """Sets docker hardening configuration
-
-    Args:
-        client (demisto_client): The configured client to use.
-        prints_manager (ParallelPrintsManager): Print manager object
-
-    Returns:
-        response_data: The response data
-        status_code: The response status code
-    """
-    host = client.api_client.configuration.host
-    installed_content_message = \
-        '\nMaking "POST" request to server - "{}" to set docker hardening server configuration.'.format(host)
-    prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
-
-    # make request to update server configs
-    server_configuration = {
-        'docker.cpu.limit': '1.0',
-        'docker.run.internal.asuser': 'true',
-        'limit.docker.cpu': 'true',
-        'python.pass.extra.keys': '--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192'
-    }
-    error_msg = "Failed to set docker hardening server config - with status code "
-
-    return update_server_configuration(client, server_configuration, error_msg)
-
-
 def get_env_conf():
     if Build.run_environment == Running.CIRCLECI_RUN:
         return get_json_file(Build.env_results_path)
@@ -923,7 +855,7 @@ def get_json_file(path):
         return json.loads(json_file.read())
 
 
-def configure_servers_and_restart(build, prints_manager=None):
+def configure_servers_and_restart(build):
     if LooseVersion(build.server_numeric_version) >= LooseVersion('5.5.0'):
         configurations = DOCKER_HARDENING_CONFIGURATION
         configure_types = ['docker hardening']
@@ -939,11 +871,7 @@ def configure_servers_and_restart(build, prints_manager=None):
         if manual_restart:
             input('restart your server and then press enter.')
         else:
-            if prints_manager:
-                prints_manager.add_print_job('Done restarting servers.\nSleeping for 1 minute...', print_warning, 0)
-                prints_manager.execute_thread_prints(0)
-            else:
-                logging.info('Done restarting servers. Sleeping for 1 minute')
+            logging.info('Done restarting servers. Sleeping for 1 minute')
             sleep(60)
 
 
@@ -1204,10 +1132,8 @@ def update_content_till_v6(build: Build):
     run_threads_list(threads_list)
 
 
-def disable_instances(build: Build, all_module_instances, prints_manager=None):
-    __disable_integrations_instances(build.servers[0].client, all_module_instances, prints_manager)
-    if prints_manager:
-        prints_manager.execute_thread_prints(0)
+def disable_instances(build: Build, all_module_instances):
+    __disable_integrations_instances(build.servers[0].client, all_module_instances)
 
 
 def create_nightly_test_pack():
@@ -1311,7 +1237,7 @@ def set_marketplace_url(servers, branch_name, ci_build_number):
 
 
 def main():
-    install_logging('Install Content And Configure Integrations On Server.log')
+    install_logging('Install_Content_And_Configure_Integrations_On_Server.log')
     build = Build(options_handler())
 
     configure_servers_and_restart(build)
