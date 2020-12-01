@@ -5,10 +5,11 @@ import traceback
 
 
 def wait_for_key(args: Dict[str, Any]):
+    context_key = args.get('context_key', 'None')
 
-    context_key = args.get('context_key')
+    max_iterations = 10
     try:
-        max_iterations = int(args.get('iterations'))
+        max_iterations = int(args.get('iterations', 10))
     except (ValueError, TypeError):
         return_error('Please provide an integer value for "iterations"')
 
@@ -22,7 +23,13 @@ def wait_for_key(args: Dict[str, Any]):
         itr = itr + 1
 
     if done is False:
-        demisto.log('Could not find "' + context_key + '" after "' + str(itr) + '" iterations')
+        readable_output = f'Could not find "{context_key}" after "{str(itr)}" iterations'
+    else:
+        readable_output = f'Found "{context_key}" after "{str(itr)}" iterations'
+
+    return CommandResults(
+        readable_output=readable_output
+    )
 
 
 def main():
@@ -36,7 +43,6 @@ def main():
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
