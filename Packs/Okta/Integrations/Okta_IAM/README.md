@@ -1,8 +1,8 @@
-> <i>Note:</i> This integration should be used along with our IAM premium pack. For further details, visit our IAM pack documentation.
+> <i>Note:</i> This integration should be used along with our ILM premium pack. For further details, visit our ILM pack documentation.
 
 Integrate with Okta's Identity Access Management service to execute CRUD operations to employee lifecycle processes.
-This integration was integrated and tested with version v1 of Okta.
-For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
+This integration was integrated and tested with version v1 of the Okta integration.
+For more information, refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
 
 ## Configure Okta IAM on Cortex XSOAR
 
@@ -26,7 +26,7 @@ For more information, please refer to the [Identity Lifecycle Management article
 | isFetch | Fetch incidents | False |
 | incidentFetchInterval | Incidents Fetch Interval | False |
 | incidentType | Incident type | False |
-| auto_generate_query_filter | Query only application events configured in IAM Configuration | False |
+| auto_generate_query_filter | Query only application events configured in the IAM Configuration | False |
 | fetch_query_filter | Fetch Query Filter (Okta system log events) | True |
 | first_fetch | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
 
@@ -35,11 +35,11 @@ For more information, please refer to the [Identity Lifecycle Management article
 4. Click **Test** to check that you are able to connect to the integration.
 
 ## Fetch incidents using an "IAM - Configuration" incident
-When the "Query only application events configured in IAM Configuration" checkbox is marked, the query filter expression for Okta's logs API request will be automatically generated, such that only events of addition/removal of users to/from **configured applications** will be retrieved. In this case, it is required to create an "IAM - configration" incident and connect at least one Okta application to an IAM instance in XSOAR in order to fetch incident from Okta.
+When the "Query only application events configured in IAM Configuration" checkbox is selected, add or remove event types for the applications you configured in the **IAM Configuration** incident are retrieved.  You must have at least one application configured in XSOAR to fetch incidents from Okta.
 
 ## Fetch incidents using a manual query filter expression
-**Note: We recommend to use the above method to generate the fetch-incidents query filter.** Use the following method for debugging purposes.
-Unmark the "Query only application events configured in IAM Configuration" checkbox if you wish to use a custom fetch query filter expression, in SCIM syntax. 
+**Note: Cortex XSOAR recommends you use the Query only application events configured in IAM Configuration option to generate the fetch-incidents query filter. The following following method should be used primarily for debugging purposes.**
+Clear the "Query only application events configured in IAM Configuration" checkbox to use a custom fetch query filter expression. The expression must be in SCIM syntax, and include the add and remove event types, as well as the application ID. 
 For example: `(eventType eq "application.user_membership.add" or eventType eq "application.user_membership.remove") and target.id eq "0oar418fvkm67MWGd0h7"`
 You may also use the advanced search in Okta's System Logs to generate the filter expression.
 For more details, visit [Okta API reference](https://developer.okta.com/docs/reference/api/system-log/#expression-filter).
@@ -150,9 +150,9 @@ Retrieves a single user resource.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IAM.Vendor.active | Boolean | When true, indicates that the employee's status is active. | 
+| IAM.Vendor.active | Boolean | When true, indicates that the employee's status is active in the 3rd-party integration. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | string | Indicates if the API was successful or provides error information. | 
+| IAM.Vendor.details | string | Provides the raw data from the 3rd-party integration. | 
 | IAM.Vendor.email | String | The employee's email address. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
@@ -193,9 +193,9 @@ Disable an active user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IAM.Vendor.active | Boolean | When true, indicates that the employee's status is active. | 
+| IAM.Vendor.active | Boolean | When true, indicates that the employee's status is active in the 3rd-party integration. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | string | Indicates if the API was successful or provides error information. | 
+| IAM.Vendor.details | string | Provides the raw data from the 3rd-party integration. | 
 | IAM.Vendor.email | String | The employee's email address. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
@@ -235,9 +235,9 @@ Enable a deprovisioned user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IAM.Vendor.active | Boolean | When true, indicates that the employee's status is active. | 
+| IAM.Vendor.active | Boolean | When true, indicates that the employee's status is active in the 3rd-party integration. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | string | Indicates if the API was successful or provides error information. | 
+| IAM.Vendor.details | string | Provides the raw data from the 3rd-party integration. | 
 | IAM.Vendor.email | String | The employee's email address. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
@@ -279,7 +279,7 @@ Gets a specific user assignment for an application by id.
 | --- | --- | --- |
 | Okta.AppUserAssignment.UserID | string | ID of the user. | 
 | Okta.AppUserAssignment.AppID | string | ID of the application. | 
-| Okta.AppUserAssignment.IsAssigned | boolean | True if the user is assigned to the application, false otherwise. | 
+| Okta.AppUserAssignment.IsAssigned | boolean | When True, indicates that the user is assigned to the application. | 
 | Okta.AppUserAssignment.ProfileInApp | unknown | The user profile data in the application. | 
 
 
