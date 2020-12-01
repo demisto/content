@@ -1,4 +1,4 @@
-category: Utilities
+category: File Integrity Management
 commonfields:
   id: Tripwire
   version: -1
