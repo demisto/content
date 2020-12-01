@@ -165,43 +165,6 @@ def get_user_command(client, args, mapper_in):
     return user_profile
 
 
-def enable_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled, create_if_not_exists):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
-    if not is_command_enabled:
-        user_profile.set_result(action=IAMActions.ENABLE_USER,
-                                skip=True,
-                                skip_reason='Command is disabled.')
-    else:
-        try:
-            service_now_user = client.get_user(user_profile.get_attribute('email'))
-            if not service_now_user:
-                if create_if_not_exists:
-                    user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled)
-                else:
-                    _, error_message = IAMErrors.USER_DOES_NOT_EXIST
-                    user_profile.set_result(action=IAMActions.ENABLE_USER,
-                                            skip=True,
-                                            skip_reason=error_message)
-            else:
-                user_id = service_now_user.get('sys_id')
-                user_data = {'active': True, 'locked_out': False}
-                updated_user = client.update_user(user_id, user_data)
-                user_profile.set_result(
-                    action=IAMActions.ENABLE_USER,
-                    success=True,
-                    active=True,
-                    iden=updated_user.get('sys_id'),
-                    email=updated_user.get('email'),
-                    username=updated_user.get('user_name'),
-                    details=updated_user
-                )
-
-        except Exception as e:
-            handle_exception(user_profile, e, IAMActions.ENABLE_USER)
-
-    return user_profile
-
-
 def disable_user_command(client, args, is_command_enabled):
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
     if not is_command_enabled:
@@ -238,6 +201,7 @@ def disable_user_command(client, args, is_command_enabled):
 
 def create_user_command(client, args, mapper_out, is_command_enabled):
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.CREATE_USER,
                                 skip=True,
@@ -246,10 +210,9 @@ def create_user_command(client, args, mapper_out, is_command_enabled):
         try:
             service_now_user = client.get_user(user_profile.get_attribute('email'))
             if service_now_user:
-                _, error_message = IAMErrors.USER_ALREADY_EXISTS
-                user_profile.set_result(action=IAMActions.CREATE_USER,
-                                        skip=True,
-                                        skip_reason=error_message)
+                # if user exists, update it
+                user_profile = update_user_command(client, args, mapper_out, True, False, False)
+
             else:
                 service_now_profile = user_profile.map_object(mapper_out)
                 created_user = client.create_user(service_now_profile)
@@ -271,6 +234,7 @@ def create_user_command(client, args, mapper_out, is_command_enabled):
 
 def update_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled, create_if_not_exists):
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+    allow_enable = args.get('allow-enable') == "true"
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.UPDATE_USER,
                                 skip=True,
@@ -281,6 +245,11 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
             if service_now_user:
                 user_id = service_now_user.get('sys_id')
                 service_now_profile = user_profile.map_object(mapper_out)
+
+                if allow_enable:
+                    service_now_profile['active'] = True
+                    service_now_profile['locked_out'] = False
+
                 updated_user = client.update_user(user_id, service_now_profile)
                 user_profile.set_result(
                     action=IAMActions.UPDATE_USER,
@@ -355,10 +324,6 @@ def main():
 
     elif command == 'iam-disable-user':
         user_profile = disable_user_command(client, args, is_enable_disable_enabled)
-
-    elif command == 'iam-enable-user':
-        user_profile = enable_user_command(client, args, mapper_out, is_enable_disable_enabled,
-                                           is_create_enabled, create_if_not_exists)
 
     if user_profile:
         return_results(user_profile)
