@@ -3,7 +3,7 @@ commonfields:
   id: Azure Network Security Groups
   version: -1
 configuration:
-- defaultvalue: 4a9969a9-53f4-4f0d-a7f4-630a7ed657e6
+- defaultvalue: d4736600-e3d5-4c97-8e65-57abd2b979fe
   display: The app ID
   hidden: false
   name: app_id
@@ -39,16 +39,22 @@ script:
     name: azure-nsg-security-groups-list
     outputs:
     - contextPath: AzureNSG.SecurityGroup.name
+      description: The security group's name
       type: String
     - contextPath: AzureNSG.SecurityGroup.id
+      description: The security group's ID
       type: String
     - contextPath: AzureNSG.SecurityGroup.etag
+      description: The security group's ETag
       type: String
     - contextPath: AzureNSG.SecurityGroup.type
+      description: The security group's type
       type: String
     - contextPath: AzureNSG.SecurityGroup.location
+      description: The security group's location
       type: String
     - contextPath: AzureNSG.SecurityGroup.tags
+      description: The security group's tags
       type: String
   - arguments:
     - default: false
@@ -75,6 +81,7 @@ script:
       description: The rule's type
       type: String
     - contextPath: AzureNSG.Rules.provisioningState
+      description: The rule's provisioning state
       type: String
     - contextPath: AzureNSG.Rules.protocol
       description: The protocol. Could be TCP, UDP, ICMP, *.
@@ -222,6 +229,7 @@ script:
       required: false
       secret: false
     - default: false
+      description: A deescription to add to the rule
       isArray: false
       name: description
       required: false
@@ -244,6 +252,7 @@ script:
       description: The rule's type
       type: String
     - contextPath: AzureNSG.Rules.provisioningState
+      description: The rule's provisioning state
       type: String
     - contextPath: AzureNSG.Rules.protocol
       description: The protocol. Could be TCP, UDP, ICMP, *.
@@ -370,6 +379,7 @@ script:
       required: false
       secret: false
     - default: false
+      description: a description to add to the rule
       isArray: false
       name: description
       required: false
@@ -392,6 +402,7 @@ script:
       description: The rule's type
       type: String
     - contextPath: AzureNSG.Rules.provisioningState
+      description: The rule's provisioning state
       type: String
     - contextPath: AzureNSG.Rules.protocol
       description: The protocol. Could be TCP, UDP, ICMP, *.
@@ -458,6 +469,7 @@ script:
       description: The rule's type
       type: String
     - contextPath: AzureNSG.Rules.provisioningState
+      description: The rule's provisioning state
       type: String
     - contextPath: AzureNSG.Rules.protocol
       description: The protocol. Could be TCP, UDP, ICMP, *.

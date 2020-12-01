@@ -8,7 +8,8 @@ In this method, the [device authorization grant flow](https://docs.microsoft.com
 
 To configure the integration:
 
-1. The ***Application ID*** integration parameter should be set to `TO_BE_FILLED` (the Cortex XSOAR Azure app ID).
+1. The ***Application ID*** integration parameter should be set to `d4736600-e3d5-4c97-8e65-57abd2b979fe
+` (the Cortex XSOAR Azure app ID).
 
 2. The ***Application Secret*** and the ***Tenant ID*** integration parameters should be left blank.
 
