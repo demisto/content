@@ -1,0 +1,21 @@
+args:
+- name: userId
+comment: Retrieves shift times for on-call hours per user.
+commonfields:
+  id: GetShifts
+  version: -1
+dockerimage: demisto/python3:3.8.6.13358
+enabled: true
+name: GetShifts
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Shift Management
+- widget
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
