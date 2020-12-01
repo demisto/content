@@ -95,8 +95,13 @@ class Server:
     @property
     def client(self):
         if self.__client is None:
-            self.__client = demisto_client.configure(self.host, verify_ssl=False, username=self.user_name,
-                                                     password=self.password)
+            self.__client = self.reconnect_client()
+
+        return self.__client
+
+    def reconnect_client(self):
+        self.__client = demisto_client.configure(self.host, verify_ssl=False, username=self.user_name,
+                                                 password=self.password)
         return self.__client
 
     def add_server_configuration(self, config_dict, error_msg, restart=False):
@@ -1107,10 +1112,10 @@ def instance_testing(build: Build, all_module_instances, pre_update):
     else:
         logging.info(f'No integrations to configure for the chosen tests. ({update_status}-update)')
 
-    testing_client = build.servers[0].client
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
+        testing_client = build.servers[0].reconnect_client()
         # If there is a failure, __test_integration_instance will print it
         success, _ = __test_integration_instance(testing_client, instance)
         if not success:
