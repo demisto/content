@@ -75,18 +75,18 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
 def create_fetch_configuration(indicators_type: list, filters: dict, params: dict) -> Dict[str, dict]:
     mapping_by_indicator_type = {
         'IP': {
-            'last_seen_as': 'stixmalwaretypes',
-            'threat_types': 'stixprimarymotivation',
+            'last_seen_as': 'malware_types',
+            'threat_types': 'Primary_Motivation',
             'malware_family': 'malwarefamily',
             'severity': 'sourceoriginalseverity'},
         'Domain': {
-            'last_seen_as': 'stixmalwaretypes',
-            'threat_types': 'stixprimarymotivation',
+            'last_seen_as': 'malware_types',
+            'threat_types': 'Primary_Motivation',
             'malware_family': 'malwarefamily',
             'severity': 'sourceoriginalseverity'},
         'URL': {
-            'last_seen_as': 'stixmalwaretypes',
-            'threat_types': 'stixprimarymotivation',
+            'last_seen_as': 'malware_types',
+            'threat_types': 'Primary_Motivation',
             'malware_family': 'malwarefamily',
             'severity': 'sourceoriginalseverity'}
     }
