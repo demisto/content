@@ -155,23 +155,28 @@ def test_create_user_command__user_already_exists(mocker):
         - A ServiceNow IAM client object
         - A user-profile argument that contains an email of a user
     When:
-        - The user already exists in ServiceNow
+        - The user already exists in ServiceNow and disabled
+        - allow-enable argument is false
         - Calling function create_user_command
     Then:
-        - Ensure the command is considered successful and skipped
+        - Ensure the command is considered successful and the user is still disabled
     """
     client = mock_client()
-    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
+    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}, 'allow-enable': 'false'}
 
-    mocker.patch.object(client, 'get_user', return_value=SERVICENOW_USER_OUTPUT)
+    mocker.patch.object(client, 'get_user', return_value=SERVICENOW_DISABLED_USER_OUTPUT)
+    mocker.patch.object(client, 'update_user', return_value=SERVICENOW_DISABLED_USER_OUTPUT)
 
     user_profile = create_user_command(client, args, 'mapper_out', is_command_enabled=True)
     outputs = get_outputs_from_user_profile(user_profile)
 
-    assert outputs.get('action') == IAMActions.CREATE_USER
+    assert outputs.get('action') == IAMActions.UPDATE_USER
     assert outputs.get('success') is True
-    assert outputs.get('skipped') is True
-    assert outputs.get('reason') == IAMErrors.USER_ALREADY_EXISTS[1]
+    assert outputs.get('active') is False
+    assert outputs.get('id') == 'mock_id'
+    assert outputs.get('username') == 'mock_user_name'
+    assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
+    assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
 
 
 def test_update_user_command__non_existing_user(mocker):
@@ -286,7 +291,7 @@ def test_disable_user_command__non_existing_user(mocker):
 
     mocker.patch.object(client, 'get_user', return_value=None)
 
-    user_profile = disable_user_command(client, args, 'mapper_out', is_command_enabled=True)
+    user_profile = disable_user_command(client, args, is_command_enabled=True)
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.DISABLE_USER

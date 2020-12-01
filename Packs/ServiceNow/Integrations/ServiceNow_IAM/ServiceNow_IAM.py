@@ -234,7 +234,7 @@ def create_user_command(client, args, mapper_out, is_command_enabled):
 
 def update_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled, create_if_not_exists):
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
-    allow_enable = args.get('allow-enable') == "true"
+    allow_enable = args.get('allow-enable') == 'true'
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.UPDATE_USER,
                                 skip=True,
@@ -292,7 +292,7 @@ def main():
     args = demisto.args()
 
     is_create_enabled = params.get("create_user_enabled")
-    is_enable_disable_enabled = params.get("enable_disable_user_enabled")
+    is_disable_enabled = params.get("disable_user_enabled")
     is_update_enabled = demisto.params().get("update_user_enabled")
     create_if_not_exists = demisto.params().get("create_if_not_exists")
 
@@ -323,7 +323,7 @@ def main():
                                            is_create_enabled, create_if_not_exists)
 
     elif command == 'iam-disable-user':
-        user_profile = disable_user_command(client, args, is_enable_disable_enabled)
+        user_profile = disable_user_command(client, args, is_disable_enabled)
 
     if user_profile:
         return_results(user_profile)
