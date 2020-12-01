@@ -8,7 +8,7 @@
    "internalMapping": {
     "Email": {
      "complex": null,
-     "simple": "email"
+     "simple": "emails.[0].value"
     },
     "Given Name": {
      "complex": null,
@@ -16,16 +16,16 @@
     },
     "Surname": {
      "complex": null,
-     "simple": "familyName"
+     "simple": "name.familyName"
     },
     "Username": {
      "complex": null,
-     "simple": "userName"
+     "simple": "name.userName"
     }
    }
   }
  },
- "name": "User Profile - Scim (Incoming)",
+ "name": "User Profile - SCIM (Incoming)",
  "type": "mapping-incoming",
  "version": -1,
  "fromVersion": "6.0.0"

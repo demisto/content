@@ -6,8 +6,8 @@ import requests
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-DEFAULT_OUTGOING_MAPPER = "User Profile - Scim (Outgoing)"
-DEFAULT_INCOMING_MAPPER = "User Profile - Scim (Incoming)"
+DEFAULT_OUTGOING_MAPPER = "User Profile - SCIM (Outgoing)"
+DEFAULT_INCOMING_MAPPER = "User Profile - SCIM (Incoming)"
 
 
 class Client(BaseClient):
@@ -85,12 +85,16 @@ def github_handle_error(e):
         error_code = ""
         error_message = str(e)
         if e.res is not None:
-            error_code = e.res.status_code
-            if e.res.json():
-                error_message = e.res.json().get("message", "")
-                error_reason = e.res.reason
-                if error_reason and error_reason != error_message:
-                    error_message += f' {error_reason}'
+            if isinstance(e.res, dict):
+                error_code = e.res.get("status")
+                error_message = e.res.get("detail")
+            else:
+                error_code = e.res.status_code
+                if e.res.json():
+                    error_message = e.res.json().get("message", "")
+                    error_reason = e.res.reason
+                    if error_reason and error_reason != error_message:
+                        error_message += f' {error_reason}'
         return error_code, error_message
 
     except Exception as e:
@@ -130,12 +134,12 @@ def get_user_command(client, args, mapper_in):
             github_user = res.get('Resources')[0]
             iam_user_profile.update_with_app_data(github_user, mapper_in, scim=True)
             iam_user_profile.set_result(success=True,
-                                        iden=item.get('id', None),
+                                        iden=github_user.get('id', None),
                                         email=email,
-                                        username=item.get('userName', None),
+                                        username=github_user.get('userName', None),
                                         action=IAMActions.GET_USER,
                                         details=res,
-                                        active=item.get('active', None))
+                                        active=github_user.get('active', None))
 
         return iam_user_profile
 
@@ -174,7 +178,7 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
                                             skip_reason=error_message)
 
             else:
-                github_user = iam_user_profile.map_object(mapper_name=mapper_out, scim=True)
+                github_user = iam_user_profile.map_object(mapper_name=mapper_out)
 
                 res = client.create_user(github_user)
                 user_id = res.get('id', None)
@@ -223,7 +227,10 @@ def update_user_command(client, args, mapper_out, is_update_enabled, is_create_e
                                                 skip=True,
                                                 skip_reason=error_message)
             else:
-                github_user = iam_user_profile.map_object(mapper_name=mapper_out, scim=True)
+                github_user = iam_user_profile.map_object(mapper_name=mapper_out)
+                emails = github_user.get("emails")
+                if not isinstance(emails, list):
+                    github_user["emails"] = [emails]
 
                 res = client.update_user(user_term=user_id, data=github_user)
                 iam_user_profile.set_result(success=True,
