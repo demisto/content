@@ -27,7 +27,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, List, Any
+    from typing import Optional, Dict, List, Any, Union
 except Exception:
     if sys.version_info[0] < 3:
         # in python 2 an exception in the imports might still be raised even though it is caught.
@@ -2664,6 +2664,555 @@ class Common(object):
 
             ret_value = {
                 Common.Account.CONTEXT_PATH: account_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+    class CertificatePublicKey(object):
+        """
+        CertificatePublicKey class
+        :return: None
+        :rtype: ``None``
+        """
+        class Algorithm(object):
+            """
+            Algorithm class
+            :return: None
+            :rtype: ``None``
+            """
+            DSA = "DSA"
+            RSA = "RSA"
+            EC = "EC"
+            UNKNOWN = "Unknown Algorithm"
+
+            @staticmethod
+            def is_valid_type(_type):
+                return _type in (
+                    Common.CertificatePublicKey.Algorithm.DSA,
+                    Common.CertificatePublicKey.Algorithm.RSA,
+                    Common.CertificatePublicKey.Algorithm.EC,
+                    Common.CertificatePublicKey.Algorithm.UNKNOWN
+                )
+
+        def __init__(
+            self,
+            algorithm: 'Common.CertificatePublicKey.Algorithm',
+            length: int,
+            publickey: str = None,  # valid for all
+            p: str = None,  # DSA
+            q: str = None,  # DSA
+            g: str = None,  # DSA
+            modulus: str = None,  # RSA
+            exponent: int = None,  # RSA
+            x: str = None,  # EC
+            y: str = None,  # EC
+            curve: str = None  # EC
+        ):
+
+            if not Common.CertificatePublicKey.Algorithm.is_valid_type(algorithm):
+                raise TypeError('algorithm must be of type Common.CertificatePublicKey.Algorithm enum')
+
+            self.algorithm = algorithm
+            self.length = length
+            self.publickey = publickey
+            self.p = p
+            self.q = q
+            self.g = g
+            self.modulus = modulus
+            self.exponent = exponent
+            self.x = x
+            self.y = y
+            self.curve = curve
+
+        def to_context(self):
+            publickey_context = {
+                'Algorithm': self.algorithm,
+                'Length': self.length
+            }
+
+            if self.publickey:
+                publickey_context['PublicKey'] = self.publickey
+
+            if self.algorithm == Common.CertificatePublicKey.Algorithm.DSA:
+                if self.p:
+                    publickey_context['P'] = self.p
+                if self.q:
+                    publickey_context['Q'] = self.q
+                if self.g:
+                    publickey_context['G'] = self.g
+
+            elif self.algorithm == Common.CertificatePublicKey.Algorithm.RSA:
+                if self.modulus:
+                    publickey_context['Modulus'] = self.modulus
+                if self.exponent:
+                    publickey_context['Exponent'] = self.exponent
+
+            elif self.algorithm == Common.CertificatePublicKey.Algorithm.EC:
+                if self.x:
+                    publickey_context['X'] = self.x
+                if self.y:
+                    publickey_context['Y'] = self.y
+                if self.curve:
+                    publickey_context['Curve'] = self.curve
+
+            elif self.algorithm == Common.CertificatePublicKey.Algorithm.UNKNOWN:
+                pass
+
+            return {
+                "PublicKey": publickey_context
+            }
+
+    class CertificateExtension(object):
+        """
+        CertificateExtension class
+        """
+        class SubjectAlternativeName(object):
+            """
+            SubjectAlternativeName class
+            """
+            def __init__(self, value: str, type: str = "Unknown"):
+                self.type = type
+                self.value = value
+
+            def to_context(self):
+                return {
+                    'Type': self.type,
+                    'Value': self.value
+                }
+
+        class AuthorityKeyIdentifier(object):
+            """
+            AuthorityKeyIdentifier class
+            """
+            def __init__(
+                self,
+                issuer: List[str],
+                serial_number: Optional[str],
+                key_identifier: Optional[str]
+            ):
+                self.issuer = issuer
+                self.serial_number = serial_number
+                self.key_identifier = key_identifier
+
+            def to_context(self):
+                authority_key_identifier_context = {
+                    'Issuer': self.issuer,
+                }
+
+                if self.serial_number:
+                    authority_key_identifier_context["SerialNumber"] = self.serial_number
+                if self.key_identifier:
+                    authority_key_identifier_context["KeyIdentifier"] = self.key_identifier
+
+                return authority_key_identifier_context
+
+        class DistributionPoint(object):
+            """
+            DistributionPoint class
+            """
+            def __init__(
+                self,
+                name: str,
+                is_relative_name: bool = False,
+                crl_issuer: Optional[str] = None,
+                reasons: Optional[str] = None
+            ):
+                self.full_name: Optional[str]
+                self.relative_name: Optional[str]
+
+                if is_relative_name:
+                    self.full_name = None
+                    self.relative_name = name
+                else:
+                    self.full_name = name
+                    self.relative_name = None
+                self.crl_issuer = crl_issuer
+                self.reasons = reasons
+
+            def to_context(self):
+                distribution_point_context: Dict[str, str] = {}
+                if self.full_name:
+                    distribution_point_context["FullName"] = self.full_name
+                if self.relative_name:
+                    distribution_point_context["RelativeName"] = self.relative_name
+                if self.crl_issuer:
+                    distribution_point_context["CRLIssuer"] = self.crl_issuer
+                if self.reasons:
+                    distribution_point_context["Reasons"] = self.reasons
+
+                return distribution_point_context
+
+        class CertificatePolicy(object):
+            """
+            CertificatePolicy class
+            """
+            def __init__(self, policy_identifier: str, policy_qualifiers: List[str] = None):
+                self.policy_identifier = policy_identifier
+                self.policy_qualifiers = policy_qualifiers
+
+            def to_context(self):
+                certificate_policies_context = {
+                    "PolicyIdentifier": self.policy_identifier
+                }
+
+                if self.policy_qualifiers:
+                    certificate_policies_context["PolicyQualifiers"] = self.policy_qualifiers
+
+                return certificate_policies_context
+
+        class AuthorityInformationAccess(object):
+            """
+            AuthorityInformationAccess class
+            """
+            def __init__(self, access_method: str, access_location: str):
+                self.access_method = access_method
+                self.access_location = access_location
+
+            def to_context(self):
+                return {
+                    "AccessMethod": self.access_method,
+                    "AccessLocation": self.access_location
+                }
+
+        class BasicConstraints(object):
+            """
+            BasicConstraints class
+            """
+            def __init__(self, ca: bool, path_length: int = None):
+                self.ca = ca
+                self.path_length = path_length
+
+            def to_context(self):
+                basic_constraints_context = {
+                    "CA": self.ca
+                }
+
+                if self.path_length:
+                    basic_constraints_context["PathLength"] = self.path_length
+
+                return basic_constraints_context
+
+        class SignedCertificateTimestamp(object):
+            """
+            SignedCertificateTimestamp class
+            for "PreCertificateSignedCertificateTimestamp" or
+            "SignedCertificateTimestamp" extensions
+            """
+            class EntryType(object):
+                """
+                ExtensionType class
+                :return: None
+                :rtype: ``None``
+                """
+                PRECERTIFICATE = "PreCertificate"
+                X509CERTIFICATE = "X509Certificate"
+
+                @staticmethod
+                def is_valid_type(_type):
+                    return _type in (
+                        Common.CertificateExtension.SignedCertificateTimestamp.EntryType.PRECERTIFICATE,
+                        Common.CertificateExtension.SignedCertificateTimestamp.EntryType.X509CERTIFICATE
+                    )
+
+            def __init__(
+                self,
+                entry_type: 'Common.CertificateExtension.SignedCertificateTimestamp.EntryType',
+                version: int,
+                log_id: str,
+                timestamp: str
+            ):
+
+                if not Common.CertificateExtension.SignedCertificateTimestamp.EntryType.is_valid_type(entry_type):
+                    raise TypeError(
+                        'entry_type must be of type Common.CertificateExtension.SignedCertificateTimestamp.EntryType enum'
+                    )
+
+                self.entry_type = entry_type
+                self.version = version
+                self.log_id = log_id
+                self.timestamp = timestamp
+
+            def to_context(self):
+                timestamps_context = {}
+
+                timestamps_context['Version'] = self.version
+                timestamps_context["LogId"] = self.log_id
+                timestamps_context["Timestamp"] = self.timestamp
+                timestamps_context["EntryType"] = self.entry_type
+
+                return timestamps_context
+
+        class ExtensionType(object):
+            """
+            ExtensionType class
+            :return: None
+            :rtype: ``None``
+            """
+            SUBJECTALTERNATIVENAME = "SubjectAlternativeName"
+            AUTHORITYKEYIDENTIFIER = "AuthorityKeyIdentifier"
+            SUBJECTKEYIDENTIFIER = "SubjectKeyIdentifier"
+            KEYUSAGE = "KeyUsage"
+            EXTENDEDKEYUSAGE = "ExtendedKeyUsage"
+            CRLDISTRIBUTIONPOINTS = "CRLDistributionPoints"
+            CERTIFICATEPOLICIES = "CertificatePolicies"
+            AUTHORITYINFORMATIONACCESS = "AuthorityInformationAccess"
+            BASICCONSTRAINTS = "BasicConstraints"
+            PRECERTIFICATESIGNEDCERTIFICATETIMESTAMPS = "PrecertificateSignedCertificateTimestamps"
+            SIGNEDCERTIFICATETIMESTAMPS = "SignedCertificateTimestamps"
+            OTHER = "Other"
+
+            @staticmethod
+            def is_valid_type(_type):
+                return _type in (
+                    Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME,
+                    Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER,
+                    Common.CertificateExtension.ExtensionType.SUBJECTKEYIDENTIFIER,
+                    Common.CertificateExtension.ExtensionType.KEYUSAGE,
+                    Common.CertificateExtension.ExtensionType.EXTENDEDKEYUSAGE,
+                    Common.CertificateExtension.ExtensionType.CRLDISTRIBUTIONPOINTS,
+                    Common.CertificateExtension.ExtensionType.CERTIFICATEPOLICIES,
+                    Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS,
+                    Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS,
+                    Common.CertificateExtension.ExtensionType.PRECERTIFICATESIGNEDCERTIFICATETIMESTAMPS,
+                    Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
+                    Common.CertificateExtension.ExtensionType.OTHER  # for extensions that are not handled explicitly
+                )
+
+            def __init__(
+                self,
+                extension_type: 'Common.CertificateExtension.ExtensionType',
+                oid: str,
+                extension_name: str,
+                critical: bool,
+                subject_alternative_names: Optional[
+                    List['Common.CertificateExtension.SubjectAlternativeName']
+                ] = None,  # for SubjectAlternativeName extension
+                authority_key_identifier: Optional[
+                    'Common.CertificateExtension.AuthorityKeyIdentifier'
+                ] = None,  # for AuthorityKeyIdentifier extension
+                digest: str = None,  # for SubjectKeyIdentifier extension
+                digital_signature: Optional[bool] = None,  # for KeyUsage extension
+                content_commitment: Optional[bool] = None,  # for KeyUsage extension
+                key_encipherment: Optional[bool] = None,  # for KeyUsage extension
+                data_encipherment: Optional[bool] = None,  # for KeyUsage extension
+                key_agreement: Optional[bool] = None,  # for KeyUsage extension
+                key_cert_sign: Optional[bool] = None,  # for KeyUsage extension
+                crl_sign: Optional[bool] = None,  # for KeyUsage extension
+                usages: Optional[List[str]] = None,  # for ExtendedKeyUsage extension
+                distribution_points: Optional[
+                    List['Common.CertificateExtension.DistributionPoint']
+                ] = None,  # for CRLDistributionPoints extension
+                certificate_policies: Optional[
+                    List['Common.CertificateExtension.CertificatePolicy']
+                ] = None,  # for CertificatePolicies extension
+                authority_information_access: Optional[
+                    List['Common.CertificateExtension.AuthorityInformationAccess']
+                ] = None,  # for AuthorityInformationAccess extension
+                basic_constraints: Optional[
+                    'Common.CertificateExtension.BasicConstraints'
+                ] = None,  # for BasicConstraints extension
+                signed_certificate_timestamps: Optional[
+                    List['Common.CertificateExtension.SignedCertificateTimestamp']
+                ] = None,  # for (Precertificate)SignedCertificateTimestamps extensions
+                value: Optional[Union[str, List[Any], Dict[str, Any]]] = None  # for any other extension
+            ):
+
+                if not Common.CertificateExtension.ExtensionType.is_valid_type(extension_type):
+                    raise TypeError('algorithm must be of type Common.CertificateExtension.ExtensionType enum')
+
+                self.extension_type = extension_type
+                self.oid = oid
+                self.extension_name = extension_name
+                self.critical = critical
+
+                if self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME:
+                    self.subject_alternative_names = subject_alternative_names
+
+                elif self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTKEYIDENTIFIER:
+                    if not digest:
+                        raise ValueError('digest is mandatory for SubjectKeyIdentifier extension')
+                    self.digest = digest
+
+                elif self.extension_type == Common.CertificateExtension.ExtensionType.KEYUSAGE:
+                    self.digital_signature = digital_signature
+                    self.content_commitment = content_commitment
+                    self.key_encipherment = key_encipherment
+                    self.data_encipherment = data_encipherment
+                    self.key_agreement = key_agreement
+                    self.key_cert_sign = key_cert_sign
+                    self.crl_sign = crl_sign
+
+                elif self.extension_type == Common.CertificateExtension.ExtensionType.EXTENDEDKEYUSAGE:
+                    if not usages:
+                        raise ValueError('usages is mandatory for ExtendedKeyUsage extension')
+                    self.usages = usages
+
+                elif self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER:
+                    self.authority_key_identifier = authority_key_identifier
+
+                elif self.extension_type == Common.CertificateExtension.ExtensionType.CRLDISTRIBUTIONPOINTS:
+                    self.distribution_points = distribution_points
+
+                elif self.extension_type == Common.CertificateExtension.ExtensionType.CERTIFICATEPOLICIES:
+                    self.certificate_policies = certificate_policies
+
+                elif self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS:
+                    self.authority_information_access = authority_information_access
+
+                elif self.extension_type == Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS:
+                    self.basic_constraints = basic_constraints
+
+                elif self.extension_type in [
+                    Common.CertificateExtension.ExtensionType.PRECERTIFICATESIGNEDCERTIFICATETIMESTAMPS,
+                    Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS
+                ]:
+                    self.signed_certificate_timestamps = signed_certificate_timestamps
+
+                elif self.extension_type == Common.CertificateExtension.ExtensionType.OTHER:
+                    self.value = value
+
+            def to_context(self):
+                extension_context = {
+                    "OID": self.oid,
+                    "Name": self.extension_name,
+                    "Critical": self.critical
+                }
+
+                if self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME:
+                    extension_context["Value"] = [san.to_context() for san in self.subject_alternative_names]
+
+                elif self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER:
+                    extension_context["Value"] = self.authority_key_identifier.to_context()
+
+                elif self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTKEYIDENTIFIER:
+                    extension_context["Value"] = {
+                        "Digest": self.digest
+                    }
+
+                elif self.extension_type == Common.CertificateExtension.ExtensionType.KEYUSAGE:
+                    key_usage: Dict[str, bool] = {}
+                    if self.digital_signature:
+                        key_usage["DigitalSignature"] = self.digital_signature
+                    if self.content_commitment:
+                        key_usage["ContentCommitment"] = self.content_commitment
+                    if self.key_encipherment:
+                        key_usage["KeyEncipherment"] = self.key_encipherment
+                    if self.data_encipherment:
+                        key_usage["DataEncipherment"] = self.data_encipherment
+                    if self.key_agreement:
+                        key_usage["KeyAgreement"] = self.key_agreement
+                    if self.key_cert_sign:
+                        key_usage["KeyCertSign"] = self.key_cert_sign
+                    if self.crl_sign:
+                        key_usage["CrlSign"] = self.crl_sign
+
+                    if key_usage:
+                        extension_context["Value"] = key_usage
+
+                elif self.extension_type == Common.CertificateExtension.ExtensionType.EXTENDEDKEYUSAGE:
+                    extension_context["Value"] = {
+                        "Usages": [u for u in self.usages]
+                    }
+
+                elif self.extension_type == Common.CertificateExtension.ExtensionType.CRLDISTRIBUTIONPOINTS:
+                    extension_context["Value"] = [dp.to_context() for dp in self.distribution_points]
+
+                elif self.extension_type == Common.CertificateExtension.ExtensionType.CERTIFICATEPOLICIES:
+                    extension_context["Value"] = [cp.to_context() for cp in self.certificate_policies]
+
+                elif self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS:
+                    extension_context["Value"] = [aia.to_context() for aia in self.authority_information_access]
+
+                elif self.extension_type == Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS:
+                    extension_context["Value"] = self.basic_constraints.to_context()
+
+                elif self.extension_type in [
+                    Common.CertificateExtension.ExtensionType.PRECERTIFICATESIGNEDCERTIFICATETIMESTAMPS,
+                    Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS
+                ]:
+                    extension_context["Value"] = [sct.to_context() for sct in self.signed_certificate_timestamps]
+
+                elif self.extension_type == Common.CertificateExtension.ExtensionType.OTHER:
+                    extension_context["Value"] = self.value
+
+                return extension_context
+
+    class Certificate(Indicator):
+        """
+        Certificate indicator - https://xsoar.pan.dev/docs/integrations/context-standards-recommended#certificate
+        """
+        CONTEXT_PATH = 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
+                       'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512)'
+
+        def __init__(
+            self,
+            subject_dn: str,
+            dbot_score: Optional['Common.DBotScore'] = None,
+            name: Optional[List[str]] = None,  # if none is built automatically
+            issuer_dn: Optional[str] = None,
+            serial_number: Optional[str] = None,
+            validity_not_after: Optional[str] = None,
+            validity_not_before: Optional[str] = None,
+            sha512: Optional[str] = None,
+            sha256: Optional[str] = None,
+            sha1: Optional[str] = None,
+            md5: Optional[str] = None,
+            publickey: Optional[Union[Dict[str, Any], 'Common.CertificatePublicKey']] = None,
+            spki_sha256: Optional[str] = None,
+            signature_algorithm: Optional[str] = None,
+            signature: Optional[str] = None,
+            subject_alternative_name: Optional[
+                Union[
+                    List[Dict[str, Any]],
+                    List['Common.CertificateExtension.SubjectAlternativeName']
+                ]
+            ] = None,  # if None, build automatically from extnesions
+            extension: Optional[List['Common.CertificateExtension']] = None,
+            pem: Optional[str] = None
+
+        ):
+
+            self.subject_dn = subject_dn
+            self.dbot_score = dbot_score
+            self.name = name
+            self.issuer_dn = issuer_dn
+            self.serial_number = serial_number
+            self.validity_not_after = validity_not_after
+            self.validity_not_before = validity_not_before
+
+            self.sha512 = sha512
+            self.sha256 = sha256
+            self.sha1 = sha1
+            self.md5 = md5
+
+            self.publickey = publickey
+
+            self.spki_sha256 = spki_sha256
+
+            self.signature_algorithm = signature_algorithm
+            self.signature = signature
+
+            self.subject_alternative_name = subject_alternative_name
+            self.extension = extension
+            if not isinstance(dbot_score, Common.DBotScore):
+                raise ValueError('dbot_score must be of type DBotScore')
+
+        def to_context(self):
+            certificate_context = {
+                "Subject_DN": self.subject_dn
+            }
+
+            # if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
+            #     url_context['Malicious'] = {
+            #         'Vendor': self.dbot_score.integration_name,
+            #         'Description': self.dbot_score.malicious_description
+            #     }
+
+            ret_value = {
+                Common.Certificate.CONTEXT_PATH: certificate_context
             }
 
             if self.dbot_score:
