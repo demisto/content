@@ -11,6 +11,11 @@ configuration:
   name: authentication
   required: false
   type: 9
+- display: Use system proxy settings
+  hidden: false
+  name: proxy
+  required: false
+  type: 8
 description: This is the an integraion that logs into other Microsoft Integration.
 display: Microsoft Login Helper
 name: Microsoft Login Helper
@@ -40,6 +45,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0

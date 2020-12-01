@@ -2,14 +2,19 @@ import demistomock as demisto
 from CommonServerPython import *
 
 import adal
+import urllib3.util
+urllib3.disable_warnings()
 
 
-def get_refresh_token(tenant_id: str, authentication: dict, client_id: str) -> CommandResults:
+def get_refresh_token(tenant_id: str, authentication: dict, client_id: str, proxy: bool) -> CommandResults:
     user_name = authentication.get('identifier', '')
     password = authentication.get('password', '')
+    proxies = {}
+    if proxy:
+        proxies = handle_proxy()
     authority_uri = f"https://login.microsoftonline.com/{tenant_id}"
     resource_uri = 'https://management.core.windows.net/'
-    context = adal.AuthenticationContext(authority_uri, api_version=None)
+    context = adal.AuthenticationContext(authority_uri, api_version=None, verify_ssl=False, proxies=proxies)
     code = context.acquire_token_with_username_password(resource_uri, user_name, password, client_id)
 
     return CommandResults(outputs_prefix='MicrosoftLoginHelper',
