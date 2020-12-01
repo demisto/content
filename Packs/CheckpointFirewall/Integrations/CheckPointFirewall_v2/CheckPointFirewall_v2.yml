@@ -1758,34 +1758,17 @@ script:
       name: session_timeout
       required: false
       secret: false
-    deprecated: false
-    description: Log in to CheckPoint and get the session ID.
-    execution: false
-    name: checkpoint-login-and-get-session-id
-    outputs:
-    - contextPath: CheckPoint.Login.session-id
-      description: Session ID.
-      type: String
-  - arguments:
     - default: false
       defaultValue: ''
-      description: Domain to start session in
+      description: Optional domain to start session in, for use with MDS login only.
       isArray: false
       name: domain
-      required: true
-      secret: false
-    - default: false
-      defaultValue: '600'
-      description: Session expiration timeout in seconds. Default is 600 seconds. Session
-        timeout range is between 600 to 3600 seconds.
-      isArray: false
-      name: session_timeout
       required: false
       secret: false
     deprecated: false
     description: Log in to CheckPoint and get the session ID.
     execution: false
-    name: checkpoint-mds-login-and-get-session-id
+    name: checkpoint-login-and-get-session-id
     outputs:
     - contextPath: CheckPoint.Login.session-id
       description: Session ID.
