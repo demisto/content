@@ -12,5 +12,5 @@ Follow these steps to add custom fields to the User Profile indicator.
 3. Add and map the custom field to the necessary mapper(s).
 4. Go to the ServiceNow IAM integration instance and in the mapper textbox, replace the name of the default mapper with the custom mapper you created.
 
-## Update/Enable User Commands
-These commands include the *create-if-not-exists* argument, which specifies if a new user should be created when the User Profile indicator passed does not fiFor both of these commands you 
+## Automatically create user if not found in update command
+The *create-if-not-exists* parameter specifies if a new user should be created when the User Profile passed was not found in the 3rd-party integration.

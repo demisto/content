@@ -24,22 +24,22 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Create User Command Enabled
+  display: '`iam-create-user` Command Enabled'
   name: create_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Update User Command Enabled
+  display: '`iam-update-user` Command Enabled'
   name: update_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Enable/Disable User Commands Enabled
-  name: enable_disable_user_enabled
+  display: '`iam-disable-user` Command Enabled'
+  name: disable_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Automatically create user if not found in update and enable commands
+  display: Automatically create user if not found in update command
   name: create_if_not_exists
   required: false
   type: 8
@@ -68,7 +68,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: If true, enables the user in ServiceNow.
+      description: When set to true, after the command execution the status of the user in the 3rd-party
+        integration will be active.
       isArray: false
       name: allow-enable
       predefined:
@@ -82,13 +83,13 @@ script:
     name: iam-create-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Indicates if the API was successful or provides error information.
+      description: Provides the raw data from the 3rd-party integration.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -106,7 +107,7 @@ script:
       description: Name of the integration instance.
       type: string
     - contextPath: IAM.Vendor.success
-      description: If true, the command was executed successfully, otherwise false.
+      description: When true, indicates that the command was executed successfully.
       type: Boolean
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
@@ -121,7 +122,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Enable the user.
+      description: When set to true, after the command execution the status of the user in the 3rd-party
+        integration will be active.
       isArray: false
       name: allow-enable
       predefined:
@@ -136,13 +138,13 @@ script:
     name: iam-update-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true, the employee's status is active, otherwise false.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Indicates if the API was successful or provides error information.
+      description: Provides the raw data from the 3rd-party integration.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -160,7 +162,7 @@ script:
       description: Name of the integration instance.
       type: string
     - contextPath: IAM.Vendor.success
-      description: If true, the command was executed successfully, otherwise false.
+      description: When true, indicates that the command was executed successfully.
       type: Boolean
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
@@ -178,13 +180,13 @@ script:
     name: iam-get-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true, the employee's status is active, otherwise false.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Indicates if the API was successful or provides error information.
+      description: Provides the raw data from the 3rd-party integration.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -202,7 +204,7 @@ script:
       description: Name of the integration instance.
       type: string
     - contextPath: IAM.Vendor.success
-      description: If true, the command was executed successfully, otherwise false.
+      description: When true, indicates that the command was executed successfully.
       type: Boolean
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
@@ -220,13 +222,13 @@ script:
     name: iam-disable-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true, the employee's status is active, otherwise false.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Indicates if the API was successful or provides error information.
+      description: Provides the raw data from the 3rd-party integration.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -244,7 +246,7 @@ script:
       description: Name of the integration instance.
       type: string
     - contextPath: IAM.Vendor.success
-      description: If true, the command was executed successfully, otherwise false.
+      description: When true, indicates that the command was executed successfully.
       type: Boolean
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
