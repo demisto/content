@@ -294,10 +294,9 @@ def disable_user_command(client, args, mapper_out, is_disable_enabled):
 
 def get_mapping_fields_command():
     scheme = [
-        "userName",
-        "familyName",
-        "givenName",
-        "email"
+        "name",
+        "emails",
+        "userName"
     ]
     incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
 
