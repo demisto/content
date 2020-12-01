@@ -1,5 +1,5 @@
 Tripwire is a file integrity management (FIM), monitors files and folders on systems and is triggered when they have changed.
-This integration was integrated and tested with version 1 of Tripwire
+This integration was integrated and tested with v1 of Tripwire
 ## Configure Tripwire on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -49,7 +49,7 @@ Returns all Element Versions that meet the search critiera.
 | limit | Limit for the number of returned results. Default is 50. | Optional | 
 | start | start index from which the results are returned. | Optional | 
 | end_detected_time | End detected time of element versions to fetch.<br/>The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z". | Optional | 
-| end_received_time | End recieved time of element versions to fetch.<br/>The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z". | Optional | 
+| end_received_time | End received time of element versions to fetch.<br/>The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z". | Optional | 
 
 
 #### Context Output

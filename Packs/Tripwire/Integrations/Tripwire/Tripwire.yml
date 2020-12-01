@@ -154,7 +154,7 @@ script:
       secret: false
     - default: false
       description: |-
-        End recieved time of element versions to fetch.
+        End received time of element versions to fetch.
         The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z"
       isArray: false
       name: end_received_time
