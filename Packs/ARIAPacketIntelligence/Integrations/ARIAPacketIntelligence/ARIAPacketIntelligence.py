@@ -15,12 +15,12 @@ class ParameterError(Exception):
 Remediation Configuration String (RCS) that use to select SIA.
 """
 
+
 class RCS:
     """
     Define class members
 
     Define class methods
-
     """
 
     def __init__(self, rcs=None):
@@ -33,6 +33,9 @@ class RCS:
         """
         self.RET_functions = {"drop": self._parse_RET_drop}
 
+    """
+    destructor
+    """
     def __del__(self):
         return 0
 
@@ -603,7 +606,7 @@ class RCS:
 
         if len(RET) <= 0:
             return None, None, "failure: RET list empty"
-
+        
         return RET, rcs, "success: {0}".format(len(RET))
 
     """
@@ -683,15 +686,15 @@ class RCS:
         return SDL, rcs, "success: {0}".format(len(SDL))
 
     """
-     Parse out the components of the RCS: [SDL] | [RET] | RDL
-     and return all three. If the optional component is
-     not found then it returns None but if keyword is
-     found nothing else then returns empty.
+    Parse out the components of the RCS: [SDL] | [RET] | RDL 
+    and return all three. If the optional component is 
+    not found then it returns None but if keyword is 
+    found nothing else then returns empty.
     
-     The fourth result returned is if there is remaining characters
-     in the original RCS then its returned.
+    The fourth result returned is if there is remaining characters 
+    in the original RCS then its returned.
     
-     Returns info in fifth result
+    Returns info in fifth result
     """
     def _parse(self, rcs):
         if rcs is None:
@@ -814,6 +817,7 @@ class RCS:
     If there is an error in parsing the RDL component is
     returned as a NULL.
     """
+
     def remediation_device_list(self):
         SDL, RET, RDL, rcs, rmsg = self._parse(self.rcs)
         if RDL is None:
@@ -830,6 +834,7 @@ class RCS:
     If there is an error in parsing the RET component is
     returned as a NULL.
     """
+
     def remediation_instruction(self):
         SDL, RET, RDL, rcs, rmsg = self._parse(self.rcs)
         if RDL is None:
