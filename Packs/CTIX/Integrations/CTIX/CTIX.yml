@@ -33,6 +33,16 @@ configuration:
   type: 4
   required: true
   additionalinfo: Enter the Secret Key from the CTIX application.
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |
     '''IMPORTS'''
