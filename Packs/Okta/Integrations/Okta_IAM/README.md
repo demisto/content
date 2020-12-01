@@ -19,7 +19,7 @@ For more information, refer to the [Identity Lifecycle Management article](https
 | create-user-enabled | `iam-create-user` Command Enabled | False |
 | update-user-enabled | `iam-update-user` Command Enabled | False |
 | disable-user-enabled | `iam-disable-user` Command Enabled | False |
-| create-if-not-exists | Automatically create user if not found in update and enable commands | False |
+| create-if-not-exists | Automatically create user if not found in update command | False |
 | mapper-in | Incoming Mapper | True |
 | mapper-out | Outgoing Mapper | True |
 | max_fetch | Fetch Limit \(recommended less than 200\) | False |

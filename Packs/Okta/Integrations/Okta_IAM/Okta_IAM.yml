@@ -20,22 +20,22 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: `iam-create-user` Command Enabled
+  display: '`iam-create-user` Command Enabled'
   name: create-user-enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: `iam-update-user` Command Enabled
+  display: '`iam-update-user` Command Enabled'
   name: update-user-enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: `iam-disable-user` Command Enabled
+  display: '`iam-disable-user` Command Enabled'
   name: disable-user-enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Automatically create user if not found in update and enable commands
+  display: Automatically create user if not found in update command
   name: create-if-not-exists
   required: false
   type: 8

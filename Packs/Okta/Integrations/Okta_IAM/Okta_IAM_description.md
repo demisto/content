@@ -13,8 +13,8 @@ Follow these steps to add custom fields to the User Profile indicator.
 3. Add and map the custom field to the necessary mapper(s).
 4. Go to the Okta IAM integration instance and in the mapper textbox, replace the name of the default mapper with the custom mapper you created.
 
-## Update/Enable User Commands
-These commands include the *create-if-not-exists* argument, which specifies if a new user should be created when the User Profile indicator passed does not fiFor both of these commands you 
+## Automatically create user if not found in update command
+The *create-if-not-exists* parameter specifies if a new user should be created when the User Profile passed was not found in the 3rd-party integration.
 
 ## Fetch incidents using an "IAM - Configuration" incident
 When the "Query only application events configured in IAM Configuration" checkbox is selected, add or remove event types for the applications you configured in the **IAM Configuration** incident are retrieved.  You must have at least one application configured in XSOAR to fetch incidents from Okta.
