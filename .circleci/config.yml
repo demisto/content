@@ -316,8 +316,8 @@ references:
       when: always
       command: |
         python3 Tests/Marketplace/merge_private_and_public_id_sets.py
-#        demisto-sdk merge-id-sets -i1 /home/circleci/project/artifacts/private_id_set.json -i2 "/home/circleci/project/artifacts/id_set.json" -o ./Tests/id_set.json
-#        cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
+        demisto-sdk merge-id-sets -i1 /home/circleci/project/artifacts/private_id_set.json -i2 "/home/circleci/project/artifacts/id_set.json" -o ./Tests/id_set.json
+        cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
 
   build_content_descriptor: &build_content_descriptor
     run:
