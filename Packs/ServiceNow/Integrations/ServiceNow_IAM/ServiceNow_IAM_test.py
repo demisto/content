@@ -261,7 +261,7 @@ def test_update_user_command__allow_enable(mocker):
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'update_user', return_value=SERVICENOW_USER_OUTPUT)
 
-    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=False,
+    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True,
                                        is_create_user_enabled=False, create_if_not_exists=False)
     outputs = get_outputs_from_user_profile(user_profile)
 
@@ -269,9 +269,9 @@ def test_update_user_command__allow_enable(mocker):
     assert outputs.get('success') is True
     assert outputs.get('active') is True
     assert outputs.get('id') == 'mock_id'
-    assert outputs.get('username') == 'testdemisto2@paloaltonetworks.com'
-    assert outputs.get('details', {}).get('profile', {}).get('firstName') == 'mock_first_name'
-    assert outputs.get('details', {}).get('profile', {}).get('lastName') == 'mock_last_name'
+    assert outputs.get('username') == 'mock_user_name'
+    assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
+    assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
 
 
 def test_disable_user_command__non_existing_user(mocker):
