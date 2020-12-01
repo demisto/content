@@ -1046,10 +1046,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     # Check if only README file in file string, if so, no need to create the servers.
     files = [s for s in files_string.split('\n') if s]
     readme = all(map(lambda s: 'README.md' in s, files))
-    if readme:
-        create_filter_envs_file(from_version, to_version, readme_only=True)
-    else:
-        create_filter_envs_file(from_version, to_version)
+    create_filter_envs_file(from_version, to_version, readme_only=bool(readme))
 
     tests = set([])
     packs_to_install = set([])
