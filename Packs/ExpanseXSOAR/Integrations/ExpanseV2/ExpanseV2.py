@@ -1852,7 +1852,7 @@ def get_associated_domains_command(client: Client, args: Dict[str, Any]) -> Comm
     )
 
 
-def expanse_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     md5_hashes = argToList(args.get('md5_hash'))
     if len(md5_hashes) == 0:
         raise ValueError('md5_hash(es) not specified')
@@ -2190,8 +2190,8 @@ def main() -> None:
         elif demisto.command() == "expanse-get-associated-domains":
             return_results(get_associated_domains_command(client, demisto.args()))
 
-        elif demisto.command() == "expanse-certificate":
-            return_results(expanse_certificate_command(client, demisto.args()))
+        elif demisto.command() == "certificate":
+            return_results(certificate_command(client, demisto.args()))
 
         elif demisto.command() == "domain":
             return_results(domain_command(client, demisto.args()))
