@@ -35,10 +35,39 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 
         ![image](https://raw.githubusercontent.com/demisto/content/8038ce7e02dfd47b75adc9bedf1f7e9747dd77d5/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-params.png)
         
+## Instance Creation Flow
+The integration supports two types of authorization:
+1. Basic authorization using username and password.
+2. OAuth 2.0 authorization.
+
+#### OAuth 2.0 Authorization
+To use OAuth 2.0 authorization follow the next steps:
+1. Login to your ServiceNow instance and create an endpoint for XSOAR to access your instance (please see [Snow OAuth](https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/security/task/t_CreateEndpointforExternalClients.html) for more information). 
+2. Copy the `Client Id` and `Client Secret` (press the lock next to the client secret to reveal it) that were automatically generated when creating the endpoint into the `Username` and `Password` fields of the instance configuration.
+3. Select the `Use OAuth Login` checkbox and click the `Done` button.
+4. Run the command `!servicenow-oauth-login` from the XSOAR CLI and fill in the username and password of the ServiceNow instance. This step generates an access token to the ServiceNow instance and is required only in the first time after configuring a new instance in the XSOAR platform.
+5. (Optional) Test the created instance by running the `!servicenow-oauth-test` command.
+
+**Notes:**
+1. When running the `!servicenow-oauth-login` command, a refresh token is generated and will be used to produce new access tokens after the current access token has expired.
+2. Every time the refresh token expires you will have to run the `servicenow-oauth-login` command again. Hence, we recommend to set the `Refresh Token Lifespan` field in the endpoint created in step 1 to a long period (can be set to several years). 
+
+
+### Using Multi Factor Authentication (MFA)
+MFA can be used both when using basic authorization and when using OAuth 2.0 authorization, however we strongly recommend using OAuth 2.0 when using MFA.
+If MFA is enabled for your user, follow the next steps:
+1. Open the Google Authenticator application on your mobile device and make note of the number. The number refreshes every 30 seconds.
+2. Enter your username and password, and append the One Time Password (OTP) that you currently see on your mobile device to your password without any extra spaces. For example, if your password is `12345` and the current OTP code is `424 058`, enter `12345424058`.
+
+**Notes:**
+1. When using basic authorization, you will have to update your password with the current OTP every time the current code expires (30 seconds), hence we recommend using OAuth 2.0 authorization.
+2. For using OAuth 2.0 see the above instructions. The OTP code should be appended to the password parameter in the `!servicenow-oauth-login` command.
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | ServiceNow URL, in the format `https://company.service-now.com/` | True |
 | credentials | Username | False |
+| use_oauth | Use OAuth | False |
 | proxy | Use system proxy settings | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | ticket_type | Default ticket type on which to run ticket commands and fetch incidents | False |
@@ -139,6 +168,65 @@ Meaning, if you change the severity in Cortex XSOAR and then change it back in S
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### servicenow-login
+***
+This function should be used once before running any command when using OAuth authentication.
+
+#### Base Command
+
+`servicenow-login`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username that should be used for login. | Required | 
+| password | The password that should be used for login. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!servicenow-login username=username password=password```
+
+#### Context Example
+```json
+{}
+```
+
+#### Human Readable Output
+
+>### Logged in successfully
+
+### servicenow-test
+***
+Test the instance configuration when using OAuth authorization.
+
+
+#### Base Command
+
+`servicenow-test`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!servicenow-test```
+
+#### Context Example
+```json
+{}
+```
+
+#### Human Readable Output
+
+>### Instance Configured Successfully
+
+
 ### servicenow-get-ticket
 ***
 Retrieves ticket information by ticket ID.
