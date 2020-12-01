@@ -41,15 +41,16 @@ Creates a user.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-profile | User Profile indicator details. | Required | 
+| allow-enable | Enable the user. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
+| IAM.Vendor.active | Boolean | If true, the employee's status is active, otherwise false. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | string | Gives the user information if the API was successful, otherwise error information. | 
+| IAM.Vendor.details | string | Indicates if the API was successful or provides error information. | 
 | IAM.Vendor.email | String | The employee's email address. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
@@ -83,15 +84,16 @@ Updates an existing user with the data passed in the user-profile argument.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-profile | A User Profile indicator. | Required | 
+| allow-enable | Enable the user. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
+| IAM.Vendor.active | Boolean | If true, the employee's status is active, otherwise false. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | string | Gives the user information if the API was successful, otherwise error information. | 
+| IAM.Vendor.details | string | Indicates if the API was successful or provides error information. | 
 | IAM.Vendor.email | String | The employee's email address. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
@@ -131,9 +133,9 @@ Retrieves a single user resource.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
+| IAM.Vendor.active | Boolean | If true, the employee's status is active, otherwise false. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | string | Gives the user information if the API was successful, otherwise error information. | 
+| IAM.Vendor.details | string | Indicates if the API was successful or provides error information. | 
 | IAM.Vendor.email | String | The employee's email address. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
@@ -148,48 +150,6 @@ Retrieves a single user resource.
 
 #### Human Readable Output
 ### Get User Results (ServiceNow IAM)
-|brand|instanceName|success|active|id|email|details|
-|---|---|---|---|---|---|---|
-| ServiceNow IAM | ServiceNow IAM_instance_1 | true | true | edab746f1b142410042611b4bd4bcb23 | testdemisto2@paloaltonetworks.com | calendar_integration: 1<br/>country: <br/>user_password: <br/>last_login_time: <br/>source: <br/>sys_updated_on: 2020-11-11 14:55:48<br/>building: <br/>web_service_access_only: false<br/>notification: 2<br/>enable_multifactor_authn: false<br/>sys_updated_by: admin<br/>sys_created_on: 2020-11-11 14:55:48<br/>sys_domain: {"link": "https://ven03941.service-now.com/api/now/table/sys_user_group/global", "value": "global"}<br/>state: <br/>vip: false<br/>sys_created_by: admin<br/>zip: <br/>home_phone: <br/>time_format: <br/>last_login: <br/>default_perspective: <br/>active: true<br/>sys_domain_path: /<br/>cost_center: <br/>phone: <br/>name: Test Demisto_updated<br/>employee_number: <br/>password_needs_reset: false<br/>gender: <br/>city: <br/>failed_attempts: <br/>user_name: <br/>roles: <br/>title: <br/>sys_class_name: sys_user<br/>sys_id: edab746f1b142410042611b4bd4bcb23<br/>internal_integration_user: false<br/>ldap_server: <br/>mobile_phone: <br/>street: <br/>company: <br/>department: <br/>first_name: Test<br/>email: testdemisto2@paloaltonetworks.com<br/>introduction: <br/>preferred_language: <br/>manager: <br/>locked_out: false<br/>sys_mod_count: 0<br/>last_name: Demisto_updated<br/>photo: <br/>avatar: <br/>middle_name: <br/>sys_tags: <br/>time_zone: <br/>schedule: <br/>date_format: <br/>location:  |
-
-
-
-### iam-enable-user
-***
-Enables a deprovisioned user.
-
-
-#### Base Command
-
-`iam-enable-user`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| user-profile | A User Profile indicator. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
-| IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | string | Gives the user information if the API was successful, otherwise error information. | 
-| IAM.Vendor.email | String | The employee's email address. | 
-| IAM.Vendor.errorCode | Number | HTTP error response code. | 
-| IAM.Vendor.errorMessage | String | Reason why the API failed. | 
-| IAM.Vendor.id | String | The employee's user ID in the app. | 
-| IAM.Vendor.instanceName | string | Name of the integration instance. | 
-| IAM.Vendor.success | Boolean | If true, the command was executed successfully, otherwise false. | 
-| IAM.Vendor.username | String | The employee's username in the app. | 
-
-
-#### Command Example
-``` !iam-enable-user user-profile=`{"email":"testdemisto2@paloaltonetworks.com"}` ```
-
-#### Human Readable Output
-### Enable User Results (ServiceNow IAM)
 |brand|instanceName|success|active|id|email|details|
 |---|---|---|---|---|---|---|
 | ServiceNow IAM | ServiceNow IAM_instance_1 | true | true | edab746f1b142410042611b4bd4bcb23 | testdemisto2@paloaltonetworks.com | calendar_integration: 1<br/>country: <br/>user_password: <br/>last_login_time: <br/>source: <br/>sys_updated_on: 2020-11-11 14:55:48<br/>building: <br/>web_service_access_only: false<br/>notification: 2<br/>enable_multifactor_authn: false<br/>sys_updated_by: admin<br/>sys_created_on: 2020-11-11 14:55:48<br/>sys_domain: {"link": "https://ven03941.service-now.com/api/now/table/sys_user_group/global", "value": "global"}<br/>state: <br/>vip: false<br/>sys_created_by: admin<br/>zip: <br/>home_phone: <br/>time_format: <br/>last_login: <br/>default_perspective: <br/>active: true<br/>sys_domain_path: /<br/>cost_center: <br/>phone: <br/>name: Test Demisto_updated<br/>employee_number: <br/>password_needs_reset: false<br/>gender: <br/>city: <br/>failed_attempts: <br/>user_name: <br/>roles: <br/>title: <br/>sys_class_name: sys_user<br/>sys_id: edab746f1b142410042611b4bd4bcb23<br/>internal_integration_user: false<br/>ldap_server: <br/>mobile_phone: <br/>street: <br/>company: <br/>department: <br/>first_name: Test<br/>email: testdemisto2@paloaltonetworks.com<br/>introduction: <br/>preferred_language: <br/>manager: <br/>locked_out: false<br/>sys_mod_count: 0<br/>last_name: Demisto_updated<br/>photo: <br/>avatar: <br/>middle_name: <br/>sys_tags: <br/>time_zone: <br/>schedule: <br/>date_format: <br/>location:  |
@@ -215,9 +175,9 @@ Disable an active user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IAM.Vendor.active | Boolean | If true the employee's status is active, otherwise false. | 
+| IAM.Vendor.active | Boolean | If true, the employee's status is active, otherwise false. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | string | Gives the user information if the API was successful, otherwise error information. | 
+| IAM.Vendor.details | string | Indicates if the API was successful or provides error information. | 
 | IAM.Vendor.email | String | The employee's email address. | 
 | IAM.Vendor.errorCode | Number | HTTP error response code. | 
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 

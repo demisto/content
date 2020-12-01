@@ -53,7 +53,7 @@ configuration:
   name: mapper_out
   required: true
   type: 0
-description: Integrate with ServiceNow's services to perform Identity Lifecycle Management operations.
+description: Integrate with ServiceNow's services to execute CRUD operations for employee lifecycle processes.
 display: ServiceNow IAM
 name: ServiceNow IAM
 script:
@@ -65,8 +65,19 @@ script:
       name: user-profile
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: If true, enables the user in ServiceNow.
+      isArray: false
+      name: allow-enable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
-    description: Creates a user.
+    description: Creates a user in ServiceNow.
     execution: true
     name: iam-create-user
     outputs:
@@ -77,8 +88,7 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Indicates if the API was successful or provides error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -108,6 +118,17 @@ script:
       name: user-profile
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Enable the user.
+      isArray: false
+      name: allow-enable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Updates an existing user with the data passed in the user-profile
       argument.
@@ -115,14 +136,13 @@ script:
     name: iam-update-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: If true, the employee's status is active, otherwise false.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Indicates if the API was successful or provides error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -158,57 +178,13 @@ script:
     name: iam-get-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: If true, the employee's status is active, otherwise false.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
-      type: string
-    - contextPath: IAM.Vendor.email
-      description: The employee's email address.
-      type: String
-    - contextPath: IAM.Vendor.errorCode
-      description: HTTP error response code.
-      type: Number
-    - contextPath: IAM.Vendor.errorMessage
-      description: Reason why the API failed.
-      type: String
-    - contextPath: IAM.Vendor.id
-      description: The employee's user ID in the app.
-      type: String
-    - contextPath: IAM.Vendor.instanceName
-      description: Name of the integration instance.
-      type: string
-    - contextPath: IAM.Vendor.success
-      description: If true, the command was executed successfully, otherwise false.
-      type: Boolean
-    - contextPath: IAM.Vendor.username
-      description: The employee's username in the app.
-      type: String
-  - arguments:
-    - default: false
-      description: A User Profile indicator.
-      isArray: false
-      name: user-profile
-      required: true
-      secret: false
-    deprecated: false
-    description: Enables a deprovisioned user.
-    execution: true
-    name: iam-enable-user
-    outputs:
-    - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
-      type: Boolean
-    - contextPath: IAM.Vendor.brand
-      description: Name of the integration.
-      type: String
-    - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Indicates if the API was successful or provides error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -244,14 +220,13 @@ script:
     name: iam-disable-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: If true, the employee's status is active, otherwise false.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Indicates if the API was successful or provides error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -275,7 +250,7 @@ script:
       description: The employee's username in the app.
       type: String
   - deprecated: false
-    description: Retrieves a User Profile schema which holds all of the user fields within the application.
+    description: Retrieves a User Profile schema, which holds all of the user fields within the application.
       Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
