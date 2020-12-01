@@ -6,8 +6,8 @@ import requests
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-DEFAULT_OUTGOING_MAPPER = "User Profile - Scim (Outgoing)"
-DEFAULT_INCOMING_MAPPER = "User Profile - Scim (Incoming)"
+DEFAULT_OUTGOING_MAPPER = "User Profile - SCIM (Outgoing)"
+DEFAULT_INCOMING_MAPPER = "User Profile - SCIM (Incoming)"
 
 
 class Client(BaseClient):

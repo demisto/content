@@ -25,7 +25,7 @@
    }
   }
  },
- "name": "User Profile - Scim (Outgoing)",
+ "name": "User Profile - SCIM (Outgoing)",
  "type": "mapping-outgoing",
  "version": -1,
  "fromVersion": "6.0.0"
