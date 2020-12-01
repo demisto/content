@@ -1,6 +1,5 @@
-id: deeb234b-0c7e-4f09-83fb-e2e10fb8f608
-version: 148
-vcShouldKeepItemLegacyProdMachine: false
+id: xMatters - Wait for Response
+version: -1
 name: xMatters - Wait for Response
 description: Trigger an xMatters workflow to notify a user for a response.
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -114,6 +114,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -195,6 +196,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -261,25 +263,25 @@ inputs:
   required: false
   description: 'The targeted recipients in xMatters. Either the targetName or UUID.
     Can be comma separated list. '
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: subject
   value:
     simple: ${incident.name}
   required: false
   description: A short description of the incident.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: body
   value:
     simple: ${incident.details}
   required: false
   description: A detailed description of the incident.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: incident_id
   value:
     simple: ${incident.id}
   required: false
   description: The ID of the incident.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: XMatters.RequestId
   description: The request_id from xMatters
@@ -288,3 +290,5 @@ outputs:
   description: The User's response from the notification.
   type: string
 fromversion: 5.5.0
+tests:
+- xMatters-Test

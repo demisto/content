@@ -2,7 +2,8 @@ from typing import Dict, Any
 import traceback
 import demistomock as demisto
 
-def wait_for_key( args: Dict[str, Any] ):
+
+def wait_for_key(args: Dict[str, Any]):
 
     context_key = args.get('context_key')
     MAX_ITERATIONS = int(args.get('iterations'))
@@ -23,7 +24,7 @@ def wait_for_key( args: Dict[str, Any] ):
 def main():
     try:
         args = demisto.args()
-        return_results( wait_for_key( args ) )
+        return_results(wait_for_key(args))
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
