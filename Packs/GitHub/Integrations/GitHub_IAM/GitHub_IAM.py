@@ -84,7 +84,7 @@ def github_handle_error(e):
     try:
         error_code = ""
         error_message = str(e)
-        if e.res is not None:
+        if e.__class__ is DemistoException and e.res is not None:
             if isinstance(e.res, dict):
                 error_code = e.res.get("status")
                 error_message = e.res.get("detail")
@@ -132,7 +132,7 @@ def get_user_command(client, args, mapper_in):
 
         else:
             github_user = res.get('Resources')[0]
-            iam_user_profile.update_with_app_data(github_user, mapper_in, scim=True)
+            iam_user_profile.update_with_app_data(github_user, mapper_in)
             iam_user_profile.set_result(success=True,
                                         iden=github_user.get('id', None),
                                         email=email,

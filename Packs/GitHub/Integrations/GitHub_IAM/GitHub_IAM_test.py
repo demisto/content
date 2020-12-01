@@ -29,13 +29,17 @@ GITHUB_CREATE_USER_OUTPUT = {'emails': [{'value': 'TestID@networks.com', 'type':
                                       'lastModified': '2020-11-23T09:26:31.000-08:00',
                                       'location': 'https://api.github.com/scim/v2/abc'}}
 
-GITHUB_UPDATE_USER_OUTPUT = {'schemas': ['urn:ietf:paramsListResponse'], 'totalResults': 1, 'itemsPerPage': 1,
-                             'startIndex': 1, 'Resources': [
-        {'emails': [{'value': 'TestID@networks.com', 'type': 'work', 'primary': True}], 'roles': [],
-         'name': {'familyName': 'J13', 'givenName': 'MJ'}, 'userName': 'TestID@networks.com',
-         'schemas': ['urn:ietf:User'], 'id': '12345', 'active': True,
-         'meta': {'resourceType': 'User', 'created': '2020-11-23T09:26:31.000-08:00',
-                  'lastModified': '2020-11-23T09:26:31.000-08:00', 'location': '//l'}}]}
+GITHUB_UPDATE_USER_OUTPUT = {
+    'schemas': ['urn:ietf:paramsListResponse'], 'totalResults': 1, 'itemsPerPage': 1, 'startIndex': 1, 'Resources':
+        [
+            {
+                'emails': [{'value': 'TestID@networks.com', 'type': 'work', 'primary': True}], 'roles': [],
+                'name': {'familyName': 'J13', 'givenName': 'MJ'}, 'userName': 'TestID@networks.com',
+                'schemas': ['urn:ietf:User'], 'id': '12345', 'active': True,
+                'meta': {'resourceType': 'User', 'created': '2020-11-23T09:26:31.000-08:00',
+                         'lastModified': '2020-11-23T09:26:31.000-08:00', 'location': '//l'}}
+        ]
+}
 
 
 def get_outputs_from_user_profile(user_profile):
@@ -124,14 +128,13 @@ def test_create_user_command__user_already_exists(mocker):
     args = {"user-profile": {"email": "mock@mock.com"}}
 
     mocker.patch.object(client, 'get_user_id_by_mail', return_value="mock@mock.com")
+    mocker.patch.object(client, 'update_user', return_value=GITHUB_UPDATE_USER_OUTPUT)
 
     iam_user_profile = create_user_command(client, args, 'mapper_out', True, True)
     outputs = get_outputs_from_user_profile(iam_user_profile)
 
-    assert outputs.get('action') == IAMActions.CREATE_USER
+    assert outputs.get('action') == IAMActions.UPDATE_USER
     assert outputs.get('success') is True
-    assert outputs.get('skipped') is True
-    assert outputs.get('reason') == IAMErrors.USER_ALREADY_EXISTS[1]
 
 
 def test_update_user_command__non_existing_user(mocker):
