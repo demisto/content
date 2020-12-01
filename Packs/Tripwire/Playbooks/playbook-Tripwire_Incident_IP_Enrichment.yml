@@ -315,4 +315,4 @@ outputs: []
 fromversion: 5.0.0
 tests:
 - TestplaybookTripwire
-description: Enrich the IP of a node
+description: Enrich the IP of a node.
