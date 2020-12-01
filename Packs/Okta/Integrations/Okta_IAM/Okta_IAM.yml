@@ -36,7 +36,7 @@ configuration:
   type: 8
 - defaultvalue: 'true'
   display: Automatically create user if not found in update and enable commands
-  name: create-if-does-not-exist
+  name: create-if-not-exists
   required: false
   type: 8
 - defaultvalue: User Profile - Okta (Incoming)
@@ -338,7 +338,7 @@ script:
       description: ID of the application.
       type: string
     - contextPath: Okta.AppUserAssignment.IsAssigned
-      description: True if the user is assigned to the application, false otherwise.
+      description: When True, indicates that the user is assigned to the application.
       type: boolean
     - contextPath: Okta.AppUserAssignment.ProfileInApp
       description: The user profile data in the application.
