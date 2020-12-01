@@ -143,6 +143,17 @@ def test_module(mocker):
     assert result == 'ok'
 
 
+def test_get_modified_remote_data(mocker):
+    """
+    The get-modified-remote-data command is not (yet) supported by this integration.
+    Make sure an exception is thrown so the server knows about it.
+    """
+    from JiraV2 import main
+    mocker.patch.object(demisto, 'command', return_value='get-modified-remote-data')
+    with pytest.raises(NotImplementedError):
+        main()
+
+
 def test_get_remote_data(mocker):
     """
     Given:

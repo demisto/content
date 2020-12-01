@@ -903,7 +903,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(circle_artifacts_path, suc
 
 
 def main():
-    install_logging('Prepare Content Packs For Testing.log')
+    install_logging('Prepare_Content_Packs_For_Testing.log')
     option = option_handler()
     packs_artifacts_path = option.artifacts_path
     extract_destination_path = option.extract_path

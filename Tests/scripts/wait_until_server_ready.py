@@ -59,7 +59,7 @@ def download_cloud_init_logs_from_server(ip: str) -> None:
 
 
 def main():
-    install_logging('Wait Until Server Ready.log')
+    install_logging('Wait_Until_Server_Ready.log')
     global SETUP_TIMEOUT
     instance_name_to_wait_on = sys.argv[1]
     ready_ami_list = []
