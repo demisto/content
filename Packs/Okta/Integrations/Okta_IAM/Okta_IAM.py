@@ -27,8 +27,9 @@ ERROR_CODES_TO_RETURN_ERROR = [
 ]
 
 FETCH_QUERY_EXCEPTION_MSG = 'If you marked the "Query only application events configured in IAM Configuration" ' \
-                            'checkbox in the instance configuration, you must add an IAM Configuration before ' \
-                            'fetching logs from Okta. Alternatively, you can unmark this checkbox and provide the ' \
+                            'checkbox in the instance configuration, you must add at least one application in
+                            'the IAM Configuration incident before fetching logs from Okta. ' \
+                            'Alternatively, you can unmark this checkbox and provide a ' \
                             '"Fetch Query Filter" parameter instead.'
 
 '''CLIENT CLASS'''
