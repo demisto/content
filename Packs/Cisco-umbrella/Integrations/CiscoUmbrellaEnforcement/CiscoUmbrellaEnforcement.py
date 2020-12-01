@@ -36,11 +36,10 @@ class Client(BaseClient):
         return self._http_request('GET', url_suffix='', full_url=request)
 
     def delete_domains(self, domain_name: str, domain_id: str):
-        url_suffix = f"domains/{domain_id}?customerKey={self.api_key}" if domain_id\
+        url_suffix = f"domains/{domain_id}?customerKey={self.api_key}" if domain_id \
             else f"domains?customerKey={self.api_key}&where[name]={domain_name}"
         return self._http_request('DELETE', url_suffix,
                                   return_empty_response=True)
-
 
     def add_event_to_domain(self, event: dict):
         return self._http_request('POST', f"events?customerKey={self.api_key}", json_data=event,
@@ -61,6 +60,7 @@ def prepare_suffix(page: Optional[str] = '', limit: Optional[str] = '') -> str:
     if limit:
         suffix += f'limit={limit}&'
     return suffix
+
 
 def domains_list_command(client: Client, args: dict) -> CommandResults:
     """
@@ -127,7 +127,7 @@ def domain_delete_command(client: Client, args: dict) -> CommandResults:
         response = client.delete_domains(domain_id=domain_id, domain_name=domain_name)
     except Exception as e:
         # When deleting a domain by id and the id does not exist.
-        if any (exp in str(e) for exp in ["Domain not in domain list","Not Found"]):
+        if any(exp in str(e) for exp in ["Domain not in domain list", "Not Found"]):
             return CommandResults(
                 readable_output='The domain was not found in the list, Please insert an existing domain name or id.'
             )
@@ -138,9 +138,9 @@ def domain_delete_command(client: Client, args: dict) -> CommandResults:
 
     if curr_context:
         if isinstance(curr_context, list):
-            old_context = curr_context[0]
+            curr_context = curr_context[0]
         curr_context['IsDeleted'] = True
-    if response and int(response.status_code) == 204:
+    if response and int(response.status_code) == 204:  # type: ignore
         message = f"{domain_name if domain_name else domain_id} domain was removed from blacklist"
     else:
         # When deleting a domain by name, if name does not exist the returned code is 200 but the response is empty.
