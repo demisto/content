@@ -4,7 +4,7 @@ from CommonServerPython import *
 import adal
 
 
-def get_refresh_token(tenant_id: str, authentication: dict, client_id: str):
+def get_refresh_token(tenant_id: str, authentication: dict, client_id: str) -> CommandResults:
     user_name = authentication.get('identifier', '')
     password = authentication.get('password', '')
     authority_uri = f"https://login.microsoftonline.com/{tenant_id}"
@@ -13,9 +13,9 @@ def get_refresh_token(tenant_id: str, authentication: dict, client_id: str):
     code = context.acquire_token_with_username_password(resource_uri, user_name, password, client_id)
 
     return CommandResults(outputs_prefix='MicrosoftLoginHelper',
-                              outputs_key_field=' _clientId',
-                              outputs=code,
-                              readable_output="Refresh token added to context.")
+                          outputs_key_field=' _clientId',
+                          outputs=code,
+                          readable_output="Refresh token added to context.")
 
 
 ''' MAIN FUNCTION '''
