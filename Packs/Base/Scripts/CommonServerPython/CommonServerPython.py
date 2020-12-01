@@ -4964,11 +4964,11 @@ class IAMUserProfile:
         :param app_data: (dict) The user data in app
         :return: (dict) the user data, in the scim format.
         """
-        family_name = app_data.get('familyName') if app_data.get('familyName') else app_data.get('email')
-        given_name = app_data.get('givenName') if app_data.get('givenName') else app_data.get('email')
+        family_name = app_data.get('surname') if app_data.get('surname') else app_data.get('surname')
+        given_name = app_data.get('givenname') if app_data.get('givenname') else app_data.get('email')
         scheme = {'name': {'familyName': family_name,
                            'givenName': given_name},
-                  'userName': app_data.get('userName'),
+                  'userName': app_data.get('username'),
                   'emails': [{'type': 'work', 'primary': True, 'value': app_data.get('email')}]}
         return scheme
 
