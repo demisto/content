@@ -4972,6 +4972,28 @@ class IAMUserProfile:
                   'emails': [{'type': 'work', 'primary': True, 'value': app_data.get('email')}]}
         return scheme
 
+    def convert_scheme_to_dict(self, app_data):
+        """ Converts a scim outputs to dict.
+        :param app_data: (dict) The scim data in app
+        :return: (dict) the user data as dict
+        """
+        output = {}
+
+        name = app_data.get("name")
+        emails = app_data.get("emails")
+
+        output["userName"] = app_data.get("userName")
+
+        if isinstance(name,dict):
+            output["familyName"] = app_data.get("familyName")
+            output["givenName"] = app_data.get("givenName")
+
+        if isinstance(emails,list):
+            if isinstance(emails[0], dict):
+                output["email"] = emails[0].get("value")
+
+        return output
+
     def map_object(self, mapper_name, mapping_type=None, scim=False):
         """ Returns the user data, in an application data format.
 
@@ -4989,16 +5011,18 @@ class IAMUserProfile:
             app_data = self.generate_user_scheme(app_data)
         return app_data
 
-    def update_with_app_data(self, app_data, mapper_name, mapping_type=None):
+    def update_with_app_data(self, app_data, mapper_name, mapping_type=None, scim=False):
         """ updates the user_profile attribute according to the given app_data
 
         :param app_data: (dict) The user data in app
         :param mapper_name: (str) incoming mapper name
         :param mapping_type: (str) Optional - mapping type
+        :param scim: (bool) If the output will be scim formatted  (optional).
         """
         if not mapping_type:
             mapping_type = IAMUserProfile.INDICATOR_TYPE
         if not isinstance(app_data, dict):
             app_data = safe_load_json(app_data)
+        if scim:
+            app_data = self.convert_scheme_to_dict(app_data)
         self._user_profile = demisto.mapObject(app_data, mapper_name, mapping_type)
-

@@ -29,14 +29,13 @@ GITHUB_CREATE_USER_OUTPUT = {'emails': [{'value': 'TestID@networks.com', 'type':
                                       'lastModified': '2020-11-23T09:26:31.000-08:00',
                                       'location': 'https://api.github.com/scim/v2/abc'}}
 
-GITHUB_UPDATE_USER_OUTPUT = {'schemas': ['urn:ietf:paramsListResponse'], 'totalResults': 1,
-                             'itemsPerPage': 1, 'startIndex': 1, 'Resources': [
+GITHUB_UPDATE_USER_OUTPUT = {'schemas': ['urn:ietf:paramsListResponse'], 'totalResults': 1, 'itemsPerPage': 1,
+                             'startIndex': 1, 'Resources': [
         {'emails': [{'value': 'TestID@networks.com', 'type': 'work', 'primary': True}], 'roles': [],
          'name': {'familyName': 'J13', 'givenName': 'MJ'}, 'userName': 'TestID@networks.com',
-         'schemas': ['urn:ietf:User'], 'id': '12345',
-         'active': True, 'meta': {'resourceType': 'User', 'created': '2020-11-23T09:26:31.000-08:00',
-                                  'lastModified': '2020-11-23T09:26:31.000-08:00',
-                                  'location': '//l'}}]}
+         'schemas': ['urn:ietf:User'], 'id': '12345', 'active': True,
+         'meta': {'resourceType': 'User', 'created': '2020-11-23T09:26:31.000-08:00',
+                  'lastModified': '2020-11-23T09:26:31.000-08:00', 'location': '//l'}}]}
 
 
 def get_outputs_from_user_profile(user_profile):

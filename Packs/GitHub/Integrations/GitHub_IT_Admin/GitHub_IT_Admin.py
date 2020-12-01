@@ -127,9 +127,8 @@ def get_user_command(client, args, mapper_in):
                                         action=IAMActions.GET_USER)
 
         else:
-            item = res.get('Resources')[0]
-            github_user = convert_scheme_to_dict(item)
-            iam_user_profile.update_with_app_data(github_user, mapper_in)
+            github_user = res.get('Resources')[0]
+            iam_user_profile.update_with_app_data(github_user, mapper_in, scim=True)
             iam_user_profile.set_result(success=True,
                                         iden=item.get('id', None),
                                         email=email,
@@ -287,23 +286,6 @@ def disable_user_command(client, args, mapper_out, is_disable_enabled):
                                     action=IAMActions.DISABLE_USER
                                     )
         return iam_user_profile
-
-
-def convert_scheme_to_dict(user_scheme):
-    user_dict = {}
-    for key, value in user_scheme.items():
-        if isinstance(value, str):
-            user_dict[key] = value
-        elif isinstance(value, dict):
-            for sub_key, sub_value in value.items():
-                if isinstance(sub_value, str):
-                    user_dict[sub_key] = sub_value
-        elif isinstance(value, List):
-            if not value:
-                continue
-            elif isinstance(value[0], dict):
-                user_dict[key] = value[0].get('value')
-    return user_dict
 
 
 def get_mapping_fields_command():
