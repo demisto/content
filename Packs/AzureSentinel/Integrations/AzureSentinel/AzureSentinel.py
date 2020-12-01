@@ -97,8 +97,8 @@ def format_date(date):
     return dateparser.parse(date).strftime(DATE_FORMAT)
 
 
-def str_to_bool(string_var):
-    return True if string_var == 'true' else False
+def str_to_bool(str_bool):
+    return str_bool.lower() == 'true'
 
 
 def incident_data_to_demisto_format(inc_data):
@@ -433,6 +433,9 @@ def get_entity_by_id_command(client, args):
             result
         )
     else:
+        # This expansion_id is written according to -
+        # https://techcommunity.microsoft.com/t5/azure-sentinel/get-entities-for-a-sentinel-incidient-by-api/m-p/1422643
+
         expansion_id = "98b974fd-cc64-48b8-9bd0-3a209f5b944b"
         url_suffix = f'entities/{entity_id}/expand'
         data = {
