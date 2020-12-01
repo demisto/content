@@ -16,7 +16,7 @@ requests.packages.urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DEPROVISIONED_STATUS = 'DEPROVISIONED'
-USER_IS_DISABLED_MSG = 'Deactivation failed because the user is already disabled.'
+USER_IS_DISABLED_MSG = 'Action failed because the user is disabled.'
 USER_IS_DISABLED_ERROR = 'E0000007'
 ERROR_CODES_TO_SKIP = [
     'E0000016',  # user is already enabled
@@ -446,20 +446,30 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
             okta_user = client.get_user(user_profile.get_attribute('email'))
             if okta_user:
                 user_id = okta_user.get('id')
-                if allow_enable:
-                    client.activate_user(user_id)
 
-                okta_profile = user_profile.map_object(mapper_out)
-                updated_user = client.update_user(user_id, okta_profile)
-                user_profile.set_result(
-                    action=IAMActions.UPDATE_USER,
-                    success=True,
-                    active=False if updated_user.get('status') == DEPROVISIONED_STATUS else True,
-                    iden=updated_user.get('id'),
-                    email=updated_user.get('profile', {}).get('email'),
-                    username=updated_user.get('profile', {}).get('login'),
-                    details=updated_user
-                )
+                if allow_enable and okta_user.get('status') == DEPROVISIONED_STATUS:
+                    client.activate_user(user_id)
+                    user_profile.set_result(
+                        action=IAMActions.ENABLE_USER,
+                        success=True,
+                        active=True,
+                        iden=okta_user.get('id'),
+                        email=okta_user.get('profile', {}).get('email'),
+                        username=okta_user.get('profile', {}).get('login'),
+                        details=okta_user
+                    )
+                else:
+                    okta_profile = user_profile.map_object(mapper_out)
+                    updated_user = client.update_user(user_id, okta_profile)
+                    user_profile.set_result(
+                        action=IAMActions.UPDATE_USER,
+                        success=True,
+                        active=False if okta_user.get('status') == DEPROVISIONED_STATUS else True,
+                        iden=updated_user.get('id'),
+                        email=updated_user.get('profile', {}).get('email'),
+                        username=updated_user.get('profile', {}).get('login'),
+                        details=updated_user
+                    )
             else:
                 if create_if_not_exists:
                     return create_user_command(client, args, mapper_out, is_create_user_enabled,

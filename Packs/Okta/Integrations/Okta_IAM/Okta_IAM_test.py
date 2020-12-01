@@ -177,13 +177,12 @@ def test_update_user_command__allow_enable(mocker):
     mocker.patch.object(client, 'get_user', return_value=OKTA_DISABLED_USER_OUTPUT)
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'activate_user', return_value=None)
-    mocker.patch.object(client, 'update_user', return_value=OKTA_USER_OUTPUT)
 
-    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=False,
+    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True,
                                        is_create_user_enabled=False, create_if_not_exists=False)
     outputs = get_outputs_from_user_profile(user_profile)
 
-    assert outputs.get('action') == IAMActions.UPDATE_USER
+    assert outputs.get('action') == IAMActions.ENABLE_USER
     assert outputs.get('success') is True
     assert outputs.get('active') is True
     assert outputs.get('id') == 'mock_id'
@@ -322,7 +321,7 @@ def test_disable_user_command__user_is_already_disabled(mocker):
     assert outputs.get('action') == IAMActions.DISABLE_USER
     assert outputs.get('success') is True
     assert outputs.get('skipped') is True
-    assert outputs.get('reason') == 'Deactivation failed because the user is already disabled.'
+    assert outputs.get('reason') == 'Action failed because the user is disabled.'
 
 
 def test_get_mapping_fields_command(mocker):
