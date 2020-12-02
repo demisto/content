@@ -63,6 +63,9 @@ def jira_req(
                              f'{BASIC_AUTH_ERROR_MSG}')
             elif result.status_code == 404:
                 return_error("Could not connect to the Jira server. Verify that the server URL is correct.")
+            elif result.status_code == 500 and files:
+                return_error(f"Failed to execute request, status code: 500\nBody: {result.text}"
+                             f"\nMake sure file name doesn't contain any special characters")
             else:
                 return_error(
                     f"Failed reaching the server. status code: {result.status_code}")
@@ -554,7 +557,7 @@ def add_comment_command(issue_id, comment, visibility=''):
     return_outputs(readable_output=human_readable, outputs={}, raw_response=contents)
 
 
-def issue_upload_command(issue_id, upload, attachment_name=None):
+def bissue_upload_command(issue_id, upload, attachment_name=None):
     j_res = upload_file(upload, issue_id, attachment_name)
     md = generate_md_upload_issue(j_res, issue_id)
     human_readable = tableToMarkdown(demisto.command(), md, "")
