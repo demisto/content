@@ -1766,6 +1766,7 @@ def main():
     params = demisto.params()
     username = params.get('username', {}).get('identifier')
     password = params.get('username', {}).get('password')
+    domain = params.get('domain', {}).get('domain')
 
     server = params['server']
     port = params['port']
