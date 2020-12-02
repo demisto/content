@@ -347,7 +347,7 @@ def list_emails(client: IMAPClient,
     """
     fetch_time = parse(f'{first_fetch_time} UTC')
 
-    mails_fetched, _ = fetch_mails(client=client,
+    mails_fetched, _, _ = fetch_mails(client=client,
                                    first_fetch_time=fetch_time,
                                    permitted_from_addresses=permitted_from_addresses,
                                    permitted_from_domains=permitted_from_domains)
@@ -363,7 +363,7 @@ def list_emails(client: IMAPClient,
 
 
 def get_email(client: IMAPClient, message_id: int) -> CommandResults:
-    mails_fetched, _ = fetch_mails(client, message_id=message_id)
+    mails_fetched, _, _ = fetch_mails(client, message_id=message_id)
     mails_json = [mail.generate_raw_json(parse_attachments=True) for mail in mails_fetched]
     return CommandResults(outputs_prefix='MailListener.Email',
                           outputs_key_field='ID',
@@ -371,7 +371,7 @@ def get_email(client: IMAPClient, message_id: int) -> CommandResults:
 
 
 def get_email_as_eml(client: IMAPClient, message_id: int) -> dict:
-    mails_fetched, _ = fetch_mails(client, message_id=message_id)
+    mails_fetched, _, _ = fetch_mails(client, message_id=message_id)
     mail_file = [fileResult('original-email-file.eml', mail.mail_bytes) for mail in mails_fetched]
     return mail_file[0] if mail_file else {}
 
