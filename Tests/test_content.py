@@ -38,7 +38,7 @@ except ModuleNotFoundError:
     from slackclient import SlackClient  # Old slack
 
 from Tests.mock_server import MITMProxy, AMIConnection
-from Tests.test_integration import Docker, check_integration, disable_all_integrations
+from Tests.test_integration import Docker, check_integration
 from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
 from demisto_sdk.commands.common.constants import FILTER_CONF, PB_Status
 from demisto_sdk.commands.common.tools import str2bool
@@ -182,38 +182,44 @@ def print_test_summary(tests_data_keeper: DataKeeperTester,
     unmocklable_integrations_count = len(unmocklable_integrations)
     logging_module.info('TEST RESULTS:')
     logging_module.info(f'Number of playbooks tested - {succeed_count + failed_count}')
-    logging_module.success(f'Number of succeeded tests - {succeed_count}')
-    if succeed_count:
-        logging_module.success(''.join([f'\n\t\t\t\t\t\t - {playbook_id}' for playbook_id in succeed_playbooks]))
     if failed_count:
         logging_module.error(f'Number of failed tests - {failed_count}:')
-        logging_module.error(''.join([f'\n\t\t\t\t\t\t - {playbook_id}' for playbook_id in failed_playbooks]))
+        logging_module.error('Failed Tests: {}'.format(
+                             ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id}' for playbook_id in failed_playbooks])))
+    if succeed_count:
+        logging_module.success(f'Number of succeeded tests - {succeed_count}')
+        logging_module.success('Successful Tests: {}'.format(
+                               ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id}' for playbook_id in succeed_playbooks])))
     if rerecorded_count > 0:
-        logging_module.warning(f'Tests with failed playback and successful re-recording - {rerecorded_count}')
-        logging_module.warning(''.join([f'\n\t\t\t\t\t\t - {playbook_id}' for playbook_id in rerecorded_tests]))
+        logging_module.warning(f'Number of tests with failed playback and successful re-recording - {rerecorded_count}')
+        logging_module.warning('Tests with failed playback and successful re-recording: {}'.format(
+                               ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id}' for playbook_id in rerecorded_tests])))
 
     if empty_mocks_count > 0:
-        logging_module.info(f'Successful tests with empty mock files - {empty_mocks_count}:\n')
+        logging_module.info(f'Successful tests with empty mock files count- {empty_mocks_count}:\n')
         proxy_explanation = \
-            '\t\t\t\t\t\t (either there were no http requests or no traffic is passed through the proxy.\n' \
-            '\t\t\t\t\t\t Investigate the playbook and the integrations.\n' \
-            '\t\t\t\t\t\t If the integration has no http traffic, add to unmockable_integrations in conf.json)'
+            '\t\t\t\t\t\t\t (either there were no http requests or no traffic is passed through the proxy.\n' \
+            '\t\t\t\t\t\t\t Investigate the playbook and the integrations.\n' \
+            '\t\t\t\t\t\t\t If the integration has no http traffic, add to unmockable_integrations in conf.json)'
         logging_module.info(proxy_explanation)
-        logging_module.info(''.join([f'\n\t\t\t\t\t\t - {playbook_id}' for playbook_id in empty_files]))
+        logging_module.info('Successful tests with empty mock files: {}'.format(
+                            ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id}' for playbook_id in empty_files])))
 
     if len(skipped_integration) > 0:
         logging_module.warning(f'Number of skipped integration - {len(skipped_integration):}')
-        logging_module.warning(''.join([f'\n\t\t\t\t\t\t - {playbook_id}' for playbook_id in skipped_integration]))
+        logging_module.warning('Skipped integration: {}'.format(
+                               ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id}' for playbook_id in skipped_integration])))
 
     if skipped_count > 0:
         logging_module.warning(f'Number of skipped tests - {skipped_count}:')
-        logging_module.warning(''.join([f'\n\t\t\t\t\t\t - {playbook_id}' for playbook_id in skipped_tests]))
+        logging_module.warning('Skipped tests: {}'.format(
+                               ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id}' for playbook_id in skipped_tests])))
 
     if unmocklable_integrations_count > 0:
         logging_module.warning(f'Number of unmockable integrations - {unmocklable_integrations_count}:')
-        logging_module.warning(
-            ''.join([f'\n\t\t\t\t\t\t - {playbook_id} - {reason}' for playbook_id, reason in
-                     unmocklable_integrations.items()]))
+        logging_module.warning('Unmockable integrations: {}'.format(
+                               ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id} - {reason}' for playbook_id, reason in
+                                        unmocklable_integrations.items()])))
 
 
 def update_test_msg(integrations, test_message):
@@ -810,8 +816,6 @@ def execute_testing(tests_settings,
     skipped_integration = set([])
     playbook_skipped_integration = set([])
 
-    disable_all_integrations(xsoar_client, logging_manager)
-    logging_manager.execute_logs()
     mockable_tests = get_test_records_of_given_test_names(tests_settings, mockable_tests_names)
     unmockable_tests = get_test_records_of_given_test_names(tests_settings, unmockable_tests_names)
 
