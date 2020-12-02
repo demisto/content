@@ -99,11 +99,10 @@ class TestConf(object):
                 pack = tools.get_pack_name(int_path)
                 if pack:
                     packs.add(pack)
-            except TypeError as e:
+            except TypeError:
                 err_msg = f'Error occurred when trying to determine the pack of integration "{integration}"'
                 err_msg += f' with path "{int_path}"' if int_path else ''
-                err_msg += f'\nERROR: "{e}"'
-                tools.print_color(err_msg, tools.LOG_COLORS.YELLOW)
+                logging.exception(err_msg)
         return packs
 
     def get_test_playbooks_configured_with_integration(self, integration_id):
@@ -1029,6 +1028,25 @@ def filter_tests(tests: set, id_set: json) -> set:
     return tests_without_non_supported
 
 
+def is_documentation_changes_only(files_string: str) -> bool:
+    """
+
+    Args:
+        files_string: The modified files.
+
+    Returns: True is only documentation related files has been changed else False.
+
+    """
+    # Check if only README file in file string, if so, no need to create the servers.
+    files = [s for s in files_string.split('\n') if s]
+    documentation_changes_only = \
+        all(map(lambda s: s.endswith('.md') or s.endswith('.png') or s.endswith('.jpg') or s.endswith('.mp4'), files))
+    if documentation_changes_only:
+        return True
+    else:
+        return False
+
+
 def get_test_list_and_content_packs_to_install(files_string, branch_name, minimum_server_version='0',
                                                conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
@@ -1042,7 +1060,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
 
-    create_filter_envs_file(from_version, to_version)
+    # Check if only README file in file string, if so, no need to create the servers.
+    documentation_changes_only = is_documentation_changes_only(files_string)
+    create_filter_envs_file(from_version, to_version, documentation_changes_only=documentation_changes_only)
 
     tests = set([])
     packs_to_install = set([])
@@ -1156,8 +1176,19 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
     return min_from_version.vstring, max_to_version.vstring
 
 
-def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=None, one_before_ga=None, ga=None):
-    """Create a file containing all the envs we need to run for the CI"""
+def create_filter_envs_file(from_version: str, to_version: str, two_before_ga: str = None, one_before_ga: str = None,
+                            ga: str = None, documentation_changes_only: bool = False):
+    """
+    Create a file containing all the envs we need to run for the CI
+    Args:
+        from_version: Server from_version
+        to_version: Server to_version
+        two_before_ga: Server version two_before_ga
+        one_before_ga: Server version one_before_ga (5.0)
+        ga: Server Version ga (6.0)
+        documentation_changes_only: If the build is for documentations changes only - no need to create instances.
+
+    """
     # always run master and PreGA
     one_before_ga = one_before_ga or AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
     ga = ga or AMI_BUILDS.get('GA', '0').split('-')[0]
@@ -1172,6 +1203,15 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
         'Demisto GA': is_runnable_in_server_version(from_version, one_before_ga, to_version),
         'Demisto 6.0': is_runnable_in_server_version(from_version, ga, to_version),
     }
+
+    if documentation_changes_only:
+        # No need to create the instances.
+        envs_to_test = {
+            'Demisto PreGA': False,
+            'Demisto Marketplace': False,
+            'Demisto GA': False,
+            'Demisto 6.0': False,
+        }
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
     with open("./Tests/filter_envs.json", "w") as filter_envs_file:
         json.dump(envs_to_test, filter_envs_file)
@@ -1227,6 +1267,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
                                                                              minimum_server_version)
+
     tests_string = '\n'.join(tests)
     packs_to_install_string = '\n'.join(packs_to_install)
 
@@ -1253,7 +1294,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
 
 
 if __name__ == "__main__":
-    install_logging('Collect Tests And Content Packs.log')
+    install_logging('Collect_Tests_And_Content_Packs.log')
     logging.info("Starting creation of test filter file")
 
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')
