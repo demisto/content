@@ -125,30 +125,6 @@ tasks:
       email: {}
       emailaddress: {}
       entryid: {}
-      expanseassettype: {}
-      expansebusinessunits: {}
-      expansecertificateadvertisementstatus: {}
-      expansecommonname: {}
-      expansedateadded: {}
-      expansednsresolutionstatus: {}
-      expansedomain: {}
-      expansefirstobserved: {}
-      expanseissuerdn: {}
-      expanselastobserved: {}
-      expansemd5hash: {}
-      expanseproperties: {}
-      expanseprovidername: {}
-      expansesans: {}
-      expanseserialnumber: {}
-      expanseservicestatus: {}
-      expansesha256fingerprint: {}
-      expansesourcedomain: {}
-      expansesubjectdn: {}
-      expansetags: {}
-      expansetenantname: {}
-      expansetype: {}
-      expansevalidnotafter: {}
-      expansevalidnotbefore: {}
       expirationdate: {}
       extension: {}
       feedrelatedindicators: {}
