@@ -2,7 +2,7 @@
 
 ### API Endpoint URL
 
-Always set to https://www.securityadvisor.io/.
+Always set to https://www.securityadvisor.io/
 
 ### API Key
 
