@@ -47,7 +47,6 @@ else:
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
 # pylint: enable=undefined-variable
 
-
 # DEPRECATED - use EntryType enum instead
 entryTypes = {
     'note': 1,
@@ -1312,7 +1311,7 @@ def appendContext(key, data, dedup=False):
         demisto.setContext(key, data)
 
 
-def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None):
+def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1357,7 +1356,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         headers = [headers]
 
     if not isinstance(t[0], dict):
-        # the table cotains only simple objects (strings, numbers)
+        # the table contains only simple objects (strings, numbers)
         # should be only one header
         if headers and len(headers) > 0:
             header = headers[0]

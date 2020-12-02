@@ -1,4 +1,4 @@
-from CloudConvert import upload_command, Client, convert_command, check_status_command, download_command
+from CloudConvert import upload_command, Client, convert_command, check_status_command, download_command, modify_results_dict
 from CommonServerPython import remove_empty_elements, tableToMarkdown, string_to_table_header
 import demistomock as demisto
 import json
@@ -210,14 +210,15 @@ def test_check_status_valid_id_non_download(mocker, create_war_room_entry):
         'task_id': 'id',
         'create_war_room_entry': create_war_room_entry
     })
-    raw_response = util_load_json('test_data/check_status_non_download_response.json')
+    raw_response_data = util_load_json('test_data/check_status_non_download_response.json').get('data')
+    modify_results_dict(raw_response_data)
     readable_output = tableToMarkdown('Check Status Results',
-                                      remove_empty_elements(raw_response.get('data')),
+                                      remove_empty_elements(raw_response_data),
                                       headers=('id', 'operation', 'created_at', 'status', 'depends_on_task_ids',
-                                               'results'),
+                                               'file_name', 'url'),
                                       headerTransform=string_to_table_header)
-    assert results.outputs == remove_empty_elements(util_load_json('test_data/'
-                                                                   'check_status_non_download_response.json').get('data'))
+    modify_results_dict(raw_response_data)
+    assert results.outputs == remove_empty_elements(raw_response_data)
     assert results.readable_output == readable_output
 
 
@@ -247,18 +248,19 @@ def test_check_status_valid_id_download(mocker, create_war_room_entry):
         'task_id': 'id',
         'create_war_room_entry': create_war_room_entry
     })
-    raw_response = util_load_json('test_data/check_status_download_response.json')
+    raw_response_data = util_load_json('test_data/check_status_download_response.json').get('data')
+    modify_results_dict(raw_response_data)
     if create_war_room_entry:
-        raw_response['data']['operation'] = 'download/entry'
+        raw_response_data['operation'] = 'download/entry'
         assert results.get('File') == file_name
 
     else:
-        raw_response['data']['operation'] = 'download/url'
-        assert results.outputs == remove_empty_elements(raw_response.get('data'))
+        raw_response_data['operation'] = 'download/url'
+        assert results.outputs == remove_empty_elements(raw_response_data)
         readable_output = tableToMarkdown('Check Status Results',
-                                          remove_empty_elements(raw_response.get('data')),
+                                          remove_empty_elements(raw_response_data),
                                           headers=('id', 'operation', 'created_at', 'status', 'depends_on_task_ids',
-                                                   'results'),
+                                                   'file_name', 'url'),
                                           headerTransform=string_to_table_header)
         assert results.readable_output == readable_output
 

@@ -39,7 +39,7 @@ class STIX21Processor:
         self.reports = reports
         self.reputation_interval = reputation_interval
 
-        self.type_to_processor = {
+        self.type_to_processor = { # based on what these were chosen?
             'report': self.process_report,
             'malware': self.process_malware,
             'threat-actor': self.process_threat_actor,
@@ -774,6 +774,7 @@ def main():
 
     except Exception as e:
         return_error(str(e))
+        print(str(e))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

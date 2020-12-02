@@ -272,7 +272,6 @@ def convert_command(client: Client, arguments: Dict[str, Any]):
     results = client.convert(arguments)
     raise_error_if_no_data(results)
     results_data = results.get('data')
-
     readable_output = tableToMarkdown(
         'Convert Results',
         remove_empty_elements(results_data),
@@ -323,14 +322,14 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
     if results_data.get('status') == 'finished' \
             and argToBoolean(arguments.get('create_war_room_entry', 'False'))\
             and results_data.get('operation') == 'download/entry':
-        results_info = results_data.get('result', {}).get('files', [{}])[0]
-        url = results_info.get('url')
-        file_name = results_info.get('filename')
+        modify_results_dict(results_data)
+        url = results_data.get('url')
+        file_name = results_data.get('file_name')
         file_data = client.get_file_from_url(url)
         war_room_file = fileResult(filename=file_name, data=file_data, file_type=entryTypes['entryInfoFile'])
         readable_output = tableToMarkdown('Check Status Results', remove_empty_elements(results_data),
                                           headers=('id', 'operation', 'created_at', 'status', 'depends_on_task_ids',
-                                                   'results'),
+                                                   'file_name', 'url'),
                                           headerTransform=string_to_table_header)
         return_results(CommandResults(
             outputs_prefix='CloudConvert.Task',
@@ -343,10 +342,12 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
 
     else:
 
+        modify_results_dict(results_data)
+
         readable_output = tableToMarkdown(
             'Check Status Results',
             remove_empty_elements(results_data),
-            headers=('id', 'operation', 'created_at', 'status', 'depends_on_task_ids', 'results'),
+            headers=('id', 'operation', 'created_at', 'status', 'depends_on_task_ids', 'file_name', 'url'),
             headerTransform=string_to_table_header,
         )
 
@@ -358,6 +359,21 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
             outputs=remove_empty_elements(results_data),
         )
 
+
+def modify_results_dict(results_data: Dict[str, Any]):
+    """
+    The results of the specific file converted/uploaded/downloaded are sub-values of some keys,
+    so parse the results field to the outer scope of the dict
+    Args:
+        results_data: the dict under the 'data' field in the response's results
+
+    """
+    if results_data.get('result'):
+        results_info = results_data.get('result', {}).get('files', [])[0]
+        if results_info:
+            results_data['file_name'] = results_info.get('filename')
+            results_data['url'] = results_info.get('url')
+            results_data['size'] = results_info.get('size')
 
 @logger
 def download_command(client: Client, arguments: Dict[str, Any]):
