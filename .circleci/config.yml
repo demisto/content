@@ -45,9 +45,6 @@ parameters:
   bucket_upload:
     type: string
     default: ""
-  force_previous_commit:
-    type: string
-    default: ""
 
 references:
   environment: &environment
@@ -72,7 +69,6 @@ references:
       FORCE_PACK_UPLOAD_PARAMETER: << pipeline.parameters.force_pack_upload >>
       PACKS_TO_UPLOAD_PARAMETER: << pipeline.parameters.packs_to_upload >>
       BUCKET_UPLOAD_PARAMETER: << pipeline.parameters.bucket_upload >>
-      FORCE_PREVIOUS_COMMIT_PARAMETER: << pipeline.parameters.force_previous_commit >>
 
   container_config: &container_config
     docker:
@@ -137,10 +133,6 @@ references:
         then
             echo "export BUCKET_UPLOAD=$BUCKET_UPLOAD_PARAMETER" >> $BASH_ENV
         fi
-        if [ -n "${FORCE_PREVIOUS_COMMIT_PARAMETER}" ];
-        then
-            echo "export FORCE_PREVIOUS_COMMIT=$FORCE_PREVIOUS_COMMIT_PARAMETER" >> $BASH_ENV
-        fi
 
         echo "=== sourcing $BASH_ENV ==="
         source $BASH_ENV
@@ -169,7 +161,7 @@ references:
         fi
 
         echo "========== Build Parameters =========="
-        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^FORCE_PREVIOUS_COMMIT="
+        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD="
         python --version
         python3 --version
         demisto-sdk --version
@@ -401,6 +393,7 @@ references:
           demisto-sdk upload -i Packs/HelloWorld/Layouts/layoutscontainer-Hello_World_Test_Layout.json --insecure
           demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_Incident_Test.json --insecure
           demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert_Test.json --insecure
+          demisto-sdk upload -i Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json --insecure
 
 
   sdk_nightly_jobs: &sdk_nightly_jobs
@@ -878,10 +871,17 @@ jobs:
             - *add_ssh_keys
             - *prepare_environment
             - run:
-                name: Collect Instance Role
+                name: Collect Instance Role And Check If Instance Was Created
                 when: always
                 command: |
                   echo 'export INSTANCE_ROLE="Demisto 6.0"' >> $BASH_ENV
+                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto 6.0"')
+                  echo "Demisto PreGA filter=$TEMP"
+                  if [[ "$TEMP" == "true" ]];
+                    then
+                      echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
+                      exit 0
+                  fi
                   source $BASH_ENV
             - run:
                 name: Wait until server ready
@@ -894,6 +894,11 @@ jobs:
                 shell: /bin/bash
                 when: always
                 command: |
+                  if [ -z $INSTANCE_WAS_CREATED ];
+                    then
+                      echo "Skipping - instance was not created"
+                      exit 0
+                  fi
                   ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
             - run:
                 name: Run Tests - Demisto 6.0
@@ -901,6 +906,11 @@ jobs:
                 when: always
                 no_output_timeout: 5h
                 command: |
+                  if [ -z $INSTANCE_WAS_CREATED ];
+                    then
+                      echo "Skipping - instance was not created"
+                      exit 0
+                  fi
                   ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
                   export RETVAL=$?
                   if [ -f ./Tests/failed_tests.txt ];
@@ -943,10 +953,17 @@ jobs:
             - *add_ssh_keys
             - *prepare_environment
             - run:
-                name: Collect Instance Role
+                name: Collect Instance Role And Check If Instance Was Created
                 when: always
                 command: |
                   echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
+                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
+                  echo "Demisto Marketplace filter=$TEMP"
+                  if [[ "$TEMP" == "true" || -n "${NIGHTLY}" ]];
+                    then
+                      echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
+                      exit 0
+                  fi
                   source $BASH_ENV
             - run:
                 name: Wait until server ready
@@ -959,6 +976,11 @@ jobs:
                 shell: /bin/bash
                 when: always
                 command: |
+                  if [ -z $INSTANCE_WAS_CREATED ];
+                    then
+                      echo "Skipping - instance was not created"
+                      exit 0
+                  fi
                   ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
             - run:
                 name: Run Tests - Demisto Master
@@ -966,6 +988,11 @@ jobs:
                 when: always
                 no_output_timeout: 5h
                 command: |
+                  if [ -z $INSTANCE_WAS_CREATED ];
+                    then
+                      echo "Skipping - instance was not created"
+                      exit 0
+                  fi
                   ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
                   export RETVAL=$?
                   if [ -f ./Tests/failed_tests.txt ];
@@ -1145,7 +1172,7 @@ jobs:
           name: Unlock HelloWorld integration and playbook
           command: python3 Tests/sdknightly/unlock_entity.py integration HelloWorld
       - run:
-          name: Create and upload incident type, incident field and a layout to Cortex XSOAR
+          name: Create and upload incident type, incident field, mapper and a layout to Cortex XSOAR
           command: python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $CIRCLE_ARTIFACTS
       - *upload_entities_to_cortex_xsoar
       - run:
@@ -1155,6 +1182,7 @@ jobs:
             demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
             demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Incident Test" --insecure -f
             demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Alert Test" --insecure -f
+            demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Test - Incoming Mapper" --insecure -f
       - run:
           name: Format the entities
           command: demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
