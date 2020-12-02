@@ -1788,7 +1788,7 @@ def main():
                 return
         elif command == 'checkpoint-login-and-get-session-id':
             session_timeout = demisto.args().get('session_timeout')
-            domain = demisto.args().get('domain', domain)
+            domain = demisto.args().get('domain')
 
             return_results(checkpoint_login_and_get_sid_command(base_url, username, password,
                                                                 verify_certificate, session_timeout, domain))
