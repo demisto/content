@@ -621,6 +621,8 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+ -  No tests
 fromversion: 6.0.0
 description: Handles each fetched Darktrace model breach by gathering additional detail
   about the activity and device, providing enrichment data from Darktrace and XSOAR,
