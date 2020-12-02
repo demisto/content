@@ -7,7 +7,7 @@ This integration was integrated and tested with version xx of RSA Archer v2
 3. Click **Add instance** to create and configure a new integration instance.
 
 ## Clarifications  
-The time_zone (offset) parameter is used if the CortexXSOAR's and Archer's server aren't in the same time zone.
+The timezone (offset) parameter should be used if the Cortex XSOAR server and Archer's server aren't in the same time zone.
 If the CortexSOAR server time is 00:00 and the Archer server time is 01:00, the time_zone parameter should be -60 (minutes).
 
 | **Parameter** | **Description** | **Required** |
