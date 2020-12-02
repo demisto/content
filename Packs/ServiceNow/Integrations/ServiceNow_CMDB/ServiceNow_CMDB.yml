@@ -453,4 +453,5 @@ script:
   type: python
 tests:
 - ServiceNow_CMDB_Test
+- ServiceNow_CMDB_OAuth_Test
 fromversion: 5.0.0

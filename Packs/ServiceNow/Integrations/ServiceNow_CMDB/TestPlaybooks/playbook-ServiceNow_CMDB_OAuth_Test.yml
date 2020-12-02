@@ -575,3 +575,4 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: ServiceNow_CMDB_Test
+fromversion: 5.0.0
