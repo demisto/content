@@ -427,7 +427,7 @@ class Client(BaseClient):
             "risk-rule": risk_rule,
             "tag-names": tag_names
         }
-
+        demisto.debug(f'DEBUGDEBUG params: {json.dumps(params)}')
         return self._paginate(
             method='GET',
             url_suffix='/v1/behavior/risky-flows',
@@ -1990,7 +1990,7 @@ def list_risk_rules_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
     return CommandResults(
-        outputs_prefix="Expanse.RiskRules",
+        outputs_prefix="Expanse.RiskRule",
         outputs_key_field="id",
         readable_output="## No Risk Rules found" if len(risk_rules) == 0 else None,
         outputs=risk_rules if len(risk_rules) > 0 else None
@@ -2010,8 +2010,7 @@ def get_risky_flows_command(client: Client, args: Dict[str, Any]) -> CommandResu
     risk_rule = args.get('risk_rule', None)
 
     tags = argToList(args.get('tagnames'))
-    if len(tags) > 0:
-        tag_names = ','.join(tags)
+    tag_names: Optional[str] = ','.join(tags) if tags else None
 
     risky_flows = list(
         islice(
@@ -2022,7 +2021,7 @@ def get_risky_flows_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
     return CommandResults(
-        outputs_prefix="Expanse.RiskyFlows",
+        outputs_prefix="Expanse.RiskyFlow",
         outputs_key_field="id",
         readable_output="## No Risky Flows found" if len(risky_flows) == 0 else None,
         outputs=risky_flows if len(risky_flows) > 0 else None

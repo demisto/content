@@ -1614,7 +1614,7 @@ def test_cidr(requests_mock):
     assert result.indicators[0].indicator == MOCK_INET
 
 
-def test_expanse_get_risky_flows(mocker):
+def test_expanse_get_risky_flows(requests_mock):
     """
     Given:
         - an Expanse client
@@ -1624,10 +1624,27 @@ def test_expanse_get_risky_flows(mocker):
     Then
         - the Risky Flows for the IP from Behavior are retrieved and returned to the context
     """
-    pass  # XXX TODO need access APIs
+    from ExpanseV2 import Client, get_risky_flows_command
+
+    MOCK_LIMIT = "2"
+    MOCK_IP = "203.0.113.102"
+    mock_risky_flows = util_load_json("test_data/expanse_get_risky_flows.json")
+    mock_risky_flows["data"] = [d for d in mock_risky_flows["data"] if d["internalAddress"] == MOCK_IP]
+
+    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+
+    requests_mock.get(
+        f"https://example.com/api/v1/behavior/risky-flows?limit={MOCK_LIMIT}&internal-ip-range={MOCK_IP}",
+        json=mock_risky_flows
+    )
+    result = get_risky_flows_command(client, {"limit": MOCK_LIMIT, "internal_ip_range": MOCK_IP})
+
+    assert result.outputs_prefix == "Expanse.RiskyFlow"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_risky_flows["data"][:int(MOCK_LIMIT)]
 
 
-def test_expanse_list_risk_rules(mocker):
+def test_expanse_list_risk_rules(requests_mock):
     """
     Given:
         - an Expanse client
@@ -1637,4 +1654,16 @@ def test_expanse_list_risk_rules(mocker):
     Then
         - the risk rules are retrieved and returned to the context
     """
-    pass  # XXX TODO need access to APIs
+    from ExpanseV2 import Client, list_risk_rules_command
+
+    MOCK_LIMIT = "2"
+    mock_risk_rules = util_load_json("test_data/expanse_list_risk_rules.json")
+
+    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+
+    requests_mock.get(f"https://example.com/api/v1/behavior/risk-rules?limit={MOCK_LIMIT}", json=mock_risk_rules)
+    result = list_risk_rules_command(client, {"limit": MOCK_LIMIT})
+
+    assert result.outputs_prefix == "Expanse.RiskRule"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_risk_rules["data"][:int(MOCK_LIMIT)]
