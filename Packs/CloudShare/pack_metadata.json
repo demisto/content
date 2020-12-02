@@ -1,0 +1,14 @@
+{
+    "name": "CloudShare",
+    "description": "This pack contains the integration required to communicate with the CloudShare APIs.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Adam Burt",
+    "url": "",
+    "email": "",
+    "created": "2020-12-02T16:18:21Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
