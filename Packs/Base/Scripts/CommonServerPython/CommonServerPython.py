@@ -3493,7 +3493,7 @@ class Common(object):
         def __init__(
             self,
             subject_dn,  # type: str
-            dbot_score=None,  # type: Optional[Common.DBotScore]'
+            dbot_score=None,  # type: Optional[Common.DBotScore]
             name=None,  # type: Optional[Union[str, List[str]]]
             issuer_dn=None,  # type: Optional[str]
             serial_number=None,  # type: Optional[str]
