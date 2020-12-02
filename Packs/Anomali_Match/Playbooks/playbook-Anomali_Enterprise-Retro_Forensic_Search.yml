@@ -1,6 +1,6 @@
 id: Anomali Enterprise Forensic Search
 version: -1
-name: Anomali Match Forensic Search
+name: Anomali Enterprise Forensic Search
 fromversion: 5.0.0
 description: Initiates a Forensic Search on IOCs in Anomali Match.
 starttaskid: "0"
