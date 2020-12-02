@@ -7,6 +7,12 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+"""*****HELPER FUNCTIONS****"""
+
+
+"""*****COMMAND FUNCTIONS****"""
+
+
 def test_get_breach(requests_mock):
     """Tests darktrace-get-breach command function.
 
