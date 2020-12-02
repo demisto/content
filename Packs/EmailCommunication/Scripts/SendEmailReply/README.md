@@ -1,11 +1,12 @@
 The script sends email massages with the configured mail sender integration.
 The script sends the email to the recipient's list, including the following information:
-the original email 
-the sender
-the person to reply to
-CC addresses, if they exist
+- the original email 
+- the sender
+- the person to reply to
+- CC addresses, if they exist
+- attachments, if they exist
 
-The email body is taken from the incident 'notes,' and the email subject will contain the incident ID and the incident name.
+The email body is taken from the incident 'notes', and the email subject will contain the incident ID and the incident name.
 
 The script is a part of the Email Communication pack.
 
