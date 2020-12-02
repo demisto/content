@@ -29,21 +29,15 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Fetch additional incident (Asset tags, Attribution Reasons)
+- display: Fetch additional incident data (Asset tags, Attribution Reasons)
   hidden: false
   name: fetch_details
   required: false
   defaultvalue: false
   type: 8
-- display: Mirror additional incident (Asset tags, Attribution Reasons)
+- display: Mirror additional incident data (Asset tags, Attribution Reasons)
   hidden: false
   name: mirror_details
-  required: false
-  defaultvalue: false
-  type: 8
-- display: Fetch risky flows from Expanse Behavior
-  hidden: false
-  name: fetch_behavior
   required: false
   defaultvalue: false
   type: 8

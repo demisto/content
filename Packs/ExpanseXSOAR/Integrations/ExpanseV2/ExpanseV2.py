@@ -1089,7 +1089,7 @@ def fetch_incidents(client: Client, max_incidents: int,
                     priority: Optional[str], activity_status: Optional[str],
                     progress_status: Optional[str], business_units: Optional[str], issue_types: Optional[str],
                     tags: Optional[str], mirror_direction: Optional[str], sync_tags: Optional[List[str]],
-                    fetch_details: Optional[bool], fetch_behavior: Optional[bool]
+                    fetch_details: Optional[bool]
                     ) -> Tuple[Dict[str, Union[Optional[int], Optional[str]]], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
     This function has to implement the logic of making sure that incidents are
@@ -2074,7 +2074,6 @@ def main() -> None:
 
             sync_tags = argToList(demisto.params().get('sync_tags', None))
             fetch_details = argToBoolean(demisto.params().get('fetch_details'))
-            fetch_behavior = argToBoolean(demisto.params().get('fetch_behavior'))
 
             mirror_direction = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'), None)
             next_run, incidents = fetch_incidents(
@@ -2090,8 +2089,7 @@ def main() -> None:
                 issue_types=issue_types,
                 mirror_direction=mirror_direction,
                 sync_tags=sync_tags,
-                fetch_details=fetch_details,
-                fetch_behavior=fetch_behavior
+                fetch_details=fetch_details
             )
 
             demisto.setLastRun(next_run)
