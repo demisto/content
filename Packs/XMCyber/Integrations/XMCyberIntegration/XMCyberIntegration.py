@@ -831,7 +831,7 @@ def main() -> None:
             "xmcyber-affected-entities-list": affected_entities_list_command,
             # Common commands
             "ip": ip_command,
-            "hostname": hostname_command
+            "xmcyber-hostname": hostname_command
         }
 
         if command == 'fetch-incidents':
