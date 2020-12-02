@@ -1766,7 +1766,6 @@ def main():
     params = demisto.params()
     username = params.get('username', {}).get('identifier')
     password = params.get('username', {}).get('password')
-    domain = params.get('domain', {}).get('domain')
 
     server = params['server']
     port = params['port']
@@ -1788,9 +1787,11 @@ def main():
                 checkpoint_logout_command(base_url, sid, verify_certificate)
                 return
         elif command == 'checkpoint-login-and-get-session-id':
+            session_timeout = demisto.args().get('session_timeout'])
+            domain = demisto.args().get('domain', domain)
+
             return_results(checkpoint_login_and_get_sid_command(base_url, username, password,
-                                                                verify_certificate,
-                                                                **demisto.args()))
+                                                                verify_certificate, session_timeout, domain))
             return
 
         elif command == 'checkpoint-logout':
