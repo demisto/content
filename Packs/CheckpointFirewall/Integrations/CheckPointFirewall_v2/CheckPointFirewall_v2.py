@@ -1626,7 +1626,6 @@ def checkpoint_login_and_get_sid_command(base_url: str, username: str, password:
                                          verify_certificate: bool,
                                          session_timeout: int, domain='') -> CommandResults:
     """login to checkpoint admin account using username and password."""
-    
     response = requests.post(base_url + 'login', verify=verify_certificate,
                              headers={'Content-Type': 'application/json'},
                              json={'user': username, 'password': password, 'domain': domain,
@@ -1642,7 +1641,8 @@ def checkpoint_login_and_get_sid_command(base_url: str, username: str, password:
         raw_response=response
     )
     return command_results
-  
+
+
 def build_member_data(result: dict, readable_output: str, printable_result: dict):
     """helper function. Builds the member data for group endpoints."""
     members = result.get('members')
@@ -1766,7 +1766,7 @@ def main():
     params = demisto.params()
     username = params.get('username', {}).get('identifier')
     password = params.get('username', {}).get('password')
-    
+
     server = params['server']
     port = params['port']
     base_url = f'https://{server}:{port}/web_api/'
