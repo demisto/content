@@ -1,0 +1,444 @@
+category: Utilities
+commonfields:
+  id: azure_waf
+  version: -1
+configuration:
+  - defaultvalue: 4a9969a9-53f4-4f0d-a7f4-630a7ed657e6
+    display: The app ID
+    hidden: false
+    name: app_id
+    required: true
+    type: 0
+  - display: Subscription ID
+    hidden: false
+    name: subscription_id
+    required: true
+    type: 0
+  - display: Resource Group Name
+    hidden: false
+    name: resource_group_name
+    required: true
+    type: 0
+  - display: Use a self-deployed Azure application
+    hidden: false
+    name: self_deployed
+    required: false
+    type: 8
+  - display: Authorization code (for self-deployed mode)
+    hidden: false
+    name: auth_code
+    required: false
+    type: 4
+  - display: App Secret (for self-deployed mode)
+    hidden: false
+    name: app_secret
+    required: false
+    type: 4
+  - display: Tenant ID (for self-deployed mode)
+    hidden: false
+    name: tenant_id
+    required: false
+    type: 4
+  - display: Application redirect URI (for self-deployed mode)
+    hidden: false
+    name: redirect_uri
+    required: false
+    type: 0
+  - display: Trust any certificate (not secure)
+    name: insecure
+    required: false
+    type: 8
+  - display: Use system proxy settings
+    name: proxy
+    required: false
+    type: 8
+description: This is the azure WAF integration.
+display: azure_waf
+name: azure_waf
+script:
+  commands:
+    - arguments:
+        - default: false
+          description: A name of a policy. Use to retrieve protection policy with specified name within a resource group.
+          isArray: false
+          name: policy_name
+          required: false
+          secret: false
+        - default: false
+          description: The name of the resource group. Default is same as instance's resource group name.
+          isArray: false
+          name: resource_group_name
+          required: false
+          secret: false
+      deprecated: false
+      description: Retrieves protection policies within a resource group. if policy_name not provided, will retrieve all.
+      execution: false
+      name: azure-waf-policy-get
+      outputs:
+        - contextPath: AzureWAFPolicy.name
+          description: 'Resource name.'
+          type: String
+        - contextPath: AzureWAFPolicy.id
+          description: 'Resource ID.'
+          type: String
+        - contextPath: AzureWAFPolicy.type
+          description: 'Resource type.'
+          type: String
+        - contextPath: AzureWAFPolicy.etag
+          description: 'A unique read-only string that changes whenever the resource is updated.'
+          type: String
+        - contextPath: AzureWAFPolicy.tags
+          description: 'Resource type.'
+          type: String
+        - contextPath: AzureWAFPolicy.location
+          description: 'Resource location.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.resourceState
+          description: 'Resource status of the policy.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.provisioningState
+          description: 'The provisioning state of the application gateway resource.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.policySettings.state
+          description: 'The state of the policy.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.policySettings.mode
+          description: 'The mode of the policy.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.policySettings.maxRequestBodySizeInKb
+          description: 'Maximum request body size in Kb for WAF.'
+          type: Number
+        - contextPath: AzureWAFPolicy.properties.policySettings.fileUploadLimitInMb
+          description: 'Maximum file upload size in Mb for WAF.'
+          type: Number
+        - contextPath: AzureWAFPolicy.properties.policySettings.requestBodyCheck
+          description: 'Whether to allow WAF to check request Body.'
+          type: Boolean
+        - contextPath: AzureWAFPolicy.properties.customRules.name
+          description: 'The name of the resource that is unique within a policy. This name can be used to access the resource.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.customRules.priority
+          description: 'Priority of the rule. Rules with a lower value will be evaluated before rules with a higher value.'
+          type: Number
+        - contextPath: AzureWAFPolicy.properties.customRules.ruleType
+          description: 'The rule type.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.customRules.matchConditions.matchVariables.variableName
+          description: 'Match Variable.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.customRules.matchConditions.matchVariables.selector
+          description: 'The selector of match variable.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.customRules.matchConditions.operator
+          description: 'The operator to be matched.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.customRules.matchConditions.negationConditon
+          description: 'Whether this is negate condition or not.'
+          type: Boolean
+        - contextPath: AzureWAFPolicy.properties.customRules.matchConditions.matchValues
+          description: 'Match value.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.customRules.action
+          description: 'Type of Actions.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.managedRuleSets.ruleSetType
+          description: 'Defines the rule set type to use.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.managedRuleSets.ruleSetVersion
+          description: 'Defines the version of the rule set to use.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.managedRuleSets.ruleGroupOverrides.ruleGroupName
+          description: 'The managed rule group to override.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.managedRuleSets.ruleGroupOverrides.rules.ruleId
+          description: 'Identifier for the managed rule.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.managedRuleSets.ruleGroupOverrides.rules.state
+          description: 'The state of the managed rule. Defaults to Disabled if not specified.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.exclusions.matchVariable
+          description: 'The variable to be excluded.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.exclusions.selectorMatchOperator
+          description: 'When matchVariable is a collection, operate on the selector to specify which elements in the collection this exclusion applies to.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.exclusions.selector
+          description: 'When matchVariable is a collection, operator used to specify which elements in the collection this exclusion applies to.'
+          type: String
+    - deprecated: false
+      description: Retrieve all the WAF policies in a subscription.
+      execution: false
+      name: azure-waf-policy-list-all-in-subscription
+      outputs:
+        - contextPath: AzureWAFPolicy.name
+          description: 'Resource name.'
+          type: String
+        - contextPath: AzureWAFPolicy.id
+          description: 'Resource ID.'
+          type: String
+        - contextPath: AzureWAFPolicy.type
+          description: 'Resource type.'
+          type: String
+        - contextPath: AzureWAFPolicy.etag
+          description: 'A unique read-only string that changes whenever the resource is updated.'
+          type: String
+        - contextPath: AzureWAFPolicy.tags
+          description: 'Resource type.'
+          type: String
+        - contextPath: AzureWAFPolicy.location
+          description: 'Resource location.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.resourceState
+          description: 'Resource status of the policy.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.provisioningState
+          description: 'The provisioning state of the application gateway resource.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.policySettings.state
+          description: 'The state of the policy.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.policySettings.mode
+          description: 'The mode of the policy.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.policySettings.maxRequestBodySizeInKb
+          description: 'Maximum request body size in Kb for WAF.'
+          type: Number
+        - contextPath: AzureWAFPolicy.properties.policySettings.fileUploadLimitInMb
+          description: 'Maximum file upload size in Mb for WAF.'
+          type: Number
+        - contextPath: AzureWAFPolicy.properties.policySettings.requestBodyCheck
+          description: 'Whether to allow WAF to check request Body.'
+          type: Boolean
+        - contextPath: AzureWAFPolicy.properties.customRules.name
+          description: 'The name of the resource that is unique within a policy. This name can be used to access the resource.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.customRules.priority
+          description: 'Priority of the rule. Rules with a lower value will be evaluated before rules with a higher value.'
+          type: Number
+        - contextPath: AzureWAFPolicy.properties.customRules.ruleType
+          description: 'The rule type.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.customRules.matchConditions.matchVariables.variableName
+          description: 'Match Variable.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.customRules.matchConditions.matchVariables.selector
+          description: 'The selector of match variable.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.customRules.matchConditions.operator
+          description: 'The operator to be matched.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.customRules.matchConditions.negationConditon
+          description: 'Whether this is negate condition or not.'
+          type: Boolean
+        - contextPath: AzureWAFPolicy.properties.customRules.matchConditions.matchValues
+          description: 'Match value.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.customRules.action
+          description: 'Type of Actions.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.managedRuleSets.ruleSetType
+          description: 'Defines the rule set type to use.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.managedRuleSets.ruleSetVersion
+          description: 'Defines the version of the rule set to use.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.managedRuleSets.ruleGroupOverrides.ruleGroupName
+          description: 'The managed rule group to override.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.managedRuleSets.ruleGroupOverrides.rules.ruleId
+          description: 'Identifier for the managed rule.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.managedRuleSets.ruleGroupOverrides.rules.state
+          description: 'The state of the managed rule. Defaults to Disabled if not specified.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.exclusions.matchVariable
+          description: 'The variable to be excluded.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.exclusions.selectorMatchOperator
+          description: 'When matchVariable is a collection, operate on the selector to specify which elements in the collection this exclusion applies to.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.exclusions.selector
+          description: 'When matchVariable is a collection, operator used to specify which elements in the collection this exclusion applies to.'
+          type: String
+    - arguments:
+        - default: false
+          description: A name of a policy. Use to retrieve protection policy with specified name within a resource group.
+          isArray: false
+          name: policy_name
+          required: true
+          secret: false
+        - default: false
+          description: The name of the resource group. Default is same as instance's resource group name.
+          isArray: false
+          name: resource_group_name
+          required: false
+          secret: false
+        - default: false
+          description: Describes the managedRules structure.
+          isArray: false
+          name: managed_rules
+          required: true
+          secret: false
+        - default: false
+          description: Resource ID.
+          isArray: false
+          name: resource_id
+          required: false
+          secret: false
+        - default: false
+          description: Describes the Resource location.
+          isArray: false
+          name: location
+          required: false
+          secret: false
+        - default: false
+          description: The custom rules inside the policy.
+          isArray: false
+          name: custom_rules
+          required: false
+          secret: false
+        - default: false
+          description: The PolicySettings for policy.
+          isArray: false
+          name: policy_settings
+          required: false
+          secret: false
+      deprecated: false
+      description: Creates or update policy with specified rule set name within a resource group.
+      execution: false
+      name: azure-waf-policy-upsert
+      outputs:
+        - contextPath: AzureWAFPolicy.name
+          description: 'Resource name.'
+          type: String
+        - contextPath: AzureWAFPolicy.id
+          description: 'Resource ID.'
+          type: String
+        - contextPath: AzureWAFPolicy.type
+          description: 'Resource type.'
+          type: String
+        - contextPath: AzureWAFPolicy.etag
+          description: 'A unique read-only string that changes whenever the resource is updated.'
+          type: String
+        - contextPath: AzureWAFPolicy.tags
+          description: 'Resource type.'
+          type: String
+        - contextPath: AzureWAFPolicy.location
+          description: 'Resource location.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.resourceState
+          description: 'Resource status of the policy.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.provisioningState
+          description: 'The provisioning state of the application gateway resource.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.policySettings.state
+          description: 'The state of the policy.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.policySettings.mode
+          description: 'The mode of the policy.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.policySettings.maxRequestBodySizeInKb
+          description: 'Maximum request body size in Kb for WAF.'
+          type: Number
+        - contextPath: AzureWAFPolicy.properties.policySettings.fileUploadLimitInMb
+          description: 'Maximum file upload size in Mb for WAF.'
+          type: Number
+        - contextPath: AzureWAFPolicy.properties.policySettings.requestBodyCheck
+          description: 'Whether to allow WAF to check request Body.'
+          type: Boolean
+        - contextPath: AzureWAFPolicy.properties.customRules.name
+          description: 'The name of the resource that is unique within a policy. This name can be used to access the resource.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.customRules.priority
+          description: 'Priority of the rule. Rules with a lower value will be evaluated before rules with a higher value.'
+          type: Number
+        - contextPath: AzureWAFPolicy.properties.customRules.ruleType
+          description: 'The rule type.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.customRules.matchConditions.matchVariables.variableName
+          description: 'Match Variable.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.customRules.matchConditions.matchVariables.selector
+          description: 'The selector of match variable.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.customRules.matchConditions.operator
+          description: 'The operator to be matched.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.customRules.matchConditions.negationConditon
+          description: 'Whether this is negate condition or not.'
+          type: Boolean
+        - contextPath: AzureWAFPolicy.properties.customRules.matchConditions.matchValues
+          description: 'Match value.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.customRules.action
+          description: 'Type of Actions.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.managedRuleSets.ruleSetType
+          description: 'Defines the rule set type to use.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.managedRuleSets.ruleSetVersion
+          description: 'Defines the version of the rule set to use.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.managedRuleSets.ruleGroupOverrides.ruleGroupName
+          description: 'The managed rule group to override.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.managedRuleSets.ruleGroupOverrides.rules.ruleId
+          description: 'Identifier for the managed rule.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.managedRuleSets.ruleGroupOverrides.rules.state
+          description: 'The state of the managed rule. Defaults to Disabled if not specified.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.exclusions.matchVariable
+          description: 'The variable to be excluded.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.exclusions.selectorMatchOperator
+          description: 'When matchVariable is a collection, operate on the selector to specify which elements in the collection this exclusion applies to.'
+          type: String
+        - contextPath: AzureWAFPolicy.properties.managedRules.exclusions.selector
+          description: 'When matchVariable is a collection, operator used to specify which elements in the collection this exclusion applies to.'
+          type: String
+    - arguments:
+        - default: false
+          description: A name of a policy.
+          isArray: false
+          name: policy_name
+          required: true
+          secret: false
+        - default: false
+          description: The name of the resource group. Default is same as instance's resource group name.
+          isArray: false
+          name: resource_group_name
+          required: false
+          secret: false
+      deprecated: false
+      description: Deletes Policy.
+      execution: false
+      name: azure-waf-policy-delete
+    - deprecated: false
+      description: |-
+        Run this command to start the autorization process and follow the
+              instructions in the command results.
+      execution: false
+      name: azure-waf-auth-start
+    - deprecated: false
+      description: |-
+        Run this command to complete the authorization process.
+        Should be used after running the azure_waf-auth-start command.
+      execution: false
+      name: azure-waf-auth-complete
+  dockerimage: demisto/python3:3.8.6.13358
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultmapperin: azureWAF-mapper
+defaultclassifier: AzureWAF
+fromversion: 5.0.0
+tests:
+- No tests
+
