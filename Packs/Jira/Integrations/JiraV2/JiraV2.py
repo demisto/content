@@ -570,7 +570,8 @@ def upload_file(entry_id, issue_id, attachment_name=None):
         headers={
             'X-Atlassian-Token': 'no-check'
         },
-        files={'file': (attachment_name or file_name, file_bytes)}
+        files={'file': (attachment_name or file_name, file_bytes)},
+        resp_type='json'
     )
 
 
