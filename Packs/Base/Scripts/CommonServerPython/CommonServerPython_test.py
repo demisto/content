@@ -2786,6 +2786,12 @@ def test_arg_to_int__valid_numbers():
 
     assert result == 4
 
+    result = arg_to_number(
+        arg=5,
+        required=True)
+
+    assert result == 5
+
 
 def test_arg_to_int__invalid_numbers():
     """
@@ -2852,6 +2858,14 @@ def test_arg_to_int_required():
     except ValueError as e:
         assert 'Missing' in str(e)
 
+    try:
+        arg_to_number(arg='goo')
+
+        assert False
+
+    except ValueError as e:
+        assert '"goo" is not a valid number' in str(e)
+
 
 def test_arg_to_timestamp_valid_inputs():
     """
@@ -2896,6 +2910,12 @@ def test_arg_to_timestamp_valid_inputs():
 
     assert int(result.timestamp()) == 1581982463
 
+    result = arg_to_datetime(
+        arg='2 hours ago'
+    )
+
+    assert result > datetime(2020, 11, 10, 21, 43, 43)
+
 
 def test_arg_to_timestamp_invalid_inputs():
     """
@@ -2936,7 +2956,7 @@ def test_arg_to_timestamp_invalid_inputs():
         assert 'Invalid date' in str(e)
 
     try:
-        dd = arg_to_datetime(
+        arg_to_datetime(
             arg='2010-32-01',
             arg_name='foo')
 
@@ -2944,4 +2964,13 @@ def test_arg_to_timestamp_invalid_inputs():
 
     except ValueError as e:
         assert 'Invalid date' in str(e)
+
+    try:
+        arg_to_datetime(
+            arg='2010-32-01')
+
+        assert False
+
+    except ValueError as e:
+        assert '"2010-32-01" is not a valid date' in str(e)
 

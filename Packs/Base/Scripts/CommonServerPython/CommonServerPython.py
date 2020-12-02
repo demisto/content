@@ -2773,8 +2773,8 @@ class IndicatorsTimeline:
         self.indicators_timeline = timelines
 
 
-def arg_to_number(arg, arg_name, required=False):
-    # type: (Any, str, bool) -> Optional[int]
+def arg_to_number(arg, arg_name=None, required=False):
+    # type: (Any, Optional[str], bool) -> Optional[int]
 
     """Converts an XSOAR argument to a Python int
 
@@ -2802,7 +2802,11 @@ def arg_to_number(arg, arg_name, required=False):
 
     if arg is None or arg == '':
         if required is True:
-            raise ValueError('Missing "{}"'.format(arg_name))
+            if arg_name:
+                raise ValueError('Missing "{}"'.format(arg_name))
+            else:
+                raise ValueError('Missing required argument')
+
         return None
     if isinstance(arg, str):
         if arg.isdigit():
@@ -2811,14 +2815,21 @@ def arg_to_number(arg, arg_name, required=False):
         try:
             return int(float(arg))
         except Exception:
-            raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
+            if arg_name:
+                raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
+            else:
+                raise ValueError('"{}" is not a valid number'.format(arg))
     if isinstance(arg, int):
         return arg
-    raise ValueError('Invalid number: "{}"'.format(arg_name))
+
+    if arg_name:
+        raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
+    else:
+        raise ValueError('"{}" is not a valid number'.format(arg))
 
 
-def arg_to_datetime(arg, arg_name, is_utc=True, required=False, settings=None):
-    # type: (Any, str, bool, bool, dict) -> Optional[datetime]
+def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=None):
+    # type: (Any, Optional[str], bool, bool, dict) -> Optional[datetime]
 
     """Converts an XSOAR argument to a datetime
 
@@ -2852,7 +2863,10 @@ def arg_to_datetime(arg, arg_name, is_utc=True, required=False, settings=None):
 
     if arg is None:
         if required is True:
-            raise ValueError('Missing "{}"'.format(arg_name))
+            if arg_name:
+                raise ValueError('Missing "{}"'.format(arg_name))
+            else:
+                raise ValueError('Missing required argument')
         return None
 
     if isinstance(arg, str) and arg.isdigit() or isinstance(arg, (int, float)):
@@ -2877,11 +2891,17 @@ def arg_to_datetime(arg, arg_name, is_utc=True, required=False, settings=None):
 
         if date is None:
             # if d is None it means dateparser failed to parse it
-            raise ValueError('Invalid date: "{}"'.format(arg_name))
+            if arg_name:
+                raise ValueError('Invalid date: "{}"="{}"'.format(arg_name, arg))
+            else:
+                raise ValueError('"{}" is not a valid date'.format(arg))
 
         return date
 
-    raise ValueError('Invalid date: "{}"'.format(arg_name))
+    if arg_name:
+        raise ValueError('Invalid date: "{}"="{}"'.format(arg_name, arg))
+    else:
+        raise ValueError('"{}" is not a valid date'.format(arg))
 
 
 class CommandResults:
