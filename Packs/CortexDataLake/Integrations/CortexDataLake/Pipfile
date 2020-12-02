@@ -5,17 +5,16 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
-pytest = "==5.0.1"
+pytest = "*"
 pytest-mock = "*"
 requests-mock = "*"
 pytest-asyncio = "*"
+pytest-xdist = "*"
+pytest-datadir-ng = "*"
+freezegun = "*"
+pytest-json = "*"
 
 [packages]
-pytest = "*"
-requests = "*"
-cryptography = "*"
-cffi = "*"
-pancloud = "==2.0.0a2"
 
 [requires]
-python_version = "3.8"
+python_version = "3.7"

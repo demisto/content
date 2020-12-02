@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -283,7 +284,8 @@ tasks:
       id: 66a1d2e2-04e1-45b6-840e-bd700f30a0ec
       version: -1
       name: cdl-query-traffic-logs
-      description: Searches the Cortex firewall.traffic table. Traffic logs contain entries for the end of each network session
+      description: Searches the Cortex firewall.traffic table. Traffic logs contain
+        entries for the end of each network session
       script: Cortex Data Lake|||cdl-query-traffic-logs
       type: regular
       iscommand: true
@@ -381,7 +383,8 @@ tasks:
       id: dd4cfff2-a9c3-49d4-8fba-0a484e792353
       version: -1
       name: cdl-query-threat-logs
-      description: Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
+      description: Searches the Cortex panw.threat table, which is the threat logs
+        table for PAN-OS/Panorama.
       script: '|||cdl-query-threat-logs'
       type: regular
       iscommand: true
