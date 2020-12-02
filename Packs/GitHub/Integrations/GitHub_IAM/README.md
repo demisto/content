@@ -1,6 +1,6 @@
-Note: This integration should be used along with our IAM premium pack. For further details, visit our IAM pack documentation.
-GitHub Integration consists of a set of API endpoints that allow customers to automate provisioning of GitHub organization membership.
-This integration was integrated and tested with version v2 of GitHub IT Admin
+Note: This integration should be used as part of our IAM premium pack. For further details, visit our IAM pack documentation.
+GitHub Integration consists of a set of API endpoints that enable you to automate provisioning of GitHub organization membership.
+This integration was integrated and tested with version v2 of GitHub IT Admin.
 For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
 
 ## Configure GitHub IT Admin on Cortex XSOAR
@@ -54,7 +54,7 @@ Creates a user.
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
 | IAM.Vendor.id | String | The employee's user ID in the app. | 
 | IAM.Vendor.instanceName | string | Name of the integration instance. | 
-| IAM.Vendor.success | Boolean | Indicates if the command executed successfully. | 
+| IAM.Vendor.success | Boolean | If true, indicates that the command was executed successfully. | 
 | IAM.Vendor.username | String | The employee's username in the app. | 
 
 
@@ -97,7 +97,7 @@ Updates an existing user with the data passed in the user-profile argument.
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
 | IAM.Vendor.id | String | The employee's user ID in the app. | 
 | IAM.Vendor.instanceName | string | Name of the integration instance. | 
-| IAM.Vendor.success | Boolean | True indicates that the command was executed successfully. | 
+| IAM.Vendor.success | Boolean | If true, indicates that the command was executed successfully. | 
 | IAM.Vendor.username | String | The employee's username in the app. | 
 
 
@@ -131,7 +131,7 @@ Retrieves a single user resource.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IAM.Vendor.active | Boolean | When true, indicates that the employee's status is active. | 
+| IAM.Vendor.active | Boolean | If true, indicates that the employee's status is active. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
 | IAM.Vendor.details | string | Indicates if the API was successful or provides error information. | 
 | IAM.Vendor.email | String | The employee's email address. | 
@@ -139,7 +139,7 @@ Retrieves a single user resource.
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
 | IAM.Vendor.id | String | The employee's user ID in the app. | 
 | IAM.Vendor.instanceName | string | Name of the integration instance. | 
-| IAM.Vendor.success | Boolean | When true, indicates that the command was executed successfully. | 
+| IAM.Vendor.success | Boolean | If true, indicates that the command was executed successfully. | 
 | IAM.Vendor.username | String | The employee's username in the app. | 
 
 
@@ -174,7 +174,7 @@ Deletes an active user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IAM.Vendor.active | Boolean | When true, indicates that the employee's status is active. | 
+| IAM.Vendor.active | Boolean | If true, indicates that the employee's status is active. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
 | IAM.Vendor.details | string | Indicates if the API was successful or provides error information. | 
 | IAM.Vendor.email | String | The employee's email address. | 
@@ -182,7 +182,7 @@ Deletes an active user.
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
 | IAM.Vendor.id | String | The employee's user ID in the app. | 
 | IAM.Vendor.instanceName | string | Name of the integration instance. | 
-| IAM.Vendor.success | Boolean | When true, indicates that the command was executed successfully. | 
+| IAM.Vendor.success | Boolean | If true, indicates that the command was executed successfully. | 
 | IAM.Vendor.username | String | The employee's username in the app. | 
 
 
@@ -217,7 +217,7 @@ Create a deprovisioned user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IAM.Vendor.active | Boolean | When true, indicates that the employee's status is active. | 
+| IAM.Vendor.active | Boolean | If true, indicates that the employee's status is active. | 
 | IAM.Vendor.brand | String | Name of the integration. | 
 | IAM.Vendor.details | string | Indicates if the API was successful or provides error information. | 
 | IAM.Vendor.email | String | The employee's email address. | 
@@ -225,7 +225,7 @@ Create a deprovisioned user.
 | IAM.Vendor.errorMessage | String | Reason why the API failed. | 
 | IAM.Vendor.id | String | The employee's user ID in the app. | 
 | IAM.Vendor.instanceName | string | Name of the integration instance. | 
-| IAM.Vendor.success | Boolean | When true, indicates that the command was executed successfully. | 
+| IAM.Vendor.success | Boolean | If true, indicates that the command was executed successfully. | 
 | IAM.Vendor.username | String | The employee's username in the app. | 
 
 
