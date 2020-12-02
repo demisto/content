@@ -1,0 +1,21 @@
+{
+    "autorun": false,
+    "color": "#CE93D8",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Jira Change",
+    "layout": "1803e530-06ed-417a-8f08-dc6c27a20ba6",
+    "locked": false,
+    "name": "Jira Change",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

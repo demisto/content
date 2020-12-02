@@ -1,0 +1,25 @@
+{
+    "defaultIncidentType": "Jira Incident",
+    "description": "",
+    "feed": false,
+    "id": "37f17a18-96ea-42b8-8e42-4bcd02dc098b",
+    "keyTypeMap": {
+        "Change": "Jira Change",
+        "Incident": "Jira Incident",
+        "Problem": "Jira Problem",
+        "Service Request": "Jira Service Request",
+        "Service Request with Approvals": "Jira Service Request",
+        "Task": "Jira Task"
+    },
+    "name": "Jira Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "issuetype.name"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,21 @@
+{
+    "autorun": false,
+    "color": "#EA80FC",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Jira Service Request",
+    "layout": "e7ea59d3-dda6-4c0a-8302-b70ccb7cfcea",
+    "locked": false,
+    "name": "Jira Service Request",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

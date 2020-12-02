@@ -1,0 +1,21 @@
+{
+    "autorun": false,
+    "color": "#FA99D0",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Jira Task",
+    "layout": "8860994e-af80-416a-83ae-dd34c2c17fd7",
+    "locked": false,
+    "name": "Jira Task",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

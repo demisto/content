@@ -1,0 +1,204 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "151a7f5b-2a78-4e65-8a20-1f8abd0db8b3",
+    "mapping": {
+        "IT Ticket": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "dbotMirrorDirection": {
+                    "complex": null,
+                    "simple": "dbotMirrorDirection"
+                },
+                "dbotMirrorId": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "complex": null,
+                    "simple": "dbotMirrorInstance"
+                },
+                "dbotMirrorTags": {
+                    "complex": null,
+                    "simple": "dbotMirrorTags"
+                },
+                "details": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "name": {
+                    "complex": null,
+                    "simple": "summary"
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [
+
+                        ],
+                        "root": "priority",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Lowest,Low,Medium,High,Highest"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "0.5,1,2,3,4"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "Jira Problem": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Root Cause Summary": {
+                    "complex": null,
+                    "simple": "customfield_10038"
+                },
+                "Ticket Status": {
+                    "complex": null,
+                    "simple": "status.name"
+                },
+                "Workaround": {
+                    "complex": null,
+                    "simple": "customfield_10039"
+                }
+            }
+        },
+        "Jira Ticket": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Jira Ticket ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Ticket Status": {
+                    "complex": null,
+                    "simple": "status.name"
+                },
+                "Ticket Sub-Type": {
+                    "complex": null,
+                    "simple": "customfield_10010.requestType.name"
+                },
+                "Ticket Type": {
+                    "complex": null,
+                    "simple": "issuetype.name"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "dbotMirrorDirection": {
+                    "complex": null,
+                    "simple": "dbotMirrorDirection"
+                },
+                "dbotMirrorId": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "complex": null,
+                    "simple": "dbotMirrorInstance"
+                },
+                "dbotMirrorTags": {
+                    "complex": null,
+                    "simple": "dbotMirrorTags"
+                },
+                "details": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "name": {
+                    "complex": null,
+                    "simple": "summary"
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "created",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "dayfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "yearfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [
+
+                        ],
+                        "root": "priority",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Lowest,Low,Medium,High,Highest"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "0.5,1,2,3,4"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "Jira Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

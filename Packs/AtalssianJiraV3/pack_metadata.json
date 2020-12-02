@@ -1,0 +1,14 @@
+{
+    "name": "Atalssian Jira v3",
+    "description": "Atlassian Jira v3 provides mirroring over the v2 pack and updates the code to newer coding standards.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Adam Burt",
+    "url": "",
+    "email": "",
+    "created": "2020-12-02T16:22:47Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

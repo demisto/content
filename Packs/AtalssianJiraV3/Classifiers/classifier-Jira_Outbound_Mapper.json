@@ -1,0 +1,117 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "c1461267-edbc-4838-8855-b71f787e7f20",
+    "mapping": {
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "description": {
+                    "complex": null,
+                    "simple": "details"
+                },
+                "priority": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "0,0.5,1,2,3,4"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Lowest,Lowest,Low,Medium,High,Highest"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "{\"name\": \""
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "\"}"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+
+                                },
+                                "operator": "ParseJSON"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "status": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "ticketstatus",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "{\"name\": \""
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "\"}"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+
+                                },
+                                "operator": "ParseJSON"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "summary": {
+                    "complex": null,
+                    "simple": "name"
+                }
+            }
+        }
+    },
+    "name": "Jira Outbound Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
