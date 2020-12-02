@@ -442,12 +442,12 @@ def checkpoint_delete_host_command(client: Client, identifier) -> CommandResults
         client (Client): CheckPoint client.
         identifier(str): uid or name.
     """
-    identifier = argToList(identifier)
+    identifiers_list = argToList(identifier)
     readable_output = ''
     printable_result = {}
     result = []
-    for index, item in enumerate(identifier):
-        current_result = client.delete_host(item[1])
+    for item in identifiers_list:
+        current_result = client.delete_host(item)
         result.append(current_result)
         printable_result = {'message': current_result.get('message')}
         current_readable_output = tableToMarkdown('CheckPoint data for deleting host:',
