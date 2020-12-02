@@ -217,7 +217,7 @@ script:
                 }
             }
 
-            var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), true,
+            var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), !params.fetchRecords,
                 a2i(params.sleepBetweenChecks, defaultSleep), params.fetchRecords);
             var incidents = [];
             var currentFetch = lastRun.time;
@@ -239,7 +239,6 @@ script:
             }
 
             if (params.fetchRecords && s.records) {
-                logDebug("s.records is: {0}".format((JSON.stringify(s.records))));
                 for (var i=0; i<s.records.length; i++) {
                     var incident = {name: 'Incident from SumoLogic',
                         details: JSON.stringify(s.records[i]), labels: [], rawJSON: JSON.stringify(s.records[i])};
@@ -250,13 +249,9 @@ script:
                         }
                     }
                     var recordDate = new Date("{0}T{1}".format(s.records[i].date, s.records[i].time));
-                    logDebug("recordDate {0}".format(recordDate));
                     var recordDateEpoch = Math.ceil(recordDate);
-                    logDebug("recordDateEpoch {0}".format(recordDateEpoch));
-                    logDebug("currentFetch {0}".format(currentFetch));
                     if (recordDateEpoch >= currentFetch){
                         currentFetch = recordDateEpoch + 1
-                        logDebug("new currentFetch {0}".format(currentFetch));
                     }
                     incidents.push(incident);
                 }
