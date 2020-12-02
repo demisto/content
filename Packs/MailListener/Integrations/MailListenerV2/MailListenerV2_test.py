@@ -1,6 +1,5 @@
 from datetime import datetime, timezone
 
-
 MAIL_STRING = """Delivered-To: to@test1.com
 MIME-Version: 1.0
 From: John Smith <from@test1.com>
@@ -78,19 +77,23 @@ def test_generate_search_query():
     now = datetime.now(timezone.utc)
     permitted_from_addresses = ['test1@mail.com', 'test2@mail.com']
     permitted_from_domains = ['test1.com', 'domain2.com']
-    assert generate_search_query(now, permitted_from_addresses, permitted_from_domains) == ['OR',
-                                                                                            'OR',
-                                                                                            'OR',
-                                                                                            'FROM',
-                                                                                            'test1@mail.com',
-                                                                                            'FROM',
-                                                                                            'test2@mail.com',
-                                                                                            'FROM',
-                                                                                            'test1.com',
-                                                                                            'FROM',
-                                                                                            'domain2.com',
-                                                                                            'SINCE',
-                                                                                            now]
+    uid_to_fetch_from = 4
+    assert generate_search_query(now, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from) == \
+           ['OR',
+            'OR',
+            'OR',
+            'FROM',
+            'test1@mail.com',
+            'FROM',
+            'test2@mail.com',
+            'FROM',
+            'test1.com',
+            'FROM',
+            'domain2.com',
+            'SINCE',
+            now,
+            'UID',
+            f'{uid_to_fetch_from}:*']
 
 
 def test_generate_labels():

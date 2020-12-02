@@ -37,7 +37,7 @@ configuration:
   name: permittedFromDomain
   required: false
   type: 0
-- defaultvalue: 3 days
+- defaultvalue: 1 day
   display: First fetch time
   name: first_fetch
   required: false
@@ -146,7 +146,7 @@ script:
     description: Fetches an email by message ID and returns the information in an eml file format.
     execution: false
     name: mail-listener-get-email-as-eml
-  dockerimage: demisto/imap:1.0.0.10664
+  dockerimage: demisto/imap:1.0.0.14044
   feed: false
   isfetch: true
   longRunning: false

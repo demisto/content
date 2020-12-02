@@ -164,6 +164,14 @@ def fetch_incidents(client: IMAPClient,
                     ) -> Tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
+    The search is based on the criteria of the SINCE time and the UID.
+    We will always store the latest email message UID that came up in the search, even if it will not be ingested as
+    incident (can happen in the first fetch where the email messages that were returned from the search are before the
+    value that was set in the first fetch parameter).
+    This is required because the SINCE criterion disregards the time and timezone (i.e. considers only the date),
+    so it might be that in the first fetch we will fetch only email messages that are occurred before the first fetch
+    time (could also happen that the limit parameter, which is implemented in the code and cannot be passed as a
+    criterion to the search, causes us to keep retrieving the same email messages in the search result)
 
     Args:
         client: IMAP client
@@ -186,19 +194,26 @@ def fetch_incidents(client: IMAPClient,
     # Handle first time fetch
     if last_fetch is None:
         latest_created_time = parse(f'{first_fetch_time} UTC')
+        uid_to_fetch_from = 1
     else:
         latest_created_time = datetime.fromisoformat(last_fetch)
-    mails_fetched, messages = fetch_mails(client=client,
-                                          include_raw_body=include_raw_body,
-                                          first_fetch_time=latest_created_time,
-                                          limit=limit,
-                                          permitted_from_addresses=permitted_from_addresses,
-                                          permitted_from_domains=permitted_from_domains,
-                                          save_file=save_file)
-    if mails_fetched:
-        latest_created_time = max(mails_fetched, key=lambda x: x.date).date
-    incidents = [mail.convert_to_incident() for mail in mails_fetched]
-    next_run = {'last_fetch': latest_created_time.isoformat()}
+        uid_to_fetch_from = last_run.get('last_uid', 1)
+    mails_fetched, messages, uid_to_fetch_from = fetch_mails(
+        client=client,
+        include_raw_body=include_raw_body,
+        first_fetch_time=latest_created_time,
+        limit=limit,
+        permitted_from_addresses=permitted_from_addresses,
+        permitted_from_domains=permitted_from_domains,
+        save_file=save_file,
+        uid_to_fetch_from=uid_to_fetch_from
+    )
+    incidents = []
+    for mail in mails_fetched:
+        incidents.append(mail.convert_to_incident())
+        latest_created_time = max(latest_created_time, mail.date)
+        uid_to_fetch_from = max(uid_to_fetch_from, mail.id)
+    next_run = {'last_fetch': latest_created_time.isoformat(), 'last_uid': uid_to_fetch_from}
     if delete_processed:
         client.delete_messages(messages)
     return next_run, incidents
@@ -211,7 +226,8 @@ def fetch_mails(client: IMAPClient,
                 include_raw_body: bool = False,
                 limit: int = -1,
                 save_file: bool = False,
-                message_id: int = None) -> Tuple[list, list]:
+                message_id: int = None,
+                uid_to_fetch_from: int = 1) -> Tuple[list, list, int]:
     """
     This function will fetch the mails from the IMAP server.
 
@@ -225,21 +241,25 @@ def fetch_mails(client: IMAPClient,
                mails will be fetched (used with list-messages command)
         save_file: Whether to save the .eml file of the incident's mail
         message_id: A unique message ID with which a specific mail can be fetched
+        uid_to_fetch_from: The email message UID to start the fetch from as offset
 
     Returns:
         mails_fetched: A list of Email objects
-        messages: A list of the ids of the messages fetched
+        messages_fetched: A list of the ids of the messages fetched
+        last_message_in_current_batch: The UID of the last message fetchedd
     """
     if message_id:
         messages = [message_id]
     else:
         messages_query = generate_search_query(first_fetch_time,
                                                permitted_from_addresses,
-                                               permitted_from_domains)
+                                               permitted_from_domains,
+                                               uid_to_fetch_from)
         messages = client.search(messages_query)
         limit = len(messages) if limit == -1 else limit
         messages = messages[:limit]
     mails_fetched = []
+    messages_fetched = []
     for mail_id, message_data in client.fetch(messages, 'RFC822').items():
         message_bytes = message_data.get(b'RFC822')
         if not message_bytes:
@@ -248,12 +268,19 @@ def fetch_mails(client: IMAPClient,
         email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
         if not first_fetch_time or email_message_object.date > first_fetch_time:
             mails_fetched.append(email_message_object)
-    return mails_fetched, messages
+            messages_fetched.append(email_message_object.id)
+
+    last_message_in_current_batch = uid_to_fetch_from
+    if messages:
+        last_message_in_current_batch = messages[-1]
+
+    return mails_fetched, messages_fetched, last_message_in_current_batch
 
 
 def generate_search_query(latest_created_time: Optional[datetime],
                           permitted_from_addresses: str,
-                          permitted_from_domains: str) -> list:
+                          permitted_from_domains: str,
+                          uid_to_fetch_from: int) -> list:
     """
     Generates a search query for the IMAP client 'search' method. with the permitted domains, email addresses and the
     starting date from which mail should be fetched.
@@ -279,6 +306,7 @@ def generate_search_query(latest_created_time: Optional[datetime],
         latest_created_time: The greatest incident created_time we fetched from last fetch
         permitted_from_addresses: A string representation of list of mail addresses to fetch from
         permitted_from_domains: A string representation list of domains to fetch from
+        uid_to_fetch_from: The email message UID to start the fetch from as offset
 
     Returns:
         A list with arguments for the email search query
@@ -291,7 +319,7 @@ def generate_search_query(latest_created_time: Optional[datetime],
         # Removing Parenthesis and quotes
         messages_query = messages_query.strip('()').replace('"', '')
     # Creating a list of the OR query words
-    messages_query_list = messages_query.split() + ['SINCE', latest_created_time]  # type: ignore[list-item]
+    messages_query_list = messages_query.split() + ['SINCE', latest_created_time, 'UID', f'{uid_to_fetch_from}:*']  # type: ignore[list-item]
     return messages_query_list
 
 
