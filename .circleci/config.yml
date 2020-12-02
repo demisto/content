@@ -236,6 +236,11 @@ references:
         export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
         zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
         rm -f $CIRCLE_ARTIFACTS/server*.log
+        if [ -f $CIRCLE_ARTIFACTS/logs/Run_Tests.log ];
+        then
+            zip -P $PSWD $CIRCLE_ARTIFACTS/logs/Run_Tests.zip $CIRCLE_ARTIFACTS/logs/Run_Tests.log
+            rm -f $CIRCLE_ARTIFACTS/logs/Run_Tests.log
+        fi
       when: always
 
   persist_to_workspace: &persist_to_workspace
