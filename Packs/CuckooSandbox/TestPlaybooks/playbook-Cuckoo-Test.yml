@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 561ffa9d-52d5-4347-8f87-7ee2af21bf7c
+    taskid: a4497e56-ff45-468f-848c-c998df7499bf
     type: start
     task:
-      id: 561ffa9d-52d5-4347-8f87-7ee2af21bf7c
+      id: a4497e56-ff45-468f-848c-c998df7499bf
       version: -1
       name: ""
       description: '-'
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 50
         }
       }
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: d7ceae7e-c3c3-49e0-8732-4bba92b898a1
+    taskid: 5e44c33f-e4c4-44e9-8f29-8eab9df78523
     type: regular
     task:
-      id: d7ceae7e-c3c3-49e0-8732-4bba92b898a1
+      id: 5e44c33f-e4c4-44e9-8f29-8eab9df78523
       version: -1
       name: Get file
       description: getting file using get
@@ -46,7 +46,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "20"
     scriptarguments:
       body: {}
       filename: {}
@@ -66,7 +66,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 1535
         }
       }
     note: false
@@ -76,10 +76,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 75939497-5b75-4c8f-8b16-bf477fef1cf8
+    taskid: 5c09350e-46d2-4f1c-8089-c0a5d30d3948
     type: regular
     task:
-      id: 75939497-5b75-4c8f-8b16-bf477fef1cf8
+      id: 5c09350e-46d2-4f1c-8089-c0a5d30d3948
       version: -1
       name: Delete Context
       description: delete context
@@ -90,7 +90,6 @@ tasks:
     nexttasks:
       '#none#':
       - "11"
-      - "1"
     scriptarguments:
       all:
         simple: "yes"
@@ -102,7 +101,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 195
         }
       }
@@ -113,10 +112,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: cbdc7b57-0b41-4899-8052-b213497c8ba2
+    taskid: 50f69c9e-415e-4864-8ffd-9c0fc46c782d
     type: playbook
     task:
-      id: cbdc7b57-0b41-4899-8052-b213497c8ba2
+      id: 50f69c9e-415e-4864-8ffd-9c0fc46c782d
       version: -1
       name: Detonate File - Cuckoo
       description: Detonating file with Cuckoo
@@ -143,8 +142,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 570
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -154,10 +153,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 3c3292df-928f-4f76-8420-7e807943d127
+    taskid: 2a48194c-5acc-4e9f-83e9-a29ea013813b
     type: title
     task:
-      id: 3c3292df-928f-4f76-8420-7e807943d127
+      id: 2a48194c-5acc-4e9f-83e9-a29ea013813b
       version: -1
       name: Done
       description: done file
@@ -168,8 +167,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 1680
+          "x": 50,
+          "y": 2875
         }
       }
     note: false
@@ -179,10 +178,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 524dea14-df28-4eb1-80c8-b7942750e31f
+    taskid: 9678d053-64fe-490d-8fbf-7ee94f989379
     type: playbook
     task:
-      id: 524dea14-df28-4eb1-80c8-b7942750e31f
+      id: 9678d053-64fe-490d-8fbf-7ee94f989379
       version: -1
       name: Detonate URL - Cuckoo
       description: url detonation playbook
@@ -205,8 +204,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 1500
+          "x": 50,
+          "y": 2700
         }
       }
     note: false
@@ -216,10 +215,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 1b03ea0c-f492-46e4-8826-9461c12653af
+    taskid: 1a86175a-4af8-4237-814c-c360da3f1398
     type: title
     task:
-      id: 1b03ea0c-f492-46e4-8826-9461c12653af
+      id: 1a86175a-4af8-4237-814c-c360da3f1398
       version: -1
       name: FileDetonate Done
       description: done file detonate
@@ -233,8 +232,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 740
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -244,10 +243,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 4841607b-bff5-4e59-8fcd-7c3f33b8ad7a
+    taskid: 3dce6be2-3519-4ba4-8911-2254ce34e9f1
     type: regular
     task:
-      id: 4841607b-bff5-4e59-8fcd-7c3f33b8ad7a
+      id: 3dce6be2-3519-4ba4-8911-2254ce34e9f1
       version: -1
       name: Delete Context
       description: delete context
@@ -269,8 +268,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 1330
+          "x": 50,
+          "y": 2525
         }
       }
     note: false
@@ -280,10 +279,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 80667489-737c-472c-8bb3-d833cdd69f29
+    taskid: ecc0ee61-3409-49bf-8a00-3a656165b5ae
     type: regular
     task:
-      id: 80667489-737c-472c-8bb3-d833cdd69f29
+      id: ecc0ee61-3409-49bf-8a00-3a656165b5ae
       version: -1
       name: Get file
       description: getting file using get
@@ -313,7 +312,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 370
         }
       }
@@ -324,10 +323,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 4036a882-386c-47e5-864f-d47ca59a9638
+    taskid: 2f15ba03-bbac-461e-89b0-5f2640b4f862
     type: regular
     task:
-      id: 4036a882-386c-47e5-864f-d47ca59a9638
+      id: 2f15ba03-bbac-461e-89b0-5f2640b4f862
       version: -1
       name: cuckoo-get-task-report
       description: Retrieve report
@@ -349,7 +348,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
+          "x": 50,
           "y": 865
         }
       }
@@ -360,10 +359,171 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 055ac125-4241-4e63-86ae-51de87ff3a77
+    taskid: 144798e8-da29-40d0-8f83-98b64b1c1df3
     type: condition
     task:
-      id: 055ac125-4241-4e63-86ae-51de87ff3a77
+      id: 144798e8-da29-40d0-8f83-98b64b1c1df3
+      version: -1
+      name: Check if file's data is in output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Cuckoo.Task.FileInfo.sha1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 76d18460-d558-4a55-8319-1ad6d974737d
+    type: title
+    task:
+      id: 76d18460-d558-4a55-8319-1ad6d974737d
+      version: -1
+      name: File data output check done
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 2ab819ba-29c5-416e-86d0-9eb38629ffe2
+    type: title
+    task:
+      id: 2ab819ba-29c5-416e-86d0-9eb38629ffe2
+      version: -1
+      name: Second file detonation
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 2e89665d-0958-4d8c-8ce4-6b849ca920aa
+    type: regular
+    task:
+      id: 2e89665d-0958-4d8c-8ce4-6b849ca920aa
+      version: -1
+      name: Delete Context
+      description: delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: c01890db-b209-44b7-8218-19e4b7110cdd
+    type: regular
+    task:
+      id: c01890db-b209-44b7-8218-19e4b7110cdd
+      version: -1
+      name: cuckoo-get-task-report
+      description: Retrieve report
+      script: Cuckoo Sandbox|||cuckoo-get-task-report
+      type: regular
+      iscommand: true
+      brand: Cuckoo Sandbox
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      id:
+        complex:
+          root: Cuckoo.Task
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 59c4efad-56e9-480d-89a7-a53cd0fe1948
+    type: condition
+    task:
+      id: 59c4efad-56e9-480d-89a7-a53cd0fe1948
       version: -1
       name: Check if file's data is in output
       type: condition
@@ -384,8 +544,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 1035
+          "x": 50,
+          "y": 2205
         }
       }
     note: false
@@ -393,27 +553,67 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "15":
-    id: "15"
-    taskid: 4696d91b-9baa-491c-872e-e58842ce7d10
+  "20":
+    id: "20"
+    taskid: db63dc4a-0052-49ac-8ee6-7e923711eb00
+    type: playbook
+    task:
+      id: db63dc4a-0052-49ac-8ee6-7e923711eb00
+      version: -1
+      name: Detonate File - Cuckoo
+      description: Detonating file with Cuckoo
+      playbookName: Detonate File - Cuckoo
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      File:
+        simple: ${File}
+      interval:
+        simple: "1"
+      timeout:
+        simple: "10"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 350f6732-b5ec-40a0-89db-d38af1e5bc7e
     type: title
     task:
-      id: 4696d91b-9baa-491c-872e-e58842ce7d10
+      id: 350f6732-b5ec-40a0-89db-d38af1e5bc7e
       version: -1
-      name: File data output check done
+      name: FileDetonate Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "10"
+      - "18"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 1190
+          "x": 50,
+          "y": 1885
         }
       }
     note: false
@@ -426,8 +626,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1695,
-        "width": 810,
+        "height": 2890,
+        "width": 380,
         "x": 50,
         "y": 50
       }
