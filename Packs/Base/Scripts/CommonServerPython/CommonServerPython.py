@@ -2873,10 +2873,10 @@ class Common(object):
         :type critical: ``bool``
         :param critical: Whether the extension is marked as critical
 
-        :type extension_name: ``str``
+        :type extension_name: ``Optional[str]``
         :param extension_name: Name of the extension
 
-        :type oid: ``str``
+        :type oid: ``Optional[str]``
         :param oid: OID of the extension
 
         :type subject_alternative_names: ``Optional[List[Common.CertificateExtension.SubjectAlternativeName]]``
@@ -2988,9 +2988,9 @@ class Common(object):
             """
             def __init__(
                 self,
-                issuer,  # type: Optional[List[Common.GeneralName]]
-                serial_number,  # type: Optional[str]
-                key_identifier  # type: Optional[str]
+                issuer=None,  # type: Optional[List[Common.GeneralName]]
+                serial_number=None,  # type: Optional[str]
+                key_identifier=None  # type: Optional[str]
             ):
                 self.issuer = issuer
                 self.serial_number = serial_number
@@ -3149,7 +3149,7 @@ class Common(object):
         class SignedCertificateTimestamp(object):
             """
             SignedCertificateTimestamp class
-            Implementsinterface for  "PreCertificateSignedCertificateTimestamp" or "SignedCertificateTimestamp" extensions
+            Implementsinterface for  "SignedCertificateTimestamp" extensions
 
             :type entry_type: ``str``
             :param entry_type: Entry Type (from Common.CertificateExtension.SignedCertificateTimestamp.EntryType enum)
@@ -3229,7 +3229,6 @@ class Common(object):
             CERTIFICATEPOLICIES = "CertificatePolicies"
             AUTHORITYINFORMATIONACCESS = "AuthorityInformationAccess"
             BASICCONSTRAINTS = "BasicConstraints"
-            PRECERTIFICATESIGNEDCERTIFICATETIMESTAMPS = "PrecertificateSignedCertificateTimestamps"
             SIGNEDCERTIFICATETIMESTAMPS = "SignedCertificateTimestamps"
             OTHER = "Other"
 
@@ -3245,7 +3244,6 @@ class Common(object):
                     Common.CertificateExtension.ExtensionType.CERTIFICATEPOLICIES,
                     Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS,
                     Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS,
-                    Common.CertificateExtension.ExtensionType.PRECERTIFICATESIGNEDCERTIFICATETIMESTAMPS,
                     Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
                     Common.CertificateExtension.ExtensionType.OTHER  # for extensions that are not handled explicitly
                 )
@@ -3253,9 +3251,9 @@ class Common(object):
         def __init__(
             self,
             extension_type,  # type: str
-            oid,  # type: str
-            extension_name,  # type: str
             critical,  # type: bool
+            oid=None,  # type: Optional[str]
+            extension_name=None,  # type: Optional[str]
             subject_alternative_names=None,  # type: Optional[List[Common.CertificateExtension.SubjectAlternativeName]]
             authority_key_identifier=None,  # type: Optional[Common.CertificateExtension.AuthorityKeyIdentifier]
             digest=None,  # type: str
@@ -3278,17 +3276,19 @@ class Common(object):
                 raise TypeError('algorithm must be of type Common.CertificateExtension.ExtensionType enum')
 
             self.extension_type = extension_type
-            self.oid = oid
-            self.extension_name = extension_name
             self.critical = critical
 
             if self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME:
                 self.subject_alternative_names = subject_alternative_names
+                self.oid = "2.5.29.17"
+                self.extension_name = "subjectAltName"
 
             elif self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTKEYIDENTIFIER:
                 if not digest:
                     raise ValueError('digest is mandatory for SubjectKeyIdentifier extension')
                 self.digest = digest
+                self.oid = "2.5.29.14"
+                self.extension_name = "subjectKeyIdentifier"
 
             elif self.extension_type == Common.CertificateExtension.ExtensionType.KEYUSAGE:
                 self.digital_signature = digital_signature
@@ -3298,35 +3298,54 @@ class Common(object):
                 self.key_agreement = key_agreement
                 self.key_cert_sign = key_cert_sign
                 self.crl_sign = crl_sign
+                self.oid = "2.5.29.15"
+                self.extension_name = "keyUsage"
 
             elif self.extension_type == Common.CertificateExtension.ExtensionType.EXTENDEDKEYUSAGE:
                 if not usages:
                     raise ValueError('usages is mandatory for ExtendedKeyUsage extension')
                 self.usages = usages
+                self.oid = "2.5.29.37"
+                self.extension_name = "extendedKeyUsage"
 
             elif self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER:
                 self.authority_key_identifier = authority_key_identifier
+                self.oid = "2.5.29.35"
+                self.extension_name = "authorityKeyIdentifier"
 
             elif self.extension_type == Common.CertificateExtension.ExtensionType.CRLDISTRIBUTIONPOINTS:
                 self.distribution_points = distribution_points
+                self.oid = "2.5.29.31"
+                self.extension_name = "cRLDistributionPoints"
 
             elif self.extension_type == Common.CertificateExtension.ExtensionType.CERTIFICATEPOLICIES:
                 self.certificate_policies = certificate_policies
+                self.oid = "2.5.29.32"
+                self.extension_name = "certificatePolicies"
 
             elif self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS:
                 self.authority_information_access = authority_information_access
+                self.oid = "1.3.6.1.5.5.7.1.1"
+                self.extension_name = "authorityInfoAccess"
 
             elif self.extension_type == Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS:
                 self.basic_constraints = basic_constraints
+                self.oid = "2.5.29.19"
+                self.extension_name = "basicConstraints"
 
-            elif self.extension_type in [
-                Common.CertificateExtension.ExtensionType.PRECERTIFICATESIGNEDCERTIFICATETIMESTAMPS,
-                Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS
-            ]:
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS:
                 self.signed_certificate_timestamps = signed_certificate_timestamps
+                self.oid = "1.3.6.1.4.1.11129.2.4.2"
+                self.extension_name = "signedCertificateTimestampList"
 
             elif self.extension_type == Common.CertificateExtension.ExtensionType.OTHER:
                 self.value = value
+
+            # override oid, extension_name if provided as inputs
+            if oid:
+                self.oid = oid
+            if extension_name:
+                self.extension_name = extension_name
 
         def to_context(self):
             extension_context = {
@@ -3408,10 +3427,7 @@ class Common(object):
                 extension_context["Value"] = self.basic_constraints.to_context()
 
             elif (
-                self.extension_type in [
-                    Common.CertificateExtension.ExtensionType.PRECERTIFICATESIGNEDCERTIFICATETIMESTAMPS,
-                    Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS
-                ]
+                self.extension_type == Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS
                 and self.signed_certificate_timestamps is not None
             ):
                 extension_context["Value"] = [sct.to_context() for sct in self.signed_certificate_timestamps]
