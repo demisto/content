@@ -72,9 +72,9 @@ class Client(BaseClient):
                 self.command_params[param] = self.command_params[param].replace('T', ' ')
         result = self.http_request('/analysis/get_completed')
         if 'data' in result:
-            context_entry: List[Any] = []
+            context_entry: List = []
             if self.use_credentials_login:
-                context_entry = self.get_status_and_time_get_history_req(argToList(result['data']))
+                context_entry = self.get_status_and_time_from_get_history_response(argToList(result['data']))
             else:
                 context_entry = self.get_status_and_time(argToList(result['data'].get('tasks')))
 
@@ -111,7 +111,7 @@ class Client(BaseClient):
             else:
                 raise error
 
-    def get_status_and_time(self, uuids) -> List[List]:
+    def get_status_and_time(self, uuids) -> List:
         task_list: List[List] = []
         for uuid in uuids:
             self.command_params['uuid'] = uuid
@@ -127,7 +127,7 @@ class Client(BaseClient):
             task_list.append([uuid, task_time.replace(' ', 'T'), status])
         return task_list
 
-    def get_status_and_time_get_history_req(self, tasks) -> List[List]:
+    def get_status_and_time_from_get_history_response(self, tasks) -> List:
         task_list: List[List] = []
         filtered_tasks: List = []
         uuid_set: set = set(map(lambda x: x.get('task_uuid'), tasks))
