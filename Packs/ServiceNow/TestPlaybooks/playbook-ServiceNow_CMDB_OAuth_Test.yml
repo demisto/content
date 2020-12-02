@@ -1,5 +1,5 @@
 id: ServiceNow_CMDB_OAuth_Test
-version: 2
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: ServiceNow_CMDB_OAuth_Test
 starttaskid: "0"
@@ -574,5 +574,4 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: ServiceNow_CMDB_Test
 fromversion: 5.0.0
