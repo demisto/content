@@ -1,0 +1,173 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: efa3cc58-e9f5-428b-8a3b-cc1f40bc2140
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Executes command using the Netmiko integration
+id: b277e0d4-bc40-41f0-8da7-a257c1905da5
+inputs:
+- description: A JSON list of commands or comamnds in text format that are separated
+    by carriage return (\n).
+  key: cmds
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: Whether or not the platform requires the "enable" command to be run.
+  key: require_enable
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "false"
+- description: Whether the commands are to be entered into a "config" mode on the
+    device.
+  key: isConfig
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "false"
+- description: Whether or not to send an "exit" command after executing all the commands.
+  key: require_exit
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "false"
+- description: They exit argument to use.
+  key: exit_argument
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: q
+- description: Specify the instance name to use with the commands.
+  key: using
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: Netmiko Execute Commands
+outputs:
+- contextPath: Netmiko.Command
+  description: The command that was executed.
+  type: string
+- contextPath: Netmiko.DateTime(UTC)
+  description: The datetime at which the command was executed (in UTC).
+  type: date
+- contextPath: Netmiko.Hostname
+  description: The hostname on which the command was executed.
+  type: string
+- contextPath: Netmiko.Output
+  description: The results of the command.
+  type: string
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 95d7c6db-d444-416d-8150-49ef0b5f6d34
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 95d7c6db-d444-416d-8150-49ef0b5f6d34
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cmds:
+        simple: ${inputs.cmds}
+      disable_context: {}
+      exit_argument:
+        simple: ${inputs.exit_argument}
+      isConfig:
+        simple: ${inputs.isConfig}
+      override_host: {}
+      override_password: {}
+      override_platform: {}
+      override_port: {}
+      override_username: {}
+      raw_print: {}
+      require_enable:
+        simple: ${inputs.require_enable}
+      require_exit:
+        simple: ${inputs.require_exit}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Execute commands using Netmiko
+      id: e1448e9a-5643-4520-8809-a8d8f6ee73f6
+      iscommand: true
+      name: Execute commands
+      script: '|||netmiko-cmds'
+      type: regular
+      version: -1
+    taskid: e1448e9a-5643-4520-8809-a8d8f6ee73f6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 829f61a0-010b-4c79-8a61-05ac39abd930
+      iscommand: false
+      name: Complete
+      type: title
+      version: -1
+    taskid: 829f61a0-010b-4c79-8a61-05ac39abd930
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
