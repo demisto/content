@@ -1,0 +1,43 @@
+{
+	"brandName": "Gurucul-GRA",
+	"custom": true,
+	"defaultIncidentType": "GraHighRiskUser",
+	"feed": false,
+	"id": "9474188a-4cc2-4ea2-8ad5-14cef42bdb03",
+	"incidentSamples": [],
+	"indicatorSamples": null,
+	"instanceId": "28ef9b7f-eaf6-455c-81f5-c4656ad7a3db",
+	"instanceName": "Gurucul-HighRiskUsers",
+	"isDefault": false,
+	"keyTypeMap": {
+		"HighRiskUser": "GraHighRiskUser"
+	},
+	"mapping": {
+		"GraHighRiskUser": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"name": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "employeeId",
+						"transformers": []
+					},
+					"simple": ""
+				}
+			}
+		}
+	},
+	"sortValues": null,
+	"transformer": {
+		"complex": {
+			"accessor": "",
+			"filters": [],
+			"root": "incidentType",
+			"transformers": []
+		},
+		"simple": ""
+	},
+	"unclassifiedCases": {},
+	"version": -1
+}

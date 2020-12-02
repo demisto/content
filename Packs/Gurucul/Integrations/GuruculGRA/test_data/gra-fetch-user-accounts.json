@@ -1,0 +1,32 @@
+[
+   {
+      "id":13,
+      "name":"AB1234",
+      "type":null,
+      "created_on":"02/09/2018 10:00:00",
+      "department":null,
+      "description":null,
+      "resource":"Linux",
+      "domain":"com",
+      "high_risk":null,
+      "is_orphan":"No",
+      "is_reassigned":null,
+      "risk_score":0,
+      "updated_on":null
+   },
+   {
+      "id":35,
+      "name":"AB1234",
+      "type":null,
+      "created_on":"02/09/2018 10:00:00",
+      "department":null,
+      "description":null,
+      "resource":"IPS",
+      "domain":"com",
+      "high_risk":null,
+      "is_orphan":"No",
+      "is_reassigned":null,
+      "risk_score":69,
+      "updated_on":null
+   }
+]
