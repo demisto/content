@@ -7,7 +7,7 @@ GLOBAL_INTEGRATION_CONTEXT: dict = {}  # Global variable in order to hold one di
 
 def _get_fetch_time() -> int:
     try:
-        fetch_time = int(demisto.params().get('fetch_time'))
+        fetch_time = int(demisto.params().get('fetch_time', ''))
     except ValueError:
         fetch_time = 14
     return fetch_time
@@ -21,8 +21,12 @@ def _update_global_integration_context(key: str = None, value: str = None) -> No
         GLOBAL_INTEGRATION_CONTEXT[key] = value
 
 
-def _get_global_integration_context(key: str) -> Optional[Any]:
+def _get_global_integration_context_by_key(key: str) -> Optional[Any]:
     return GLOBAL_INTEGRATION_CONTEXT.get(key)
+
+
+def _get_global_integration_context() -> dict:
+    return GLOBAL_INTEGRATION_CONTEXT
 
 
 def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
@@ -42,7 +46,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
     params: dict = feed.get('filters', {})
     current_indicator_type = feed.get('indicator_type', '')
     _update_global_integration_context()
-    last_fetch = _get_global_integration_context(f'{current_indicator_type}_fetch_time')
+    last_fetch = _get_global_integration_context_by_key(f'{current_indicator_type}_fetch_time')
     page_number = 1
     params['end_date'] = current_datetime.isoformat() + 'Z'
     params['start_date'] = last_fetch if last_fetch else \
@@ -52,7 +56,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
     if not limit:
         limit = 10000
         _update_global_integration_context(current_indicator_type + '_fetch_time', str(params['end_date']))
-        set_integration_context(GLOBAL_INTEGRATION_CONTEXT)
+        set_integration_context(_get_global_integration_context())
 
     more_indicators = True
     result: list = []

@@ -61,7 +61,7 @@ def test_build_iterator_paging():
         assert len(results) == 4
 
 
-def test_build_iterator_no_json():
+def test_build_iterator_change_extractor():
     """
     Given:
         - feed configuration with wrong feed extractor
