@@ -1533,7 +1533,7 @@ class TestCommandResults:
                 critical=False
             ),
             Common.CertificateExtension(
-                extension_type=Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
+                extension_type=Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS,
                 signed_certificate_timestamps=[
                     Common.CertificateExtension.SignedCertificateTimestamp(
                         version=0,
