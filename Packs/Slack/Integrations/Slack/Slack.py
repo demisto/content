@@ -1311,7 +1311,19 @@ def slack_send():
     thread_id = demisto.args().get('threadID', '')
     severity = demisto.args().get('severity')  # From server
     blocks = demisto.args().get('blocks')
+    entry_object = demisto.args().get('entryObject')  # From server
     entitlement = ''
+
+    if message_type == MIRROR_TYPE:
+        tags = argToList(demisto.params().get('filtered_tags', []))
+        entry_tags = entry_object.get('tags', [])
+
+        if tags and not entry_tags:
+            return
+
+        # return if the entry tags is not containing any of the filtered_tags
+        if tags and not any(elem in entry_tags for elem in tags):
+            return
 
     if message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
         # return so there will not be a loop of messages
