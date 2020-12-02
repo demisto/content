@@ -8,10 +8,6 @@ configuration:
   name: url
   required: true
   type: 0
-- defaultvalue: '50'
-  name: max_fetch
-  required: false
-  type: 0
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -53,7 +49,7 @@ configuration:
   defaultvalue: '50'
   display: Maximum Model Breaches per Fetch
   hidden: false
-  name: max_alerts
+  name: max_fetch
   required: false
   type: 0
 - additionalinfo: Time to start fetching the first incidents. Default is to begin
@@ -65,7 +61,11 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-description: Rapid detection of malicious behavior can make all the difference in the response to a security event. This pack includes configurations to combine the world-class threat detection of Darktrace with the synchrony and automation abilities of XSOAR, allowing security teams to investigate and manage security events before they have time to escalate.
+description: Rapid detection of malicious behavior can make all the difference in
+  the response to a security event. This pack includes configurations to combine the
+  world-class threat detection of Darktrace with the synchrony and automation abilities
+  of XSOAR, allowing security teams to investigate and manage security events before
+  they have time to escalate.
 display: Darktrace
 name: Darktrace
 script:

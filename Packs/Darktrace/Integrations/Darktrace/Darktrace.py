@@ -1051,8 +1051,8 @@ def main() -> None:
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_alerts = arg_to_int(
-                arg=demisto.params().get('max_alerts', MAX_INCIDENTS_TO_FETCH),
-                arg_name='max_alerts',
+                arg=demisto.params().get('max_fetch', MAX_INCIDENTS_TO_FETCH),
+                arg_name='max_fetch',
                 required=False
             )
             if not max_alerts or max_alerts > MAX_INCIDENTS_TO_FETCH:
