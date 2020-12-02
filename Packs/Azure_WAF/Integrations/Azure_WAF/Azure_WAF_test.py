@@ -1,5 +1,5 @@
 import pytest
-import Integrations.Azure_WAF.Azure_WAF as waf
+import Azure_WAF as waf
 import demistomock as demisto
 
 GET_COMMAND_DATA = [

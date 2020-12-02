@@ -27,7 +27,7 @@ API_VERSION = '2020-05-01'
 class AzureWAFClient:
     @logger
     def __init__(self, self_deployed, tenant_id, app_id, app_secret, redirect_uri, auth_code,
-                 subscription_id, resource_group_name: str, verify, proxy):
+                 subscription_id, resource_group_name, verify, proxy):
 
         refresh_token = demisto.getIntegrationContext().get('current_refresh_token')
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/'
@@ -110,94 +110,6 @@ class AzureWAFClient:
         )
 
 
-def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
-    """Converts an XSOAR argument to a Python int
-
-    This function is used to quickly validate an argument provided to XSOAR
-    via ``demisto.args()`` into an ``int`` type. It will throw a ValueError
-    if the input is invalid. If the input is None, it will throw a ValueError
-    if required is ``True``, or ``None`` if required is ``False.
-
-    :type arg: ``Any``
-    :param arg: argument to convert
-
-    :type arg_name: ``str``
-    :param arg_name: argument name
-
-    :type required: ``bool``
-    :param required:
-        throws exception if ``True`` and argument provided is None
-
-    :return:
-        returns an ``int`` if arg can be converted
-        returns ``None`` if arg is ``None`` and required is set to ``False``
-        otherwise throws an Exception
-    :rtype: ``Optional[int]``
-    """
-
-    if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
-        return None
-    if isinstance(arg, str):
-        if arg.isdigit():
-            return int(arg)
-        raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
-    if isinstance(arg, int):
-        return arg
-    raise ValueError(f'Invalid number: "{arg_name}"')
-
-
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
-    """Converts an XSOAR argument to a timestamp (seconds from epoch)
-
-    This function is used to quickly validate an argument provided to XSOAR
-    via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
-    since epoch). It will throw a ValueError if the input is invalid.
-    If the input is None, it will throw a ValueError if required is ``True``,
-    or ``None`` if required is ``False.
-
-    :type arg: ``Any``
-    :param arg: argument to convert
-
-    :type arg_name: ``str``
-    :param arg_name: argument name
-
-    :type required: ``bool``
-    :param required:
-        throws exception if ``True`` and argument provided is None
-
-    :return:
-        returns an ``int`` containing a timestamp (seconds from epoch) if conversion works
-        returns ``None`` if arg is ``None`` and required is set to ``False``
-        otherwise throws an Exception
-    :rtype: ``Optional[int]``
-    """
-
-    if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
-        return None
-
-    if isinstance(arg, str) and arg.isdigit():
-        # timestamp is a str containing digits - we just convert it to int
-        return int(arg)
-    if isinstance(arg, str):
-        # we use dateparser to handle strings either in ISO8601 format, or
-        # relative time stamps.
-        # For example: format 2019-10-23T00:00:00 or "3 days", etc
-        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
-        if date is None:
-            # if d is None it means dateparser failed to parse it
-            raise ValueError(f'Invalid date: {arg_name}')
-
-        return int(date.timestamp())
-    if isinstance(arg, (int, float)):
-        # Convert to int if the input is a float
-        return int(arg)
-    raise ValueError(f'Invalid date: "{arg_name}"')
-
-
 ''' COMMAND FUNCTIONS '''
 
 
@@ -221,13 +133,14 @@ def complete_auth(client: AzureWAFClient):
     return '✅ Authorization completed successfully.'
 
 
-def policy_get_command(client: AzureWAFClient, **args: Dict[str, str]) -> CommandResults:
-    policy_name = args.get('policy_name', '')
-    resource_group_name = args.get('resource_group_name', client.resource_group_name)
+def policy_get_command(client: AzureWAFClient, **kwargs) -> CommandResults:
+    policy_name: str = kwargs.get('policy_name', '')
+    resource_group_name: str = kwargs.get('resource_group_name', client.resource_group_name)
     policies: List[Dict] = []
     try:
         if policy_name:
-            policies.extend(client.get_policy_by_name(policy_name, resource_group_name))
+            policy = client.get_policy_by_name(policy_name, resource_group_name)
+            policies.extend(policy)
         else:
             policies.extend(client.get_policy_list_by_resource_group_name(resource_group_name))
     except DemistoException:
@@ -238,7 +151,7 @@ def policy_get_command(client: AzureWAFClient, **args: Dict[str, str]) -> Comman
     return res
 
 
-def policy_get_list_by_subscription_command(client: AzureWAFClient, **args: Dict[str, Any]) -> CommandResults:
+def policy_get_list_by_subscription_command(client: AzureWAFClient, **kwargs: Dict[str, Any]) -> CommandResults:
     policies = []
     try:
         policies.extend(client.get_policy_list_by_subscription_id())
@@ -250,7 +163,7 @@ def policy_get_list_by_subscription_command(client: AzureWAFClient, **args: Dict
     return res
 
 
-def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> CommandResults:
+def policy_upsert_command(client: AzureWAFClient, **kwargs: Dict[str, Any]) -> CommandResults:
 
     def parse_nested_keys_to_dict(base_dict: Dict, keys: List, value: str) -> None:
         """ A recursive function to make a list of type [x,y,z] and value a to a dictionary of type {x:{y:{z:a}}}"""
@@ -261,17 +174,17 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
                 base_dict[keys[0]] = {}
             parse_nested_keys_to_dict(base_dict[keys[0]], keys[1:], value)
 
-    policy_name = args.get('policy_name', '')
-    resource_group_name = args.get('resource_group_name', client.resource_group_name)
-    managed_rules = args.get('managed_rules', {})
-    location = args.get("location", '')
+    policy_name = kwargs.get('policy_name', '')
+    resource_group_name = kwargs.get('resource_group_name', client.resource_group_name)
+    managed_rules = kwargs.get('managed_rules', {})
+    location = kwargs.get("location", '')
     if not policy_name or not managed_rules or not location:
         raise Exception('In order to add/ update policy, '
                         'please provide policy_name, location and managed_rules. ')
 
     body = {}
     for param in UPSERT_PARAMS:
-        val = args.get(param, '')
+        val = kwargs.get(param, '')
         try:
             val = json.loads(val)
         except json.decoder.JSONDecodeError:
@@ -287,9 +200,9 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
     return res
 
 
-def policy_delete_command(client: AzureWAFClient, args: Dict[str, Any]):
-    policy_name = args.get('policy_name', '')
-    resource_group_name = args.get('resource_group_name', client.resource_group_name)
+def policy_delete_command(client: AzureWAFClient, **kwargs: Dict[str, str]):
+    policy_name = kwargs.get('policy_name', '')
+    resource_group_name = kwargs.get('resource_group_name', str(client.resource_group_name))
     status = client.delete_policy(policy_name, resource_group_name)
     res = CommandResults(readable_output=status.get('status'))
     return res
