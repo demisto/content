@@ -3602,9 +3602,7 @@ class Common(object):
                         and ext.subject_alternative_names is not None
                     ):
                         for san in ext.subject_alternative_names:
-                            san_ctx = san.to_context()
-                            if 'Value' in san_ctx:
-                                san_list.append(san_ctx['Value'])
+                            san_list.append(san.to_context())
 
             if san_list:
                 certificate_context['SubjectAlternativeName'] = san_list
