@@ -53,7 +53,7 @@ configuration:
   name: mapper_out
   required: true
   type: 0
-description: Integrate with GitHub's services to perform Identity Lifecycle Management
+description: Integrate with GitHub services to perform Identity Lifecycle Management
   operations.
 display: GitHub IAM
 name: GitHub IAM
@@ -72,14 +72,13 @@ script:
     name: iam-create-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: If true, the employee's status is active, otherwise false.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Indicates if the API was successful or provides error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -116,14 +115,13 @@ script:
     name: iam-update-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: If true, the employee's status is active, otherwise false.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Indicates if the API was successful or provides error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -159,14 +157,13 @@ script:
     name: iam-get-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: If true, the employee's status is active, otherwise false.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Indicates if the API was successful or provides error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -202,14 +199,13 @@ script:
     name: iam-disable-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: If true, the employee's status is active, otherwise false.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Indicates if the API was successful or provides error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
