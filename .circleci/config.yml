@@ -11,7 +11,7 @@ parameters:
     default: ""
   backward_compatibility:
     type: string
-    default: ""
+    default: "true"
   nightly:
     type: string
     default: ""
