@@ -3449,7 +3449,7 @@ class Common(object):
         :param subject_dn: Subject Distinguished Name
 
         :type dbot_score: ``DBotScore``
-        :param dbot_score: If IP has a score then create and set a DBotScore object.
+        :param dbot_score: If Certificate has a score then create and set a DBotScore object.
 
         :type name: ``Optional[Union[str, List[str]]]``
         :param name: Name (if not provided output is calculated from SubjectDN and SAN)
