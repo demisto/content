@@ -10,16 +10,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Darktrace
 
 ### Scripts
-* FindSimilarIncidents
 * Print
+* FindSimilarIncidents
+* IsIntegrationAvailable
 
 ### Commands
-* closeInvestigation
 * darktrace-get-breach
 * linkIncidents
 * darktrace-acknowledge
-* darktrace-get-device-identity-info
+* closeInvestigation
 * darktrace-list-similar-devices
+* darktrace-get-device-identity-info
 
 ## Playbook Inputs
 ---
@@ -31,4 +32,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Handle Darktrace Model Breach](https://raw.githubusercontent.com/katherinemcgauleydarktrace/DarktraceXSOARImages/master/HandleDarktraceModelBreach.png)
+![Handle Darktrace Model Breach](https://raw.githubusercontent.com/katherinemcgauleydarktrace/DarktraceXSOARImages/master/Handle_Darktrace_Model_Breach_Wed_Dec_02_2020.png)

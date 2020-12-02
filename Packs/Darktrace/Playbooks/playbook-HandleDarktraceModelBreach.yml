@@ -16,13 +16,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "20"
+      - "27"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 50
+          "x": 517.5,
+          "y": 40
         }
       }
     note: false
@@ -54,8 +54,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 340
+          "x": 75,
+          "y": 660
         }
       }
     note: false
@@ -74,7 +74,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: Conditional of whether to Acknowledge Model Breach
     nexttasks:
       "No":
       - "7"
@@ -84,8 +83,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2145
+          "x": 75,
+          "y": 2485
         }
       }
     note: false
@@ -132,8 +131,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2320
+          "x": -140,
+          "y": 2660
         }
       }
     note: false
@@ -156,7 +155,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "31"
     scriptarguments:
       value:
         simple: Model breach not acknowledged.
@@ -164,8 +163,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2320
+          "x": 290,
+          "y": 2660
         }
       }
     note: false
@@ -187,13 +186,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "18"
+      - "29"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 515
+          "x": 75,
+          "y": 815
         }
       }
     note: false
@@ -220,8 +219,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1010
+          "x": 75,
+          "y": 1450
         }
       }
     note: false
@@ -231,26 +230,92 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 29811d87-052e-4f40-8da2-03bcb867ca55
+    taskid: d8c64900-4c4c-48fb-84bc-7112504cbad0
     type: playbook
     task:
-      id: 29811d87-052e-4f40-8da2-03bcb867ca55
+      id: d8c64900-4c4c-48fb-84bc-7112504cbad0
       version: -1
       name: Entity Enrichment - Generic v3
+      description: Enrich entities using one or more integrations.
       playbookName: Entity Enrichment - Generic v3
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "14"
+    scriptarguments:
+      CVE:
+        complex:
+          root: CVE
+          accessor: ID
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: Darktrace.ModelBreach.device
+          accessor: ip
+      InternalDomains: {}
+      InternalRange: {}
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1155
+          "x": 75,
+          "y": 1595
         }
       }
     note: false
@@ -280,8 +345,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1330
+          "x": 75,
+          "y": 1720
         }
       }
     note: false
@@ -308,8 +373,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2000
+          "x": 75,
+          "y": 2360
         }
       }
     note: false
@@ -345,8 +410,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2495
+          "x": 290,
+          "y": 2955
         }
       }
     note: false
@@ -385,8 +450,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 660
+          "x": 75,
+          "y": 1130
         }
       }
     note: false
@@ -420,8 +485,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 835
+          "x": 75,
+          "y": 1275
         }
       }
     note: false
@@ -448,8 +513,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 195
+          "x": 75,
+          "y": 545
         }
       }
     note: false
@@ -468,7 +533,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: Conditional of whether to Link Similar Incidents
     nexttasks:
       '#default#':
       - "15"
@@ -489,8 +553,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1650
+          "x": 75,
+          "y": 1990
         }
       }
     note: false
@@ -524,8 +588,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 1825
+          "x": 290,
+          "y": 2165
         }
       }
     note: false
@@ -549,8 +613,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2670
+          "x": 290,
+          "y": 3080
         }
       }
     note: false
@@ -598,8 +662,138 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1475
+          "x": 75,
+          "y": 1835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 1e62210a-141d-42a4-8983-20891943e3b6
+    type: title
+    task:
+      id: 1e62210a-141d-42a4-8983-20891943e3b6
+      version: -1
+      name: Check Integration Enabled
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 517.5,
+          "y": 185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 46e1f2e4-12bc-40df-8e6d-2b446d26928d
+    type: condition
+    task:
+      id: 46e1f2e4-12bc-40df-8e6d-2b446d26928d
+      version: -1
+      name: Does device exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${incident.darktracedevicehostname}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 75,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 6ee98514-519f-47db-8f09-3d5ef80d24c3
+    type: condition
+    task:
+      id: 6ee98514-519f-47db-8f09-3d5ef80d24c3
+      version: -1
+      name: Check Integration is enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "24"
+      "yes":
+      - "20"
+    scriptarguments:
+      brandname:
+        simple: Darktrace
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 517.5,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 56f60ba9-07d9-439b-818a-4db8eb402957
+    type: regular
+    task:
+      id: 56f60ba9-07d9-439b-818a-4db8eb402957
+      version: -1
+      name: Analyst Manual Investigation
+      description: This task is open as the Darktrace model breach is unacknowledged.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 2790
         }
       }
     note: false
@@ -612,19 +806,18 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2685,
-        "width": 810,
-        "x": 50,
-        "y": 50
+        "height": 3105,
+        "width": 1037.5,
+        "x": -140,
+        "y": 40
       }
     }
   }
 inputs: []
 outputs: []
 tests:
- -  No tests
+- Darktrace Test Playbook
 fromversion: 6.0.0
-description: Handles each fetched Darktrace model breach by gathering additional detail
-  about the activity and device, providing enrichment data from Darktrace and XSOAR,
-  linking similar incidents, and giving the ability to acknowledge the model breach
-  and close the incident.
+description: Handles each fetched Darktrace model breach by gathering additional detail about the activity and device,
+  providing enrichment data from Darktrace and XSOAR, linking similar incidents, and giving the ability to acknowledge
+  the model breach and close the incident.
