@@ -1765,8 +1765,6 @@ script:
       name: domain
       required: false
       secret: false
-    - default: false
-      defaultValue: ''
     deprecated: false
     description: Log in to CheckPoint and get the session ID.
     execution: false
