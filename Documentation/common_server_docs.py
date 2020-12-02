@@ -240,19 +240,19 @@ def create_ps_documentation(path, origin, language):
 
 
 def main():
-    # install_logging('Common_Server_Documentation.log')
-    # js_doc, is_error_js = create_js_documentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs',
-    #                                               'javascript')
+    install_logging('Common_Server_Documentation.log')
+    js_doc, is_error_js = create_js_documentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs',
+                                                  'javascript')
     py_doc, is_error_py = create_py_documentation('./Packs/Base/Scripts/CommonServerPython/CommonServerPython.py',
                                                   'CommonServerPython', 'python')
-    # ps_doc, is_error_ps = create_ps_documentation(
-    #     './Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1',
-    #     'CommonServerPowerShell', 'powershell')
+    ps_doc, is_error_ps = create_ps_documentation(
+        './Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1',
+        'CommonServerPowerShell', 'powershell')
     final_docs = read_json_file('./Documentation/commonServerConstants.json')
 
-    # if is_error_js or is_error_py or is_error_ps or not final_docs:
-    #     logging.critical("Errors found in common server docs.")
-    #     sys.exit(1)
+    if is_error_js or is_error_py or is_error_ps or not final_docs:
+        logging.critical("Errors found in common server docs.")
+        sys.exit(1)
     with open('./Documentation/doc-CommonServer.json', 'w') as fp:
         final_docs += py_doc
         json.dump(final_docs, fp)
