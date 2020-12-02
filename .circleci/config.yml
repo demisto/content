@@ -745,6 +745,7 @@ jobs:
                   ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
             - run:
                 name: Run Tests - Server 5.0
+                no_output_timeout: 5h
                 shell: /bin/bash
                 command: |
                   if [ -z $INSTANCE_WAS_CREATED ];
@@ -823,6 +824,7 @@ jobs:
                   ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
             - run:
                 name: Run Tests - 5.5
+                no_output_timeout: 5h
                 shell: /bin/bash
                 command: |
                   if [ -z $INSTANCE_WAS_CREATED ];
