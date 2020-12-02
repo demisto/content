@@ -383,6 +383,7 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, demisto_use
             logging_manager.info(f'------ Test {test_message} end ------\n')
             return
         proxy.failed_tests_count += 1
+        proxy.get_mitmdump_service_status()
         logging_manager.warning("Test failed with mock, recording new mock file. (Mock: Recording)")
         rerecord = True
     else:
