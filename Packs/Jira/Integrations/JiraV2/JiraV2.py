@@ -557,7 +557,7 @@ def add_comment_command(issue_id, comment, visibility=''):
     return_outputs(readable_output=human_readable, outputs={}, raw_response=contents)
 
 
-def bissue_upload_command(issue_id, upload, attachment_name=None):
+def issue_upload_command(issue_id, upload, attachment_name=None):
     j_res = upload_file(upload, issue_id, attachment_name)
     md = generate_md_upload_issue(j_res, issue_id)
     human_readable = tableToMarkdown(demisto.command(), md, "")
