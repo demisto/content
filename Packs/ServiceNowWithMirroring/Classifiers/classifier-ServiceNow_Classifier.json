@@ -1,0 +1,24 @@
+{
+    "description": "Default Classifier for Service Now",
+    "feed": false,
+    "id": "29393fc6-25c4-49f7-8d4a-f51c58214617",
+    "keyTypeMap": {
+        "change_request": "ServiceNow Change Request",
+        "incident": "ServiceNow Incident",
+        "problem": "ServiceNow Problem",
+        "sc_req_item": "ServiceNow Service Catalogue Request Item",
+        "sc_request": "ServiceNow Service Catalogue Request",
+        "sc_task": "ServiceNow Service Catalogue Task"
+    },
+    "name": "ServiceNow_Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "sys_class_name"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

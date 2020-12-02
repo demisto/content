@@ -1,0 +1,21 @@
+{
+    "autorun": false,
+    "color": "#ade901",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "ServiceNow Service Catalogue Task",
+    "layout": "d5c33486-be9b-4cb8-83e9-f98010698cdb",
+    "locked": false,
+    "name": "ServiceNow Service Catalogue Task",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

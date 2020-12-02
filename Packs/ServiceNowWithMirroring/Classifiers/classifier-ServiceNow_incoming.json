@@ -1,0 +1,346 @@
+{
+    "description": "Default inbound mirroring for Service Now",
+    "feed": false,
+    "id": "18692d3c-7805-4e09-8517-6965dc0eef4f",
+    "mapping": {
+        "ServiceNow Change Request": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Change Type": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "Impact": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "impact",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "3,2,1"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Low,Medium,High"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Risk": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "risk",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "4,3,2"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Low,Moderate,High"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "ServiceNow State": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "state",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "-5,-4,-3,-2,-1,0,1,2,3,4,5,6"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "New,Assess,Authorise,Scheduled,Implement,Review,New,In Progress,On Hold,Resolved,Closed,Cancelled"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "ServiceNow Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Service Now ID": {
+                    "complex": null,
+                    "simple": "number"
+                },
+                "ServiceNow Category": {
+                    "complex": null,
+                    "simple": "category"
+                },
+                "ServiceNow State": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "incident_state",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5,6"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "New,In Progress, On Hold, Resolved,Closed,Cancelled"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Sub-Category": {
+                    "complex": null,
+                    "simple": "subcategory"
+                }
+            }
+        },
+        "ServiceNow Problem": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+
+            }
+        },
+        "ServiceNow Service Catalogue Request": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+
+            }
+        },
+        "ServiceNow Service Catalogue Request Item": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+
+            }
+        },
+        "ServiceNow Service Catalogue Task": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Impact": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "impact",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "3,2,1"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Low,Medium,High"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Priority": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "priority",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "5,4,3,2,1"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Planning,Low,Moderate,High,Critical"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Urgency": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "urgency",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "3,2,1"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Low,Medium,High"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "dbotMirrorDirection": {
+                    "complex": null,
+                    "simple": "dbotMirrorDirection"
+                },
+                "dbotMirrorId": {
+                    "complex": null,
+                    "simple": "sys_id"
+                },
+                "dbotMirrorInstance": {
+                    "complex": null,
+                    "simple": "dbotMirrorInstance"
+                },
+                "dbotMirrorTags": {
+                    "complex": null,
+                    "simple": "dbotMirrorTags"
+                },
+                "details": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "short_description",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "sys_created_on",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "formatter": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "%Y-%m-%d %H:%M:%S"
+                                        }
+                                    }
+                                },
+                                "operator": "FormattedDateToEpoch"
+                            },
+                            {
+                                "args": {
+
+                                },
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "ServiceNow_incoming",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,21 @@
+{
+    "autorun": false,
+    "color": "#ade901",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "ServiceNow Problem",
+    "layout": "5c7ee7b8-b06e-48c5-8a88-17a53d2aea16",
+    "locked": false,
+    "name": "ServiceNow Problem",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

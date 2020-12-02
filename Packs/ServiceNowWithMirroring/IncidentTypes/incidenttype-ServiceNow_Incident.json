@@ -1,0 +1,21 @@
+{
+    "autorun": false,
+    "color": "#ade901",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "ServiceNow Incident",
+    "layout": "678e0ba3-0148-4671-8b76-6ad4d7bfb234",
+    "locked": false,
+    "name": "ServiceNow Incident",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,21 @@
+{
+    "autorun": false,
+    "color": "#ade901",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "ServiceNow Change Request",
+    "layout": "f2c7d288-69fb-4fc7-8bfd-3c9203030408",
+    "locked": false,
+    "name": "ServiceNow Change Request",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

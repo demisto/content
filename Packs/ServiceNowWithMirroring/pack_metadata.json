@@ -1,0 +1,14 @@
+{
+    "name": "ServiceNow with mirroring",
+    "description": "This is the ServiceNow V2 integration with the option for mirroring.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Adam Burt",
+    "url": "",
+    "email": "",
+    "created": "2020-12-02T16:19:20Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

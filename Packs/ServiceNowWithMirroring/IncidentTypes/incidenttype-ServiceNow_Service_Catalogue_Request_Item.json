@@ -1,0 +1,21 @@
+{
+    "autorun": false,
+    "color": "#ade901",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "ServiceNow Service Catalogue Request Item",
+    "layout": "959a0959-bf95-49ea-8046-c17698761ce4",
+    "locked": false,
+    "name": "ServiceNow Service Catalogue Request Item",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

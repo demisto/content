@@ -1,0 +1,55 @@
+{
+    "description": "Default outbound mirroring for Service Now",
+    "feed": false,
+    "id": "38586341-d173-431d-8c93-cb1f3b2a3cf7",
+    "mapping": {
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "description": {
+                    "complex": null,
+                    "simple": "details"
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "4,3,2,1"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4"
+                                        }
+                                    }
+                                },
+                                "operator": "5e8092be-35e1-467e-8fb0-87c9a52c7568"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "short_description": {
+                    "complex": null,
+                    "simple": "name"
+                }
+            }
+        }
+    },
+    "name": "ServiceNow_Outgoing",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
