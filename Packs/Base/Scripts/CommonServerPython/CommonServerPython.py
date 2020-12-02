@@ -3337,13 +3337,7 @@ class Common(object):
             elif self.extensions:  # autogenerate it from extensions
                 for ext in self.extensions:
                     if ext.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME:
-<<<<<<< HEAD
                         san_list.append(ext.to_context())
-=======
-                        ext_context = ext.to_context()
-                        if 'Value' in ext_context:
-                            san_list.extend(ext_context['Value'])
->>>>>>> cd7a9db8e36d214c5b5070513f8d31c287b66501
 
             if san_list:
                 certificate_context['SubjectAlternativeName'] = san_list
@@ -3351,12 +3345,12 @@ class Common(object):
             if self.name:
                 certificate_context["Name"] = self.name
             else:  # autogenerate it
-                name = set ()  # type: Set[str]
+                name = set()  # type: Set[str]
 
                 # add subject alternative names
                 if san_list:
                     name = set([
-                        sn['Value'] for sn in san_list 
+                        sn['Value'] for sn in san_list
                         if (
                             'Value' in sn
                             and (
