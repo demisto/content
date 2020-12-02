@@ -2680,12 +2680,48 @@ class Common(object):
     class CertificatePublicKey(object):
         """
         CertificatePublicKey class
+        Defines an X509  PublicKey used in Common.Certificate
+
+        :type algorithm: ``str``
+        :param algorithm: The encryption algorithm: DSA, RSA, EC or UNKNOWN (Common.CertificatePublicKey.Algorithm enum)
+
+        :type length: ``int``
+        :param length: The length of the public key
+
+        :type publickey: ``Optional[str]``
+        :param publickey: publickey
+
+        :type p: ``Optional[str]``
+        :param p: P parameter used in DSA algorithm
+
+        :type q: ``Optional[str]``
+        :param q: Q parameter used in DSA algorithm
+
+        :type g: ``Optional[str]``
+        :param g: G parameter used in DSA algorithm
+
+        :type modulus: ``Optional[str]``
+        :param modulus: modulus parameter used in RSA algorithm
+
+        :type modulus: ``Optional[int]``
+        :param modulus: exponent parameter used in RSA algorithm
+
+        :type x: ``Optional[str]``
+        :param x: X parameter used in EC algorithm
+
+        :type y: ``Optional[str]``
+        :param y: Y parameter used in EC algorithm
+
+        :type curve: ``Optional[str]``
+        :param curve: curve parameter used in EC algorithm
+
         :return: None
         :rtype: ``None``
         """
         class Algorithm(object):
             """
-            Algorithm class
+            Algorithm class to enumerate available algorithms
+
             :return: None
             :rtype: ``None``
             """
@@ -2772,6 +2808,17 @@ class Common(object):
     class GeneralName(object):
         """
         GeneralName class
+        Implements GeneralName interface from rfc5280
+        Enumerates the available General Name Types
+
+        :type gn_type: ``str``
+        :param gn_type: General Name Type
+
+        :type gn_value: ``str``
+        :param gn_value: General Name Value
+
+        :return: None
+        :rtype: ``None``
         """
         OTHERNAME = 'otherName'
         RFC822NAME = 'rfc822Name'
@@ -2817,10 +2864,88 @@ class Common(object):
     class CertificateExtension(object):
         """
         CertificateExtension class
+        Defines an X509 Certificate Extensions used in Common.Certificate
+
+
+        :type extension_type: ``str``
+        :param extension_type: The type of Extension (from Common.CertificateExtension.ExtensionType enum, or "Other)
+
+        :type critical: ``bool``
+        :param critical: Whether the extension is marked as critical
+
+        :type extension_name: ``str``
+        :param extension_name: Name of the extension
+
+        :type oid: ``str``
+        :param oid: OID of the extension
+
+        :type subject_alternative_names: ``Optional[List[Common.CertificateExtension.SubjectAlternativeName]]``
+        :param subject_alternative_names: Subject Alternative Names
+
+        :type authority_key_identifier: ``Optional[Common.CertificateExtension.AuthorityKeyIdentifier]``
+        :param authority_key_identifier: Authority Key Identifier
+
+        :type digest: ``Optional[str]``
+        :param digest: digest for Subject Key Identifier extension
+
+        :type digital_signature: ``Optional[bool]``
+        :param digital_signature: Digital Signature usage for Key Usage extension
+
+        :type content_commitment: ``Optional[bool]``
+        :param content_commitment: Content Commitment usage for Key Usage extension
+
+        :type key_encipherment: ``Optional[bool]``
+        :param key_encipherment: Key Encipherment usage for Key Usage extension
+
+        :type data_encipherment: ``Optional[bool]``
+        :param data_encipherment: Data Encipherment usage for Key Usage extension
+
+        :type key_agreement: ``Optional[bool]``
+        :param key_agreement: Key Agreement usage for Key Usage extension
+
+        :type key_cert_sign: ``Optional[bool]``
+        :param key_cert_sign: Key Cert Sign usage for Key Usage extension
+
+        :type usages: ``Optional[List[str]]``
+        :param usages: Usages for Extended Key Usage extension
+
+        :type distribution_points: ``Optional[List[Common.CertificateExtension.DistributionPoint]]``
+        :param distribution_points: Distribution Points
+
+        :type certificate_policies: ``Optional[List[Common.CertificateExtension.CertificatePolicy]]``
+        :param certificate_policies: Certificate Policies
+
+        :type authority_information_access: ``Optional[List[Common.CertificateExtension.AuthorityInformationAccess]]``
+        :param authority_information_access: Authority Information Access
+
+        :type basic_constraints: ``Optional[Common.CertificateExtension.BasicConstraints]``
+        :param basic_constraints: Basic Constraints
+
+        :type signed_certificate_timestamps: ``Optional[List[Common.CertificateExtension.SignedCertificateTimestamp]]``
+        :param signed_certificate_timestamps: (PreCertificate)Signed Certificate Timestamps
+
+        :type value: ``Optional[Union[str, List[Any], Dict[str, Any]]]``
+        :param value: Raw value of the Extension (used for "Other" type)
+
+        :return: None
+        :rtype: ``None``
         """
         class SubjectAlternativeName(object):
             """
             SubjectAlternativeName class
+            Implements Subject Alternative Name extension interface
+
+            :type gn: ``Optional[Common.GeneralName]``
+            :param gn: General Name Type provided as Common.GeneralName
+
+            :type gn_type: ``Optional[str]``
+            :param gn_type: General Name Type provided as string
+
+            :type gn_value: ``Optional[str]``
+            :param gn_value: General Name Value provided as string
+
+            :return: None
+            :rtype: ``None``
             """
             def __init__(
                 self,
@@ -2847,10 +2972,23 @@ class Common(object):
         class AuthorityKeyIdentifier(object):
             """
             AuthorityKeyIdentifier class
+            Implements Authority Key Identifier extension interface
+
+            :type issuer: ``Optional[List['Common.GeneralName']]``
+            :param issuer: Issuer list
+
+            :type serial_number: ``Optional[str]``
+            :param serial_number: Serial Number
+
+            :type key_identifier: ``Optional[str]``
+            :param key_identifier: Key Identifier
+
+            :return: None
+            :rtype: ``None``
             """
             def __init__(
                 self,
-                issuer,  # type: Optional[List['Common.GeneralName']]
+                issuer,  # type: Optional[List[Common.GeneralName]]
                 serial_number,  # type: Optional[str]
                 key_identifier  # type: Optional[str]
             ):
@@ -2874,12 +3012,28 @@ class Common(object):
         class DistributionPoint(object):
             """
             DistributionPoint class
+            Implements Distribution Point extension interface
+
+            :type full_name: ``Optional[List['Common.GeneralName']]``
+            :param full_name: Full Name list
+
+            :type relative_name: ``Optional[str]``
+            :param relative_name: Relative Name
+
+            :type crl_issuer: ``Optional[List['Common.GeneralName']]``
+            :param crl_issuer: CRL Issuer
+
+            :type reasons: ``Optional[List[str]]``
+            :param reasons: Reason list
+
+            :return: None
+            :rtype: ``None``
             """
             def __init__(
                 self,
-                full_name=None,  # type: Optional[List['Common.GeneralName']]
+                full_name=None,  # type: Optional[List[Common.GeneralName]]
                 relative_name=None,  # type:  Optional[str]
-                crl_issuer=None,  # type: Optional[List['Common.GeneralName']]
+                crl_issuer=None,  # type: Optional[List[Common.GeneralName]]
                 reasons=None  # type: Optional[List[str]]
             ):
                 self.full_name = full_name
@@ -2903,6 +3057,16 @@ class Common(object):
         class CertificatePolicy(object):
             """
             CertificatePolicy class
+            Implements Certificate Policy extension interface
+
+            :type policy_identifier: ``str``
+            :param policy_identifier: Policy Identifier
+
+            :type policy_qualifiers: ``Optional[List[str]]``
+            :param policy_qualifiers: Policy Qualifier list
+
+            :return: None
+            :rtype: ``None``
             """
             def __init__(
                 self,
@@ -2925,11 +3089,21 @@ class Common(object):
         class AuthorityInformationAccess(object):
             """
             AuthorityInformationAccess class
+            Implements Authority Information Access extension interface
+
+            :type access_method: ``str``
+            :param access_method: Access Method
+
+            :type access_location: ``Common.GeneralName``
+            :param access_location: Access Location
+
+            :return: None
+            :rtype: ``None``
             """
             def __init__(
                 self,
                 access_method,  # type: str
-                access_location  # type:Common.GeneralName
+                access_location  # type: Common.GeneralName
             ):
                 self.access_method = access_method
                 self.access_location = access_location
@@ -2943,6 +3117,16 @@ class Common(object):
         class BasicConstraints(object):
             """
             BasicConstraints class
+            Implements Basic Constraints extension interface
+
+            :type ca: ``bool``
+            :param ca: Certificate Authority
+
+            :type path_length: ``int``
+            :param path_length: Path Length
+
+            :return: None
+            :rtype: ``None``
             """
             def __init__(
                 self,
@@ -2965,12 +3149,28 @@ class Common(object):
         class SignedCertificateTimestamp(object):
             """
             SignedCertificateTimestamp class
-            for "PreCertificateSignedCertificateTimestamp" or
-            "SignedCertificateTimestamp" extensions
+            Implementsinterface for  "PreCertificateSignedCertificateTimestamp" or "SignedCertificateTimestamp" extensions
+
+            :type entry_type: ``str``
+            :param entry_type: Entry Type (from Common.CertificateExtension.SignedCertificateTimestamp.EntryType enum)
+
+            :type version: ``str``
+            :param version: Version
+
+            :type log_id: ``str``
+            :param log_id: Log ID
+
+            :type timestamp: ``str``
+            :param timestamp: Timestamp (ISO8601 string representation in UTC)
+
+            :return: None
+            :rtype: ``None``
             """
             class EntryType(object):
                 """
-                ExtensionType class
+                EntryType class
+                Enumerates Entry Types for SignedCertificateTimestamp class
+
                 :return: None
                 :rtype: ``None``
                 """
@@ -3015,6 +3215,8 @@ class Common(object):
         class ExtensionType(object):
             """
             ExtensionType class
+            Enumerates Extension Types for Common.CertificatExtension class
+
             :return: None
             :rtype: ``None``
             """
@@ -3224,7 +3426,66 @@ class Common(object):
 
     class Certificate(Indicator):
         """
-        Certificate indicator - https://xsoar.pan.dev/docs/integrations/context-standards-recommended#certificate
+        Implements the X509 Certificate interface
+        Certificate indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#certificate
+
+        :type subject_dn: ``str``
+        :param subject_dn: Subject Distinguished Name
+
+        :type dbot_score: ``DBotScore``
+        :param dbot_score: If IP has a score then create and set a DBotScore object.
+
+        :type name: ``Optional[Union[str, List[str]]]``
+        :param name: Name (if not provided output is calculated from SubjectDN and SAN)
+
+        :type issuer_dn: ``Optional[str]``
+        :param issuer_dn: Issuer Distinguished Name
+
+        :type serial_number: ``Optional[str]``
+        :param serial_number: Serial Number
+
+        :type validity_not_after: ``Optional[str]``
+        :param validity_not_after: Certificate Expiration Timestamp (ISO8601 string representation)
+
+        :type validity_not_before: ``Optional[str]``
+        :param validity_not_before: Initial Certificate Validity Timestamp (ISO8601 string representation)
+
+        :type sha512: ``Optional[str]``
+        :param sha512: The SHA-512 hash of the certificate in binary encoded format (DER)
+
+        :type sha256: ``Optional[str]``
+        :param sha256: The SHA-256 hash of the certificate in binary encoded format (DER)
+
+        :type sha1: ``Optional[str]``
+        :param sha1: The SHA-1 hash of the certificate in binary encoded format (DER)
+
+        :type md5: ``Optional[str]``
+        :param md5: The MD5 hash of the certificate in binary encoded format (DER)
+
+        :type publickey: ``Optional[Common.CertificatePublicKey]``
+        :param publickey: Certificate Public Key
+
+        :type spki_sha256: ``Optional[str]``
+        :param sha1: The SHA-256 hash of the SPKI
+
+        :type signature_algorithm: ``Optional[str]``
+        :param signature_algorithm: Signature Algorithm
+
+        :type signature: ``Optional[str]``
+        :param signature: Certificate Signature
+
+        :type subject_alternative_name: \
+        ``Optional[List[Union[str,Dict[str, str],Common.CertificateExtension.SubjectAlternativeName]]]``
+        :param subject_alternative_name: Subject Alternative Name list
+
+        :type extensions: ``Optional[List['Common.CertificateExtension']]`
+        :param extensions: Certificate Extension List
+
+        :type pem: ``Optional[str]``
+        :param pem: PEM encoded certificate
+
+        :return: None
+        :rtype: ``None``
         """
         CONTEXT_PATH = 'Certificate(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
                        'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512)'
@@ -3242,7 +3503,7 @@ class Common(object):
             sha256=None,  # type: Optional[str]
             sha1=None,  # type: Optional[str]
             md5=None,  # type: Optional[str]
-            publickey=None,  # type: Optional[Union[Dict[str, Any], 'Common.CertificatePublicKey']]
+            publickey=None,  # type: Optional[Common.CertificatePublicKey]
             spki_sha256=None,  # type: Optional[str]
             signature_algorithm=None,  # type: Optional[str]
             signature=None,  # type: Optional[str]
@@ -3263,7 +3524,7 @@ class Common(object):
                 elif isinstance(name, list):
                     self.name = name
                 else:
-                    raise TypeError('certificate name must be of type str  or List[str]')
+                    raise TypeError('certificate name must be of type str or List[str]')
 
             self.issuer_dn = issuer_dn
             self.serial_number = serial_number
@@ -3399,8 +3660,6 @@ class Common(object):
 
             if self.publickey and isinstance(self.publickey, Common.CertificatePublicKey):
                 certificate_context["PublicKey"] = self.publickey.to_context()
-            elif self.publickey:
-                certificate_context["PublicKey"] = self.publickey
 
             if self.spki_sha256:
                 certificate_context["SPKISHA256"] = self.spki_sha256
