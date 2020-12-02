@@ -27,7 +27,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, Dict, List, Any, Union
+    from typing import Optional, Dict, List, Any, Union, Set
 except Exception:
     if sys.version_info[0] < 3:
         # in python 2 an exception in the imports might still be raised even though it is caught.
@@ -3256,6 +3256,7 @@ class Common(object):
             self.subject_dn = subject_dn
             self.dbot_score = dbot_score
 
+            self.name = None
             if name:
                 if isinstance(name, str):
                     self.name = [name]
@@ -3332,10 +3333,17 @@ class Common(object):
                         san_list.append(san)
                     elif(isinstance(san, Common.CertificateExtension.SubjectAlternativeName)):
                         san_list.append(san.to_context())
+
             elif self.extensions:  # autogenerate it from extensions
                 for ext in self.extensions:
                     if ext.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME:
+<<<<<<< HEAD
                         san_list.append(ext.to_context())
+=======
+                        ext_context = ext.to_context()
+                        if 'Value' in ext_context:
+                            san_list.extend(ext_context['Value'])
+>>>>>>> cd7a9db8e36d214c5b5070513f8d31c287b66501
 
             if san_list:
                 certificate_context['SubjectAlternativeName'] = san_list
@@ -3343,9 +3351,21 @@ class Common(object):
             if self.name:
                 certificate_context["Name"] = self.name
             else:  # autogenerate it
-                name = []  # type: List[str]
+                name = set ()  # type: Set[str]
+
+                # add subject alternative names
                 if san_list:
-                    name = [s['Value'] for s in san_list if 'Value' in s]
+                    name = set([
+                        sn['Value'] for sn in san_list 
+                        if (
+                            'Value' in sn
+                            and (
+                                'Type' not in sn
+                                or sn['Type'] in (Common.GeneralName.DNSNAME, Common.GeneralName.IPADDRESS)
+                            )
+                        )
+                    ])
+
                 # subject_dn is RFC4515 escaped
                 # replace \, and \+ with the long escaping \2c and \2b
                 long_escaped_subject_dn = self.subject_dn.replace("\\,", "\\2c")
@@ -3354,9 +3374,10 @@ class Common(object):
                 rdns = long_escaped_subject_dn.replace('+', ',').split(',')
                 cn = next((rdn for rdn in rdns if rdn.startswith('CN=')), None)
                 if cn:
-                    name.append(cn)
+                    name.add(cn.split('=', 1)[-1])
+
                 if name:
-                    certificate_context["Name"] = name
+                    certificate_context["Name"] = sorted(list(name))
 
             if self.issuer_dn:
                 certificate_context["IssuerDN"] = self.issuer_dn
