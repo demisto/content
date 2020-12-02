@@ -11,7 +11,7 @@ parameters:
     default: ""
   backward_compatibility:
     type: string
-    default: ""
+    default: "true"
   nightly:
     type: string
     default: ""
@@ -55,7 +55,7 @@ references:
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
-      BACKWARD_COMPATIBILITY: << pipeline.parameters.backward_compatibility >>
+      CHECK_BACKWARD: << pipeline.parameters.backward_compatibility >>
       MEM_CHECK: << pipeline.parameters.mem_check >>
       CONTRIB_BRANCH: << pipeline.parameters.contrib_branch >>
       CONTRIB_PACK_NAME: << pipeline.parameters.contrib_pack_name >>
@@ -260,7 +260,6 @@ references:
         ./Tests/scripts/pyflake.sh *.py
         find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
 
-        [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
         ./Tests/scripts/validate.sh
 
   run_unit_testing_and_lint: &run_unit_testing_and_lint
