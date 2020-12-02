@@ -81,7 +81,7 @@ def normalize_pack_integration_urls(pack, original_base_path):
 
 
 def main():
-    install_logging('Prepare Content Packs For Testing.log')
+    install_logging('Prepare_Content_Packs_For_Testing.log')
     option = option_handler()
     storage_bucket_name = option.bucket_name
     service_account = option.service_account

@@ -9,25 +9,24 @@ integration_params = {
     'query': 'status=Open'
 }
 
-integration_args_missing_mandatory_summary = {
-    "projectKey": "testKey",
-    "issueTypeId": "1234"
+integration_args_missing_mandatory_project_key_and_name = {
+    "summary": "test",
 }
 
-integration_args_missing_mandatory_project_key = {
-    "summary": "test",
-    "issueTypeId": "1234"
-}
-
-integration_args_missing_mandatory_issue_type_id = {
+integration_args_missing_mandatory_name = {
     "summary": "test",
     "projectKey": "testKey",
+}
+
+integration_args_missing_mandatory_key = {
+    "summary": "test",
+    "projectName": "testName",
 }
 
 integration_args = {
     "summary": "test",
     "projectKey": "testKey",
-    "issueTypeId": "1234"
+    "projectName": "testName"
 }
 
 
@@ -36,9 +35,11 @@ def set_params(mocker):
     mocker.patch.object(demisto, 'params', return_value=integration_params)
 
 
-def test_create_issue_command_after_fix_mandatory_args_issue(mocker):
+@pytest.mark.parametrize('args', [integration_args, integration_args_missing_mandatory_name,
+                                  integration_args_missing_mandatory_key])
+def test_create_issue_command_after_fix_mandatory_args_issue(mocker, args):
     from JiraV2 import create_issue_command
-    mocker.patch.object(demisto, 'args', return_value=integration_args)
+    mocker.patch.object(demisto, 'args', return_value=args)
     user_data = {
         "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=1234", "accountId": "1234",
         "emailAddress": "admin@demistodev.com", "displayName": "test", "active": True,
@@ -52,17 +53,17 @@ def test_create_issue_command_after_fix_mandatory_args_issue(mocker):
     assert demisto.results.call_count == 1
 
 
-@pytest.mark.parametrize('args',
-                         [integration_args_missing_mandatory_summary,
-                          integration_args_missing_mandatory_issue_type_id,
-                          integration_args_missing_mandatory_project_key])
+@pytest.mark.parametrize('args', [integration_args_missing_mandatory_project_key_and_name])
 def test_create_issue_command_before_fix_mandatory_args_summary_missing(mocker, args):
     mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, "results")
     from JiraV2 import create_issue_command
-    with pytest.raises(Exception) as e:
+    with pytest.raises(SystemExit) as e:
         # when there are missing arguments, an Exception is raised to the user
         create_issue_command()
     assert e
+    assert demisto.results.call_args[0][0]['Contents'] == \
+           'You must provide at least one of the following: project_key or project_name'
 
 
 def test_issue_query_command_no_issues(mocker):
@@ -141,6 +142,17 @@ def test_module(mocker):
     mocker.patch('JiraV2.run_query', return_value={})
     result = module()
     assert result == 'ok'
+
+
+def test_get_modified_remote_data(mocker):
+    """
+    The get-modified-remote-data command is not (yet) supported by this integration.
+    Make sure an exception is thrown so the server knows about it.
+    """
+    from JiraV2 import main
+    mocker.patch.object(demisto, 'command', return_value='get-modified-remote-data')
+    with pytest.raises(NotImplementedError):
+        main()
 
 
 def test_get_remote_data(mocker):
