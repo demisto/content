@@ -595,9 +595,9 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         if entries:
             for entry in entries:
                 if 'file' in entry and entry.get('file'):
-                    file_entry = client.get_file_entry(entry.get('id'))
+                    file_entry = client.get_file_entry(entry.get('id'))  # type: ignore
                     file_result = fileResult(entry['file'], file_entry.content)
-                    if any(attachment.get('name') == entry['file'] for attachment in incident.get('attachment')):
+                    if any(attachment.get('name') == entry['file'] for attachment in incident.get('attachment', [])):
                         if file_result['Type'] == entryTypes['error']:
                             raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
                         file_attachments.append({
