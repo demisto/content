@@ -96,11 +96,11 @@ def set_email_reply(email_from, email_to, email_cc, html_body, attachments):
 
 def get_incident_by_query(query):
     """
-    Get incident id and return it's details.
+    Get a query and return all incidents details matching the given query.
     Args:
-        query: Query for the incident id.
+        query: Query for the incidents that should be returned.
     Returns:
-        dict. Incident details.
+        dict. The details of all incidents matching the query.
     """
     res = demisto.executeCommand("GetIncidentsByQuery", {"query": query, "Contents": "id,status"})[0]
 
@@ -108,8 +108,8 @@ def get_incident_by_query(query):
         demisto.results(ERROR_TEMPLATE.format('GetIncidentsByQuery', res['Contents']))
         raise DemistoException(ERROR_TEMPLATE.format('GetIncidentsByQuery', res['Contents']))
 
-    incident_details = json.loads(res['Contents'])[0]
-    return incident_details
+    incidents_details = json.loads(res['Contents'])
+    return incidents_details
 
 
 def check_incident_status(incident_details, email_related_incident):
@@ -190,6 +190,33 @@ def update_latest_message_field(incident_id, item_id):
                       f'"emaillatestmessage" field was not updated with {item_id} value for incident: {incident_id}')
 
 
+def get_email_related_incident_id(email_related_incident_code, email_original_subject):
+    """
+    Get the email generated code and the original text subject of an email and return the incident matching to the
+    email code and original subject.
+    """
+
+    query = f'emailcodegenerator: {email_related_incident_code}'
+    incidents_details = get_incident_by_query(query)
+    for incident in incidents_details:
+        if email_original_subject in incident.get('emailsubject'):
+            return incident.get('id')
+
+
+def get_unique_code():
+    """
+    Create a 8-digit unique random code that should be used to identify new created incidents.
+    """
+    code_is_unique = False
+    while not code_is_unique:
+        code = f'{random.randrange(1, 10 ** 8):08}'
+        query = f'emailcodegenerator: {code}'
+        incidents_details = get_incident_by_query(query)
+        if len(incidents_details) == 0:
+            code_is_unique = True
+    return code
+
+
 def main():
     incident = demisto.incident()
     custom_fields = incident.get('CustomFields')
@@ -202,10 +229,12 @@ def main():
     email_latest_message = custom_fields.get('emaillatestmessage')
 
     try:
-        email_related_incident = email_subject.split('#')[1].split()[0]
+        email_related_incident_code = email_subject.split('<')[1].split('>')[0]
+        email_original_subject = email_subject.split('<')[1].split('>')[1]
+        email_related_incident = get_email_related_incident_id(email_related_incident_code, email_original_subject)
         update_latest_message_field(email_related_incident, email_latest_message)
         query = f"id:{email_related_incident}"
-        incident_details = get_incident_by_query(query)
+        incident_details = get_incident_by_query(query)[0]
         check_incident_status(incident_details, email_related_incident)
         get_attachments_using_instance(email_related_incident, incident.get('labels'))
 
@@ -222,6 +251,8 @@ def main():
 
     except (IndexError, ValueError, DemistoException) as e:
         # True - For creating new incident
+        demisto.executeCommand('setIncident', {'id': incident.get('id'), 'customFields': {'emailcodegenerator': get_unique_code()}})
+
         demisto.results(True)
         return_error(f"The PreprocessEmail script has encountered an error:\n {e} \nA new incidents was created.")
 
