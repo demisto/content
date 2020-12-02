@@ -810,7 +810,6 @@ def execute_testing(tests_settings,
     skipped_integration = set([])
     playbook_skipped_integration = set([])
 
-    logging_manager.execute_logs()
     mockable_tests = get_test_records_of_given_test_names(tests_settings, mockable_tests_names)
     unmockable_tests = get_test_records_of_given_test_names(tests_settings, unmockable_tests_names)
 
