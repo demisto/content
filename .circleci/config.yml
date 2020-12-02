@@ -10,8 +10,8 @@ parameters:
     type: string
     default: ""
   backward_compatibility:
-    type: string
-    default: "true"
+    type: bool
+    default: true
   nightly:
     type: string
     default: ""
