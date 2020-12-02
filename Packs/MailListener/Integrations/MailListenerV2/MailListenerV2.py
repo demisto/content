@@ -213,7 +213,10 @@ def fetch_incidents(client: IMAPClient,
         incidents.append(mail.convert_to_incident())
         latest_created_time = max(latest_created_time, mail.date)  # type: ignore[type-var]
         uid_to_fetch_from = max(uid_to_fetch_from, mail.id)
-    next_run = {'last_fetch': latest_created_time.isoformat(), 'last_uid': uid_to_fetch_from}  # type: ignore[union-attr]
+    next_run = {
+        'last_fetch': latest_created_time.isoformat(),  # type: ignore[union-attr]
+        'last_uid': uid_to_fetch_from
+    }
     if delete_processed:
         client.delete_messages(messages)
     return next_run, incidents
