@@ -570,16 +570,14 @@ script:
           secret: false
         - auto: PREDEFINED
           default: false
-          defaultValue: severity
+          defaultValue: first_event_time
           description: Field by which to sort the results. Can be "first_event_time",
-            "last_event_time", "severity", or "target_value".
+            or "last_event_time".
           isArray: false
           name: sort_field
           predefined:
             - first_event_time
             - last_event_time
-            - severity
-            - target_value
           required: false
           secret: false
         - auto: PREDEFINED
@@ -1817,7 +1815,7 @@ script:
         - contextPath: CarbonBlackEEDR.SearchProcess.results.scriptload_count
           description: The cumulative count of loaded scripts since process tracking started.
           type: Number
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: true
   longRunning: false

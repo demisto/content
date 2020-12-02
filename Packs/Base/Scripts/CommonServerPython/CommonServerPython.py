@@ -2912,6 +2912,10 @@ def return_results(results):
         demisto.results(results.to_entry())
         return
 
+    if isinstance(results, GetModifiedRemoteDataResponse):
+        demisto.results(results.to_entry())
+        return
+
     demisto.results(results)
 
 
@@ -3874,7 +3878,7 @@ if 'requests' in sys.modules:
             except NameError:
                 pass
 
-        def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None,
+        def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
                           params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
@@ -4001,15 +4005,10 @@ if 'requests' in sys.modules:
                             # Try to parse json error response
                             error_entry = res.json()
                             err_msg += '\n{}'.format(json.dumps(error_entry))
-                            raise DemistoException(err_msg, res=error_entry)
+                            raise DemistoException(err_msg, res=res)
                         except ValueError:
                             err_msg += '\n{}'.format(res.text)
-                            try:
-                                error_entry = json.loads(res.text)
-                                raise DemistoException(err_msg, res=error_entry)
-                            except ValueError:
-                                # couldn't parse the response json, sending only the error message
-                                raise DemistoException(err_msg)
+                            raise DemistoException(err_msg, res=res)
 
                 is_response_empty_and_successful = (res.status_code == 204)
                 if is_response_empty_and_successful and return_empty_response:
@@ -4353,7 +4352,7 @@ def update_integration_context(context, object_keys=None, sync=True):
 
 class DemistoException(Exception):
     def __init__(self, message, exception=None, res=None, *args):
-        self.res = res if res else {}
+        self.res = res
         self.message = message
         self.exception = exception
         super(DemistoException, self).__init__(message, exception, *args)
@@ -4365,7 +4364,7 @@ class DemistoException(Exception):
 class GetRemoteDataArgs:
     """get-remote-data args parser
     :type args: ``dict``
-    :param args: arguments for the command of the command.
+    :param args: arguments for the command.
 
     :return: No data returned
     :rtype: ``None``
@@ -4373,6 +4372,19 @@ class GetRemoteDataArgs:
 
     def __init__(self, args):
         self.remote_incident_id = args['id']
+        self.last_update = args['lastUpdate']
+
+
+class GetModifiedRemoteDataArgs:
+    """get-modified-remote-data args parser
+    :type args: ``dict``
+    :param args: arguments for the command.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, args):
         self.last_update = args['lastUpdate']
 
 
@@ -4419,6 +4431,28 @@ class GetRemoteDataResponse:
         if self.mirrored_object:
             demisto.info('Updating object {}'.format(self.mirrored_object["id"]))
             return [self.mirrored_object] + self.entries
+
+
+class GetModifiedRemoteDataResponse:
+    """get-modified-remote-data response parser
+    :type modified_incident_ids: ``list``
+    :param modified_incident_ids: The incidents that were modified since the last check.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, modified_incident_ids):
+        self.modified_incident_ids = modified_incident_ids
+
+    def to_entry(self):
+        """Extracts the response
+
+        :return: List of incidents to run the get-remote-data command on.
+        :rtype: ``list``
+        """
+        demisto.info('Modified incidents: {}'.format(self.modified_incident_ids))
+        return {'Contents': self.modified_incident_ids, 'Type': EntryType.NOTE, 'ContentsFormat': EntryFormat.JSON}
 
 
 class SchemeTypeMapping:

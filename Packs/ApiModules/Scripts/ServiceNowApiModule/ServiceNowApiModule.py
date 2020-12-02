@@ -118,6 +118,7 @@ class ServiceNowClient(BaseClient):
         Get an access token that was previously created if it is still valid, else, generate a new access token from
         the client id, client secret and refresh token.
         """
+        ok_codes = (200, 201, 401)
         previous_token = get_integration_context()
 
         # Check if there is an existing valid access token
@@ -140,7 +141,7 @@ class ServiceNowClient(BaseClient):
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
                 res = super()._http_request(method='POST', url_suffix=OAUTH_URL, resp_type='response', headers=headers,
-                                            data=data)
+                                            data=data, ok_codes=ok_codes)
                 try:
                     res = res.json()
                 except ValueError as exception:

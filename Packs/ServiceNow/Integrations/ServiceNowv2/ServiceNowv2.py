@@ -9,6 +9,8 @@ from CommonServerPython import *
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
+
 TICKET_STATES = {
     'incident': {
         '1': '1 - New',
@@ -1948,8 +1950,8 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     """
     # Notify the user that test button can't be used when using OAuth 2.0:
     if client.use_oauth:
-        return_error('Test button cannot be used when using OAuth 2.0. Please use the !servicenow-oauth-login command '
-                     'followed by the !servicenow-oauth-test command to test the instance.')
+        raise Exception('Test button cannot be used when using OAuth 2.0. Please use the !servicenow-oauth-login '
+                        'command followed by the !servicenow-oauth-test command to test the instance.')
 
     test_instance(client)
     return 'ok', {}, {}, True
@@ -1960,8 +1962,9 @@ def oauth_test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any
     Test the instance configurations when using OAuth authentication.
     """
     if not client.use_oauth:
-        return_error('!servicenow-oauth-test command should be used only when using OAuth 2.0 authorization.\n Please '
-                     'select the `Use OAuth Login` checkbox in the instance configuration before running this command.')
+        raise Exception('!servicenow-oauth-test command should be used only when using OAuth 2.0 authorization.\n '
+                        'Please select the `Use OAuth Login` checkbox in the instance configuration before running '
+                        'this command.')
 
     test_instance(client)
     hr = '### Instance Configured Successfully.\n'
@@ -1980,8 +1983,9 @@ def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, 
     """
     # Verify that the user checked the `Use OAuth` checkbox:
     if not client.use_oauth:
-        return_error('!servicenow-oauth-login command can be used only when using OAuth 2.0 authorization.\n Please '
-                     'select the `Use OAuth Login` checkbox in the instance configuration before running this command.')
+        raise Exception('!servicenow-oauth-login command can be used only when using OAuth 2.0 authorization.\n Please '
+                        'select the `Use OAuth Login` checkbox in the instance configuration before running this '
+                        'command.')
 
     username = args.get('username', '')
     password = args.get('password', '')
@@ -2315,7 +2319,9 @@ def main():
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
         else:
-            raise NotImplementedError(f'Command "{command}" is not implemented.')
+            raise_exception = True
+            raise NotImplementedError(f'{COMMAND_NOT_IMPLEMENTED_MSG}: {demisto.command()}')
+
     except Exception as err:
         LOG(err)
         LOG.print_log()
