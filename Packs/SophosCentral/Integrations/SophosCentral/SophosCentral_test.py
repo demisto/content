@@ -1,7 +1,6 @@
 import json
 from datetime import datetime
 from pytest import raises
-from mock import Mock
 from CommonServerPython import DemistoException
 
 BASE_URL = 'https://api-eu02.central.sophos.com'
