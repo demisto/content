@@ -2610,13 +2610,13 @@ script:
       secret: false
     - default: false
       description: Risk rule
-      isArray: true
-      name: risk-rule
+      isArray: false
+      name: risk_rule
       required: false
       secret: false
     - default: false
       description: Internal IP range. Supported formats a.b.c.d, a.b.c.d/e, a.b.c.d-a.b.c.d, a., a.*
-      isArray: true
+      isArray: false
       name: internal_ip_range
       required: false
       secret: false
@@ -2627,23 +2627,92 @@ script:
       required: false
       secret: false
     - default: false
-      description: created_before
+      description: Created Before date
       isArray: false
       name: created_before
       required: false
       secret: false       
     - default: false
-      description: created_after
+      description: Created AFter date
       isArray: false
       name: created_after
       required: false
       secret: false 
     outputs:
+    - contextPath: Expanse.RiskyFlow.acked
+      description: ''
+      type: Boolean
+    - contextPath: Expanse.RiskyFlow.businessUnit.id
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskyFlow.businessUnit.name
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskyFlow.created
+      description: ''
+      type: Date
+    - contextPath: Expanse.RiskyFlow.externalAddress
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskyFlow.externalCountryCode
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskyFlow.externalCountryCodes
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskyFlow.externalPort
+      description: ''
+      type: Number
+    - contextPath: Expanse.RiskyFlow.flowDirection
+      description: ''
+      type: String
     - contextPath: Expanse.RiskyFlow.id
-      description: 'Expanse Risky Flow ID'
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskyFlow.internalAddress
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskyFlow.internalCountryCode
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskyFlow.internalCountryCodes
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskyFlow.internalPort
+      description: ''
+      type: Number
+    - contextPath: Expanse.RiskyFlow.internalTags.ipRange
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskyFlow.observationTimestamp
+      description: ''
+      type: Date
+    - contextPath: Expanse.RiskyFlow.protocol
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskyFlow.riskRule.additionalDataFields
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskyFlow.riskRule.description
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskyFlow.riskRule.id
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskyFlow.riskRule.name
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskyFlow.tenantBusinessUnitId
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskyFlow.internalDomains
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskyFlow.internalExposureTypes
+      description: ''
       type: String
   - name: expanse-list-risk-rules
-    description: List Risk Rules
+    description: List Behavior Risk Rules
     deprecated: false
     execution: false
     arguments:
@@ -2654,8 +2723,26 @@ script:
       required: false
       secret: false
     outputs:
+    - contextPath: Expanse.RiskRule.abbreviatedName
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskRule.businessUnits.id
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskRule.dataFields
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskRule.description
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskRule.direction
+      description: ''
+      type: String
     - contextPath: Expanse.RiskRule.id
-      description: 'Expanse Risk Rule ID'
+      description: ''
+      type: String
+    - contextPath: Expanse.RiskRule.name
+      description: ''
       type: String
   - name: domain
     arguments:
