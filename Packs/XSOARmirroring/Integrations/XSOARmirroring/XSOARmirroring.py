@@ -51,6 +51,11 @@ class Client(BaseClient):
             url_suffix=f'/incident/load/{incident_id}'
         )
 
+    def get_file_entry(self, entry_id: str) -> requests.Response:
+        return requests.get(self._base_url + f'/entry/download/{entry_id}', verify=self._verify, headers={
+            'Authorization': demisto.params().get('apikey')
+        })
+
     def get_incident_entries(self, incident_id: str, from_date: Optional[int], max_results: Optional[int],
                              categories: Optional[List[str]], tags: Optional[List[str]]) -> List[Dict[str, Any]]:
         data = {
@@ -99,6 +104,19 @@ class Client(BaseClient):
         )
 
     def add_incident_entry(self, incident_id: Optional[str], entry: Dict[str, Any]):
+        if entry.get('type') == 3:
+            path_res = demisto.getFilePath(entry.get('id'))
+            full_file_name = path_res.get('name')
+
+            with open(path_res.get('path'), 'rb') as file_to_send:
+                self._http_request(
+                    method='POST',
+                    url_suffix=f'/entry/upload/{incident_id}',
+                    files={
+                        "file": (full_file_name, file_to_send, 'application/octet-stream')
+                    },
+                )
+
         if not entry.get('note', False):
             demisto.debug(f'the entry has inv_id {incident_id}\nformat {entry.get("format")}\n contents '
                           f'{entry.get("contents")}')
@@ -570,17 +588,33 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
             categories=categories,
             tags=tags
         )
+
         formatted_entries = []
+        file_attachments = []
+
         if entries:
             for entry in entries:
-                formatted_entries.append({
-                    'Type': entry.get('type'),
-                    'Category': entry.get('category'),
-                    'Contents': entry.get('contents'),
-                    'ContentsFormat': entry.get('format'),
-                    'Tags': entry.get('tags'),  # the list of tags to add to the entry
-                    'Note': entry.get('note')  # boolean, True for Note, False otherwise
-                })
+                if 'file' in entry and entry.get('file'):
+                    file_entry = client.get_file_entry(entry.get('id'))
+                    file_result = fileResult(entry['file'], file_entry.content)
+                    if any(attachment.get('name') == entry['file'] for attachment in incident.get('attachment')):
+                        if file_result['Type'] == entryTypes['error']:
+                            raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
+                        file_attachments.append({
+                            'path': file_result.get('FileID', ''),
+                            'name': file_result.get('File', '')
+                        })
+                    else:
+                        formatted_entries.append(file_result)
+                else:
+                    formatted_entries.append({
+                        'Type': entry.get('type'),
+                        'Category': entry.get('category'),
+                        'Contents': entry.get('contents'),
+                        'ContentsFormat': entry.get('format'),
+                        'Tags': entry.get('tags'),  # the list of tags to add to the entry
+                        'Note': entry.get('note')  # boolean, True for Note, False otherwise
+                    })
 
         # Handle if the incident closed remotely
         if incident.get('status') == IncidentStatus.DONE:
@@ -600,6 +634,9 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
             demisto.debug(f'Nothing new in the incident, incident id {remote_args.remote_incident_id}')
             incident = {}  # this empties out the incident, which will result in not updating the local one
 
+        incident['dbotMirrorInstance'] = demisto.integrationInstance()
+        incident['id'] = remote_args.remote_incident_id
+        incident['attachment'] = file_attachments
         mirror_data = GetRemoteDataResponse(
             mirrored_object=incident,
             entries=formatted_entries

@@ -45,7 +45,7 @@ configuration:
   required: false
 - display: Entry Categories
   name: categories
-  defaultvalue: notes,chats
+  defaultvalue: notes,chats,attachments
   type: 0
   required: false
   additionalinfo: Which entries to retrieve from the XSOAR server.
