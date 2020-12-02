@@ -73,7 +73,7 @@ def domains_list_command(client: Client, args: dict) -> CommandResults:
     readable_output = tableToMarkdown(t=response, name='List of Domains', headers=['id', 'name'])
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='CiscoUmbrellaEnforcement.Domains',
+        outputs_prefix='UmbrellaEnforcement.Domains',
         outputs_key_field='id',
         outputs=response
     )
@@ -104,7 +104,7 @@ def domain_event_add_command(client: Client, args: dict) -> str:
 
     response: dict = client.add_event_to_domain(new_event)
     if id := str(response.get('id')):
-        action_result = f"New event was added successfully, The id is {id}."
+        action_result = f"New event was added successfully, The Event id is {id}."
     else:
         action_result = "New event's addition failed."
     return action_result
@@ -132,9 +132,9 @@ def domain_delete_command(client: Client, args: dict) -> CommandResults:
                 readable_output='The domain was not found in the list, Please insert an existing domain name or id.'
             )
     if domain_name:
-        curr_context = demisto.dt(demisto.context(), f'CiscoUmbrellaEnforcement.Domains(val.name == "{domain_name}")')
+        curr_context = demisto.dt(demisto.context(), f'UmbrellaEnforcement.Domains(val.name == "{domain_name}")')
     else:
-        curr_context = demisto.dt(demisto.context(), f'CiscoUmbrellaEnforcement.Domains(val.id == "{domain_id}")')
+        curr_context = demisto.dt(demisto.context(), f'UmbrellaEnforcement.Domains(val.id == "{domain_id}")')
 
     if curr_context:
         if isinstance(curr_context, list):
@@ -147,7 +147,7 @@ def domain_delete_command(client: Client, args: dict) -> CommandResults:
         message = f"{domain_name if domain_name else domain_id} domain not in the blacklist or Error"
     return CommandResults(
         readable_output=message,
-        outputs_prefix='CiscoUmbrellaEnforcement.Domains',
+        outputs_prefix='UmbrellaEnforcement.Domains',
         outputs_key_field='id',
         outputs=curr_context
     )

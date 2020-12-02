@@ -149,7 +149,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: CiscoUmbrellaEnforcement.Domains.name
+              simple: UmbrellaEnforcement.Domains.name
             iscontext: true
           right:
             value:
@@ -245,7 +245,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: CiscoUmbrellaEnforcement.Domains.IsDeleted
+              simple: UmbrellaEnforcement.Domains.IsDeleted
             iscontext: true
           right:
             value:

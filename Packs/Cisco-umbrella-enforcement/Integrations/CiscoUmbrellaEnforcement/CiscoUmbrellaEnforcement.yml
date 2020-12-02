@@ -81,13 +81,13 @@ script:
     execution: false
     name: umbrella-domains-list
     outputs:
-    - contextPath: CiscoUmbrellaEnforcement.Domains.name
+    - contextPath: UmbrellaEnforcement.Domains.name
       description: Domains name
       type: String
-    - contextPath: CiscoUmbrellaEnforcement.Domains.id
+    - contextPath: UmbrellaEnforcement.Domains.id
       description: Domains id.
       type: Number
-    - contextPath: CiscoUmbrellaEnforcement.Domains.IsDeleted
+    - contextPath: UmbrellaEnforcement.Domains.IsDeleted
       description: IsDeleted set true if the domain has been deleted from list.
       type: Boolean
   - arguments:
@@ -107,12 +107,9 @@ script:
     description: Delete domain.
     execution: false
     name: umbrella-domain-delete
-    outputs:
   dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: false
-  longRunning: true
-  longRunningPort: false
   runonce: true
   script: '-'
   subtype: python3
