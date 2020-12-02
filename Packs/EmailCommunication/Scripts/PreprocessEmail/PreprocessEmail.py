@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 import json
 import re
+import random
 
 ERROR_TEMPLATE = 'ERROR: PreprocessEmail - {function_name}: {reason}'
 QUOTE_MARKERS = ['<div class="gmail_quote">',
@@ -251,7 +252,8 @@ def main():
 
     except (IndexError, ValueError, DemistoException) as e:
         # True - For creating new incident
-        demisto.executeCommand('setIncident', {'id': incident.get('id'), 'customFields': {'emailcodegenerator': get_unique_code()}})
+        demisto.executeCommand('setIncident', {'id': incident.get('id'),
+                                               'customFields': {'emailcodegenerator': get_unique_code()}})
 
         demisto.results(True)
         return_error(f"The PreprocessEmail script has encountered an error:\n {e} \nA new incidents was created.")

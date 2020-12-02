@@ -20,7 +20,7 @@ def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, e
           email_code: The random code that was generated when the incident was created.
     """
     email_reply = send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc,
-                                      reply_html_body, entry_id_list, email_latest_message, email_code)
+                                    reply_html_body, entry_id_list, email_latest_message, email_code)
 
     status = email_reply[0].get('Contents', '')
     if status != FAIL_STATUS_MSG and status:
@@ -34,7 +34,7 @@ def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, e
 
 
 def send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, reply_html_body,
-                        entry_id_list, email_latest_message, email_code):
+                      entry_id_list, email_latest_message, email_code):
     if f'<{email_code}' not in email_subject:
         subject_with_id = f"<{email_code}> {email_subject}"
 
