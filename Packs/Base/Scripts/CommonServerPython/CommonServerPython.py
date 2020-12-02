@@ -2705,17 +2705,17 @@ class Common(object):
 
         def __init__(
             self,
-            algorithm: str,
-            length: int,
-            publickey: str = None,  # valid for all
-            p: str = None,  # DSA
-            q: str = None,  # DSA
-            g: str = None,  # DSA
-            modulus: str = None,  # RSA
-            exponent: int = None,  # RSA
-            x: str = None,  # EC
-            y: str = None,  # EC
-            curve: str = None  # EC
+            algorithm,  # type: str
+            length,  # type: int
+            publickey=None,  # type: str
+            p=None,  # type: str
+            q=None,  # type: str
+            g=None,  # type: str
+            modulus=None,  # type: str
+            exponent=None,  # type: int
+            x=None,  # type: str
+            y=None,  # type: str
+            curve=None  # type: str
         ):
 
             if not Common.CertificatePublicKey.Algorithm.is_valid_type(algorithm):
@@ -2793,7 +2793,11 @@ class Common(object):
                 Common.GeneralName.REGISTEREDID
             )
 
-        def __init__(self, gn_value: str, gn_type: str):
+        def __init__(
+            self,
+            gn_value,  # type: str
+            gn_type  # type: str
+        ):
             if not Common.GeneralName.is_valid_type(gn_type):
                 raise TypeError(
                     'gn_type must be of type Common.GeneralName enum'
@@ -2818,8 +2822,21 @@ class Common(object):
             """
             SubjectAlternativeName class
             """
-            def __init__(self, gn: 'Common.GeneralName'):
-                self.gn = gn
+            def __init__(
+                self,
+                gn=None,  # type: Optional[Common.GeneralName]
+                gn_type=None,  # type: Optional[str]
+                gn_value=None  # type: Optional[str]
+            ):
+                if gn:
+                    self.gn = gn
+                elif gn_type and gn_value:
+                    self.gn = Common.GeneralName(
+                        gn_value=gn_value,
+                        gn_type=gn_type
+                    )
+                else:
+                    raise ValueError('either GeneralName or gn_type/gn_value required to inizialize SubjectAlternativeName')
 
             def to_context(self):
                 return self.gn.to_context()
@@ -2833,16 +2850,16 @@ class Common(object):
             """
             def __init__(
                 self,
-                issuer: Optional[List['Common.GeneralName']],
-                serial_number: Optional[str],
-                key_identifier: Optional[str]
+                issuer,  # type: Optional[List['Common.GeneralName']]
+                serial_number,  # type: Optional[str]
+                key_identifier  # type: Optional[str]
             ):
                 self.issuer = issuer
                 self.serial_number = serial_number
                 self.key_identifier = key_identifier
 
             def to_context(self):
-                authority_key_identifier_context = {}
+                authority_key_identifier_context = {}  # type: Dict[str, Any]
 
                 if self.issuer:
                     authority_key_identifier_context['Issuer'] = self.issuer,
@@ -2860,10 +2877,10 @@ class Common(object):
             """
             def __init__(
                 self,
-                full_name: Optional[List['Common.GeneralName']] = None,
-                relative_name: Optional[str] = None,
-                crl_issuer: Optional[List['Common.GeneralName']] = None,
-                reasons: Optional[List[str]] = None,
+                full_name=None,  # type: Optional[List['Common.GeneralName']]
+                relative_name=None,  # type:  Optional[str]
+                crl_issuer=None,  # type: Optional[List['Common.GeneralName']]
+                reasons=None  # type: Optional[List[str]]
             ):
                 self.full_name = full_name
                 self.relative_name = relative_name
@@ -2871,7 +2888,7 @@ class Common(object):
                 self.reasons = reasons
 
             def to_context(self):
-                distribution_point_context: Dict[str, str] = {}
+                distribution_point_context = {}  # type: Dict[str, Union[List, str]]
                 if self.full_name:
                     distribution_point_context["FullName"] = [fn.to_context() for fn in self.full_name]
                 if self.relative_name:
@@ -2887,14 +2904,18 @@ class Common(object):
             """
             CertificatePolicy class
             """
-            def __init__(self, policy_identifier: str, policy_qualifiers: Optional[List[str]] = None):
+            def __init__(
+                self,
+                policy_identifier,  # type: str
+                policy_qualifiers=None  # type: Optional[List[str]]
+            ):
                 self.policy_identifier = policy_identifier
                 self.policy_qualifiers = policy_qualifiers
 
             def to_context(self):
                 certificate_policies_context = {
                     "PolicyIdentifier": self.policy_identifier
-                }
+                }  # type: Dict[str, Union[List, str]]
 
                 if self.policy_qualifiers:
                     certificate_policies_context["PolicyQualifiers"] = self.policy_qualifiers
@@ -2905,7 +2926,11 @@ class Common(object):
             """
             AuthorityInformationAccess class
             """
-            def __init__(self, access_method: str, access_location: 'Common.GeneralName'):
+            def __init__(
+                self,
+                access_method,  # type: str
+                access_location  # type:Common.GeneralName
+            ):
                 self.access_method = access_method
                 self.access_location = access_location
 
@@ -2919,14 +2944,18 @@ class Common(object):
             """
             BasicConstraints class
             """
-            def __init__(self, ca: bool, path_length: int = None):
+            def __init__(
+                self,
+                ca,  # type: bool
+                path_length=None  # type: int
+            ):
                 self.ca = ca
                 self.path_length = path_length
 
             def to_context(self):
                 basic_constraints_context = {
                     "CA": self.ca
-                }
+                }  # type: Dict[str, Union[str, int]]
 
                 if self.path_length:
                     basic_constraints_context["PathLength"] = self.path_length
@@ -2957,10 +2986,10 @@ class Common(object):
 
             def __init__(
                 self,
-                entry_type: str,
-                version: int,
-                log_id: str,
-                timestamp: str
+                entry_type,  # type: str
+                version,  # type: int
+                log_id,  # type: str
+                timestamp  # type: str
             ):
 
                 if not Common.CertificateExtension.SignedCertificateTimestamp.EntryType.is_valid_type(entry_type):
@@ -2974,7 +3003,7 @@ class Common(object):
                 self.timestamp = timestamp
 
             def to_context(self):
-                timestamps_context = {}
+                timestamps_context = {}  # type: Dict[str, Any]
 
                 timestamps_context['Version'] = self.version
                 timestamps_context["LogId"] = self.log_id
@@ -3021,41 +3050,27 @@ class Common(object):
 
         def __init__(
             self,
-            extension_type: str,
-            oid: str,
-            extension_name: str,
-            critical: bool,
-            subject_alternative_names: Optional[
-                List['Common.CertificateExtension.SubjectAlternativeName']
-            ] = None,  # for SubjectAlternativeName extension
-            authority_key_identifier: Optional[
-                'Common.CertificateExtension.AuthorityKeyIdentifier'
-            ] = None,  # for AuthorityKeyIdentifier extension
-            digest: str = None,  # for SubjectKeyIdentifier extension
-            digital_signature: Optional[bool] = None,  # for KeyUsage extension
-            content_commitment: Optional[bool] = None,  # for KeyUsage extension
-            key_encipherment: Optional[bool] = None,  # for KeyUsage extension
-            data_encipherment: Optional[bool] = None,  # for KeyUsage extension
-            key_agreement: Optional[bool] = None,  # for KeyUsage extension
-            key_cert_sign: Optional[bool] = None,  # for KeyUsage extension
-            crl_sign: Optional[bool] = None,  # for KeyUsage extension
-            usages: Optional[List[str]] = None,  # for ExtendedKeyUsage extension
-            distribution_points: Optional[
-                List['Common.CertificateExtension.DistributionPoint']
-            ] = None,  # for CRLDistributionPoints extension
-            certificate_policies: Optional[
-                List['Common.CertificateExtension.CertificatePolicy']
-            ] = None,  # for CertificatePolicies extension
-            authority_information_access: Optional[
-                List['Common.CertificateExtension.AuthorityInformationAccess']
-            ] = None,  # for AuthorityInformationAccess extension
-            basic_constraints: Optional[
-                'Common.CertificateExtension.BasicConstraints'
-            ] = None,  # for BasicConstraints extension
-            signed_certificate_timestamps: Optional[
-                List['Common.CertificateExtension.SignedCertificateTimestamp']
-            ] = None,  # for (Precertificate)SignedCertificateTimestamps extensions
-            value: Optional[Union[str, List[Any], Dict[str, Any]]] = None  # for any other extension
+            extension_type,  # type: str
+            oid,  # type: str
+            extension_name,  # type: str
+            critical,  # type: bool
+            subject_alternative_names=None,  # type: Optional[List[Common.CertificateExtension.SubjectAlternativeName]]
+            authority_key_identifier=None,  # type: Optional[Common.CertificateExtension.AuthorityKeyIdentifier]
+            digest=None,  # type: str
+            digital_signature=None,  # type: Optional[bool]
+            content_commitment=None,  # type: Optional[bool]
+            key_encipherment=None,  # type: Optional[bool]
+            data_encipherment=None,  # type: Optional[bool]
+            key_agreement=None,  # type: Optional[bool]
+            key_cert_sign=None,  # type: Optional[bool]
+            crl_sign=None,  # type: Optional[bool]
+            usages=None,  # type: Optional[List[str]]
+            distribution_points=None,  # type: Optional[List[Common.CertificateExtension.DistributionPoint]]
+            certificate_policies=None,  # type: Optional[List[Common.CertificateExtension.CertificatePolicy]]
+            authority_information_access=None,  # type: Optional[List[Common.CertificateExtension.AuthorityInformationAccess]]
+            basic_constraints=None,  # type: Optional[Common.CertificateExtension.BasicConstraints]
+            signed_certificate_timestamps=None,  # type: Optional[List[Common.CertificateExtension.SignedCertificateTimestamp]]
+            value=None  # type: Optional[Union[str, List[Any], Dict[str, Any]]]
         ):
             if not Common.CertificateExtension.ExtensionType.is_valid_type(extension_type):
                 raise TypeError('algorithm must be of type Common.CertificateExtension.ExtensionType enum')
@@ -3116,21 +3131,30 @@ class Common(object):
                 "OID": self.oid,
                 "Name": self.extension_name,
                 "Critical": self.critical
-            }
+            }  # type: Dict[str, Any]
 
-            if self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME:
+            if (
+                self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME
+                and self.subject_alternative_names is not None
+            ):
                 extension_context["Value"] = [san.to_context() for san in self.subject_alternative_names]
 
-            elif self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER:
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER
+                and self.authority_key_identifier is not None
+            ):
                 extension_context["Value"] = self.authority_key_identifier.to_context()
 
-            elif self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTKEYIDENTIFIER:
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTKEYIDENTIFIER
+                and self.digest is not None
+            ):
                 extension_context["Value"] = {
                     "Digest": self.digest
                 }
 
             elif self.extension_type == Common.CertificateExtension.ExtensionType.KEYUSAGE:
-                key_usage: Dict[str, bool] = {}
+                key_usage = {}  # type: Dict[str, bool]
                 if self.digital_signature:
                     key_usage["DigitalSignature"] = self.digital_signature
                 if self.content_commitment:
@@ -3149,30 +3173,51 @@ class Common(object):
                 if key_usage:
                     extension_context["Value"] = key_usage
 
-            elif self.extension_type == Common.CertificateExtension.ExtensionType.EXTENDEDKEYUSAGE:
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.EXTENDEDKEYUSAGE
+                and self.usages is not None
+            ):
                 extension_context["Value"] = {
                     "Usages": [u for u in self.usages]
                 }
 
-            elif self.extension_type == Common.CertificateExtension.ExtensionType.CRLDISTRIBUTIONPOINTS:
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.CRLDISTRIBUTIONPOINTS
+                and self.distribution_points is not None
+            ):
                 extension_context["Value"] = [dp.to_context() for dp in self.distribution_points]
 
-            elif self.extension_type == Common.CertificateExtension.ExtensionType.CERTIFICATEPOLICIES:
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.CERTIFICATEPOLICIES
+                and self.certificate_policies is not None
+            ):
                 extension_context["Value"] = [cp.to_context() for cp in self.certificate_policies]
 
-            elif self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS:
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS
+                and self.authority_information_access is not None
+            ):
                 extension_context["Value"] = [aia.to_context() for aia in self.authority_information_access]
 
-            elif self.extension_type == Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS:
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS
+                and self.basic_constraints is not None
+            ):
                 extension_context["Value"] = self.basic_constraints.to_context()
 
-            elif self.extension_type in [
-                Common.CertificateExtension.ExtensionType.PRECERTIFICATESIGNEDCERTIFICATETIMESTAMPS,
-                Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS
-            ]:
+            elif (
+                self.extension_type in [
+                    Common.CertificateExtension.ExtensionType.PRECERTIFICATESIGNEDCERTIFICATETIMESTAMPS,
+                    Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS
+                ]
+                and self.signed_certificate_timestamps is not None
+            ):
                 extension_context["Value"] = [sct.to_context() for sct in self.signed_certificate_timestamps]
 
-            elif self.extension_type == Common.CertificateExtension.ExtensionType.OTHER:
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.OTHER
+                and self.value is not None
+            ):
                 extension_context["Value"] = self.value
 
             return extension_context
@@ -3186,30 +3231,25 @@ class Common(object):
 
         def __init__(
             self,
-            subject_dn: str,
-            dbot_score: Optional['Common.DBotScore'] = None,
-            name: Optional[Union[str, List[str]]] = None,  # if None is built automatically
-            issuer_dn: Optional[str] = None,
-            serial_number: Optional[str] = None,
-            validity_not_after: Optional[str] = None,
-            validity_not_before: Optional[str] = None,
-            sha512: Optional[str] = None,
-            sha256: Optional[str] = None,
-            sha1: Optional[str] = None,
-            md5: Optional[str] = None,
-            publickey: Optional[Union[Dict[str, Any], 'Common.CertificatePublicKey']] = None,
-            spki_sha256: Optional[str] = None,
-            signature_algorithm: Optional[str] = None,
-            signature: Optional[str] = None,
-            subject_alternative_name: Optional[
-                List[Union[
-                    str,
-                    Dict[str, str],
-                    'Common.CertificateExtension.SubjectAlternativeName'
-                ]]
-            ] = None,  # if None, build automatically from extensions
-            extensions: Optional[List['Common.CertificateExtension']] = None,
-            pem: Optional[str] = None
+            subject_dn,  # type: str
+            dbot_score=None,  # type: Optional['Common.DBotScore']
+            name=None,  # type: Optional[Union[str, List[str]]]
+            issuer_dn=None,  # type: Optional[str]
+            serial_number=None,  # type: Optional[str]
+            validity_not_after=None,  # type: Optional[str]
+            validity_not_before=None,  # type: Optional[str]
+            sha512=None,  # type: Optional[str]
+            sha256=None,  # type: Optional[str]
+            sha1=None,  # type: Optional[str]
+            md5=None,  # type: Optional[str]
+            publickey=None,  # type: Optional[Union[Dict[str, Any], 'Common.CertificatePublicKey']]
+            spki_sha256=None,  # type: Optional[str]
+            signature_algorithm=None,  # type: Optional[str]
+            signature=None,  # type: Optional[str]
+            subject_alternative_name=None, \
+            # type: Optional[List[Union[str,Dict[str, str],Common.CertificateExtension.SubjectAlternativeName]]]
+            extensions=None,  # type: Optional[List['Common.CertificateExtension']]
+            pem=None  # type: Optional[str]
 
         ):
 
@@ -3279,9 +3319,9 @@ class Common(object):
         def to_context(self):
             certificate_context = {
                 "SubjectDN": self.subject_dn
-            }
+            }  # type: Dict[str, Any]
 
-            san_list: List[Dict[str, str]] = []
+            san_list = []  # type: List[Dict[str, str]]
             if self.subject_alternative_name:
                 for san in self.subject_alternative_name:
                     if isinstance(san, str):
@@ -3295,9 +3335,7 @@ class Common(object):
             elif self.extensions:  # autogenerate it from extensions
                 for ext in self.extensions:
                     if ext.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME:
-                        ext_context = ext.to_context()
-                        if 'Value' in ext_context:
-                            san_list.append(ext_context['Value'])
+                        san_list.append(ext.to_context())
 
             if san_list:
                 certificate_context['SubjectAlternativeName'] = san_list
@@ -3305,9 +3343,9 @@ class Common(object):
             if self.name:
                 certificate_context["Name"] = self.name
             else:  # autogenerate it
-                name: List[str] = []
+                name = []  # type: List[str]
                 if san_list:
-                    name = san_list
+                    name = [s['Value'] for s in san_list if 'Value' in s]
                 # subject_dn is RFC4515 escaped
                 # replace \, and \+ with the long escaping \2c and \2b
                 long_escaped_subject_dn = self.subject_dn.replace("\\,", "\\2c")
@@ -3352,7 +3390,7 @@ class Common(object):
             if self.spki_sha256:
                 certificate_context["SPKISHA256"] = self.spki_sha256
 
-            sig: Dict[str, str] = {}
+            sig = {}  # type: Dict[str, str]
             if self.signature_algorithm:
                 sig["Algorithm"] = self.signature_algorithm
             if self.signature:
