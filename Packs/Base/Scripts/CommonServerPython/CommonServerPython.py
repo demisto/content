@@ -2004,7 +2004,7 @@ class Common(object):
 
     class IP(Indicator):
         """
-        IP indicator class - https://xsoar.pan.dev/docs/context-standards#ip
+        IP indicator class - https://xsoar.pan.dev/docs/context-standards-mandatory#ip
 
         :type ip: ``str``
         :param ip: IP address
@@ -2141,7 +2141,7 @@ class Common(object):
 
     class File(Indicator):
         """
-        File indicator class - https://xsoar.pan.dev/docs/context-standards#file
+        File indicator class - https://xsoar.pan.dev/docs/context-standards-mandatory#file
         :type name: ``str``
         :param name: The full file name (including file extension).
 
@@ -2291,7 +2291,7 @@ class Common(object):
 
     class CVE(Indicator):
         """
-        CVE indicator class - https://xsoar.pan.dev/docs/context-standards#cve
+        CVE indicator class - https://xsoar.pan.dev/docs/context-standards-mandatory#cve
         :type id: ``str``
         :param id: The ID of the CVE, for example: "CVE-2015-1653".
         :type cvss: ``str``
@@ -2350,7 +2350,7 @@ class Common(object):
 
     class URL(Indicator):
         """
-        URL indicator - https://xsoar.pan.dev/docs/context-standards#url
+        URL indicator - https://xsoar.pan.dev/docs/context-standards-mandatory#url
         :type url: ``str``
         :param url: The URL
 
@@ -2410,7 +2410,7 @@ class Common(object):
 
     class Domain(Indicator):
         """ ignore docstring
-        Domain indicator - https://xsoar.pan.dev/docs/context-standards#domain
+        Domain indicator - https://xsoar.pan.dev/docs/context-standards-mandatory#domain
         """
         CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
@@ -2536,7 +2536,7 @@ class Common(object):
 
     class Endpoint(Indicator):
         """ ignore docstring
-        Endpoint indicator - https://xsoar.pan.dev/docs/integrations/context-standards#endpoint
+        Endpoint indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#endpoint
         """
         CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID)'
 
@@ -2606,7 +2606,7 @@ class Common(object):
 
     class Account(Indicator):
         """
-        Account indicator - https://xsoar.pan.dev/docs/integrations/context-standards#account
+        Account indicator - https://xsoar.pan.dev/docs/integrations/context-standards-recommended#account
 
         :type dbot_score: ``DBotScore``
         :param dbot_score: If account has reputation then create DBotScore object
@@ -2974,7 +2974,7 @@ class Common(object):
             AuthorityKeyIdentifier class
             Implements Authority Key Identifier extension interface
 
-            :type issuer: ``Optional[List['Common.GeneralName']]``
+            :type issuer: ``Optional[List[Common.GeneralName]]``
             :param issuer: Issuer list
 
             :type serial_number: ``Optional[str]``
@@ -3014,13 +3014,13 @@ class Common(object):
             DistributionPoint class
             Implements Distribution Point extension interface
 
-            :type full_name: ``Optional[List['Common.GeneralName']]``
+            :type full_name: ``Optional[List[Common.GeneralName]]``
             :param full_name: Full Name list
 
             :type relative_name: ``Optional[str]``
             :param relative_name: Relative Name
 
-            :type crl_issuer: ``Optional[List['Common.GeneralName']]``
+            :type crl_issuer: ``Optional[List[Common.GeneralName]]``
             :param crl_issuer: CRL Issuer
 
             :type reasons: ``Optional[List[str]]``
@@ -3478,7 +3478,7 @@ class Common(object):
         ``Optional[List[Union[str,Dict[str, str],Common.CertificateExtension.SubjectAlternativeName]]]``
         :param subject_alternative_name: Subject Alternative Name list
 
-        :type extensions: ``Optional[List['Common.CertificateExtension']]`
+        :type extensions: ``Optional[List[Common.CertificateExtension]]`
         :param extensions: Certificate Extension List
 
         :type pem: ``Optional[str]``
@@ -3493,7 +3493,7 @@ class Common(object):
         def __init__(
             self,
             subject_dn,  # type: str
-            dbot_score=None,  # type: Optional['Common.DBotScore']
+            dbot_score=None,  # type: Optional[Common.DBotScore]'
             name=None,  # type: Optional[Union[str, List[str]]]
             issuer_dn=None,  # type: Optional[str]
             serial_number=None,  # type: Optional[str]
@@ -3509,7 +3509,7 @@ class Common(object):
             signature=None,  # type: Optional[str]
             subject_alternative_name=None, \
             # type: Optional[List[Union[str,Dict[str, str],Common.CertificateExtension.SubjectAlternativeName]]]
-            extensions=None,  # type: Optional[List['Common.CertificateExtension']]
+            extensions=None,  # type: Optional[List[Common.CertificateExtension]]
             pem=None  # type: Optional[str]
 
         ):
