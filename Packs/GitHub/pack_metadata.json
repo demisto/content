@@ -12,5 +12,11 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "IAM-Scim": {
+            "mandatory": true,
+            "display_name": "IAM Scim"
+        }
+    }
 }

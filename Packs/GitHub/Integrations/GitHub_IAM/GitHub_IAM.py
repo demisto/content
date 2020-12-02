@@ -85,16 +85,17 @@ def github_handle_error(e):
         error_code = ""
         error_message = str(e)
         if e.__class__ is DemistoException and e.res is not None:
-            if isinstance(e.res, dict):
-                error_code = e.res.get("status")
-                error_message = e.res.get("detail")
+            error_res = e.res
+            if isinstance(error_res, dict):
+                error_code = str(error_res.get("status"))
+                error_message = str(error_res.get("detail"))
             else:
                 error_code = e.res.status_code
                 if e.res.json():
-                    error_message = e.res.json().get("message", "")
+                    error_message = error_res.json().get("message", "")
                     if not error_message:
-                        error_message = e.res.json().get("detail", "")
-                    error_reason = e.res.reason
+                        error_message = error_res.json().get("detail", "")
+                    error_reason = error_res.reason
                     if error_reason and error_reason != error_message:
                         error_message += f' {error_reason}'
         return error_code, error_message
