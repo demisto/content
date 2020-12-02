@@ -1,8 +1,5 @@
-from datetime import datetime, timedelta
-import time
-from typing import Dict, List, Optional, Tuple
 import dateparser
-from requests import post, get
+from typing import Dict, Tuple
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -15,15 +12,69 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 class Client(BaseClient):
     """
-    Client will implement the service API, and should not contain any XSOAR logic.
-    Should only do requests and return data.
+    Client class, communicates with Sophos Central
     """
 
-    def __init__(self, client_id, client_secret, base_url, headers, verify, proxy):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+    def __init__(self, client_id, client_secret, verify, proxy, bearer_token):
+        headers, base_url = self.get_client_data(bearer_token)
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
         self.headers = headers
         self.client_id = client_id
         self.client_secret = client_secret
+
+    @staticmethod
+    def get_client_data(bearer_token: str):
+        """
+        Set the tenant ID required for the API endpoints. Updates the existing self.headers.
+
+        Args:
+            bearer_token (str): A JWT token.
+
+        Returns:
+            headers (dict): Headers for the client.
+            base_url (str): Base URL for the client.
+        """
+        headers = {'Authorization': 'Bearer ' + bearer_token}
+        response = requests.get(headers=headers,
+                                url='https://api.central.sophos.com/whoami/v1')
+        try:
+            response_data = response.json()
+        except (json.JSONDecodeError, DemistoException) as exception:
+            raise DemistoException('Failed getting a whoami response JSON: ',
+                                   exception) from exception
+        headers.update({'X-Tenant-ID': response_data.get('id')})
+        if not headers.get('X-Tenant-ID'):
+            raise DemistoException('Error retrieving tenant ID.')
+        api_url = response_data.get('apiHosts', {}).get('dataRegion')
+        if not api_url:
+            raise DemistoException(f'Error finding data region. {str(response)}')
+        base_url = f'{api_url}/'
+        return headers, base_url
+
+    @staticmethod
+    def get_jwt_token_from_api(client_id: str, client_secret: str) -> dict:
+        """
+        Send an auth request to Sophos Central and receive an access token.
+
+        Args:
+            client_id (str): Sophos Central client id.
+            client_secret (str): Sophos Central client secret.
+
+        Returns:
+            response.json (dict): API response from Sophos.
+        """
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        body = {
+            'grant_type': 'client_credentials',
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'scope': 'token'
+        }
+        response = requests.post(headers=headers, data=body,
+                                 url='https://id.sophos.com/api/v2/oauth2/token')
+        if not response.ok:
+            raise DemistoException(response.text)
+        return response.json()
 
     def list_alert(self, limit: Optional[int]) -> Dict:
         """
@@ -574,31 +625,6 @@ class Client(BaseClient):
         return response
 
 
-def get_jwt_token(client_id: str, client_secret: str) -> dict:
-    """
-    Send an auth request to Sophos Central and receive an access token.
-
-    Args:
-        client_id (str): Sophos Central client id.
-        client_secret (str): Sophos Central client secret.
-
-    Returns:
-        response.json (dict): API response from Sophos.
-    """
-    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-    body = {
-        'grant_type': 'client_credentials',
-        'client_id': client_id,
-        'client_secret': client_secret,
-        'scope': 'token'
-    }
-    response = post(headers=headers, data=body,
-                    url='https://id.sophos.com/api/v2/oauth2/token')
-    if not response.ok:
-        raise DemistoException(response.text)
-    return response.json()
-
-
 def get_client_data(bearer_token: str):
     """
     Set the tenant ID required for the API endpoints. Updates the existing self.headers.
@@ -611,17 +637,19 @@ def get_client_data(bearer_token: str):
         base_url (str): Base URL for the client.
     """
     headers = {'Authorization': 'Bearer ' + bearer_token}
-    response = get(headers=headers,
-                   url='https://api.central.sophos.com/whoami/v1')
+    response = requests.get(headers=headers,
+                            url='https://api.central.sophos.com/whoami/v1')
     try:
         response_data = response.json()
     except (json.JSONDecodeError, DemistoException) as exception:
         raise DemistoException('Failed getting a whoami response JSON: ', exception) from exception
     headers.update({'X-Tenant-ID': response_data.get('id')})
-    api_hosts = response_data.get('apiHosts')
-    if not api_hosts:
-        raise DemistoException('Error finding data region. ' + str(response))
-    base_url = api_hosts.get('dataRegion') + '/'
+    if not headers.get('X-Tenant-ID'):
+        raise DemistoException('Error retrieving tenant ID.')
+    data_region = response_data.get('apiHosts', {}).get('dataRegion')
+    if not data_region:
+        raise DemistoException(f'Error finding data region. {str(response)}')
+    base_url = f'{data_region}/'
     return headers, base_url
 
 
@@ -636,20 +664,20 @@ def create_alert_output(item: Dict, table_headers: List[str]) -> Dict[str, Optio
     Returns:
         object_data (dict(str)): The output dictionary.
     """
-    object_data = {field: item.get(field) for field in table_headers + ['groupKey', 'product']}
+    alert_data = {field: item.get(field) for field in table_headers + ['groupKey', 'product']}
     managed_agent = item.get('managedAgent')
     if managed_agent:
-        object_data['managedAgentId'] = managed_agent.get('id')
-        object_data['managedAgentType'] = managed_agent.get('type')
+        alert_data['managedAgentId'] = managed_agent.get('id')
+        alert_data['managedAgentType'] = managed_agent.get('type')
     tenant = item.get('tenant')
     if tenant:
-        object_data['tenantId'] = tenant.get('id')
-        object_data['tenantName'] = tenant.get('name')
+        alert_data['tenantId'] = tenant.get('id')
+        alert_data['tenantName'] = tenant.get('name')
     person = item.get('person')
     if person:
-        object_data['person'] = person.get('id')
+        alert_data['person'] = person.get('id')
 
-    return object_data
+    return alert_data
 
 
 def sophos_central_alert_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
@@ -689,17 +717,19 @@ def sophos_central_alert_get_command(client: Client, args: dict) -> CommandResul
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    result = client.get_alert(args.get('alert_id', ''))
-    table_headers = ['id', 'description', 'severity', 'raisedAt', 'allowedActions',
-                     'managedAgentId', 'category', 'type']
-    object_data = {}
-    if result:
+    alert_id = args.get('alert_id', '')
+    try:
+        result = client.get_alert(alert_id)
+        table_headers = ['id', 'description', 'severity', 'raisedAt', 'allowedActions',
+                         'managedAgentId', 'category', 'type']
         object_data = create_alert_output(result, table_headers)
-
-    readable_output = tableToMarkdown(name='Found Alert:', t=object_data, headers=table_headers,
-                                      removeNull=True)
-    return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.Alert',
-                          raw_response=result, outputs=object_data, readable_output=readable_output)
+        readable_output = tableToMarkdown(name='Found Alert:', t=object_data, headers=table_headers,
+                                          removeNull=True)
+        return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.Alert',
+                              raw_response=result, outputs=object_data,
+                              readable_output=readable_output)
+    except DemistoException:
+        return CommandResults(readable_output=f'Unable to find the following alert: {alert_id}')
 
 
 def sophos_central_alert_action_command(client: Client, args: dict) -> CommandResults:
@@ -717,15 +747,20 @@ def sophos_central_alert_action_command(client: Client, args: dict) -> CommandRe
     table_headers = ['id', 'action', 'completedAt', 'alertId', 'result',
                      'requestedAt', 'startedAt', 'status']
     alert_ids = argToList(args.get('alert_id'))
+    failed_alerts = []
     results = []
     for alert_id in alert_ids:
-        result = client.action_alert(alert_id, args.get('action', ''), args.get('message', ''))
-        if result:
+        try:
+            result = client.action_alert(alert_id, args.get('action', ''), args.get('message', ''))
             results.append(result)
             object_data = {field: result.get(field) for field in table_headers}
             outputs.append(object_data)
+        except DemistoException:
+            failed_alerts.append(alert_id)
     readable_output = tableToMarkdown(name='Alerts Acted Against:', t=outputs,
                                       headers=table_headers, removeNull=True)
+    if failed_alerts:
+        readable_output += f'\nAlerts not acted against: {",".join(failed_alerts)}'
     return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.AlertAction',
                           raw_response=results, outputs=outputs,
                           readable_output=readable_output)
@@ -803,25 +838,20 @@ def sophos_central_endpoint_list_command(client: Client, args: dict) -> CommandR
                 object_data['associatedPersonId'] = associated_person.get('id')
                 object_data['associatedPersonName'] = associated_person.get('name')
                 object_data['associatedPersonViaLogin'] = associated_person.get('viaLogin')
-
             group = item.get('group')
             if group:
                 object_data['groupId'] = group.get('id')
                 object_data['groupName'] = group.get('name')
-
             endpoint_os = item.get('os')
             if endpoint_os:
                 object_data['osBuild'] = endpoint_os.get('build')
                 object_data['osIsServer'] = endpoint_os.get('isServer')
                 object_data['osName'] = endpoint_os.get('name')
                 object_data['osPlatform'] = endpoint_os.get('platform')
-
             health = item.get('health')
             if health:
                 object_data['health'] = health.get('overall')
-
             outputs.append(object_data)
-
     readable_output = tableToMarkdown(name=f'Listed {len(outputs)} Endpoints:', t=outputs,
                                       headers=table_headers, removeNull=True)
     return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.Endpoint',
@@ -840,16 +870,22 @@ def sophos_central_endpoint_scan_command(client: Client, args: dict) -> CommandR
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     table_headers = ['id', 'status', 'requestedAt']
+    failed_endpoints = []
     outputs = []
     results = []
     for endpoint in argToList(args.get('endpoint_id')):
-        result = client.scan_endpoint(endpoint)
-        if result:
-            results.append(result)
-            object_data = {field: result.get(field) for field in table_headers}
-            outputs.append(object_data)
+        try:
+            result = client.scan_endpoint(endpoint)
+            if result:
+                results.append(result)
+                object_data = {field: result.get(field) for field in table_headers}
+                outputs.append(object_data)
+        except DemistoException:
+            failed_endpoints.append(endpoint)
     readable_output = tableToMarkdown(name='Scanning Endpoints:', t=outputs, headers=table_headers,
                                       removeNull=True)
+    if failed_endpoints:
+        readable_output += f'\nEndpoints not scanned: {",".join(failed_endpoints)}'
     return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.EndpointScan',
                           raw_response=results, outputs=outputs, readable_output=readable_output)
 
@@ -866,22 +902,27 @@ def sophos_central_endpoint_tamper_get_command(client: Client, args: dict) -> Co
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     table_headers = ['endpointId', 'enabled', 'password']
+    failed_endpoints = []
     outputs = []
     results = []
     for endpoint in argToList(args.get('endpoint_id')):
-        result = client.get_tamper(endpoint)
-        if result:
-            object_data = {'enabled': result.get('enabled'),
-                           'endpointId': endpoint,
-                           'password': result.get('password')}
-            if not argToBoolean(args.get('get_password')):
-                object_data['password'] = None
-                result['password'] = result['previousPasswords'] = None
-            results.append(result)
-            outputs.append(object_data)
-
+        try:
+            result = client.get_tamper(endpoint)
+            if result:
+                object_data = {'enabled': result.get('enabled'),
+                               'endpointId': endpoint,
+                               'password': result.get('password')}
+                if not argToBoolean(args.get('get_password')):
+                    object_data['password'] = None
+                    result['password'] = result['previousPasswords'] = None
+                results.append(result)
+                outputs.append(object_data)
+        except DemistoException:
+            failed_endpoints.append(endpoint)
     readable_output = tableToMarkdown(name='Listed Endpoints Tamper Protection:', t=outputs,
                                       headers=table_headers, removeNull=True)
+    if failed_endpoints:
+        readable_output += f'\nEndpoints not found: {",".join(failed_endpoints)}'
     return CommandResults(outputs_key_field='endpointId',
                           outputs_prefix='SophosCentral.EndpointTamper',
                           raw_response=results, outputs=outputs, readable_output=readable_output)
@@ -899,22 +940,27 @@ def sophos_central_endpoint_tamper_update_command(client: Client, args: dict) ->
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     table_headers = ['endpointId', 'enabled', 'password']
+    failed_endpoints = []
     outputs = []
     results = []
     for endpoint in argToList(args.get('endpoint_id')):
-        result = client.update_tamper(endpoint, args.get('enabled') == 'true')
-        if result:
-            object_data = {'enabled': result.get('enabled'),
-                           'endpointId': endpoint,
-                           'password': result.get('password')}
-            if not argToBoolean(args.get('get_password')):
-                object_data['password'] = None
-                result['password'] = result['previousPasswords'] = None
-            results.append(result)
-            outputs.append(object_data)
-
+        try:
+            result = client.update_tamper(endpoint, args.get('enabled') == 'true')
+            if result:
+                object_data = {'enabled': result.get('enabled'),
+                               'endpointId': endpoint,
+                               'password': result.get('password')}
+                if not argToBoolean(args.get('get_password')):
+                    object_data['password'] = None
+                    result['password'] = result['previousPasswords'] = None
+                results.append(result)
+                outputs.append(object_data)
+        except DemistoException:
+            failed_endpoints.append(endpoint)
     readable_output = tableToMarkdown(name='Updated Endpoints Tamper Protection:', t=outputs,
                                       headers=table_headers, removeNull=True)
+    if failed_endpoints:
+        readable_output += f'\nEndpoints not found: {",".join(failed_endpoints)}'
     return CommandResults(outputs_key_field='endpointId',
                           outputs_prefix='SophosCentral.EndpointTamper',
                           raw_response=results, outputs=outputs, readable_output=readable_output)
@@ -928,32 +974,32 @@ def create_item_output(item: Dict) -> Dict:
         item (dict(str)): A source dictionary from the API response.
 
     Returns:
-        object_data (dict(str)): The output dictionary.
+        item_data (dict(str)): The output dictionary.
     """
     data_fields = ['id', 'comment', 'type', 'updatedAt', 'createdAt']
-    object_data = {field: item.get(field) for field in data_fields}
+    item_data = {field: item.get(field) for field in data_fields}
     properties = item.get('properties')
     if properties:
-        object_data['fileName'] = properties.get('fileName')
-        object_data['path'] = properties.get('path')
-        object_data['sha256'] = properties.get('sha256')
-        object_data['certificateSigner'] = properties.get('certificateSigner')
+        item_data['fileName'] = properties.get('fileName')
+        item_data['path'] = properties.get('path')
+        item_data['sha256'] = properties.get('sha256')
+        item_data['certificateSigner'] = properties.get('certificateSigner')
 
     created_by = item.get('createdBy')
     if created_by:
-        object_data['createdById'] = created_by.get('id')
-        object_data['createdByName'] = created_by.get('name')
+        item_data['createdById'] = created_by.get('id')
+        item_data['createdByName'] = created_by.get('name')
 
     origin_endpoint = item.get('originEndpoint')
     if origin_endpoint:
-        object_data['originEndpointId'] = origin_endpoint.get('endpointId')
+        item_data['originEndpointId'] = origin_endpoint.get('endpointId')
 
     origin_person = item.get('originPerson')
     if origin_person:
-        object_data['originPersonId'] = origin_person.get('id')
-        object_data['originPersonName'] = origin_person.get('name')
+        item_data['originPersonId'] = origin_person.get('id')
+        item_data['originPersonName'] = origin_person.get('name')
 
-    return object_data
+    return item_data
 
 
 def validate_item_fields(args: Dict[str, str]):
@@ -1010,17 +1056,22 @@ def sophos_central_allowed_item_get_command(client: Client, args: dict) -> Comma
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    result = client.get_allowed_item(args.get('allowed_item_id', ''))
-    table_headers = ['id', 'comment', 'fileName', 'sha256', 'path', 'certificateSigner',
-                     'createdAt', 'createdByName', 'type', 'updatedAt']
-    object_data = {}
-    if result:
-        object_data = create_item_output(result)
+    allowed_item_id = args.get('allowed_item_id', '')
+    try:
+        result = client.get_allowed_item(allowed_item_id)
+        table_headers = ['id', 'comment', 'fileName', 'sha256', 'path', 'certificateSigner',
+                         'createdAt', 'createdByName', 'type', 'updatedAt']
+        object_data = {}
+        if result:
+            object_data = create_item_output(result)
 
-    readable_output = tableToMarkdown(name='Found Allowed Item:', t=object_data,
-                                      headers=table_headers, removeNull=True)
-    return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.AllowedItem',
-                          raw_response=result, outputs=object_data, readable_output=readable_output)
+        readable_output = tableToMarkdown(name='Found Allowed Item:', t=object_data,
+                                          headers=table_headers, removeNull=True)
+        return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.AllowedItem',
+                              raw_response=result, outputs=object_data,
+                              readable_output=readable_output)
+    except DemistoException:
+        return CommandResults(readable_output=f'Unable to find item: {allowed_item_id}')
 
 
 def sophos_central_allowed_item_add_command(client: Client, args: dict) -> CommandResults:
@@ -1062,17 +1113,22 @@ def sophos_central_allowed_item_update_command(client: Client, args: dict) -> Co
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    result = client.update_allowed_item(args.get('allowed_item_id', ''), args.get('comment', ''))
-    table_headers = ['id', 'comment', 'fileName', 'sha256', 'path', 'certificateSigner',
-                     'createdAt', 'createdByName', 'type', 'updatedAt']
-    object_data = {}
-    if result:
-        object_data = create_item_output(result)
+    allowed_item_id = args.get('allowed_item_id', '')
+    try:
+        result = client.update_allowed_item(allowed_item_id, args.get('comment', ''))
+        table_headers = ['id', 'comment', 'fileName', 'sha256', 'path', 'certificateSigner',
+                         'createdAt', 'createdByName', 'type', 'updatedAt']
+        object_data = {}
+        if result:
+            object_data = create_item_output(result)
 
-    readable_output = tableToMarkdown(name='Updated Allowed Item:', t=object_data,
-                                      headers=table_headers, removeNull=True)
-    return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.AllowedItem',
-                          raw_response=result, outputs=object_data, readable_output=readable_output)
+        readable_output = tableToMarkdown(name='Updated Allowed Item:', t=object_data,
+                                          headers=table_headers, removeNull=True)
+        return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.AllowedItem',
+                              raw_response=result, outputs=object_data,
+                              readable_output=readable_output)
+    except DemistoException:
+        return CommandResults(readable_output=f'Unable to find item: {allowed_item_id}')
 
 
 def sophos_central_allowed_item_delete_command(client: Client, args: dict) -> CommandResults:
@@ -1134,17 +1190,22 @@ def sophos_central_blocked_item_get_command(client: Client, args: dict) -> Comma
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    result = client.get_blocked_item(args.get('blocked_item_id', ''))
-    table_headers = ['id', 'comment', 'fileName', 'sha256', 'path', 'certificateSigner',
-                     'createdAt', 'createdByName', 'type', 'updatedAt']
-    object_data = {}
-    if result:
-        object_data = create_item_output(result)
+    blocked_item_id = args.get('blocked_item_id', '')
+    try:
+        result = client.get_blocked_item(blocked_item_id)
+        table_headers = ['id', 'comment', 'fileName', 'sha256', 'path', 'certificateSigner',
+                         'createdAt', 'createdByName', 'type', 'updatedAt']
+        object_data = {}
+        if result:
+            object_data = create_item_output(result)
 
-    readable_output = tableToMarkdown(name='Found Blocked Item:', t=object_data,
-                                      headers=table_headers, removeNull=True)
-    return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.BlockedItem',
-                          raw_response=result, outputs=object_data, readable_output=readable_output)
+        readable_output = tableToMarkdown(name='Found Blocked Item:', t=object_data,
+                                          headers=table_headers, removeNull=True)
+        return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.BlockedItem',
+                              raw_response=result, outputs=object_data,
+                              readable_output=readable_output)
+    except DemistoException:
+        return CommandResults(readable_output=f'Unable to find item: {blocked_item_id}')
 
 
 def sophos_central_blocked_item_add_command(client: Client, args: dict) -> CommandResults:
@@ -1237,16 +1298,21 @@ def sophos_central_scan_exclusion_get_command(client: Client, args: dict) -> Com
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    result = client.get_scan_exclusion(args.get('exclusion_id', ''))
-    table_headers = ['id', 'value', 'type', 'description', 'comment', 'scanMode']
-    object_data = {}
-    if result:
-        object_data = {field: result.get(field) for field in table_headers}
+    exclusion_id = args.get('exclusion_id', '')
+    try:
+        result = client.get_scan_exclusion(exclusion_id)
+        table_headers = ['id', 'value', 'type', 'description', 'comment', 'scanMode']
+        object_data = {}
+        if result:
+            object_data = {field: result.get(field) for field in table_headers}
 
-    readable_output = tableToMarkdown(name='Found Scan Exclusion:', t=object_data,
-                                      headers=table_headers, removeNull=True)
-    return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.ScanExclusion',
-                          raw_response=result, outputs=object_data, readable_output=readable_output)
+        readable_output = tableToMarkdown(name='Found Scan Exclusion:', t=object_data,
+                                          headers=table_headers, removeNull=True)
+        return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.ScanExclusion',
+                              raw_response=result, outputs=object_data,
+                              readable_output=readable_output)
+    except DemistoException:
+        return CommandResults(f'Unable to find exclusion: {exclusion_id}')
 
 
 def sophos_central_scan_exclusion_add_command(client: Client, args: dict) -> CommandResults:
@@ -1286,17 +1352,22 @@ def sophos_central_scan_exclusion_update_command(client: Client, args: dict) -> 
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    result = client.update_scan_exclusion(args.get('comment'), args.get('scan_mode'),
-                                          args.get('exclusion_id', ''), args.get('value', ''))
-    table_headers = ['id', 'value', 'type', 'description', 'comment', 'scanMode']
-    object_data = {}
-    if result:
-        object_data = {field: result.get(field) for field in table_headers}
+    exclusion_id = args.get('exclusion_id', '')
+    try:
+        result = client.update_scan_exclusion(args.get('comment'), args.get('scan_mode'),
+                                              exclusion_id, args.get('value', ''))
+        table_headers = ['id', 'value', 'type', 'description', 'comment', 'scanMode']
+        object_data = {}
+        if result:
+            object_data = {field: result.get(field) for field in table_headers}
 
-    readable_output = tableToMarkdown(name='Updated Scan Exclusion:', t=object_data,
-                                      headers=table_headers, removeNull=True)
-    return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.ScanExclusion',
-                          raw_response=result, outputs=object_data, readable_output=readable_output)
+        readable_output = tableToMarkdown(name='Updated Scan Exclusion:', t=object_data,
+                                          headers=table_headers, removeNull=True)
+        return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.ScanExclusion',
+                              raw_response=result, outputs=object_data,
+                              readable_output=readable_output)
+    except DemistoException:
+        return CommandResults(f'Unable to find exclusion: {exclusion_id}')
 
 
 def sophos_central_scan_exclusion_delete_command(client: Client, args: dict) -> CommandResults:
@@ -1361,16 +1432,22 @@ def sophos_central_exploit_mitigation_get_command(client: Client, args: dict) ->
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    result = client.get_exploit_mitigation(args.get('mitigation_id', ''))
-    table_headers = ['id', 'name', 'type', 'category', 'paths']
-    object_data = {}
-    if result:
-        object_data = {field: result.get(field) for field in table_headers}
+    mitigation_id = args.get('mitigation_id', '')
+    try:
+        result = client.get_exploit_mitigation(mitigation_id)
+        table_headers = ['id', 'name', 'type', 'category', 'paths']
+        object_data = {}
+        if result:
+            object_data = {field: result.get(field) for field in table_headers}
 
-    readable_output = tableToMarkdown(name='Found Exploit Mitigation:', t=object_data,
-                                      headers=table_headers, removeNull=True)
-    return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.ExploitMitigation',
-                          raw_response=result, outputs=object_data, readable_output=readable_output)
+        readable_output = tableToMarkdown(name='Found Exploit Mitigation:', t=object_data,
+                                          headers=table_headers, removeNull=True)
+        return CommandResults(outputs_key_field='id',
+                              outputs_prefix='SophosCentral.ExploitMitigation',
+                              raw_response=result, outputs=object_data,
+                              readable_output=readable_output)
+    except DemistoException:
+        return CommandResults(f'Unable to find mitigation: {mitigation_id}')
 
 
 def sophos_central_exploit_mitigation_add_command(client: Client, args: dict) -> CommandResults:
@@ -1409,16 +1486,22 @@ def sophos_central_exploit_mitigation_update_command(client: Client, args: dict)
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    result = client.update_exploit_mitigation(args.get('mitigation_id', ''), args.get('path'))
-    table_headers = ['id', 'name', 'type', 'category', 'paths']
-    object_data = {}
-    if result:
-        object_data = {field: result.get(field) for field in table_headers}
+    mitigation_id = args.get('mitigation_id', '')
+    try:
+        result = client.update_exploit_mitigation(mitigation_id, args.get('path'))
+        table_headers = ['id', 'name', 'type', 'category', 'paths']
+        object_data = {}
+        if result:
+            object_data = {field: result.get(field) for field in table_headers}
 
-    readable_output = tableToMarkdown(name='Updated Exploit Mitigation:', t=object_data,
-                                      headers=table_headers, removeNull=True)
-    return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.ExploitMitigation',
-                          raw_response=result, outputs=object_data, readable_output=readable_output)
+        readable_output = tableToMarkdown(name='Updated Exploit Mitigation:', t=object_data,
+                                          headers=table_headers, removeNull=True)
+        return CommandResults(outputs_key_field='id',
+                              outputs_prefix='SophosCentral.ExploitMitigation',
+                              raw_response=result, outputs=object_data,
+                              readable_output=readable_output)
+    except DemistoException:
+        return CommandResults(f'Unable to find mitigation: {mitigation_id}')
 
 
 def sophos_central_exploit_mitigation_delete_command(client: Client, args: dict) -> CommandResults:
@@ -1506,22 +1589,28 @@ def sophos_central_detected_exploit_get_command(client: Client, args: dict) -> C
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    result = client.get_detected_exploit(args.get('detected_exploit_id', ''))
-    table_headers = ['id', 'description', 'thumbprint', 'count', 'firstSeenAt', 'lastSeenAt']
-    object_data = {}
-    if result:
-        object_data = create_detected_exploit_output(result)
+    detected_exploit_id = args.get('detected_exploit_id', '')
+    try:
+        result = client.get_detected_exploit(detected_exploit_id)
+        table_headers = ['id', 'description', 'thumbprint', 'count', 'firstSeenAt', 'lastSeenAt']
+        object_data = {}
+        if result:
+            object_data = create_detected_exploit_output(result)
 
-    readable_output = tableToMarkdown(name='Found Detected Exploit:', t=object_data,
-                                      headers=table_headers, removeNull=True)
-    return CommandResults(outputs_key_field='id', outputs_prefix='SophosCentral.DetectedExploit',
-                          raw_response=result, outputs=object_data, readable_output=readable_output)
+        readable_output = tableToMarkdown(name='Found Detected Exploit:', t=object_data,
+                                          headers=table_headers, removeNull=True)
+        return CommandResults(outputs_key_field='id',
+                              outputs_prefix='SophosCentral.DetectedExploit',
+                              raw_response=result, outputs=object_data,
+                              readable_output=readable_output)
+    except DemistoException:
+        return CommandResults(f'Unable to find exploit: {detected_exploit_id}')
 
 
 def fetch_incidents(client: Client, last_run: Dict[str, int],
                     first_fetch_time: str, fetch_severity: Optional[List[str]],
                     fetch_category: Optional[List[str]],
-                    max_fetch: Optional[str]) -> Tuple[Dict[str, int], List[dict]]:
+                    max_fetch: Optional[int]) -> Tuple[Dict[str, int], List[dict]]:
     """
     Fetch incidents (alerts) each minute (by default).
     Args:
@@ -1531,26 +1620,23 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         first_fetch_time (dict): Dict with first fetch time in str (ex: 3 days ago).
         fetch_severity (list(str)): Severity to fetch.
         fetch_category (list(str)): Category(s) to fetch.
-        max_fetch (str): Max number of alerts to fetch.
+        max_fetch (int): Max number of alerts to fetch.
     Returns:
         Tuple of next_run (millisecond timestamp) and the incidents list
     """
     last_fetch_timestamp = last_run.get('last_fetch', None)
-    fetch_category = None if not fetch_category else fetch_category
-    fetch_severity = None if not fetch_severity else fetch_severity
-    limit = None if not max_fetch else int(max_fetch)
 
     if last_fetch_timestamp:
         last_fetch_date = datetime.fromtimestamp(last_fetch_timestamp / 1000)
         last_fetch = last_fetch_date
     else:
-        first_fetch_date = dateparser.parse(first_fetch_time)
+        first_fetch_date = dateparser.parse(first_fetch_time).replace(tzinfo=None)
         last_fetch = first_fetch_date
 
     incidents = []
     next_run = last_fetch
     alerts = client.search_alert(last_fetch.strftime(DATE_FORMAT)[:-4] + 'Z', None, None,
-                                 fetch_category, None, fetch_severity, None, limit)
+                                 fetch_category, None, fetch_severity, None, max_fetch)
     data_fields = ['id', 'description', 'severity', 'raisedAt', 'allowedActions', 'managedAgentId',
                    'category', 'type']
     for alert in alerts.get('items', []):
@@ -1583,14 +1669,12 @@ def test_module(client: Client) -> str:
         'ok' if test passed, anything else will fail the test.
     """
     try:
-        result = client.list_alert(1)
-        if result and result.get('pages'):
-            return 'ok'
-        return str(result)
+        client.list_alert(1)
+        return 'ok'
     except DemistoException as exception:
         if 'Name does not resolve' in str(exception):
             return 'Wrong API server region found.'
-        return str(exception)
+        raise DemistoException(exception)
 
 
 def retrieve_jwt_token(client_id: str, client_secret: str, integration_context: Dict) -> str:
@@ -1609,10 +1693,9 @@ def retrieve_jwt_token(client_id: str, client_secret: str, integration_context: 
     valid_until = integration_context.get('valid_until', '')
     time_now = int(time.time())
     if bearer_token and valid_until:
-        if time_now < valid_until:
+        if time_now < int(valid_until):
             return bearer_token
-
-    bearer_token_dict = get_jwt_token(client_id, client_secret)
+    bearer_token_dict = Client.get_jwt_token_from_api(client_id, client_secret)
     if bearer_token_dict:
         bearer_token = str(bearer_token_dict.get('access_token', ''))
     integration_context = {'bearer_token': bearer_token, 'valid_until': time_now + 600}
@@ -1630,24 +1713,19 @@ def main():
 
     fetch_severity = params.get('fetch_severity', [])
     fetch_category = params.get('fetch_category', [])
-    max_fetch = params.get('max_fetch', '')
+    max_fetch = int(params.get('max_fetch', '50'))
     verify_certificate = not params.get('insecure', False)
     first_fetch_time = params.get('fetch_time', '3 days').strip()
     proxy = params.get('proxy', False)
     demisto.info(f'Command being called is {demisto.command()}')
     try:
-
         bearer_token = retrieve_jwt_token(sophos_id, sophos_secret, demisto.getIntegrationContext())
-        headers, base_url = get_client_data(bearer_token)
-
         client = Client(
-            base_url=base_url,
-            headers=headers,
+            bearer_token=bearer_token,
             verify=verify_certificate,
             client_id=sophos_id,
             client_secret=sophos_secret,
             proxy=proxy)
-
         if demisto.command() == 'test-module':
             result = test_module(client)
             return_results(result)

@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 from pytest import raises
+from mock import Mock
 from CommonServerPython import DemistoException
 
 BASE_URL = 'https://api-eu02.central.sophos.com'
@@ -35,7 +36,9 @@ def test_sophos_central_alert_list_command(requests_mock) -> None:
     from SophosCentral import Client, sophos_central_alert_list_command
     mock_response = load_mock_response('alert_list.json')
     requests_mock.get(f'{BASE_URL}/common/v1/alerts', json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_alert_list_command(client, {'limit': '50'})
@@ -62,7 +65,9 @@ def test_sophos_central_alert_get_command(requests_mock) -> None:
     mock_response = load_mock_response('alert_single.json')
     alert_id = '56931431-9faf-480c-ba1d-8d7541eae259'
     requests_mock.get(f'{BASE_URL}/common/v1/alerts/{alert_id}', json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_alert_get_command(client, {'alert_id': alert_id})
@@ -89,7 +94,9 @@ def test_sophos_central_alert_action_command(requests_mock) -> None:
     mock_response = load_mock_response('alert_action.json')
     alert_id = '56931431-9faf-480c-ba1d-8d7541eae259'
     requests_mock.post(f'{BASE_URL}/common/v1/alerts/{alert_id}/actions', json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_alert_action_command(client, {'alert_id': alert_id, 'action': 'a',
@@ -122,7 +129,9 @@ def test_sophos_central_alert_search_command(requests_mock) -> None:
     from SophosCentral import Client, sophos_central_alert_search_command
     mock_response = load_mock_response('alert_list.json')
     requests_mock.post(f'{BASE_URL}/common/v1/alerts/search', json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_alert_search_command(client, {'limit': '50'})
@@ -149,7 +158,9 @@ def test_sophos_central_endpoint_list_command(requests_mock) -> None:
     from SophosCentral import Client, sophos_central_endpoint_list_command
     mock_response = load_mock_response('endpoint_list.json')
     requests_mock.get(f'{BASE_URL}/endpoint/v1/endpoints', json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_endpoint_list_command(client, {'limit': '50'})
@@ -177,7 +188,9 @@ def test_sophos_central_endpoint_scan_command(requests_mock) -> None:
     mock_response = load_mock_response('endpoint_scan.json')
     endpoint_id = '6e9567ea-bb50-40c5-9f12-42eb308e4c9b'
     requests_mock.post(f'{BASE_URL}/endpoint/v1/endpoints/{endpoint_id}/scans', json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_endpoint_scan_command(client, {'endpoint_id': endpoint_id})
@@ -210,7 +223,9 @@ def test_sophos_central_endpoint_tamper_get_command(requests_mock) -> None:
     endpoint_id = '6e9567ea-bb50-40c5-9f12-42eb308e4c9b'
     requests_mock.get(f'{BASE_URL}/endpoint/v1/endpoints/{endpoint_id}/tamper-protection',
                       json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_endpoint_tamper_get_command(client, {'endpoint_id': endpoint_id,
@@ -245,7 +260,9 @@ def test_sophos_central_endpoint_tamper_update_command(requests_mock) -> None:
     endpoint_id = '6e9567ea-bb50-40c5-9f12-42eb308e4c9b'
     requests_mock.post(f'{BASE_URL}/endpoint/v1/endpoints/{endpoint_id}/tamper-protection',
                        json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_endpoint_tamper_update_command(client, {'endpoint_id': endpoint_id,
@@ -279,7 +296,9 @@ def test_sophos_central_allowed_item_list_command(requests_mock) -> None:
     mock_response = load_mock_response('allowed_item_list.json')
     requests_mock.get(f'{BASE_URL}/endpoint/v1/settings/allowed-items',
                       json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_allowed_item_list_command(client, {'page_size': '30',
@@ -308,7 +327,9 @@ def test_sophos_central_allowed_item_get_command(requests_mock) -> None:
     allowed_item_id = 'a28c7ee1-8ad9-4b5c-8f15-4d913436ce18'
     requests_mock.get(f'{BASE_URL}/endpoint/v1/settings/allowed-items/{allowed_item_id}',
                       json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_allowed_item_get_command(client, {'allowed_item_id': allowed_item_id})
@@ -334,7 +355,9 @@ def test_sophos_central_allowed_item_add_command(requests_mock) -> None:
     mock_response = load_mock_response('allowed_item_single.json')
     requests_mock.post(f'{BASE_URL}/endpoint/v1/settings/allowed-items',
                        json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_allowed_item_add_command(client, {})
@@ -361,7 +384,9 @@ def test_sophos_central_allowed_item_update_command(requests_mock) -> None:
     allowed_item_id = 'a28c7ee1-8ad9-4b5c-8f15-4d913436ce18'
     requests_mock.patch(f'{BASE_URL}/endpoint/v1/settings/allowed-items/{allowed_item_id}',
                         json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_allowed_item_update_command(client,
@@ -389,7 +414,9 @@ def test_sophos_central_allowed_item_delete_command(requests_mock) -> None:
     allowed_item_id = 'a28c7ee1-8ad9-4b5c-8f15-4d913436ce18'
     requests_mock.delete(f'{BASE_URL}/endpoint/v1/settings/allowed-items/{allowed_item_id}',
                          json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_allowed_item_delete_command(client,
@@ -417,7 +444,9 @@ def test_sophos_central_blocked_item_list_command(requests_mock) -> None:
     mock_response = load_mock_response('blocked_item_list.json')
     requests_mock.get(f'{BASE_URL}/endpoint/v1/settings/blocked-items',
                       json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_blocked_item_list_command(client, {'page_size': '30',
@@ -446,7 +475,9 @@ def test_sophos_central_blocked_item_get_command(requests_mock) -> None:
     blocked_item_id = 'a28c7ee1-8ad9-4b5c-8f15-4d913436ce18'
     requests_mock.get(f'{BASE_URL}/endpoint/v1/settings/blocked-items/{blocked_item_id}',
                       json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_blocked_item_get_command(client, {'blocked_item_id': blocked_item_id})
@@ -472,7 +503,9 @@ def test_sophos_central_blocked_item_add_command(requests_mock) -> None:
     mock_response = load_mock_response('blocked_item_single.json')
     requests_mock.post(f'{BASE_URL}/endpoint/v1/settings/blocked-items',
                        json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_blocked_item_add_command(client, {})
@@ -499,7 +532,9 @@ def test_sophos_central_blocked_item_delete_command(requests_mock) -> None:
     blocked_item_id = 'a28c7ee1-8ad9-4b5c-8f15-4d913436ce18'
     requests_mock.delete(f'{BASE_URL}/endpoint/v1/settings/blocked-items/{blocked_item_id}',
                          json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_blocked_item_delete_command(client,
@@ -527,7 +562,9 @@ def test_sophos_central_scan_exclusion_list_command(requests_mock) -> None:
     mock_response = load_mock_response('scan_exclusion_list.json')
     requests_mock.get(f'{BASE_URL}/endpoint/v1/settings/exclusions/scanning',
                       json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_scan_exclusion_list_command(client, {'page_size': '30',
@@ -556,7 +593,9 @@ def test_sophos_central_scan_exclusion_get_command(requests_mock) -> None:
     scan_exclusion_id = '16bac29f-17a4-4c3a-9370-8c5968c5ac7d'
     requests_mock.get(f'{BASE_URL}/endpoint/v1/settings/exclusions/scanning/{scan_exclusion_id}',
                       json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_scan_exclusion_get_command(client, {'exclusion_id': scan_exclusion_id})
@@ -582,7 +621,9 @@ def test_sophos_central_scan_exclusion_add_command(requests_mock) -> None:
     mock_response = load_mock_response('scan_exclusion_single.json')
     requests_mock.post(f'{BASE_URL}/endpoint/v1/settings/exclusions/scanning',
                        json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_scan_exclusion_add_command(client, {})
@@ -609,7 +650,9 @@ def test_sophos_central_scan_exclusion_update_command(requests_mock) -> None:
     scan_exclusion_id = '16bac29f-17a4-4c3a-9370-8c5968c5ac7d'
     requests_mock.patch(f'{BASE_URL}/endpoint/v1/settings/exclusions/scanning/{scan_exclusion_id}',
                         json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_scan_exclusion_update_command(client,
@@ -637,7 +680,9 @@ def test_sophos_central_scan_exclusion_delete_command(requests_mock) -> None:
     scan_exclusion_id = '16bac29f-17a4-4c3a-9370-8c5968c5ac7d'
     requests_mock.delete(f'{BASE_URL}/endpoint/v1/settings/exclusions/scanning/{scan_exclusion_id}',
                          json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_scan_exclusion_delete_command(client,
@@ -665,7 +710,9 @@ def test_sophos_central_exploit_mitigation_list_command(requests_mock) -> None:
     mock_response = load_mock_response('exploit_mitigation_list.json')
     requests_mock.get(f'{BASE_URL}/endpoint/v1/settings/exploit-mitigation/applications',
                       json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_exploit_mitigation_list_command(client, {'page_size': '30',
@@ -694,7 +741,9 @@ def test_sophos_central_exploit_mitigation_get_command(requests_mock) -> None:
     exploit_id = 'c2824651-26c1-4470-addf-7b6bb6ac90b4'
     requests_mock.get(f'{BASE_URL}/endpoint/v1/settings/'
                       f'exploit-mitigation/applications/{exploit_id}', json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_exploit_mitigation_get_command(client, {'mitigation_id': exploit_id})
@@ -721,7 +770,9 @@ def test_sophos_central_exploit_mitigation_add_command(requests_mock) -> None:
     exploit_id = 'c2824651-26c1-4470-addf-7b6bb6ac90b4'
     requests_mock.post(f'{BASE_URL}/endpoint/v1/settings/exploit-mitigation/applications',
                        json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_exploit_mitigation_add_command(client, {'mitigation_id': exploit_id})
@@ -749,7 +800,9 @@ def test_sophos_central_exploit_mitigation_update_command(requests_mock) -> None
     requests_mock.patch(f'{BASE_URL}/endpoint/v1/settings/'
                         f'exploit-mitigation/applications/{exploit_id}',
                         json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_exploit_mitigation_update_command(client, {'mitigation_id': exploit_id})
@@ -777,7 +830,9 @@ def test_sophos_central_exploit_mitigation_delete_command(requests_mock) -> None
     requests_mock.delete(f'{BASE_URL}/endpoint/v1/settings/'
                          f'exploit-mitigation/applications/{exploit_id}',
                          json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_exploit_mitigation_delete_command(client, {'mitigation_id': exploit_id})
@@ -804,7 +859,9 @@ def test_sophos_central_detected_exploit_list_command(requests_mock) -> None:
     mock_response = load_mock_response('detected_exploit_list.json')
     requests_mock.get(f'{BASE_URL}/endpoint/v1/settings/exploit-mitigation/detected-exploits',
                       json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_detected_exploit_list_command(client, {'page_size': '30',
@@ -833,7 +890,9 @@ def test_sophos_central_detected_exploit_get_command(requests_mock) -> None:
     exploit_id = 'b81aac51-2fc0-ab6a-asdf-7b6bb6ac90b4'
     requests_mock.get(f'{BASE_URL}/endpoint/v1/settings/'
                       f'exploit-mitigation/detected-exploits/{exploit_id}', json=mock_response)
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
 
     result = sophos_central_detected_exploit_get_command(client,
@@ -876,11 +935,11 @@ def test_get_client_data(requests_mock) -> None:
      - Ensure base URL is correct according to mock response.
      - Ensure headers are correct according to given fake JWT token and mock response.
     """
-    from SophosCentral import get_client_data
+    from SophosCentral import Client
     mock_response = load_mock_response('client_data.json')
     requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_response)
 
-    headers, base_url = get_client_data('aaaa')
+    headers, base_url = Client.get_client_data('aaaa')
     assert base_url == 'https://api-eu02.central.sophos.com/'
     assert headers == {'Authorization': 'Bearer aaaa',
                        'X-Tenant-ID': '11f104c5-cc4a-4a9f-bb9c-632c936dfb9f'}
@@ -899,11 +958,14 @@ def test_fetch_incidents(requests_mock) -> None:
      - Ensure last_fetch is correctly configured according to mock response.
     """
     from SophosCentral import Client, fetch_incidents
-    client = Client(base_url=BASE_URL, headers={'a': 'b'}, verify=False, client_id='a',
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
+    client = Client(bearer_token='a', verify=False, client_id='a',
                     client_secret='b', proxy=False)
     mock_response = load_mock_response('alert_list.json')
     requests_mock.post(f'{BASE_URL}/common/v1/alerts/search', json=mock_response)
-
+    mock_client_data = load_mock_response('client_data.json')
+    requests_mock.get('https://api.central.sophos.com/whoami/v1', json=mock_client_data)
     last_fetch, incidents = fetch_incidents(client, {'last_fetch': 1}, '3 days', ['x'], ['x'], '50')
     wanted_time = datetime.timestamp(datetime.strptime('2020-11-04T09:31:19.895Z', DATE_FORMAT))
     assert last_fetch.get('last_fetch') == wanted_time * 1000
