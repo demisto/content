@@ -1,0 +1,40 @@
+{
+    "name": "xMatters",
+    "description": "Use the xMatters pack to trigger events to on-call groups or users and wait for their response. Use their response to branch and take action in XSOAR.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Travis DePuy",
+    "url": "https://support.xmatters.com/hc/en-us/requests/new",
+    "email": "",
+    "created": "2020-10-06T22:06:34Z",
+    "categories": [
+        "Messaging",
+        "Utilities",
+        "IT Services"
+    ],
+    "tags": [
+        "Alert",
+        "alert",
+        "Email",
+        "Push",
+        "SMS",
+        "Notifications",
+        "Incident Response"
+    ],
+    "useCases": [
+        "Default",
+        "Email Communication",
+        "Incident Response"
+    ],
+    "keywords": [
+        "email",
+        "sms",
+        "push",
+        "notification",
+        "response",
+        "workflow",
+        "on-call",
+        "schedule"
+    ],
+    "githubUser": [ "xmtinkerer" ]
+}
