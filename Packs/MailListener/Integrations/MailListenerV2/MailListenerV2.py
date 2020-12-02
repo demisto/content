@@ -211,9 +211,9 @@ def fetch_incidents(client: IMAPClient,
     incidents = []
     for mail in mails_fetched:
         incidents.append(mail.convert_to_incident())
-        latest_created_time = max(latest_created_time, mail.date)
+        latest_created_time = max(latest_created_time, mail.date)  # type: ignore[type-var]
         uid_to_fetch_from = max(uid_to_fetch_from, mail.id)
-    next_run = {'last_fetch': latest_created_time.isoformat(), 'last_uid': uid_to_fetch_from}
+    next_run = {'last_fetch': latest_created_time.isoformat(), 'last_uid': uid_to_fetch_from}  # type: ignore[union-attr]
     if delete_processed:
         client.delete_messages(messages)
     return next_run, incidents
@@ -319,7 +319,8 @@ def generate_search_query(latest_created_time: Optional[datetime],
         # Removing Parenthesis and quotes
         messages_query = messages_query.strip('()').replace('"', '')
     # Creating a list of the OR query words
-    messages_query_list = messages_query.split() + ['SINCE', latest_created_time, 'UID', f'{uid_to_fetch_from}:*']  # type: ignore[list-item]
+    messages_query_list = messages_query.split()
+    messages_query_list += ['SINCE', latest_created_time, 'UID', f'{uid_to_fetch_from}:*']  # type: ignore[list-item]
     return messages_query_list
 
 
@@ -333,7 +334,6 @@ def list_emails(client: IMAPClient,
                 first_fetch_time: str,
                 permitted_from_addresses: str,
                 permitted_from_domains: str) -> CommandResults:
-
     """
     Lists all emails that can be fetched with the given configuration and return a preview version of them.
     Args:
@@ -348,9 +348,9 @@ def list_emails(client: IMAPClient,
     fetch_time = parse(f'{first_fetch_time} UTC')
 
     mails_fetched, _, _ = fetch_mails(client=client,
-                                   first_fetch_time=fetch_time,
-                                   permitted_from_addresses=permitted_from_addresses,
-                                   permitted_from_domains=permitted_from_domains)
+                                      first_fetch_time=fetch_time,
+                                      permitted_from_addresses=permitted_from_addresses,
+                                      permitted_from_domains=permitted_from_domains)
     results = [{'Subject': email.subject,
                 'Date': email.date.isoformat(),
                 'To': email.to,
