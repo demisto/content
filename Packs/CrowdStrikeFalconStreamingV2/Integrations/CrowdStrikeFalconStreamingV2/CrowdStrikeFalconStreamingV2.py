@@ -355,7 +355,7 @@ class RefreshToken:
                 async with session.post(f'{self.base_url}/oauth2/token', data=data) as res:
                     if res.status == TOO_MANY_REQUESTS_STATUS_CODE:
                         demisto.debug('Token retrieval requests status: rate limit exceeded, will retry in 5 seconds.')
-                        await sleep(5)
+                        await sleep(10)
                     elif res.status == CREATED_STATUS_CODE:
                         try:
                             body = await res.json()
