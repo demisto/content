@@ -427,7 +427,7 @@ script:
         Should be used after running the azure_waf-auth-start command.
       execution: false
       name: azure-waf-auth-complete
-  dockerimage: demisto/crypto:1.0.0.12979
+  dockerimage: demisto/crypto:1.0.0.13944
   feed: false
   isfetch: false
   longRunning: false

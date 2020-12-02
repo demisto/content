@@ -4,9 +4,8 @@ from CommonServerUserPython import *
 
 import json
 import urllib3
-import dateparser
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import Any, Dict, List, Union
 from MicrosoftApiModule import *
 
 # Disable insecure warnings
@@ -133,9 +132,9 @@ def complete_auth(client: AzureWAFClient):
     return '✅ Authorization completed successfully.'
 
 
-def policy_get_command(client: AzureWAFClient, **kwargs) -> CommandResults:
-    policy_name: str = kwargs.get('policy_name', '')
-    resource_group_name: str = kwargs.get('resource_group_name', client.resource_group_name)
+def policy_get_command(client: AzureWAFClient, **args) -> CommandResults:
+    policy_name: str = args.get('policy_name', '')
+    resource_group_name: str = args.get('resource_group_name', client.resource_group_name)
     policies: List[Dict] = []
     try:
         if policy_name:
@@ -151,8 +150,8 @@ def policy_get_command(client: AzureWAFClient, **kwargs) -> CommandResults:
     return res
 
 
-def policy_get_list_by_subscription_command(client: AzureWAFClient, **kwargs: Dict[str, Any]) -> CommandResults:
-    policies = []
+def policy_get_list_by_subscription_command(client: AzureWAFClient, **args: Dict[str, Any]) -> CommandResults:
+    policies: List[Dict] = []
     try:
         policies.extend(client.get_policy_list_by_subscription_id())
     except DemistoException:
@@ -163,9 +162,8 @@ def policy_get_list_by_subscription_command(client: AzureWAFClient, **kwargs: Di
     return res
 
 
-def policy_upsert_command(client: AzureWAFClient, **kwargs: Dict[str, Any]) -> CommandResults:
-
-    def parse_nested_keys_to_dict(base_dict: Dict, keys: List, value: str) -> None:
+def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> CommandResults:
+    def parse_nested_keys_to_dict(base_dict: Dict, keys: List, value: Union[str, Dict]) -> None:
         """ A recursive function to make a list of type [x,y,z] and value a to a dictionary of type {x:{y:{z:a}}}"""
         if len(keys) == 1:
             base_dict[keys[0]] = value
@@ -174,17 +172,17 @@ def policy_upsert_command(client: AzureWAFClient, **kwargs: Dict[str, Any]) -> C
                 base_dict[keys[0]] = {}
             parse_nested_keys_to_dict(base_dict[keys[0]], keys[1:], value)
 
-    policy_name = kwargs.get('policy_name', '')
-    resource_group_name = kwargs.get('resource_group_name', client.resource_group_name)
-    managed_rules = kwargs.get('managed_rules', {})
-    location = kwargs.get("location", '')
+    policy_name = str(args.get('policy_name', ''))
+    resource_group_name = str(args.get('resource_group_name', client.resource_group_name))
+    managed_rules = args.get('managed_rules', {})
+    location = args.get("location", '')
     if not policy_name or not managed_rules or not location:
         raise Exception('In order to add/ update policy, '
                         'please provide policy_name, location and managed_rules. ')
 
-    body = {}
+    body: Dict[str, Any] = {}
     for param in UPSERT_PARAMS:
-        val = kwargs.get(param, '')
+        val = str(args.get(param, ''))
         try:
             val = json.loads(val)
         except json.decoder.JSONDecodeError:
@@ -200,9 +198,9 @@ def policy_upsert_command(client: AzureWAFClient, **kwargs: Dict[str, Any]) -> C
     return res
 
 
-def policy_delete_command(client: AzureWAFClient, **kwargs: Dict[str, str]):
-    policy_name = kwargs.get('policy_name', '')
-    resource_group_name = kwargs.get('resource_group_name', str(client.resource_group_name))
+def policy_delete_command(client: AzureWAFClient, **args: Dict[str, str]):
+    policy_name = str(args.get('policy_name', ''))
+    resource_group_name = str(args.get('resource_group_name', client.resource_group_name))
     status = client.delete_policy(policy_name, resource_group_name)
     res = CommandResults(readable_output=status.get('status'))
     return res
