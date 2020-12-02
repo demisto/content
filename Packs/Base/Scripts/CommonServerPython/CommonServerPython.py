@@ -3568,11 +3568,7 @@ class Common(object):
                 and isinstance(subject_alternative_name, list)
                 and not all(
                     isinstance(san, str)
-                    or (
-                        isinstance(san, dict)
-                        and all(isinstance(d, str) for d in san.keys())
-                        and all(isinstance(d, str) for d in san.values())
-                    )
+                    or isinstance(san, dict)
                     or isinstance(san, Common.CertificateExtension.SubjectAlternativeName)
                     for san in subject_alternative_name)
             ):
