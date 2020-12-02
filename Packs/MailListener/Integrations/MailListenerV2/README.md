@@ -197,3 +197,6 @@ There is no context output for this command.
     }
 }
 ```
+
+## Additional Information
+In the first fetch iteration, it might take a few minutes for email messages to be ingested due to filter limitations on the IMAP client.
