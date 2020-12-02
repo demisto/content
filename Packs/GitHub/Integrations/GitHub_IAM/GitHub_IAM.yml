@@ -242,6 +242,8 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  ismappable: true
+  isremotesyncout: true
   runonce: false
   script: '-'
   subtype: python3
