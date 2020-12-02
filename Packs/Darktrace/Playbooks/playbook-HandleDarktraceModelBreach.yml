@@ -74,6 +74,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Conditional
     nexttasks:
       "No":
       - "7"
@@ -533,6 +534,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Conditional
     nexttasks:
       '#default#':
       - "15"
@@ -707,6 +709,7 @@ tasks:
       id: 46e1f2e4-12bc-40df-8e6d-2b446d26928d
       version: -1
       name: Does device exist?
+      description: Conditional
       type: condition
       iscommand: false
       brand: ""
@@ -818,6 +821,7 @@ outputs: []
 tests:
 - Darktrace Test Playbook
 fromversion: 6.0.0
-description: Handles each fetched Darktrace model breach by gathering additional detail about the activity and device,
-  providing enrichment data from Darktrace and XSOAR, linking similar incidents, and giving the ability to acknowledge
-  the model breach and close the incident.
+description: Handles each fetched Darktrace model breach by gathering additional detail
+  about the activity and device, providing enrichment data from Darktrace and XSOAR,
+  linking similar incidents, and giving the ability to acknowledge the model breach
+  and close the incident.
