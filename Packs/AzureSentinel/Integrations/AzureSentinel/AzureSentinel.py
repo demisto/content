@@ -97,6 +97,10 @@ def format_date(date):
     return dateparser.parse(date).strftime(DATE_FORMAT)
 
 
+def str_to_bool(str_bool):
+    return str_bool.lower() == 'true'
+
+
 def incident_data_to_demisto_format(inc_data):
     properties = inc_data.get('properties', {})
 
@@ -405,26 +409,57 @@ def incident_add_comment_command(client, args):
 
 def get_entity_by_id_command(client, args):
     entity_id = args.get('entity_id')
-    url_suffix = f'entities/{entity_id}'
+    expand_entity_information = str_to_bool(args.get('expand_entity_information'))
 
-    result = client.http_request('GET', url_suffix, is_get_entity_cmd=True)
+    if not expand_entity_information:
+        url_suffix = f'entities/{entity_id}'
 
-    flattened_result = flatten_entity_attributes(result)
+        result = client.http_request('GET', url_suffix, is_get_entity_cmd=True)
 
-    readable_output = tableToMarkdown(f'Entity {entity_id} details',
-                                      flattened_result,
-                                      removeNull=True,
-                                      headerTransform=pascalToSpace)
+        flattened_result = flatten_entity_attributes(result)
 
-    outputs = {
-        'AzureSentinel.Entity(val.ID === obj.ID)': flattened_result
-    }
+        readable_output = tableToMarkdown(f'Entity {entity_id} details',
+                                          flattened_result,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace)
 
-    return (
-        readable_output,
-        outputs,
-        result
-    )
+        outputs = {
+            'AzureSentinel.Entity(val.ID === obj.ID)': flattened_result
+        }
+
+        return (
+            readable_output,
+            outputs,
+            result
+        )
+    else:
+        # This expansion_id is written according to -
+        # https://techcommunity.microsoft.com/t5/azure-sentinel/get-entities-for-a-sentinel-incidient-by-api/m-p/1422643
+
+        expansion_id = "98b974fd-cc64-48b8-9bd0-3a209f5b944b"
+        url_suffix = f'entities/{entity_id}/expand'
+        data = {
+            "expansionId": expansion_id
+        }
+
+        result = client.http_request('POST', url_suffix, is_get_entity_cmd=True, data=data)
+
+        result_value = result.get('value', {})
+        result_entities = result_value.get('entities', [])
+        readable_output = tableToMarkdown(f'Entity {entity_id} details',
+                                          result_entities,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace)
+
+        outputs = {
+            'AzureSentinel.Entity(val.id === obj.id)': result_entities
+        }
+
+        return (
+            readable_output,
+            outputs,
+            result
+        )
 
 
 def list_entity_relations_command(client, args):
