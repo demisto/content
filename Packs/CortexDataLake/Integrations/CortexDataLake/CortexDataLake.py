@@ -6,10 +6,11 @@ import json
 from pancloud import QueryService, Credentials, exceptions
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from typing import Dict, Any, List, Tuple, Callable
+from typing import Dict, Any, List, Tuple, Callable, Union
 from tempfile import gettempdir
 from dateutil import parser
 import demistomock as demisto
+from datetime import timedelta
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -22,6 +23,8 @@ INSTANCE_ID_CONST = 'instance_id'
 API_URL_CONST = 'api_url'
 REGISTRATION_ID_CONST = 'reg_id'
 ENCRYPTION_KEY_CONST = 'auth_key'
+FIRST_FAILURE_TIME_CONST = 'first_failure_time'
+LAST_FAILURE_TIME_CONST = 'last_failure_time'
 DEFAULT_API_URL = 'https://api.us.cdl.paloaltonetworks.com'
 MINUTES_60 = 60 * 60
 SECONDS_30 = 30
@@ -81,13 +84,7 @@ class Client(BaseClient):
         self.instance_id = instance_id
 
     def _oproxy_authorize(self) -> Tuple[str, str, str, str, int]:
-        oproxy_response = self._http_request('POST',
-                                             '/cdl-token',
-                                             json_data={'token': get_encrypted(self.refresh_token, self.enc_key)},
-                                             timeout=(60 * 3, 60 * 3),
-                                             retries=3,
-                                             backoff_factor=10,
-                                             status_list_to_retry=[400])
+        oproxy_response = self._get_access_token_with_backoff_strategy()
         access_token = oproxy_response.get(ACCESS_TOKEN_CONST)
         api_url = oproxy_response.get('url')
         refresh_token = oproxy_response.get(REFRESH_TOKEN_CONST)
@@ -99,6 +96,101 @@ class Client(BaseClient):
             raise DemistoException(f'Missing attribute in response: access_token, instance_id or api are missing.\n'
                                    f'Oproxy response: {oproxy_response}')
         return access_token, api_url, instance_id, refresh_token, expires_in
+
+    def _get_access_token_with_backoff_strategy(self) -> Union[dict, DemistoException]:
+        """ Implements a backoff strategy for retrieving an access token. Logic as follows:
+        - First 60 minutes check for access token once every 1 minute max.
+        - Next 47 hours check for access token once every 10 minute max.
+        - After 48 hours check for access token once every 60 minutes max.
+        Successful fetch of access token resets the counters.
+
+        Returns: The oproxy response or raising a DemistoException
+
+        """
+        err_msg = 'We have found out that your recent calls were failed to authenticate against the CDL server. ' \
+                  'Therefore we have limited the amount of calls that the CDL integration performs. ' \
+                  'If you wish to try again, please run the cdl-reset-failure-times command beforehand.'
+        integration_context = demisto.getIntegrationContext()
+        first_failure_time = integration_context.get(FIRST_FAILURE_TIME_CONST)
+        last_failure_time = integration_context.get(LAST_FAILURE_TIME_CONST)
+
+        if first_failure_time and last_failure_time:
+            last_failure_datetime = datetime.fromtimestamp(last_failure_time)
+            first_failure_datetime = datetime.fromtimestamp(first_failure_time)
+            last_first_time_delta = last_failure_datetime - first_failure_datetime
+            now_last_time_delta = datetime.now() - last_failure_datetime
+
+            if last_first_time_delta < timedelta(hours=1):
+                if now_last_time_delta < timedelta(minutes=1):
+                    raise DemistoException(err_msg)
+            elif last_first_time_delta < timedelta(hours=48):
+                if now_last_time_delta < timedelta(minutes=10):
+                    raise DemistoException(err_msg)
+            else:
+                if now_last_time_delta < timedelta(minutes=60):
+                    raise DemistoException(err_msg)
+
+        return self._get_access_token()
+
+    def _get_access_token(self) -> Union[dict, DemistoException]:
+        """ Performs an http request to oproxy-cdl access token endpoint
+        In case of failure, handles the error, otherwise reset the failure counters and return the response
+
+        Returns: The oproxy response or raising a DemistoException
+
+        """
+        oproxy_response = self._http_request('POST',
+                                             '/cdl-token',
+                                             json_data={'token': get_encrypted(self.refresh_token, self.enc_key)},
+                                             error_handler=Client.error_handler,
+                                             timeout=(60 * 3, 60 * 3),
+                                             retries=3,
+                                             backoff_factor=10,
+                                             status_list_to_retry=[400])
+        self.reset_failure_times()
+        return oproxy_response
+
+    @staticmethod
+    def error_handler(oproxy_response: requests.Response):
+        """ Handles the oproxy response in case of a failure
+
+        Args:
+            oproxy_response: The oproxy response
+
+        """
+        integration_context = demisto.getIntegrationContext()
+        current_time = datetime.now().timestamp()
+        times_dict = {LAST_FAILURE_TIME_CONST: current_time}
+        if not integration_context.get(FIRST_FAILURE_TIME_CONST):
+            # first failure
+            times_dict[FIRST_FAILURE_TIME_CONST] = current_time
+        demisto.setIntegrationContext(integration_context.update(times_dict))
+
+        err_msg = f'Error in API call [{oproxy_response.status_code}] - {oproxy_response.reason}'
+        try:
+            # Try to parse json error response
+            error_entry = oproxy_response.json()
+            err_msg += f'\n{json.dumps(error_entry)}'
+            raise DemistoException(err_msg)
+        except ValueError:
+            err_msg += f'\n{oproxy_response.text}'
+            raise DemistoException(err_msg)
+
+    @staticmethod
+    def reset_failure_times():
+        """ Resets the time failure counters: FIRST_FAILURE_TIME_CONST & LAST_FAILURE_TIME_CONST
+
+        """
+        integration_context = demisto.getIntegrationContext()
+        need_to_set_integration_context = False
+
+        for const in (FIRST_FAILURE_TIME_CONST, LAST_FAILURE_TIME_CONST):
+            if const in integration_context:
+                del integration_context[const]
+                need_to_set_integration_context = True
+
+        if need_to_set_integration_context:
+            demisto.setIntegrationContext(integration_context)
 
     def query_loggings(self, query: str) -> Tuple[List[dict], list]:
         """
@@ -1024,13 +1116,19 @@ def main():
     enc_key = params.get(ENCRYPTION_KEY_CONST)
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    client = Client(token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key)
     args = demisto.args()
     fetch_table = params.get('fetch_table')
     fetch_fields = params.get('fetch_fields') or '*'
 
     command = demisto.command()
     LOG(f'command is {command}')
+    # needs to be executed before creating a Client
+    if command == 'cdl-reset-failure-times':
+        Client.reset_failure_times()
+        return_results(CommandResults(readable_output="Failure time counters have been successfully reset."))
+
+    client = Client(token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key)
+
     try:
         if command == 'test-module':
             test_module(client, fetch_table, fetch_fields, params.get('isFetch'))

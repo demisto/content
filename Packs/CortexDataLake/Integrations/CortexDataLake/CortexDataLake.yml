@@ -2588,6 +2588,10 @@ script:
       description: Identifies the origin of the data (the system that produced the
         data.
       type: String
+  - name: cdl-reset-failure-times
+    deprecated: false
+    description: Reset the failure times of retrieving the access token
+    execution: false
   dockerimage: demisto/python_pancloud_v2:1.0.0.13088
   feed: false
   isfetch: true
