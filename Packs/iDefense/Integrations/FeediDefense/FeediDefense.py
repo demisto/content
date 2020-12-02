@@ -2,12 +2,15 @@ from typing import Dict, Union
 from CommonServerPython import *
 from JSONFeedApiModule import *  # noqa: E402
 
-try:
-    FETCH_TIME = int(demisto.params().get('fetch_time'))
-except ValueError:
-    FETCH_TIME = 14
-
 GLOBAL_INTEGRATION_CONTEXT: dict = {}  # Global variable in order to hold one dictionary that manage all indicator types
+
+
+def _get_fetch_time() -> int:
+    try:
+        fetch_time = int(demisto.params().get('fetch_time'))
+    except ValueError:
+        fetch_time = 14
+    return fetch_time
 
 
 def _update_global_integration_context(key: str = None, value: str = None) -> None:
@@ -35,6 +38,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
         list of indicators returned from api. Each indicator is represented in dictionary
     """
     current_datetime = datetime.now()
+    fetch_time = _get_fetch_time()
     params: dict = feed.get('filters', {})
     current_indicator_type = feed.get('indicator_type', '')
     _update_global_integration_context()
@@ -42,7 +46,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
     page_number = 1
     params['end_date'] = current_datetime.isoformat() + 'Z'
     params['start_date'] = last_fetch if last_fetch else \
-        (current_datetime - timedelta(days=FETCH_TIME)).isoformat() + 'Z'
+        (current_datetime - timedelta(days=fetch_time)).isoformat() + 'Z'
     params['page_size'] = 200
 
     if not limit:

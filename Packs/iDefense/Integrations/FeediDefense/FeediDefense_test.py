@@ -77,8 +77,9 @@ def test_build_iterator_no_json():
     url_page1 = 'https://api.intelgraph.idefense.com/rest/threatindicator/v0/domain?page_size=200&page=1'
     status_code = 200
     client = Client(**PARAMS)
+    json_data = {"ccc": [{"display_text": "3.3.3.3"}], "total_size": 1, "page": 1, "page_size": 200, "more": False}
     with requests_mock.Mocker() as m:
-        m.get(url_page1, status_code=status_code, json="ccc")
+        m.get(url_page1, status_code=status_code, json=json_data)
         with pytest.raises(TypeError) as e:
             custom_build_iterator(client, PARAMS['feed_name_to_config']['Domain'], 0)
         if not e:
