@@ -10,8 +10,8 @@ parameters:
     type: string
     default: ""
   backward_compatibility:
-    type: boolean
-    default: true
+    type: string
+    default: "true"
   nightly:
     type: string
     default: ""
@@ -132,6 +132,10 @@ references:
         if [ -n "${BUCKET_UPLOAD_PARAMETER}" ];
         then
             echo "export BUCKET_UPLOAD=$BUCKET_UPLOAD_PARAMETER" >> $BASH_ENV
+        fi
+        if [ -n "${BACKWARD_COMPATIBILITY}" ];
+        then
+            echo "export CHECK_BACKWARD=$BACKWARD_COMPATIBILITY" >> $BASH_ENV
         fi
 
         echo "=== sourcing $BASH_ENV ==="
