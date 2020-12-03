@@ -551,6 +551,17 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
+class DBotScoreOnlyIndicator(Common.Indicator):
+    """
+    This class represents a generic indicator and is used only to return DBotScore
+    """
+    def __init__(self, dbot_score: Common.DBotScore):
+        self.dbot_score = dbot_score
+
+    def to_context(self):
+        return self.dbot_score.to_context()
+
+
 def calculate_limits(limit: str) -> Tuple[int, int]:
     total_results = check_int(limit, 'limit', None, None, False)
     if not total_results:
@@ -646,23 +657,8 @@ def timestamp_us_to_datestring_utc(ts: int, date_format: str = DATE_FORMAT) -> s
 
 
 def format_cidr_data(cidrs: List[Dict[str, Any]]) -> CommandResults:
-    class ExpanseCIDR(Common.Indicator):
-        def __init__(self, indicator: str):
-            self.indicator = indicator
-
-        def to_context(self):
-            return {
-                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
-                    'Score': Common.DBotScore.NONE,
-                    'Vendor': 'ExpanseV2',
-                    'Type': 'CIDR',
-                    'Indicator': self.indicator
-                }
-            }
-
     cidr_data_list: List[Dict[str, Any]] = []
-    cidr_standard_list: List[Common.Indicator] = []
+    cidr_standard_list: List[DBotScoreOnlyIndicator] = []
 
     for cidr_data in cidrs:
         cidr_data['cidr'] = ','.join(range_to_cidrs(cidr_data['startAddress'], cidr_data['endAddress'])) if (
@@ -679,9 +675,14 @@ def format_cidr_data(cidrs: List[Dict[str, Any]]) -> CommandResults:
             for k in cidr_data if k not in cidr_context_excluded_fields
         })
 
-        # We can't use Common.DBotScore here because CIDR is not one of the well known
-        # Indicator types
-        cidr_standard_context = ExpanseCIDR(cidr_data['cidr'])
+        cidr_standard_context = DBotScoreOnlyIndicator(
+            dbot_score=Common.DBotScore(
+                indicator=cidr_data['cidr'],
+                indicator_type=DBotScoreType.CIDR,
+                integration_name="ExpanseV2",
+                score=Common.DBotScore.NONE
+            )
+        )
         cidr_standard_list.append(cidr_standard_context)
 
     readable_output = tableToMarkdown(
@@ -707,7 +708,7 @@ def find_indicator_md5_by_hash(h: str) -> Optional[str]:
         return None
 
     fetched_iocs = demisto.searchIndicators(
-        query=f'{field}:{h} and type:Certificate and -md5:""', 
+        query=f'{field}:{h} and type:Certificate and -md5:""',
         page=0, size=1  # we just take the first one
     ).get('iocs')
     if fetched_iocs is None or len(fetched_iocs) == 0:
@@ -1903,13 +1904,13 @@ def certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             if len(ba_hash) == 16:
                 # MD5 hash
                 curr_hash = base64.urlsafe_b64encode(ba_hash).decode('ascii')
-            else:  # maybe a different hash? let's look for an indicator with a corresponding hash
+            else: # maybe a different hash? let's look for an indicator with a corresponding hash
                 result_hash = find_indicator_md5_by_hash(ba_hash.hex())
                 if result_hash is None:
                     continue
 
                 curr_hash = base64.urlsafe_b64encode(bytearray.fromhex(result_hash)).decode('ascii')
-                
+
         except ValueError:
             pass
 
