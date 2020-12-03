@@ -178,6 +178,7 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
 
             else:
                 github_user = iam_user_profile.map_object(mapper_name=mapper_out)
+                # make sure the email is transformer to a list
                 emails = github_user.get("emails")
                 if not isinstance(emails, list):
                     github_user["emails"] = [emails]
@@ -297,9 +298,14 @@ def disable_user_command(client, args, mapper_out, is_disable_enabled):
 
 def get_mapping_fields_command():
     scheme = [
+        "userName",
+        "externalId",
+        "title",
+        "userType",
         "name",
         "emails",
-        "userName"
+        "phoneNumbers",
+        "urn:scim:schemas:extension:enterprise:1.0"
     ]
     incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
 
@@ -307,6 +313,20 @@ def get_mapping_fields_command():
         incident_type_scheme.add_field(field, "Field")
 
     return GetMappingFieldsResponse([incident_type_scheme])
+
+{
+  "userName": "demistotest@paloaltonetworks.com",
+  "active": "true",
+  "name": {
+    "givenName": "Demisto"
+  },
+  "emails": [
+    {
+      "type": "work",
+      "primary": true,
+      "value": "demistotest@paloaltonetworks.com"
+    }
+
 
 
 def main():
