@@ -697,10 +697,11 @@ def createChangeManagerTicket(client: zClient, args):
 
 
 
+
     command_results = CommandResults(
         outputs_prefix="Skybox.ChangeManagerTicket",
         outputs_key_field="id",
-        outputs=resolve_datetime(resp),
+        outputs=helpers.serialize_object(resolve_datetime(resp)),
         readable_output=f"Created Ticket {resp['id']}"
     )
 
@@ -750,10 +751,6 @@ def implementChangeRequests(client: zClient, args):
         implementationStatus = args.get('implementationStatus','')
 
 
-
-
-
-
     )
 
 
@@ -766,12 +763,50 @@ def implementChangeRequests(client: zClient, args):
     return_results(str(resp))
 
 
+def addBlockAccess(ticket_client: zClient,network_client: zClient, args):
+
+    dHostId = args.get('dhostId', 0)
+    dObject = args.get('dObject', "")
+
+    destinationobjects = findFirewallObjectsIdentifications(network_client, hostId=dHostId, objectNameFilter=dObject)
+
+    blockAccessChangeRequestV7_type = ticket_client.get_type('ns0:blockAccessChangeRequestV7')
+    blockAccessChangeRequestV7 = blockAccessChangeRequestV7_type(
+
+    comment = args.get('comment'),
+    complianceStatus = args.get('complianceStatus', 'UNCOMPUTED'),
+    createdBy = args.get('createdBy', ''),
+    # creationTime = args.get('creationTime',''),
+    description = args.get('description', ''),
+    id = args.get('id', 0),
+    isRequiredStatus = args.get('isRequiredStatus', 'UNCOMPUTED'),
+    # lastModificationTime = args.get('lastModificationTime',''),
+    # lastModifiedBy = args.get('lastModifiedBy','xsoar'),
+    originalChangeRequestId = args.get('originalChangeRequestId', 0),
+    verificationStatus = args.get('verificationStatus', 'UNKNOWN'),  # END of ChangeRequestV3 BASE.
+    destinationObjects=[destinationobjects],
+    ports=args.get('ports', ""),
+    sourceAddresses=args.get('sourceAddresses', ""),
+    )
+
+    resp = ticket_client.service.addOriginalChangeRequestsV7(
+        ticketId=args.get('ticketId', 0),
+        changeRequests=blockAccessChangeRequestV7
+    )
+
+    return(
+        CommandResults(
+            outputs_prefix='Skybox.ChangeRequest',
+            outputs_key_field = 'id',
+            outputs=helpers.serialize_object(resolve_datetime(resp[0]))
+        )
+    )
 
 
 def addRequireAccess(ticket_client: zClient,network_client: zClient, args):
 
-    dHostId = args.get('dhostId',0)
-    dObject = args.get('dObject',"*")
+    dHostId = args.get('dhostId')
+    dObject = args.get('dObject')
 
     destinationobjects = findFirewallObjectsIdentifications(network_client,hostId=dHostId, objectNameFilter=dObject)
 
@@ -780,7 +815,7 @@ def addRequireAccess(ticket_client: zClient,network_client: zClient, args):
     requireAccessChangeRequestV7 = requireAccessChangeRequestV7_type(
         comment = args.get('comment'),
         complianceStatus = args.get('complianceStatus','UNCOMPUTED'),
-        createdBy = args.get('createdBy','xsoar'),
+        createdBy = args.get('createdBy',''),
         #creationTime = args.get('creationTime',''),
         description = args.get('description',''),
         id = args.get('id',0),
@@ -807,7 +842,32 @@ def addRequireAccess(ticket_client: zClient,network_client: zClient, args):
         changeRequests = requireAccessChangeRequestV7
     )
 
-    return_results(str(resp))
+    return(
+        CommandResults(
+            outputs_prefix='Skybox.ChangeRequest',
+            outputs_key_field='id',
+            outputs=helpers.serialize_object(resolve_datetime(resp[0]))
+        )
+    )
+
+def operateOnAccessChangeTicket(ticket_client:zClient, args):
+
+    phaseOperation_type = ticket_client.get_type('ns0:phaseOperation')
+    phaseOperation = phaseOperation_type(
+        phaseId = 0,
+        reject = False,
+        type = args.get('phaseType',"ACCEPT"),
+        phaseOwner= args.get('phaseOwner','xsoar')
+
+
+    )
+
+    resp = ticket_client.service.operateOnAccessChangeTicket(
+        ticketId = args.get('ticketId',0),
+        phaseOperation = phaseOperation
+    )
+
+    return (f"Requested to {args.get('phaseType')} for ticket {args.get('ticketId')}")
 
 ''' MAIN FUNCTION '''
 
@@ -823,7 +883,7 @@ def main() -> None:
 
     # get the service API url
     base_url = demisto.params()['url']
-    service_url = urljoin(base_url, '/skybox/webservice/jaxws')
+    soap_service_url = urljoin(base_url, '/skybox/webservice/jaxws')
     service_url = urljoin(base_url, '/skybox/webservice/jaxrs')
 
     # if your Client class inherits from BaseClient, SSL verification is
@@ -908,6 +968,12 @@ def main() -> None:
 
         elif demisto.command() == 'skybox-tickets-addRequireAccess':
             return_results(addRequireAccess(network_client=network_client, ticket_client=ticket_client, args=demisto.args()))
+
+        elif demisto.command() == 'skybox-tickets-addBlockAccess':
+            return_results(addBlockAccess(network_client=network_client, ticket_client=ticket_client, args=demisto.args()))
+
+        elif demisto.command() == 'skybox-tickets-operateOnAccessChangeTicket':
+            return_results(operateOnAccessChangeTicket(ticket_client=ticket_client,args=demisto.args()))
 
 
 

@@ -27,8 +27,8 @@ configuration:
   name: password
   required: true
   type: 4
-description: This is the Hello World integration for getting started.
-display: skybox
+description: Alpha implementation of Skybox API
+display: skybox (alpha)
 name: skybox
 script:
   commands:
@@ -329,9 +329,77 @@ script:
       name: dObject
       required: false
       secret: false
+    - default: false
+      isArray: false
+      name: sourceAddresses
+      required: false
+      secret: false
     deprecated: false
     execution: false
     name: skybox-tickets-addRequireAccess
+  - arguments:
+    - default: false
+      isArray: false
+      name: dHostId
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: dObject
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ticketId
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: sourceAddresses
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: destinationAddresses
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: sObject
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: sHostId
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: skybox-tickets-addBlockAccess
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: phaseType
+      predefined:
+      - ACCEPT
+      - PROMOTE
+      - DEMOTE
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: phaseOwner
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ticketId
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: skybox-tickets-operateOnAccessChangeTicket
   dockerimage: demisto/zeep:1.0.0.8900
   feed: false
   isfetch: false
