@@ -25,7 +25,9 @@ def test_ip(requests_mock):
     client = Client(
         base_url=BASE_URL,
         access_id=ACCESS_ID,
-        secret_key=SECRET_KEY
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={}
     )
 
     args = {
@@ -57,7 +59,9 @@ def test_domain(requests_mock):
     client = Client(
         base_url=BASE_URL,
         access_id=ACCESS_ID,
-        secret_key=SECRET_KEY
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={}
     )
 
     args = {
@@ -89,7 +93,9 @@ def test_url(requests_mock):
     client = Client(
         base_url=BASE_URL,
         access_id=ACCESS_ID,
-        secret_key=SECRET_KEY
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={}
     )
 
     args = {
@@ -121,7 +127,9 @@ def test_file(requests_mock):
     client = Client(
         base_url=BASE_URL,
         access_id=ACCESS_ID,
-        secret_key=SECRET_KEY
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={}
     )
 
     args = {

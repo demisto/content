@@ -55,7 +55,7 @@ class Client(BaseClient):
             ).digest()
         ).decode("utf-8")
 
-    def http_request(self, full_url, **kwargs):
+    def http_request(self, full_url: str, **kwargs):
         """
         A wrapper to send requests and handle responses.
         """
@@ -81,7 +81,7 @@ class Client(BaseClient):
         client_url = self.base_url + "ping/"
         return self.http_request(client_url)
 
-    def get_ip_details(self, ip: list, enhanced=False):
+    def get_ip_details(self, ip: list, enhanced: bool = False):
         """Gets the IP Details
 
         :type ip: ``list``
@@ -104,7 +104,7 @@ class Client(BaseClient):
         client_url = self.base_url + url_suffix
         return self.http_request(full_url=client_url, **params)
 
-    def get_domain_details(self, domain: list, enhanced=False):
+    def get_domain_details(self, domain: list, enhanced: bool = False):
         """Gets the Domain Details
 
         :type domain: ``list``
@@ -128,7 +128,7 @@ class Client(BaseClient):
         client_url = self.base_url + url_suffix
         return self.http_request(full_url=client_url, **params)
 
-    def get_url_details(self, url: list, enhanced=False):
+    def get_url_details(self, url: list, enhanced: bool = False):
         """Gets the URL Details
 
         :type url: ``list``
@@ -151,7 +151,7 @@ class Client(BaseClient):
         client_url = self.base_url + url_suffix
         return self.http_request(full_url=client_url, **params)
 
-    def get_file_details(self, file: list, enhanced=False):
+    def get_file_details(self, file: list, enhanced: bool = False):
         """Gets the File Details
 
         :type file: ``list``
@@ -220,7 +220,7 @@ def ip_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if invalid_ips:
         return_warning('The following IP Addresses were found invalid: {}'.format(', '.join(invalid_ips)))
 
-    enhanced = args.get('enhanced')
+    enhanced = argToBoolean(args.get('enhanced'))
     response = client.get_ip_details(ip_addresses_array, enhanced)
     ip_list = response.get("data", {}).get("results", {})
     ip_data_list, ip_standard_list = [], []
@@ -265,7 +265,7 @@ def domain_details_command(client: Client, args: Dict[str, Any]) -> CommandResul
     if invalid_domains:
         return_warning('The following Domains were found invalid: {}'.format(', '.join(invalid_domains)))
 
-    enhanced = args.get('enhanced')
+    enhanced = argToBoolean(args.get('enhanced'))
     response = client.get_domain_details(domain_array, enhanced)
     domain_list = response.get("data", {}).get("results", {})
     domain_data_list, domain_standard_list = [], []
@@ -309,7 +309,7 @@ def url_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if invalid_urls:
         return_warning('The following URLs were found invalid: {}'.format(', '.join(invalid_urls)))
 
-    enhanced = args.get('enhanced')
+    enhanced = argToBoolean(args.get('enhanced'))
     response = client.get_url_details(url_array, enhanced)
     url_list = response.get("data", {}).get("results", {})
     url_data_list, url_standard_list = [], []
@@ -353,7 +353,7 @@ def file_details_command(client: Client, args: Dict[str, Any]) -> CommandResults
     if invalid_hashes:
         return_warning('The following Hashes were found invalid: {}'.format(', '.join(invalid_hashes)))
 
-    enhanced = args.get('enhanced')
+    enhanced = argToBoolean(args.get('enhanced'))
     response = client.get_file_details(file_array, enhanced)
     file_list = response.get("data", {}).get("results", {})
     file_data_list, file_standard_list = [], []
