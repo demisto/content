@@ -6,7 +6,7 @@ import json
 from pancloud import QueryService, Credentials, exceptions
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from typing import Dict, Any, List, Tuple, Callable, Union
+from typing import Dict, Any, List, Tuple, Callable
 from tempfile import gettempdir
 from dateutil import parser
 import demistomock as demisto
@@ -83,7 +83,7 @@ class Client(BaseClient):
         self.api_url = api_url
         self.instance_id = instance_id
 
-    def _oproxy_authorize(self) -> Tuple[str, str, str, str, int]:
+    def _oproxy_authorize(self) -> Tuple[Any, Any, Any, Any, int]:
         oproxy_response = self._get_access_token_with_backoff_strategy()
         access_token = oproxy_response.get(ACCESS_TOKEN_CONST)
         api_url = oproxy_response.get('url')
@@ -97,7 +97,7 @@ class Client(BaseClient):
                                    f'Oproxy response: {oproxy_response}')
         return access_token, api_url, instance_id, refresh_token, expires_in
 
-    def _get_access_token_with_backoff_strategy(self) -> Union[dict, DemistoException]:
+    def _get_access_token_with_backoff_strategy(self) -> dict:
         """ Implements a backoff strategy for retrieving an access token. Logic as follows:
         - First 60 minutes check for access token once every 1 minute max.
         - Next 47 hours check for access token once every 10 minute max.
@@ -132,7 +132,7 @@ class Client(BaseClient):
 
         return self._get_access_token()
 
-    def _get_access_token(self) -> Union[dict, DemistoException]:
+    def _get_access_token(self) -> dict:
         """ Performs an http request to oproxy-cdl access token endpoint
         In case of failure, handles the error, otherwise reset the failure counters and return the response
 
@@ -164,7 +164,8 @@ class Client(BaseClient):
         if not integration_context.get(FIRST_FAILURE_TIME_CONST):
             # first failure
             times_dict[FIRST_FAILURE_TIME_CONST] = current_time
-        demisto.setIntegrationContext(integration_context.update(times_dict))
+        integration_context.update(times_dict)
+        demisto.setIntegrationContext(integration_context)
 
         err_msg = f'Error in API call [{oproxy_response.status_code}] - {oproxy_response.reason}'
         try:
@@ -1119,13 +1120,13 @@ def main():
     args = demisto.args()
     fetch_table = params.get('fetch_table')
     fetch_fields = params.get('fetch_fields') or '*'
-
     command = demisto.command()
     LOG(f'command is {command}')
     # needs to be executed before creating a Client
     if command == 'cdl-reset-failure-times':
         Client.reset_failure_times()
-        return_results(CommandResults(readable_output="Failure time counters have been successfully reset."))
+        return_outputs(readable_output="Failure time counters have been successfully reset.")
+        return
 
     client = Client(token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key)
 

@@ -81,8 +81,8 @@ configuration:
   - sctp
   required: false
   type: 16
-- additionalinfo: Comma-separated fields that will be fetched with every incident, e.g., "pcap,session_id".
-    Enter "*" for all possible fields.
+- additionalinfo: Comma-separated fields that will be fetched with every incident,
+    e.g., "pcap,session_id". Enter "*" for all possible fields.
   defaultvalue: '*'
   display: Fetch Fields
   hidden: false
@@ -2592,7 +2592,7 @@ script:
     deprecated: false
     description: Reset the failure times of retrieving the access token
     execution: false
-  dockerimage: demisto/python_pancloud_v2:1.0.0.13088
+  dockerimage: demisto/python_pancloud_v2:1.0.0.13988
   feed: false
   isfetch: true
   longRunning: false
