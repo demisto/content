@@ -253,13 +253,18 @@ def certificate_reputation_command(args: Dict[str, Any]) -> Dict[str, Any]:
             'ReadableContentsFormat': formats['markdown']
         }
 
+    comments: List[str] = []
+
     indicator_value = indicator.get('value')
     if indicator_value is None:
         raise ValueError("Matching indicator has no value (this should not be possible)")
 
     standard_context = {}
     if (fields := indicator.get('CustomFields')) is not None:
-        if (certificate_context := certificate_fields_to_context(fields)) is not None:
+        if not 'pem' in fields:
+            comments.append("*PEM field is empty*")
+
+        elif (certificate_context := certificate_fields_to_context(fields)) is not None:
             standard_context.update(certificate_context)
 
     tags, check_comments, dbot_score = dbot_context(
@@ -275,6 +280,8 @@ def certificate_reputation_command(args: Dict[str, Any]) -> Dict[str, Any]:
 
     readable_output = f"Score for {indicator_value} is {standard_context['DBotScore']['Score']}\n"
     readable_output += "## Notes\n"
+    readable_output += '\n'.join(comments)
+    readable_output += '\n'
     readable_output += '\n'.join(check_comments)
 
     return {
