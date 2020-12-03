@@ -1789,7 +1789,7 @@ def main():
         command = demisto.command()
         if demisto.command() == 'test-module':
             response = checkpoint_login_and_get_sid_command(base_url, username, password,
-                                                            verify_certificate, 600).outputs
+                                                            verify_certificate, 600, domain).outputs
             if response:
                 sid = response.get('session-id')  # type: ignore
                 return_results(test_module(base_url, sid, verify_certificate))
