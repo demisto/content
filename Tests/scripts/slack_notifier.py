@@ -9,7 +9,7 @@ from circleci.api import Api as circle_api
 from slackclient import SlackClient
 
 from demisto_sdk.commands.common.tools import str2bool, run_command, LOG_COLORS, print_color, print_error
-from Tests.Marketplace.marketplace_services import BucketUploadFlow
+from Tests.Marketplace.marketplace_services import BucketUploadFlow, get_successful_and_failed_packs
 
 DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/' \
                     'uploads/2018/07/Demisto-Icon-Dark.png'
@@ -137,32 +137,23 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
         }] + steps_fields
 
     if job_name and job_name == BucketUploadFlow.UPLOAD_JOB_NAME:
-        if os.path.exists(packs_results_file_path):
-            try:
-                with open(packs_results_file_path, 'r') as json_file:
-                    packs_results_file = json.load(json_file)
-                if packs_results_file:
-                    successful_packs = packs_results_file.get(
-                        BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, {}
-                    ).get(BucketUploadFlow.SUCCESSFUL_PACKS, {})
-                    if successful_packs:
-                        steps_fields += [{
-                            "title": "Successful Packs:",
-                            "value": "\n".join([pack_name for pack_name in {*successful_packs}]),
-                            "short": False
-                        }]
-                    failed_packs = packs_results_file.get(
-                        BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, {}
-                    ).get(BucketUploadFlow.FAILED_PACKS, {})
-                    if failed_packs:
-                        steps_fields += [{
-                            "title": "Failed Packs:",
-                            "value": "\n".join([f"{pack_name}: {pack_data.get(BucketUploadFlow.STATUS)}"
-                                                for pack_name, pack_data in failed_packs.items()]),
-                            "short": False
-                        }]
-            except json.decoder.JSONDecodeError:
-                pass
+        try:
+            successful_packs, failed_packs = get_successful_and_failed_packs(packs_results_file_path)
+            if successful_packs:
+                steps_fields += [{
+                    "title": "Successful Packs:",
+                    "value": "\n".join([pack_name for pack_name in {*successful_packs}]),
+                    "short": False
+                }]
+            if failed_packs:
+                steps_fields += [{
+                    "title": "Failed Packs:",
+                    "value": "\n".join([f"{pack_name}: {pack_data.get(BucketUploadFlow.STATUS)}"
+                                        for pack_name, pack_data in failed_packs.items()]),
+                    "short": False
+                }]
+        except json.decoder.JSONDecodeError:
+            pass
 
     if job_name and job_name != 'Upload Packs To Marketplace' and color == 'good':
         print_color('On bucket upload flow we are not notifying on jobs that are not Upload Packs. exiting...',

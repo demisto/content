@@ -5,13 +5,13 @@ import argparse
 import shutil
 import logging
 import re
-from typing import Tuple
 from zipfile import ZipFile
 from google.cloud.storage import Blob, Bucket
 
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, \
-    IGNORED_FILES, PACKS_FOLDER, BucketUploadFlow, load_json, store_successful_and_failed_packs_in_ci_artifacts
+    IGNORED_FILES, PACKS_FOLDER, BucketUploadFlow, load_json, store_successful_and_failed_packs_in_ci_artifacts, \
+    get_successful_and_failed_packs
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, get_packs_summary
 
 LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/packs/([A-Za-z0-9-_.]+/\d+\.\d+\.\d+/'
@@ -187,27 +187,6 @@ def download_and_extract_index(build_bucket: Bucket, extract_destination_path: s
         sys.exit(1)
 
 
-def get_successful_and_failed_packs(packs_results_file_path: str) -> Tuple[dict, dict]:
-    """ Loads the packs_results.json file to get the successful and failed packs dicts
-
-    Args:
-        packs_results_file_path: The path to the file
-
-    Returns:
-        dict: The successful packs dict
-        dict: The failed packs dict
-
-    """
-    if os.path.exists(packs_results_file_path):
-        packs_results_file = load_json(packs_results_file_path)
-        successful_packs_dict = packs_results_file.get(BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, {}) \
-            .get(BucketUploadFlow.SUCCESSFUL_PACKS, {})
-        failed_packs_dict = packs_results_file.get(BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, {}) \
-            .get(BucketUploadFlow.FAILED_PACKS, {})
-        return successful_packs_dict, failed_packs_dict
-    return {}, {}
-
-
 def copy_id_set(production_bucket: Bucket, build_bucket: Bucket):
     """ Copies the id_set.json artifact from the build bucket to the production bucket.
 
@@ -221,6 +200,7 @@ def copy_id_set(production_bucket: Bucket, build_bucket: Bucket):
 
     if not build_id_set_blob.exists():
         logging.error(f"id_set.json file does not exists in build bucket in path: {build_id_set_path}")
+        sys.exit(1)
 
     prod_id_set_path = os.path.join(os.path.dirname(GCPConfig.STORAGE_BASE_PATH), 'id_set.json')
     try:
@@ -229,10 +209,12 @@ def copy_id_set(production_bucket: Bucket, build_bucket: Bucket):
         )
         if not copied_blob.exists():
             logging.error(f"Failed to upload id_set.json to {prod_id_set_path}")
+            sys.exit(1)
         else:
             logging.success("Finished uploading id_set.json to storage.")
     except Exception as e:
         logging.exception(f"Failed copying ID Set. Additional Info: {str(e)}")
+        sys.exit(1)
 
 
 def verify_copy(successful_packs: list, pc_successful_packs_dict: dict):
@@ -334,6 +316,8 @@ def main():
     # Get the successful and failed packs file from Prepare Content step in Create Instances job if there are
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
     pc_successful_packs_dict, pc_failed_packs_dict = get_successful_and_failed_packs(packs_results_file_path)
+    logging.debug(f"Successful packs from Prepare Content: {pc_successful_packs_dict}")
+    logging.debug(f"Failed packs from Prepare Content: {pc_failed_packs_dict}")
 
     # Check if needs to upload or not
     check_if_need_to_upload(pc_successful_packs_dict, pc_failed_packs_dict)

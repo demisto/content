@@ -1811,16 +1811,37 @@ class Pack(object):
 # HELPER FUNCTIONS
 
 
+def get_successful_and_failed_packs(packs_results_file_path: str) -> Tuple[dict, dict]:
+    """ Loads the packs_results.json file to get the successful and failed packs dicts
+
+    Args:
+        packs_results_file_path: The path to the file
+
+    Returns:
+        dict: The successful packs dict
+        dict: The failed packs dict
+
+    """
+    if os.path.exists(packs_results_file_path):
+        packs_results_file = load_json(packs_results_file_path)
+        successful_packs_dict = packs_results_file.get(BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, {}) \
+            .get(BucketUploadFlow.SUCCESSFUL_PACKS, {})
+        failed_packs_dict = packs_results_file.get(BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, {}) \
+            .get(BucketUploadFlow.FAILED_PACKS, {})
+        return successful_packs_dict, failed_packs_dict
+    return {}, {}
+
+
 def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: str, stage: str, successful_packs: list,
                                                       failed_packs: list):
-    """ Adds the pack to the correct section in the packs_results.json file
+    """ Write the successful and failed packs to the correct section in the packs_results.json file
 
     Args:
         packs_results_file_path (str): The path to the pack_results.json file
         stage (str): can be BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING or
         BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
-        failed_packs (list): The list of all failed packs
         successful_packs (list): The list of all successful packs
+        failed_packs (list): The list of all failed packs
 
     """
     packs_results = load_json(packs_results_file_path)
@@ -1837,6 +1858,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
             }
         }
         packs_results[stage].update(failed_packs_dict)
+        logging.debug(f"Failed packs {failed_packs_dict}")
 
     if successful_packs:
         successful_packs_dict = {
@@ -1849,6 +1871,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
             }
         }
         packs_results[stage].update(successful_packs_dict)
+        logging.debug(f"Successful packs {successful_packs_dict}")
 
     if packs_results:
         json_write(packs_results_file_path, packs_results)
