@@ -12,6 +12,7 @@ BASE_URL = demisto.getParam('url').rstrip('/') + '/'
 API_TOKEN = demisto.getParam('APItoken')
 USERNAME = demisto.getParam('username')
 PASSWORD = demisto.getParam('password')
+COMMAND_NOT_IMPELEMENTED_MSG = 'Command not implemented'
 
 HEADERS = {
     'Content-Type': 'application/json',
@@ -322,6 +323,9 @@ def create_update_incident_from_ticket(issue: dict) -> dict:
 
 
 def get_project_id(project_key='', project_name=''):
+    if not project_key and not project_name:
+        return_error('You must provide at least one of the following: project_key or project_name')
+
     result = jira_req('GET', 'rest/api/latest/issue/createmeta', resp_type='json')
 
     for project in result.get('projects'):
@@ -363,8 +367,8 @@ def get_issue_fields(issue_creating=False, **issue_args):
 
     if issue_creating:
         # make sure the key & name are right, and get the corresponding project id & key
-        project_id = get_project_id(issue['fields']['project'].get('key', ''),
-                                    issue['fields']['project'].get('name', ''))
+        project_id = get_project_id(issue['fields'].get('project', {}).get('key', ''),
+                                    issue['fields'].get('project', {}).get('name', ''))
         issue['fields']['project']['id'] = project_id
 
     if issue_args.get('issueTypeName'):
@@ -698,7 +702,8 @@ def get_remote_data_command(id: str, lastUpdate: str) -> GetRemoteDataResponse:
 
     # Update incident only if issue modified in Jira server-side after the last sync
     if jira_modified_date > incident_modified_date:
-        incident_update = create_update_incident_from_ticket(issue_raw_response)    # Getting labels to be updated in incident
+        incident_update = create_update_incident_from_ticket(
+            issue_raw_response)  # Getting labels to be updated in incident
 
         demisto.debug(f"\nUpdate incident:\n\tIncident name: Jira issue {issue_raw_response.get('id')}\n\t"
                       f"Reason: Issue modified in remote.\n\tIncident Last update time: {incident_modified_date}"
@@ -757,7 +762,12 @@ def main():
         elif demisto.command() == 'get-remote-data':
             return_results(get_remote_data_command(**demisto.args()))
 
+        else:
+            raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
+
     except Exception as err:
+        if isinstance(err, NotImplementedError) and COMMAND_NOT_IMPELEMENTED_MSG in str(err):
+            raise
         return_error(str(err))
 
     finally:

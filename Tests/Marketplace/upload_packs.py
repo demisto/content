@@ -844,7 +844,7 @@ def get_packs_summary(packs_list):
 
 
 def main():
-    install_logging('Prepare Content Packs For Testing.log')
+    install_logging('Prepare_Content_Packs_For_Testing.log')
     option = option_handler()
     packs_artifacts_path = option.artifacts_path
     extract_destination_path = option.extract_path
