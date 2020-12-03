@@ -1626,10 +1626,18 @@ def checkpoint_login_and_get_sid_command(base_url: str, username: str, password:
                                          verify_certificate: bool,
                                          session_timeout: int, domain='') -> CommandResults:
     """login to checkpoint admin account using username and password."""
+    body = {
+        'user': username, 
+        'password': password, 
+        'session-timeout': session_timeout
+    }
+    if domain:
+        body['domain'] = domain
+    
     response = requests.post(base_url + 'login', verify=verify_certificate,
                              headers={'Content-Type': 'application/json'},
-                             json={'user': username, 'password': password, 'domain': domain,
-                                   'session-timeout': session_timeout}).json()
+                             json=body).json()
+
     printable_result = {'session-id': response.get('sid')}
     readable_output = tableToMarkdown('CheckPoint session data:', printable_result)
 
@@ -1775,6 +1783,7 @@ def main():
     proxy = params.get('proxy', False)
 
     is_sid_provided = True
+    domain = demisto.params().get('domain')
 
     try:
         command = demisto.command()
@@ -1788,10 +1797,10 @@ def main():
                 return
         elif command == 'checkpoint-login-and-get-session-id':
             session_timeout = demisto.args().get('session_timeout')
-            domain = demisto.args().get('domain')
+            domain_arg = demisto.args().get('domain', domain)
 
             return_results(checkpoint_login_and_get_sid_command(base_url, username, password,
-                                                                verify_certificate, session_timeout, domain))
+                                                                verify_certificate, session_timeout, domain_arg))
             return
 
         elif command == 'checkpoint-logout':
