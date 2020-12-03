@@ -153,7 +153,7 @@ def policy_get_command(client: AzureWAFClient, **args) -> CommandResults:
 def policy_get_list_by_subscription_command(client: AzureWAFClient, **args: Dict[str, Any]) -> CommandResults:
     policies: List[Dict] = []
     try:
-        policies.extend(client.get_policy_list_by_subscription_id())
+        policies.extend(client.get_policy_list_by_subscription_id().get("value"))
     except DemistoException:
         raise
     res = CommandResults(readable_output=policies_to_markdown(policies),
