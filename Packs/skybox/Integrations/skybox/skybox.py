@@ -765,10 +765,30 @@ def implementChangeRequests(client: zClient, args):
 
 def addBlockAccess(ticket_client: zClient,network_client: zClient, args):
 
-    dHostId = args.get('dhostId', 0)
-    dObject = args.get('dObject', "")
 
-    destinationobjects = findFirewallObjectsIdentifications(network_client, hostId=dHostId, objectNameFilter=dObject)
+    dHostId = args.get('dhostId')
+    dObject = args.get('dObject')
+    destinationAddresses = args.get('destinationAddresses')
+
+    if dHostId and dObject:
+        destinationObjects = findFirewallObjectsIdentifications(network_client, hostId=dHostId, objectNameFilter=dObject)
+        destinationObjects =[destinationObjects]
+    elif destinationAddresses:
+        destinationObjects = None
+    else:
+        return_error("Destination Object or Address must be provided")
+
+    sHostId = args.get('shostId')
+    sObject = args.get('sObject')
+    sourceAddresses = args.get('sourceAddresses')
+
+    if sHostId and sObject:
+        sourceObjects = findFirewallObjectsIdentifications(network_client, hostId = sHostId, objectNameFilter=sObject)
+        sourceObjects = [sourceObjects]
+    elif sourceAddresses:
+        sourceObjects=None
+    else:
+        return_error("Source Object or Addresses must be provided")
 
     blockAccessChangeRequestV7_type = ticket_client.get_type('ns0:blockAccessChangeRequestV7')
     blockAccessChangeRequestV7 = blockAccessChangeRequestV7_type(
@@ -784,9 +804,11 @@ def addBlockAccess(ticket_client: zClient,network_client: zClient, args):
     # lastModifiedBy = args.get('lastModifiedBy','xsoar'),
     originalChangeRequestId = args.get('originalChangeRequestId', 0),
     verificationStatus = args.get('verificationStatus', 'UNKNOWN'),  # END of ChangeRequestV3 BASE.
-    destinationObjects=[destinationobjects],
+    destinationAddresses = destinationAddresses,
+    destinationObjects=destinationObjects,
     ports=args.get('ports', ""),
-    sourceAddresses=args.get('sourceAddresses', ""),
+    sourceAddresses=sourceAddresses,
+    sourceObjects=sourceObjects
     )
 
     resp = ticket_client.service.addOriginalChangeRequestsV7(
@@ -807,9 +829,28 @@ def addRequireAccess(ticket_client: zClient,network_client: zClient, args):
 
     dHostId = args.get('dhostId')
     dObject = args.get('dObject')
+    destinationAddresses = args.get('destinationAddresses')
 
-    destinationobjects = findFirewallObjectsIdentifications(network_client,hostId=dHostId, objectNameFilter=dObject)
+    if dHostId and dObject:
+        destinationObjects = findFirewallObjectsIdentifications(network_client, hostId=dHostId,
+                                                                objectNameFilter=dObject)
+        destinationObjects = [destinationObjects]
+    elif destinationAddresses:
+        destinationObjects = None
+    else:
+        return_error("Destination Object or Address must be provided")
 
+    sHostId = args.get('shostId')
+    sObject = args.get('sObject')
+    sourceAddresses = args.get('sourceAddresses')
+
+    if sHostId and sObject:
+        sourceObjects = findFirewallObjectsIdentifications(network_client, hostId=sHostId, objectNameFilter=sObject)
+        sourceObjects = [sourceObjects]
+    elif sourceAddresses:
+        sourceObjects = None
+    else:
+        return_error("Source Object or Addresses must be provided")
 
     requireAccessChangeRequestV7_type = ticket_client.get_type('ns0:requireAccessChangeRequestV7') #This uses ChangeRequestV3 as a base
     requireAccessChangeRequestV7 = requireAccessChangeRequestV7_type(
@@ -824,7 +865,8 @@ def addRequireAccess(ticket_client: zClient,network_client: zClient, args):
         #lastModifiedBy = args.get('lastModifiedBy','xsoar'),
         originalChangeRequestId = args.get('originalChangeRequestId',0),
         verificationStatus = args.get('verificationStatus','UNKNOWN'), #END of ChangeRequestV3 BASE.
-        destinationObjects = [destinationobjects],
+        destinationAddresses=destinationAddresses,
+        destinationObjects = destinationObjects,
         isGlobal = False,
         isInstallOnAny = False,
         isLogEnabled = args.get('isLogEnabled', True),
@@ -832,6 +874,7 @@ def addRequireAccess(ticket_client: zClient,network_client: zClient, args):
         NATPorts = args.get('NATPorts', ""),
         ports = args.get('ports',""),
         sourceAddresses = args.get('sourceAddresses',""),
+        sourceObjects=sourceObjects,
         useApplicationsDefaultPorts = False,
         userUsage = "ANY"
 
