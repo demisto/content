@@ -263,6 +263,7 @@ def fetch_mails(client: IMAPClient,
         messages = messages[:limit]
     mails_fetched = []
     messages_fetched = []
+    demisto.debug(f'Messages to fetch: {messages}')
     for mail_id, message_data in client.fetch(messages, 'RFC822').items():
         message_bytes = message_data.get(b'RFC822')
         if not message_bytes:
@@ -272,6 +273,10 @@ def fetch_mails(client: IMAPClient,
         if not first_fetch_time or email_message_object.date > first_fetch_time:
             mails_fetched.append(email_message_object)
             messages_fetched.append(email_message_object.id)
+        else:
+            demisto.debug(
+                f'Skipping {mail_id}. Email date: {email_message_object.date}, criterion SINCE time: {first_fetch_time}'
+            )
 
     last_message_in_current_batch = uid_to_fetch_from
     if messages:
