@@ -1,0 +1,743 @@
+category: IT Services
+commonfields:
+  id: BoxV2
+  version: -1
+configuration:
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Client ID
+  hidden: false
+  name: client_id
+  required: true
+  type: 0
+- display: Client Secret
+  hidden: false
+  name: client_secret
+  required: true
+  type: 4
+- display: Public Key ID
+  hidden: false
+  name: pub_key_id
+  required: true
+  type: 0
+- display: Private Key
+  hidden: false
+  name: private_key
+  required: true
+  type: 12
+- display: Passphrase
+  hidden: false
+  name: passphrase
+  required: true
+  type: 4
+- display: Enterprise ID
+  hidden: false
+  name: enterprise_id
+  required: true
+  type: 0
+- display: Verify Cert
+  hidden: false
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: all
+  display: Stream type for incident creation.
+  hidden: false
+  name: stream_type
+  options:
+  - all
+  - changes
+  - sync
+  - admin_logs
+  required: true
+  type: 15
+- display: As User for Fetching Incidents
+  hidden: false
+  name: as_user
+  required: false
+  type: 0
+- hidden: false
+  name: event_type
+  options:
+  - ACCESS_GRANTED
+  - ACCESS_REVOKED
+  - ADD_DEVICE_ASSOCIATION
+  - ADD_LOGIN_ACTIVITY_DEVICE
+  - ADMIN_LOGIN
+  - APPLICATION_CREATED
+  - APPLICATION_PUBLIC_KEY_ADDED
+  - APPLICATION_PUBLIC_KEY_DELETED
+  - CHANGE_ADMIN_ROLE
+  - CHANGE_FOLDER_PERMISSION
+  - COLLABORATION_ACCEPT
+  - COLLABORATION_EXPIRATION
+  - COLLABORATION_INVITE
+  - COLLABORATION_REMOVE
+  - COLLABORATION_ROLE_CHANGE
+  - COMMENT_CREATE
+  - COMMENT_DELETE
+  - CONTENT_ACCESS
+  - CONTENT_WORKFLOW_ABNORMAL_DOWNLOAD_ACTIVITY
+  - CONTENT_WORKFLOW_AUTOMATION_ADD
+  - CONTENT_WORKFLOW_AUTOMATION_DELETE
+  - CONTENT_WORKFLOW_POLICY_ADD
+  - CONTENT_WORKFLOW_SHARING_POLICY_VIOLATION
+  - CONTENT_WORKFLOW_UPLOAD_POLICY_VIOLATION
+  - COPY
+  - DATA_RETENTION_CREATE_RETENTION
+  - DATA_RETENTION_REMOVE_RETENTION
+  - DELETE
+  - DELETE_USER
+  - DEVICE_TRUST_CHECK_FAILED
+  - DOWNLOAD
+  - EDIT
+  - EDIT_USER
+  - EMAIL_ALIAS_CONFIRM
+  - EMAIL_ALIAS_REMOVE
+  - ENTERPRISE_APP_AUTHORIZATION_UPDATE
+  - EXTERNAL_COLLAB_SECURITY_SETTINGS
+  - FAILED_LOGIN
+  - FILE_MARKED_MALICIOUS
+  - FILE_WATERMARKED_DOWNLOAD
+  - GROUP_ADD_ITEM
+  - GROUP_ADD_USER
+  - GROUP_CREATION
+  - GROUP_DELETION
+  - GROUP_EDITED
+  - GROUP_REMOVE_ITEM
+  - GROUP_REMOVE_USER
+  - ITEM_MODIFY
+  - ITEM_OPEN
+  - ITEM_SHARED_UPDATE
+  - "ITEM_SYNC\t"
+  - ITEM_UNSYNC
+  - LEGAL_HOLD_ASSIGNMENT_CREATE
+  - LEGAL_HOLD_ASSIGNMENT_DELETE
+  - LEGAL_HOLD_POLICY_CREATE
+  - LEGAL_HOLD_POLICY_DELETE
+  - LEGAL_HOLD_POLICY_UPDATE
+  - LOCK
+  - LOGIN
+  - METADATA_INSTANCE_CREATE
+  - METADATA_INSTANCE_DELETE
+  - METADATA_INSTANCE_UPDATE
+  - METADATA_TEMPLATE_CREATE
+  - METADATA_TEMPLATE_UPDATE
+  - METADATA_TEMPLATE_DELETE
+  - MOVE
+  - NEW_USER
+  - OAUTH2_ACCESS_TOKEN_REVOKE
+  - PREVIEW
+  - REMOVE_DEVICE_ASSOCIATION
+  - REMOVE_LOGIN_ACTIVITY_DEVICE
+  - RENAME
+  - RETENTION_POLICY_ASSIGNMENT_ADD
+  - SHARE
+  - SHARE_EXPIRATION
+  - SHIELD_ALERT
+  - STORAGE_EXPIRATION
+  - TASK_ASSIGNMENT_UPDATE
+  - TASK_ASSIGNMENT_CREATE
+  - TASK_ASSIGNMENT_DELETE
+  - TASK_CREATE
+  - TASK_UPDATE
+  - TERMS_OF_SERVICE_ACCEPT
+  - TERMS_OF_SERVICE_REJECT
+  - UNDELETE
+  - UNLOCK
+  - UNSHARE
+  - UPDATE_COLLABORATION_EXPIRATION
+  - UPDATE_SHARE_EXPIRATION
+  - UPLOAD
+  - USER_AUTHENTICATE_OAUTH2_ACCESS_TOKEN_CREATE
+  - WATERMARK_LABEL_CREATE
+  - WATERMARK_LABEL_DELETE
+  required: false
+  type: 16
+- additionalinfo: When the as-user argument is not provided, the command will be executed
+    with this user.
+  display: Default User
+  hidden: false
+  name: default_user
+  required: false
+  type: 0
+- additionalinfo: Please note, if more than one user exists for the email address,
+    this will cause commands to fail.
+  display: Auto-detect user IDs based on their email address.
+  hidden: false
+  name: search_user_id
+  required: false
+  type: 8
+description: Manage Box users
+display: BoxV2
+name: BoxV2
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Limits the search results to any items of this type. This parameter
+        only takes one value. By default the API returns items that match any of these
+        types.
+      isArray: false
+      name: type
+      predefined:
+      - file
+      - folder
+      - web_link
+      required: false
+      secret: false
+    - default: false
+      description: Limits the search results to items within the given list of folders,
+        defined as a comma separated lists of folder IDs.
+      isArray: false
+      name: ancestor_folder_ids
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: item_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches for files, folders, web links, and shared files across the
+      users content or across the entire enterprise.
+    execution: false
+    name: box-search-content
+  - arguments:
+    - default: false
+      description: Linked used to share the file
+      isArray: false
+      name: shared_link
+      required: true
+      secret: false
+    - default: false
+      description: Password used to access the shared link.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    deprecated: false
+    description: Return the file represented by a shared link.
+    execution: false
+    name: box-find-file-folder-by-share-link
+  - arguments:
+    - default: false
+      description: The unique identifier that represent a file.
+      isArray: false
+      name: file_id
+      required: true
+      secret: false
+    - default: false
+      description: The user ID for the account used to access the file.
+      isArray: false
+      name: as_user
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the information for a shared link on a file.
+    execution: false
+    name: box-get-shared-link-by-file
+  - arguments:
+    - default: false
+      description: The unique identifier that represent a file.
+      isArray: false
+      name: file_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The level of access for the shared link.
+      isArray: false
+      name: access
+      predefined:
+      - open
+      - company
+      - collaborators
+      required: false
+      secret: false
+    - default: false
+      description: The password required to access the shared link.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - default: false
+      description: The timestamp at which this shared link will expire.
+      isArray: false
+      name: unshared_at
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If the shared link allows for downloading of files.
+      isArray: false
+      name: can_download
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: User which is making the request.
+      isArray: false
+      name: as_user
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds a shared link to a file.
+    execution: false
+    name: box-create-file-share-link
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The level of access for the shared link.
+      isArray: false
+      name: access
+      predefined:
+      - open
+      - company
+      - collaborators
+      required: false
+      secret: false
+    - default: false
+      description: The password required to access the shared link.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - default: false
+      description: The timestamp at which this shared link will expire.
+      isArray: false
+      name: unshared_at
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If the shared link allows for downloading of files.
+      isArray: false
+      name: can_download
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The unique identifier that represent a file.
+      isArray: false
+      name: file_id
+      required: true
+      secret: false
+    - default: false
+      description: The user which is performing the action.
+      isArray: false
+      name: as_user
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates a shared link on a file.
+    execution: false
+    name: box-update-file-share-link
+  - arguments:
+    - default: false
+      description: The unique identifier that represents a file.
+      isArray: false
+      name: file_id
+      required: true
+      secret: false
+    - default: false
+      description: The user which is performing the action.
+      isArray: false
+      name: as_user
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes a shared link from a file.
+    execution: false
+    name: box-remove-file-share-link
+  - arguments:
+    - default: false
+      description: The unique identifier that represent a folder.
+      isArray: false
+      name: folder_id
+      required: true
+      secret: false
+    - default: false
+      description: User which is performing the action.
+      isArray: false
+      name: as_user
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the information for a shared link on a folder.
+    execution: false
+    name: box-get-shared-link-by-folder
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The level of access for the shared link.
+      isArray: false
+      name: access
+      predefined:
+      - open
+      - company
+      - collaborators
+      required: false
+      secret: false
+    - default: false
+      description: The password required to access the shared link.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - default: false
+      description: The timestamp at which this shared link will expire.
+      isArray: false
+      name: unshared_at
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If the shared link allows for downloading of folders.
+      isArray: false
+      name: can_download
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The unique identifier that represent a folder.
+      isArray: false
+      name: folder_id
+      required: true
+      secret: false
+    - default: false
+      description: The user which is performing the action.
+      isArray: false
+      name: as_user
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds a shared link to a folder.
+    execution: false
+    name: box-create-folder-share-link
+  - arguments:
+    - default: false
+      description: The unique identifier that represent a folder.
+      isArray: false
+      name: folder_id
+      required: true
+      secret: false
+    - default: false
+      description: The user which is performing the action.
+      isArray: false
+      name: as_user
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The level of access for the shared link.
+      isArray: false
+      name: access
+      predefined:
+      - open
+      - company
+      - collaborators
+      required: false
+      secret: false
+    - default: false
+      description: The password required to access the shared link.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - default: false
+      description: The timestamp at which this shared link will expire.
+      isArray: false
+      name: unshared_at
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If the shared link allows for downloading of folders.
+      isArray: false
+      name: can_download
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates a shared link on a folder.
+    execution: false
+    name: box-update-folder-share-link
+  - arguments:
+    - default: false
+      description: The unique identifier that represent a folder.
+      isArray: false
+      name: folder_id
+      required: true
+      secret: false
+    - default: false
+      description: User which is performing the action.
+      isArray: false
+      name: as_user
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes a shared link from a folder.
+    execution: false
+    name: box-remove-folder-share-link
+  - arguments:
+    - default: false
+      description: The unique identifier that represent a folder.
+      isArray: false
+      name: folder_id
+      required: true
+      secret: false
+    - default: false
+      description: The user that is performing the action.
+      isArray: false
+      name: as_user
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves details for a folder, including the first 100 entries in
+      the folder.
+    execution: false
+    name: box-get-folder
+  - arguments:
+    - default: false
+      description: The unique identifier that represent a folder.
+      isArray: false
+      name: folder_id
+      required: true
+      secret: false
+    - default: false
+      description: The user which is performing the action.
+      isArray: false
+      name: as_user
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The maximum number of items to return per page.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The offset of the item at which to begin the response.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: name
+      isArray: false
+      name: sort
+      predefined:
+      - id
+      - name
+      - date
+      - size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a page of items in a folder.
+    execution: false
+    name: box-list-folder-items
+  - arguments:
+    - default: false
+      description: The name for the new folder.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The parent folder to create the new folder within.
+      isArray: false
+      name: parent_id
+      required: true
+      secret: false
+    - default: false
+      description: The user which is performing the action.
+      isArray: false
+      name: as_user
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a new empty folder within the specified parent folder.
+    execution: false
+    name: box-folder-create
+  - arguments:
+    - default: false
+      description: The unique identifier that represent a file.
+      isArray: false
+      name: file_id
+      required: true
+      secret: false
+    - default: false
+      description: The user which is performing the action.
+      isArray: false
+      name: as_user
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a file, either permanently or by moving it to the trash.
+    execution: false
+    name: box-file-delete
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'Attributes to include in the response. '
+      isArray: false
+      name: fields
+      predefined:
+      - id
+      - type
+      - name
+      required: false
+      secret: false
+    - default: false
+      description: Limits the results to only users who's name or login start with
+        the search term.
+      isArray: false
+      name: filter_term
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The maximum number of items to return per page.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The offset of the item at which to begin the response.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of all users for the Enterprise along with their user_id,
+      public_name, and login.
+    execution: false
+    name: box-list-users
+  - arguments:
+    - default: false
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: as_user
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: file_name
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: folder_id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: box-upload-file
+  - arguments:
+    - default: false
+      description: The user performing the action.
+      isArray: false
+      name: as_user
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of items to return per page.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The offset of the item at which to begin the response.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the files and folders that have been moved to the trash.
+    execution: false
+    name: box-trashed-items-list
+  - arguments:
+    - default: false
+      description: The unique identifier that represents the file or folder.
+      isArray: false
+      name: item_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of the object to restore.
+      isArray: false
+      name: type
+      predefined:
+      - file
+      - folder
+      required: true
+      secret: false
+    - default: false
+      description: The user which is performing the action.
+      isArray: false
+      name: as_user
+      required: true
+      secret: false
+    deprecated: false
+    description: Restores a file or folder that has been moved to the trash.
+    execution: false
+    name: box-trashed-item-restore
+  - arguments:
+    - default: false
+      description: The unique identifier that represents the file or folder.
+      isArray: false
+      name: item_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of the item to delete.
+      isArray: false
+      name: type
+      predefined:
+      - file
+      - folder
+      required: true
+      secret: false
+    - default: false
+      description: The user which is performing the action.
+      isArray: false
+      name: as_user
+      required: true
+      secret: false
+    deprecated: false
+    description: Permanently deletes a file or folder that is in the trash. This action
+      cannot be undone.
+    execution: true
+    name: box-trashed-item-delete-permanently
+  dockerimage: demisto/pyjwt3:1.0.0.8871
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
