@@ -1,7 +1,7 @@
 {
  "description": "",
  "feed": false,
- "id": "bb5955000-e398-4b82-885f-9068fda553e8",
+ "id": "User Profile - SCIM (Outgoing)",
  "mapping": {
   "User Profile": {
    "dontMapEventToLabels": true,
