@@ -1463,7 +1463,7 @@ def checkpoint_list_package_command(client: Client, identifier: str) -> CommandR
         readable_output = tableToMarkdown('CheckPoint data for package:', printable_result,
                                           headers, removeNull=True)
     command_results = CommandResults(
-        outputs_prefix='CheckPoint.Packages',
+        outputs_prefix='CheckPoint.Package',
         outputs_key_field='target-uid',
         readable_output=readable_output,
         outputs=printable_result,
