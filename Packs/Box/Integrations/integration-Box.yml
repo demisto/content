@@ -715,3 +715,6 @@ script:
       type: string
     description: Getting file info of provided ID
   runonce: false
+tests:
+  - No test
+fromversion: 5.0.0
