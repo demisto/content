@@ -21,10 +21,12 @@ API_VERSION = '2020-05-01'
 
 class AzureNSGClient:
     @logger
-    def __init__(self, self_deployed, tenant_id, app_id, app_secret, redirect_uri, auth_code,
-                 subscription_id, resource_group_name, verify, proxy):
-
-        refresh_token = demisto.getIntegrationContext().get('current_refresh_token')
+    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy):
+        if '@' in app_id:
+            app_id, refresh_token = app_id.split('@')
+            integration_context = demisto.getIntegrationContext()
+            integration_context.update(current_refresh_token=refresh_token)
+            demisto.setIntegrationContext(integration_context)
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/' \
             f'resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups'
         client_args = {
@@ -32,23 +34,16 @@ class AzureNSGClient:
                                     # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
                                     # flow and most of the same arguments should be set, as we're !not! using OProxy.
             'auth_id': app_id,
-            'auth_code': auth_code,
             'refresh_token': refresh_token,
-            'enc_key': app_secret,
-            'redirect_uri': redirect_uri,
-            'token_retrieval_url': f'https://login.microsoftonline.com/{tenant_id}/oauth2/token',
-            'grant_type': AUTHORIZATION_CODE,  # disable-secrets-detection
+            'token_retrieval_url': 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            'grant_type': DEVICE_CODE,  # disable-secrets-detection
             'base_url': base_url,
             'verify': verify,
             'proxy': proxy,
             'resource': 'https://management.core.windows.net',   # disable-secrets-detection
-            'tenant_id': tenant_id,
+            'scope': 'https://management.azure.com/user_impersonation offline_access user.read',
             'ok_codes': (200, 201, 202, 204)
         }
-        if not self_deployed:
-            client_args['grant_type'] = DEVICE_CODE
-            client_args['token_retrieval_url'] = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
-            client_args['scope'] = 'https://management.azure.com/user_impersonation offline_access user.read'
         self.ms_client = MicrosoftClient(**client_args)
 
     @logger
@@ -302,12 +297,7 @@ def start_auth(client: AzureNSGClient) -> CommandResults:
 
 
 @logger
-def complete_auth(client: AzureNSGClient, refresh_token: str = None):
-    if refresh_token:
-        # For test purposes if a refresh token is passed, set it in the integration context
-        integration_context = demisto.getIntegrationContext()
-        integration_context.update(current_refresh_token=refresh_token)
-        demisto.setIntegrationContext(integration_context)
+def complete_auth(client: AzureNSGClient):
     client.ms_client.get_access_token()
     return '✅ Authorization completed successfully.'
 
@@ -324,13 +314,8 @@ def main() -> None:
     try:
         client = AzureNSGClient(
             # TODO: After demo maybe can remove self-deployed values
-            self_deployed=params.get('self_deployed', False),
             app_id=params.get('app_id', ''),
-            tenant_id=params.get('tenant_id', ''),
-            app_secret=params.get('app_secret', ''),
-            redirect_uri=params.get('redirect_uri', ''),
             subscription_id=params.get('subscription_id', ''),
-            auth_code=params.get('auth_code', ''),
             resource_group_name=params.get('resource_group_name', ''),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
@@ -346,8 +331,6 @@ def main() -> None:
             'azure-nsg-auth-complete': complete_auth,
         }
         if command == 'test-module':
-            if params.get('self_deployed'):
-                raise ValueError("Please use `!azure-nsg-test` instead")
             raise ValueError("Please run `!azure-nsg-auth-start` and `!azure-nsg-auth-complete` to log in."
                              " For more details press the (?) button.")
 
