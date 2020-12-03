@@ -10,6 +10,7 @@
      "complex": {
       "accessor": "",
       "filters": [
+
       ],
       "root": "email",
       "transformers": [
@@ -34,6 +35,7 @@
        },
        {
         "args": {
+
         },
         "operator": "ParseJSON"
        }
@@ -41,10 +43,15 @@
      },
      "simple": ""
     },
+    "externalId": {
+     "complex": null,
+     "simple": "employeeid"
+    },
     "name": {
      "complex": {
       "accessor": "",
       "filters": [
+
       ],
       "root": "${givenname}",
       "transformers": [
@@ -101,6 +108,245 @@
        },
        {
         "args": {
+
+        },
+        "operator": "ParseJSON"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "phoneNumbers": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "mobilephone",
+      "transformers": [
+       {
+        "args": {
+         "prefix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "[{\"type\": \"work\", \"value\": \""
+          }
+         },
+         "suffix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "\"}]"
+          }
+         }
+        },
+        "operator": "concat"
+       },
+       {
+        "args": {
+
+        },
+        "operator": "ParseJSON"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "title": {
+     "complex": null,
+     "simple": "title"
+    },
+    "urn:scim:schemas:extension:enterprise:1.0": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "${employeenumber}",
+      "transformers": [
+       {
+        "args": {
+         "prefix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "{\"employeeNumber\": \""
+          }
+         },
+         "suffix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "\", \"department\": \""
+          }
+         }
+        },
+        "operator": "concat"
+       },
+       {
+        "args": {
+         "prefix": {
+          "isContext": false,
+          "value": null
+         },
+         "suffix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "${department}"
+          }
+         }
+        },
+        "operator": "concat"
+       },
+       {
+        "args": {
+         "prefix": {
+          "isContext": false,
+          "value": null
+         },
+         "suffix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "\", \"division\": \""
+          }
+         }
+        },
+        "operator": "concat"
+       },
+       {
+        "args": {
+         "prefix": {
+          "isContext": false,
+          "value": null
+         },
+         "suffix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "${division}"
+          }
+         }
+        },
+        "operator": "concat"
+       },
+       {
+        "args": {
+         "prefix": {
+          "isContext": false,
+          "value": null
+         },
+         "suffix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "\", \"costCenter\": \""
+          }
+         }
+        },
+        "operator": "concat"
+       },
+       {
+        "args": {
+         "prefix": {
+          "isContext": false,
+          "value": null
+         },
+         "suffix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "${costcentercode}"
+          }
+         }
+        },
+        "operator": "concat"
+       },
+       {
+        "args": {
+         "prefix": {
+          "isContext": false,
+          "value": null
+         },
+         "suffix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "\", \"countryCode\": \""
+          }
+         }
+        },
+        "operator": "concat"
+       },
+       {
+        "args": {
+         "prefix": {
+          "isContext": false,
+          "value": null
+         },
+         "suffix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "${countrycodenumber}"
+          }
+         }
+        },
+        "operator": "concat"
+       },
+       {
+        "args": {
+         "prefix": {
+          "isContext": false,
+          "value": null
+         },
+         "suffix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "\", \"managerflag\": \""
+          }
+         }
+        },
+        "operator": "concat"
+       },
+       {
+        "args": {
+         "prefix": {
+          "isContext": false,
+          "value": null
+         },
+         "suffix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "${peoplemanagerflag}"
+          }
+         }
+        },
+        "operator": "concat"
+       },
+       {
+        "args": {
+         "prefix": {
+          "isContext": false,
+          "value": null
+         },
+         "suffix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "\"}"
+          }
+         }
+        },
+        "operator": "concat"
+       },
+       {
+        "args": {
+
         },
         "operator": "ParseJSON"
        }
@@ -111,6 +357,10 @@
     "userName": {
      "complex": null,
      "simple": "username"
+    },
+    "userType": {
+     "complex": null,
+     "simple": "employeetype"
     }
    }
   }
