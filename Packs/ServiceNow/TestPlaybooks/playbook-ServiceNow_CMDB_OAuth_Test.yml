@@ -506,10 +506,10 @@ tasks:
       name: servicenow-cmdb-oauth-login
       description: This function should be used once before running any command when
         using OAuth authorization.
-      script: ServiceNow_CMDB|||servicenow-cmdb-oauth-login
+      script: ServiceNow CMDB|||servicenow-cmdb-oauth-login
       type: regular
       iscommand: true
-      brand: ServiceNow_CMDB
+      brand: ServiceNow CMDB
     nexttasks:
       '#none#':
       - "20"
@@ -540,10 +540,10 @@ tasks:
       version: -1
       name: servicenow-cmdb-oauth-test
       description: Test the instance configuration when using OAuth authorization.
-      script: ServiceNow_CMDB|||servicenow-cmdb-oauth-test
+      script: ServiceNow CMDB|||servicenow-cmdb-oauth-test
       type: regular
       iscommand: true
-      brand: ServiceNow_CMDB
+      brand: ServiceNow CMDB
     nexttasks:
       '#none#':
       - "1"
