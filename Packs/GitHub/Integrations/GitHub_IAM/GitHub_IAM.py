@@ -314,20 +314,6 @@ def get_mapping_fields_command():
 
     return GetMappingFieldsResponse([incident_type_scheme])
 
-{
-  "userName": "demistotest@paloaltonetworks.com",
-  "active": "true",
-  "name": {
-    "givenName": "Demisto"
-  },
-  "emails": [
-    {
-      "type": "work",
-      "primary": true,
-      "value": "demistotest@paloaltonetworks.com"
-    }
-
-
 
 def main():
 
