@@ -50,6 +50,7 @@ class GCPConfig(object):
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
     DOWNLOADS_TABLE = "oproxy-dev.shared_views.top_packs"  # packs downloads statistics table
     BIG_QUERY_MAX_RESULTS = 2000  # big query max row results
+    STORAGE_PRIVATE_ID_SET_PATH = "content/tests"  # base path for private ID set
 
     with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_list_file:
         CORE_PACKS_LIST = json.load(core_packs_list_file)
