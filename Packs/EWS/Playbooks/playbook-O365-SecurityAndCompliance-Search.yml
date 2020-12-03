@@ -2,12 +2,12 @@ id: O365 - Security And Compliance - Search
 version: -1
 name: O365 - Security And Compliance - Search
 description: |-
-  This playbook perform the following steps:
-  1. Create compliance search.
-  2. Start compliance search.
-  3. Wait for compliance search completion.
-  4. Get results of compliance search as an output.
-  5. Get preview results if specified.
+  This playbook performs the following steps:
+  1. Creates a compliance search.
+  2. Starts a compliance search.
+  3. Waits for the compliance search to complete.
+  4. Gets the results of the compliance search as an output.
+  5. Gets the preview results, if specified.
 starttaskid: "0"
 tasks:
   "0":
@@ -128,7 +128,7 @@ tasks:
       id: 7181ccf2-3524-495e-82da-4bbeb6b9c97c
       version: -1
       name: Start search
-      description: Start stopped, completed or not started compliance search in the
+      description: Start stopped, completed, or not started compliance search in the
         Security & Compliance Center.
       script: '|||o365-sc-start-search'
       type: regular
@@ -162,7 +162,7 @@ tasks:
       id: d4c8f250-3be4-4f86-84d2-5a8f6e4ed207
       version: -1
       name: Get compliance search
-      description: Gets compliance search by name from the Security & Compliance Center.
+      description: Gets the compliance search by name from the Security & Compliance Center.
       script: '|||o365-sc-get-search'
       type: regular
       iscommand: true
@@ -204,7 +204,7 @@ tasks:
       id: bd133499-2ef6-42de-8c66-4a5788fe8bb6
       version: -1
       name: Is compliance search exists ?
-      description: Check whether compliance search exists.
+      description: Check whether the compliance search exists.
       type: condition
       iscommand: false
       brand: ""
@@ -242,7 +242,7 @@ tasks:
       id: 8387a12c-f51f-437a-891a-8956081d2d54
       version: -1
       name: Create compliance search
-      description: Create compliance search in the Security & Compliance Center.
+      description: Create a compliance search in the Security & Compliance Center.
       script: '|||o365-sc-new-search'
       type: regular
       iscommand: true
@@ -344,9 +344,9 @@ tasks:
       id: d31133f0-1710-4962-895b-e69a1ebd4b5e
       version: -1
       name: Should overwrite existing search?
-      description: If compliance search exists and force == "true", The existing compliance
-        search will be removed and new will be created, If foce == "false", The exisiting
-        search will be in use.
+      description: If compliance search exists and force == "true", the existing compliance
+        search will be removed and a new will be created. If force == "false", the existing
+        search will be used.
       type: condition
       iscommand: false
       brand: ""
@@ -405,7 +405,7 @@ tasks:
       id: 0770250d-1006-4693-894e-6776626c32ef
       version: -1
       name: Remove compliance search
-      description: Remove compliance search by name from the Security & Compliance
+      description: Remove a compliance search by name from the Security & Compliance
         Center.
       script: '|||o365-sc-remove-search'
       type: regular
@@ -479,14 +479,14 @@ tasks:
       id: 4256eb8a-4764-48bf-8071-aee55b0fe087
       version: -1
       name: Error - Invalid force parameter
-      description: Prints an error entry with a given message
+      description: Prints an error entry with a given message.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
       message:
-        simple: Force parameter isn't valid - Accepted values true/false.
+        simple: Force parameter isn't valid. Accepted values are true/false.
     separatecontext: false
     view: |-
       {
@@ -507,8 +507,8 @@ tasks:
     task:
       id: 06101d5f-eb62-4ad4-896e-5147445f0713
       version: -1
-      name: Get compliace search
-      description: Gets compliance search by name from the Security & Compliance Center.
+      name: Get compliance search
+      description: Gets a compliance search by name from the Security & Compliance Center.
       script: '|||o365-sc-get-search'
       type: regular
       iscommand: true
@@ -563,14 +563,14 @@ inputs:
   value:
     simple: "false"
   required: true
-  description: If false will use existing search without modifying any search parameters,
-    If true will over write existin search. (true/false)
+  description: 'If false, will use the existing search without modifying any search parameters.
+    If true, will overwrite the existing search. Possible values are: "true" and "false".'
   playbookInputQuery: null
 - key: preview
   value:
     simple: "false"
   required: true
-  description: Whether to preview results using search action (true/false).
+  description: 'Whether to preview results using the search action. Possible values are: "true" and "false".'.
   playbookInputQuery: null
 - key: case
   value: {}
@@ -581,8 +581,8 @@ inputs:
 - key: kql
   value: {}
   required: false
-  description: ' Text search string or a query that is formatted using the Keyword
-    Query Language (KQL).'
+  description: Text search string or a query that is formatted using the Keyword
+    Query Language (KQL).
   playbookInputQuery: null
 - key: description
   value: {}
@@ -593,15 +593,15 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: Whether to include mailboxes other than regular user mailboxes in the
-    compliance search. (true/false)
+  description: 'Whether to include mailboxes other than regular user mailboxes in the
+    compliance search. Possible values are: "true" and "false".'
   playbookInputQuery: null
 - key: exchange_location
   value:
     simple: All
   required: false
-  description: 'Comma-separated list of mailboxes/distribution groups to include,
-    or you can use the value "All" to include all. '
+  description: Comma-separated list of mailboxes/distribution groups to include,
+    or use the value "All" to include all. 
   playbookInputQuery: null
 - key: ' exchange_location_exclusion'
   value: {}
@@ -612,22 +612,22 @@ inputs:
 - key: public_folder_location
   value: {}
   required: false
-  description: Comma-separated list of public folders to include, or you can use the
+  description: Comma-separated list of public folders to include, or use the
     value "All" to include all.
   playbookInputQuery: null
 - key: share_point_location
   value: {}
   required: false
   description: Comma-separated list of SharePoint online sites to include. You can
-    identify the sites by their URL value, or you can use the value "All" to include
+    identify the sites by their URL value, or use the value "All" to include
     all sites.
   playbookInputQuery: null
 - key: share_point_location_exclusion
   value: {}
   required: false
-  description: 'Comma-separated list of SharePoint online sites to exclude when you
+  description: Comma-separated list of SharePoint online sites to exclude when you
     use the value "All" for the share_point_location argument. You can identify the
-    sites by their URL value. '
+    sites by their URL value.
   playbookInputQuery: null
 outputs:
 - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AllowNotFoundExchangeLocationsEnabled
@@ -689,7 +689,7 @@ outputs:
   description: Security and compliance search last modification time.
   type: Date
 - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.LogLevel
-  description: Security and compliance search the Azure log level.
+  description: Security and compliance search Azure log level.
   type: String
 - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Name
   description: Security and compliance search name.
@@ -728,10 +728,10 @@ outputs:
   description: Security and compliance search result location.
   type: String
 - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults.ItemsCount
-  description: The number of security and compliance search results in location.
+  description: The number of security and compliance search results in the location.
   type: Number
 - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults.Size
-  description: The byte size of the security and compliance search results in location.
+  description: The byte size of the security and compliance search results in the location.
   type: Number
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
   description: Security and compliance search action type. Either "Purge" or "Preview".
