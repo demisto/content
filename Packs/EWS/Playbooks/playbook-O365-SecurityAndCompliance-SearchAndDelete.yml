@@ -2,13 +2,13 @@ id: O365 - Security And Compliance - Search And Delete
 version: -1
 name: O365 - Security And Compliance - Search And Delete
 description: |-
-  This playbook perform the following steps:
-  1. Create compliance search.
-  2. Start compliance search.
-  3. Wait for compliance search completion.
-  4. Get results of compliance search.
-  5. Get preview results if specified.
-  6. Delete search results (Hard/Soft).
+  This playbook performs the following steps:
+  1. Creates a compliance search.
+  2. Starts a compliance search.
+  3. Waits for the compliance search to complete.
+  4. Gets the results of the compliance search.
+  5. Gets the preview results, if specified.
+  6. Deletes the search results (Hard/Soft).
 starttaskid: "0"
 tasks:
   "0":
@@ -46,7 +46,7 @@ tasks:
       id: 50ac34c1-b193-4b8b-860e-869d879841d5
       version: -1
       name: Emails found?
-      description: Checking if search results exists, If not no action should be done.
+      description: Checks if the search results exist. If not, no action should be performed.
       type: condition
       iscommand: false
       brand: ""
@@ -109,7 +109,7 @@ tasks:
       id: c7e20a76-efed-4d9f-8535-2988816ecf72
       version: -1
       name: Remove compliance search
-      description: Remove compliance search by name from the Security & Compliance
+      description: Removes the compliance search by name from the Security & Compliance
         Center.
       script: '|||o365-sc-remove-search'
       type: regular
@@ -143,7 +143,7 @@ tasks:
       id: e2d22a23-9414-4516-8be7-ec07d06cbd0b
       version: -1
       name: Remove search action
-      description: Removes compliance search action by search the action name from
+      description: Removes the compliance search action by searching for the action name in
         the Security & Compliance Center.
       script: '|||o365-sc-remove-search-action'
       type: regular
@@ -181,11 +181,11 @@ tasks:
       name: O365 - Security And Compliance - Search
       description: |-
         This playbook perform the following steps:
-        1. Create compliance search.
-        2. Start compliance search.
-        3. Wait for compliance search completion.
-        4. Get results of compliance search as an output.
-        5. Get preview results if specified.
+        1. Creates the compliance search.
+        2. Starts the compliance search.
+        3. Waits for the compliance search to complete.
+        4. Gets the results of the compliance search as an output.
+        5. Gets the preview results, if specified.
       playbookName: O365 - Security And Compliance - Search
       type: playbook
       iscommand: false
@@ -247,9 +247,9 @@ tasks:
     task:
       id: e1bfc91e-420b-48c1-853e-863e75244881
       version: -1
-      name: Should preview results ?
-      description: Whether to preview results using search action "Preview", Accepted
-        values are true/false or leave empty for manual choose.
+      name: Should preview results?
+      description: Whether to preview results using the search action "Preview". Possible 
+        values are "true" and "false" or leave empty to select manually.
       type: condition
       iscommand: false
       brand: ""
@@ -350,8 +350,8 @@ tasks:
       id: 36d660fc-fbcd-48d2-860a-52d8afe179ea
       version: -1
       name: O365 - Security And Compliance - Search Action - Preview
-      description: This playbook intend to create new search action in security and
-        compliance and than wait to search action to complete.
+      description: This playbook creates a new search action in security and
+        compliance and then waits for the search action to complete.
       playbookName: O365 - Security And Compliance - Search Action - Preview
       type: playbook
       iscommand: false
@@ -389,8 +389,7 @@ tasks:
       id: 89853810-9d59-45d7-8357-7779a853585a
       version: -1
       name: Should search action - Delete?
-      description: Specify delete type to perform on search results - Hard/Soft or
-        leave empty for manual choose. (Hard = Unrecoverable, Soft=Recoverable)
+      description: Specify the delete type to perform on the search results. Possible values are "Hard" and "Soft" or leave empty to select manually. (Hard = Unrecoverable, Soft=Recoverable)
       type: condition
       iscommand: false
       brand: ""
@@ -458,8 +457,8 @@ tasks:
     task:
       id: 9c36f4cd-af01-4719-80c0-499f1599f5c1
       version: -1
-      name: Which type of delete you want to perform ?
-      description: Manual selection for Hard/Soft delete.
+      name: Which type of delete you want to perform?
+      description: Manually select either Hard or Soft delete.
       type: condition
       iscommand: false
       brand: ""
@@ -491,8 +490,8 @@ tasks:
       id: 2bd67dce-59ae-465a-813f-e2a00e7b2304
       version: -1
       name: Soft delete
-      description: This playbook intend to create new search action in security and
-        compliance and than wait to search action to complete.
+      description: This playbook creates a new search action in security and
+        compliance and then waits for the search action to complete.
       playbookName: O365 - Security And Compliance - Search Action - Delete
       type: playbook
       iscommand: false
@@ -532,8 +531,8 @@ tasks:
       id: f87e0644-d91c-46d5-8f8c-cc4db0ddf845
       version: -1
       name: Hard delete
-      description: This playbook intend to create new search action in security and
-        compliance and than wait to search action to complete.
+      description: This playbook creates a new search action in security and
+        compliance and then waits for the search action to complete.
       playbookName: O365 - Security And Compliance - Search Action - Delete
       type: playbook
       iscommand: false
@@ -573,14 +572,14 @@ tasks:
       id: f63f830a-4742-4b27-818b-b9bfdbdb6717
       version: -1
       name: Error - Preview parameter
-      description: Prints an error entry with a given message
+      description: Prints an error entry with a given message.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
       message:
-        simple: Preview parameter should be empty or true/false
+        simple: Preview parameter should be empty or true or false.
     separatecontext: false
     view: |-
       {
@@ -602,14 +601,14 @@ tasks:
       id: e998044a-c6b6-44c4-8ab8-25854a769f5e
       version: -1
       name: Error - delete_type parameter
-      description: Prints an error entry with a given message
+      description: Prints an error entry with a given message.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
       message:
-        simple: delete_type parameter should be empty or soft/delete
+        simple: delete_type parameter should be empty or soft/delete.
     separatecontext: false
     view: |-
       {
@@ -649,13 +648,13 @@ inputs:
 - key: search_name
   value: {}
   required: true
-  description: ' The name of the compliance search.'
+  description: The name of the compliance search.
   playbookInputQuery: null
 - key: case
   value: {}
   required: false
-  description: ' The name of a Core eDiscovery case to associate with the new compliance
-    search.'
+  description: The name of a Core eDiscovery case to associate with the new compliance
+    search.
   playbookInputQuery: null
 - key: kql
   value: {}
@@ -666,7 +665,7 @@ inputs:
 - key: description
   value: {}
   required: false
-  description: ' Description of the compliance search.'
+  description: Description of the compliance search.
   playbookInputQuery: null
 - key: allow_not_found_exchange_locations
   value:
@@ -678,8 +677,8 @@ inputs:
 - key: exchange_location
   value: {}
   required: false
-  description: 'Comma-separated list of mailboxes/distribution groups to include,
-    or you can use the value "All" to include all. '
+  description: Comma-separated list of mailboxes/distribution groups to include,
+    or use the value "All" to include all.
   playbookInputQuery: null
 - key: exchange_location_exclusion
   value: {}
@@ -691,23 +690,21 @@ inputs:
   value:
     simple: "false"
   required: true
-  description: Whether to replace exisiting search if allready exists, If "true" existing
-    search will be removed and new search will be created, If "false" existing search
-    will be in use (Any search configuration will ignored)
+  description: Whether to replace the existing search. If "true", the existing
+    search will be removed and a new search will be created. If "false", the existing search
+    will be used and any new search configurations will be ignored.
   playbookInputQuery: null
 - key: preview
   value:
     simple: "true"
   required: true
-  description: Whether to preview results using search action "Preview", Accepted
-    values are true/false or leave empty for manual choose.
+  description: 'Whether to preview the results using the search action "Preview". Possible values are: "true" and "false" or leave empty to select manually.'
   playbookInputQuery: null
 - key: delete_type
   value:
     simple: Soft
   required: true
-  description: Specify delete type to perform on search results - Hard/Soft or leave
-    empty for manual choose. (Hard = Unrecoverable, Soft=Recoverable)
+  description: Specify the delete type to perform on the search results. Possible values are Hard and Soft or leave empty to select manually. (Hard = Unrecoverable, Soft=Recoverable)
   playbookInputQuery: null
 outputs: []
 fromversion: 5.5.0
