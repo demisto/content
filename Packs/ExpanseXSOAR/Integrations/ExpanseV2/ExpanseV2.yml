@@ -2570,11 +2570,27 @@ script:
   - name: certificate
     arguments:
     - default: true
-      description: The MD5 hash of the certificate to enrich.
+      description: |
+        MD5, SHA-1, SHA-256 or SHA-512 hash of the certificate to enrich.
+        If MD5 is given, the command will check directly with Expanse API otherwise
+        the script looks first for an indicator with the given hash to retrieve the
+        corresponding MD5 hash.
       isArray: true
-      name: md5_hash
+      name: hash
       required: false
       secret: false
+    - default: false
+      auto: PREDEFINED
+      description: |
+        If set to true, the command updates the Expanse custom fields of the indicator.
+        Only if an indicator already exists.
+      isArray: false
+      name: set_expanse_fields
+      required: false
+      secret: false
+      predefined:
+      - 'true'
+      - 'false'
     deprecated: false
     description: Provides data enrichment for ExpanseCertificate.
     execution: false
