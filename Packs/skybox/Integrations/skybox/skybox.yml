@@ -28,7 +28,7 @@ configuration:
   required: true
   type: 4
 description: Alpha implementation of Skybox API
-display: skybox (alpha)
+display: skybox_0_1 (alpha)
 name: skybox
 script:
   commands:
@@ -334,13 +334,33 @@ script:
       name: sourceAddresses
       required: false
       secret: false
+    - default: false
+      isArray: false
+      name: destinationAddresses
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: sObject
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: shostId
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ports
+      required: false
+      secret: false
     deprecated: false
     execution: false
     name: skybox-tickets-addRequireAccess
   - arguments:
     - default: false
       isArray: false
-      name: dHostId
+      name: dhostId
       required: false
       secret: false
     - default: false
@@ -370,7 +390,12 @@ script:
       secret: false
     - default: false
       isArray: false
-      name: sHostId
+      name: shostId
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ports
       required: false
       secret: false
     deprecated: false
