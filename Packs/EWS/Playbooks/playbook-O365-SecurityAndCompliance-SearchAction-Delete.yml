@@ -2,10 +2,10 @@ id: O365 - Security And Compliance - Search Action - Delete
 version: -1
 name: O365 - Security And Compliance - Search Action - Delete
 description: |-
-  This playbook perform:
-  1. Create new compliance search action Purge - Hard or Soft.
-  2. Wait for compliance search action complete.
-  3. Retrieve delete search action.
+  This playbook performs the following steps:
+  1. Creates a new compliance search action Purge - Hard or Soft.
+  2. Waits for the compliance search action to complete.
+  3. Retrieves the delete search action.
 starttaskid: "0"
 tasks:
   "0":
@@ -302,7 +302,7 @@ tasks:
       id: c934dc98-9fbe-4a31-8306-464511500f3d
       version: -1
       name: Error - Invalid delete_type parameter
-      description: Prints an error entry with a given message
+      description: Prints an error entry with a given message.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
