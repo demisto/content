@@ -1627,13 +1627,13 @@ def checkpoint_login_and_get_sid_command(base_url: str, username: str, password:
                                          session_timeout: int, domain='') -> CommandResults:
     """login to checkpoint admin account using username and password."""
     body = {
-        'user': username, 
-        'password': password, 
+        'user': username,
+        'password': password,
         'session-timeout': session_timeout
     }
     if domain:
         body['domain'] = domain
-    
+
     response = requests.post(base_url + 'login', verify=verify_certificate,
                              headers={'Content-Type': 'application/json'},
                              json=body).json()
