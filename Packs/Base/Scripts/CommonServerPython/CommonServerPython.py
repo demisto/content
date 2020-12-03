@@ -3229,7 +3229,8 @@ class Common(object):
             CERTIFICATEPOLICIES = "CertificatePolicies"
             AUTHORITYINFORMATIONACCESS = "AuthorityInformationAccess"
             BASICCONSTRAINTS = "BasicConstraints"
-            SIGNEDCERTIFICATETIMESTAMPS = "SignedCertificateTimestamps"
+            SIGNEDCERTIFICATETIMESTAMPS = "SignedCertificateTimestamps",
+            PRESIGNEDCERTIFICATETIMESTAMPS = "PreCertSignedCertificateTimestamps",
             OTHER = "Other"
 
             @staticmethod
@@ -3245,6 +3246,7 @@ class Common(object):
                     Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS,
                     Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS,
                     Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
+                    Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS,
                     Common.CertificateExtension.ExtensionType.OTHER  # for extensions that are not handled explicitly
                 )
 
@@ -3333,9 +3335,14 @@ class Common(object):
                 self.oid = "2.5.29.19"
                 self.extension_name = "basicConstraints"
 
-            elif self.extension_type == Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS:
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS:
                 self.signed_certificate_timestamps = signed_certificate_timestamps
                 self.oid = "1.3.6.1.4.1.11129.2.4.2"
+                self.extension_name = "signedCertificateTimestampList"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS:
+                self.signed_certificate_timestamps = signed_certificate_timestamps
+                self.oid = "1.3.6.1.4.1.11129.2.4.5"
                 self.extension_name = "signedCertificateTimestampList"
 
             elif self.extension_type == Common.CertificateExtension.ExtensionType.OTHER:
@@ -3427,7 +3434,10 @@ class Common(object):
                 extension_context["Value"] = self.basic_constraints.to_context()
 
             elif (
-                self.extension_type == Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS
+                self.extension_type in [
+                    Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
+                    Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS
+                ]
                 and self.signed_certificate_timestamps is not None
             ):
                 extension_context["Value"] = [sct.to_context() for sct in self.signed_certificate_timestamps]
