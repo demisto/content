@@ -36,6 +36,7 @@ MAX_INCIDENTS = 100  # max incidents per fetch
 MAX_UPDATES = 100  # max updates received
 PREFIX = SERVER + "/api"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+PAGE_SIZE = 200
 
 ISSUE_PROGRESS_STATUS = ['New', 'Investigating', 'InProgress', 'AcceptableRisk', 'Resolved']
 ISSUE_PROGRESS_STATUS_CLOSED = ['AcceptableRisk', 'Resolved']
@@ -695,6 +696,29 @@ def format_cidr_data(cidrs: List[Dict[str, Any]]) -> CommandResults:
     )
 
 
+def find_indicator_md5_by_hash(h: str) -> Optional[str]:
+    field = {
+        40: 'sha1',
+        64: 'sha256',
+        128: 'sha512'
+    }.get(len(h))
+
+    if field is None:
+        return None
+
+    fetched_iocs = demisto.searchIndicators(
+        query=f'{field}:{h} and type:Certificate and -md5:""', 
+        page=0, size=1  # we just take the first one
+    ).get('iocs')
+    if fetched_iocs is None or len(fetched_iocs) == 0:
+        return None
+
+    if (custom_fields := fetched_iocs[0].get('CustomFields')) is None:
+        return None
+
+    return custom_fields.get('md5')
+
+
 def format_domain_data(domains: List[Dict[str, Any]]) -> CommandResults:
     class DomainGlob(Common.Domain):
         def to_context(self):
@@ -794,46 +818,33 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> CommandResults:
 
 
 def format_certificate_data(certificates: List[Dict[str, Any]]) -> CommandResults:
-    # XXX - should we dump the full timeline of the certificate inside the details?
-    class ExpanseCertificate(Common.Indicator):
-        CONTEXT_PATH = 'ExpanseCertificate(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
-            'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512)'
-
-        def __init__(self, md5: str, pem: Optional[str] = None):
-            self.md5 = md5
-            self.pem = pem
-
-        def to_context(self):
-            result: Dict[str, Any] = {
-                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                'val.Vendor == obj.Vendor && val.Type == obj.Type)': {
-                    'Score': Common.DBotScore.NONE,
-                    'Vendor': 'ExpanseV2',
-                    'Type': 'ExpanseCertificate',
-                    'Indicator': self.md5
-                },
-            }
-
-            standard_context = {
-                'MD5': self.md5,
-            }
-
-            if self.pem is not None:
-                standard_context['PEM'] = self.pem
-
-            result.update({
-                ExpanseCertificate.CONTEXT_PATH: standard_context
-            })
-
-            return result
-
     certificate_standard_list: List[Common.Indicator] = []
     certificate_data_list: List[Dict[str, Any]] = []
+    certificate_context_excluded_fields: List[str] = []
 
     for certificate in certificates:
-        md5_hash = certificate.get('certificate', {}).get('md5Hash')
-        if md5_hash is None:
+        expanse_certificate = certificate.get('certificate')
+        if expanse_certificate is None:
             continue
+
+        # Standard Context (Common.Certificate + DBotScore)
+        # they are prefixed with PEM but they really the hashes of DER (like it should be)
+        ec_sha256 = expanse_certificate.get('pemSha256')
+        if ec_sha256 is None:
+            demisto.debug('SHA-256 not found!!!')
+            continue
+        indicator_value = base64.urlsafe_b64decode(ec_sha256).hex()
+
+        ec_md5 = expanse_certificate.get('md5Hash')
+        ec_sha1 = expanse_certificate.get('pemSha1')
+        ec_spki = expanse_certificate.get('publicKeySpki')
+
+        ec_modulus = expanse_certificate.get('publicKeyModulus')
+        ec_publickey = None
+        if (pktemp := expanse_certificate.get('publicKey')) is not None:
+            ec_publickey = base64.urlsafe_b64decode(pktemp).hex()
+
+        ec_san = expanse_certificate.get('subjectAlternativeNames')
 
         pem = None
         if (details := certificate.get('details')) is not None:
@@ -841,15 +852,36 @@ def format_certificate_data(certificates: List[Dict[str, Any]]) -> CommandResult
                 pem_lines = '\n'.join([base64Encoded[i:i + 64] for i in range(0, len(base64Encoded), 64)])
                 pem = f"-----BEGIN CERTIFICATE-----\n{pem_lines}\n-----END CERTIFICATE-----"
 
-        # We can't use Common.DBotScore here because ExpanseCertificate is not one of the well known
-        # Indicator types
-        certificate_standard_context = ExpanseCertificate(
-            md5=base64.urlsafe_b64decode(md5_hash).hex(),
-            pem=pem
+        certificate_standard_context = Common.Certificate(
+            serial_number=expanse_certificate.get('serialNumber'),
+            subject_dn=expanse_certificate.get('subject'),
+            issuer_dn=expanse_certificate.get('issuer'),
+            md5=base64.urlsafe_b64decode(ec_md5).hex() if ec_md5 else None,
+            sha1=base64.urlsafe_b64decode(ec_sha1).hex() if ec_sha1 else None,
+            sha256=indicator_value,
+            publickey=Common.CertificatePublicKey(
+                algorithm=expanse_certificate.get('publicKeyAlgorithm'),
+                length=expanse_certificate.get('publicKeyBits'),
+                modulus=':'.join([ec_modulus[i:i + 2] for i in range(0, len(ec_modulus), 2)]) if ec_modulus else None,
+                exponent=expanse_certificate.get('publicKeyRsaExponent'),
+                publickey=':'.join([ec_publickey[i:i + 2] for i in range(0, len(ec_publickey), 2)]) if ec_publickey else None
+            ),
+            spki_sha256=base64.urlsafe_b64decode(ec_spki).hex() if ec_spki else None,
+            signature_algorithm=expanse_certificate.get('SHA256withRSA'),
+            subject_alternative_name=[san for san in ec_san.split() if len(san) != 0] if ec_san else None,
+            validity_not_after=expanse_certificate.get('validNotAfter'),
+            validity_not_before=expanse_certificate.get('validNotBefore'),
+            pem=pem,
+            dbot_score=Common.DBotScore(
+                indicator=indicator_value,
+                indicator_type=DBotScoreType.CERTIFICATE,
+                integration_name="ExpanseV2",
+                score=Common.DBotScore.NONE
+            )
         )
         certificate_standard_list.append(certificate_standard_context)
 
-        certificate_context_excluded_fields: List[str] = []
+        # Expanse Context
         certificate_data_list.append({
             k: certificate[k]
             for k in certificate if k not in certificate_context_excluded_fields
@@ -1853,32 +1885,107 @@ def get_associated_domains_command(client: Client, args: Dict[str, Any]) -> Comm
 
 
 def certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    md5_hashes = argToList(args.get('md5_hash'))
-    if len(md5_hashes) == 0:
-        raise ValueError('md5_hash(es) not specified')
+    hashes = argToList(args.get('hash'))
+    if len(hashes) == 0:
+        raise ValueError('hash(es) not specified')
 
-    if len(md5_hashes) > MAX_RESULTS:
-        md5_hashes = md5_hashes[:MAX_RESULTS]
+    set_expanse_fields = argToBoolean(args.get('set_expanse_fieldsd', 'true'))
+
+    if len(hashes) > MAX_RESULTS:
+        hashes = hashes[:MAX_RESULTS]
 
     certificate_data: List[Dict[str, Any]] = []
 
-    for md5_hash in md5_hashes:
+    for curr_hash in hashes:
         # we try to convert it as hex, and if we fail we trust it's a base64 encoded
-        # MD5 hash
         try:
-            if len(ba_hash := bytearray.fromhex(md5_hash)) == 16:
-                md5_hash = base64.urlsafe_b64encode(ba_hash).decode('ascii')
+            ba_hash = bytearray.fromhex(curr_hash)
+            if len(ba_hash) == 16:
+                # MD5 hash
+                curr_hash = base64.urlsafe_b64encode(ba_hash).decode('ascii')
+            else:  # maybe a different hash? let's look for an indicator with a corresponding hash
+                result_hash = find_indicator_md5_by_hash(ba_hash.hex())
+                if result_hash is None:
+                    continue
+
+                curr_hash = base64.urlsafe_b64encode(bytearray.fromhex(result_hash)).decode('ascii')
+                
         except ValueError:
             pass
 
-        c = client.get_certificate_by_md5_hash(md5_hash=md5_hash)
+        c = client.get_certificate_by_md5_hash(md5_hash=curr_hash)
         if not c or not isinstance(c, dict):
             continue
-        if 'MD5' not in c:
-            c['MD5'] = md5_hash
+
         certificate_data.append(c)
 
-    return format_certificate_data(certificate_data)
+    result = format_certificate_data(certificate_data)
+
+    # XXX - this is a workaround to the lack of the possibility of extending mapper
+    # of standard Indicator Types. We need to call createIndicator to set custom fields
+    if not set_expanse_fields or result.outputs is None:
+        return result
+
+    indicators: List[Dict[str, Any]] = []
+    result_outputs = cast(List[Dict[str, Any]], result.outputs)  # we keepy mypy happy
+    for certificate in result_outputs:
+        ec_sha256 = certificate.get('certificate', {}).get('pemSha256')
+        if ec_sha256 is None:
+            continue
+        indicator_value = base64.urlsafe_b64decode(ec_sha256).hex()
+
+        if find_indicator_md5_by_hash(indicator_value) is None:
+            demisto.debug(f'XXX Update: Indicator {indicator_value} not found')
+            continue
+
+        annotations = certificate.get('annotations', {})
+        tags = []
+        if 'tags' in annotations:
+            tags = [tag['name'] for tag in annotations['tags']]
+
+        provider_name: Optional[str] = None
+        provider = certificate.get('provider', None)
+        if provider is not None:
+            provider_name = provider.get('name', None)
+
+        tenant_name: Optional[str] = None
+        tenant = certificate.get('tenant', None)
+        if tenant is not None:
+            tenant_name = tenant.get('name', None)
+
+        business_unit_names: List[str] = []
+        business_units = certificate.get("businessUnits", [])
+        for bu in business_units:
+            if 'name' not in bu:
+                continue
+            business_unit_names.append(bu['name'])
+
+        indicator: Dict[str, Any] = {
+            'type': 'Certificate',
+            'value': indicator_value,
+            'score': Common.DBotScore.NONE,
+            'source': 'ExpanseV2',
+            'fields': {
+                'expansedateadded': certificate.get('dateAdded'),
+                'expansefirstobserved': certificate.get('firstObserved'),
+                'firstseenbysource': certificate.get('firstObserved'),
+                'expanselastobserved': certificate.get('lastObserved'),
+                'lastseenbysource': certificate.get('lastObserved'),
+                'expansecertificateadvertisementstatus': certificate.get('certificateAdvertisementStatus'),
+                'expansetags': tags,
+                'expanseproperties': '\n'.join(certificate.get('properties', [])),
+                'expanseservicestatus': certificate.get('serviceStatus'),
+                'expanseprovidername': provider_name,
+                'expansetenantname': tenant_name,
+                'expansebusinessunits': business_unit_names
+            }
+        }
+        indicators.append(indicator)
+
+    demisto.debug(f'XXX - indicators: {indicators!r}')
+    demisto.createIndicators(indicators)
+
+    return result
 
 
 def domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
