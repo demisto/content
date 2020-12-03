@@ -1,0 +1,14 @@
+{
+    "name": "Centrify Vault",
+    "description": "Centrify vault integration to create/fetcj/delete secrets, folders, sets",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "prashasthbaliga",
+    "url": "",
+    "email": "",
+    "created": "2020-12-03T14:14:24Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
