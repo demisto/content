@@ -330,7 +330,7 @@ def check_status_command(client: Client, arguments: Dict[str, Any]):
         readable_output = tableToMarkdown('Check Status Results', remove_empty_elements(results_data),
                                           headers=('id', 'operation', 'created_at', 'status', 'depends_on_task_ids',
                                                    'file_name', 'url'),
-                                          headerTransform=string_to_table_header)
+                                          headerTransform=string_to_table_header,)
         return_results(CommandResults(
             outputs_prefix='CloudConvert.Task',
             outputs_key_field='id',
