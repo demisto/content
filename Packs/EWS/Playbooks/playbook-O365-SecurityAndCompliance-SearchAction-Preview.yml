@@ -3,9 +3,9 @@ version: -1
 name: O365 - Security And Compliance - Search Action - Preview
 description: |-
   This playbook perform:
-  1. Create new compliance search action - Preview (Base on created compliance search).
-  2. Wait until preview action complete.
-  3. Retrieve preview results.
+  1. Creates a new compliance search action - Preview (Base on created compliance search).
+  2. Waits for the preview action to complete.
+  3. Retrieves the preview results.
 starttaskid: "0"
 tasks:
   "0":
@@ -165,7 +165,7 @@ tasks:
       id: 8c86a155-8d4c-4426-81b0-9f3cc75de3e5
       version: -1
       name: Get preview results
-      description: Gets compliance search action from the Security & Compliance Center.
+      description: Gets the compliance search action from the Security & Compliance Center.
       script: '|||o365-sc-get-search-action'
       type: regular
       iscommand: true
