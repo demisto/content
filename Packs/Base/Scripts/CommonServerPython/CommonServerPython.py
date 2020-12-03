@@ -1312,7 +1312,22 @@ def appendContext(key, data, dedup=False):
         demisto.setContext(key, data)
 
 
-def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None):
+def urlify_dict(table, url_keys, urlify_inner_urls):
+    """
+    """
+    if not isinstance(table, dict): # is this the only option?
+        return
+    for key in url_keys:
+        if key in table.keys():
+            value = table[key]
+            table[key] = f'[{value}]({value})'
+        # handle nested url fields in the table
+        if isinstance(table[key], dict):
+            if urlify_inner_urls:
+                urlify_dict(table, url_keys, urlify_inner_urls)
+
+
+def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None, urlify_inner_urls=False):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1338,6 +1353,10 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :return: A string representation of the markdown table
        :rtype: ``str``
     """
+    print('##################')
+    # Turning the urls in the table to clickable
+    if url_keys:
+        urlify_dict(t, url_keys, urlify_inner_urls)
 
     mdResult = ''
     if name:
@@ -1357,7 +1376,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         headers = [headers]
 
     if not isinstance(t[0], dict):
-        # the table cotains only simple objects (strings, numbers)
+        # the table contains only simple objects (strings, numbers)
         # should be only one header
         if headers and len(headers) > 0:
             header = headers[0]
