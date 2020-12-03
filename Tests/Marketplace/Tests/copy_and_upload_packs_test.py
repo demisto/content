@@ -1,8 +1,7 @@
 import pytest
 import os
-import json
 
-from Tests.Marketplace.marketplace_services import GCPConfig, BucketUploadFlow
+from Tests.Marketplace.marketplace_services import GCPConfig
 
 
 # disable-secrets-detection-start

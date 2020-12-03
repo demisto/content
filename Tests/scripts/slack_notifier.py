@@ -139,23 +139,22 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
         }] + steps_fields
 
     if job_name and job_name == BucketUploadFlow.UPLOAD_JOB_NAME:
-        try:
-            successful_packs, failed_packs = get_successful_and_failed_packs(packs_results_file_path)
-            if successful_packs:
-                steps_fields += [{
-                    "title": "Successful Packs:",
-                    "value": "\n".join([pack_name for pack_name in {*successful_packs}]),
-                    "short": False
-                }]
-            if failed_packs:
-                steps_fields += [{
-                    "title": "Failed Packs:",
-                    "value": "\n".join([f"{pack_name}: {pack_data.get(BucketUploadFlow.STATUS)}"
-                                        for pack_name, pack_data in failed_packs.items()]),
-                    "short": False
-                }]
-        except json.decoder.JSONDecodeError:
-            pass
+        successful_packs, failed_packs = get_successful_and_failed_packs(
+            packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
+        )
+        if successful_packs:
+            steps_fields += [{
+                "title": "Successful Packs:",
+                "value": "\n".join([pack_name for pack_name in {*successful_packs}]),
+                "short": False
+            }]
+        if failed_packs:
+            steps_fields += [{
+                "title": "Failed Packs:",
+                "value": "\n".join([f"{pack_name}: {pack_data.get(BucketUploadFlow.STATUS)}"
+                                    for pack_name, pack_data in failed_packs.items()]),
+                "short": False
+            }]
 
     if job_name and job_name != 'Upload Packs To Marketplace' and color == 'good':
         logging.info('On bucket upload flow we are not notifying on jobs that are not Upload Packs. exiting...')

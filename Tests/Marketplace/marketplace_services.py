@@ -1811,11 +1811,13 @@ class Pack(object):
 # HELPER FUNCTIONS
 
 
-def get_successful_and_failed_packs(packs_results_file_path: str) -> Tuple[dict, dict]:
+def get_successful_and_failed_packs(packs_results_file_path: str, stage: str) -> Tuple[dict, dict]:
     """ Loads the packs_results.json file to get the successful and failed packs dicts
 
     Args:
-        packs_results_file_path: The path to the file
+        packs_results_file_path (str): The path to the file
+        stage (str): can be BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING or
+        BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
 
     Returns:
         dict: The successful packs dict
@@ -1824,10 +1826,8 @@ def get_successful_and_failed_packs(packs_results_file_path: str) -> Tuple[dict,
     """
     if os.path.exists(packs_results_file_path):
         packs_results_file = load_json(packs_results_file_path)
-        successful_packs_dict = packs_results_file.get(BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, {}) \
-            .get(BucketUploadFlow.SUCCESSFUL_PACKS, {})
-        failed_packs_dict = packs_results_file.get(BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, {}) \
-            .get(BucketUploadFlow.FAILED_PACKS, {})
+        successful_packs_dict = packs_results_file.get(stage, {}).get(BucketUploadFlow.SUCCESSFUL_PACKS, {})
+        failed_packs_dict = packs_results_file.get(stage, {}).get(BucketUploadFlow.FAILED_PACKS, {})
         return successful_packs_dict, failed_packs_dict
     return {}, {}
 

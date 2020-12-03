@@ -1352,18 +1352,18 @@ class TestGetSuccessfulAndFailedPacks:
                - Verify that we get an empty dictionary
                - Verify that we get the expected dictionary
        """
-        from Tests.Marketplace.copy_and_upload_packs import get_successful_and_failed_packs
+        from Tests.Marketplace.marketplace_services import get_successful_and_failed_packs
         file = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
 
         # Case 1: assert file does not exist
-        successful, failed = get_successful_and_failed_packs(file)
+        successful, failed = get_successful_and_failed_packs(file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
         assert successful == {}
         assert failed == {}
 
         # Case 2: assert empty file
         with open(file, "w") as f:
             f.write('')
-        successful, failed = get_successful_and_failed_packs(file)
+        successful, failed = get_successful_and_failed_packs(file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
         assert successful == {}
         assert failed == {}
 
@@ -1385,7 +1385,7 @@ class TestGetSuccessfulAndFailedPacks:
                     }
                 }
             }))
-        successful, failed = get_successful_and_failed_packs(file)
+        successful, failed = get_successful_and_failed_packs(file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
         assert successful == {"TestPack1": {
             f"{BucketUploadFlow.STATUS}": "status1",
             f"{BucketUploadFlow.AGGREGATED}": True
