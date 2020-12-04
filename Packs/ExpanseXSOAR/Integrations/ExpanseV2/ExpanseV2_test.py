@@ -1316,7 +1316,7 @@ def test_expanse_unassign_multiple_tags_from_certificate(mocker, requests_mock):
     assert result.readable_output == "Operation complete"
 
 
-def test_expanse_get_certificate_by_id(requests_mock):
+def test_expanse_get_certificate_by_hash(requests_mock):
     """
     Given:
         - an Expanse client
@@ -1330,18 +1330,19 @@ def test_expanse_get_certificate_by_id(requests_mock):
     """
     from ExpanseV2 import Client, get_certificate_command
 
-    MOCK_MD5HASH = "mock_md5_hash"
-    mock_cert = util_load_json("test_data/expanse_certificate.json")
+    mock_certificate_data = util_load_json("test_data/expanse_certificate.json")
+    mock_result_data = util_load_json("test_data/expanse_certificate_stdctx.json")
+
+    mock_result_data['Expanse.Certificate(val.id == obj.id)'] = [mock_certificate_data]
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+    requests_mock.get(
+        f"https://example.com/api/v2/assets/certificates/{mock_certificate_data['certificate']['md5Hash']}", json=mock_certificate_data
+    )
 
-    requests_mock.get(f"https://example.com/api/v2/assets/certificates/{MOCK_MD5HASH}", json=mock_cert)
-
-    result = get_certificate_command(client, {"md5_hash": MOCK_MD5HASH})
-    assert result.outputs_prefix == "Expanse.Certificate"
-    assert result.outputs_key_field == "id"
-    assert result.outputs == [mock_cert]
-    #  XXX TODO command is being refactored
+    result = get_certificate_command(client, {"md5_hash": mock_certificate_data['certificate']['md5Hash']})
+    result_context = result.to_context()
+    assert result_context['EntryContext'] == mock_result_data
 
 
 def test_expanse_get_certificate_by_query(requests_mock):
@@ -1355,8 +1356,11 @@ def test_expanse_get_certificate_by_query(requests_mock):
         - the Certificates are retrieved and returned to the context as Expanse.Certificate
         - the Certificate standard context is present
         - DBotScore is present
+        - for each certificate returned a Certificate standard context and DBotScore is present
     """
     from ExpanseV2 import Client, get_certificate_command
+    from CommonServerPython import Common
+    import base64
 
     MOCK_BU = "Test Company Dev,Test Company Prod"
     MOCK_LIMIT = "2"
@@ -1373,10 +1377,17 @@ def test_expanse_get_certificate_by_query(requests_mock):
     assert result.outputs_prefix == "Expanse.Certificate"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_certs["data"][: int(MOCK_LIMIT)]
-    # XXX TODO command is being refactored
+
+    certs_sha256 = set([base64.urlsafe_b64decode(c['certificate']['pemSha256']).hex() for c in mock_certs['data']])
+    for indicator in result.indicators:
+        assert isinstance(indicator, Common.Certificate)
+        assert indicator.sha256 == indicator.dbot_score.indicator
+        assert indicator.dbot_score.indicator_type == 'certificate'
+        certs_sha256.remove(indicator.sha256)
+    assert len(certs_sha256) == 0
 
 
-def test_expanse_certificate(requests_mock):
+def test_certificate_command(requests_mock, mocker):
     """
     Given:
         - an Expanse client
@@ -1388,7 +1399,29 @@ def test_expanse_certificate(requests_mock):
         - the Certificate standard context is present
         - DBotScore is present
     """
-    pass  # XXX TODO command is being refactored
+    from ExpanseV2 import Client, certificate_command
+    from CommonServerPython import Common, DBotScoreType
+
+    mock_certificate_data = util_load_json("test_data/expanse_certificate.json")
+    mock_indicators_data = util_load_json("test_data/expanse_certcommand_indicators.json")
+    mock_ioc_data = util_load_json("test_data/expanse_certcommand_ioc.json")
+    mock_result_data = util_load_json("test_data/expanse_certificate_stdctx.json")
+
+    mock_result_data['Expanse.Certificate(val.id == obj.id)'] = [mock_certificate_data]
+
+    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+    requests_mock.get(
+        f"https://example.com/api/v2/assets/certificates/mRi21v8MwFzvzjB1abEnKw==", json=mock_certificate_data
+    )
+
+    mocker.patch('ExpanseV2.demisto.searchIndicators', return_value={'iocs': mock_ioc_data})
+    ci_mock = mocker.patch('ExpanseV2.demisto.createIndicators')
+
+    result = certificate_command(client, {'hash': mock_ioc_data[0]['CustomFields']['sha256']})
+    result_context = result.to_context()
+
+    assert result_context['EntryContext'] == mock_result_data
+    ci_mock.assert_called_once_with(mock_indicators_data)
 
 
 def test_expanse_get_domain(requests_mock):

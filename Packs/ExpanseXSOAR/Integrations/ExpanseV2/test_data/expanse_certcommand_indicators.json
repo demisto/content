@@ -11,7 +11,7 @@
         "expansefirstobserved": "2020-11-09T00:00:00Z",
         "expanselastobserved": "2020-12-03T00:00:00Z",
         "expanseproperties": "WILDCARD",
-        "expanseprovidername": "Google",
+        "expanseprovidername": null,
         "expanseservicestatus": [
           "NO_ACTIVE_ON_PREM_SERVICE",
           "HAS_ACTIVE_CLOUD_SERVICE",
