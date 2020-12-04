@@ -127,7 +127,7 @@
             "dnsResolutionStatus": [
                 "HAS_DNS_RESOLUTION"
             ],
-            "domain": "aaaaaaa-0d9a-4397-b8e7-9d4daf12a82b.dev-qa2.uk.example.local",
+            "domain": "*.aaaaaaa-0d9a-4397-b8e7-9d4daf12a82b.dev-qa2.uk.example.local",
             "firstObserved": "2020-09-28T05:25:30.295Z",
             "hasLinkedCloudResources": false,
             "id": "041739cb-1cec-3b11-9816-fa3eb7a9bf0f",
