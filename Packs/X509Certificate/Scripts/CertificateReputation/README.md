@@ -7,7 +7,7 @@ Enrich and calculate reputation of a Certificate indicator.
 | --- | --- |
 | Script Type | python3 |
 | Tags | reputation |
-| Demisto Version | 5.5.0 |
+| Demisto Version | 6.0.0 |
 
 ## Inputs
 ---

@@ -7,7 +7,7 @@ Extract fields from a certificate file and return the standard context
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Demisto Version | 5.5.0 |
+| Demisto Version | 6.0.0 |
 
 ## Inputs
 ---
