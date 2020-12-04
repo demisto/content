@@ -1017,7 +1017,7 @@ class TestCommandResults:
         """
         from CommonServerPython import CommandResults
 
-        files = []
+        files = [{"key": "value"}]  # if outputs is empty list, no results are returned
         results = CommandResults(outputs_prefix='File(val.sha1 == obj.sha1 && val.md5 == obj.md5)',
                                  outputs_key_field='', outputs=files)
 
@@ -1043,7 +1043,28 @@ class TestCommandResults:
     def test_empty_outputs(self):
         """
         Given:
-        - Empty outputs
+        - Outputs as None
+
+        When:
+        - Returning results
+
+        Then:
+        - Validate EntryContext key value
+
+        """
+        from CommonServerPython import CommandResults
+        res = CommandResults(
+            outputs_prefix='FoundIndicators',
+            outputs_key_field='value',
+            outputs=None
+        )
+        context = res.to_context()
+        assert {} == context.get('EntryContext')
+
+    def test_empty_list_outputs(self):
+        """
+        Given:
+        - Outputs with empty list
 
         When:
         - Returning results
@@ -1059,7 +1080,7 @@ class TestCommandResults:
             outputs=[]
         )
         context = res.to_context()
-        assert {'FoundIndicators(val.value == obj.value)': []} == context.get('EntryContext')
+        assert {} == context.get('EntryContext')
 
     def test_return_command_results(self, clear_version_cache):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
@@ -1550,6 +1571,24 @@ class TestCommandResults:
                 ],
                 critical=False
             ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
+                signed_certificate_timestamps=[
+                    Common.CertificateExtension.SignedCertificateTimestamp(
+                        version=0,
+                        log_id="f65c942fd1773022145418083094568ee34d131933bfdf0c2f200bcc4ef164e3",
+                        timestamp="2020-10-23T19:31:49.000Z",
+                        entry_type="X509Certificate"
+                    ),
+                    Common.CertificateExtension.SignedCertificateTimestamp(
+                        version=0,
+                        log_id="5cdc4392fee6ab4544b15e9ad456e61037fbd5fa47dca17394b25ee6f6c70eca",
+                        timestamp="2020-10-23T19:31:49.000Z",
+                        entry_type="X509Certificate"
+                    )
+                ],
+                critical=False
+            )
         ]
         certificate = Common.Certificate(
             subject_dn='CN=*.paloaltonetworks.com,O=Palo Alto Networks\\, Inc.,L=Santa Clara,ST=California,C=US',
@@ -1761,11 +1800,30 @@ class TestCommandResults:
                                     "EntryType": "PreCertificate"
                                 }
                             ]
+                        },
+                        {
+                            "OID": "1.3.6.1.4.1.11129.2.4.5",
+                            "Name": "signedCertificateTimestampList",
+                            "Critical": False,
+                            "Value": [
+                                {
+                                    "Version": 0,
+                                    "LogId": "f65c942fd1773022145418083094568ee34d131933bfdf0c2f200bcc4ef164e3",
+                                    "Timestamp": "2020-10-23T19:31:49.000Z",
+                                    "EntryType": "X509Certificate"
+                                },
+                                {
+                                    "Version": 0,
+                                    "LogId": "5cdc4392fee6ab4544b15e9ad456e61037fbd5fa47dca17394b25ee6f6c70eca",
+                                    "Timestamp": "2020-10-23T19:31:49.000Z",
+                                    "EntryType": "X509Certificate"
+                                }
+                            ]
                         }
                     ]
                 }],
                 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                'val.Vendor == obj.Vendor && val.Type == obj.Type)':[{
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': [{
                     "Indicator": "bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d",
                     "Type": "certificate",
                     "Vendor": "test",
