@@ -1,5 +1,6 @@
 import json
 import io
+from CommonServerPython import *
 
 
 def util_load_json(path):
@@ -183,7 +184,12 @@ def test_fetch_incidents(requests_mock):
     # THEN the relevant information will be fetched and pulled
     expected_response = util_load_json('test_data/formatted_fetch_breach.json')
 
+    for modelbreach in expected_response:
+        fetch_time = date_to_timestamp(modelbreach['occurred'])
+        assert fetch_time > last_run[last_fetch]
+
     assert integration_response == expected_response
+    assert len(integration_response) == 2
 
 
 def test_list_similar_devices(requests_mock):
