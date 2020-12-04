@@ -721,23 +721,7 @@ def find_indicator_md5_by_hash(h: str) -> Optional[str]:
 
 
 def format_domain_data(domains: List[Dict[str, Any]]) -> CommandResults:
-    class DomainGlob(Common.Domain):
-        def to_context(self):
-            DBOT_CONTEXT_PATH = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && ' \
-                                'val.Vendor == obj.Vendor && val.Type == obj.Type)'
-            c = super(DomainGlob, self).to_context()
-            if not c or not isinstance(c, dict):
-                return {}
-            if DBOT_CONTEXT_PATH in c:
-                if isinstance(c[DBOT_CONTEXT_PATH], dict):
-                    c[DBOT_CONTEXT_PATH]['Type'] = 'domainglob'
-                elif isinstance(c[DBOT_CONTEXT_PATH], list):
-                    for n, l in enumerate(c['CONTEXT_PATH']):
-                        if isinstance(l, dict):
-                            c[DBOT_CONTEXT_PATH][n]['Type'] = 'domainglob'
-            return c
-
-    domain_standard_list: List[Union[Common.Domain, DomainGlob]] = []
+    domain_standard_list: List[Common.Domain] = []
     domain_data_list: List[Dict[str, Any]] = []
 
     for domain_data in domains:
@@ -773,31 +757,22 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> CommandResults:
             whois_args['registrant_phone'] = registrant.get('phoneNumber', None) if registrar is not None else None
             whois_args['registrant_country'] = registrant.get('country', None) if registrar is not None else None
 
-        domain_standard_context: Union[Common.Domain, DomainGlob]
+        domain_standard_context: Common.Domain
         if domain.startswith('*.'):
-            # DomainGlob
-            domain_standard_context = DomainGlob(
-                domain=domain,
-                dbot_score=Common.DBotScore(
-                    indicator=domain,
-                    indicator_type=DBotScoreType.DOMAIN,
-                    integration_name="ExpanseV2",
-                    score=Common.DBotScore.NONE
-                ),
-                **whois_args
-            )
+            indicator_type = DBotScoreType.DOMAINGLOB
         else:
-            # Domain
-            domain_standard_context = Common.Domain(
-                domain=domain,
-                dbot_score=Common.DBotScore(
-                    indicator=domain,
-                    indicator_type=DBotScoreType.DOMAIN,
-                    integration_name="ExpanseV2",
-                    score=Common.DBotScore.NONE
-                ),
-                **whois_args
-            )
+            indicator_type = DBotScoreType.DOMAIN
+
+        domain_standard_context = Common.Domain(
+            domain=domain,
+            dbot_score=Common.DBotScore(
+                indicator=domain,
+                indicator_type=indicator_type,
+                integration_name="ExpanseV2",
+                score=Common.DBotScore.NONE
+            ),
+            **whois_args
+        )
         domain_standard_list.append(domain_standard_context)
 
         domain_context_excluded_fields: List[str] = []
@@ -1904,7 +1879,7 @@ def certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             if len(ba_hash) == 16:
                 # MD5 hash
                 curr_hash = base64.urlsafe_b64encode(ba_hash).decode('ascii')
-            else: # maybe a different hash? let's look for an indicator with a corresponding hash
+            else:  #  maybe a different hash? let's look for an indicator with a corresponding hash
                 result_hash = find_indicator_md5_by_hash(ba_hash.hex())
                 if result_hash is None:
                     continue
@@ -1928,7 +1903,7 @@ def certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         return result
 
     indicators: List[Dict[str, Any]] = []
-    result_outputs = cast(List[Dict[str, Any]], result.outputs)  # we keepy mypy happy
+    result_outputs = cast(List[Dict[str, Any]], result.outputs)  # we keep mypy happy
     for certificate in result_outputs:
         ec_sha256 = certificate.get('certificate', {}).get('pemSha256')
         if ec_sha256 is None:

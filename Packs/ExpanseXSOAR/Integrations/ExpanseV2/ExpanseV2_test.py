@@ -233,7 +233,7 @@ def test_fetch_incidents(requests_mock, mocker):
     next_run, result = fetch_incidents(client, max_incidents=int(MOCK_LIMIT), last_run=last_run, business_units=MOCK_BU,
                                        first_fetch=None, priority=None, activity_status=None, progress_status=None,
                                        issue_types=None, tags=None, mirror_direction=None, sync_tags=False,
-                                       fetch_details=None, fetch_behavior=None)
+                                       fetch_details=None)
 
     assert next_run == {
         'last_fetch': datestring_to_timestamp_us(MOCK_NEXT_FETCH_TIME),
@@ -628,7 +628,7 @@ def test_expanse_get_iprange(requests_mock):
         - DBotScore is present
     """
     from ExpanseV2 import Client, get_iprange_command
-    from CommonServerPython import Common
+    from CommonServerPython import Common, DBotScoreType
 
     MOCK_BU = "BU 1 Dev,BU 2 Prod"
     MOCK_LIMIT = "2"
@@ -655,7 +655,11 @@ def test_expanse_get_iprange(requests_mock):
         del d["endAddress"]
     assert result.outputs == mock_ipranges_output["data"][: int(MOCK_LIMIT)]
     assert isinstance(result.indicators[0], Common.Indicator)
-    assert result.indicators[0].indicator == mock_ipranges_output["data"][0]["cidr"]
+    assert isinstance(result.indicators[0].dbot_score, Common.DBotScore)
+    assert result.indicators[0].dbot_score.indicator == mock_ipranges_output["data"][0]["cidr"]
+    assert result.indicators[0].dbot_score.integration_name == "ExpanseV2"
+    assert result.indicators[0].dbot_score.score == Common.DBotScore.NONE
+    assert result.indicators[0].dbot_score.indicator_type == DBotScoreType.CIDR
 
 
 def test_expanse_create_tag(requests_mock):
@@ -1337,7 +1341,8 @@ def test_expanse_get_certificate_by_hash(requests_mock):
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
     requests_mock.get(
-        f"https://example.com/api/v2/assets/certificates/{mock_certificate_data['certificate']['md5Hash']}", json=mock_certificate_data
+        f"https://example.com/api/v2/assets/certificates/{mock_certificate_data['certificate']['md5Hash']}",
+        json=mock_certificate_data
     )
 
     result = get_certificate_command(client, {"md5_hash": mock_certificate_data['certificate']['md5Hash']})
@@ -1400,7 +1405,8 @@ def test_certificate_command(requests_mock, mocker):
         - DBotScore is present
     """
     from ExpanseV2 import Client, certificate_command
-    from CommonServerPython import Common, DBotScoreType
+
+    MOCK_CERT_HASH = 'mRi21v8MwFzvzjB1abEnKw=='
 
     mock_certificate_data = util_load_json("test_data/expanse_certificate.json")
     mock_indicators_data = util_load_json("test_data/expanse_certcommand_indicators.json")
@@ -1411,7 +1417,7 @@ def test_certificate_command(requests_mock, mocker):
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
     requests_mock.get(
-        f"https://example.com/api/v2/assets/certificates/mRi21v8MwFzvzjB1abEnKw==", json=mock_certificate_data
+        f"https://example.com/api/v2/assets/certificates/{MOCK_CERT_HASH}", json=mock_certificate_data
     )
 
     mocker.patch('ExpanseV2.demisto.searchIndicators', return_value={'iocs': mock_ioc_data})
@@ -1453,6 +1459,7 @@ def test_expanse_get_domain(requests_mock):
     assert result.outputs_prefix == "Expanse.Domain"
     assert result.outputs_key_field == "domain"
     assert result.outputs == mock_domain_data["data"][: int(MOCK_LIMIT)]
+    # first entry is a domain
     assert isinstance(result.indicators[0], Common.Domain)
     assert result.indicators[0].domain == mock_domain_data["data"][0]["domain"]
     assert isinstance(result.indicators[0].dbot_score, Common.DBotScore)
@@ -1461,7 +1468,16 @@ def test_expanse_get_domain(requests_mock):
     assert result.indicators[0].dbot_score.score == Common.DBotScore.NONE
     assert result.indicators[0].dbot_score.indicator_type == DBotScoreType.DOMAIN
     assert result.indicators[0].registrant_country == mock_domain_data["data"][0]["whois"][0]["registrant"]["country"]
+    # second entry is a domainglob
+    assert isinstance(result.indicators[1], Common.Domain)
     assert result.indicators[1].domain == mock_domain_data["data"][1]["domain"]
+    assert isinstance(result.indicators[1].dbot_score, Common.DBotScore)
+    assert result.indicators[1].domain == mock_domain_data["data"][1]["domain"]
+    assert result.indicators[1].dbot_score.indicator == mock_domain_data["data"][1]["domain"]
+    assert result.indicators[1].dbot_score.integration_name == "ExpanseV2"
+    assert result.indicators[1].dbot_score.score == Common.DBotScore.NONE
+    assert result.indicators[1].dbot_score.indicator_type == DBotScoreType.DOMAINGLOB
+    assert result.indicators[1].registrant_country == mock_domain_data["data"][1]["whois"][0]["registrant"]["country"]
 
 
 def test_get_associated_domains(requests_mock):
@@ -1617,7 +1633,7 @@ def test_cidr(requests_mock):
         - DBotScore is present
     """
     from ExpanseV2 import Client, cidr_command
-    from CommonServerPython import Common
+    from CommonServerPython import Common, DBotScoreType
 
     MOCK_INET = "203.0.112.0/22"
     MOCK_INCLUDE = "severityCounts,annotations,attributionReasons,relatedRegistrationInformation,locationInformation"
@@ -1644,7 +1660,11 @@ def test_cidr(requests_mock):
         del d["endAddress"]
     assert result.outputs == mock_cidr_output["data"]
     assert isinstance(result.indicators[0], Common.Indicator)
-    assert result.indicators[0].indicator == MOCK_INET
+    assert isinstance(result.indicators[0].dbot_score, Common.DBotScore)
+    assert result.indicators[0].dbot_score.indicator == MOCK_INET
+    assert result.indicators[0].dbot_score.integration_name == "ExpanseV2"
+    assert result.indicators[0].dbot_score.score == Common.DBotScore.NONE
+    assert result.indicators[0].dbot_score.indicator_type == DBotScoreType.CIDR
 
 
 def test_expanse_get_risky_flows(requests_mock):
