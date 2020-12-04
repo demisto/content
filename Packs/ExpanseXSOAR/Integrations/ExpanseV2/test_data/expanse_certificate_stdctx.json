@@ -18,6 +18,9 @@
       },
       "SHA1": "c4f6a8356f435a5ae9f476e254dce4d8a82979bf",
       "SHA256": "81681aad607e66a1a77c1ad62b1eda0b3e1d0b77f9a2b901dda828d08b412f2f",
+      "Signature": {
+        "Algorithm": "SHA256withRSA"
+      },
       "SPKISHA256": "f0945e95bab57b79c371141d423bea7747bcd7a85110a37d445ac912aa723c55",
       "SerialNumber": "343786058877416862049673426398503330032570",
       "SubjectAlternativeName": [
