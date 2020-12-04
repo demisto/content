@@ -9,7 +9,6 @@ from CommonServerUserPython import *  # noqa
 import requests
 import traceback
 import base64
-from urllib.parse import urljoin
 from datetime import datetime, timedelta
 from ipaddress import IPv4Address, AddressValueError, summarize_address_range
 from typing import (
