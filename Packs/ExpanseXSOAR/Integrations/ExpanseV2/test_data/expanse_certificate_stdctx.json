@@ -1,0 +1,47 @@
+{
+  "Certificate(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512)": [
+    {
+      "IssuerDN": "C=US,O=Let's Encrypt,CN=Let's Encrypt Authority X3",
+      "MD5": "9918b6d6ff0cc05cefce307569b1272b",
+      "Name": [
+        "*.pan.dev",
+        "demisto.developers.paloaltonetworks.com",
+        "pan.dev"
+      ],
+      "PEM": "-----BEGIN CERTIFICATE-----\nMIIFezCCBGOgAwIBAgISA/JL4oaGczW5OqvCy9cEQqu6MA0GCSqGSIb3DQEBCwUA\nMEoxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MSMwIQYDVQQD\nExpMZXQncyBFbmNyeXB0IEF1dGhvcml0eSBYMzAeFw0yMDExMDgxODE1NDFaFw0y\nMTAyMDYxODE1NDFaMBQxEjAQBgNVBAMMCSoucGFuLmRldjCCASIwDQYJKoZIhvcN\nAQEBBQADggEPADCCAQoCggEBANg20WTL+SVHruVKNy0hLNUlOUeK0EDdEV/rwsqk\niT3yIASK2AXzaOF3M8TVU6I/xEKVMnEmduxmSKeGIiF8+0ClKaXRGkt6ErVM6G+f\nHQOAMNYIOmWe199hRFrKKmH/F9ws366vjQMwP7xUwcQPsSKhirz1VoOpYLBgQ8FO\nF8IWJuad8wiW6qfRZXEUl9Ta4klekG5/Kp3P/pPnNn65rFYrMCcmaSLymdfcyGpV\nEtipNc8X5zvryZ3q1sNRG05MSNhtN0FtnuRG99oetzjUP/MhiX+6RqbG2Ou33b+A\nnOPKsTksDNeSNMPJpd/vxYnjzTeISo10+AuXRrpJ2I9nzhECAwEAAaOCAo8wggKL\nMA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIw\nDAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQUuENucz/GeiKrE10fxExRWTUydqMwHwYD\nVR0jBBgwFoAUqEpqYwR93brm0Tm3pkVl7/Oo7KEwbwYIKwYBBQUHAQEEYzBhMC4G\nCCsGAQUFBzABhiJodHRwOi8vb2NzcC5pbnQteDMubGV0c2VuY3J5cHQub3JnMC8G\nCCsGAQUFBzAChiNodHRwOi8vY2VydC5pbnQteDMubGV0c2VuY3J5cHQub3JnLzBG\nBgNVHREEPzA9ggkqLnBhbi5kZXaCJ2RlbWlzdG8uZGV2ZWxvcGVycy5wYWxvYWx0\nb25ldHdvcmtzLmNvbYIHcGFuLmRldjBMBgNVHSAERTBDMAgGBmeBDAECATA3Bgsr\nBgEEAYLfEwEBATAoMCYGCCsGAQUFBwIBFhpodHRwOi8vY3BzLmxldHNlbmNyeXB0\nLm9yZzCCAQMGCisGAQQB1nkCBAIEgfQEgfEA7wB2AESUZS6w7s6vxEAH2Kj+KMDa\n5oK+2MsxtT/TM5a1toGoAAABdalJF6wAAAQDAEcwRQIgY7UA7lCiPYQi2OiML/mg\nZ7LQyFegVH1tX2dBG23D5tgCIQC9c9UX886gpx4ROpDyHdSd+k0a9BR5dDdyPfj0\ncRm1LgB1AH0+8viP/4hVaCTCwMqeUol5K8UOeAl/LmqXaJl+IvDXAAABdalJF+MA\nAAQDAEYwRAIgKMtxuyKPcT0QxAJKN0uNl4jcJn0pdBzHqafHQXni9gYCIGqdT8l5\n3OEkoiQ17boLs4saRFlg2a2zx0cB4jEPg6/eMA0GCSqGSIb3DQEBCwUAA4IBAQBD\nGb01zj3OJ5cntlFldFGzlNDMMrsJxYPNZJfjKr/USMZ/OTjN9snr2HvWnhFTrD8L\n7HxDbYWXt0dMwQZtA0ZIKrlUIZrxhnyPsehYRrKm9+G8X2n/K6vseCwxxTfIlL2R\nOvmeIWc8NBxJ6bu/s2xIYuIk07fHOpw537pk8NIZnkeOL9VPwKsAgotCyB+6AQ1f\nraEqZXkLJYnNYoYh24QVrP9RX/wZdPqDaFAAesTRwiSP7EF/jZpDR9qV97wHHf5Y\nIS4pZ6GLGp6w0cVySp0mZR2yOtMeb64Dj1egdJQEU5HMnoO3OpTu2l3FzqVZ2TkO\nDFO4KRA2df7pJLNqY7Db\n-----END CERTIFICATE-----",
+      "PublicKey": {
+        "Algorithm": "RSA",
+        "Exponent": 65537,
+        "Length": 2048,
+        "Modulus": "d8:36:d1:64:cb:f9:25:47:ae:e5:4a:37:2d:21:2c:d5:25:39:47:8a:d0:40:dd:11:5f:eb:c2:ca:a4:89:3d:f2:20:04:8a:d8:05:f3:68:e1:77:33:c4:d5:53:a2:3f:c4:42:95:32:71:26:76:ec:66:48:a7:86:22:21:7c:fb:40:a5:29:a5:d1:1a:4b:7a:12:b5:4c:e8:6f:9f:1d:03:80:30:d6:08:3a:65:9e:d7:df:61:44:5a:ca:2a:61:ff:17:dc:2c:df:ae:af:8d:03:30:3f:bc:54:c1:c4:0f:b1:22:a1:8a:bc:f5:56:83:a9:60:b0:60:43:c1:4e:17:c2:16:26:e6:9d:f3:08:96:ea:a7:d1:65:71:14:97:d4:da:e2:49:5e:90:6e:7f:2a:9d:cf:fe:93:e7:36:7e:b9:ac:56:2b:30:27:26:69:22:f2:99:d7:dc:c8:6a:55:12:d8:a9:35:cf:17:e7:3b:eb:c9:9d:ea:d6:c3:51:1b:4e:4c:48:d8:6d:37:41:6d:9e:e4:46:f7:da:1e:b7:38:d4:3f:f3:21:89:7f:ba:46:a6:c6:d8:eb:b7:dd:bf:80:9c:e3:ca:b1:39:2c:0c:d7:92:34:c3:c9:a5:df:ef:c5:89:e3:cd:37:88:4a:8d:74:f8:0b:97:46:ba:49:d8:8f:67:ce:11",
+        "PublicKey": "30:82:01:22:30:0d:06:09:2a:86:48:86:f7:0d:01:01:01:05:00:03:82:01:0f:00:30:82:01:0a:02:82:01:01:00:d8:36:d1:64:cb:f9:25:47:ae:e5:4a:37:2d:21:2c:d5:25:39:47:8a:d0:40:dd:11:5f:eb:c2:ca:a4:89:3d:f2:20:04:8a:d8:05:f3:68:e1:77:33:c4:d5:53:a2:3f:c4:42:95:32:71:26:76:ec:66:48:a7:86:22:21:7c:fb:40:a5:29:a5:d1:1a:4b:7a:12:b5:4c:e8:6f:9f:1d:03:80:30:d6:08:3a:65:9e:d7:df:61:44:5a:ca:2a:61:ff:17:dc:2c:df:ae:af:8d:03:30:3f:bc:54:c1:c4:0f:b1:22:a1:8a:bc:f5:56:83:a9:60:b0:60:43:c1:4e:17:c2:16:26:e6:9d:f3:08:96:ea:a7:d1:65:71:14:97:d4:da:e2:49:5e:90:6e:7f:2a:9d:cf:fe:93:e7:36:7e:b9:ac:56:2b:30:27:26:69:22:f2:99:d7:dc:c8:6a:55:12:d8:a9:35:cf:17:e7:3b:eb:c9:9d:ea:d6:c3:51:1b:4e:4c:48:d8:6d:37:41:6d:9e:e4:46:f7:da:1e:b7:38:d4:3f:f3:21:89:7f:ba:46:a6:c6:d8:eb:b7:dd:bf:80:9c:e3:ca:b1:39:2c:0c:d7:92:34:c3:c9:a5:df:ef:c5:89:e3:cd:37:88:4a:8d:74:f8:0b:97:46:ba:49:d8:8f:67:ce:11:02:03:01:00:01"
+      },
+      "SHA1": "c4f6a8356f435a5ae9f476e254dce4d8a82979bf",
+      "SHA256": "81681aad607e66a1a77c1ad62b1eda0b3e1d0b77f9a2b901dda828d08b412f2f",
+      "SPKISHA256": "f0945e95bab57b79c371141d423bea7747bcd7a85110a37d445ac912aa723c55",
+      "SerialNumber": "343786058877416862049673426398503330032570",
+      "SubjectAlternativeName": [
+        {
+          "Value": "*.pan.dev"
+        },
+        {
+          "Value": "demisto.developers.paloaltonetworks.com"
+        },
+        {
+          "Value": "pan.dev"
+        }
+      ],
+      "SubjectDN": "CN=*.pan.dev",
+      "ValidityNotAfter": "2021-02-06T18:15:41Z",
+      "ValidityNotBefore": "2020-11-08T18:15:41Z"
+    }
+  ],
+  "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+    {
+      "Indicator": "81681aad607e66a1a77c1ad62b1eda0b3e1d0b77f9a2b901dda828d08b412f2f",
+      "Score": 0,
+      "Type": "certificate",
+      "Vendor": "ExpanseV2"
+    }
+  ]
+}
