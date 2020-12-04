@@ -1861,9 +1861,9 @@ def get_associated_domains_command(client: Client, args: Dict[str, Any]) -> Comm
 
 
 def certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    hashes = argToList(args.get('hash'))
+    hashes = argToList(args.get('certificate'))
     if len(hashes) == 0:
-        raise ValueError('hash(es) not specified')
+        raise ValueError('certificate hash(es) not specified')
 
     set_expanse_fields = argToBoolean(args.get('set_expanse_fields', 'true'))
 
