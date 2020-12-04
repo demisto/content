@@ -1,6 +1,5 @@
 import json
 import io
-from CommonServerPython import *
 
 
 def util_load_json(path):
