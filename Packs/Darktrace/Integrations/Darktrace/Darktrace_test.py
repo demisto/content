@@ -185,7 +185,7 @@ def test_fetch_incidents(requests_mock):
     expected_response = util_load_json('test_data/formatted_fetch_breach.json')
 
     for modelbreach in expected_response:
-        fetch_time = date_to_timestamp(modelbreach['occurred'], date_format='%Y-%m-%dT%H:%M:%S.00Z')
+        fetch_time = date_to_timestamp(modelbreach['occurred'], date_format='%Y-%m-%dT%H:%M:%S.000Z')
         assert fetch_time > last_run[last_fetch]
 
     assert integration_response == expected_response
