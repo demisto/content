@@ -120,3 +120,14 @@ def test_get_user_details(requests_mock):
     result = get_user_details(loginClient, queryClient, user)
     assert result.outputs_prefix == 'ConcentricAI.UserDetails'
     assert result.outputs_key_field == 'info'
+
+
+def test_get_file_sharing_details(requests_mock):
+    from ConcentricAI import get_file_sharing_details
+    loginClient, queryClient = setup()
+    mock_response = util_load_json('test_data/mock_file_permissions.json')
+    requests_mock.post('https://mock-url.com/graphql-third-party', json=mock_response['response'])
+    cid = 'lsknadkl12312'
+    result = get_file_sharing_details(loginClient, queryClient, cid)
+    assert result.outputs_prefix == 'ConcentricAI.FileSharingInfo'
+    assert result.outputs_key_field == 'info'
