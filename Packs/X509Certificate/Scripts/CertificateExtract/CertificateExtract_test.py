@@ -19,7 +19,7 @@ def test_pem():
     with open('test_data/test.pem', 'r') as f:
         contents = f.read()
 
-    context = certificate_extract_command({'pem': contents})
+    context = certificate_extract_command({'pem': contents}).to_context()
     expected_result = load_json_data('test_data/pem_result.json')
 
     assert context['EntryContext'] == expected_result
@@ -41,9 +41,8 @@ def test_load_pem(mocker):
 
     from CertificateExtract import certificate_extract_command
 
-    context = certificate_extract_command({'input': 'test'})
+    context = certificate_extract_command({'input': 'test'}).to_context()
     expected_result = load_json_data('test_data/pandev_result.json')
-
     assert context['EntryContext'] == expected_result
 
 
@@ -63,7 +62,7 @@ def test_load_der(mocker):
 
     from CertificateExtract import certificate_extract_command
 
-    context = certificate_extract_command({'input': 'test'})
+    context = certificate_extract_command({'input': 'test'}).to_context()
     expected_result = load_json_data('test_data/pandev_result.json')
 
     assert context['EntryContext'] == expected_result
@@ -85,7 +84,7 @@ def test_load_pem2(mocker):
 
     from CertificateExtract import certificate_extract_command
 
-    context = certificate_extract_command({'input': 'test'})
+    context = certificate_extract_command({'input': 'test'}).to_context()
     expected_result = load_json_data('test_data/test2_result.json')
 
     assert context['EntryContext'] == expected_result
