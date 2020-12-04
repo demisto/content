@@ -143,12 +143,8 @@ script:
       name: iprange
       required: false
       secret: false
-    outputs:
-    - contextPath: Expanse.Indicator
-      description: 'Expanse Discovered Assets'
-      type: Unknown
     deprecated: false
-    description: Retrieve discovered IPs/IP Ranges/Domains/Certificates as indicators
+    description: Retrieve discovered IPs/IP Ranges/Domains/Certificates
     execution: true
   isfetch: false
   feed: true

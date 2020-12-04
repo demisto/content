@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "ExpanseCertificate",
+        "Certificate",
         "DomainGlob",
         "Domain"
     ],
@@ -19,14 +19,7 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
-    "selectValues": [
-        "NO_ACTIVE_SERVICE",
-        "NO_ACTIVE_ON_PREM_SERVICE",
-        "NO_ACTIVE_CLOUD_SERVICE",
-        "HAS_ACTIVE_SERVICE",
-        "HAS_ACTIVE_ON_PREM_SERVICE",
-        "HAS_ACTIVE_CLOUD_SERVICE"
-    ],
+    "selectValues": [],
     "sla": 0,
     "system": false,
     "threshold": 72,
