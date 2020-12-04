@@ -72,7 +72,7 @@ def certificate_fields_to_context(certindicator_fields: Dict[str, Any]) -> Optio
     return entry_context
 
 
-def dbot_context(value: str, fields: Dict[str, Any], certificate_context: Dict[str, Any]
+def dbot_context(value: str, certificate_context: Dict[str, Any]
                  ) -> Tuple[List[CertificateValidationTag], List[str], Dict[str, Any]]:
     comments: List[str] = []
     tags: List[CertificateValidationTag] = []
@@ -110,7 +110,7 @@ def dbot_context(value: str, fields: Dict[str, Any], certificate_context: Dict[s
     elif now < parsed_validity_not_before:
         comments.append(f'{CertificateValidationTag.NOT_VALID_YET.value} '
                         f'Certificate not valid yet: {now.strftime("%Y-%m-%dT%H:%M:%S.000Z")} < '
-                        '{validity_not_before}')
+                        f'{validity_not_before}')
         tags.append(CertificateValidationTag.NOT_VALID_YET)
         current_score = max(current_score, Common.DBotScore.SUSPICIOUS)
 
@@ -263,7 +263,7 @@ def certificate_reputation_command(args: Dict[str, Any]) -> Dict[str, Any]:
             standard_context.update(certificate_context)
 
     tags, check_comments, dbot_score = dbot_context(
-        indicator_value, fields, standard_context.get(
+        indicator_value, standard_context.get(
             Common.Certificate.CONTEXT_PATH, {}))
 
     standard_context.update(dbot_score)

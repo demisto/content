@@ -37,7 +37,17 @@ _SCT_LOG_ENTRY_TYPE_NAME = {
 ''' STANDALONE FUNCTION '''
 
 
-def get_indicator_from_value(indicator_value: str):
+def get_indicator_from_value(indicator_value: str) -> Any:
+    """
+    get_indicator_from_value function
+    Finds an indicator in XSOAR store given a value
+
+    :type value: ``str``
+    :param value: Indicator value
+
+    :return: Indicator
+    :rtype: ``Any``
+    """
     try:
         res = demisto.executeCommand("findIndicators", {'query': f'value:"{indicator_value}" and type:Certificate'})
         indicator = res[0]['Contents'][0]
@@ -48,6 +58,16 @@ def get_indicator_from_value(indicator_value: str):
 
 
 def oid_name(oid: oid.ObjectIdentifier) -> str:
+    """
+    oid_name function
+    Translates an oid.ObjectIdentifier into a string representation
+
+    :type oid: ``oid.ObjectIdentifier``
+    :param oid: OID as oid.ObjectIdentifier
+
+    :return: OID in dotted string format
+    :rtype: ``str``
+    """
     n = oid._name
     if n.startswith('Unknown'):
         return oid.dotted_string
@@ -56,6 +76,19 @@ def oid_name(oid: oid.ObjectIdentifier) -> str:
 
 
 def repr_or_str(o: Any) -> str:
+    """
+    repr_or_str function
+    Returns a string representation of the input:
+    - If input is bytes returns the hex representation
+    - If input is str returns the string
+    - If input is None returns empty string
+
+    :type o: ``Any``
+    :param o: Input data (str or bytes)
+
+    :return: String representation of the input
+    :rtype: ``str``
+    """
     if isinstance(o, str):
         return o
     elif isinstance(o, bytes):
@@ -67,6 +100,16 @@ def repr_or_str(o: Any) -> str:
 
 
 def load_certificate(path: str) -> x509.Certificate:
+    """
+    load_certificate function
+    Loads a certificate from a file
+
+    :type path: ``str``
+    :param path: File path
+
+    :return: X509 Certificate parsed by cryptography.x509
+    :rtype: ``x509.Certificate``
+    """
     with open(path, 'rb') as f:
         contents = f.read()
 
@@ -81,6 +124,19 @@ def load_certificate(path: str) -> x509.Certificate:
 
 
 def int_to_comma_hex(n: int, blength: Optional[int] = None) -> str:
+    """
+    int_to_comma_hex
+    Translates an integer in its corresponding hex string
+
+    :type n: ``int``
+    :param n: Input integer
+
+    :type blength: ``Optional[int]``
+    :param blength: Add padding to reach length
+
+    :return: Translated hex string
+    :rtype: ``str``
+    """
     bhex = f'{n:x}'
     if len(bhex) % 2 == 1:
         bhex = '0' + bhex
@@ -91,11 +147,22 @@ def int_to_comma_hex(n: int, blength: Optional[int] = None) -> str:
     return ':'.join([bhex[i:i + 2] for i in range(0, len(bhex), 2)])
 
 
-def public_key_context2(pkey: Union[asymmetric.dsa.DSAPublicKey,
-                                    asymmetric.rsa.RSAPublicKey,
-                                    asymmetric.ec.EllipticCurvePublicKey,
-                                    asymmetric.ed25519.Ed25519PublicKey,
-                                    asymmetric.ed448.Ed448PublicKey]) -> Common.CertificatePublicKey:
+def public_key_context(pkey: Union[asymmetric.dsa.DSAPublicKey,
+                       asymmetric.rsa.RSAPublicKey,
+                       asymmetric.ec.EllipticCurvePublicKey,
+                       asymmetric.ed25519.Ed25519PublicKey,
+                       asymmetric.ed448.Ed448PublicKey]) -> Common.CertificatePublicKey:
+    """
+    public_key_context function
+    Translates an X509 certificate Public Key into a Common.CertificatePublicKey object
+
+    :type pkey: ``Union[asymmetric.dsa.DSAPublicKey, asymmetric.rsa.RSAPublicKey, asymmetric.ec.EllipticCurvePublicKey, \
+         asymmetric.ed25519.Ed25519PublicKey, asymmetric.ed448.Ed448PublicKey]``
+    :param pkey: Certificate Public Key
+
+    :return: Certificate Public Key represented as a Common.CertificatePublicKey object
+    :rtype: ``Common.CertificatePublicKey``
+    """
     if isinstance(pkey, asymmetric.dsa.DSAPublicKey):
         return Common.CertificatePublicKey(
             algorithm=Common.CertificatePublicKey.Algorithm.DSA,
@@ -131,6 +198,16 @@ def public_key_context2(pkey: Union[asymmetric.dsa.DSAPublicKey,
 
 
 def map_gn(gn: Any) -> Common.GeneralName:
+    """
+    map_gn function
+    Check whether the provided General Name is a compatible type and maps it to a Common.GeneralName class
+
+    :type gn: ``Any``
+    :param gn: General name to be checked
+
+    :return: General Name mapped to a Common.GeneralName class
+    :rtype: ``Common.GeneralName``
+    """
     if gn is None:
         raise ValueError('gn cannot be None')
 
@@ -144,6 +221,25 @@ def map_gn(gn: Any) -> Common.GeneralName:
 
 
 def extension_context(oid: str, extension_name: str, critical: bool, extension_value: Any) -> Common.CertificateExtension:
+    """
+    extension_context function
+    Translates an X509 certificate extension into a Common.CertificateExtension object
+
+    :type oid: ``str``
+    :param oid: Certificate Extension OID
+
+    :type extension_name: ``str``
+    :param extension_name: Name of the Extension
+
+    :type critical: ``bool``
+    :param critical: Whether the Extension is marked as critical
+
+    :type extension_value: ``Any``
+    :param extension_value: Value of the extension (parsed from cryptograph module)
+
+    :return: Extension represented as a Common.CertificateExtension object
+    :rtype: ``Common.CertificateExtension``
+    """
     if isinstance(extension_value, extensions.SubjectAlternativeName):
         return Common.CertificateExtension(
             extension_type=Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME,
@@ -241,10 +337,22 @@ def extension_context(oid: str, extension_name: str, critical: bool, extension_v
                 path_length=None if extension_value.path_length is None else extension_value.path_length
             )
         )
-    elif (
-        isinstance(extension_value, extensions.PrecertificateSignedCertificateTimestamps)
-        or isinstance(extension_value, extensions.SignedCertificateTimestamps)
-    ):
+    elif isinstance(extension_value, extensions.PrecertificateSignedCertificateTimestamps):
+        presigcerttimestamps: List[Common.CertificateExtension.SignedCertificateTimestamp] = []
+        presct: extensions.SignedCertificateTimestamp
+        for presct in extension_value:
+            presigcerttimestamps.append(Common.CertificateExtension.SignedCertificateTimestamp(
+                entry_type=_SCT_LOG_ENTRY_TYPE_NAME.get(presct.entry_type, presct.entry_type.value),
+                version=presct.version.value,
+                log_id=presct.log_id.hex(),
+                timestamp=presct.timestamp.strftime(format="%Y-%m-%dT%H:%M:%S.000Z"),
+            ))
+        return Common.CertificateExtension(
+            extension_type=Common.CertificateExtension.ExtensionType.OTHER,
+            oid=oid, extension_name=extension_name, critical=critical,
+            value=[ts.to_context() for ts in presigcerttimestamps]
+        )
+    elif isinstance(extension_value, extensions.SignedCertificateTimestamps):
         sigcerttimestamps: List[Common.CertificateExtension.SignedCertificateTimestamp] = []
         sct: extensions.SignedCertificateTimestamp
         for sct in extension_value:
@@ -255,9 +363,9 @@ def extension_context(oid: str, extension_name: str, critical: bool, extension_v
                 timestamp=sct.timestamp.strftime(format="%Y-%m-%dT%H:%M:%S.000Z"),
             ))
         return Common.CertificateExtension(
-            extension_type=Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
+            extension_type=Common.CertificateExtension.ExtensionType.OTHER,
             oid=oid, extension_name=extension_name, critical=critical,
-            signed_certificate_timestamps=sigcerttimestamps
+            value=[ts.to_context() for ts in sigcerttimestamps]
         )
 
     return Common.CertificateExtension(
@@ -267,7 +375,17 @@ def extension_context(oid: str, extension_name: str, critical: bool, extension_v
     )
 
 
-def certificate_to_context(certificate: x509.Certificate) -> Dict[str, Any]:
+def certificate_to_context(certificate: x509.Certificate) -> Common.Certificate:
+    """
+    certificate_to_context function
+    Translates an X509 certificate into a Common.Certificate object
+
+    :type certificate: ``x509.Certificate``
+    :param oid: Certificate Extension OID
+
+    :return: Certificate represented as a Common.Certificate object
+    :rtype: ``Common.Certificate``
+    """
     spkisha256 = hashes.Hash(hashes.SHA256(), backends.default_backend())
     spkisha256.update(
         certificate.public_key().public_bytes(
@@ -298,7 +416,7 @@ def certificate_to_context(certificate: x509.Certificate) -> Dict[str, Any]:
         extensions=extensions_contexts,
         signature_algorithm=certificate.signature_hash_algorithm.name,
         signature=certificate.signature.hex(),
-        publickey=public_key_context2(certificate.public_key()),
+        publickey=public_key_context(certificate.public_key()),
         dbot_score=Common.DBotScore(
             indicator=indicator,
             indicator_type=DBotScoreType.CERTIFICATE,
@@ -308,13 +426,13 @@ def certificate_to_context(certificate: x509.Certificate) -> Dict[str, Any]:
         pem=certificate.public_bytes(serialization.Encoding.PEM).decode('ascii')
     )
 
-    return cert.to_context()
+    return cert
 
 
 ''' COMMAND FUNCTION '''
 
 
-def certificate_extract_command(args: Dict[str, Any]) -> Dict[str, Any]:
+def certificate_extract_command(args: Dict[str, Any]) -> CommandResults:
     pem: Optional[str] = args.get('pem')
     input_: Optional[str] = args.get('input')
 
@@ -340,15 +458,12 @@ def certificate_extract_command(args: Dict[str, Any]) -> Dict[str, Any]:
     standard_context = certificate_to_context(certificate)
     readable_output = "Certificate decoded"
 
-    return {
-        'Type': entryTypes['note'],
-        'EntryContext': standard_context,
-        'Contents': Common.DBotScore.NONE,
-        'ContentsFormat': formats['text'],
-        'HumanReadable': readable_output,
-        'ReadableContentsFormat': formats['markdown'],
-        'IgnoreAutoExtract': True
-    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=None,
+        indicators=[standard_context],
+        ignore_auto_extract=True
+    )
 
 
 ''' MAIN FUNCTION '''
