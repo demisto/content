@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "ExpanseCertificate",
+        "Certificate",
         "IP",
         "Domain",
         "DomainGlob"
