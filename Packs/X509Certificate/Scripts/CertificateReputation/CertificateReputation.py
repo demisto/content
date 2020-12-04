@@ -261,7 +261,7 @@ def certificate_reputation_command(args: Dict[str, Any]) -> Dict[str, Any]:
 
     standard_context = {}
     if (fields := indicator.get('CustomFields')) is not None:
-        if not 'pem' in fields:
+        if 'pem' not in fields:
             comments.append("*PEM field is empty*")
 
         elif (certificate_context := certificate_fields_to_context(fields)) is not None:
