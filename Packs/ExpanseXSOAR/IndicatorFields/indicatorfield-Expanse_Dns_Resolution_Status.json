@@ -18,10 +18,7 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
-    "selectValues": [
-        "HAS_DNS_RESOLUTION",
-        "NO_DNS_RESOLUTION"
-    ],
+    "selectValues": [],
     "sla": 0,
     "system": false,
     "threshold": 72,

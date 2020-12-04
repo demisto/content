@@ -92,8 +92,9 @@
         }
     },
     {
-        "type": "ExpanseCertificate",
-        "value": "E2PIqhovq3mmZd45A8abRw==",
+        "score": 0,
+        "type": "Certificate",
+        "value": "dda1230f3b151d87ec03b9108b6120222ec75caddb8ef568b5f920ae2110b1e8",
         "rawJSON": {
             "id": "58b41e52-694d-3c5a-8112-d522a4ea6993",
             "tenant": {
@@ -130,7 +131,7 @@
                 "formattedIssuerOrg": "ExampleCA",
                 "issuerOrgUnit": null,
                 "issuerState": null,
-                "publicKey": "real-public-key-will-be-here",
+                "publicKey": "3aEjDzsVHYfsA7kQi2EgIi7HXK3bjvVotfkgriEQseg=",
                 "publicKeyAlgorithm": "RSA",
                 "publicKeyRsaExponent": 65537,
                 "signatureAlgorithm": "SHA256withRSA",
@@ -150,8 +151,8 @@
                 "publicKeyBits": 2048,
                 "pemSha256": "3aEjDzsVHYfsA7kQi2EgIi7HXK3bjvVotfkgriEQseg=",
                 "pemSha1": "h5p90eUUheWHSx61SNVPbaQcyt4=",
-                "publicKeyModulus": "real-public-key-modulus-will-be-here",
-                "publicKeySpki": "real-public-key-spki-will-be-here"
+                "publicKeyModulus": "deaddead",
+                "publicKeySpki": "3aEjDzsVHYfsA7kQi2EgIi7HXK3bjvVotfkgriEQseg="
             },
             "commonName": "example.example.com",
             "properties": [
@@ -171,41 +172,59 @@
                 "contacts": [],
                 "tags": [],
                 "note": ""
-            },
-            "expanseType": "certificate"
+            }
         },
-        "score": 0,
         "fields": {
-            "expansepemmd5hash": "E2PIqhovq3mmZd45A8abRw==",
-            "expansetags": [],
+            "certificatenames": "*.example.com\nexample.example.com",
+            "certificatesignature": {
+                "algorithm": "SHA256withRSA"
+            },
+            "expansebusinessunits": [
+                "BU1"
+            ],
             "expansecertificateadvertisementstatus": [
                 "NO_CERTIFICATE_ADVERTISEMENT"
             ],
-            "expansecommonname": "example.example.com",
-            "expansesans": "example.example.com\n*.example.com",
-            "expanseserialnumber": "2",
-            "expansesubjectdn": "O=Example.com,CN=example.example.com",
-            "expanseissuerdn": "O=Example.com,CN=example.com",
-            "expansevalidnotafter": "2022-12-05T04:03:00Z",
-            "expansevalidnotbefore": "2019-12-06T04:03:00Z",
             "expansedateadded": "2020-09-28T14:28:31.069Z",
             "expansefirstobserved": null,
-            "firstseenbysource": null,
             "expanselastobserved": null,
-            "lastseenbysource": null,
             "expanseproperties": "HEALTHY",
+            "expanseprovidername": "None",
             "expanseservicestatus": [
                 "NO_ACTIVE_SERVICE",
                 "NO_ACTIVE_ON_PREM_SERVICE",
                 "NO_ACTIVE_CLOUD_SERVICE"
             ],
-            "expanseprovidername": null,
+            "expansetags": [],
             "expansetenantname": "Example Inc.",
-            "expansebusinessunits": [
-                "BU1"
+            "firstseenbysource": null,
+            "issuerdn": "O=Example.com,CN=example.com",
+            "lastseenbysource": null,
+            "md5": "1363c8aa1a2fab79a665de3903c69b47",
+            "publickey": {
+                "algorithm": "RSA",
+                "exponent": 65537,
+                "length": 2048,
+                "modulus": "de:ad:de:ad",
+                "publickey": "dd:a1:23:0f:3b:15:1d:87:ec:03:b9:10:8b:61:20:22:2e:c7:5c:ad:db:8e:f5:68:b5:f9:20:ae:21:10:b1:e8"
+            },
+            "serialnumber": "2",
+            "sha1": "879a7dd1e51485e5874b1eb548d54f6da41ccade",
+            "sha256": "dda1230f3b151d87ec03b9108b6120222ec75caddb8ef568b5f920ae2110b1e8",
+            "spkisha256": "dda1230f3b151d87ec03b9108b6120222ec75caddb8ef568b5f920ae2110b1e8",
+            "subjectalternativenames": [
+                {
+                    "value": "example.example.com"
+                },
+                {
+                    "value": "*.example.com"
+                }
             ],
-            "trafficlightprotocol": "Red",
-            "tags": "tag1"
+            "subjectdn": "O=Example.com,CN=example.example.com",
+            "validitynotafter": "2022-12-05T04:03:00Z",
+            "validitynotbefore": "2019-12-06T04:03:00Z",
+            "tags": "tag1",
+            "trafficlightprotocol": "Red"
         }
     },
     {

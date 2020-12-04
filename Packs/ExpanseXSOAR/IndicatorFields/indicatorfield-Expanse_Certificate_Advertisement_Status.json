@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "ExpanseCertificate"
+        "Certificate"
     ],
     "caseInsensitive": true,
     "cliName": "expansecertificateadvertisementstatus",
@@ -17,12 +17,7 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
-    "selectValues": [
-        "[\"HAS_CERTIFICATE_ADVERTISEMENT\"]",
-        "HAS_CERTIFICATE_ADVERTISEMENT",
-        "[\"NO_CERTIFICATE_ADVERTISEMENT\"]",
-        "NO_CERTIFICATE_ADVERTISEMENT"
-    ],
+    "selectValues": [],
     "sla": 0,
     "system": false,
     "threshold": 72,

@@ -26,11 +26,11 @@ This integration was integrated and tested with version xx of FeedExpanse
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### feedexpanse-get-indicators
 ***
-Retrieve discovered IPs/Domains/Certificates as indicators
+Retrieve discovered IPs/IP Ranges/Domains/Certificates
 
 
 #### Base Command
@@ -44,118 +44,23 @@ Retrieve discovered IPs/Domains/Certificates as indicators
 | ip | Retrieve discovered IPs | Optional | 
 | domain | Retrieve discovered Domains | Optional | 
 | certificate | Retrieve discovered certificates | Optional | 
+| iprange | Retrieve IP Ranges | Optional | 
 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Expanse.Indicator | Unknown | Expanse Discovered Assets | 
-
+There is no context output for this command.
 
 #### Command Example
 ```!feedexpanse-get-indicators max_indicators=1 certificate=yes ip=yes domain=yes```
 
-#### Context Example
-```json
-{
-    "Expanse": {
-        "Indicator": [
-            {
-                "fields": {
-                    "expanseassetype": "CERTIFICATE",
-                    "expansebusinessunits": [
-                        "DevRel"
-                    ],
-                    "expansecommonname": "test.pan.dev",
-                    "expansedomain": null,
-                    "expanselastobserved": "2020-10-19T00:20:07Z",
-                    "expanseprovidername": "Google",
-                    "expansetenantname": "Palo Alto Networks",
-                    "expansetype": "CERTIFICATE_SIGHTING",
-                    "lastseenbysource": "2020-10-19T00:20:07Z"
-                },
-                "rawJSON": {...},
-                "score": 0,
-                "type": "IP",
-                "value": "1.2.3.4"
-            },
-            {
-                "fields": {
-                    "expansebusinessunits": [
-                        "DevRel"
-                    ],
-                    "expansecertificateadvertisementstatus": [
-                        "HAS_CERTIFICATE_ADVERTISEMENT"
-                    ],
-                    "expansecommonname": "test.pan.dev",
-                    "expansedateadded": "2020-10-19T04:11:26.698Z",
-                    "expansefirstobserved": "2020-10-17T00:00:00Z",
-                    "expanseissuerdn": "CN=FakeCA",
-                    "expanselastobserved": "2020-10-19T00:00:00Z",
-                    "expansepemmd5hash": "B4YDxJd6wEIcPVsOE7iRdA==",
-                    "expanseproperties": "WILDCARD\nDOMAIN_CONTROL_VALIDATED",
-                    "expanseprovidername": null,
-                    "expansesans": "test.pan.dev\n*.pan.dev",
-                    "expanseserialnumber": "1",
-                    "expanseservicestatus": [
-                        "HAS_ACTIVE_SERVICE",
-                        "NO_ACTIVE_CLOUD_SERVICE",
-                        "HAS_ACTIVE_ON_PREM_SERVICE"
-                    ],
-                    "expansesubjectdn": "CN=test.pan.dev",
-                    "expansetags": [],
-                    "expansetenantname": "Palo Alto Networks",
-                    "expansevalidnotafter": "2021-10-16T18:25:06Z",
-                    "expansevalidnotbefore": "2020-10-16T18:25:06Z",
-                    "firstseenbysource": "2020-10-17T00:00:00Z",
-                    "lastseenbysource": "2020-10-19T00:00:00Z"
-                },
-                "rawJSON": {...},
-                "score": 0,
-                "type": "ExpanseCertificate",
-                "value": "B4YDxJd6wEIcPVsOE7iRdA=="
-            },
-            {
-                "fields": {
-                    "expansebusinessunits": [
-                        "DevRel"
-                    ],
-                    "expansedateadded": "2020-10-19T03:59:49.138Z",
-                    "expansednsresolutionstatus": [
-                        "HAS_DNS_RESOLUTION"
-                    ],
-                    "expansefirstobserved": "2020-10-17T14:56:11Z",
-                    "expanselastobserved": "2020-10-17T14:56:11Z",
-                    "expanselastsampledip": "1.2.3.4",
-                    "expanseprovidername": null,
-                    "expanseservicestatus": [
-                        "NO_ACTIVE_SERVICE",
-                        "NO_ACTIVE_ON_PREM_SERVICE",
-                        "NO_ACTIVE_CLOUD_SERVICE"
-                    ],
-                    "expansesourcedomain": "pan.dev",
-                    "expansetags": [],
-                    "expansetenantname": "Palo Alto Networks",
-                    "firstseenbysource": "2020-10-17T14:56:11Z",
-                    "lastseenbysource": "2020-10-17T14:56:11Z"
-                },
-                "rawJSON": {...},
-                "score": 0,
-                "type": "Domain",
-                "value": "test.pan.dev"
-            }
-        ]
-    }
-}
-```
-
 #### Human Readable Output
 
 >### Expanse Indicators (capped at 1)
->|value|type|rawJSON|score|
->|---|---|---|---|
->| 1.2.3.4 | IP | ip: 1.2.3.4<br/>... | 0 |
->| B4YDxJd6wEIcPVsOE7iRdA== | ExpanseCertificate | id: 42b7b646-b35c-32a7-ad1c-beefbeef<br/>... | 0 |
->| test.pan.dev | Domain | id: fdf85c14-97b6-332b-9229-beefbeef<br/>... | 0 |
+>|value|type|
+>|---|---|
+>| 198.51.100.220 | IP |
+>| e0ce1c7a7e02d3a9f361a760e9f2ab22fe3d7e9a9ee9188386b1abff44be6b5f | Certificate |
+>| test.example.com | Domain |
+>| 198.51.100..0/24 | CIDR |
 

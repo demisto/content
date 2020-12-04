@@ -9,10 +9,12 @@ from CommonServerUserPython import *  # noqa
 import requests
 import traceback
 import copy
+import json
+import base64
 
 from typing import (
     Any, Dict, Optional, Iterator,
-    Tuple, Union, cast, Set
+    Tuple, Union, cast, Set, List
 )
 
 from itertools import islice
@@ -843,7 +845,7 @@ def format_certificate_data(certificates: List[Dict[str, Any]]) -> CommandResult
                 publickey=':'.join([ec_publickey[i:i + 2] for i in range(0, len(ec_publickey), 2)]) if ec_publickey else None
             ),
             spki_sha256=base64.urlsafe_b64decode(ec_spki).hex() if ec_spki else None,
-            signature_algorithm=expanse_certificate.get('SHA256withRSA'),
+            signature_algorithm=expanse_certificate.get('signatureAlgorithm'),
             subject_alternative_name=[san for san in ec_san.split() if len(san) != 0] if ec_san else None,
             validity_not_after=expanse_certificate.get('validNotAfter'),
             validity_not_before=expanse_certificate.get('validNotBefore'),
@@ -1920,9 +1922,9 @@ def certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             tags = [tag['name'] for tag in annotations['tags']]
 
         provider_name: Optional[str] = None
-        provider = certificate.get('provider', None)
-        if provider is not None:
-            provider_name = provider.get('name', None)
+        providers = certificate.get('providers', None)
+        if isinstance(providers, list) and len(providers) > 0:
+            provider_name = providers[0].get('name', None)
 
         tenant_name: Optional[str] = None
         tenant = certificate.get('tenant', None)

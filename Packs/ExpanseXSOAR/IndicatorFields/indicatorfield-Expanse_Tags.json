@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "ExpanseCertificate",
+        "Certificate",
         "IP",
         "DomainGlob",
         "Domain"
@@ -20,18 +20,7 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
-    "selectValues": [
-        "inap",
-        "gns",
-        "prismaaccess",
-        "it",
-        "test-bulk",
-        "cloudgenix",
-        "test-my-iprange",
-        "test-tag-1",
-        "xsoar-ou-devrel",
-        "xsoar-ou-gpcloudservice"
-    ],
+    "selectValues": [],
     "sla": 0,
     "system": false,
     "threshold": 72,
