@@ -17,7 +17,7 @@ import traceback
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
-from datetime import datetime, timedelta
+from datetime import tzinfo, datetime, timedelta
 from abc import abstractmethod
 
 import demistomock as demisto
@@ -28,6 +28,9 @@ try:
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
     from typing import Optional, Dict, List, Any, Union, Set
+
+    import dateparser
+    from datetime import timezone  # type: ignore
 except Exception:
     if sys.version_info[0] < 3:
         # in python 2 an exception in the imports might still be raised even though it is caught.
@@ -39,12 +42,33 @@ CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
 
 # pylint: disable=undefined-variable
+
+ZERO = timedelta(0)
+HOUR = timedelta(hours=1)
+
+
+class UTC(tzinfo):
+    """UTC"""
+
+    def utcoffset(self, dt):
+        return ZERO
+
+    def tzname(self, dt):
+        return "UTC"
+
+    def dst(self, dt):
+        return ZERO
+
+
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
     STRING_OBJ_TYPES = (str,)
+    TIMEZONE_UTC = timezone.utc
+
 else:
     STRING_TYPES = (str, unicode)  # type: ignore # noqa: F821
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
+    TIMEZONE_UTC = UTC()
 # pylint: enable=undefined-variable
 
 
@@ -95,6 +119,20 @@ class IncidentStatus(object):
     ACTIVE = 1
     DONE = 2
     ARCHIVE = 3
+
+
+class IncidentSeverity(object):
+    """
+    Enum: contains all the incident severity types
+    :return: None
+    :rtype: ``None``
+    """
+    UNKNOWN = 0
+    INFO = 0.5
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+    CRITICAL = 4
 
 
 # DEPRECATED - use EntryFormat enum instead
@@ -3782,6 +3820,137 @@ class IndicatorsTimeline:
         self.indicators_timeline = timelines
 
 
+def arg_to_number(arg, arg_name=None, required=False):
+    # type: (Any, Optional[str], bool) -> Optional[int]
+
+    """Converts an XSOAR argument to a Python int
+
+    This function is used to quickly validate an argument provided to XSOAR
+    via ``demisto.args()`` into an ``int`` type. It will throw a ValueError
+    if the input is invalid. If the input is None, it will throw a ValueError
+    if required is ``True``, or ``None`` if required is ``False.
+
+    :type arg: ``Any``
+    :param arg: argument to convert
+
+    :type arg_name: ``str``
+    :param arg_name: argument name
+
+    :type required: ``bool``
+    :param required:
+        throws exception if ``True`` and argument provided is None
+
+    :return:
+        returns an ``int`` if arg can be converted
+        returns ``None`` if arg is ``None`` and required is set to ``False``
+        otherwise throws an Exception
+    :rtype: ``Optional[int]``
+    """
+
+    if arg is None or arg == '':
+        if required is True:
+            if arg_name:
+                raise ValueError('Missing "{}"'.format(arg_name))
+            else:
+                raise ValueError('Missing required argument')
+
+        return None
+    if isinstance(arg, str):
+        if arg.isdigit():
+            return int(arg)
+
+        try:
+            return int(float(arg))
+        except Exception:
+            if arg_name:
+                raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
+            else:
+                raise ValueError('"{}" is not a valid number'.format(arg))
+    if isinstance(arg, int):
+        return arg
+
+    if arg_name:
+        raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
+    else:
+        raise ValueError('"{}" is not a valid number'.format(arg))
+
+
+def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=None):
+    # type: (Any, Optional[str], bool, bool, dict) -> Optional[datetime]
+
+    """Converts an XSOAR argument to a datetime
+
+    This function is used to quickly validate an argument provided to XSOAR
+    via ``demisto.args()`` into an ``datetime``. It will throw a ValueError if the input is invalid.
+    If the input is None, it will throw a ValueError if required is ``True``,
+    or ``None`` if required is ``False.
+
+    :type arg: ``Any``
+    :param arg: argument to convert
+
+    :type arg_name: ``str``
+    :param arg_name: argument name
+
+    :type is_utc: ``bool``
+    :param is_utc: if True then date converted as utc timezone, otherwise will convert with local timezone.
+
+    :type required: ``bool``
+    :param required:
+        throws exception if ``True`` and argument provided is None
+
+    :type settings: ``dict``
+    :param settings: If provided, passed to dateparser.parse function.
+
+    :return:
+        returns an ``datetime`` if conversion works
+        returns ``None`` if arg is ``None`` and required is set to ``False``
+        otherwise throws an Exception
+    :rtype: ``Optional[datetime]``
+    """
+
+    if arg is None:
+        if required is True:
+            if arg_name:
+                raise ValueError('Missing "{}"'.format(arg_name))
+            else:
+                raise ValueError('Missing required argument')
+        return None
+
+    if isinstance(arg, str) and arg.isdigit() or isinstance(arg, (int, float)):
+        # timestamp is a str containing digits - we just convert it to int
+        ms = float(arg)
+        if ms > 2000000000.0:
+            # in case timestamp was provided as unix time (in milliseconds)
+            ms = ms / 1000.0
+
+        if is_utc:
+            return datetime.utcfromtimestamp(ms).replace(tzinfo=TIMEZONE_UTC)
+        else:
+            return datetime.fromtimestamp(ms)
+    if isinstance(arg, str):
+        # we use dateparser to handle strings either in ISO8601 format, or
+        # relative time stamps.
+        # For example: format 2019-10-23T00:00:00 or "3 days", etc
+        if settings:
+            date = dateparser.parse(arg, settings=settings)
+        else:
+            date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+
+        if date is None:
+            # if d is None it means dateparser failed to parse it
+            if arg_name:
+                raise ValueError('Invalid date: "{}"="{}"'.format(arg_name, arg))
+            else:
+                raise ValueError('"{}" is not a valid date'.format(arg))
+
+        return date
+
+    if arg_name:
+        raise ValueError('Invalid date: "{}"="{}"'.format(arg_name, arg))
+    else:
+        raise ValueError('"{}" is not a valid date'.format(arg))
+
+
 class CommandResults:
     """
     CommandResults class - use to return results to warroom
@@ -4295,6 +4464,8 @@ def string_to_context_key(string):
 
 def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0, utc=True):
     """
+        THIS FUNCTTION IS DEPRECATED - USE dateparser.parse instead
+
       Parses date_range string to a tuple date strings (start, end). Input must be in format 'number date_range_unit')
       Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
 
