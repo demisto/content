@@ -1004,25 +1004,3 @@ Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL 
 >|Account|Deleted|Region|Resource Name|Service|
 >|---|---|---|---|---|
 >| Felix - AWS - pan-lab | false | AWS Virginia | tl-console | Amazon EC2 |
-
-
-### redlock-remediate-alerts
-***
-Remediate alerts in Prisma Cloud
-
-
-#### Base Command
-
-`redlock-remediate-alerts`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| alert-id | The alert id to remediate. You can retrieve alerts using the redlock-search-alerts command | Required | 
-
-#### Command Example
-```!redlock-remediate-alerts alert-id=P-370468```
-
-#### Human Readable Output
-
->Alert remediated successfully

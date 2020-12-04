@@ -451,25 +451,6 @@ def get_rql_response():
     })
 
 
-def remediate_alerts():
-    """
-    Retrieve remediation details for a given alert
-    """
-    alert_ids = argToList(demisto.getArg('alert-id'))
-    payload = {'alerts': alert_ids, 'filter': {}}
-    handle_filters(payload['filter'])
-    handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
-
-    if not alert_ids:
-        return_error('You must specify the alert-id to retrieve with CLI remediation')
-
-    response = req('PATCH', 'alert/remediation/' + demisto.getArg('alert-id'), None, None)
-    if response is False:
-        demisto.results("Alert remediation not available. Check alert status")
-    else:
-        demisto.results("Alert remediated successfully")
-
-
 def get_remediation_details():
     """
     Retrieve remediation details for a given alert
@@ -610,8 +591,6 @@ try:
         get_remediation_details()
     elif demisto.command() == 'redlock-get-rql-response':
         get_rql_response()
-    elif demisto.command() == 'redlock-remediate-alerts':
-        remediate_alerts()
     elif demisto.command() == 'redlock-search-config':
         redlock_search_config()
     elif demisto.command() == 'fetch-incidents':
