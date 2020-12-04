@@ -1423,7 +1423,7 @@ def test_certificate_command(requests_mock, mocker):
     mocker.patch('ExpanseV2.demisto.searchIndicators', return_value={'iocs': mock_ioc_data})
     ci_mock = mocker.patch('ExpanseV2.demisto.createIndicators')
 
-    result = certificate_command(client, {'hash': mock_ioc_data[0]['CustomFields']['sha256']})
+    result = certificate_command(client, {'certificate': mock_ioc_data[0]['CustomFields']['sha256']})
     result_context = result.to_context()
 
     assert result_context['EntryContext'] == mock_result_data
