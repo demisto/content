@@ -1,5 +1,8 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Certificate"
+    ],
     "caseInsensitive": true,
     "cliName": "spkisha256",
     "closeForm": false,

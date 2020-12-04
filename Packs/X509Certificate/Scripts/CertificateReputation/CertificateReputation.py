@@ -6,7 +6,7 @@ import traceback
 import dateparser
 from datetime import timedelta
 from enum import Enum
-from typing import Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional, Tuple
 
 
 # Threshold defining "long expiration". When validity_not_after - validity_not_before is greater than
@@ -79,7 +79,7 @@ def dbot_context(value: str, fields: Dict[str, Any], certificate_context: Dict[s
     some_checks_not_performed: bool = False
     current_score = Common.DBotScore.NONE
 
-    # check for validty over time
+    # check for validity over time
     now = dateparser.parse('now Z')
     if now is None:
         raise RuntimeError("Dateparser failed parsing 'now Z'")

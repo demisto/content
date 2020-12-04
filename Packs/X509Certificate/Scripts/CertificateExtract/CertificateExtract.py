@@ -2,8 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa # pylint: disable=unused-wildcard-import
 
-from typing import Dict
-
 from cryptography.hazmat import backends
 from cryptography.hazmat.primitives import (
     hashes,
@@ -17,8 +15,8 @@ from cryptography.x509 import (
     general_name,
     certificate_transparency
 )
-from typing import Union, Any, Optional, cast, List
-
+from typing import Dict, Union, Any, Optional, cast, List
+import traceback
 
 _INSTANCE_TO_TYPE = {
     general_name.OtherName: 'otherName',
@@ -133,13 +131,11 @@ def public_key_context2(pkey: Union[asymmetric.dsa.DSAPublicKey,
 
 
 def map_gn(gn: Any) -> Common.GeneralName:
-    # print(f'gg: {gn!r}')
     if gn is None:
         raise ValueError('gn cannot be None')
 
     itype = next((t for t in _INSTANCE_TO_TYPE.keys() if isinstance(gn, t)), None)
     if itype is not None:
-        # print(f'gn_type: {_INSTANCE_TO_TYPE[itype]}')
         return Common.GeneralName(
             gn_type=_INSTANCE_TO_TYPE[itype],
             gn_value=str(gn.value)
