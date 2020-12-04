@@ -4,6 +4,13 @@ fromversion: 5.0.0
 contentitemfields:
   propagationLabels:
   - all
+contentitemexportablefields:
+  contentitemfields:
+    packID: CarbonBlackEnterpriseEDR
+    itemVersion: 1.1.0
+    fromServerVersion: ""
+    toServerVersion: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Carbon Black Enterprise EDR Test
 starttaskid: "0"
 tasks:
@@ -32,7 +39,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: "314"
@@ -68,7 +75,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: "327"
@@ -77,11 +84,11 @@ tasks:
       id: "327"
       version: -1
       name: List Watchlists
-      description: Retrieve all watchlists.
-      script: Carbon Black Enterprise EDR|||cb-eedr-watchlist-list
+      description: Retrieves all watchlists.
+      script: '|||cb-eedr-watchlist-list'
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise EDR
+      brand: ""
     nexttasks:
       '#none#':
       - "18"
@@ -97,7 +104,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: "418"
@@ -126,7 +133,28 @@ tasks:
       tags_enabled:
         simple: "false"
       watchlist_name:
-        simple: Test watchlist
+        complex:
+          root: incident
+          accessor: created
+          transformers:
+          - operator: toString
+            args:
+              format: {}
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: _
+              toReplace:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: test_watchlist_
+              suffix: {}
     separatecontext: false
     view: |-
       {
@@ -139,7 +167,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: "329"
@@ -171,7 +199,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: "414"
@@ -180,12 +208,12 @@ tasks:
       id: "414"
       version: -1
       name: Update the watchlist
-      description: Update watchlist with watchlist_id. This will update the tags and
+      description: Updates the specified watchlist. This will update the tags and
         alert status as well as any reports or classifiers attached to the watchlist.
-      script: Carbon Black Enterprise EDR|||cb-eedr-watchlist-update
+      script: '|||cb-eedr-watchlist-update'
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise EDR
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
@@ -213,7 +241,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: "325"
@@ -222,11 +250,11 @@ tasks:
       id: "325"
       version: -1
       name: Get updated watchlist
-      description: Get watchlist information by id.
-      script: Carbon Black Enterprise EDR|||cb-eedr-get-watchlist-by-id
+      description: Gets watchlist information by  watchlist ID.
+      script: '|||cb-eedr-get-watchlist-by-id'
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise EDR
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
@@ -245,7 +273,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: "415"
@@ -288,7 +316,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "9":
     id: "9"
     taskid: "359"
@@ -297,11 +325,11 @@ tasks:
       id: "359"
       version: -1
       name: Create new report
-      description: Add a new watchlist report.
-      script: Carbon Black Enterprise EDR|||cb-eedr-report-create
+      description: Adds a new watchlist report.
+      script: '|||cb-eedr-report-create'
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise EDR
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
@@ -334,7 +362,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "10":
     id: "10"
     taskid: "345"
@@ -343,11 +371,11 @@ tasks:
       id: "345"
       version: -1
       name: Get new report
-      description: Retrieve report with report_id.
-      script: Carbon Black Enterprise EDR|||cb-eedr-report-get
+      description: Retrieves the specified report.
+      script: '|||cb-eedr-report-get'
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise EDR
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
@@ -366,7 +394,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "11":
     id: "11"
     taskid: "413"
@@ -375,11 +403,11 @@ tasks:
       id: "413"
       version: -1
       name: Update report
-      description: Update report with report_id.
-      script: Carbon Black Enterprise EDR|||cb-eedr-report-update
+      description: Updates the specified report.
+      script: '|||cb-eedr-report-update'
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise EDR
+      brand: ""
     nexttasks:
       '#none#':
       - "12"
@@ -414,7 +442,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "12":
     id: "12"
     taskid: "348"
@@ -446,7 +474,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "13":
     id: "13"
     taskid: "365"
@@ -494,7 +522,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "14":
     id: "14"
     taskid: "351"
@@ -504,10 +532,10 @@ tasks:
       version: -1
       name: Delete the report
       description: Remove report with report_id.
-      script: Carbon Black Enterprise EDR|||cb-eedr-report-remove
+      script: '|||cb-eedr-report-remove'
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise EDR
+      brand: ""
     nexttasks:
       '#none#':
       - "15"
@@ -526,7 +554,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "15":
     id: "15"
     taskid: "352"
@@ -535,11 +563,11 @@ tasks:
       id: "352"
       version: -1
       name: Remove watchlist
-      description: Remove watchlist with watchlist_id.
-      script: Carbon Black Enterprise EDR|||cb-eedr-watchlist-delete
+      description: Removes the specified watchlist.
+      script: '|||cb-eedr-watchlist-delete'
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise EDR
+      brand: ""
     nexttasks:
       '#none#':
       - "16"
@@ -551,14 +579,14 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 3170
+          "y": 3160
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "16":
     id: "16"
     taskid: "412"
@@ -567,11 +595,11 @@ tasks:
       id: "412"
       version: -1
       name: List alerts
-      description: List alerts.
-      script: Carbon Black Enterprise EDR|||cb-eedr-list-alerts
+      description: Returns a list of alerts.
+      script: '|||cb-eedr-list-alerts'
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise EDR
+      brand: ""
     nexttasks:
       '#none#':
       - "20"
@@ -614,7 +642,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "17":
     id: "17"
     taskid: "366"
@@ -623,11 +651,11 @@ tasks:
       id: "366"
       version: -1
       name: List devices
-      description: List devidces based on the search query.
-      script: Carbon Black Enterprise EDR|||cb-eedr-devices-list
+      description: List devices based on the search query.
+      script: '|||cb-eedr-devices-list'
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise EDR
+      brand: ""
     nexttasks:
       '#none#':
       - "21"
@@ -656,7 +684,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "18":
     id: "18"
     taskid: "355"
@@ -692,7 +720,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "19":
     id: "19"
     taskid: "367"
@@ -732,7 +760,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "20":
     id: "20"
     taskid: "374"
@@ -777,7 +805,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "21":
     id: "21"
     taskid: "371"
@@ -825,7 +853,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "22":
     id: "22"
     taskid: "368"
@@ -849,7 +877,8 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},

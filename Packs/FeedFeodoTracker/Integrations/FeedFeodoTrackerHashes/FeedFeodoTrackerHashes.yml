@@ -33,6 +33,16 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -73,9 +83,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Feodo Tracker publishes a list of hashes (MD5) associated with Dridex
-  and Emotet/Heodo malware samples.
-display: Feodo Tracker Hashes Feed
+description: Deprecated. Feodo Tracker no longer supports this feed.
+display: Feodo Tracker Hashes Feed (Deprecated)
 name: Feodo Tracker Hashes Feed
 script:
   commands:
@@ -91,7 +100,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: feodotracker-hashes-get-indicators
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.5.10845
   feed: true
   isfetch: false
   longRunning: false
@@ -101,3 +110,6 @@ script:
   subtype: python3
   type: python
 fromversion: 5.5.0
+deprecated: true
+tests:
+  - No tests

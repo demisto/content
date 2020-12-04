@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
-from typing import Dict, List, Set, Any, Callable
+from typing import Dict, List, Set, Any, Callable, Optional
 from collections import OrderedDict
 import traceback
 import requests
@@ -100,7 +100,7 @@ def post_id_to_full_url(post_id):
     return f'https://portal.cybersixgill.com/#/search?q=_id:{post_id}'
 
 
-def to_demisto_indicator(value, indicators_name, stix2obj, tags: list = []):
+def to_demisto_indicator(value, indicators_name, stix2obj, tags: list = [], tlp_color: Optional[str] = None):
     indicator = {
         "value": value,
         "type": indicators_name,
@@ -133,7 +133,11 @@ def to_demisto_indicator(value, indicators_name, stix2obj, tags: list = []):
                                                                            ExternalReferenceSourceTypes.MITRE_ATTACK,
                                                                            "mitre_attack_technique"),
         },
-        "score": to_demisto_score(stix2obj.get("sixgill_feedid"), stix2obj.get("revoked", False))}
+        "score": to_demisto_score(stix2obj.get("sixgill_feedid"), stix2obj.get("revoked", False))
+    }
+
+    if tlp_color:
+        indicator['fields']['trafficlightprotocol'] = tlp_color
 
     mitre_id = extract_external_reference_field(stix2obj, ExternalReferenceSourceTypes.MITRE_ATTACK,
                                                 "mitre_attack_tactic_id")
@@ -155,7 +159,7 @@ def get_limit(str_limit, default_limit):
         return default_limit
 
 
-def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log, tags: list = []):
+def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log, tags: list = [], tlp_color: Optional[str] = None):
     indicators = []
     pattern = stix2obj.get("pattern", "")
     sixgill_feedid = stix2obj.get("sixgill_feedid", "")
@@ -168,7 +172,7 @@ def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log, tags: list = []):
             if demisto_indicator_map:
                 indicators_name = demisto_indicator_map.get('name')
                 value = run_pipeline(value, demisto_indicator_map.get('pipeline', []), log)
-                demisto_indicator = to_demisto_indicator(value, indicators_name, stix2obj, tags)
+                demisto_indicator = to_demisto_indicator(value, indicators_name, stix2obj, tags, tlp_color)
 
                 if demisto_indicator.get("type") == FeedIndicatorType.File and \
                         HASH_MAPPING.get(sub_type.lower()) in hashes.keys():
@@ -241,14 +245,14 @@ def get_indicators_command(client: SixgillFeedClient, args):
 
 
 def fetch_indicators_command(client: SixgillFeedClient, limit: int = 0, get_indicators_mode: bool = False,
-                             tags: list = []):
+                             tags: list = [], tlp_color: Optional[str] = None):
     bundle = client.get_bundle()
     indicators_to_create: List = []
     indicator_values_set: Set = set()
 
     for stix_indicator in bundle.get("objects"):
         if is_indicator(stix_indicator):
-            demisto_indicators = stix2_to_demisto_indicator(stix_indicator, demisto, tags)
+            demisto_indicators = stix2_to_demisto_indicator(stix_indicator, demisto, tags, tlp_color)
 
             for indicator in demisto_indicators:
                 if indicator.get("value") not in indicator_values_set:
@@ -281,13 +285,14 @@ def main():
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
     tags = argToList(demisto.params().get('feedTags', []))
+    tlp_color = demisto.params().get('tlp_color')
     commands: Dict[str, Callable] = {
         'test-module': test_module_command,
         'sixgill-get-indicators': get_indicators_command
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, tags=tags)
+            indicators = fetch_indicators_command(client, tags=tags, tlp_color=tlp_color)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:

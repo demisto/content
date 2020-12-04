@@ -1,18 +1,22 @@
 from typing import Dict, List, Tuple, Optional, Callable
+
 from urllib3 import disable_warnings
 from CommonServerPython import *
 import demistomock as demisto
 from datetime import timedelta, datetime
 import time
-
+import itertools
 
 disable_warnings()
 
 CONTEXT_INTEGRATION_NAME = 'McAfeeESM.'
 
 
-class McAfeeESMClient(BaseClient):
+class EmptyFile(Exception):
+    pass
 
+
+class McAfeeESMClient(BaseClient):
     demisto_format = '%Y-%m-%dT%H:%M:%SZ'
 
     def __init__(self, params: Dict):
@@ -37,7 +41,7 @@ class McAfeeESMClient(BaseClient):
     def __del__(self):
         self.__logout()
 
-    def _is_status_code_valid(self, *_other):    # noqa
+    def _is_status_code_valid(self, *_other):  # noqa
         return True
 
     def __request(self, mcafee_command, data=None, params=None):
@@ -376,7 +380,7 @@ class McAfeeESMClient(BaseClient):
         human_readable = tableToMarkdown(name='Fields', t=result)
         return human_readable, {}, result
 
-    def fetch_alarms(self, since: str = None, start_time: str = None, end_time: str = None, raw: bool = False)\
+    def fetch_alarms(self, since: str = None, start_time: str = None, end_time: str = None, raw: bool = False) \
             -> Tuple[str, Dict, List]:
         path = 'alarmGetTriggeredAlarms'
         human_readable = ''
@@ -488,7 +492,7 @@ class McAfeeESMClient(BaseClient):
         i = 0
         while not self.__generic_polling(search_id):
             i += 1
-            time.sleep(interval)
+            time.sleep(interval)  # pylint: disable=sleep-exists
             if i * interval == time_out:
                 raise DemistoException(f'Search: {search_id} time out.')
 
@@ -566,7 +570,7 @@ class McAfeeESMClient(BaseClient):
         for i in range(len(result['rows'])):
             entry[i] = {headers[j]: result['rows'][i]['values'][j] for j in range(len(headers))}
 
-        condition = '(val.AlertIPSIDAlertID && val.AlertIPSIDAlertID == obj.AlertIPSIDAlertID)'\
+        condition = '(val.AlertIPSIDAlertID && val.AlertIPSIDAlertID == obj.AlertIPSIDAlertID)' \
             if 'AlertIPSIDAlertID' in headers else ''
         context_entry = {f'{CONTEXT_INTEGRATION_NAME}results{condition}': entry}
         return search_readable_outputs(result), context_entry, result
@@ -645,6 +649,151 @@ class McAfeeESMClient(BaseClient):
         current_run = {'id': all_cases[0].get('id', start_id) if all_cases else start_id}
         all_cases = create_incident(all_cases, alarms=False)
         return all_cases, current_run
+
+    def __get_watchlists(self, args):
+        command = 'sysGetWatchlists'
+        params = {
+            'hidden': args.get('hidden', True),
+            'dynamic': args.get('dynamic', True),
+            'writeOnly': args.get('write_only', False),
+            'indexedOnly': args.get('indexed_only', False),
+        }
+        return self.__request(command, params=params)
+
+    def __get_watchlist_id(self, watchlist_name):
+        try:
+            return list(filter(lambda x: x.get('name') == watchlist_name, self.__get_watchlists(dict())))[0].get('id')
+        except IndexError:
+            raise DemistoException(f'Can not find the watchlist {watchlist_name}')
+
+    def get_watchlists_names_and_ids(self):
+        raw_watch_lists = self.__get_watchlists(self.args)
+        watch_lists = list(map(format_watchlist_params, raw_watch_lists))
+        human_readable = tableToMarkdown('McAfee ESM Watchlist', t=watch_lists)
+        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Watchlist': watch_lists}, raw_watch_lists
+
+    def add_watchlist(self):
+        command = 'sysAddWatchlist'
+        watchlist_name = self.args.get('name')
+        watchlist_type = self.args.get('type')
+        data = {
+            "watchlist": {
+                "name": watchlist_name,
+                "type": {"name": watchlist_type,
+                         "id": 0},
+                "customType": {"name": "",
+                               "id": 0},
+                "dynamic": "False",
+                "enabled": "True",
+            }}
+        watchlist_id = self.__request(command, data=data)
+        context_entry = {
+            'name': watchlist_name,
+            'id': watchlist_id.get('value'),
+            'type': watchlist_type,
+        }
+        human_readable = f'Watchlist {watchlist_name} created.'
+        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Watchlist': context_entry}, watchlist_id
+
+    def delete_watchlist(self):
+        command = 'sysRemoveWatchlist'
+        ids_to_delete = argToList(self.args.get('ids', ''))
+        ids_to_delete.extend(list(map(self.__get_watchlist_id, argToList(self.args.get('names')))))
+        if self.version.startswith('11.'):
+            data = {"ids": {"watchlistIdList": ids_to_delete}}
+            self.__request(command, data)
+        else:
+            for single_id in ids_to_delete:
+                data = {"id": single_id}
+                self.__request(command, data)
+        return 'Watchlists removed', {}, {}
+
+    def watchlist_add_entry(self):
+        command = 'sysAddWatchlistValues'
+        watchlist_id = self.args.get('watchlist_id')
+        data = {
+            'watchlist': watchlist_id if watchlist_id else self.__get_watchlist_id(self.args.get('watchlist_name', '')),
+            'values': argToList(self.args.get('values', ''))
+        }
+        self.__request(command, data=data)
+        human_readable = 'Watchlist successfully updated.'
+        return human_readable, {}, {}
+
+    def watchlist_delete_entry(self):
+        command = 'sysRemoveWatchlistValues'
+        watchlist_id = self.args.get('watchlist_id')
+        data = {
+            'watchlist': watchlist_id if watchlist_id else self.__get_watchlist_id(self.args.get('watchlist_name', '')),
+            'values': argToList(self.args.get('values', ''))
+        }
+        self.__request(command, data=data)
+        human_readable = 'Watchlist successfully updated.'
+        return human_readable, {}, {}
+
+    def __get_watchlist_file_id(self, watchlist_id):
+        command = 'sysGetWatchlistDetails'
+        result = self.__request(command, data={'id': watchlist_id})
+        # v10.x uses 'valueCount' while v11.x uses 'recordCount'.
+        count_results = result.get('recordCount') or result.get('valueCount')
+        if not count_results:
+            raise EmptyFile()
+        value_file = result.get('valueFile', {})
+        file_token = value_file.get('fileToken', value_file.get('id'))
+        watchlist_name = result.get('name')
+        return file_token, watchlist_name
+
+    def watchlist_data_list(self):
+        watchlist_id = self.args.get('watchlist_id')
+        watchlist_id = watchlist_id if watchlist_id else self.__get_watchlist_id(self.args.get('watchlist_name', ''))
+
+        try:
+            file_token, watchlist_name = self.__get_watchlist_file_id(watchlist_id)
+        except EmptyFile:
+            return 'the watchlist is empty.', {}, {}
+
+        else:
+            max_values = int(self.args.get('limit', 50))
+            offset = int(self.args.get('offset', 0))
+            file_data = []
+            for i, line in enumerate(self.watchlist_values(file_token)):
+                if i < offset:
+                    continue
+                file_data.append(line)
+                if len(file_data) >= max_values:
+                    break
+            human_readable = tableToMarkdown(f'results from {watchlist_name} watchlist',
+                                             t={'data': file_data})
+            context_entry = {f'{CONTEXT_INTEGRATION_NAME}Watchlist': {'data': file_data, 'name': watchlist_name}}
+            return human_readable, context_entry, file_data
+
+    def watchlist_values(self, file_token, buff_size=400):
+        """
+
+        :param file_token: the token file (McAfee API call needed for the file creation)
+        :param buff_size: the size of the bytes in every API call.
+        :return: generate values (string)
+        """
+        command = 'sysGetWatchlistValues'
+        data = {'file': {'id': file_token}}
+        end = ''
+        for i in itertools.count(start=0):
+            params = {
+                'pos': i * buff_size,
+                'count': buff_size
+            }
+            result = self.__request(command, data=data, params=params)
+            file_data = '{}{}'.format(end, result.get('data', ''))
+            file_data = file_data.split('\n')
+            more_data_exist = buff_size == result.get('bytesRead') or not file_data
+            if more_data_exist:
+                end = file_data[-1]
+                file_data = file_data[:-1]
+
+            for line in filter(lambda x: x, file_data):
+                yield line
+
+            if not more_data_exist:
+                break
 
 
 def filtering_incidents(incidents_list: List, start_id: int, limit: int = 1):
@@ -867,6 +1016,14 @@ def mcafee_severity_to_demisto(severity: int) -> int:
         return 0
 
 
+def format_watchlist_params(raw_watchlist_params):
+    return {
+        'id': raw_watchlist_params.get('id'),
+        'name': raw_watchlist_params.get('name'),
+        'type': dict_safe_get(raw_watchlist_params, ['type', 'name'])
+    }
+
+
 def main():
     params = demisto.params()
     client = McAfeeESMClient(params)
@@ -891,7 +1048,13 @@ def main():
         'esm-delete-alarms': client.delete_alarm,
         'esm-get-alarm-event-details': client.get_alarm_event_details,
         'esm-list-alarm-events': client.list_alarm_events,
-        'esm-search': client.complete_search
+        'esm-search': client.complete_search,
+        'esm-get-watchlists': client.get_watchlists_names_and_ids,
+        'esm-create-watchlist': client.add_watchlist,
+        'esm-delete-watchlist': client.delete_watchlist,
+        'esm-watchlist-add-entry': client.watchlist_add_entry,
+        'esm-watchlist-delete-entry': client.watchlist_delete_entry,
+        'esm-watchlist-list-entries': client.watchlist_data_list,
     }
     try:
         if command == 'fetch-incidents':

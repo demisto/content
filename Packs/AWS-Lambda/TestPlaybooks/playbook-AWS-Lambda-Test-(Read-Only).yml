@@ -35,9 +35,7 @@ tasks:
       id: 233ed168-fe31-4c78-839c-10e9a1e14dc0
       version: -1
       name: aws-lambda-list-functions
-      description: Returns a list of your Lambda functions. For each function, the
-        response includes the function configuration information. You must use GetFunction
-        to retrieve the code for your function.
+      description: Returns a list of your Lambda functions. For each function, the response includes the function configuration information. You must use GetFunction to retrieve the code for your function.
       script: AWS - Lambda|||aws-lambda-list-functions
       type: regular
       iscommand: true
@@ -64,8 +62,7 @@ tasks:
       id: 166f0026-3899-4333-8eff-87af678d477b
       version: -1
       name: aws-lambda-get-account-settings
-      description: Retrieves details about your account's limits and usage in an AWS
-        Region.
+      description: Retrieves details about your account's limits and usage in an AWS Region.
       script: AWS - Lambda|||aws-lambda-get-account-settings
       type: regular
       iscommand: true
@@ -95,3 +92,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

@@ -656,27 +656,30 @@ class TestParams:
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'score': 2},
             {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO',
              'type': 'IP'},
-            {},
-            'Cortex XDR'
+            {'tlp_color': ''},
+            'Cortex XDR',
+            None
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'score': 2},
             {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO',
              'type': 'IP'},
             {'tag': 'tag1'},
-            'tag1'
+            'tag1',
+            None
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'score': 2},
             {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO',
              'type': 'IP'},
-            {'feedTags': 'tag2'},
-            'tag2'
+            {'feedTags': 'tag2', 'tlp_color': 'AMBER'},
+            'tag2',
+            'AMBER'
         )
     ]
 
-    @pytest.mark.parametrize('demisto_ioc, xdr_ioc, param_value, expected', tags_test)
-    def test_feed_tags(self, demisto_ioc, xdr_ioc, param_value, expected, mocker):
+    @pytest.mark.parametrize('demisto_ioc, xdr_ioc, param_value, expected_tags, expected_tlp_color', tags_test)
+    def test_feed_tags_and_tlp_color(self, demisto_ioc, xdr_ioc, param_value, expected_tags, expected_tlp_color, mocker):
         """
             Given:
                 - IOC in XDR format.
@@ -690,9 +693,11 @@ class TestParams:
         mocker.patch.object(demisto, 'searchIndicators', return_value={})
         outputs = mocker.patch.object(demisto, 'createIndicators')
         Client.tag = demisto.params().get('feedTags', demisto.params().get('tag', Client.tag))
+        Client.tlp_color = demisto.params().get('tlp_color')
         client = Client({'url': 'yana'})
         xdr_res = {'reply': list(map(lambda xdr_ioc: xdr_ioc[0], TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto))}
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
         get_changes(client)
         output = outputs.call_args.args[0]
-        assert output[0]['fields']['tags'] == expected
+        assert output[0]['fields']['tags'] == expected_tags
+        assert output[0]['fields'].get('trafficlightprotocol') == expected_tlp_color

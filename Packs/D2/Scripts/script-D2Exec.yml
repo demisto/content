@@ -2,7 +2,8 @@ commonfields:
   id: D2Exec
   version: -1
 name: D2Exec
-script: packOutput(args.cmd);
+script: >-
+  packOutput(args.cmd);
 type: javascript
 tags:
 - agent
@@ -17,3 +18,4 @@ args:
 scripttarget: 1
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

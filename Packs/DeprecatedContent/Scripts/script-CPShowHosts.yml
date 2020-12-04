@@ -2,8 +2,9 @@ commonfields:
   id: CPShowHosts
   version: -1
 name: CPShowHosts
-script: |
+script: >
   resp = demisto.executeCommand('checkpoint', {'command': 'show-hosts'})
+
   if isError(resp[0]):
       demisto.results(resp)
   else:
@@ -25,3 +26,4 @@ dependson:
   must:
   - checkpoint
 timeout: 0s
+fromversion: 5.0.0

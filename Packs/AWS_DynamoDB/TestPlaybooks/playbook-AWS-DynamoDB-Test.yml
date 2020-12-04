@@ -34,9 +34,7 @@ tasks:
       id: 312d8b2f-625e-4412-8e58-c7ffe2ed0d30
       version: -1
       name: aws-dynamodb-list-tables
-      description: Returns an array of table names associated with the current account
-        and endpoint. The output from ListTables is paginated, with each page returning
-        a maximum of 100 table names.
+      description: Returns an array of table names associated with the current account and endpoint. The output from ListTables is paginated, with each page returning a maximum of 100 table names.
       script: Amazon DynamoDB|||aws-dynamodb-list-tables
       type: regular
       iscommand: true
@@ -69,13 +67,7 @@ tasks:
       id: ec760111-8213-424d-8baa-a18b8ec36e39
       version: -1
       name: aws-dynamodb-list-backups
-      description: List backups associated with an AWS account. To list backups for
-        a given table, specify TableName. ListBackups returns a paginated list of
-        results with at most 1 MB worth of items in a page. You can also specify a
-        limit for the maximum number of entries to be returned in a page.  In the
-        request, start time is inclusive, but end time is exclusive. Note that these
-        limits are for the time at which the original backup was requested. You can
-        call ListBackups a maximum of five times per second.
+      description: List backups associated with an AWS account. To list backups for a given table, specify TableName. ListBackups returns a paginated list of results with at most 1 MB worth of items in a page. You can also specify a limit for the maximum number of entries to be returned in a page.  In the request, start time is inclusive, but end time is exclusive. Note that these limits are for the time at which the original backup was requested. You can call ListBackups a maximum of five times per second.
       script: Amazon DynamoDB|||aws-dynamodb-list-backups
       type: regular
       iscommand: true
@@ -110,13 +102,7 @@ tasks:
       id: 4ca59cf9-71ef-4a05-8536-ce236c028fe4
       version: -1
       name: aws-dynamodb-describe-table
-      description: 'Returns information about the table, including the current status
-        of the table, when it was created, the primary key schema, and any indexes
-        on the table.  If you issue a DescribeTable request immediately after a CreateTable
-        request, DynamoDB might return a ResourceNotFoundException. This is because
-        DescribeTable uses an eventually consistent query, and the metadata for your
-        table might not be available at that moment. Wait for a few seconds, and then
-        try the DescribeTable request again. '
+      description: 'Returns information about the table, including the current status of the table, when it was created, the primary key schema, and any indexes on the table.  If you issue a DescribeTable request immediately after a CreateTable request, DynamoDB might return a ResourceNotFoundException. This is because DescribeTable uses an eventually consistent query, and the metadata for your table might not be available at that moment. Wait for a few seconds, and then try the DescribeTable request again. '
       script: Amazon DynamoDB|||aws-dynamodb-describe-table
       type: regular
       iscommand: true
@@ -150,8 +136,7 @@ tasks:
       id: 53802168-8f40-48d2-8c98-22b9d599087a
       version: -1
       name: aws-dynamodb-describe-backup
-      description: Describes an existing backup of a table. You can call DescribeBackup
-        at a maximum rate of 10 times per second.
+      description: Describes an existing backup of a table. You can call DescribeBackup at a maximum rate of 10 times per second.
       script: Amazon DynamoDB|||aws-dynamodb-describe-backup
       type: regular
       iscommand: true
@@ -188,3 +173,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

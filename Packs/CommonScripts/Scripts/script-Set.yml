@@ -2,9 +2,11 @@ commonfields:
   id: Set
   version: -1
 name: Set
-script: |-
+script: >-
   var ec = {};
+
   var value;
+
   try {
       if (args.stringify === 'true') {
           if (typeof args.value === 'string') {
@@ -19,7 +21,9 @@ script: |-
       value = args.value;
   }
 
+
   ec[args.key] = value;
+
   var result = {
       Type: entryTypes.note,
       Contents: ec,
@@ -27,11 +31,13 @@ script: |-
       HumanReadable: 'Key ' + args.key + ' set'
   };
 
+
   if (!args.append || args.append === 'false') {
       setContext(args.key, value);
   } else {
       result.EntryContext = ec;
   }
+
 
   return result;
 type: javascript
@@ -43,18 +49,19 @@ args:
 - name: key
   required: true
   default: true
-  description: The key to set
+  description: The key to set. Can be a full path such as "Key.ID". 
+    If using append=true can also use a DT selector such as "Data(val.ID == obj.ID)".
 - name: value
   required: true
-  description: The value to set to the key. Can be an array. Usually, a dq expression.
+  description: The value to set to the key. Can be an array.
   isArray: true
 - name: append
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: If false then then the context key will be overwritten. If set to true
-    then the script will append to existing context key
+  description: If false then the context key will be overwritten. If set to true
+    then the script will append to existing context key.
 - name: stringify
   auto: PREDEFINED
   predefined:
@@ -66,4 +73,5 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 tests:
-  - Set - Test
+- Set - Test
+fromversion: 5.0.0

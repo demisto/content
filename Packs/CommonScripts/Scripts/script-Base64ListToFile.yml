@@ -2,29 +2,38 @@ commonfields:
   id: Base64ListToFile
   version: -1
 name: Base64ListToFile
-script: |-
+script: >-
   import base64
+
   import zlib
 
 
+
   # Output file name
+
   if 'filename' in demisto.args():
       outfilename = demisto.args()['filename']
   else:
       outfilename = demisto.args()['listname']
 
   # get the list
+
   res = demisto.executeCommand('getList', {'listName': demisto.args()['listname']})
+
   res = res[0]
+
   if isError(res):
     return_error("error reading list %s from demisto" % demisto.args()['listname'])
 
   # convert base64 file to binary file
+
   bin_file = base64.decodestring(res['Contents'])
+
   if demisto.args()['isZipFile'] == 'yes':
       bin_file = zlib.decompress(bin_file)
 
   # output file to warroom
+
   demisto.results(fileResult(outfilename, bin_file))
 type: python
 subtype: python2
@@ -63,3 +72,4 @@ outputs:
   description: EntryID of the file (only in case of report type=json)
 scripttarget: 0
 runonce: false
+fromversion: 5.0.0

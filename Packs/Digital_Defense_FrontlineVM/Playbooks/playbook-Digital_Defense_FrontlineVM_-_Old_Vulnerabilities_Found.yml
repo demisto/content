@@ -1,9 +1,8 @@
 id: Digital Defense FrontlineVM - Old Vulnerabilities Found
 version: -1
-fromversion: 4.1.0
+fromversion: 5.0.0
 name: Digital Defense FrontlineVM - Old Vulnerabilities Found
-description: This will query Frontline.Cloud's active view for any critical level
-  vulnerabilities found to be older than 90 days.
+description: This will query Frontline.Cloud's active view for any critical level vulnerabilities found to be older than 90 days.
 starttaskid: '0'
 tasks:
   '0':
@@ -39,8 +38,7 @@ tasks:
       id: a64ad67e-b87b-4259-8869-c019bd0197d3
       version: -1
       name: frontline-get-vulns (query for any old vulnerabilities)
-      description: This will query Frontline's active view for any vulnerabilities
-        found to be high or critical and older than the given number of days.
+      description: This will query Frontline's active view for any vulnerabilities found to be high or critical and older than the given number of days.
       script: Digital Defense FrontlineVM|||frontline-get-vulns
       type: regular
       iscommand: true
@@ -150,8 +148,7 @@ tasks:
       brand: ''
     scriptarguments:
       value:
-        simple: No high or critical level severity vulnerabilities found within Frontline.Cloud's
-          active view for the given number of days.
+        simple: No high or critical level severity vulnerabilities found within Frontline.Cloud's active view for the given number of days.
     separatecontext: false
     view: |-
       {
@@ -171,8 +168,7 @@ tasks:
       id: 9d4aa8e7-1d6e-4abf-8180-ca9fadbde22e
       version: -1
       name: Get number of days.
-      description: Query for any vulnerabilities found older than this given day (from
-        now).
+      description: Query for any vulnerabilities found older than this given day (from now).
       type: collection
       iscommand: false
       brand: ''
@@ -191,15 +187,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
-        simple: Query for any vulnerabilities found older than this given day (from
-          now).
+        simple: Query for any vulnerabilities found older than this given day (from now).
       methods: []
       format: ''
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -208,7 +203,7 @@ tasks:
       questions:
       - id: '0'
         label: ''
-        labelarg: null
+        labelarg:
         required: false
         gridcolumns: []
         defaultrows: []
@@ -216,11 +211,9 @@ tasks:
         options: []
         fieldassociated: ''
         placeholder: ''
-        tooltip: Query for any vulnerabilities found older than this given day (from
-          now).
+        tooltip: Query for any vulnerabilities found older than this given day (from now).
       title: Query for any vulnerabilities found older than this given day (from now).
-      description: Query for any vulnerabilities found older than this given day (from
-        now).
+      description: Query for any vulnerabilities found older than this given day (from now).
       sender: ''
       expired: false
       totalanswers: 0
@@ -240,8 +233,7 @@ inputs:
 - key: Days Older Than
   value: {}
   required: true
-  description: Input number of days from now in which to search if vulnerabilities
-    exist.
+  description: Input number of days from now in which to search if vulnerabilities exist.
 outputs: []
 tests:
-  - No test - manual task
+- No test - manual task

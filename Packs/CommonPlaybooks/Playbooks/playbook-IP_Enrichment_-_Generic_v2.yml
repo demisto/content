@@ -1,6 +1,6 @@
 id: IP Enrichment - Generic v2
 version: -1
-fromversion: 4.1.0
+fromversion: 5.0.0
 name: IP Enrichment - Generic v2
 description: |-
   Enrich IP addresses using one or more integrations.
@@ -195,18 +195,13 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The list
-    should be provided in CIDR notation, separated by commas. An example of a list
-    of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
-    If a list is not provided, will use default list provided in the IsIPInRanges
-    script (the known IPv4 private address ranges).'
+  description: 'A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
 - key: ResolveIP
   value:
     complex:
       root: inputs.ResolveIP
   required: true
-  description: Determines whether to convert the IP address to a hostname using a
-    DNS query (True/ False).
+  description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
 outputs:
 - contextPath: IP
   description: The IP objects
@@ -231,4 +226,4 @@ outputs:
   description: Endpoint domain name
   type: string
 tests:
-  - IP Enrichment - Generic v2 - Test
+- IP Enrichment - Generic v2 - Test

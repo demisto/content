@@ -3,14 +3,11 @@ commonfields:
   version: -1
 name: RSA NetWitness Security Analytics
 system: true
-fromversion: 2.0.0
+fromversion: 5.0.0
 display: RSA NetWitness Security Analytics
 category: Analytics & SIEM
 image: data:image/png;base64,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
-description: RSA Security Analytics, compatible with prior to v11. A distributed and modular system that enables
-  highly flexible deployment architectures that scale with the needs of the organization.
-  Security Analytics allows administrators to collect two types of data from the network
-  infrastructure, packet data and log data.
+description: RSA Security Analytics, compatible with prior to v11. A distributed and modular system that enables highly flexible deployment architectures that scale with the needs of the organization. Security Analytics allows administrators to collect two types of data from the network infrastructure, packet data and log data.
 configuration:
 - display: Server Url (192.168.56.101)
   name: url
@@ -41,15 +38,21 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     var url = params.url;
+
     if (url.indexOf("https://") < 0) {
         url = 'https://' + url;
     }
+
     var username = params.username;
+
     var password = params.password;
+
     var proxy = params.proxy || false;
+
     var COOKIE_PREFIX = 'RSA_SA_LICENSE=true; JSESSIONID=';
+
 
     function FailedRequestError(message, url, query, reqBody, resBody) {
         return {
@@ -78,13 +81,16 @@ script:
         };
     }
 
+
     function escapeRegExp(str) {
         return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
     }
 
+
     function replaceAll(str, find, replace) {
         return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
     }
+
 
     function login(url, username, password) {
         var fullUrl = url + '/j_spring_security_check';
@@ -124,6 +130,7 @@ script:
         return sessionId;
     }
 
+
     function logout(url, sessionId) {
         var fullUrl = url + '/j_spring_security_logout';
 
@@ -146,6 +153,7 @@ script:
             throw 'Failed to logout with status [' + res.StatusCode + ']. Expected status 302.\nOriginal error: ' + res.Body;
         }
     }
+
 
     function createQuery(args, defaultQuery) {
         args = args || {};
@@ -175,6 +183,7 @@ script:
         return query;
     }
 
+
     function createQueryFromString(q) {
         if (!q.match(/(.*=.*&)*(.*=.*)/)) {
             throw 'invalid query. query must be of structure: key1=value1&key2=value2&keyN=valueN';
@@ -191,6 +200,7 @@ script:
 
         return query;
     }
+
 
     var defaultIncidentFilter = {
         page: 1,
@@ -212,6 +222,7 @@ script:
             }
         ])
     };
+
 
     function listIncidents(sessionId, args, incidentManagementId) {
         var fullUrl = url + '/ajax/incidents/' + incidentManagementId;
@@ -279,6 +290,7 @@ script:
         }
     }
 
+
     function fetchIncidents(sessionId, args, incidentManagementId) {
         var now = new Date().getTime();
         var lastRun = getLastRun().lastRun || now - 1*60*1000; // last minute
@@ -323,6 +335,7 @@ script:
         return JSON.stringify(convertedIncidents);
     }
 
+
     function getIncidentById(sessionId, args, incidentManagementId) {
         var fullUrl = [
             url,
@@ -359,6 +372,7 @@ script:
         }
     }
 
+
     var defaultComponentFilter = {
         page: 1,
         start: 0,
@@ -370,6 +384,7 @@ script:
             }
         ]), '\"', '"')
     };
+
 
     function getComponents(sessionId, argz, types) {
         var fullUrl = url + '/common/devices';
@@ -410,6 +425,7 @@ script:
         }
     }
 
+
     function getIncidentManagementId(sessionId) {
         var incidentManagement = getComponents(sessionId, {}, ['INCIDENT_MANAGEMENT']);
 
@@ -419,6 +435,7 @@ script:
 
         return incidentManagement[0].id;
     }
+
 
     function createEventsQuery(args, predicateIds) {
         args = args || {};
@@ -448,6 +465,7 @@ script:
 
         return query;
     }
+
     function getEvents(sessionId, args) {
         var predicateIds = [];
         if (args.filter) {
@@ -489,6 +507,7 @@ script:
             throw FailedRequestError('Unexpected while fetching events. \nOriginal error: ' + err, fullUrl, query, null, res.Body).toString();
         }
     }
+
     function postEventsTransient(sessionId, query, ctoken) {
         var fullUrl = url + '/predicates/transient';
         var body = {
@@ -525,6 +544,7 @@ script:
             throw FailedRequestError('Unexpected while posting transient for events. \nOriginal error: ' + err, fullUrl, null, body, res.Body).toString();
         }
     }
+
 
     function getEventDetails(sessionId, args) {
         var fullUrl = url + '/investigation/reconstruct/event';
@@ -572,7 +592,9 @@ script:
         }
     }
 
+
     // Returns events/session data content.
+
     function getEventContent(sessionId, urlSuffix) {
         var fullUrl = url + urlSuffix;
         var res = http(
@@ -598,6 +620,7 @@ script:
         }
     }
 
+
     var defaultAlertQuery = {
         page: 1,
         start: 0,
@@ -618,6 +641,7 @@ script:
             }
         ])
     };
+
     function filterAlerts(sessionId, args) {
         var query = createQuery(args, defaultAlertQuery);
         var fullUrl = [
@@ -655,6 +679,7 @@ script:
         }
     }
 
+
     function getAlertById(sessionId, args) {
         var fullUrl = [
             url,
@@ -690,6 +715,7 @@ script:
             throw FailedRequestError('Unexpected while fetching alert details. \nOriginal error: ' + err, fullUrl, null, null, res.Body).toString();
         }
     }
+
 
     function getOriginalAlertById(sessionId, args) {
         var fullUrl = [
@@ -727,6 +753,7 @@ script:
         }
     }
 
+
     function getAvailableAssignees(sessionId) {
         var fullUrl = url + '/ajax/incident/user/availableAssignees';
 
@@ -758,6 +785,7 @@ script:
         }
     }
 
+
     function getEventsViewHtml(sessionId) {
         var fullUrl = url + '/investigation/events';
 
@@ -780,6 +808,7 @@ script:
         return res.Body;
     }
 
+
     function extractCsrfTokenFromHTML(html) {
         var matched = html.match(/<meta name="csrf-token" content=".*"/);
         if (!matched) {
@@ -789,6 +818,7 @@ script:
         var csrfToken = replaceAll(matched[0].replace('<meta name="csrf-token" content=', ''), '"', '');
         return csrfToken;
     }
+
 
     function extractLoggedUserFromHTML(html) {
         var matchedLoggedUser = html.match(/name: Ext\.htmlDecode\(.*\)/);
@@ -804,7 +834,9 @@ script:
         return user;
     }
 
+
     var DEFAULT_SEVERITY = "50";
+
     function createAlert(sessionId, args, incidentManagementId, createdUser, csrfToken) {
         var eventListString = replaceAll(args.eventList, ' ', '');
         var fullUrl = [
@@ -852,6 +884,7 @@ script:
             throw FailedRequestError('Unexpected error while creating alert. \nOriginal error: ' + err, fullUrl, null, body, res.Body).toString();
         }
     }
+
 
     function createIncident(sessionId, args, incidentManagementId, availableAssignees) {
         var eventsViewHTML = getEventsViewHtml(sessionId);
@@ -917,6 +950,7 @@ script:
         }
     }
 
+
     function addEventsToIncident(sessionId, args, incidentManagementId, availableAssignees) {
         var eventsViewHTML = getEventsViewHtml(sessionId);
         var csrfToken = extractCsrfTokenFromHTML(eventsViewHTML);
@@ -976,6 +1010,7 @@ script:
             throw FailedRequestError('Unexpected error while adding new events to incident. \nOriginal error: ' + err, fullUrl, null, body, res.Body).toString();
         }
     }
+
 
     function updateIncident(sessionId, args, incidentManagementId, availableAssignees) {
         var eventsViewHTML = getEventsViewHtml(sessionId);
@@ -1066,6 +1101,7 @@ script:
         }
     }
 
+
     function makeUpperCase (o) {
         for (var key in o ) {
             if(o.hasOwnProperty(key)) {
@@ -1076,6 +1112,7 @@ script:
         }
         return o;
     }
+
 
     function getIncidentObject(e) {
         return {
@@ -1096,6 +1133,7 @@ script:
         };
     }
 
+
     function getAlert (alert) {
         return {
             "Id": alert.id,
@@ -1115,6 +1153,7 @@ script:
             "DestonationPort": alert.groupby_destination_port
         };
     }
+
     function buildRetValListIncidents (incidets) {
         var md = [];
         var ctx = {"Netwitness.Incident":[]}
@@ -1129,6 +1168,7 @@ script:
         return {Type: entryTypes.note, Contents: incidets, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown, EntryContext: ctx};
     }
 
+
     function buildRetValGetIncidentDetails (incident) {
         var md = [];
         var ctx = {"Netwitness.Incident":[]}
@@ -1137,6 +1177,7 @@ script:
         ctx["Netwitness.Incident"].push(toPush);
         return {Type: entryTypes.note, Contents: incident, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown, EntryContext: ctx};
     }
+
 
     function buildRetValGetComponents (components) {
         var md = [];
@@ -1163,6 +1204,7 @@ script:
         return {Type: entryTypes.note, Contents: components, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown, EntryContext:  ctx};
     }
 
+
     function buildRetValGetEvents (events) {
         var md = [];
         var ctx = {"Netwitness.Event":[]}
@@ -1184,6 +1226,7 @@ script:
         return {Type: entryTypes.note, Contents: events, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown};
     }
 
+
     function buildRetValGetEventDetails (event) {
         var md = [];
         var ctx = {"Netwitness.Event":[]};
@@ -1204,6 +1247,7 @@ script:
         return {Type: entryTypes.note, Contents: event, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown, EntryContext:  ctx};
     }
 
+
     function buildRetValGetAlerts (alerts) {
         var md = [];
         var ctx = {"Netwitness.Alert":[]}
@@ -1218,6 +1262,7 @@ script:
         return {Type: entryTypes.note, Contents: alerts, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown, EntryContext: ctx};
     }
 
+
     function buildRetValGetAlert (alert) {
         var ctx = {"Netwitness.Alert":[]}
         var alertValue = getAlert(alert);
@@ -1230,6 +1275,7 @@ script:
         ctx["Netwitness.Alert"].push(alertValue);
         return {Type: entryTypes.note, Contents: alert, ContentsFormat: formats.json, HumanReadable: hr, ReadableContentsFormat: formats.markdown, EntryContext: ctx};
     }
+
 
     function buildRetValGetAlertOrig (alertOrig) {
         var md = [];
@@ -1248,6 +1294,7 @@ script:
         ctx["Netwitness.Event"] = alertOrig.events;
         return {Type: entryTypes.note, Contents: alertOrig, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown, EntryContext: ctx};
     }
+
 
     function buildRetValAvailableAssignees(availableAssignees) {
         var md = [];
@@ -1268,6 +1315,7 @@ script:
         return {Type: entryTypes.note, Contents: availableAssignees, ContentsFormat: formats.json, HumanReadable: tableToMarkdown(command, md), ReadableContentsFormat: formats.markdown, EntryContext:  ctx};
     }
 
+
     function buildRetValCreateIncident (newIncident) {
         var md = [];
         var ctx = {"Netwitness.Incident":[]}
@@ -1284,10 +1332,15 @@ script:
     }
 
 
+
     // The command input arg holds the command sent from the user.
+
     var sessionId = login(url, username, password);
+
     var incidentManagementId = args.incidentManagementId || getIncidentManagementId(sessionId);
+
     var results = false;
+
     switch (command) {
         case 'fetch-incidents':
             results = fetchIncidents(sessionId, args, incidentManagementId);
@@ -1369,7 +1422,9 @@ script:
             // Params are of the type given in the integration page creation.
     }
 
+
     logout(url, sessionId);
+
     return results;
   type: javascript
   commands:
@@ -1377,8 +1432,7 @@ script:
     deprecated: true
     arguments:
     - name: query
-      description: 'If query provided all other parameters ignored. Query should contain
-        page, limit, start, sort and filter, joined by &, For example: page=1&start=0&limit=100&sort=[{"property":"created","direction":"DESC"}]&filter=[{"property":"created","value":[851171984031,1482323984031]}]'
+      description: 'If query provided all other parameters ignored. Query should contain page, limit, start, sort and filter, joined by &, For example: page=1&start=0&limit=100&sort=[{"property":"created","direction":"DESC"}]&filter=[{"property":"created","value":[851171984031,1482323984031]}]'
     - name: page
       description: The default is 1. Indicates the page number of incidents
     - name: start
@@ -1386,21 +1440,13 @@ script:
     - name: limit
       description: The default is 100. Limits the number of incidents per page
     - name: sort
-      description: 'By default sorts by "created" field in "DESC" order. Example:
-        "[{\"property\":\"created\",\"direction\":\"DESC\"}]"'
+      description: 'By default sorts by "created" field in "DESC" order. Example: "[{\"property\":\"created\",\"direction\":\"DESC\"}]"'
     - name: filter
-      description: 'By default filters by "created" from 1996 to this date. Example:
-        "[{\"property\":\"id\", \"value\":\"INC-21\"}]"'
+      description: 'By default filters by "created" from 1996 to this date. Example: "[{\"property\":\"id\", \"value\":\"INC-21\"}]"'
     - name: incidentManagementId
-      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
-        device/component id. It can be received by running nw-get-component command.
-        If this argument is not filled/passed, the script will automatically get the
-        first device of type INCIDENT_MANAGEMENT from the SA server.'
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running nw-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
     - name: loadAlerts
-      description: '[optinal boolean] By default alerts and events related to incident
-        not loaded. If loadAlerts is true, then command will load all alerts and their
-        events from SA. Please be noticed THIS IS HAS PERFORMANCE IMPACT! For each
-        alert XHR request send to SA.'
+      description: '[optinal boolean] By default alerts and events related to incident not loaded. If loadAlerts is true, then command will load all alerts and their events from SA. Please be noticed THIS IS HAS PERFORMANCE IMPACT! For each alert XHR request send to SA.'
     description: Fetches incidents by filter
   - name: nw-login
     arguments: []
@@ -1442,18 +1488,15 @@ script:
       description: Filter of time range in which events occured
     - name: deviceId
       required: true
-      description: '[number] Id of the device where the events stored/occurred. In
-        order to get list of available devices/components run command nw-get-components'
+      description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command nw-get-components'
     - name: collectionName
       description: '[optional]'
     - name: predicateIds
       description: '[optional]'
     - name: startDate
-      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this
-        argument'
+      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument'
     - name: endDate
-      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this
-        argument'
+      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument'
     - name: lastCollectionTime
       description: '[optional datetime] Last collection time'
     - name: mid1
@@ -1465,16 +1508,13 @@ script:
     - name: page
       description: '[optional number] Default set to 1. The page number'
     - name: start
-      description: '[optional number] Default set to 0. The starting index of event
-        in page.'
+      description: '[optional number] Default set to 0. The starting index of event in page.'
     - name: limit
-      description: '[optional number] Default set to 25. Limits the number of events
-        per page'
+      description: '[optional number] Default set to 25. Limits the number of events per page'
     - name: sort
       description: 'By default sorts by "id" field in "ASC" order. Example: "[{\"property\":\"id\",\"direction\":\"ASC\"}]"'
     - name: filter
-      description: '<string> Must provide key value pairs of fieldName and their value
-        separated by comma. Example: "ip.src=1.1.1.1,meta.device.type=\"crowdstrike\""'
+      description: '<string> Must provide key value pairs of fieldName and their value separated by comma. Example: "ip.src=1.1.1.1,meta.device.type=\"crowdstrike\""'
     description: Returns all the events in defined time range
   - name: nw-get-available-assignees
     deprecated: true
@@ -1494,26 +1534,20 @@ script:
     arguments:
     - name: alertSummary
       required: true
-      description: '[string] Short summary of the alert which will be attached to
-        incident'
+      description: '[string] Short summary of the alert which will be attached to incident'
     - name: severity
       description: '[optional string] Default set to "50". '
     - name: name
       required: true
       description: '[string] The name of the incident.'
     - name: assigned
-      description: '[optional string] Set assignee login name if assignee has changed.
-        You can execute nw-get-available-assignees to get the list of users. Example:
-        demisto123'
+      description: '[optional string] Set assignee login name if assignee has changed. You can execute nw-get-available-assignees to get the list of users. Example: demisto123'
     - name: eventList
       required: true
-      description: List of event ids separated by comma [,] must not include spaces
-        in it. In order to get list of events you can use nw-get-events
+      description: List of event ids separated by comma [,] must not include spaces in it. In order to get list of events you can use nw-get-events
     - name: deviceId
       required: true
-      description: The id of the device/component (Concentrator, Log Decoder, Packet
-        Decoder, etc.) from which the events are. You can view the list of devices
-        by executing the command nw-get-components
+      description: The id of the device/component (Concentrator, Log Decoder, Packet Decoder, etc.) from which the events are. You can view the list of devices by executing the command nw-get-components
     - name: priority
       required: true
       auto: PREDEFINED
@@ -1526,10 +1560,7 @@ script:
     - name: summary
       description: Summary of the incident
     - name: incidentManagementId
-      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
-        device/component id. It can be received by running nw-get-component command.
-        If this argument is not filled/passed, the script will automatically get the
-        first device of type INCIDENT_MANAGEMENT from the SA server.'
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running nw-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
     description: Creating new incident
     execution: true
   - name: nw-add-events-to-incident
@@ -1541,26 +1572,18 @@ script:
       description: '[string] Existing incident id. '
     - name: eventList
       required: true
-      description: '[array of strings] List of event ids separated by comma [,] must
-        not include spaces in it. In order to get list of events you can use nw-get-events.
-        Example: "23,12,3"'
+      description: '[array of strings] List of event ids separated by comma [,] must not include spaces in it. In order to get list of events you can use nw-get-events. Example: "23,12,3"'
     - name: alertSummary
       required: true
-      description: '[string] Short summary of the alert which will be attached to
-        incident'
+      description: '[string] Short summary of the alert which will be attached to incident'
     - name: severity
       required: true
       description: '[number] Severity of the incident. Example: 50'
     - name: deviceId
       required: true
-      description: '[number] The id of the device/component (Concentrator, Log Decoder,
-        Packet Decoder, etc.) from which the events are. You can view the list of
-        devices by executing the command nw-get-components'
+      description: '[number] The id of the device/component (Concentrator, Log Decoder, Packet Decoder, etc.) from which the events are. You can view the list of devices by executing the command nw-get-components'
     - name: incidentManagementId
-      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
-        device/component id. It can be received by running nw-get-component command.
-        If this argument is not filled/passed, the script will automatically get the
-        first device of type INCIDENT_MANAGEMENT from the SA server.'
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running nw-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
     description: This command will add new events to existing incident
     execution: true
   - name: nw-update-incident
@@ -1568,16 +1591,13 @@ script:
     arguments:
     - name: idList
       required: true
-      description: 'List of incident ids which will be updated, separated by comma
-        [,]. Must not contain spaces. Example: "INC-13,INC-15,INC-23"'
+      description: 'List of incident ids which will be updated, separated by comma [,]. Must not contain spaces. Example: "INC-13,INC-15,INC-23"'
     - name: name
       description: '[optional string] Set name if incident name has been changed'
     - name: summary
       description: '[optional string] Updated incident summary'
     - name: assignee
-      description: '[optional string] Set assignee login name if assignee has changed.
-        You can execute nw-get-available-assignees to get the list of users. Example:
-        demisto123'
+      description: '[optional string] Set assignee login name if assignee has changed. You can execute nw-get-available-assignees to get the list of users. Example: demisto123'
     - name: comment
       description: '[optional string] Add a journal entry describing your changes'
     - name: status
@@ -1598,15 +1618,11 @@ script:
       - MEDIUM
       - HIGH
       - CRITICAL
-      description: '[optional priority] Set priority if incident priority has been
-        changed'
+      description: '[optional priority] Set priority if incident priority has been changed'
     - name: categories
       description: List of categories.
     - name: incidentManagementId
-      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
-        device/component id. It can be received by running nw-get-component command.
-        If this argument is not filled/passed, the script will automatically get the
-        first device of type INCIDENT_MANAGEMENT from the SA server.'
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running nw-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
     description: Updates incident
     execution: true
   - name: fetch-incidents
@@ -1623,11 +1639,9 @@ script:
     - name: limit
       description: The default is 100. Limits the number of incidents per page
     - name: sort
-      description: 'By default sorts by "alert.timestamp" field in "DESC" order. Example:
-        "[{\"property\":\"alert.timestamp\",\"direction\":\"DESC\"}]"'
+      description: 'By default sorts by "alert.timestamp" field in "DESC" order. Example: "[{\"property\":\"alert.timestamp\",\"direction\":\"DESC\"}]"'
     - name: filter
-      description: 'By default filters by "alert.timestamp" from 1996 to this date.
-        Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
+      description: 'By default filters by "alert.timestamp" from 1996 to this date. Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
   - name: nw-get-alert-details
     description: Return single alert by id
     deprecated: true
@@ -1640,13 +1654,11 @@ script:
     arguments:
     - name: deviceId
       required: true
-      description: '[number] Id of the device where the events stored/occurred. In
-        order to get list of available devices/components run command nw-get-components'
+      description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command nw-get-components'
     - name: eventId
       required: true
       description: '[number] Id of the event'
-    description: Returns two entries. One is event details json and the second is
-      event/session content
+    description: Returns two entries. One is event details json and the second is event/session content
   - name: nw-get-incident-details
     deprecated: true
     arguments:
@@ -1666,8 +1678,7 @@ script:
   - name: netwitness-im-list-incidents
     arguments:
     - name: query
-      description: 'If query provided all other parameters ignored. Query should contain
-        page, limit, start, sort and filter, joined by &, For example: page=1&start=0&limit=100&sort=[{"property":"created","direction":"DESC"}]&filter=[{"property":"created","value":[851171984031,1482323984031]}]'
+      description: 'If query provided all other parameters ignored. Query should contain page, limit, start, sort and filter, joined by &, For example: page=1&start=0&limit=100&sort=[{"property":"created","direction":"DESC"}]&filter=[{"property":"created","value":[851171984031,1482323984031]}]'
     - name: page
       description: The default is 1. Indicates the page number of incidents
     - name: start
@@ -1675,21 +1686,13 @@ script:
     - name: limit
       description: The default is 100. Limits the number of incidents per page
     - name: sort
-      description: 'By default sorts by "created" field in "DESC" order. Example:
-        "[{\"property\":\"created\",\"direction\":\"DESC\"}]"'
+      description: 'By default sorts by "created" field in "DESC" order. Example: "[{\"property\":\"created\",\"direction\":\"DESC\"}]"'
     - name: filter
-      description: 'By default filters by "created" from 1996 to this date. Example:
-        "[{\"property\":\"id\", \"value\":\"INC-21\"}]"'
+      description: 'By default filters by "created" from 1996 to this date. Example: "[{\"property\":\"id\", \"value\":\"INC-21\"}]"'
     - name: incidentManagementId
-      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
-        device/component id. It can be received by running netwitness-im-get-component command.
-        If this argument is not filled/passed, the script will automatically get the
-        first device of type INCIDENT_MANAGEMENT from the SA server.'
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running netwitness-im-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
     - name: loadAlerts
-      description: '[optinal boolean] By default alerts and events related to incident
-        not loaded. If loadAlerts is true, then command will load all alerts and their
-        events from SA. Please be noticed THIS IS HAS PERFORMANCE IMPACT! For each
-        alert XHR request send to SA.'
+      description: '[optinal boolean] By default alerts and events related to incident not loaded. If loadAlerts is true, then command will load all alerts and their events from SA. Please be noticed THIS IS HAS PERFORMANCE IMPACT! For each alert XHR request send to SA.'
     description: Fetches incidents by filter
     outputs:
     - contextPath: Netwitness.Incident.Id
@@ -1777,18 +1780,15 @@ script:
       description: Filter of time range in which events occured
     - name: deviceId
       required: true
-      description: '[number] Id of the device where the events stored/occurred. In
-        order to get list of available devices/components run command netwitness-im-get-components'
+      description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command netwitness-im-get-components'
     - name: collectionName
       description: '[optional]'
     - name: predicateIds
       description: '[optional]'
     - name: startDate
-      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this
-        argument'
+      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument'
     - name: endDate
-      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this
-        argument'
+      description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument'
     - name: lastCollectionTime
       description: '[optional datetime] Last collection time'
     - name: mid1
@@ -1800,16 +1800,13 @@ script:
     - name: page
       description: '[optional number] Default set to 1. The page number'
     - name: start
-      description: '[optional number] Default set to 0. The starting index of event
-        in page.'
+      description: '[optional number] Default set to 0. The starting index of event in page.'
     - name: limit
-      description: '[optional number] Default set to 25. Limits the number of events
-        per page'
+      description: '[optional number] Default set to 25. Limits the number of events per page'
     - name: sort
       description: 'By default sorts by "id" field in "ASC" order. Example: "[{\"property\":\"id\",\"direction\":\"ASC\"}]"'
     - name: filter
-      description: '<string> Must provide key value pairs of fieldName and their value
-        separated by comma. Example: "ip.src=1.1.1.1,meta.device.type=\"crowdstrike\""'
+      description: '<string> Must provide key value pairs of fieldName and their value separated by comma. Example: "ip.src=1.1.1.1,meta.device.type=\"crowdstrike\""'
     description: Returns all the events in defined time range
   - name: netwitness-im-get-available-assignees
     arguments: []
@@ -1827,26 +1824,20 @@ script:
     arguments:
     - name: alertSummary
       required: true
-      description: '[string] Short summary of the alert which will be attached to
-        incident'
+      description: '[string] Short summary of the alert which will be attached to incident'
     - name: severity
       description: '[optional string] Default set to "50". '
     - name: name
       required: true
       description: '[string] The name of the incident.'
     - name: assigned
-      description: '[optional string] Set assignee login name if assignee has changed.
-        You can execute netwitness-im-get-available-assignees to get the list of users. Example:
-        demisto123'
+      description: '[optional string] Set assignee login name if assignee has changed. You can execute netwitness-im-get-available-assignees to get the list of users. Example: demisto123'
     - name: eventList
       required: true
-      description: List of event ids separated by comma [,] must not include spaces
-        in it. In order to get list of events you can use netwitness-im-get-events
+      description: List of event ids separated by comma [,] must not include spaces in it. In order to get list of events you can use netwitness-im-get-events
     - name: deviceId
       required: true
-      description: The id of the device/component (Concentrator, Log Decoder, Packet
-        Decoder, etc.) from which the events are. You can view the list of devices
-        by executing the command netwitness-im-get-components
+      description: The id of the device/component (Concentrator, Log Decoder, Packet Decoder, etc.) from which the events are. You can view the list of devices by executing the command netwitness-im-get-components
     - name: priority
       required: true
       auto: PREDEFINED
@@ -1859,10 +1850,7 @@ script:
     - name: summary
       description: Summary of the incident
     - name: incidentManagementId
-      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
-        device/component id. It can be received by running netwitness-im-get-component command.
-        If this argument is not filled/passed, the script will automatically get the
-        first device of type INCIDENT_MANAGEMENT from the SA server.'
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running netwitness-im-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
     description: Creating new incident
     outputs:
     - contextPath: Netwitness.Incident.Id
@@ -1884,42 +1872,31 @@ script:
       description: '[string] Existing incident id. '
     - name: eventList
       required: true
-      description: '[array of strings] List of event ids separated by comma [,] must
-        not include spaces in it. In order to get list of events you can use netwitness-im-get-events.
-        Example: "23,12,3"'
+      description: '[array of strings] List of event ids separated by comma [,] must not include spaces in it. In order to get list of events you can use netwitness-im-get-events. Example: "23,12,3"'
     - name: alertSummary
       required: true
-      description: '[string] Short summary of the alert which will be attached to
-        incident'
+      description: '[string] Short summary of the alert which will be attached to incident'
     - name: severity
       required: true
       description: '[number] Severity of the incident. Example: 50'
     - name: deviceId
       required: true
-      description: '[number] The id of the device/component (Concentrator, Log Decoder,
-        Packet Decoder, etc.) from which the events are. You can view the list of
-        devices by executing the command netwitness-im-get-components'
+      description: '[number] The id of the device/component (Concentrator, Log Decoder, Packet Decoder, etc.) from which the events are. You can view the list of devices by executing the command netwitness-im-get-components'
     - name: incidentManagementId
-      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
-        device/component id. It can be received by running netwitness-im-get-component command.
-        If this argument is not filled/passed, the script will automatically get the
-        first device of type INCIDENT_MANAGEMENT from the SA server.'
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running netwitness-im-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
     description: This command will add new events to existing incident
     execution: true
   - name: netwitness-im-update-incident
     arguments:
     - name: idList
       required: true
-      description: 'List of incident ids which will be updated, separated by comma
-        [,]. Must not contain spaces. Example: "INC-13,INC-15,INC-23"'
+      description: 'List of incident ids which will be updated, separated by comma [,]. Must not contain spaces. Example: "INC-13,INC-15,INC-23"'
     - name: name
       description: '[optional string] Set name if incident name has been changed'
     - name: summary
       description: '[optional string] Updated incident summary'
     - name: assignee
-      description: '[optional string] Set assignee login name if assignee has changed.
-        You can execute netwitness-im-get-available-assignees to get the list of users. Example:
-        demisto123'
+      description: '[optional string] Set assignee login name if assignee has changed. You can execute netwitness-im-get-available-assignees to get the list of users. Example: demisto123'
     - name: comment
       description: '[optional string] Add a journal entry describing your changes'
     - name: status
@@ -1940,15 +1917,11 @@ script:
       - MEDIUM
       - HIGH
       - CRITICAL
-      description: '[optional priority] Set priority if incident priority has been
-        changed'
+      description: '[optional priority] Set priority if incident priority has been changed'
     - name: categories
       description: List of categories.
     - name: incidentManagementId
-      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
-        device/component id. It can be received by running netwitness-im-get-component command.
-        If this argument is not filled/passed, the script will automatically get the
-        first device of type INCIDENT_MANAGEMENT from the SA server.'
+      description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running netwitness-im-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
     description: Updates incident
     execution: true
   - name: netwitness-im-get-alerts
@@ -1961,11 +1934,9 @@ script:
     - name: limit
       description: The default is 100. Limits the number of incidents per page
     - name: sort
-      description: 'By default sorts by "alert.timestamp" field in "DESC" order. Example:
-        "[{\"property\":\"alert.timestamp\",\"direction\":\"DESC\"}]"'
+      description: 'By default sorts by "alert.timestamp" field in "DESC" order. Example: "[{\"property\":\"alert.timestamp\",\"direction\":\"DESC\"}]"'
     - name: filter
-      description: 'By default filters by "alert.timestamp" from 1996 to this date.
-        Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
+      description: 'By default filters by "alert.timestamp" from 1996 to this date. Example: "[{\"property\":\"incidentId\", \"value\":\"INC-21\"}]"'
   - name: netwitness-im-get-alert-details
     description: Return single alert by id
     arguments:
@@ -2007,8 +1978,7 @@ script:
     arguments:
     - name: deviceId
       required: true
-      description: '[number] Id of the device where the events stored/occurred. In
-        order to get list of available devices/components run command netwitness-im-get-components'
+      description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command netwitness-im-get-components'
     - name: eventId
       required: true
       description: '[number] Id of the event'
@@ -2067,4 +2037,4 @@ script:
     description: Returns the original events which this alert contains
   isfetch: true
 tests:
-  - no test
+- no test

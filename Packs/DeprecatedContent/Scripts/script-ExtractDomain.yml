@@ -2,10 +2,13 @@ commonfields:
   id: ExtractDomain
   version: -1
 name: ExtractDomain
-script: |
+script: >
   var markAsIndicator = (args.markAsIndicator === 'true');
+
   var calcReputation = (args.calcReputation === 'true');
+
   var extractFromEmails = (args.extractFromEmails === 'true');
+
 
   var checkMatch = function(reg,str) {
       if (reg === str) {
@@ -19,6 +22,7 @@ script: |
       return false;
   };
 
+
   var addToContextAndMD = function(domains, ec, md) {
       for (var j=0; j < domains.length; j++) {
           var domain = domains[j];
@@ -30,6 +34,7 @@ script: |
       }
       return md;
   };
+
 
   var handleDomain = function(domain) {
       knownTldList = "Known Tld";
@@ -64,6 +69,7 @@ script: |
       return domain;
   };
 
+
   var collectDomainsFromEmails = function(domains, data){
       var matches = {};
       var foundEmail;
@@ -86,6 +92,7 @@ script: |
       return domains;
   };
 
+
   var extractHostname = function(url) {
       var hostname;
       if (url.indexOf("://") > -1) {
@@ -99,6 +106,7 @@ script: |
       return hostname;
   };
 
+
   var extractRootDomain = function(url) {
       var domain = extractHostname(url),
           splitArr = domain.split('.'),
@@ -110,21 +118,29 @@ script: |
       return domain;
   };
 
+
   var text = args.text;
+
   if (typeof text !== 'string') {
       text = JSON.stringify(text).replace(/\\n/g,' '); // need to replace \n
   }
 
+
   var matches = {};
+
   var found;
+
   var reg;
+
   if (args.urlRegex) {
       reg = new RegExp(args.urlRegex, "gmi");
   } else {
       reg = /(?:(?:https?|ftp):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/gmi;
   }
 
+
   var whitelist = getCSVListAsArray('Indicators Whitelist');
+
   while (found = reg.exec(text)) {
       matches[found[0]] = true;
       for (var i = 0 ; i < whitelist.length; i++) {
@@ -135,17 +151,24 @@ script: |
       }
   }
 
+
   var uniqueMatches = Object.keys(matches);
+
   var ec = {};
+
   ec[outputPaths.domain] = [];
+
   var md = '### Extract Domain\n';
 
+
   var allDomains = [];
+
 
   if (extractFromEmails) {
       allDomains = collectDomainsFromEmails(allDomains,text);
       md = addToContextAndMD(allDomains,ec,md);
   }
+
 
   for (var i=0; i < uniqueMatches.length; i++) {
       var hostname = extractHostname(uniqueMatches[i]);
@@ -160,13 +183,12 @@ script: |
       }
       md = addToContextAndMD(domains,ec,md);
   }
+
   return { Type: entryTypes.note, Contents: ec[outputPaths.domain], ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec };
 type: javascript
 tags:
 - Utility
-comment: Deprecated. We recommend using extractIndicators command instead.
-  Extract Domains from the given text and place them both as output and in
-  the context of a playbook. If given an object, will convert to JSON.
+comment: Deprecated. We recommend using extractIndicators command instead. Extract Domains from the given text and place them both as output and in the context of a playbook. If given an object, will convert to JSON.
 enabled: true
 args:
 - name: text
@@ -188,11 +210,9 @@ args:
   predefined:
   - "true"
   - "false"
-  description: If to calculate reputation for new indicator created or not, default
-    is true
+  description: If to calculate reputation for new indicator created or not, default is true
 - name: tldList
-  description: Name of Demisto list to hold known TLD list, so will be ignored when
-    looking for domains
+  description: Name of Demisto list to hold known TLD list, so will be ignored when looking for domains
 - name: extractFromEmails
   auto: PREDEFINED
   defaultValue: "true"
@@ -205,6 +225,6 @@ outputs:
   description: Extracted domains
 scripttarget: 0
 deprecated: true
-fromversion: 3.1.0
+fromversion: 5.0.0
 tests:
-  - No Tests
+- No Tests

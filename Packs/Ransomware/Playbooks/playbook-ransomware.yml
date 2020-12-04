@@ -1,7 +1,7 @@
 id: playbook3
 version: -1
 system: true
-fromversion: 2.5.0
+fromversion: 5.0.0
 name: Ransomware Playbook - Manual
 description: Master playbook for ransomware incidents. This playbook is a manual playbook.
 starttaskid: "0"
@@ -79,8 +79,7 @@ tasks:
       id: 21cb9178-78a0-4610-801f-3bc5f808e4a2
       version: -1
       name: Initial triage
-      description: 1. Make sure that there is relevant information in the incident
-        - system name, end user name and initial severity as reported.
+      description: 1. Make sure that there is relevant information in the incident - system name, end user name and initial severity as reported.
       iscommand: false
       brand: ""
     nexttasks:
@@ -101,8 +100,7 @@ tasks:
       id: cd85115e-4379-4319-853b-f518e9aa98bc
       version: -1
       name: Assess severity
-      description: 'Based on the end user affected, and other information assess and
-        change the severity if needed. '
+      description: 'Based on the end user affected, and other information assess and change the severity if needed. '
       type: regular
       iscommand: false
       brand: ""
@@ -124,8 +122,7 @@ tasks:
       id: 8135a8aa-6d2c-4cf1-80c4-c5cf4bf136a8
       version: -1
       name: Assign and involve appropriate personnel
-      description: 'Invite the relevant users for investigation - malware expert and
-        network experts if needed. '
+      description: 'Invite the relevant users for investigation - malware expert and network experts if needed. '
       type: regular
       iscommand: false
       brand: ""
@@ -168,8 +165,7 @@ tasks:
       id: e882cafd-1c86-4443-8ea8-e873d3552a0f
       version: -1
       name: Notify IT about the end user details for replacing device
-      description: "1. Notify IT with end user details to replace device. \n2. Hopefully
-        there is back for end user data to be restored."
+      description: "1. Notify IT with end user details to replace device. \n2. Hopefully there is back for end user data to be restored."
       iscommand: false
       brand: ""
     nexttasks:
@@ -190,8 +186,7 @@ tasks:
       id: 9bdc27f9-07d9-4d9a-83f4-f1cebfd918c5
       version: -1
       description: ""
-      name: Is the incident reported by end user or an alert from SIEM (or another
-        security product)?
+      name: Is the incident reported by end user or an alert from SIEM (or another security product)?
       iscommand: false
       brand: ""
     nexttasks:
@@ -281,8 +276,7 @@ tasks:
       id: 43ec8c44-5322-4cae-87f8-b4bbffb38fc0
       version: -1
       name: Identify the affected endpoint and user
-      description: "1. Get the source IP address from the alert and add it to investigation.\n2.
-        Get the user associated with this system from domain controller and AD "
+      description: "1. Get the source IP address from the alert and add it to investigation.\n2. Get the user associated with this system from domain controller and AD "
       iscommand: false
       brand: ""
     nexttasks:
@@ -324,8 +318,7 @@ tasks:
       id: 862a44d2-5599-4282-883f-de1d9e1d063c
       version: -1
       name: Execute local containment
-      description: 'Ask the user to disconnect the system from network - turn wifi
-        off if needed. '
+      description: 'Ask the user to disconnect the system from network - turn wifi off if needed. '
       iscommand: false
       brand: ""
     nexttasks:
@@ -400,8 +393,7 @@ tasks:
       id: b47fff38-a785-41d6-8049-db1ae21226fa
       version: -1
       name: Execute initial containment
-      description: Ask the user to disconnect the device from the network. If the
-        user connects to the network with a wifi, he/she must turn it off.
+      description: Ask the user to disconnect the device from the network. If the user connects to the network with a wifi, he/she must turn it off.
       iscommand: false
       brand: ""
     nexttasks:
@@ -464,11 +456,7 @@ tasks:
       id: 9a551e7e-0816-499f-8cfa-86d6584ea7f1
       version: -1
       name: Analyze email logs to narrow down suspicious emails
-      description: 1. Go to the SIEM 2. Filter on the email logs associated with the
-        user from the last 3 days 3. Filter again on emails where the recipient was
-        the victim 4. Remove email logs where the sender was from within your company.
-        5. Export the list of emails into a CSV file. It should only contain emails
-        sent to the victim from the Internet within the last 3 days.
+      description: 1. Go to the SIEM 2. Filter on the email logs associated with the user from the last 3 days 3. Filter again on emails where the recipient was the victim 4. Remove email logs where the sender was from within your company. 5. Export the list of emails into a CSV file. It should only contain emails sent to the victim from the Internet within the last 3 days.
       iscommand: false
       brand: ""
     nexttasks:
@@ -489,15 +477,7 @@ tasks:
       id: cef1ed6a-c8e3-4b06-8ca4-4fcd15bbf067
       version: -1
       name: Collect and analyze suspicious emails
-      description: "1. Send the CSV file to IT Team and ask them to retrieve the full
-        emails from the user’s inbox. Attach the cvs to the investigation as evidence.\n2.
-        Once you get the emails in a zip file, go through them to identify suspicious
-        links or attachments.\n3. Look for links that does not point to the same URL
-        displayed on the screen (e.g. <a href=”http://malware.com”>http://www.bbc.co.uk</a>)\n4.
-        Check the domain in the ‘From:’ field correspond to the topic of the email
-        (e.g. package delivery notification emails from UPS will not come from john@mypersonalblog.com)\n5.
-        Scan suspicious URLs as necessary with threat feeds like Virustotal, http://www.phishtank.com.
-        If you identify suspicious URL analyze in depth in next steps. \n"
+      description: "1. Send the CSV file to IT Team and ask them to retrieve the full emails from the user’s inbox. Attach the cvs to the investigation as evidence.\n2. Once you get the emails in a zip file, go through them to identify suspicious links or attachments.\n3. Look for links that does not point to the same URL displayed on the screen (e.g. <a href=”http://malware.com”>http://www.bbc.co.uk</a>)\n4. Check the domain in the ‘From:’ field correspond to the topic of the email (e.g. package delivery notification emails from UPS will not come from john@mypersonalblog.com)\n5. Scan suspicious URLs as necessary with threat feeds like Virustotal, http://www.phishtank.com. If you identify suspicious URL analyze in depth in next steps. \n"
       iscommand: false
       brand: ""
     nexttasks:
@@ -518,11 +498,7 @@ tasks:
       id: 170848e4-7295-4ebf-8e7a-0c02403a710f
       version: -1
       name: Analyze suspicious URLs and files collected from emails (malware playbook)
-      description: "1. If you identify a suspicious URL, Download the malicious file
-        with ‘curl’\n2. Check reputation of file using virustotal and other threat
-        feeds. \n3. Do a static and dynamic analysis of files using sandbox or SIFT
-        workstation. \n4. If you find suspicious file, then upload to VT or other
-        AV vendors.\n"
+      description: "1. If you identify a suspicious URL, Download the malicious file with ‘curl’\n2. Check reputation of file using virustotal and other threat feeds. \n3. Do a static and dynamic analysis of files using sandbox or SIFT workstation. \n4. If you find suspicious file, then upload to VT or other AV vendors.\n"
       iscommand: false
       brand: ""
     nexttasks:
@@ -543,8 +519,7 @@ tasks:
       id: 71148252-7dfa-442c-8d28-20cb54927a29
       version: -1
       description: ""
-      name: 'Option 2: Investigate whether the victim’s PC has been infected by an
-        exploit kit/drive-by download'
+      name: 'Option 2: Investigate whether the victim’s PC has been infected by an exploit kit/drive-by download'
       iscommand: false
       brand: ""
     nexttasks:
@@ -625,9 +600,7 @@ tasks:
       id: e37b3eef-ac20-4ee6-8d71-5edb5a62ee29
       version: -1
       name: Analyze the URL in a sandbox
-      description: "Consider deeper analysis of the URL using sandbox like Cuckoo.
-        \nBased on the analysis here and the previous step, create the final list
-        of malicious URL.\n\n"
+      description: "Consider deeper analysis of the URL using sandbox like Cuckoo. \nBased on the analysis here and the previous step, create the final list of malicious URL.\n\n"
       iscommand: false
       brand: ""
     nexttasks:
@@ -648,8 +621,7 @@ tasks:
       id: b770133f-1b8d-4b29-8fc2-32ac77a2b1a0
       version: -1
       name: Get file details from web logs for downloaded files
-      description: "1. Get the hash for downloaded files. \n2. Check the reputation
-        of files against threat feeds. \n\n"
+      description: "1. Get the hash for downloaded files. \n2. Check the reputation of files against threat feeds. \n\n"
       iscommand: false
       brand: ""
     nexttasks:
@@ -670,8 +642,7 @@ tasks:
       id: 9fd3ac5d-71d7-4d85-8715-0a0b489ea248
       version: -1
       name: 'Go to : Generating IoCs from URLs and Hashes'
-      description: 'Take the malicious URL and files from this section and generate
-        IOC using steps in Section: Generating IoCs from URLs and Hashes'
+      description: 'Take the malicious URL and files from this section and generate IOC using steps in Section: Generating IoCs from URLs and Hashes'
       iscommand: false
       brand: ""
     nexttasks:
@@ -713,12 +684,7 @@ tasks:
       id: 9ac4e924-5559-455c-852c-d3a67a0a27a0
       version: -1
       name: Generate IOC for malicious URL from SIEM Threat Feed
-      description: "1. Get the list of flagged URLs/hashes from the Investigation
-        Step\n2. Check the URL against threat feed (virustotal, IBM Xforce).\n3. Check
-        your SIEM for threat feeds and see if there are IOC related to the URLs. \n4.
-        Subscribe to the feed in SIEM. This will install the relevant IoCs into our
-        SIEM automatically.\n5. If none of the IoCs are on the TI feed, you need to
-        generate IoCs manually in next step\n"
+      description: "1. Get the list of flagged URLs/hashes from the Investigation Step\n2. Check the URL against threat feed (virustotal, IBM Xforce).\n3. Check your SIEM for threat feeds and see if there are IOC related to the URLs. \n4. Subscribe to the feed in SIEM. This will install the relevant IoCs into our SIEM automatically.\n5. If none of the IoCs are on the TI feed, you need to generate IoCs manually in next step\n"
       iscommand: false
       brand: ""
     nexttasks:
@@ -739,15 +705,7 @@ tasks:
       id: cf6fe0f5-fe53-4ba7-80c7-4d6eaf896d2a
       version: -1
       name: Generate IOC for malicious URL manually
-      description: "1. Go to the proxy logs again\n2. Find 2-3 properties associated
-        with the flagged URL, such as:\n     The request is POST\n     The User-Agent
-        field is dodgy (Java, Python, IE6 etc.)\n     URL contains more than 128 random
-        characters\n     URL contains .php\n     URL contains lots of slashes (/)\n
-        \    URL contains WordPress related things (wp-content)\n     URL contains
-        dodgy TLDs (for instance .tk, .ru)\n\n3. Test your assumption on the proxy
-        logs in the SIEM. Use your pattern and check how many false positives and
-        true positives it produces.\n4. If the pattern is good enough, append your
-        results to the investigation. \n\n\n"
+      description: "1. Go to the proxy logs again\n2. Find 2-3 properties associated with the flagged URL, such as:\n     The request is POST\n     The User-Agent field is dodgy (Java, Python, IE6 etc.)\n     URL contains more than 128 random characters\n     URL contains .php\n     URL contains lots of slashes (/)\n     URL contains WordPress related things (wp-content)\n     URL contains dodgy TLDs (for instance .tk, .ru)\n\n3. Test your assumption on the proxy logs in the SIEM. Use your pattern and check how many false positives and true positives it produces.\n4. If the pattern is good enough, append your results to the investigation. \n\n\n"
       iscommand: false
       brand: ""
     nexttasks:
@@ -768,12 +726,7 @@ tasks:
       id: c24a436e-71bb-48e7-89cd-8058fec1d2fb
       version: -1
       name: Generate IOC from phishing emails
-      description: "If you find in previous steps that source was phishing email -
-        \n\n1. Find all the URLs in the email and go through the URL IOC generation
-        steps. \n2. Find all the attachments for the email and analyze the file using
-        file IOC generation steps. \n3. If these steps identify files or URL as malicious
-        - \n     extract sender, sending domain and other properties to find emails.
-        \n     use this data to block future emails."
+      description: "If you find in previous steps that source was phishing email - \n\n1. Find all the URLs in the email and go through the URL IOC generation steps. \n2. Find all the attachments for the email and analyze the file using file IOC generation steps. \n3. If these steps identify files or URL as malicious - \n     extract sender, sending domain and other properties to find emails. \n     use this data to block future emails."
       iscommand: false
       brand: ""
     nexttasks:
@@ -839,10 +792,7 @@ tasks:
       id: fe9439ce-8a68-45dc-8a4e-71a97d98072f
       version: -1
       name: Identify other systems based on URL and hashes
-      description: "1. Go to SIEM and search for the URL pattern from Generating IOC
-        step in the proxy logs in order to identify other computers already affected.
-        \n2. Search for hashes identified in all logs and identify systems associated.\n2.
-        If you identify other affected PCs with above two steps, create new incident.\n\n"
+      description: "1. Go to SIEM and search for the URL pattern from Generating IOC step in the proxy logs in order to identify other computers already affected. \n2. Search for hashes identified in all logs and identify systems associated.\n2. If you identify other affected PCs with above two steps, create new incident.\n\n"
       iscommand: false
       brand: ""
     nexttasks:
@@ -926,8 +876,7 @@ tasks:
       id: bcc506a2-1413-43d8-8012-8c1d63f35ecc
       version: -1
       name: IOC deployment verification
-      description: 'Make sure that IOC deployment is in place. These are the IOC identified
-        from previous steps. '
+      description: 'Make sure that IOC deployment is in place. These are the IOC identified from previous steps. '
       iscommand: false
       brand: ""
     nexttasks:
@@ -1101,4 +1050,4 @@ view: |-
     }
   }
 tests:
-  - No tests
+- No tests

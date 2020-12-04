@@ -2,11 +2,14 @@ commonfields:
   id: NessusHostDetails
   version: -1
 name: NessusHostDetails
-script: |
+script: >
   res = []
 
+
   dArgs = demisto.args()
+
   resCmd1 = demisto.executeCommand("scan-host-details", dArgs)
+
   try:
       for entry in resCmd1:
           if isError(entry):
@@ -41,3 +44,4 @@ dependson:
   - Nessus|||scan-host-details
 timeout: 0s
 deprecated: true
+fromversion: 5.0.0

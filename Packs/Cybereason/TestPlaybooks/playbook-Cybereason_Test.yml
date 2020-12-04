@@ -38,8 +38,7 @@ tasks:
       id: 8bb987ab-ee97-4bcb-82a9-a7ad9e2a2f84
       version: -1
       name: cybereason-is-probe-connected
-      description: Checks if the machine is currently connected to the Cybereason
-        server
+      description: Checks if the machine is currently connected to the Cybereason server
       script: Cybereason|||cybereason-is-probe-connected
       type: regular
       iscommand: true
@@ -712,3 +711,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

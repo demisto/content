@@ -26,9 +26,11 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     import requests
+
     requests.packages.urllib3.disable_warnings()
+
 
     if not demisto.params()['proxy']:
         del os.environ['HTTP_PROXY']
@@ -37,6 +39,7 @@ script:
         del os.environ['https_proxy']
 
     # removes the last / from the url
+
     def fix_url(url):
         if url.endswith("/"):
             return url[:-1]
@@ -44,9 +47,13 @@ script:
         return url
 
     USERNAME = demisto.params()['credentials']['identifier']
+
     PASSWORD = demisto.params()['credentials']['password']
+
     SERVER_URL = fix_url(demisto.params()['url'])
+
     INSECURE = demisto.params().get('insecure')
+
 
     def get_accounts_request():
         fullurl = '{}{}'.format(SERVER_URL, '/openapi/api/rest/v1/accounts')
@@ -81,6 +88,7 @@ script:
         })
 
     # suspend_or_unsuspend_user_request will suspend user if suspend=True, otherwise it will un-suspend user
+
     def suspend_or_unsuspend_user_request(suspend, account_id, user_email):
         query_params = {
             'userAttributeName': 'email',
@@ -141,6 +149,7 @@ script:
         })
 
     # The command demisto.command() holds the command sent from the user.
+
     if demisto.command() == 'test-module':
         get_accounts_request()
         demisto.results('ok')
@@ -183,26 +192,21 @@ script:
     arguments:
     - name: accountId
       required: true
-      description: You can get the account id by executing skyformation-get-accounts
-        command
+      description: You can get the account id by executing skyformation-get-accounts command
     - name: userEmail
       required: true
       description: The email of the user that will be suspended in that account
-    description: The command will suspend user in the configured application by user
-      email. For example if Sales Cloud configured in Skyformation, then this command
-      can suspend user in Sales Cloud.
+    description: The command will suspend user in the configured application by user email. For example if Sales Cloud configured in Skyformation, then this command can suspend user in Sales Cloud.
     execution: true
   - name: skyformation-unsuspend-user
     arguments:
     - name: accountId
       required: true
-      description: You can get the account id by executing skyformation-get-accounts
-        command
+      description: You can get the account id by executing skyformation-get-accounts command
     - name: userEmail
       required: true
       description: The email of the user that will be un-suspended in that account
-    description: The command will un-suspend user in the configured application by
-      user email. For example if Sales Cloud configured in Skyformation, then this
-      command can un-suspend user in Sales Cloud.
+    description: The command will un-suspend user in the configured application by user email. For example if Sales Cloud configured in Skyformation, then this command can un-suspend user in Sales Cloud.
     execution: true
   runonce: false
+fromversion: 5.0.0

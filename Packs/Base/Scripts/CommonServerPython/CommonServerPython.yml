@@ -14,8 +14,9 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 alt_dockerimages: # used for unit testing
-  - demisto/python3:3.7.3.286
-  - demisto/python3:3.8.3.8494
+- demisto/python3:3.7.3.286
+- demisto/python3:3.8.3.8494
 tests:
-  - TestCommonPython
-  - Test-debug-mode
+- TestCommonPython
+- Test-debug-mode
+fromversion: 5.0.0

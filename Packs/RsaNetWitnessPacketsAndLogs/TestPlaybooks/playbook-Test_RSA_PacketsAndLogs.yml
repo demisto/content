@@ -115,8 +115,7 @@ tasks:
       id: 3043e05e-ead5-49c6-866b-263adc3b8b17
       version: -1
       name: nw-sdk-values
-      description: Performs a value count query and returns the matching values for
-        a report
+      description: Performs a value count query and returns the matching values for a report
       script: RSA NetWitness Packets and Logs|||nw-sdk-values
       type: regular
       iscommand: true
@@ -399,8 +398,7 @@ tasks:
         simple: "48"
       lastMinutes: {}
       query:
-        simple: select alias.host where alias.host contains 'skimresources' group
-          by alias.host
+        simple: select alias.host where alias.host contains 'skimresources' group by alias.host
       size:
         simple: "100"
       threshold: {}
@@ -467,3 +465,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

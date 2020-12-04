@@ -1,12 +1,9 @@
 id: playbook10
-fromversion: 2.5.0
+fromversion: 5.0.0
 system: true
 version: -1
 name: Rapid IOC Hunting Playbook
-description: Deprecated. Use the Hunt File Hash playbook instead. Playbook to quickly
-  react to discovery of new IOCs. Receive a list of IOCs as attached text / csv files,
-  extract IOCs using regular expressions and hunt rapidly across the infrastructure
-  using various integrations. Also supports attaching multiple files.
+description: Deprecated. Use the Hunt File Hash playbook instead. Playbook to quickly react to discovery of new IOCs. Receive a list of IOCs as attached text / csv files, extract IOCs using regular expressions and hunt rapidly across the infrastructure using various integrations. Also supports attaching multiple files.
 starttaskid: "0"
 hidden: true
 tasks:
@@ -409,4 +406,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-  - No test
+- No test

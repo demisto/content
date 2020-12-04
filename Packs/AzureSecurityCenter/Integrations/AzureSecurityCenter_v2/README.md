@@ -1,185 +1,107 @@
 Unified security management and advanced threat protection across hybrid cloud workloads.
+For more information see [Azure Security Center documentation](https://docs.microsoft.com/en-us/rest/api/securitycenter/)
 
-<h2>Use Case</h2>
+## Use Case
+
 With Security Center, you can apply security policies across your workloads, limit your exposure to threats, and detect and respond to attacks.
 
-<h2>Authentication</h2>
-For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
+## Authentication
 
-<li>After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription. </li>
-<li>In order to assign a role to the application after consent was given: 
-  <ul>
-    <li>Go to the Azure Portal UI.</li>
-    <li>Go to Subscriptions, and then Access Control (IAM).</li>
-    <li>Click Add.</li>
-    <li>Select a role that includes the following permissions:</li>
-    <ul>
-      <li>Microsoft.Security/locations/read</li>
-      <li>Microsoft.Security/alerts/read</li>
-      <li>Microsoft.Security/locations/alerts/read</li>
-      <li>Microsoft.Storage/storageAccounts/read</li>
-      <li>Microsoft.Management/managementGroups/read</li>
-      <li>Microsoft.Security/advancedThreatProtectionSettings/*</li>
-      <li>Microsoft.Security/informationProtectionPolicies/read</li>
-      <li>Microsoft.Security/locations/jitNetworkAccessPolicies/*</li>
-      <li>Microsoft.Security/locations/jitNetworkAccessPolicies/initiate/action</li>
-    </ul>
-    <li>Select the Azure Secruity Center application.</li>
-  </ul>
-</li>
-<h2>Configure Azure Security Center v2 on Demisto</h2>
-<ol>
-  <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
-  &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
-  <li>Search for Azure Security Center v2.</li>
-  <li>
-    Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
-    <ul>
-      <li><strong>Name</strong>: a textual name for the integration instance.</li>
-   <li><strong>Microsoft Azure Management URL</strong></li>
-   <li><strong>ID (received from the admin consent - see Detailed Instructions (?)</strong></li>
-   <li><strong>Token (received from the admin consent - see Detailed Instructions (?) section)</strong></li>
-   <li><strong>Key (received from the admin consent - see Detailed Instructions (?)</strong></li>
-   <li><strong>Trust any certificate (not secure)</strong></li>
-   <li><strong>Use system proxy settings</strong></li>
-   <li><strong>Default subscription ID to use</strong></li>
-    </ul>
-  </li>
-  <li>
-    Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
-  </li>
-</ol>
-<h2>Commands</h2>
-<p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication) .
+
+* After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription.
+* In order to assign a role to the application after consent was given:
+    * Go to the Azure Portal UI.
+    * Go to Subscriptions, and then Access Control (IAM).
+    * Click Add.
+    * Select a role that includes the following permissions:
+      - Microsoft.Security/locations/read
+      - Microsoft.Security/alerts/read
+      - Microsoft.Security/locations/alerts/read
+      - Microsoft.Storage/storageAccounts/read
+      - Microsoft.Management/managementGroups/read
+      - Microsoft.Security/advancedThreatProtectionSettings/*
+      - Microsoft.Security/informationProtectionPolicies/read
+      - Microsoft.Security/locations/jitNetworkAccessPolicies/*
+      - Microsoft.Security/locations/jitNetworkAccessPolicies/initiate/action
+    * Select the Azure Secruity Center application.
+
+## Configure Azure Security Center v2 on Demisto
+
+1. Navigate to **Settings** > **Integrations**   > **Servers & Services**.
+2. Search for Azure Security Center v2.
+3. Click **Add instance** to create and configure a new integration instance.
+    - **Name**: a textual name for the integration instance.
+    - **Microsoft Azure Management URL**
+    - **ID (received from the admin consent - see Detailed Instructions (?)**
+    - **Token (received from the admin consent - see Detailed Instructions (?) section)**
+    - **Key (received from the admin consent - see Detailed Instructions (?)**
+    - **Trust any certificate (not secure)**
+    - **Use system proxy settings**
+    - **Default subscription ID to use**
+4. Click **Test** to validate the new instance.
+
+
+## Commands
+#### Subscription ID
+Some commands require a subscription ID parameter in order to run.
+You can find your organization's subscriptions list in the ***Microsoft Azure Portal > Subscriptions*** or by running the ***azure-list-subscriptions*** command.
+
+You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
-</p>
-<ol>
-  <li>azure-sc-list-alert</li>
-  <li>azure-sc-update-atp</li>
-  <li>azure-sc-get-atp</li>
-  <li>azure-sc-update-aps</li>
-  <li>azure-sc-get-aps</li>
-  <li>azure-sc-list-aps</li>
-  <li>azure-sc-list-jit</li>
-  <li>azure-sc-list-storage</li>
-  <li>azure-list-subscriptions</li>
-  <li>azure-sc-list-location</li>
-</ol>
-<h3>1. azure-sc-list-alert</h3>
-<hr>
-<p>Lists alerts for the subscription according to the specified filters.</p>
-<h5>Base Command</h5>
-<p>
-  <code>azure-sc-list-alert</code>
-</p>
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>resource_group_name</td>
-      <td>The name of the resource group within the user's subscription. The name is case insensitive.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>asc_location</td>
-      <td>The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>filter</td>
-      <td>OData filter</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>select</td>
-      <td>OData select</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>expand</td>
-      <td>OData expand</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>subscription_id</td>
-      <td>Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+1. azure-sc-list-alert
+2. azure-sc-update-atp
+3. azure-sc-get-atp
+4. azure-sc-update-aps
+5. azure-sc-get-aps
+6. azure-sc-list-aps
+7. azure-sc-list-jit
+8. azure-sc-list-storage
+9. azure-list-subscriptions
+10. azure-sc-list-location
+11. azure-sc-get-alert
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>AzureSecurityCenter.Alert.AlertDisplayName</td>
-      <td>string</td>
-      <td>Alert display name</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.Alert.CompromisedEntity</td>
-      <td>string</td>
-      <td>The entity on which the incident occurred</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.Alert.DetectedTimeUtc</td>
-      <td>date</td>
-      <td>Time the vendor detected the incident</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.Alert.ReportedSeverity</td>
-      <td>string</td>
-      <td>Estimated severity of this alert</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.Alert.State</td>
-      <td>string</td>
-      <td>Alert state (Active, Dismissed, etc.)</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.Alert.ID</td>
-      <td>string</td>
-      <td>Alert ID</td>
-    </tr>
-  </tbody>
-</table>
+### 1. azure-sc-list-alert
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!azure-sc-list-alert</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+***
+
+Lists alerts for the subscription according to the specified filters.
+
+*Require Subscription ID*
+##### Base Command
+
+`azure-sc-list-alert`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The name of the resource group within the user's subscription. The name is case insensitive. | Optional |
+| asc_location | The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument. | Optional |
+| filter | OData filter | Optional |
+| select | OData select | Optional |
+| expand | OData expand | Optional |
+| subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.Alert.AlertDisplayName | string | Alert display name |
+| AzureSecurityCenter.Alert.CompromisedEntity | string | The entity on which the incident occurred |
+| AzureSecurityCenter.Alert.DetectedTimeUtc | date | Time the vendor detected the incident |
+| AzureSecurityCenter.Alert.ReportedSeverity | string | Estimated severity of this alert |
+| AzureSecurityCenter.Alert.State | string | Alert state (Active, Dismissed, etc.) |
+| AzureSecurityCenter.Alert.ID | string | Alert ID |
+
+##### Command Example
+
+`!azure-sc-list-alert`
+
+##### Context Example
+
+```
 {
     "AzureSecurityCenter.Alert": [
         {
@@ -194,310 +116,115 @@ For more details about the authentication used in this integration, see <a href=
         }
     ]
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Azure Security Center - List Alerts</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>DisplayName</strong></th>
-      <th><strong>CompromisedEntity</strong></th>
-      <th><strong>DetectedTime</strong></th>
-      <th><strong>ReportedSeverity</strong></th>
-      <th><strong>State</strong></th>
-      <th><strong>ActionTaken</strong></th>
-      <th><strong>Description</strong></th>
-      <th><strong>ID</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> Traffic from unrecommended IP addresses was detected </td>
-      <td> alerts </td>
-      <td> 2019-10-27T00:00:00Z </td>
-      <td> Information </td>
-      <td> Active </td>
-      <td> Undefined </td>
-      <td> Azure security center has detected incoming traffic from IP addresses, which have been identified as IP addresses that should be blocked by the Adaptive Network Hardening control </td>
-      <td> 2518301663999999999_d1521d81-f4c1-40ae-b224-01456637790c </td>
-    </tr>
-  </tbody>
-</table>
+```
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
+##### Human Readable Output
 
-<h3>2. azure-sc-update-atp</h3>
-<hr>
-<p>Updates Advanced Threat Detection settings.</p>
-<h5>Base Command</h5>
-<p>
-  <code>azure-sc-update-atp</code>
-</p>
+### Azure Security Center - List Alerts
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>resource_group_name</td>
-      <td>Resource group name</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>setting_name</td>
-      <td>Name of the Advanced Threat Detection setting, default is 'current'.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>storage_account</td>
-      <td>Storage name in your Azure account</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>is_enabled</td>
-      <td>Indicates whether Advanced Threat Protection is enabled.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>subscription_id</td>
-      <td>Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+| **DisplayName** | **CompromisedEntity** | **DetectedTime** | **ReportedSeverity** | **State** | **ActionTaken** | **Description** | **ID** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Traffic from unrecommended IP addresses was detected | alerts | 2019-10-27T00:00:00Z | Information | Active | Undefined | Azure security center has detected incoming traffic from IP addresses, which have been identified as IP addresses that should be blocked by the Adaptive Network Hardening control | 2518301663999999999_d1521d81-f4c1-40ae-b224-01456637790c |
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>AzureSecurityCenter.AdvancedThreatProtection.ID</td>
-      <td>string</td>
-      <td>Resource ID</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.AdvancedThreatProtection.Name</td>
-      <td>string</td>
-      <td>Resource Name</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.AdvancedThreatProtection.IsEnabled</td>
-      <td>string</td>
-      <td>Indicates whether Advanced Threat Protection is enabled</td>
-    </tr>
-  </tbody>
-</table>
+### 2. azure-sc-update-atp
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!azure-sc-update-atp resource_group_name=recouce_name</code>
-</p>
+***
 
+Updates Advanced Threat Detection settings.
 
-<h3>3. azure-sc-get-atp</h3>
-<hr>
-<p>Returns the Advanced Threat Protection setting.</p>
-<h5>Base Command</h5>
-<p>
-  <code>azure-sc-get-atp</code>
-</p>
+*Require Subscription ID*
+##### Base Command
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>resource_group_name</td>
-      <td>Name of the resource group.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>setting_name</td>
-      <td>Name of Advanced Threat Detection setting, default setting's name is 'current'.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>storage_account</td>
-      <td>Name of a storage in your azure account.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>subscription_id</td>
-      <td>Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+`azure-sc-update-atp`
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>AzureSecurityCenter.AdvancedThreatProtection.ID</td>
-      <td>string</td>
-      <td>Resource ID</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.AdvancedThreatProtection.Name</td>
-      <td>string</td>
-      <td>Resource name</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.AdvancedThreatProtection.IsEnabled</td>
-      <td>string</td>
-      <td>Indicates whether Advanced Threat Protection is enabled</td>
-    </tr>
-  </tbody>
-</table>
+##### Input
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!azure-sc-get-atp resource_group_name=resource_group storage_account=st_acc1</code>
-</p>
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | Resource group name | Required |
+| setting_name | Name of the Advanced Threat Detection setting, default is 'current'. | Optional |
+| storage_account | Storage name in your Azure account | Required |
+| is_enabled | Indicates whether Advanced Threat Protection is enabled. | Required |
+| subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional |
 
+##### Context Output
 
-<h3>4. azure-sc-update-aps</h3>
-<hr>
-<p>Updates a specific auto provisioning setting.</p>
-<h5>Base Command</h5>
-<p>
-  <code>azure-sc-update-aps</code>
-</p>
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.AdvancedThreatProtection.ID | string | Resource ID |
+| AzureSecurityCenter.AdvancedThreatProtection.Name | string | Resource Name |
+| AzureSecurityCenter.AdvancedThreatProtection.IsEnabled | string | Indicates whether Advanced Threat Protection is enabled |
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>setting_name</td>
-      <td>Name of the auto provisioning setting, default setting's name is 'default'</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>auto_provision</td>
-      <td>Describes the type of security agent provisioning action to take (On or Off)</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>subscription_id</td>
-      <td>Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+##### Command Example
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>AzureSecurityCenter.AutoProvisioningSetting.Name</td>
-      <td>string</td>
-      <td>Setting display name</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.AutoProvisioningSetting.AutoProvision</td>
-      <td>string</td>
-      <td>Display the type of security agent provisioning action to take (On or Off)</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.AutoProvisioningSetting.ID</td>
-      <td>string</td>
-      <td>Setting resource ID</td>
-    </tr>
-  </tbody>
-</table>
+`!azure-sc-update-atp resource_group_name=recouce_name`
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!azure-sc-update-aps setting_name=default auto_provision=Off</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### 3. azure-sc-get-atp
+
+***
+
+Returns the Advanced Threat Protection setting.
+
+*Require Subscription ID*
+##### Base Command
+
+`azure-sc-get-atp`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | Name of the resource group. | Required |
+| setting_name | Name of Advanced Threat Detection setting, default setting's name is 'current'. | Optional |
+| storage_account | Name of a storage in your azure account. | Required |
+| subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.AdvancedThreatProtection.ID | string | Resource ID |
+| AzureSecurityCenter.AdvancedThreatProtection.Name | string | Resource name |
+| AzureSecurityCenter.AdvancedThreatProtection.IsEnabled | string | Indicates whether Advanced Threat Protection is enabled |
+
+##### Command Example
+
+`!azure-sc-get-atp resource_group_name=resource_group storage_account=st_acc1`
+
+### 4. azure-sc-update-aps
+
+***
+
+Updates a specific auto provisioning setting.
+
+*Require Subscription ID*
+##### Base Command
+
+`azure-sc-update-aps`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| setting_name | Name of the auto provisioning setting, default setting's name is 'default' | Required |
+| auto_provision | Describes the type of security agent provisioning action to take (On or Off) | Required |
+| subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.AutoProvisioningSetting.Name | string | Setting display name |
+| AzureSecurityCenter.AutoProvisioningSetting.AutoProvision | string | Display the type of security agent provisioning action to take (On or Off) |
+| AzureSecurityCenter.AutoProvisioningSetting.ID | string | Setting resource ID |
+
+##### Command Example
+
+`!azure-sc-update-aps setting_name=default auto_provision=Off`
+
+##### Context Example
+
+```
 {
     "AzureSecurityCenter.AutoProvisioningSetting": [
         {
@@ -507,110 +234,49 @@ For more details about the authentication used in this integration, see <a href=
         }
     ]
 }
-</pre>
+```
 
-<h5>Human Readable Output</h5>
-<h3>Azure Security Center - Update Auto Provisioning Setting</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Name</strong></th>
-      <th><strong>ID</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> default </td>
-      <td> /subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx/providers/Microsoft.Security/autoProvisioningSettings/default </td>
-    </tr>
-  </tbody>
-</table>
+##### Human Readable Output
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
+### Azure Security Center - Update Auto Provisioning Setting
 
-<h3>5. azure-sc-get-aps</h3>
-<hr>
-<p>Returns details of a specific auto provisioning setting.</p>
-<h5>Base Command</h5>
-<p>
-  <code>azure-sc-get-aps</code>
-</p>
+| **Name** | **ID** |
+| --- | --- |
+| default | /subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx/providers/Microsoft.Security/autoProvisioningSettings/default |
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>setting_name</td>
-      <td>Name of the auto provisioning setting</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>subscription_id</td>
-      <td>Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+### 5. azure-sc-get-aps
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>AzureSecurityCenter.AutoProvisioningSetting.Name</td>
-      <td>string</td>
-      <td>Setting display name</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.AutoProvisioningSetting.AutoProvision</td>
-      <td>string</td>
-      <td>Display the type of security agent provisioning action to take (On or Off)</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.AutoProvisioningSetting.ID</td>
-      <td>string</td>
-      <td>Set resource ID</td>
-    </tr>
-  </tbody>
-</table>
+***
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!azure-sc-get-aps setting_name=default</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+Returns details of a specific auto provisioning setting.
+
+*Require Subscription ID*
+##### Base Command
+
+`azure-sc-get-aps`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| setting_name | Name of the auto provisioning setting | Required |
+| subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.AutoProvisioningSetting.Name | string | Setting display name |
+| AzureSecurityCenter.AutoProvisioningSetting.AutoProvision | string | Display the type of security agent provisioning action to take (On or Off) |
+| AzureSecurityCenter.AutoProvisioningSetting.ID | string | Set resource ID |
+
+##### Command Example
+
+`!azure-sc-get-aps setting_name=default`
+
+##### Context Example
+
+```
 {
     "AzureSecurityCenter.AutoProvisioningSetting": [
         {
@@ -620,106 +286,48 @@ For more details about the authentication used in this integration, see <a href=
         }
     ]
 }
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Azure Security Center - Get Auto Provisioning Setting</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Name</strong></th>
-      <th><strong>AutoProvision</strong></th>
-      <th><strong>ID</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> default </td>
-      <td> Off </td>
-      <td> /subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx/providers/Microsoft.Security/autoProvisioningSettings/default </td>
-    </tr>
-  </tbody>
-</table>
+```
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
+##### Human Readable Output
 
-<h3>6. azure-sc-list-aps</h3>
-<hr>
-<p>Lists auto provisioning settings in the subscription.</p>
-<h5>Base Command</h5>
-<p>
-  <code>azure-sc-list-aps</code>
-</p>
+### Azure Security Center - Get Auto Provisioning Setting
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>subscription_id</td>
-      <td>Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+| **Name** | **AutoProvision** | **ID** |
+| --- | --- | --- |
+| default | Off | /subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx/providers/Microsoft.Security/autoProvisioningSettings/default |
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>AzureSecurityCenter.AutoProvisioningSetting.Name</td>
-      <td>string</td>
-      <td>Setting display name</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.AutoProvisioningSetting.AutoProvision</td>
-      <td>string</td>
-      <td>Display the type of security agent provisioning action to take (On or Off)</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.AutoProvisioningSetting.ID</td>
-      <td>string</td>
-      <td>Setting resource ID</td>
-    </tr>
-  </tbody>
-</table>
+### 6. azure-sc-list-aps
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!azure-sc-list-aps</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+***
+
+Lists auto provisioning settings in the subscription.
+
+*Require Subscription ID*
+##### Base Command
+
+`azure-sc-list-aps`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.AutoProvisioningSetting.Name | string | Setting display name |
+| AzureSecurityCenter.AutoProvisioningSetting.AutoProvision | string | Display the type of security agent provisioning action to take (On or Off) |
+| AzureSecurityCenter.AutoProvisioningSetting.ID | string | Setting resource ID |
+
+##### Command Example
+
+`!azure-sc-list-aps`
+
+##### Context Example
+
+```
 {
     "AzureSecurityCenter.AutoProvisioningSetting": [
         {
@@ -729,199 +337,80 @@ For more details about the authentication used in this integration, see <a href=
         }
     ]
 }
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Azure Security Center - List Auto Provisioning Settings</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Name</strong></th>
-      <th><strong>AutoProvision</strong></th>
-      <th><strong>ID</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> default </td>
-      <td> Off </td>
-      <td> /subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx/providers/Microsoft.Security/autoProvisioningSettings/default </td>
-    </tr>
-  </tbody>
-</table>
+```
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
+##### Human Readable Output
 
-<h3>7. azure-sc-list-jit</h3>
-<hr>
-<p>Lists all policies for protecting resources using Just-in-Time access control.</p>
-<h5>Base Command</h5>
-<p>
-  <code>azure-sc-list-jit</code>
-</p>
+### Azure Security Center - List Auto Provisioning Settings
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>asc_location</td>
-      <td>The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the asc_location.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>resource_group_name</td>
-      <td>The name of the resource group within the user's subscription. The name is case insensitive.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>subscription_id</td>
-      <td>Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+| **Name** | **AutoProvision** | **ID** |
+| --- | --- | --- |
+| default | Off | /subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx/providers/Microsoft.Security/autoProvisioningSettings/default |
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>AzureSecurityCenter.JITPolicy.Name</td>
-      <td>string</td>
-      <td>Poliyc display name</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.JITPolicy.Rules</td>
-      <td>string</td>
-      <td>CSV list of access rules for Microsoft.Compute/virtualMachines resource, in the format (VMName: allowPort1,...)</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.JITPolicy.Location</td>
-      <td>string</td>
-      <td>Location where the resource is stored</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.JITPolicy.Kind</td>
-      <td>string</td>
-      <td>Policy resource type</td>
-    </tr>
-  </tbody>
-</table>
+### 7. azure-sc-list-jit
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!azure-sc-list-jit </code>
-</p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
+***
 
-<h3>8. azure-sc-list-storage</h3>
-<hr>
-<p>Lists all the storage accounts available under the subscription.</p>
-<h5>Base Command</h5>
-<p>
-  <code>azure-sc-list-storage</code>
-</p>
+Lists all policies for protecting resources using Just-in-Time access control.
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>subscription_id</td>
-      <td>Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+*Require Subscription ID*
+##### Base Command
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>AzureSecurityCenter.Storage.Name</td>
-      <td>string</td>
-      <td>Name of the storage account</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.Storage.ResourceGroupName</td>
-      <td>string</td>
-      <td>Names of the attached resource group</td>
-    </tr>
-    <tr>
-      <td>AzureSecurityCenter.Storage.Location</td>
-      <td>string</td>
-      <td>The geo-location where the resource resides</td>
-    </tr>
-  </tbody>
-</table>
+`azure-sc-list-jit`
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!azure-sc-list-storage</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asc_location | The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the asc_location. | Optional |
+| resource_group_name | The name of the resource group within the user's subscription. The name is case insensitive. | Optional |
+| subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.JITPolicy.Name | string | Poliyc display name |
+| AzureSecurityCenter.JITPolicy.Rules | string | CSV list of access rules for Microsoft.Compute/virtualMachines resource, in the format (VMName: allowPort1,...) |
+| AzureSecurityCenter.JITPolicy.Location | string | Location where the resource is stored |
+| AzureSecurityCenter.JITPolicy.Kind | string | Policy resource type |
+
+##### Command Example
+
+`!azure-sc-list-jit `
+
+### 8. azure-sc-list-storage
+
+***
+
+Lists all the storage accounts available under the subscription.
+
+*Require Subscription ID*
+##### Base Command
+
+`azure-sc-list-storage`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.Storage.Name | string | Name of the storage account |
+| AzureSecurityCenter.Storage.ResourceGroupName | string | Names of the attached resource group |
+| AzureSecurityCenter.Storage.Location | string | The geo-location where the resource resides |
+
+##### Command Example
+
+`!azure-sc-list-storage`
+
+##### Context Example
+
+```
 {
     "AzureSecurityCenter.Storage": [
         {
@@ -932,94 +421,47 @@ For more details about the authentication used in this integration, see <a href=
         }
     ]
 }
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Azure Security Center - List Storage Accounts</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Name</strong></th>
-      <th><strong>ResourceGroupName</strong></th>
-      <th><strong>Location</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> cs20f907ea4bc8bx4c11x9d7 </td>
-      <td> cloud-shell-storage-eastus </td>
-      <td> eastus </td>
-    </tr>
-    <tr>
-      <td> useastrgdiag204 </td>
-      <td> us-east-rg </td>
-      <td> eastus </td>
-    </tr>
-    <tr>
-      <td> demistodevops </td>
-      <td> cloud-shell-storage-eastus </td>
-      <td> westeurope </td>
-    </tr>
-  </tbody>
-</table>
+```
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
+##### Human Readable Output
 
-<h3>9. azure-list-subscriptions</h3>
-<hr>
-<p>List available subscriptions for this application.</p>
-<h5>Base Command</h5>
-<p>
-  <code>azure-list-subscriptions</code>
-</p>
+### Azure Security Center - List Storage Accounts
 
-<h5>Input</h5>
+| **Name** | **ResourceGroupName** | **Location** |
+| --- | --- | --- |
+| cs20f907ea4bc8bx4c11x9d7 | cloud-shell-storage-eastus | eastus |
+| useastrgdiag204 | us-east-rg | eastus |
+| demistodevops | cloud-shell-storage-eastus | westeurope |
+
+### 9. azure-list-subscriptions
+
+***
+
+List available subscriptions for this application.
+
+##### Base Command
+
+`azure-list-subscriptions`
+
+##### Input
+
 There are no input arguments for this command.
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Azure.Subscription.ID</td>
-      <td>String</td>
-      <td>Subscription ID</td>
-    </tr>
-    <tr>
-      <td>Azure.Subscription.Name</td>
-      <td>String</td>
-      <td>Subscription Name</td>
-    </tr>
-    <tr>
-      <td>Azure.Subscription.Enabled</td>
-      <td>String</td>
-      <td>Subscription state</td>
-    </tr>
-  </tbody>
-</table>
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!azure-list-subscriptions</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Subscription.ID | String | Subscription ID |
+| Azure.Subscription.Name | String | Subscription Name |
+| Azure.Subscription.Enabled | String | Subscription state |
+
+##### Command Example
+
+`!azure-list-subscriptions`
+
+##### Context Example
+
+```
 {
     "Azure.Subscription": [
         {
@@ -1029,70 +471,48 @@ There are no input arguments for this command.
         }
     ]
 }
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Azure Security Center - Subscriptions</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>ID</strong></th>
-      <th><strong>Name</strong></th>
-      <th><strong>State</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> /subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx </td>
-      <td> Pay-As-You-Go </td>
-      <td> Enabled </td>
-    </tr>
-  </tbody>
-</table>
+```
 
-<h3>List of Subscriptions</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>ID</strong></th>
-      <th><strong>Name</strong></th>
-      <th><strong>State</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> /subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx</td>
-      <td> Pay-As-You-Go </td>
-      <td> Enabled </td>
-    </tr>
-  </tbody>
-</table>
+##### Human Readable Output
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
+### Azure Security Center - Subscriptions
 
-<h3>10. azure-sc-list-location</h3>
-<hr>
-<p>The location of the responsible ASC of the specific subscription. For each subscription there is only one responsible location.</p>
-<h5>Base Command</h5>
-<p>
-  <code>azure-sc-list-location</code>
-</p>
+| **ID** | **Name** | **State** |
+| --- | --- | --- |
+| /subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx | Pay-As-You-Go | Enabled |
 
-<h5>Input</h5>
+### List of Subscriptions
+
+| **ID** | **Name** | **State** |
+| --- | --- | --- |
+| /subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx | Pay-As-You-Go | Enabled |
+
+### 10. azure-sc-list-location
+
+***
+
+The location of the responsible ASC of the specific subscription. For each subscription there is only one responsible location.
+
+*Require Subscription ID*
+##### Base Command
+
+`azure-sc-list-location`
+
+##### Input
+
 There are no input arguments for this command.
-<p>&nbsp;</p>
-<h5>Context Output</h5>
+
+##### Context Output
+
 There are no context output for this command.
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!azure-sc-list-location</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+
+##### Command Example
+
+`!azure-sc-list-location`
+
+##### Context Example
+
+```
 {
     "AzureSecurityCenter.Location": [
         {
@@ -1102,30 +522,63 @@ There are no context output for this command.
         }
     ]
 }
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Azure Security Center - List Locations</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>HomeRegionName</strong></th>
-      <th><strong>Name</strong></th>
-      <th><strong>ID</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> centralus </td>
-      <td> centralus </td>
-      <td> /subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx/providers/Microsoft.Security/locations/centralus </td>
-    </tr>
-  </tbody>
-</table>
+```
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-<h2>Additional Information</h2>
-<span>For more information regarding roles, see <a href="https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal">the microsoft documentation.</a></span>
+##### Human Readable Output
+
+### Azure Security Center - List Locations
+
+| **HomeRegionName** | **Name** | **ID** |
+| --- | --- | --- |
+| centralus | centralus | /subscriptions/xxxx-xxxx-xxxx-xxxx-xxxx/providers/Microsoft.Security/locations/centralus |
+
+### 11. azure-sc-get-alert
+
+***
+
+Get an alert that is associated a resource group or a subscription.
+
+*Require Subscription ID*
+##### Base Command
+
+`azure-sc-get-alert`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The name of the resource group within the user's subscription. The name is case insensitive. | Optional |
+| asc_location | The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument. | Required |
+| alert_id | The alert ID. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.Alert.DisplayName | string | The display name of the alert. |
+| AzureSecurityCenter.Alert.CompromisedEntity | string | The entity on which the incident occurred. |
+| AzureSecurityCenter.Alert.DetectedTime | date | The time the vendor detected the incident. |
+| AzureSecurityCenter.Alert.ReportedTime | date | The time the incident was reported to Microsoft.Security, in UTC. |
+| AzureSecurityCenter.Alert.ReportedSeverity | string | The estimated severity of the alert. |
+| AzureSecurityCenter.Alert.State | string | The alert state (Active, Dismissed, etc.). |
+| AzureSecurityCenter.Alert.ConfidenceScore | string | Level of confidence for the alert. |
+| AzureSecurityCenter.Alert.ActionTaken | string | The action that was taken as a response to the alert (Active, Blocked etc.). |
+| AzureSecurityCenter.Alert.CanBeInvestigated | string | Whether this alert can be investigated using Azure Security Center. |
+| AzureSecurityCenter.Alert.RemediationSteps | string | Recommended steps to remediate the incident. |
+| AzureSecurityCenter.Alert.VendorName | string | Name of the vendor that discovered the incident. |
+| AzureSecurityCenter.Alert.AssociatedResource | string | Azure resource ID of the associated resource. |
+| AzureSecurityCenter.Alert.AlertName | string | Name of the alert type. |
+| AzureSecurityCenter.Alert.InstanceID | string | Instance ID of the alert. |
+| AzureSecurityCenter.Alert.ID | string | The alert ID. |
+| AzureSecurityCenter.Alert.SubscriptionID | string | Azure subscription ID of the resource that had the security alert or the subscription ID of the workspace that this resource reports to. |
+| AzureSecurityCenter.Alert.Description | string | Description and explanation of the incident. |
+| AzureSecurityCenter.Alert.ExtendedProperties | string | Changing set of properties depending on the alert type. |
+| AzureSecurityCenter.Alert.Entities | string | Objects that are related to the alert. |
+
+##### Command Example
+
+`!azure-sc-get-alert asc_location="location" alert_id="alert_id"`
+
+## Additional Information
+
+For more information regarding roles, see [the microsoft documentation.](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)

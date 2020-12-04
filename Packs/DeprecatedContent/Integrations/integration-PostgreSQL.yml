@@ -34,8 +34,9 @@ configuration:
   type: 0
   required: true
 script:
-  script: |
+  script: >
     import psycopg2
+
 
     def closeConnection(conn, cur = None):
         if cur is not None:
@@ -141,3 +142,4 @@ script:
 hidden: false
 tests:
 - No tests - test was moved to NonCircleTests
+fromversion: 5.0.0

@@ -22,17 +22,27 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     var SERVER_API = 'https://analyze.intezer.com/api/';
+
     var IS_AVAILABLE_URL = 'is-available';
+
     var HASH_URL = 'v1-2/analyze-by-sha256';
+
     var FILE_UPLOAD_URL = 'v1-2/analyze';
+
     var ANALYSIS_RESULT_URL = 'v1-2/analyses/';
+
     var SHA_256_REGEXP = new RegExp('[A-Fa-f0-9]{64}');
+
     var SHA_1_REGEXP = new RegExp('[A-Fa-f0-9]{40}');
+
     var MD_5_REGEXP = new RegExp('[A-Fa-f0-9]{32}');
+
     var SUCCESS_STATUS = 'succeeded';
+
     var ERROR_PREFIX = 'Error from Intezer: ';
+
 
     var sendRequest = function(method, url, body, acceptedCodes) {
         // handle '/' at the end of the url
@@ -57,6 +67,7 @@ script:
         return handleResponse(result, url, acceptedCodes);
     };
 
+
     var sendMultipartRequest = function(url, file, body) {
         // handle '/' at the end of the url
         if (url[url.length - 1] === '/') {
@@ -77,6 +88,7 @@ script:
         );
         return handleResponse(result, url);
     };
+
 
     var handleResponse = function(result, url, acceptedCodes) {
         var ignoreStatusCode = acceptedCodes && (acceptedCodes.indexOf(result.StatusCode) !== -1);
@@ -120,10 +132,12 @@ script:
         return { body: result.Body, obj: obj, statusCode: result.StatusCode };
     };
 
+
     var getAnalysis = function(analysisId) {
         var analysisRes = sendRequest('POST', ANALYSIS_RESULT_URL + analysisId);
         return analysisRes.obj;
     };
+
 
     var analyzeSHA256 = function(hash, codeItemType, maxRetries, delay) {
         // validate file is indeed sha256
@@ -167,6 +181,7 @@ script:
         return waitForResponse(analysisId, maxRetries, delay);
     };
 
+
     var analyzeUploadedFile = function(fileEntryId, codeItemType, maxRetries, delay) {
         var res = sendMultipartRequest(FILE_UPLOAD_URL, fileEntryId, {code_item_type: codeItemType});
         var analysisId;
@@ -177,6 +192,7 @@ script:
         }
         return waitForResponse(analysisId, maxRetries, delay);
     };
+
 
     var waitForResponse = function(analysisId, maxRetries, delay) {
         var entry;
@@ -249,6 +265,7 @@ script:
         return entry;
     };
 
+
     switch (command) {
         case 'test-module':
             // send is available
@@ -292,8 +309,7 @@ script:
       - file
       - memory_module
       - fileless_code
-      description: Item type - File (file), Memory Module (memory_module) or Memory
-        Fileless Code (fileless_code)
+      description: Item type - File (file), Memory Module (memory_module) or Memory Fileless Code (fileless_code)
       defaultValue: file
     - name: maxRetries
       description: Number of retries for polling the analysis report
@@ -321,13 +337,10 @@ script:
       description: The actual score
       type: number
     - contextPath: File.ExistsInIntezer
-      description: 'File exists in Intezer genome database (in case file does not
-        exist, consider upload the file) '
+      description: 'File exists in Intezer genome database (in case file does not exist, consider upload the file) '
       type: boolean
     - contextPath: File.Metadata
-      description: Metadata returned from Intezer analysis (analysis id, analysis
-        url, family, family type, sha256, verdict, sub_verdict). Metedata will be
-        retuned only for supported files.
+      description: Metadata returned from Intezer analysis (analysis id, analysis url, family, family type, sha256, verdict, sub_verdict). Metedata will be retuned only for supported files.
       type: unknown
     description: Checks file reputation of the given hash, supports SHA256
   - name: intezer-upload
@@ -342,8 +355,7 @@ script:
       - file
       - memory_module
       - fileless_code
-      description: Item type - File (file), Memory Module (memory_module) or Memory
-        Fileless Code (fileless_code)
+      description: Item type - File (file), Memory Module (memory_module) or Memory Fileless Code (fileless_code)
       defaultValue: file
     - name: maxRetries
       description: Number of retries for polling the analysis report
@@ -371,10 +383,9 @@ script:
       description: The actual score
       type: number
     - contextPath: File.Metadata
-      description: Metadata returned from Intezer analysis (analysis id, analysis
-        url, family, family type, sha256, verdict, sub_verdict). Metedata will be
-        retuned only for supported files.
+      description: Metadata returned from Intezer analysis (analysis id, analysis url, family, family type, sha256, verdict, sub_verdict). Metedata will be retuned only for supported files.
     description: Checks file reputation for uploaded file (up to 20MB)
   runonce: false
 tests:
-  - No test - integration was deprecated, and doesn't need to be tested
+- No test - integration was deprecated, and doesn't need to be tested
+fromversion: 5.0.0

@@ -2,12 +2,16 @@ commonfields:
   id: LCMAcknowledgeHost
   version: -1
 name: LCMAcknowledgeHost
-script: |
+script: >
   import re
+
   ID_REGEX = r'Id: ([a-zA-Z0-9\-]+)'
 
+
   dArgs = demisto.args()
+
   resp = demisto.executeCommand("LCMHosts", dArgs)
+
   if isError(resp[0]):
       demisto.results(resp)
   elif  resp[0]['Contents'] == 'No results.':
@@ -47,3 +51,4 @@ dependson:
   must:
   - lcm-acknowledge-host
 timeout: 0s
+fromversion: 5.0.0

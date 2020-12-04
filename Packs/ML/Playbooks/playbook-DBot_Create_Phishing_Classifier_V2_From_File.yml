@@ -1,9 +1,8 @@
 id: DBot Create Phishing Classifier V2 From File
 version: -1
 name: DBot Create Phishing Classifier V2 From File
-fromversion: 4.5.0
-description: Create a phishing classifier using machine learning. The classifier is based on
-  incidents files extracted from email content.
+fromversion: 5.0.0
+description: Create a phishing classifier using machine learning. The classifier is based on incidents files extracted from email content.
 starttaskid: "0"
 tasks:
   "0":
@@ -192,111 +191,95 @@ inputs:
   value: {}
   required: true
   description: The ID of the file containing phishing incidents.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: inputFormat
   value:
     simple: csv
   required: true
   description: The input file format. Valid values include json \ pickle \ csv.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: modelName
   value:
     simple: phishing_model
   required: false
   description: The model name to store in the system.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: emailTextKey
   value:
     simple: Email Body|Email Body HTML|details
   required: false
-  description: A comma-separated list of incident field names with the email body
-    or html body. You can also use "|" if you want to choose the first non empty value
-    from a list of fields.
-  playbookInputQuery: null
+  description: A comma-separated list of incident field names with the email body or html body. You can also use "|" if you want to choose the first non empty value from a list of fields.
+  playbookInputQuery:
 - key: emailSubjectKey
   value:
     simple: Email Subject|name
   required: false
-  description: A comma-separated list of incident field names with the email subject.
-    You can also use "|" if you want to choose the first non-empty value from a list
-    of fields.
-  playbookInputQuery: null
+  description: A comma-separated list of incident field names with the email subject. You can also use "|" if you want to choose the first non-empty value from a list of fields.
+  playbookInputQuery:
 - key: emailTagKey
   value:
     simple: closeReason
   required: false
-  description: The field name with the email tag. Supports a comma-separated list,
-    in which the first non-empty value will be taken.
-  playbookInputQuery: null
+  description: The field name with the email tag. Supports a comma-separated list, in which the first non-empty value will be taken.
+  playbookInputQuery:
 - key: phishingLabels
   value:
     simple: '*'
   required: false
-  description: 'A comma-separated list of email tag values and mappings. The script
-    considers only the tags specified in this field. You can map a label to another
-    value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in the email
-    tag: malicious, credentials harvesting, inner communitcation, external legit email,
-    unclassified. While training, we want to ignore the "unclassified" tag, and refer
-    to "credentials harvesting" as "malicious" too. Also, we want to merge "inner
-    communication" and "external legit email" to one tag called "non-malicious". The
-    input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,  external
-    legit email:non-malicious'
-  playbookInputQuery: null
+  description: 'A comma-separated list of email tag values and mappings. The script considers only the tags specified in this field. You can map a label to another value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in the email tag: malicious, credentials harvesting, inner communitcation, external legit email, unclassified. While training, we want to ignore the "unclassified" tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to merge "inner communication" and "external legit email" to one tag called "non-malicious". The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,  external legit email:non-malicious'
+  playbookInputQuery:
 - key: incidentsQuery
   value: {}
   required: false
   description: The incidents query used to fetch the training data for the model.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: maxIncidentsToFetchOnTraining
   value:
     simple: "6000"
   required: false
   description: The maximum number of incidents to fetch.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: hashSeed
   value: {}
   required: false
   description: If non-empty, hash every word with this seed.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: overrideModel
   value:
     simple: "false"
   required: false
-  description: Whether to override the existing model if a model with the same name
-    already exists. Default is "false".
-  playbookInputQuery: null
+  description: Whether to override the existing model if a model with the same name already exists. Default is "false".
+  playbookInputQuery:
 - key: incidentTypes
   value:
     simple: Phishing
   required: false
   description: ' A comma-separated list of incident types by which to filter.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dedupThreshold
   value:
     simple: "0.99"
   required: false
-  description: Remove emails with similarity greater than this threshold. A valid range is 0-1,
-    where 1 is completely identical.
-  playbookInputQuery: null
+  description: Remove emails with similarity greater than this threshold. A valid range is 0-1, where 1 is completely identical.
+  playbookInputQuery:
 - key: removeShortTextThreshold
   value:
     simple: "15"
   required: false
-  description: ' Sample text of which the total number of words less than or equal
-    to this number will be ignored.'
-  playbookInputQuery: null
+  description: ' Sample text of which the total number of words less than or equal to this number will be ignored.'
+  playbookInputQuery:
 - key: modelTargetAccuracy
   value:
     simple: "0.7"
   required: false
   description: The model target accuracy at each label, between 0 and 1.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: outputFormat
   value:
     simple: pickle
   required: false
   description: The file output format. Valid values can be json \ pickle.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: DBotPhishingClassifier.EvaluationScores.micro_avg.f1-score
   description: F1 score (0-1)
@@ -311,4 +294,4 @@ outputs:
   description: Model name in Demisto
   type: String
 tests:
-  - No test
+- No test

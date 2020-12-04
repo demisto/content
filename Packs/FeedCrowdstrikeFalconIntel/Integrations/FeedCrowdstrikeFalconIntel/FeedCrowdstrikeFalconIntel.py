@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 # IMPORTS
 from datetime import datetime
 import requests
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -44,7 +44,7 @@ class Client(BaseClient):
         token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self._client_id, self._client_secret))
         return token_res.get('access_token')
 
-    def create_indicators_from_response(self, response, feed_tags: list) -> list:
+    def create_indicators_from_response(self, response, feed_tags: list, tlp_color: Optional[str]) -> list:
         parsed_indicators = []  # type:List
         indicator = {}
         for actor in response['resources']:
@@ -65,6 +65,9 @@ class Client(BaseClient):
                                'geocountry': actor.get('origins'),
                                'region': actor.get('region')}
                 }
+                if tlp_color:
+                    indicator['fields']['trafficlightprotocol'] = tlp_color
+
                 indicator['rawJSON'].update(actor)
             parsed_indicators.append(indicator)
 
@@ -121,8 +124,8 @@ class Client(BaseClient):
             url_suffix = url_suffix + '?filter=' + params
         return url_suffix
 
-    def build_iterator(self, feed_tags: List, limit=None, offset=None, target_countries=None, target_industries=None,
-                       custom_filter=None):
+    def build_iterator(self, feed_tags: List, tlp_color: Optional[str], limit=None, offset=None, target_countries=None,
+                       target_industries=None, custom_filter=None):
         """Builds a list of indicators.
         Returns:
             list. A list of JSON objects representing indicators fetched from a feed.
@@ -136,7 +139,8 @@ class Client(BaseClient):
 
         url_suffix_to_filter_by = self.build_url_suffix(params, actors_filter)
         response = self.http_request('GET', url_suffix_to_filter_by)
-        parsed_indicators = self.create_indicators_from_response(response, feed_tags)  # list of dict of indicators
+        parsed_indicators = self.create_indicators_from_response(response, feed_tags,
+                                                                 tlp_color)  # list of dict of indicators
 
         # for get_indicator_command only
         if limit:
@@ -163,23 +167,25 @@ class Client(BaseClient):
         return params
 
 
-def test_module(client: Client, args: dict, feed_tags: list):
+def test_module(client: Client, args: dict, feed_tags: list, tlp_color: Optional[str]):
     try:
         tags = argToList(demisto.params().get('feedTags'))
-        client.build_iterator(tags, limit=1, offset=0)
+        client.build_iterator(tags, tlp_color, limit=1, offset=0)
     except Exception:
         raise Exception("Could not fetch CrowdStrike Feed\n"
                         "\nCheck your API key and your connection to CrowdStrike.")
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client, args: dict, feed_tags: list) -> Tuple[str, dict, list]:
+def get_indicators_command(client: Client, args: dict, feed_tags: list, tlp_color: Optional[str]) \
+        -> Tuple[str, dict, list]:
     """Initiate a single fetch-indicators
 
     Args:
         client(Client): The CrowdStrike Client.
         args(dict): Command arguments.
-        feed_tags: The indicator tags
+        feed_tags: The indicator tags.
+        tlp_color (str): Traffic Light Protocol color.
     Returns:
         str, dict, list. the markdown table, context JSON and list of indicators
     """
@@ -192,7 +198,8 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list) -> Tuple
     custom_filter = args.get('custom_filter') if args.get('custom_filter') \
         else demisto.params().get('custom_filter')
 
-    indicators = fetch_indicators(client, feed_tags, limit, offset, target_countries, target_industries, custom_filter)
+    indicators = fetch_indicators(client, feed_tags, tlp_color, limit, offset, target_countries,
+                                  target_industries, custom_filter)
 
     hr_indicators = []
     for indicator in indicators:
@@ -209,13 +216,14 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list) -> Tuple
     return human_readable, {}, indicators
 
 
-def fetch_indicators(client: Client, feed_tags: List, limit=None, offset=None, target_countries=None,
-                     target_industries=None, custom_filter=None) -> list:
+def fetch_indicators(client: Client, feed_tags: List, tlp_color: Optional[str], limit=None, offset=None,
+                     target_countries=None, target_industries=None, custom_filter=None) -> list:
     """Fetch-indicators command from CrowdStrike Feeds
 
     Args:
         client(Client): CrowdStrike Feed client.
-        feed_tags: The indicator tags
+        feed_tags: The indicator tags.
+        tlp_color (str): Traffic Light Protocol color.
         limit: limit the amount of indicators fetched.
         offset: the index of the first index to fetch.
         target_industries: the actor's target_industries.
@@ -224,7 +232,8 @@ def fetch_indicators(client: Client, feed_tags: List, limit=None, offset=None, t
     Returns:
         list. List of indicators.
     """
-    indicators = client.build_iterator(feed_tags, limit, offset, target_countries, target_industries, custom_filter)
+    indicators = client.build_iterator(feed_tags, tlp_color, limit, offset, target_countries,
+                                       target_industries, custom_filter)
 
     return indicators
 
@@ -232,6 +241,7 @@ def fetch_indicators(client: Client, feed_tags: List, limit=None, offset=None, t
 def main():
     params = demisto.params()
     feed_tags = argToList(params.get('feedTags'))
+    tlp_color = params.get('tlp_color')
     target_countries = params.get('target_countries')
     target_industries = params.get('target_industries')
     custom_filter = params.get('custom_filter')
@@ -246,14 +256,14 @@ def main():
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators(client, feed_tags, target_countries=target_countries,
+            indicators = fetch_indicators(client, feed_tags, tlp_color, target_countries=target_countries,
                                           target_industries=target_industries, custom_filter=custom_filter)
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args(),
-                                                                       feed_tags)  # type: ignore
+                                                                       feed_tags, tlp_color)  # type: ignore
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         raise Exception(f'Error in CrowdStrike falcon intel Integration [{e}]')

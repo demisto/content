@@ -2,8 +2,9 @@ commonfields:
   id: CSIndicators
   version: -1
 name: CSIndicators
-script: |-
+script: >-
   import time
+
   def formatDate(t):
       if t:
           return time.ctime(t)
@@ -20,7 +21,9 @@ script: |-
               res += demisto.gets(l, 'name')
       return res
   res = '## CrowdStrike Falcon Intelligence'
+
   entry = demisto.executeCommand('cs-indicators', demisto.args())[0]
+
   if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
       indicators = demisto.get(entry, 'Contents')
       if indicators:
@@ -59,9 +62,7 @@ args:
   required: true
   description: The value for the given parameter
 - name: sort
-  description: Sort by a field. Should be field_name.order where order is either asc
-    or desc. Fields are indicator, type, report, actor, malicious_confidence, published_date,
-    last_updated.
+  description: Sort by a field. Should be field_name.order where order is either asc or desc. Fields are indicator, type, report, actor, malicious_confidence, published_date, last_updated.
 - name: page
   description: The page to retrieve - 1 based
 - name: pageSize
@@ -71,3 +72,4 @@ dependson:
   must:
   - cs-indicators
 timeout: 0s
+fromversion: 5.0.0

@@ -1076,7 +1076,7 @@ def send_message():
         if severity < severity_threshold:
             return
 
-    team_member: str = demisto.args().get('team_member', '')
+    team_member: str = demisto.args().get('team_member', '') or demisto.args().get('to', '')
 
     if not (team_member or channel_name):
         raise ValueError('No channel or team member to send message were provided.')

@@ -2,8 +2,9 @@ commonfields:
   id: CPBlockIP
   version: -1
 name: CPBlockIP
-script: |-
+script: >-
   from time import sleep
+
   def runCheck(cmd, args):
       err = []
       r = demisto.executeCommand(cmd, args)
@@ -20,10 +21,15 @@ script: |-
 
 
   DEBUGMODE = demisto.get(demisto.args(), 'dbg')
+
   res = []
+
   dbg = []
+
   ips = argToList(demisto.args()['ip'])
+
   direction = demisto.get(demisto.args(), 'direction')
+
   if not direction:
       direction = 'both'
 
@@ -34,7 +40,9 @@ script: |-
       demisto.args()['ipname'] = demisto.args()['ip'] + ' . ' + direction
 
   i = 1
+
   blocked = []
+
   if not ips:
       demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'No IP addresses specified.' } )
   else:
@@ -91,8 +99,7 @@ args:
   default: true
   description: One or more IP addresses to be blocked (comma-separated)
 - name: direction
-  description: Whether to block traffic "to" or "from" the IPs, or "both". Default
-    is "both".
+  description: Whether to block traffic "to" or "from" the IPs, or "both". Default is "both".
 - name: rulename
   description: Base name for added rules inside checkpoint db
 - name: ipname
@@ -105,3 +112,4 @@ dependson:
   - checkpoint
 tests:
 - No tests
+fromversion: 5.0.0

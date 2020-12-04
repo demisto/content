@@ -227,6 +227,6 @@ outputs:
   type: string
 - contextPath: Email.HeadersMap
   description: The headers of the email.
-fromversion: 4.0.0
+fromversion: 5.0.0
 tests:
 - Phishing v2 - Test - Incident Starter

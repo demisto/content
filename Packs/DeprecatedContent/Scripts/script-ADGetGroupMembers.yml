@@ -2,7 +2,7 @@ commonfields:
   id: ADGetGroupMembers
   version: -1
 name: ADGetGroupMembers
-script: |+
+script: >+
   def createEndpointEntities(t,attrs):
       endpoints = []
       for l in t:
@@ -38,15 +38,21 @@ script: |+
       return accounts
 
   # Optional arguments and default values
+
   attrs = 'name'
+
   if demisto.get(demisto.args(), 'attributes'):
       attrs += "," + demisto.args()['attributes']
 
   memberType = demisto.get(demisto.args(), 'memberType')
 
+
   filterstr = r"(&(objectCategory=" + memberType + ")(memberof=" + demisto.args()['groupdn'] + "))"
+
   context = {}
+
   resp = demisto.executeCommand( 'ad-search', { 'filter' : filterstr, 'attributes' : attrs } )
+
   if isError(resp):
       demisto.results(resp)
   else:
@@ -74,10 +80,7 @@ type: python
 subtype: python2
 tags:
 - active directory
-comment: Deprecated. Use Active Directory to retrieve the list of users or computers that are members
-  of the specified group. Group must be given by its AD Distinguished Name. The attributes
-  argument receives a comma-separated list of additional attributes you wish to be
-  displayed in the results.nExample usage !ADGetGroupMembers memberType=user groupdn=CN=Administrators,CN=Builtin,DC=acme,DC=int attributes=name,email
+comment: Deprecated. Use Active Directory to retrieve the list of users or computers that are members of the specified group. Group must be given by its AD Distinguished Name. The attributes argument receives a comma-separated list of additional attributes you wish to be displayed in the results.nExample usage !ADGetGroupMembers memberType=user groupdn=CN=Administrators,CN=Builtin,DC=acme,DC=int attributes=name,email
 system: true
 args:
 - name: groupdn
@@ -85,8 +88,7 @@ args:
   default: true
   description: Active Directory Distinguished Name for the desired group
 - name: attributes
-  description: Include these AD attributes of the resulting objects in addition to
-    the default ones
+  description: Include these AD attributes of the resulting objects in addition to the default ones
 - name: memberType
   required: true
   auto: PREDEFINED
@@ -126,4 +128,5 @@ outputs:
   description: The Account display name
 deprecated: true
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

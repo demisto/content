@@ -2,12 +2,17 @@ commonfields:
   id: ExchangeDeleteIDsFromContext
   version: -1
 name: ExchangeDeleteIDsFromContext
-script: |-
+script: >-
   import json
+
   resultText = ''
+
   resultErr = []
+
   res = []
+
   found = demisto.get(demisto.context(), 'ExchangeItemIDs')
+
   if found and not found == '{}':
       mbIds = json.loads(found)
 
@@ -53,3 +58,4 @@ dependson:
   - ews-delete-items
 timeout: 0s
 deprecated: true
+fromversion: 5.0.0

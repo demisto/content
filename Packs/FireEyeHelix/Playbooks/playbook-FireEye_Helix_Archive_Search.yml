@@ -1,7 +1,7 @@
 id: FireEye Helix Archive Search
 version: -1
 name: FireEye Helix Archive Search
-fromversion: 4.5.0
+fromversion: 5.0.0
 description: Create an archive search in FireEye Helix, and fetch the results as events.
 starttaskid: "0"
 tasks:
@@ -90,7 +90,7 @@ tasks:
       id: 473a8564-2302-4afc-80cd-405e56e53991
       version: -1
       name: Check search status
-      description: Verify if there are searches that haven't yet completed. 
+      description: Verify if there are searches that haven't yet completed.
       type: condition
       iscommand: false
       brand: ""
@@ -323,20 +323,15 @@ inputs:
 - key: Groupby
   value: {}
   required: false
-  description: Returns the unique values for the specified field and groups them together
-    based on the specified frequency. For example, groupby="srcipv4 5 100" will group the
-    top 5 srcipv4 that have at least 100 occurences. Multiple values can be provided
-    using a comma separated list. 
+  description: Returns the unique values for the specified field and groups them together based on the specified frequency. For example, groupby="srcipv4 5 100" will group the top 5 srcipv4 that have at least 100 occurences. Multiple values can be provided using a comma separated list.
 - key: Sort_by
   value: {}
   required: false
-  description: 'Sorts results by this field. Default is descending order; to change
-    this add the following to the command: argument sort_order="asc"'
+  description: 'Sorts results by this field. Default is descending order; to change this add the following to the command: argument sort_order="asc"'
 - key: Sort_order
   value: {}
   required: false
-  description: Controls the order of the results sorted by the sort_by argument, ascending
-    or descending.
+  description: Controls the order of the results sorted by the sort_by argument, ascending or descending.
 - key: Limit
   value: {}
   required: false
@@ -345,8 +340,7 @@ inputs:
   value:
     simple: "10"
   required: true
-  description: Amount of time for which to poll before declaring a timeout and resuming the
-    playbook (in minutes).
+  description: Amount of time for which to poll before declaring a timeout and resuming the playbook (in minutes).
 - key: Interval
   value:
     simple: "1"
@@ -490,4 +484,4 @@ outputs:
   description: \'Reply to\' email address.
   type: string
 tests:
-  - No test - No instance
+- No test - No instance

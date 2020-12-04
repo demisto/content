@@ -1,8 +1,7 @@
 id: DBotCreatePhishingClassifier
 version: -1
 name: DBot Create Phishing Classifier
-description: Deprecated. Use "DBot Create Phishing Classifier V2" playbook instead. Create a phishing classifier using machine learning technique, based
-  on email content
+description: Deprecated. Use "DBot Create Phishing Classifier V2" playbook instead. Create a phishing classifier using machine learning technique, based on email content
 starttaskid: "0"
 hidden: true
 tasks:
@@ -312,15 +311,7 @@ inputs:
   value:
     simple: '*'
   required: false
-  description: 'Comma-separated values of email tags values and mapping. The script
-    going to consider only the tags specify in this field. You can map label to another
-    value by using this format: LABEL:MAPPED_LABEL. For example: let''s say we have
-    4 values in email tag: malicious, credentials harvesting, inner communitcation,
-    external legit email, unclassified. While training, we want to ignore "unclassified"
-    tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to
-    merge "inner communitcation" and "external legit email" to one tag called "non-malicious".
-    The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
-    external legit email:non-malicious'
+  description: 'Comma-separated values of email tags values and mapping. The script going to consider only the tags specify in this field. You can map label to another value by using this format: LABEL:MAPPED_LABEL. For example: let''s say we have 4 values in email tag: malicious, credentials harvesting, inner communitcation, external legit email, unclassified. While training, we want to ignore "unclassified" tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to merge "inner communitcation" and "external legit email" to one tag called "non-malicious". The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious, external legit email:non-malicious'
 - key: incidentsTrainingQuery
   value:
     simple: type:Phishing and created:>="180 days ago" and created:<"7 days ago"
@@ -349,8 +340,7 @@ inputs:
   value:
     simple: "no"
   required: false
-  description: Preform hash function to the words (to anonymize the data). Choose
-    between yes/no
+  description: Preform hash function to the words (to anonymize the data). Choose between yes/no
 outputs:
 - contextPath: DBotPredictPhishingEvaluation.F1
   description: F1 score (0-1)
@@ -360,6 +350,6 @@ outputs:
   type: number
 - contextPath: DBotTextClassifier.ListName
   description: Model list name in Demisto
-fromversion: 4.1.0
+fromversion: 5.0.0
 tests:
-  - No tests
+- No tests

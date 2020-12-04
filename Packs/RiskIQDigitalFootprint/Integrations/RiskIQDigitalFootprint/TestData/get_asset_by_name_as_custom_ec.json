@@ -1,0 +1,77 @@
+{
+  "assetAsNames": [
+    {
+      "current": true,
+      "firstSeen": 1532708763182,
+      "lastSeen": 1587456222572,
+      "recent": true,
+      "value": "DUMMY-01"
+    }
+  ],
+  "assetAsn": {
+    "asnID": 63245,
+    "countryCode": "united states",
+    "description": "DUMMY-01, united states",
+    "fullName": "AS63245 - united states - DUMMY-01, united states",
+    "id": 63245,
+    "name": "AS63245",
+    "registry": "DUMMYREG"
+  },
+  "assetAsnNumber": 63245,
+  "assetCount": 3747,
+  "assetCountries": [
+    {
+      "current": true,
+      "firstSeen": 1586212561934,
+      "lastSeen": 1587456222572,
+      "recent": true,
+      "value": "united states"
+    },
+    {
+      "firstSeen": 1532708763182,
+      "lastSeen": 1586212561931,
+      "value": "us"
+    },
+    {
+      "firstSeen": 1532708763182,
+      "lastSeen": 1532708763182,
+      "value": "US"
+    }
+  ],
+  "assetFirstSeen": 1532708763182,
+  "assetLastSeen": 1592809972649,
+  "assetOrgIds": [
+    {
+      "current": true,
+      "firstSeen": 1532708763182,
+      "lastSeen": 1586212561931,
+      "recent": true,
+      "value": "DUMMY-ORG"
+    }
+  ],
+  "assetOrgNames": [
+    {
+      "current": true,
+      "firstSeen": 1532708763182,
+      "lastSeen": 1586212561931,
+      "recent": true,
+      "value": "dummy.com"
+    }
+  ],
+  "assetRegistries": [
+    {
+      "current": true,
+      "firstSeen": 1532708763182,
+      "lastSeen": 1587456222572,
+      "recent": true,
+      "value": "DUMMYREG"
+    }
+  ],
+  "description": "AS63245",
+  "firstSeen": 1532708763182,
+  "label": "63245",
+  "lastSeen": 1592980768058,
+  "name": "63245",
+  "type": "AS",
+  "uuid": "9ca2cd53-af69-cbca-f398-e891ecf413d3"
+}

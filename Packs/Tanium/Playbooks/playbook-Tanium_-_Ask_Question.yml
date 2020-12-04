@@ -1,6 +1,6 @@
 id: Tanium - Ask Question
 version: -1
-fromversion: ""
+fromversion: "5.0.0"
 name: Tanium - Ask Question
 description: 'This playbook used generic polling to gets question result.'
 starttaskid: "0"
@@ -173,4 +173,4 @@ outputs:
 - contextPath: Tanium.Question.ID
   description: The unique ID of the question object
 tests:
-  - Tanium v2 - Test
+- Tanium v2 - Test

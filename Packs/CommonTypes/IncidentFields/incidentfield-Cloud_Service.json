@@ -24,7 +24,8 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "Microsoft CAS Alert"
+        "Microsoft CAS Alert",
+        "Trend Micro CAS Event"
     ],
     "systemAssociatedTypes": null,
     "associatedToAll": false,

@@ -81,8 +81,7 @@ tasks:
       - "3"
     scriptarguments:
       expectedValue:
-        simple: 'From:"jondoe@acme.com" AND Subject:"hello RE: w’orld" AND Received:"this
-          week"'
+        simple: 'From:"jondoe@acme.com" AND Subject:"hello RE: w’orld" AND Received:"this week"'
       fields: {}
       path:
         simple: EWS.Query
@@ -130,3 +129,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

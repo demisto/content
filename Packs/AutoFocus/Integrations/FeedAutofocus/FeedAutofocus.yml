@@ -64,6 +64,16 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 - defaultvalue: suddenDeath
   name: feedExpirationPolicy
   display: ""
@@ -129,7 +139,7 @@ script:
     description: Gets the indicators from AutoFocus.
     execution: false
     name: autofocus-get-indicators
-  dockerimage: demisto/python3:3.8.5.10289
+  dockerimage: demisto/python3:3.8.5.11789
   feed: true
   isfetch: false
   longRunning: false

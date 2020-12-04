@@ -1,14 +1,16 @@
 
-from Utils.old_content_branch import should_keep_json_file, should_keep_yml_file, get_json, get_yaml
+from Utils.old_content_branch import should_keep_json_file, should_keep_yml_file, edit_playbooks_directory, ryaml
+import json
+import shutil
+TEST_VERSION = "5.1.9"
+JSON_SHOULD_STAY = 'Packs/CommonReports/Reports/report-MTTRbyIncidentType2Quar.json'
+YML_SHOULD_STAY = 'Packs/ThinkstCanary/Integrations/ThinkstCanary/ThinkstCanary.yml'
+JSON_SHOULD_DELETE = 'Utils/tests/test_data_old_content/json_should_delete.json'
+YML_SHOULD_DELETE = 'Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml'
+TEST_TPB = 'Utils/tests/test_data_old_content/temp_test_playbook.yml'
 
-TEST_VERSION = "4.1.0"
-JSON_SHOULD_STAY = '../../Packs/CommonReports/Reports/report-MTTRbyIncidentType2Quar.json'
-YML_SHOULD_STAY = '../../Packs/ThinkstCanary/Integrations/ThinkstCanary/ThinkstCanary.yml'
-JSON_SHOULD_DELETE = '../../Packs/NonSupported/Reports/report-dailyIncidentReport_3_1_0.json'
-YML_SHOULD_DELETE = '../../Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml'
 
-
-def test_handle_json__should_say():
+def test_handle_json__should_stay():
     """
     Given
     - A path to a json file that should stay - lower fromVersion.
@@ -19,7 +21,9 @@ def test_handle_json__should_say():
     Then
     - function returns True (file should be updated).
     """
-    json_content = get_json(JSON_SHOULD_STAY)
+    with open(JSON_SHOULD_STAY, 'r') as json_file:
+
+        json_content = json.loads(json_file.read())
     assert should_keep_json_file(json_content, TEST_VERSION) is True
 
 
@@ -34,8 +38,9 @@ def test_handle_json__should_delete():
     Then
     - function returns False (file should be deleted).
     """
-    json_content = get_json(JSON_SHOULD_DELETE)
-    assert should_keep_json_file(json_content, TEST_VERSION, should_rewrite=False) is False
+    with open(JSON_SHOULD_DELETE, 'r') as json_file:
+        json_content = json.loads(json_file.read())
+    assert should_keep_json_file(json_content, TEST_VERSION) is False
 
 
 def test_handle_yml__should_stay():
@@ -49,8 +54,10 @@ def test_handle_yml__should_stay():
     Then
     - function returns True (file should be updated)
     """
-    yml_content = get_yaml(YML_SHOULD_STAY)
-    assert should_keep_yml_file(yml_content, TEST_VERSION, should_rewrite=False) is True
+    with open(YML_SHOULD_STAY, 'r') as yml_file:
+
+        yml_content = ryaml.load(yml_file)
+    assert should_keep_yml_file(yml_content, TEST_VERSION) is True
 
 
 def test_handle_yml__should_delete():
@@ -64,5 +71,26 @@ def test_handle_yml__should_delete():
     Then
     - function returns False (file should be deleted)
     """
-    yml_content = get_yaml(YML_SHOULD_DELETE)
-    assert should_keep_yml_file(yml_content, TEST_VERSION, should_rewrite=False) is False
+    with open(YML_SHOULD_DELETE, 'r') as yml_file:
+
+        yml_content = ryaml.load(yml_file)
+    assert should_keep_yml_file(yml_content, TEST_VERSION) is True
+
+
+def test_edit_playbooks_directory(tmp_path):
+    """
+    Given
+    - A path to a tpb that should stay and its toversion field should change to 4.1.9.
+
+    When
+    - Running edit_playbooks_directory on it.
+
+    Then
+    - Tpb should be updated with a new toversion field.
+    """
+    tmp_tpb = shutil.copyfile(TEST_TPB, f"{tmp_path}/tpb.yml")
+
+    edit_playbooks_directory(TEST_VERSION, tmp_path)
+    with open(tmp_tpb, 'r') as yml_file:
+        yml_content = ryaml.load(yml_file)
+    assert yml_content['toversion'] == '5.1.9'

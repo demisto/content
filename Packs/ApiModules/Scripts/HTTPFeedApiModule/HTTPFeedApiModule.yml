@@ -13,4 +13,5 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/jmespath:1.0.0.6980
+dockerimage: demisto/jmespath:1.0.0.10854
+fromversion: 5.0.0

@@ -1,10 +1,8 @@
 id: ExtraHop - Default
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 name: ExtraHop - Default
-description: Default playbook to run for all ExtraHop Detection incidents.  This playbook
-  handles ticket tracking as well as triggering specific playbooks based on the name
-  of the ExtraHop Detection.
+description: Default playbook to run for all ExtraHop Detection incidents.  This playbook handles ticket tracking as well as triggering specific playbooks based on the name of the ExtraHop Detection.
 starttaskid: "0"
 tasks:
   "0":
@@ -63,8 +61,7 @@ tasks:
       id: c46704ba-c334-4b3b-887f-fa1dd8339fd0
       version: -1
       name: Is ExtraHop Reveal(x) enabled?
-      description: Checks if there is an active instance of the ExtraHop Reveal(x)
-        integration enabled.
+      description: Checks if there is an active instance of the ExtraHop Reveal(x) integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -114,10 +111,9 @@ tasks:
     task:
       id: b24f8753-bb48-4a77-8b97-a33ed472cd05
       version: -1
-      name: ExtraHop - Ticket Tracking
-      description: Links the Demisto incident back to the ExtraHop detection that
-        created it for ticket tracking purposes.
-      playbookName: ExtraHop - Ticket Tracking
+      name: ExtraHop - Ticket Tracking v2
+      description: Links the Demisto incident back to the ExtraHop detection that created it for ticket tracking purposes.
+      playbookName: ExtraHop - Ticket Tracking v2
       type: playbook
       iscommand: false
       brand: ""
@@ -147,9 +143,7 @@ tasks:
       id: a67d8b24-4516-46c0-85a0-3fd3cf7c2279
       version: -1
       name: Add initial investigation notes
-      description: This task is for the ExtraHop analyst to enter notes on the ExtraHop
-        Detection that created this Incident.  Used as a method of initial investigation
-        and tracking notes within the Work Plan.
+      description: This task is for the ExtraHop analyst to enter notes on the ExtraHop Detection that created this Incident.  Used as a method of initial investigation and tracking notes within the Work Plan.
       type: regular
       iscommand: false
       brand: ""
@@ -175,8 +169,7 @@ tasks:
       id: 03bac09d-d03d-45d5-86f1-4209973b4a4d
       version: -1
       name: Detection Playbooks
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: title
       iscommand: false
       brand: ""

@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 # IMPORTS
 import requests
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -101,12 +101,14 @@ class Client(BaseClient):
         else:
             return FeedIndicatorType.Domain
 
-    def create_indicators_from_response(self, response: list, feed_tags: list) -> list:
+    def create_indicators_from_response(self, response: list, feed_tags: list, tlp_color: Optional[str]) -> list:
         """
         Creates a list of indicators from a given response
         Args:
             response: List of dict that represent the response from the api
             feed_tags: The indicator tags
+            tlp_color: Traffic Light Protocol color
+
         Returns:
             List of indicators with the correct indicator type.
         """
@@ -121,7 +123,7 @@ class Client(BaseClient):
                                       FeedIndicatorType.IPv6CIDR, FeedIndicatorType.IPv6] and ":" in indicator:
                     indicator = indicator.split(":", 1)[0]
 
-                parsed_indicators.append({
+                indicator_obj = {
                     "type": indicator_type,
                     "value": indicator,
                     "rawJSON": {
@@ -130,17 +132,22 @@ class Client(BaseClient):
                         'service': 'Daily Threat Feed'
                     },
                     'fields': {'service': 'Daily Threat Feed', 'tags': feed_tags}
-                })
+                }
+                if tlp_color:
+                    indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+
+                parsed_indicators.append(indicator_obj)
 
         return parsed_indicators
 
-    def build_iterator(self, feed_tags: List, limit=None, offset=None):
+    def build_iterator(self, feed_tags: List, tlp_color: Optional[str], limit=None, offset=None):
         """Builds a list of indicators.
         Returns:
             list. A list of JSON objects representing indicators fetched from a feed.
         """
         response = self.daily_http_request()
-        parsed_indicators = self.create_indicators_from_response(response, feed_tags)  # list of dict of indicators
+        parsed_indicators = self.create_indicators_from_response(response, feed_tags,
+                                                                 tlp_color)  # list of dict of indicators
 
         # for get_indicator_command only
         if limit:
@@ -148,7 +155,7 @@ class Client(BaseClient):
         return parsed_indicators
 
 
-def module_test_command(client: Client, args: dict, feed_tags: list):
+def module_test_command(client: Client, args: dict, feed_tags: list, tlp_color: Optional[str]):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
@@ -156,32 +163,35 @@ def module_test_command(client: Client, args: dict, feed_tags: list):
         client(Client): Autofocus Feed client
         args(Dict): The instance parameters
         feed_tags: The indicator tags
+        tlp_color: Traffic Light Protocol color
 
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
     try:
-        client.build_iterator(argToList(demisto.params().get('feedTags')), 1, 0)
+        client.build_iterator(argToList(demisto.params().get('feedTags')), tlp_color, 1, 0)
     except Exception:
         raise Exception("Could not fetch Daily Threat Feed\n"
                         "\nCheck your API key and your connection to AutoFocus.")
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client, args: dict, feed_tags: list) -> Tuple[str, dict, list]:
+def get_indicators_command(client: Client, args: dict, feed_tags: list, tlp_color: Optional[str]) \
+        -> Tuple[str, dict, list]:
     """Initiate a single fetch-indicators
 
     Args:
         client(Client): The AutoFocus Client.
         args(dict): Command arguments.
-        feed_tags: The indicator tags
+        feed_tags: The indicator tags.
+        tlp_color: Traffic Light Protocol color.
     Returns:
         str, dict, list. the markdown table, context JSON and list of indicators
     """
     offset = int(args.get('offset', 0))
     limit = int(args.get('limit', 100))
 
-    indicators = fetch_indicators_command(client, feed_tags, limit, offset)
+    indicators = fetch_indicators_command(client, feed_tags, tlp_color, limit, offset)
 
     hr_indicators = []
     for indicator in indicators:
@@ -204,19 +214,21 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list) -> Tuple
     return human_readable, {}, indicators
 
 
-def fetch_indicators_command(client: Client, feed_tags: List, limit=None, offset=None) -> list:
+def fetch_indicators_command(client: Client, feed_tags: List, tlp_color: Optional[str], limit=None, offset=None) \
+        -> list:
     """Fetch-indicators command from AutoFocus Feeds
 
     Args:
         client(Client): AutoFocus Feed client.
-        feed_tags: The indicator tags
-        limit: limit the amount of incidators fetched.
+        feed_tags: The indicator tags.
+        tlp_color: Traffic Light Protocol color.
+        limit: limit the amount of indicators fetched.
         offset: the index of the first index to fetch.
 
     Returns:
         list. List of indicators.
     """
-    indicators = client.build_iterator(feed_tags, limit, offset)
+    indicators = client.build_iterator(feed_tags, tlp_color, limit, offset)
 
     return indicators
 
@@ -224,6 +236,7 @@ def fetch_indicators_command(client: Client, feed_tags: List, limit=None, offset
 def main():
     params = demisto.params()
     feed_tags = argToList(params.get('feedTags'))
+    tlp_color = params.get('tlp_color')
     client = Client(api_key=params.get('api_key'),
                     insecure=params.get('insecure'))
 
@@ -236,13 +249,13 @@ def main():
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, feed_tags)
+            indicators = fetch_indicators_command(client, feed_tags, tlp_color)
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args(),
-                                                                       feed_tags)  # type: ignore
+                                                                       feed_tags, tlp_color)  # type: ignore
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         raise Exception(f'Error in AutoFocusFeed Daily Integration [{e}]')

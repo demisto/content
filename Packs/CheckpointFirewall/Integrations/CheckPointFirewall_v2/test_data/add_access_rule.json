@@ -1,0 +1,150 @@
+{
+  "uid": "1234",
+  "type": "access-rule",
+  "domain": {
+    "uid": "5678",
+    "name": "SMC User",
+    "domain-type": "domain"
+  },
+  "track": {
+    "type": {
+      "uid": "9876",
+      "name": "None",
+      "type": "Track",
+      "domain": {
+        "uid": "222222222",
+        "name": "Check Point Data",
+        "domain-type": "data domain"
+      }
+    },
+    "per-session": false,
+    "per-connection": false,
+    "accounting": false,
+    "enable-firewall-session": false,
+    "alert": "none"
+  },
+  "layer": "00000000",
+  "source": [
+    {
+      "uid": "1111111111",
+      "name": "Any",
+      "type": "CpmiAnyObject",
+      "domain": {
+        "uid": "222222222",
+        "name": "Check Point Data",
+        "domain-type": "data domain"
+      }
+    }
+  ],
+  "source-negate": false,
+  "destination": [
+    {
+      "uid": "1111111111",
+      "name": "Any",
+      "type": "CpmiAnyObject",
+      "domain": {
+        "uid": "222222222",
+        "name": "Check Point Data",
+        "domain-type": "data domain"
+      }
+    }
+  ],
+  "destination-negate": false,
+  "service": [
+    {
+      "uid": "1111111111",
+      "name": "Any",
+      "type": "CpmiAnyObject",
+      "domain": {
+        "uid": "222222222",
+        "name": "Check Point Data",
+        "domain-type": "data domain"
+      }
+    }
+  ],
+  "service-negate": false,
+  "vpn": [
+    {
+      "uid": "1111111111",
+      "name": "Any",
+      "type": "CpmiAnyObject",
+      "domain": {
+        "uid": "222222222",
+        "name": "Check Point Data",
+        "domain-type": "data domain"
+      }
+    }
+  ],
+  "action": {
+    "uid": "44444444",
+    "name": "Drop",
+    "type": "RulebaseAction",
+    "domain": {
+      "uid": "222222222",
+      "name": "Check Point Data",
+      "domain-type": "data domain"
+    }
+  },
+  "action-settings": {
+    
+  },
+  "content": [
+    {
+      "uid": "1111111111",
+      "name": "Any",
+      "type": "CpmiAnyObject",
+      "domain": {
+        "uid": "222222222",
+        "name": "Check Point Data",
+        "domain-type": "data domain"
+      }
+    }
+  ],
+  "content-negate": false,
+  "content-direction": "any",
+  "time": [
+    {
+      "uid": "1111111111",
+      "name": "Any",
+      "type": "CpmiAnyObject",
+      "domain": {
+        "uid": "222222222",
+        "name": "Check Point Data",
+        "domain-type": "data domain"
+      }
+    }
+  ],
+  "custom-fields": {
+    "field-1": "",
+    "field-2": "",
+    "field-3": ""
+  },
+  "meta-info": {
+    "lock": "locked by current session",
+    "validation-state": "ok",
+    "last-modify-time": {
+      "posix": 1599491114012,
+      "iso-8601": "2020-09-07T18:05+0300"
+    },
+    "last-modifier": "admin",
+    "creation-time": {
+      "posix": 1599491114012,
+      "iso-8601": "2020-09-07T18:05+0300"
+    },
+    "creator": "admin"
+  },
+  "comments": "",
+  "enabled": true,
+  "install-on": [
+    {
+      "uid": "33333333333",
+      "name": "Policy Targets",
+      "type": "Global",
+      "domain": {
+        "uid": "222222222",
+        "name": "Check Point Data",
+        "domain-type": "data domain"
+      }
+    }
+  ]
+}

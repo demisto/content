@@ -2,9 +2,11 @@ commonfields:
   id: LCMPathFinderScanHost
   version: -1
 name: LCMPathFinderScanHost
-script: |
+script: >
   args = demisto.args()
+
   resp = demisto.executeCommand("lcm-pathfinder-scan", args)
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -31,3 +33,4 @@ dependson:
   must:
   - lcm-pathfinder-scan
 timeout: 0s
+fromversion: 5.0.0

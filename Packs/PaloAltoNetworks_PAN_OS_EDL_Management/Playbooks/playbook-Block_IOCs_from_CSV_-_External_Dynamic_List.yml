@@ -1,6 +1,6 @@
 id: Block IOCs from CSV - External Dynamic List
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 name: Block IOCs from CSV - External Dynamic List
 starttaskid: "0"
 description: This playbook parses a CSV file with IOCs and blocks them using Palo Alto Networks External Dynamic Lists.
@@ -38,8 +38,7 @@ tasks:
       id: 03ec5404-fb6f-48fc-879d-ae8411b5d753
       version: -1
       name: Parse indicators CSV
-      description: This script will parse a CSV file and place the unique IPs, Domains
-        and Hashes into the context.
+      description: This script will parse a CSV file and place the unique IPs, Domains and Hashes into the context.
       scriptName: ParseCSV
       type: regular
       iscommand: false
@@ -387,14 +386,12 @@ inputs:
   value:
     simple: Demisto Remediation - IP EDL
   required: false
-  description: IP address list from the instance context with which to override the
-    remote file.
+  description: IP address list from the instance context with which to override the remote file.
 - key: DomainListName
   value:
     simple: Demisto Remediation - Domain EDL
   required: false
-  description: Domain list from the instance context with which to override the remote
-    file.
+  description: Domain list from the instance context with which to override the remote file.
 - key: EDLServerIP
   value: {}
   required: false
@@ -428,5 +425,5 @@ inputs:
       * after
 outputs: []
 tests:
-  - No Test
-  
+- No Test
+

@@ -36,8 +36,7 @@ tasks:
       id: 5e00adec-6a0d-4262-8184-a754cfa083bd
       version: -1
       name: scan a url
-      description: Check if url is phishing and get details about the brand that is
-        being phished
+      description: Check if url is phishing and get details about the brand that is being phished
       script: '|||phish-ai-scan-url'
       type: regular
       iscommand: true
@@ -139,3 +138,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

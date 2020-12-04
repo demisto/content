@@ -2,14 +2,20 @@ commonfields:
   id: O365SearchEmails
   version: -1
 name: O365SearchEmails
-script: |
+script: >
   res = []
+
   dArgs = demisto.args()
+
   dArgs['using'] = dArgs['system']
+
   import re
+
   REGEX_RESULTS = r"Search results\: \{([^}]*)\}"
 
+
   delArg = demisto.get(dArgs, 'delete')
+
   if type(delArg) in [str, unicode] and delArg.lower()  == 'true':
       demisto.log('[*] Script set to also delete found emails.')
       resCmdName = demisto.executeCommand("D2O365SearchAndDelete", dArgs)
@@ -56,8 +62,8 @@ args:
   required: true
   description: Windows system to run the powershell script
 - name: delete
-  description: if set to "true" (case insensitive) - the script will also delete found
-    emails. Default is false.
+  description: if set to "true" (case insensitive) - the script will also delete found emails. Default is false.
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

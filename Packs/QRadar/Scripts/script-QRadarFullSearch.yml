@@ -2,32 +2,44 @@ commonfields:
   id: QRadarFullSearch
   version: -1
 name: QRadarFullSearch
-script: |-
+script: >-
   res = [];
 
+
   var search_done = false;
+
   var error = false;
 
+
   var timeout = ('timeout' in args) ? parseInt(args.timeout) : 600;
+
   var interval = ('interval' in args) ? parseInt(args.interval) : 10;
 
+
   var search_args = {};
+
   if ('query_expression' in args) {
       search_args.query_expression = args.query_expression;
   }
+
   if ('fields' in args) {
       search_args.fields = args.fields;
   }
+
   if ('range' in args) {
       search_args.range = args.range;
   }
+
 
   if ('headers' in args) {
       search_args.headers = args.headers;
   }
 
+
   //submit query, retrive  search_id
+
   var query_res = executeCommand("qradar-searches", search_args);
+
 
   if (isError(query_res[0])) {
       return query_res;
@@ -102,3 +114,4 @@ dependson:
   - qradar-get-search-results
 tests:
 - No test
+fromversion: 5.0.0

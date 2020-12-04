@@ -35,7 +35,7 @@ class MicrosoftClient(BaseClient):
                  scope: str = 'https://graph.microsoft.com/.default',
                  grant_type: str = CLIENT_CREDENTIALS,
                  redirect_uri: str = 'https://localhost/myapp',
-                 resource: str = '',
+                 resource: Optional[str] = '',
                  multi_resource: bool = False,
                  resources: List[str] = None,
                  verify: bool = True,
@@ -320,12 +320,12 @@ class MicrosoftClient(BaseClient):
         Returns:
             tuple: An access token, its expiry and refresh token.
         """
-        data = {
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'resource': self.resource if not resource else resource,
-            'redirect_uri': self.redirect_uri
-        }
+        data = assign_params(
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            resource=self.resource if not resource else resource,
+            redirect_uri=self.redirect_uri
+        )
 
         if scope:
             data['scope'] = scope
@@ -350,8 +350,7 @@ class MicrosoftClient(BaseClient):
 
         access_token = response_json.get('access_token', '')
         expires_in = int(response_json.get('expires_in', 3595))
-        if self.multi_resource:
-            refresh_token = response_json.get('refresh_token', '')
+        refresh_token = response_json.get('refresh_token', '')
 
         return access_token, expires_in, refresh_token
 
@@ -459,15 +458,7 @@ class MicrosoftClient(BaseClient):
         # pylint: disable=no-member
         headers = {}
         try:
-            calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
-            brand_name = calling_context.get('IntegrationBrand', '')
-            instance_name = calling_context.get('IntegrationInstance', '')
-            headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
-            headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
-            if hasattr(demisto, 'demistoVersion'):
-                demisto_version = demisto.demistoVersion()
-                headers['X-Content-Server-Version'] = '{}-{}'.format(demisto_version.get('version'),
-                                                                     demisto_version.get("buildNumber"))
+            headers = get_x_content_info_headers()
         except Exception as e:
             demisto.error('Failed getting integration info: {}'.format(str(e)))
 

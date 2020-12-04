@@ -2,9 +2,11 @@ commonfields:
   id: CSCountDevicesForIOC
   version: -1
 name: CSCountDevicesForIOC
-script: |-
+script: >-
   res = []
+
   t = []
+
   for v in argToList(demisto.args()['value']):
       e = demisto.executeCommand("cs-device-count-ioc", {"type": demisto.args()['type'], "value": v})[0]
       if isError(e):
@@ -40,3 +42,4 @@ dependson:
   must:
   - cs-device-count-ioc
 timeout: 0s
+fromversion: 5.0.0

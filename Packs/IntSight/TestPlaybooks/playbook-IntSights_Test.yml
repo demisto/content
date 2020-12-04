@@ -456,8 +456,7 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: Failed to get IOCs, please log  in the instance and verify that you
-          have IOCs.
+        simple: Failed to get IOCs, please log  in the instance and verify that you have IOCs.
     separatecontext: false
     view: |-
       {
@@ -483,3 +482,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

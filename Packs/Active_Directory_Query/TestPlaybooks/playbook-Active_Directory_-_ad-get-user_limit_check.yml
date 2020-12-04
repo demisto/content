@@ -125,9 +125,7 @@ tasks:
       id: e264fa8d-83ff-438a-8574-c679fd28207a
       version: -1
       name: Run ad-get-user with no limit
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
       script: '|||ad-get-user'
       type: regular
       iscommand: true
@@ -283,7 +281,7 @@ inputs:
   value: {}
   required: false
   description: Search for user by the sAMAccountName attribute in Active Directory.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: UserEmail
   value:
     complex:
@@ -293,7 +291,7 @@ inputs:
       - operator: uniq
   required: false
   description: Search for user by the email attribute in Active Directory.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: UserManagerEmail
   description: The email of the user's manager.
@@ -301,3 +299,4 @@ outputs:
   description: The display name of the user's manager.
   type: unknown
 sourceplaybookid: Active Directory - Get User Manager Details
+fromversion: 5.0.0

@@ -2,7 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: AWS - AccessAnalyzer
   version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 configuration:
 - display: AWS Default Region
   name: defaultRegion
@@ -92,9 +92,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -109,8 +107,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The ARN of the analyzer to retrieve a list of analyzed resources
-        from.
+      description: The ARN of the analyzer to retrieve a list of analyzed resources from.
       isArray: false
       name: analyzerArn
       required: true
@@ -154,9 +151,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -226,9 +221,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -273,9 +266,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -320,9 +311,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -337,8 +326,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The ARN of the analyzer to use to scan the policies applied to
-        the specified resource.
+      description: The ARN of the analyzer to use to scan the policies applied to the specified resource.
       isArray: false
       name: analyzerArn
       required: true
@@ -368,9 +356,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -421,9 +407,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -442,4 +426,4 @@ script:
   type: python
 beta: true
 tests:
-  - No test
+- No test

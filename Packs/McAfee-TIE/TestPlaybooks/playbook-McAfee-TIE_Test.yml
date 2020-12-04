@@ -116,8 +116,7 @@ tasks:
       id: 73f34142-9516-409e-8986-8fa3c122d89c
       version: -1
       name: TIE file reputation
-      description: Retrieves the reputations for the specified hash ( Supports MD5
-        SHA1 & SHA256)
+      description: Retrieves the reputations for the specified hash ( Supports MD5 SHA1 & SHA256)
       script: McAfee Threat Intelligence Exchange|||file
       type: regular
       iscommand: true
@@ -331,3 +330,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

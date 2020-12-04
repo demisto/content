@@ -1,7 +1,9 @@
 <!-- REMINDER: THIS IS A PUBLIC REPO DO NOT POST HERE SECRETS/SENSITIVE DATA -->
 
-## XSOAR [Partner](https://xsoar.pan.dev/docs/partners/become-a-tech-partner)?
-- [ ] The title must be in the following format: **[YOUR_PARTNER_ID] short description**.
+## Contributing to Cortex XSOAR Content
+Make sure to register your contribution by filling the [contribution registration form](https://forms.gle/XDfxU4E61ZwEESSMA)
+
+**The Pull Request will be reviewed only after the contribution registration form is filled.**
 
 ## Status
 - [x] In Progress
@@ -30,4 +32,3 @@ Paste here any images that will help the reviewer
 ## Must have
 - [ ] Tests
 - [ ] Documentation 
-

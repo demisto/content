@@ -867,7 +867,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The fetched incidents filtered by owner. 
+      description: The fetched incidents filtered by owner.
       isArray: false
       name: owner
       required: false
@@ -1872,7 +1872,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the indicator. For example, "indicator_type=emailAddresses" where "indicator=a@a.co.il".        
+      description: The name of the indicator. For example, "indicator_type=emailAddresses" where "indicator=a@a.co.il".
       isArray: false
       name: indicator
       required: true
@@ -1991,8 +1991,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of group for which to return the ID. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
-        or "threats".
+      description: The type of group for which to return the ID. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -2201,7 +2200,7 @@ script:
       type: String
     - contextPath: File.Extension
       description: The extension of the file.
-      type: String  
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -2370,7 +2369,6 @@ script:
     - contextPath: TC.Group.AssociatedGroup.GroupType
       description: The type of the group to associate to.
       type: String
-  dockerimage45: demisto/threatconnect-sdk
   dockerimage: demisto/threatconnect-sdk:1.0.0.7659
   isfetch: false
   runonce: false
@@ -2379,3 +2377,4 @@ script:
   subtype: python2
 tests:
 - No tests - deprecated
+fromversion: 5.0.0

@@ -228,8 +228,7 @@ script:
     name: cisco-ise-get-policy
     outputs:
     - contextPath: CiscoISE.Policy.Action
-      description: The action of the policy. Can be "QUARANTINE", "PORTBOUNCE", or
-        "SHUTDOWN".
+      description: The action of the policy. Can be "QUARANTINE", "PORTBOUNCE", or "SHUTDOWN".
       type: String
     - contextPath: CiscoISE.Policy.ID
       description: The ID of the ANC policy.
@@ -243,8 +242,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The actions of the policy. Can be "QUARANTINE", "PORTBOUNCE", or
-        "SHUTDOWN".
+      description: The actions of the policy. Can be "QUARANTINE", "PORTBOUNCE", or "SHUTDOWN".
       isArray: false
       name: policy_actions
       predefined:
@@ -319,3 +317,4 @@ script:
   subtype: python3
 tests:
 - cisco-ise-test-playbook
+fromversion: 5.0.0

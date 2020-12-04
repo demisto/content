@@ -74,3 +74,4 @@ script:
   script: '-'
   type: python
   subtype: python3
+fromversion: 5.0.0

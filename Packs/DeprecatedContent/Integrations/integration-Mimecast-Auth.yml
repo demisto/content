@@ -38,14 +38,18 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     var authType = params.basicCloudAuth ? 'Basic-Cloud' : 'Basic-Ad';
+
 
     var baseUrl = params.baseUrl;
 
+
     var insecure = params.insecure;
 
+
     var demistoAppId = 'dc04611d-3315-4572-976a-a2a9ddc7a0b9';
+
 
     var sendRequest = function(method, url, body) {
             var auth = basicAuth(params.emailAddress,params.password);
@@ -66,6 +70,7 @@ script:
             return JSON.parse(res.Body);
     };
 
+
     var login = function() {
             var body = {};
             var l = {};
@@ -74,6 +79,7 @@ script:
             bodyAsString = JSON.stringify(body);
             return sendRequest('POST', baseUrl + '/api/login/login', bodyAsString);
     };
+
 
     var refresh = function(accessKey) {
             var body = {};
@@ -85,6 +91,7 @@ script:
             return sendRequest('POST', baseUrl + '/api/login/login', bodyAsString);
     };
 
+
     var logout = function(accessKey) {
             var body = {};
             var data = {};
@@ -93,6 +100,7 @@ script:
             bodyAsString = JSON.stringify(body);
             return sendRequest('POST', baseUrl + '/api/login/logout', bodyAsString);
     };
+
 
     var discover = function() {
             var body = {};
@@ -114,6 +122,7 @@ script:
             }
             return JSON.parse(res.Body);
     };
+
 
     switch (command) {
         case 'test-module':
@@ -138,8 +147,7 @@ script:
   - name: mimecast-discover
     deprecated: true
     arguments: []
-    description: 'discover authentication types are supported for your account and
-      which base URL to use for the requesting user. '
+    description: 'discover authentication types are supported for your account and which base URL to use for the requesting user. '
   - name: mimecast-refresh-token
     deprecated: true
     arguments:
@@ -150,3 +158,4 @@ script:
     description: refresh Access Key valid time
 tests:
 - No test
+fromversion: 5.0.0

@@ -2,7 +2,7 @@ id: search_endpoints_by_hash_-_carbon_black_response_-_test
 version: -1
 name: Search Endpoints By Hash - Carbon Black Response - Test
 description: A test playbook for Carbon Black Rapid IOC Hunting
-fromversion: 3.5.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":

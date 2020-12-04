@@ -27,8 +27,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: auto-discovery
-  display: ESM time format, e.g., %Y/%m/%d %H:%M:%S. Select "auto-discovery" to attempt
-    to determine the format automatically.
+  display: ESM time format, e.g., %Y/%m/%d %H:%M:%S. Select "auto-discovery" to attempt to determine the format automatically.
   name: time_format
   required: false
   type: 0
@@ -51,14 +50,12 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
-    months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: alarm_fetch_time
   type: 0
   required: false
 - defaultvalue: '0'
-  display: McAfee ESM Timezone in hours (e.g if ESM timezone is +0300 => then insert
-    3)
+  display: McAfee ESM Timezone in hours (e.g if ESM timezone is +0300 => then insert 3)
   name: timezone
   required: false
   type: 0
@@ -68,8 +65,7 @@ name: McAfee ESM-v10
 script:
   commands:
   - deprecated: false
-    description: Get all fields that can be used in query filters, with type information
-      for each field
+    description: Get all fields that can be used in query filters, with type information for each field
     execution: false
     name: esm-fetch-fields
   - arguments:
@@ -100,16 +96,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: Filter on the query results, should be a json string, of the format
-        EsmFilter (read more on that here - https://<esm-ip>:<esm-port>/rs/esm/help/types/EsmFilter)
+      description: Filter on the query results, should be a json string, of the format EsmFilter (read more on that here - https://<esm-ip>:<esm-port>/rs/esm/help/types/EsmFilter)
       isArray: false
       name: filters
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Query type to preform, by default EVENT (other possible values
-        are : FLOW/ASSET)'
+      description: 'Query type to preform, by default EVENT (other possible values are : FLOW/ASSET)'
       isArray: false
       name: queryType
       predefined:
@@ -187,8 +181,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'user assigned to handle this triggered alarm (use ''ME'' option
-        to use instance user, or use format EsmUser (read more on that here - https://<esm-ip>:<esm-port>/rs/esm/help/types/EsmUser) '
+      description: 'user assigned to handle this triggered alarm (use ''ME'' option to use instance user, or use format EsmUser (read more on that here - https://<esm-ip>:<esm-port>/rs/esm/help/types/EsmUser) '
       isArray: false
       name: assignedUser
       predefined:
@@ -230,8 +223,7 @@ script:
       type: number
   - arguments:
     - default: false
-      description: Filter for a case opened before this date. Given in format "<number>         <time
-        unit>",e.g. 1 day,30 minutes,2 weeks,6 months,1 year
+      description: Filter for a case opened before this date. Given in format "<number>         <time unit>",e.g. 1 day,30 minutes,2 weeks,6 months,1 year
       isArray: false
       name: since
       required: false
@@ -277,8 +269,7 @@ script:
       secret: false
     - default: false
       defaultValue: Open
-      description: the status of the case (use `esm-get-case-statuses` to view all
-        statuses)
+      description: the status of the case (use `esm-get-case-statuses` to view all statuses)
       isArray: false
       name: status
       required: false
@@ -298,8 +289,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: the organization assigned to the case  (use `esm-get-organization-list`
-        to view all ogranizations)
+      description: the organization assigned to the case  (use `esm-get-organization-list` to view all ogranizations)
       isArray: false
       name: organization
       required: false
@@ -362,15 +352,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: the new status of the case (use `esm-get-case-statuses` to view
-        all statuses)
+      description: the new status of the case (use `esm-get-case-statuses` to view all statuses)
       isArray: false
       name: status
       required: false
       secret: false
     - default: false
-      description: the organization assigned to the case  (use `esm-get-organization-list`
-        to view all ogranizations)
+      description: the organization assigned to the case  (use `esm-get-organization-list` to view all ogranizations)
       isArray: false
       name: organization
       required: false
@@ -567,8 +555,7 @@ script:
       type: boolean
   - arguments:
     - default: true
-      description: list of triggered alarm ids to be marked acknowledged separated
-        with commas
+      description: list of triggered alarm ids to be marked acknowledged separated with commas
       isArray: true
       name: alarmIds
       required: true
@@ -579,8 +566,7 @@ script:
     name: esm-acknowledge-alarms
   - arguments:
     - default: true
-      description: list of triggered alarm ids to be marked unacknowledged separated
-        with commas
+      description: list of triggered alarm ids to be marked unacknowledged separated with commas
       isArray: true
       name: alarmIds
       required: true
@@ -671,8 +657,7 @@ script:
       type: string
   - arguments:
     - default: true
-      description: The alarm to get the details for. the ID can be taken from the
-        esm-fetch-alarms
+      description: The alarm to get the details for. the ID can be taken from the esm-fetch-alarms
       isArray: false
       name: alarmId
       required: true
@@ -728,3 +713,4 @@ script:
   subtype: python2
 tests:
 - No tests
+fromversion: 5.0.0

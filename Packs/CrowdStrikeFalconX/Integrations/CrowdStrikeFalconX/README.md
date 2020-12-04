@@ -512,7 +512,7 @@ Submits a URL or FTP for sandbox analysis.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A web page or file URL. It can be HTTP(S) or FTP.<br/>For example: “https://url.com”,“ftp://ftp.com” | Required | 
+| url | A web page or file URL. It can be HTTP(S) or FTP.<br/>For example: `https://url.com or ftp://ftp.com` | Required | 
 | environment_id | Sandbox environment used for analysis. | Required | 
 | action_script | Runtime script for sandbox analysis. Values:<br/>default<br/>default_maxantievasion<br/>default_randomfiles<br/>default_randomtheme<br/>default_openie | Optional | 
 | command_line | Command line script passed to the submitted file at runtime. Max length: 2048 characters | Optional | 

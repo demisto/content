@@ -2,7 +2,7 @@ commonfields:
   id: ContextContains
   version: -1
 name: ContextContains
-script: |
+script: >
   def search(context, path, value):
       '''
       searches a value in a context path.
@@ -24,12 +24,15 @@ script: |
           return len(path) == 0 and context == value
 
   path = demisto.args().get(u'path', u'')
+
   value = demisto.args().get(u'value')
+
 
   results = {
       True : 'yes',
       False : 'no',
   }
+
 
   demisto.results(results[search(demisto.context(), path.split('.'), value)])
 type: python
@@ -45,3 +48,4 @@ args:
   default: true
   description: Value to search
 scripttarget: 0
+fromversion: 5.0.0

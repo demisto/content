@@ -2,29 +2,40 @@ commonfields:
   id: WhileLoop
   version: -1
 name: WhileLoop
-script: |
+script: >
   var val = invContext.keyToWatch;
+
   var expectedValue = args.value;
+
   var argumentsVal = args.cmdArguments;
+
   var argsArr = argumentsVal.split(",");
+
   var maxIterations = 100;
+
   var lastEntry = {};
+
 
   if ((args.maxIterations) && (args.maxIterations.length > 0)) {
       maxIterations = parseInt(args.maxIterations);
   }
+
   sleepTime = 10;
+
   if ((args.sleepTime) && (args.sleepTime.length > 0)) {
       sleepTime = parseInt(args.sleepTime);
   }
 
+
   var argsToCmd = {};
+
   for (i = 0; i < argsArr.length ; i++) {
       var keyval = argsArr[i].split("=");
       if (keyval.length == 2) {
           argsToCmd[keyval[0]] = keyval[1];
       }
   }
+
   for (i = 0; i < maxIterations && (val != expectedValue); i++) {
       lastEntry = executeCommand(args.cmdToRun, argsToCmd );
       val = lastEntry[0].EntryContext[args.keyToWatch];
@@ -41,12 +52,12 @@ script: |
       }
       wait(sleepTime);
   }
+
   return lastEntry;
 type: javascript
 tags:
 - Utility
-comment: Deprecated. While loop is utility script, to do while loops on specific commands or scripts, it will allow you to loop over until some condition is fulfilled (${keyToWatch} == value).
-  Please make sure timeout of the script also sufficient for the loop.
+comment: Deprecated. While loop is utility script, to do while loops on specific commands or scripts, it will allow you to loop over until some condition is fulfilled (${keyToWatch} == value). Please make sure timeout of the script also sufficient for the loop.
 enabled: true
 deprecated: true
 args:
@@ -56,12 +67,10 @@ args:
   description: Command or Automation script to execute each while loop iteration
 - name: cmdArguments
   required: true
-  description: 'comma separated list of command/automation arguments and values to
-    run: key=val,key=val,key=val'
+  description: 'comma separated list of command/automation arguments and values to run: key=val,key=val,key=val'
 - name: keyToWatch
   required: true
-  description: watch this key, if it is equal to value argument (${key}==value) then
-    exit while loop, otherwise continue to next loop iteration (will run command again)
+  description: watch this key, if it is equal to value argument (${key}==value) then exit while loop, otherwise continue to next loop iteration (will run command again)
 - name: value
   required: true
   description: the value that keyToWatch needs to be equal to
@@ -71,3 +80,4 @@ args:
   description: time to sleep/wait between iterations in seconds (default is 10)
 scripttarget: 0
 timeout: 900ns
+fromversion: 5.0.0

@@ -2,7 +2,7 @@ commonfields:
   id: GetDuplicatesMlv2
   version: -1
 name: GetDuplicatesMlv2
-fromversion: "3.5.0"
+fromversion: "5.0.0"
 script: ''
 type: python
 subtype: python2
@@ -17,12 +17,10 @@ comment: |-
 enabled: true
 args:
 - name: maxNumberOfIncidents
-  description: Maximum number of incidents (to fetch from the database) to consider
-    for machine-learning calculation.
+  description: Maximum number of incidents (to fetch from the database) to consider for machine-learning calculation.
   defaultValue: "1000"
 - name: timeFrameHours
-  description: Check candidates for duplication in this time frame of number of days
-    from\after.
+  description: Check candidates for duplication in this time frame of number of days from\after.
   defaultValue: "72"
 - name: ignoreClosedIncidents
   auto: PREDEFINED
@@ -35,16 +33,11 @@ args:
   description: Threshold to consider incident as duplication, number between 0-1
   defaultValue: "0.5"
 - name: compareIndicators
-  description: 'Indicators to consider for duplicate calculation, from the following
-    options: Email, IP, Domain, File SHA256, File MD5, URL. Comma separated values'
+  description: 'Indicators to consider for duplicate calculation, from the following options: Email, IP, Domain, File SHA256, File MD5, URL. Comma separated values'
   defaultValue: Email, IP, Domain, File SHA256, File MD5, URL
 - name: compareEmailLabels
-  description: 'Email labels to consider for duplicate calculation, from the following
-    options: Email/headers/From, Email/headers/Subject, Email/text, Email/html, Email/attachments.
-    Comma separated values. If your labels are different from the default, please
-    specify your labels as follows: LABEL_NAME:YOUR_LABEL_NAME. For example, email/from:email_sender.'
-  defaultValue: Email/headers/From, Email/headers/Subject, Email/text, Email/html,
-    Email/attachments
+  description: 'Email labels to consider for duplicate calculation, from the following options: Email/headers/From, Email/headers/Subject, Email/text, Email/html, Email/attachments. Comma separated values. If your labels are different from the default, please specify your labels as follows: LABEL_NAME:YOUR_LABEL_NAME. For example, email/from:email_sender.'
+  defaultValue: Email/headers/From, Email/headers/Subject, Email/text, Email/html, Email/attachments
 - name: compareOtherLabels
   auto: PREDEFINED
   predefined:
@@ -60,17 +53,13 @@ args:
   description: If yes - take into account incident time differences.
   defaultValue: "yes"
 - name: UseLocalEnvDuplicatesInLastDays
-  description: Consider duplicate incident examples from the local environment within
-    the last "X" days. Default is 0, which means do not use.
+  description: Consider duplicate incident examples from the local environment within the last "X" days. Default is 0, which means do not use.
   defaultValue: "0"
 - name: ipComparisonSubnetMask
-  description: Consider the equity of the IP base on this subnet mask (a valid value
-    is a number between 0 - 32). Default is 32 which means an exact match of the IP
-    addresses.
+  description: Consider the equity of the IP base on this subnet mask (a valid value is a number between 0 - 32). Default is 32 which means an exact match of the IP addresses.
   defaultValue: "32"
 - name: maxResults
-  description: Maximum number of candidates in the output (in incidents candidate
-    list).
+  description: Maximum number of candidates in the output (in incidents candidate list).
   defaultValue: "10"
 - name: timeField
   auto: PREDEFINED
@@ -96,7 +85,8 @@ outputs:
   description: Similar incident name.
   type: string
 scripttarget: 0
+runas: DBotWeakRole
 runonce: false
 dockerimage: demisto/machine-learning
 tests:
-  - Dedup - Generic v2 - Test
+- Dedup - Generic v2 - Test

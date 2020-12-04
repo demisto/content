@@ -2,9 +2,10 @@ commonfields:
   id: 82764532-0a4f-4b59-8cf9-fe1a00cabdae
   version: -1
 name: OktaSearch
-script: |2
+script: >2
 
   resp = demisto.executeCommand("okta-search", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -32,3 +33,4 @@ deprecated: true
 dependson:
   must:
   - okta-search
+fromversion: 5.0.0

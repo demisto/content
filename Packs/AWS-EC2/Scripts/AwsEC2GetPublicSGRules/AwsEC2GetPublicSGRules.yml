@@ -6,10 +6,7 @@ args:
   required: true
   secret: false
 - default: false
-  description: JSON string of the ipPermissions. IpPermissions should have one or
-    more rules which are composed of IpProtocol, FromPort, ToPort, or IpRanges. Refer
-    to aws-ec2-describe-security-groups (https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-security-groups.html)
-    for example/reference.
+  description: JSON string of the ipPermissions. IpPermissions should have one or more rules which are composed of IpProtocol, FromPort, ToPort, or IpRanges. Refer to aws-ec2-describe-security-groups (https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-security-groups.html) for example/reference.
   isArray: true
   name: ipPermissions
   required: true
@@ -26,15 +23,13 @@ args:
   required: true
   secret: false
 - default: false
-  description: Lower bound port range to be checked. If fromPort and toPort are not
-    specified, all ports will be included.
+  description: Lower bound port range to be checked. If fromPort and toPort are not specified, all ports will be included.
   isArray: false
   name: fromPort
   required: false
   secret: false
 - default: false
-  description: Upper bound port range to be checked. If fromPort and toPort are not
-    specified, all ports will be included.
+  description: Upper bound port range to be checked. If fromPort and toPort are not specified, all ports will be included.
   isArray: false
   name: toPort
   required: false
@@ -94,3 +89,4 @@ subtype: python3
 dockerimage: demisto/python3:3.8.3.8715
 runas: DBotWeakRole
 runonce: false
+fromversion: 5.0.0

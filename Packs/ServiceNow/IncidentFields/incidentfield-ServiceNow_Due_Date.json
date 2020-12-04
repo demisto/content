@@ -1,8 +1,5 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "ServiceNow Ticket"
-    ],
+    "associatedToAll": true,
     "breachScript": "",
     "caseInsensitive": true,
     "cliName": "servicenowduedate",

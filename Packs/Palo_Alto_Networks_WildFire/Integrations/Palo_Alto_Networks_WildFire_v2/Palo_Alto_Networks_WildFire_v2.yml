@@ -334,8 +334,7 @@ script:
       type: number
   - arguments:
     - default: false
-      description: EntryID of the text file that contains multiple hashes. Limit is
-        500 hashes.
+      description: EntryID of the text file that contains multiple hashes. Limit is 500 hashes.
       isArray: true
       name: EntryID
       required: false
@@ -347,8 +346,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a verdict regarding multiple hashes, stored in a TXT file
-      or given as list.
+    description: Returns a verdict regarding multiple hashes, stored in a TXT file or given as list.
     execution: false
     name: wildfire-get-verdicts
     outputs:
@@ -417,7 +415,7 @@ script:
     description: Retrieves a sample.
     execution: false
     name: wildfire-get-sample
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: false
   longRunning: false
@@ -428,4 +426,4 @@ script:
   type: python
 tests:
 - Wildfire Test
-fromversion: 4.0.0
+fromversion: 5.0.0

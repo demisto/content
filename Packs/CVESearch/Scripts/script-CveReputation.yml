@@ -2,23 +2,32 @@ commonfields:
   id: cveReputation
   version: -1
 name: cveReputation
-script: |
+script: >
   var resCmd = executeCommand('cve', {'cve_id': args.input})[0];
+
   var maxTries = 5;
+
   var counter = 0;
+
   while (isError(resCmd) && counter < maxTries) {
       resCmd = executeCommand('cve', {'cve_id': args.input})[0];
       counter++;
   }
 
+
   if (isError(resCmd)) {
       throw resCmd.Contents;
   }
 
+
   var data = resCmd.Contents[0];
+
   var key = Object.keys(resCmd.EntryContext)[0]
+
   var cvss = (data.cvss) ? parseInt(data.cvss) : -1;
+
   var res;
+
   if (cvss === -1) {
       res = 0;
   } else if (cvss < 3) {
@@ -29,12 +38,14 @@ script: |
       res= 3;
   }
 
+
   var result = {
     Type: entryTypes.note,
     Contents: res,
     HumanReadable: res,
     EntryContext:{'CVE':resCmd.EntryContext[key]}
   };
+
   return result
 type: javascript
 tags:
@@ -53,3 +64,4 @@ dependson:
   - cve
 timeout: 2.4µs
 runonce: false
+fromversion: 5.0.0

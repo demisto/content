@@ -8,10 +8,10 @@ fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
-    taskid: a1107485-481e-4ace-8904-b72068f4483d
+    taskid: da1a2ceb-52e1-44d9-833a-5e2038d55cae
     type: start
     task:
-      id: a1107485-481e-4ace-8904-b72068f4483d
+      id: da1a2ceb-52e1-44d9-833a-5e2038d55cae
       version: -1
       name: ""
       iscommand: false
@@ -31,12 +31,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 1c585eee-2e16-4a68-84ea-af29782c5462
+    taskid: 5b6e3552-e48d-427e-8bd7-341d9eccb9d0
     type: regular
     task:
-      id: 1c585eee-2e16-4a68-84ea-af29782c5462
+      id: 5b6e3552-e48d-427e-8bd7-341d9eccb9d0
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -63,12 +64,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: da890fe0-fd6a-43f7-8b89-3a8897f9b340
+    taskid: c0c52b20-d291-42ed-81bd-667c66146b13
     type: regular
     task:
-      id: da890fe0-fd6a-43f7-8b89-3a8897f9b340
+      id: c0c52b20-d291-42ed-81bd-667c66146b13
       version: -1
       name: jira-create-issue
       description: Create a new issue on Jira
@@ -86,7 +88,8 @@ tasks:
       dueDate: {}
       issueJson:
         simple: '{"fields":{"issuetype":{"name":"Request for Action"}}}'
-      issueTypeId: {}
+      issueTypeId:
+        simple: "10008"
       issueTypeName: {}
       labels: {}
       parentIssueId: {}
@@ -111,12 +114,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 3b86db93-98a7-46fa-8aeb-b2a7bbbd9c94
+    taskid: 865196c4-4173-4f49-8dcd-9eadc8eaf8a9
     type: regular
     task:
-      id: 3b86db93-98a7-46fa-8aeb-b2a7bbbd9c94
+      id: 865196c4-4173-4f49-8dcd-9eadc8eaf8a9
       version: -1
       name: jira-get-issue
       description: Fetch issue from Jira
@@ -148,12 +152,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: e738a022-6fef-4dc8-8082-d2a86d408118
+    taskid: 8ce4c4b4-c342-4b07-86dd-79c57d43f534
     type: condition
     task:
-      id: e738a022-6fef-4dc8-8082-d2a86d408118
+      id: 8ce4c4b4-c342-4b07-86dd-79c57d43f534
       version: -1
       name: VerifyContextFields
       type: condition
@@ -191,12 +196,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: ee923a46-7da3-4716-8d4f-031588fd08d0
+    taskid: aaadc36c-33f7-4d64-8939-8cda2e489413
     type: regular
     task:
-      id: ee923a46-7da3-4716-8d4f-031588fd08d0
+      id: aaadc36c-33f7-4d64-8939-8cda2e489413
       version: -1
       name: jira-issue-add-comment
       description: Add new comment to existing Jira issue
@@ -227,12 +233,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 9e3e96db-151b-4083-8a2d-ba77689d9150
+    taskid: d483c4fe-0129-45d5-8b6d-f3013419d1a1
     type: regular
     task:
-      id: 9e3e96db-151b-4083-8a2d-ba77689d9150
+      id: d483c4fe-0129-45d5-8b6d-f3013419d1a1
       version: -1
       name: jira-issue-add-link
       description: Creates (or updates) issue link
@@ -269,12 +276,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 6dfb9e1d-e5a4-4cbb-8b13-9e79ff281a87
+    taskid: 330abbed-2bd8-4368-8fd3-38bfe677b03e
     type: regular
     task:
-      id: 6dfb9e1d-e5a4-4cbb-8b13-9e79ff281a87
+      id: 330abbed-2bd8-4368-8fd3-38bfe677b03e
       version: -1
       name: jira-issue-upload-file
       description: Upload a file attachments to an issue
@@ -306,12 +314,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: f6afb873-a85a-48ab-87cc-c9e8c565efb0
+    taskid: 307160b3-75d3-4b85-8f25-e21b0e004f6c
     type: condition
     task:
-      id: f6afb873-a85a-48ab-87cc-c9e8c565efb0
+      id: 307160b3-75d3-4b85-8f25-e21b0e004f6c
       version: -1
       name: VerifyContextFields
       type: condition
@@ -349,12 +358,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: 51934d70-54a0-410e-864c-6b430b902509
+    taskid: 3051d348-e213-42dd-8ce8-7aca1d4edfff
     type: regular
     task:
-      id: 51934d70-54a0-410e-864c-6b430b902509
+      id: 3051d348-e213-42dd-8ce8-7aca1d4edfff
       version: -1
       name: jira-issue-query
       description: Query Jira issues
@@ -383,12 +393,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: f23d8452-44fa-48ae-8e23-dccb74753cd1
+    taskid: 742357c8-5c59-46b5-8fd8-5a95f8fa208e
     type: regular
     task:
-      id: f23d8452-44fa-48ae-8e23-dccb74753cd1
+      id: 742357c8-5c59-46b5-8fd8-5a95f8fa208e
       version: -1
       name: FileCreateAndUpload
       description: |
@@ -417,12 +428,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: d3b08c82-12bc-47d3-8588-ce1fbd6df2c8
+    taskid: ea3f3cc3-cf5e-4ab2-863c-c8450cabd3ab
     type: regular
     task:
-      id: d3b08c82-12bc-47d3-8588-ce1fbd6df2c8
+      id: ea3f3cc3-cf5e-4ab2-863c-c8450cabd3ab
       version: -1
       name: jira-edit-issue
       script: '|||jira-edit-issue'
@@ -459,12 +471,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: 41ea27ee-d174-4451-8764-a5522c086cf9
+    taskid: fa8643fd-09b9-4b7c-83b0-9d1241fead68
     type: condition
     task:
-      id: 41ea27ee-d174-4451-8764-a5522c086cf9
+      id: fa8643fd-09b9-4b7c-83b0-9d1241fead68
       version: -1
       name: VerifyContext - Summary and Status
       type: condition
@@ -508,12 +521,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: 7345691f-d65d-48ed-8164-0a81ef9151ba
+    taskid: 03a467e4-d5cc-4e93-86cd-40d3ccc02d40
     type: regular
     task:
-      id: 7345691f-d65d-48ed-8164-0a81ef9151ba
+      id: 03a467e4-d5cc-4e93-86cd-40d3ccc02d40
       version: -1
       name: jira-get-comments
       script: '|||jira-get-comments'
@@ -540,12 +554,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: 93d52d18-3500-425e-863a-faf106ca0e2f
+    taskid: 9b8ace65-90e9-4de0-83d7-823c2e86a87f
     type: condition
     task:
-      id: 93d52d18-3500-425e-863a-faf106ca0e2f
+      id: 9b8ace65-90e9-4de0-83d7-823c2e86a87f
       version: -1
       name: VerifyContext - comment
       type: condition
@@ -576,12 +591,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
-    taskid: e60b2abd-a5fc-48e3-842c-b86211852ff9
+    taskid: 487c1367-a1fa-4f86-8e14-36360ae3670c
     type: regular
     task:
-      id: e60b2abd-a5fc-48e3-842c-b86211852ff9
+      id: 487c1367-a1fa-4f86-8e14-36360ae3670c
       version: -1
       name: delete-issue
       script: '|||jira-delete-issue'
@@ -606,12 +622,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "25":
     id: "25"
-    taskid: ef3c1cef-0bc4-4d27-894b-692991815cb0
+    taskid: 90ea5428-8d5c-431a-8514-33324410d44f
     type: regular
     task:
-      id: ef3c1cef-0bc4-4d27-894b-692991815cb0
+      id: 90ea5428-8d5c-431a-8514-33324410d44f
       version: -1
       name: jira-get-issue with getAttachments
       script: '|||jira-get-issue'
@@ -642,12 +659,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: ddb712ce-511a-4ba0-83d4-d6efd53f86ac
+    taskid: 77c41fa0-0572-4c72-8c35-1d196950bda1
     type: condition
     task:
-      id: ddb712ce-511a-4ba0-83d4-d6efd53f86ac
+      id: 77c41fa0-0572-4c72-8c35-1d196950bda1
       version: -1
       name: check attachment name and issue attachment
       type: condition
@@ -689,12 +707,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: 519dcf93-922e-488b-89b0-dedbe4080006
+    taskid: 13d4712a-0417-4618-83b3-4d2d44d0bf9c
     type: title
     task:
-      id: 519dcf93-922e-488b-89b0-dedbe4080006
+      id: 13d4712a-0417-4618-83b3-4d2d44d0bf9c
       version: -1
       name: Done
       type: title
@@ -712,6 +731,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},

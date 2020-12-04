@@ -233,8 +233,7 @@ tasks:
       id: f5306f35-038d-480e-8b59-7833c7cb230d
       version: -1
       name: Request user to confirm account activity
-      description: Send an email to the source user email address to confirm whether
-        they recognize the suspicious activity.
+      description: Send an email to the source user email address to confirm whether they recognize the suspicious activity.
       scriptName: EmailAskUser
       type: regular
       iscommand: false
@@ -268,11 +267,7 @@ tasks:
           transformers:
           - operator: uniq
       message:
-        simple: "Hi ${incident.srcuser},\n\nWe identified unexpected activity on your\
-          \ account. \n\nStarting on ${incident.occurred}, there were suspicious log-in\
-          \ attempts from the ${incident.src} IP address.\n\nPlease confirm whether\
-          \ or not you recognize this activity.\nReply \"Yes\" to confirm this activity.\
-          \ \nReply \"No\" otherwise.\n\nRegards,\nYour friendly security team."
+        simple: "Hi ${incident.srcuser},\n\nWe identified unexpected activity on your account. \n\nStarting on ${incident.occurred}, there were suspicious log-in attempts from the ${incident.src} IP address.\n\nPlease confirm whether or not you recognize this activity.\nReply \"Yes\" to confirm this activity. \nReply \"No\" otherwise.\n\nRegards,\nYour friendly security team."
       option1:
         simple: "yes"
       option2:
@@ -707,11 +702,7 @@ tasks:
       id: a762c9b2-95c6-459a-8fe0-398d9721ce0b
       version: -1
       name: Manually remediate  the incident
-      description: "Review the incident to determine if the account activity is malicious.\n\
-        \nIf malicious, consider the following:\n* Quarantine the account/ endpoint\
-        \ \n* Revoke the account password\n* Query the account/ IPs logs in the SIEM\n\
-        * Block the external IPs in the firewall/ proxy\n* Check the account's privileges\
-        \ and change if needed"
+      description: "Review the incident to determine if the account activity is malicious.\n\nIf malicious, consider the following:\n* Quarantine the account/ endpoint \n* Revoke the account password\n* Query the account/ IPs logs in the SIEM\n* Block the external IPs in the firewall/ proxy\n* Check the account's privileges and change if needed"
       type: regular
       iscommand: false
       brand: ""
@@ -779,8 +770,7 @@ tasks:
       id: 7b32be50-0650-4319-81d4-86b65225d07c
       version: -1
       name: Active Directory - Get User Manager Details
-      description: Takes an email address or a username of a user account in Active
-        Directory, and returns the email address of the user's manager.
+      description: Takes an email address or a username of a user account in Active Directory, and returns the email address of the user's manager.
       playbookName: Active Directory - Get User Manager Details
       type: playbook
       iscommand: false
@@ -907,8 +897,7 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: Set to true to assign only the users that are currently on shift. Requires
-    Cortex XSOAR v5.5 or later.
+  description: Set to true to assign only the users that are currently on shift. Requires Cortex XSOAR v5.5 or later.
   playbookInputQuery:
 outputs:
 - contextPath: Account.Email.Address
@@ -970,6 +959,6 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
-fromversion: 4.5.0
+fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

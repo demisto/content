@@ -72,14 +72,20 @@ configuration:
   type: 0
   required: false
 script:
-  script: |-
+  script: >-
     var DEFAULT_EVENT_HEADERS = ['message','id','type','sensorId','threatScore','killChainStage','confidence','startedAt','observedAt','endedAt','observationCount','netflowCount','observedStage'];
+
     var DEFAULT_NETFLOW_HEADERS = ['key', 'id.srcIp', 'id.dstIp', 'id.srcPort', 'id.dstPort', 'id.layer4Proto'];
+
     var DEFAULT_OBSERVATION_HEADERS = ['id','killChainStage','source','sensorId','threatScore','severity','confidence','occurredAt','observedAt','endedAt','netflowId','observedStage'];
+
     var DEFAULT_SENSOR_HEADERS = ['id', 'friendly_name', 'ip_address', 'last_seen', 'customer_id', 'enabled'];
+
     var TIME_FIELDS = ['startedAt', 'occurredAt', 'endedAt', 'observedAt'];
 
+
     var serverUrl = params.url.replace(/[\/]+$/, '') + '/';
+
 
     var getToken = function() {
         var token = '';
@@ -115,10 +121,13 @@ script:
         return token;
     };
 
+
     // If value for any argument is empty remove it
+
     var cleanArgs = function(args) {
         return Object.keys(args).filter(function(k) {return args[k];}).reduce(function(clean, k) {clean[k] = args[k]; return clean;}, {});
     };
+
 
     var doReq = function(url, token, raw, args, saveToFile) {
         if (args) {
@@ -144,6 +153,7 @@ script:
         }
     };
 
+
     var filterClone = function(src, filter) {
         if (src && Array.isArray(src) && filter && Array.isArray(filter)) {
             var items = [];
@@ -158,6 +168,7 @@ script:
         } else return undefined;
     };
 
+
     var parseTime = function(time) {
         if ((typeof time === 'string' || time instanceof String) && (time.indexOf("-") >= 0 || time.indexOf("/") >= 0 )){
             var d = new Date(time);
@@ -166,17 +177,20 @@ script:
         return time;
     };
 
+
     var eventsSearch = function(start, end, eventType, killChainStage, threatLevel, threatCategory, observationStage, ip, expandDetails, minLimit, maxLimit, reverseOrder, nextPage, token) {
         return doReq(serverUrl + 'events', token, true, {start: parseTime(start), end: parseTime(end),
             eventType: eventType, killChainStage: killChainStage, threatLevel: threatLevel, threatCategory: threatCategory, observationStage: observationStage,
             ip: ip, expandDetails: expandDetails, minLimit: minLimit, maxLimit: maxLimit, reverseOrder: reverseOrder, nextPage: nextPage});
     };
 
+
     var observationSearch = function(sensorId,start,end,type,killChainStage,threatLevel,threatCategory,hasKillChain,ip,expandDetails,minLimit,maxLimit,reverseOrder,nextPage,signatureId,token) {
         return doReq(serverUrl + 'observations', token, true, {sensorId: sensorId, start: parseTime(start), end: parseTime(end), type: type, killChainStage: killChainStage,
             threatLevel: threatLevel, threatCategory: threatCategory, hasKillChain: hasKillChain, ip: ip, expandDetails: expandDetails, minLimit: minLimit, maxLimit: maxLimit,
             reverseOrder: reverseOrder, nextPage: nextPage, signatureId: signatureId});
     };
+
 
     var createIncidentFromEvent = function(event) {
         var keys = Object.keys(event);
@@ -196,7 +210,9 @@ script:
         };
     };
 
+
     var token = getToken();
+
     switch (command) {
         case 'test-module':
             if (token && token.length > 0) {
@@ -476,15 +492,13 @@ script:
     arguments:
     - name: sensorId
       default: true
-      description: The ID of the individual sensor. If empty, will query all
-        available sensors.
+      description: The ID of the individual sensor. If empty, will query all available sensors.
     description: Returns the specified, or all available sensors.
   - name: protectwise-show-sensors
     arguments:
     - name: sensorId
       default: true
-      description: The ID of the individual sensor. If empty, will query all
-        available sensors.
+      description: The ID of the individual sensor. If empty, will query all available sensors.
     outputs:
     - contextPath: Protectwise.Sensor.id
       description: The ID of the sensor.
@@ -504,12 +518,10 @@ script:
     arguments:
     - name: start
       required: true
-      description: 'The timestamp of the start time of the event. For example, 1401451200000,
-        or 2015-03-25T12:00:00.'
+      description: 'The timestamp of the start time of the event. For example, 1401451200000, or 2015-03-25T12:00:00.'
     - name: end
       required: true
-      description: 'The timestamp of the end of the event. For example, 1401451500000, or
-      2015-03-25T12:00:00.'
+      description: 'The timestamp of the end of the event. For example, 1401451500000, or 2015-03-25T12:00:00.'
     - name: eventType
       description: 'Filter by one or more event types. Can be: "MaliciousFlow", "KillChainEscalation", or "MaliciousConversation".'
     - name: killChainStage
@@ -530,8 +542,7 @@ script:
       description: Whether to sort results by descending timestamp. If "true", results are returned in descending timestamp order. If "false", results are returned in ascending timestamp order. Default is "true".
     - name: nextPage
       description: An identifier to fetch the next page in the result set.
-    description: Searches for events. Events are resources that describe a threat and contain
-      a collection of observations. 
+    description: Searches for events. Events are resources that describe a threat and contain a collection of observations.
   - name: protectwise-search-events
     arguments:
     - name: start
@@ -587,8 +598,7 @@ script:
       description: The number of netflows related to this event.
     - contextPath: Protectwise.Event.observedStage
       description: The observed stage (Realtime or Retrospective).
-    description: Searches for events. Events are resources that describe a threat and contains
-      a collection of observations. Deprecated - use the protectwise-search-events command.
+    description: Searches for events. Events are resources that describe a threat and contains a collection of observations. Deprecated - use the protectwise-search-events command.
   - name: pw-event-get
     deprecated: true
     arguments:
@@ -675,12 +685,10 @@ script:
       description: The sensor ID or a comma-separated list of sensor IDs.
     - name: start
       required: true
-      description: 'The timestamp of the start time of the event. For example, 1401451200000,
-        or 2015-03-25T12:00:00'
+      description: 'The timestamp of the start time of the event. For example, 1401451200000, or 2015-03-25T12:00:00'
     - name: end
       required: true
-      description: 'The timestamp of the end of the event. For example, 1401451500000, or
-        2015-03-25T12:00:00'
+      description: 'The timestamp of the end of the event. For example, 1401451500000, or 2015-03-25T12:00:00'
     - name: type
       description: 'Filter by observation type. Can be: "ids", "http", "iprep", "urlrep", "protocol" or "file".'
     - name: hasKillChain
@@ -694,8 +702,7 @@ script:
     - name: threatCategory
       description: Filter by threat category (ExploitsAndAttacks  DenialOfService  Malware  Scanning  Botnets  Phishing  Suspicious  MaliciousHost  APT  Misc  Unknown)
     - name: signatureId
-      description: 'Filter by threat signature (find observations of the same type
-        of threat) -  Example: 69020504'
+      description: 'Filter by threat signature (find observations of the same type of threat) -  Example: 69020504'
     - name: minLimit
       description: Try to return at least this many results per page
     - name: maxLimit
@@ -709,15 +716,13 @@ script:
     arguments:
     - name: sensorId
       required: true
-      description: The ID of the individual sensor or a comma-separated list of Sensor IDs. 
+      description: The ID of the individual sensor or a comma-separated list of Sensor IDs.
     - name: start
       required: true
-      description: 'Timestamp of the start time of the event. For example, 1401451200000,
-        or 2015-03-25T12:00:00.'
+      description: 'Timestamp of the start time of the event. For example, 1401451200000, or 2015-03-25T12:00:00.'
     - name: end
       required: true
-      description: 'Timestamp of the end of the event. For example, 1401451500000, or
-      2015-03-25T12:00:00'
+      description: 'Timestamp of the end of the event. For example, 1401451500000, or 2015-03-25T12:00:00'
     - name: type
       description: 'Filter by observation type. Can be: "ids", "http", "iprep", "urlrep", "protocol", or "file".'
     - name: hasKillChain
@@ -731,8 +736,7 @@ script:
     - name: threatCategory
       description: 'Filter by threat category. Can be: "ExploitsAndAttacks", "DenialOfService", "Malware", "Scanning", "Botnets", "Phishing", "Suspicious", "MaliciousHost", "APT", "Misc", or "Unknown".'
     - name: signatureId
-      description: 'Filter by threat signature. Finds observations of the same type
-        of threat). For example, 69020504.'
+      description: 'Filter by threat signature. Finds observations of the same type of threat). For example, 69020504.'
     - name: minLimit
       description: Minimum number of results per page.
     - name: maxLimit
@@ -820,7 +824,7 @@ script:
       description: The event ID.
     - name: filename
       description: The filename for download.
-    description: The Event PCAP file to download. 
+    description: The Event PCAP file to download.
   - name: protectwise-event-pcap-download
     arguments:
     - name: eventId
@@ -906,6 +910,6 @@ script:
     arguments: []
     description: Returns the API token, which is used in the integration configuration.
   isfetch: true
-fromversion: 3.5.0
+fromversion: 5.0.0
 tests:
-  - Protectwise-Test
+- Protectwise-Test

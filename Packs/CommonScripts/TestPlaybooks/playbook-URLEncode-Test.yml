@@ -1,0 +1,148 @@
+id: URLEncode-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: URLEncode-Test
+description: 'Testing output of URLEncode'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: eb4f882a-8d11-47d8-8c03-2f3fc45b30f1
+    type: start
+    task:
+      id: eb4f882a-8d11-47d8-8c03-2f3fc45b30f1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ccc44e81-af9f-4292-8e28-40ea260d49c6
+    type: condition
+    task:
+      id: ccc44e81-af9f-4292-8e28-40ea260d49c6
+      version: -1
+      name: Validate output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: UrlToEncode
+                transformers:
+                - operator: URLEncode
+            iscontext: true
+          right:
+            value:
+              simple: https%3A//example.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d8ea5b1f-2486-49c3-811f-132968aac122
+    type: title
+    task:
+      id: d8ea5b1f-2486-49c3-811f-132968aac122
+      version: -1
+      name: End test
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 288676a9-2cdf-4294-8611-e87c527f50bd
+    type: regular
+    task:
+      id: 288676a9-2cdf-4294-8611-e87c527f50bd
+      version: -1
+      name: Set Context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: UrlToEncode
+      value:
+        simple: https://example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

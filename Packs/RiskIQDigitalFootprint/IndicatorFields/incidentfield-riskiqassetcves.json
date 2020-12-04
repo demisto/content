@@ -1,0 +1,32 @@
+{
+ "id": "indicator_riskiqassetcves",
+ "version": -1,
+ "modified": "2020-07-14T12:19:50.968358268+05:30",
+ "name": "RiskIQAsset CVEs",
+ "ownerOnly": false,
+ "placeholder": "CVEs detected from the details of the RiskIQ Asset.",
+ "description": "CVEs detected from the details of the RiskIQ Asset.",
+ "cliName": "riskiqassetcves",
+ "type": "tagsSelect",
+ "closeForm": false,
+ "editForm": false,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 2,
+ "hidden": false,
+ "associatedTypes": [
+  "RiskIQAsset"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.5.0"
+}

@@ -24,6 +24,7 @@ Fetch indicators stored in an Elasticsearch database.
     * __First Fetch Time__: Determine how far to look back for fetched indicators (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days).
     * __Indicator Reputation__: Indicators from this integration instance will be marked with this reputation.
     * __Source Reliability__: Reliability of the source providing the intelligence data.
+    * __Traffic Light Protocol Color__: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp.
     * __Indicator Value Field__: Source field that contains the indicator value in the index.
     * __Indicator Type Field__: Source field that contains the indicator type in the index.
     * __Indicator Type__: Default indicator type used in case no "Indicator Type Field" was provided

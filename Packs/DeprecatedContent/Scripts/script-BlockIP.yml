@@ -2,9 +2,11 @@ commonfields:
   id: BlockIP
   version: -1
 name: BlockIP
-script: |-
+script: >-
   var blockPanorama = !!executeCommand('IsIntegrationAvailable',{'brandname': 'panorama'})[0].Contents;
+
   var blockCP = !!executeCommand('IsIntegrationAvailable',{'brandname': 'check point'})[0].Contents;
+
 
   if (args['using-brand']) {
       switch (args['using-brand'].toLowerCase()) {
@@ -17,14 +19,18 @@ script: |-
       }
   }
 
+
   if (!args.rulename) {
       args.rulename = 'ip' + args.ip + ' blocked in direction ' + args.direction;
   }
 
+
   var entries = [];
+
   if (blockPanorama) {
       entries.push(executeCommand('PanoramaBlockIP', args));
   }
+
 
   if (blockCP) {
       if (!args.ipname) {
@@ -32,6 +38,7 @@ script: |-
       }
       entries.push(executeCommand('CPBlockIP', args));
   }
+
 
   return entries;
 type: javascript
@@ -67,3 +74,4 @@ dependson:
   - checkpoint
 tests:
 - No tests
+fromversion: 5.0.0

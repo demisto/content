@@ -1,5 +1,6 @@
 id: test-ThreatConnect
 version: -1
+fromversion: 5.0.0
 name: test-ThreatConnect
 starttaskid: "0"
 tasks:

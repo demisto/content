@@ -2,9 +2,10 @@ commonfields:
   id: TrendmicroHostRetrieveAll
   version: -1
 name: TrendmicroHostRetrieveAll
-script: |2
+script: >2
 
   resp = demisto.executeCommand("trendmicro-host-retrieve-all", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -27,3 +28,4 @@ dependson:
   must:
   - trendmicro-host-retrieve-all
 timeout: 0s
+fromversion: 5.0.0

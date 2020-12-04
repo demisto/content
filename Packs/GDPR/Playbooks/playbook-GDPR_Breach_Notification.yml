@@ -1,17 +1,8 @@
 id: GDPR Breach Notification
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 name: GDPR Breach Notification
-description: "This playbook triggers by a GDPR breach incident, and then performs the required tasks that are detailed
-  in GDPR Article 33.
-
-  The General Data Protection Regulation (the GDPR) is a regulation in EU law on data protection and privacy
-  of individuals. The GDPR introduces the requirement for a personal data breach to be notified to the competent
-  national supervisory authority and in certain cases, to communicate the breach to the individuals whose personal
-  data have been affected by the breach.
-
-  ***Disclaimer: This playbook does not ensure compliance to the GDPR regulation. Before using this playbook,
-  we advise consulting with the relevant authority, and adjusting it to the organization's needs."
+description: "This playbook triggers by a GDPR breach incident, and then performs the required tasks that are detailed in GDPR Article 33.\nThe General Data Protection Regulation (the GDPR) is a regulation in EU law on data protection and privacy of individuals. The GDPR introduces the requirement for a personal data breach to be notified to the competent national supervisory authority and in certain cases, to communicate the breach to the individuals whose personal data have been affected by the breach.\n***Disclaimer: This playbook does not ensure compliance to the GDPR regulation. Before using this playbook, we advise consulting with the relevant authority, and adjusting it to the organization's needs."
 starttaskid: "0"
 tasks:
   "0":
@@ -71,25 +62,12 @@ tasks:
       subject:
         simple: Suspected Data Breach in your organization
       body:
-        simple: "Hello,\nA suspected data breach has occurred in your organization,
-                and requires your attention.\n\nData breach details:\n\nCompany:
-                ${incident.companyname}\nCountry: ${incident.countrywherethebreachtookplace}\nDate/Time:
-                ${incident.datetimeofthebreach}\nAffected data type: ${incident.affecteddata}\nApprox.
-                # of affected data subjects: ${incident.approximatenumberofaffecteddatasubjects}\nData
-                encryption status: ${incident.dataencryptionstatus}\nWhere data is hosted:
-                ${incident.whereisdatahosted}\nApprox. # of affected data records:
-                ${incident.affectedindividualscontactinformation.0.approximatenumberofdatarecordsbreached}\nSuspected
-                cause of the breach: ${incident.possiblecauseofthebreach}\nIf the cause
-                is malicious, specific cause might have been:
-                ${incident.maliciouscauseifthecauseisamaliciousattack}\nRefer to Article 33 GDPR for more information
-                on the notification process:
-                https://gdpr-info.eu/art-33-gdpr/ \n\nPlease complete the following form
-                to continue the data breach investigation. \n"
+        simple: "Hello,\nA suspected data breach has occurred in your organization, and requires your attention.\n\nData breach details:\n\nCompany: ${incident.companyname}\nCountry: ${incident.countrywherethebreachtookplace}\nDate/Time: ${incident.datetimeofthebreach}\nAffected data type: ${incident.affecteddata}\nApprox. # of affected data subjects: ${incident.approximatenumberofaffecteddatasubjects}\nData encryption status: ${incident.dataencryptionstatus}\nWhere data is hosted: ${incident.whereisdatahosted}\nApprox. # of affected data records: ${incident.affectedindividualscontactinformation.0.approximatenumberofdatarecordsbreached}\nSuspected cause of the breach: ${incident.possiblecauseofthebreach}\nIf the cause is malicious, specific cause might have been: ${incident.maliciouscauseifthecauseisamaliciousattack}\nRefer to Article 33 GDPR for more information on the notification process: https://gdpr-info.eu/art-33-gdpr/ \n\nPlease complete the following form to continue the data breach investigation. \n"
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -102,8 +80,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: In your assessment, does the breach involve the personal
-            data of living individuals?
+          simple: In your assessment, does the breach involve the personal data of living individuals?
         required: true
         gridcolumns: []
         defaultrows: []
@@ -113,8 +90,7 @@ tasks:
         - "No"
         fieldassociated: ""
         placeholder: ""
-        tooltip: If the answer is 'Yes', please proceed and fill out the following
-          questions. In that case the breach will be documented.
+        tooltip: If the answer is 'Yes', please proceed and fill out the following questions. In that case the breach will be documented.
       - id: "1"
         label: ""
         labelarg:
@@ -128,11 +104,7 @@ tasks:
         - Unlikely
         fieldassociated: ""
         placeholder: ""
-        tooltip: Risk - The resulting risk of the impact of the breach on individuals.
-          When assessing the risk to individuals as a result of a breach, the comptroller should consider the specific
-          circumstances of the breach, including the severity of the potential impact and the likelihood of this
-          occurring. If the answer is 'Likely' to result in a risk to individuals, please process to fill out the next
-          question, and the section regarding the information for the breach report.
+        tooltip: Risk - The resulting risk of the impact of the breach on individuals. When assessing the risk to individuals as a result of a breach, the comptroller should consider the specific circumstances of the breach, including the severity of the potential impact and the likelihood of this occurring. If the answer is 'Likely' to result in a risk to individuals, please process to fill out the next question, and the section regarding the information for the breach report.
       - id: "2"
         label: ""
         labelarg:
@@ -146,13 +118,7 @@ tasks:
         - "No"
         fieldassociated: ""
         placeholder: ""
-        tooltip: High Risk - This risk exists when the breach may lead to physical, material or non-material damage
-          for the individuals whose data have been breached. Examples of such damage are discrimination,
-          identity theft or fraud, financial loss and damage to reputation. When the breach involves personal data
-          that reveals racial or ethnic origin, political opinion, religion or philosophical beliefs, or trade union
-          membership, or includes genetic data, data concerning health, or criminal convictions and offences
-          or related security measures, such damage should be considered likely to occur.If the answer is 'Yes',
-          you need to notify the affected subjects (persons) about the data breach.
+        tooltip: High Risk - This risk exists when the breach may lead to physical, material or non-material damage for the individuals whose data have been breached. Examples of such damage are discrimination, identity theft or fraud, financial loss and damage to reputation. When the breach involves personal data that reveals racial or ethnic origin, political opinion, religion or philosophical beliefs, or trade union membership, or includes genetic data, data concerning health, or criminal convictions and offences or related security measures, such damage should be considered likely to occur.If the answer is 'Yes', you need to notify the affected subjects (persons) about the data breach.
       - id: "3"
         label: ""
         labelarg:
@@ -356,19 +322,7 @@ tasks:
         options: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: '"main establishment means: as regards a controller with establishments
-          in more than one Member State, the place of its central administration in
-          the Union, unless the decisions on the purposes and means of the processing
-          of personal data are taken in another establishment of the controller in
-          the Union and the latter establishment has the power to have such decisions
-          implemented, in which case the establishment having taken such decisions
-          is to be considered to be the main establishment, as regards a processor
-          with establishments in more than one Member State, the place of its central
-          administration in the Union, or, if the processor has no central administration
-          in the Union, the establishment of the processor in the Union where the
-          main processing activities in the context of the activities of an establishment
-          of the processor take place to the extent that the processor is subject
-          to specific obligations under this Regulation" - GDPR Art. 4'
+        tooltip: '"main establishment means: as regards a controller with establishments in more than one Member State, the place of its central administration in the Union, unless the decisions on the purposes and means of the processing of personal data are taken in another establishment of the controller in the Union and the latter establishment has the power to have such decisions implemented, in which case the establishment having taken such decisions is to be considered to be the main establishment, as regards a processor with establishments in more than one Member State, the place of its central administration in the Union, or, if the processor has no central administration in the Union, the establishment of the processor in the Union where the main processing activities in the context of the activities of an establishment of the processor take place to the extent that the processor is subject to specific obligations under this Regulation" - GDPR Art. 4'
       - id: "19"
         label: ""
         labelarg:
@@ -432,20 +386,11 @@ tasks:
         - Other
         fieldassociated: ""
         placeholder: ""
-        tooltip: '"A data protection impact assessment (...) shall in particular be
-          required in the case of: (a) a systematic and extensive evaluation of personal
-          aspects relating to natural persons which is based on automated processing,
-          including profiling, and on which decisions are based that produce legal
-          effects concerning the natural person or similarly significantly affect
-          the natural person; (b) processing on a large scale of special categories
-          of data referred to in Article 9(1), or of personal data relating to criminal
-          convictions and offences referred to in Article 10; or (c) a systematic
-          monitoring of a publicly accessible area on a large scale. - GDPR Art. 35'
+        tooltip: '"A data protection impact assessment (...) shall in particular be required in the case of: (a) a systematic and extensive evaluation of personal aspects relating to natural persons which is based on automated processing, including profiling, and on which decisions are based that produce legal effects concerning the natural person or similarly significantly affect the natural person; (b) processing on a large scale of special categories of data referred to in Article 9(1), or of personal data relating to criminal convictions and offences referred to in Article 10; or (c) a systematic monitoring of a publicly accessible area on a large scale. - GDPR Art. 35'
       - id: "22"
         label: ""
         labelarg:
-          simple: Have the data breached been subject to a Data Protection Impact
-            Assessment (DPIA)?
+          simple: Have the data breached been subject to a Data Protection Impact Assessment (DPIA)?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -485,9 +430,7 @@ tasks:
         options: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: '"(d) describe the measures taken or proposed to be taken by the
-          controller to address the personal data breach, including, where appropriate,
-          measures to mitigate its possible adverse effects." - GDPR Art. 33'
+        tooltip: '"(d) describe the measures taken or proposed to be taken by the controller to address the personal data breach, including, where appropriate, measures to mitigate its possible adverse effects." - GDPR Art. 33'
       - id: "25"
         label: ""
         labelarg:
@@ -1510,8 +1453,8 @@ tasks:
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1566,4 +1509,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-  - No Test
+- No Test

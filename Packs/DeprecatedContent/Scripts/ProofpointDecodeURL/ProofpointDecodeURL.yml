@@ -18,5 +18,6 @@ outputs:
   description: Decoded URLs
 scripttarget: 0
 tests:
-  - No tests
+- No tests
 deprecated: true
+fromversion: 5.0.0

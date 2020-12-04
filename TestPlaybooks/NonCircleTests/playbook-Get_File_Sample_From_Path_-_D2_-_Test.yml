@@ -2,7 +2,7 @@ id: get_file_sample_from_path_-_d2_-_test
 version: -1
 name: Get File Sample From Path - D2 - Test
 description: ""
-fromversion: "3.5.0"
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":

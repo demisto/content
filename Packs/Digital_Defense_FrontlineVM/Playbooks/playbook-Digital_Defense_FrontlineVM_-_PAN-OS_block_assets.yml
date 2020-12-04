@@ -1,11 +1,8 @@
 id: Digital Defense FrontlineVM - PAN-OS block assets
 version: -1
-fromversion: 4.1.0
+fromversion: 5.0.0
 name: Digital Defense FrontlineVM - PAN-OS block assets
-description: This playbook will pull Panorama queried threat logs and check for any
-  correlating assets that are found to have a minimum of high level vulnerabilities.
-  If so, it will block the the IP using Panorama's PAN-OS - Block IP and URL - External
-  Dynamic List playbook.
+description: This playbook will pull Panorama queried threat logs and check for any correlating assets that are found to have a minimum of high level vulnerabilities. If so, it will block the the IP using Panorama's PAN-OS - Block IP and URL - External Dynamic List playbook.
 starttaskid: '0'
 tasks:
   '0':
@@ -115,8 +112,7 @@ tasks:
       id: ba8ae7be-71f8-445a-83e6-bc9e78260c97
       version: -1
       name: frontline-get-vulns (pull high & critical severity vulns from threat source)
-      description: Query FrontlineVM for vulnerabilities with a minimum severity of
-        'high' found from Panorama's queried log threat source.
+      description: Query FrontlineVM for vulnerabilities with a minimum severity of 'high' found from Panorama's queried log threat source.
       script: Digital Defense FrontlineVM|||frontline-get-vulns
       type: regular
       iscommand: true
@@ -198,8 +194,7 @@ tasks:
       - '19'
     scriptarguments:
       value:
-        simple: 'Asset found to have high level and/or critical level vulnerabilities
-          within Frontline.Cloud: ${Panorama.Monitor.Logs.SourceAddress}'
+        simple: 'Asset found to have high level and/or critical level vulnerabilities within Frontline.Cloud: ${Panorama.Monitor.Logs.SourceAddress}'
     separatecontext: false
     view: |-
       {
@@ -226,8 +221,7 @@ tasks:
       brand: ''
     scriptarguments:
       value:
-        simple: 'High and/or critical level vulnerabilities not found within Frontline.Cloud
-          for given asset: ${Panorama.Monitor.Logs.SourceAddress}'
+        simple: 'High and/or critical level vulnerabilities not found within Frontline.Cloud for given asset: ${Panorama.Monitor.Logs.SourceAddress}'
     separatecontext: false
     view: |-
       {
@@ -434,8 +428,8 @@ tasks:
       methods:
       - email
       format: ''
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -487,4 +481,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-  - No test - manual task
+- No test - manual task

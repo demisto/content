@@ -1,0 +1,62 @@
+{
+  "name": "dummy@contact.com",
+  "type": "CONTACT",
+  "firstSeen": 1474994431102,
+  "lastSeen": 1591634267273,
+  "uuid": "3ae11a55-2925-c271-7806-f0839ce24350",
+  "label": "dummy@contact.com",
+  "description": "dummy@contact.com",
+  "assetEmail": "dummy@contact.com",
+  "assetNames": [
+    {
+      "value": "Dummy Person",
+      "firstSeen": 1515223308119,
+      "lastSeen": 1569768302096
+    },
+    {
+      "value": "Risk IQ",
+      "firstSeen": 1474994431102,
+      "lastSeen": 1474994431180
+    }
+  ],
+  "assetOrganizations": [
+    {
+      "value": "RiskIQ, Inc.",
+      "firstSeen": 1474994431102,
+      "lastSeen": 1569768302096
+    }
+  ],
+  "assetFirstSeen": 1474994431102,
+  "assetLastSeen": 1569768302096,
+  "assetCount": 18,
+  "assetNameServers": [
+      {
+        "value": "dummy.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy1.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy2.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy3.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      }
+  ]
+}

@@ -64,8 +64,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns authentication logs associated with a user. Limited to 30
-      at a time
+    description: Returns authentication logs associated with a user. Limited to 30 at a time
     execution: false
     name: duoadmin-get-authentication-logs-by-user
     outputs:
@@ -232,7 +231,7 @@ script:
     description: Associates a device to a user
     execution: false
     name: duoadmin-associate-device-to-user
-  dockerimage: demisto/duoadmin:1.0.0.10663
+  dockerimage: demisto/duoadmin:1.0.0.11989
   isfetch: false
   longRunning: false
   longRunningPort: false
@@ -242,3 +241,4 @@ script:
   subtype: python2
 tests:
 - DuoAdmin API test playbook
+fromversion: 5.0.0

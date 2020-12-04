@@ -1,6 +1,6 @@
 id: Endpoint Enrichment - Generic v2
 version: -1
-fromversion: 4.1.0
+fromversion: 5.0.0
 name: Endpoint Enrichment - Generic v2
 description: |-
   Deprecated. Use "Endpoint Enrichment - Generic v2.1" playbook instead. Enrich an endpoint by hostname using one or more integrations.
@@ -224,8 +224,7 @@ tasks:
       id: 9cee85fe-c940-400e-88e8-b0afb46fbb36
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
-      description: Checks if there is any active instance of the Carbon Black Enterprise integration enabled.
-        Response.
+      description: Checks if there is any active instance of the Carbon Black Enterprise integration enabled. Response.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -805,4 +804,4 @@ outputs:
   description: The domain names of the endpoints that were enriched.
   type: string
 tests:
-  - No Tests
+- No Tests

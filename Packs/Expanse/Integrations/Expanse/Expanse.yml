@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-fromversion: 4.5.0
+fromversion: 5.0.0
 commonfields:
   id: Expanse
   version: -1
@@ -50,10 +50,7 @@ configuration:
   - ROUTINE
   - WARNING
   - CRITICAL
-description: The Expanse App for Demisto leverages the Expander API to retrieve network
-  exposures and risky flows to create incidents in Demisto.  This application also allows for IP,
-  Domain, Certificate, Behavior, and Exposure enrichment, retrieving assets and exposures information drawn from Expanse’s
-  unparalleled view of the Internet.
+description: The Expanse App for Demisto leverages the Expander API to retrieve network exposures and risky flows to create incidents in Demisto.  This application also allows for IP, Domain, Certificate, Behavior, and Exposure enrichment, retrieving assets and exposures information drawn from Expanse’s unparalleled view of the Internet.
 display: Expanse
 name: Expanse
 script:
@@ -74,8 +71,7 @@ script:
       description: The IP address.
       type: String
     - contextPath: IP.Geo.Location
-      description: 'The geolocation where the IP address is located, in the format:
-        latitude:longitude.'
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
       type: String
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
@@ -114,12 +110,10 @@ script:
       description: The number of IP addresses in the IP network this IP address belongs to.
       type: Number
     - contextPath: Expanse.IP.IPRange.ResponsiveIPCount
-      description: Number of responsive IP addresses in IP network this IP address
-        belongs to.
+      description: Number of responsive IP addresses in IP network this IP address belongs to.
       type: Number
     - contextPath: Expanse.IP.IPRange.RangeIntroduced
-      description: Date the IP network this IP address belongs to was introduced to
-        Expanse.
+      description: Date the IP network this IP address belongs to was introduced to Expanse.
       type: Date
     - contextPath: Expanse.IP.IPRange.AttributionReasons
       description: The reason why this IP belongs to the IP range.
@@ -146,8 +140,7 @@ script:
       description: Customer defined Notes from Expanse related to this IP range.
       type: String
     - contextPath: Expanse.IP.Annotations.PointsOfContact
-      description: Customer defined Points of Contact from Expanse related to this
-        IP range.
+      description: Customer defined Points of Contact from Expanse related to this IP range.
       type: String
     - contextPath: Expanse.IP.SeverityCounts.CRITICAL
       description: The number of CRITICAL Events for this IP address.
@@ -680,7 +673,7 @@ script:
     - contextPath: Expanse.IPDomains.DomainList
       description: An array of domain objects. This is truncated at 50.
       type: Unknown
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
   longRunning: false

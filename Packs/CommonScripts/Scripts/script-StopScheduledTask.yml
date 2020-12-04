@@ -2,8 +2,9 @@ commonfields:
   id: StopScheduledTask
   version: -1
 name: StopScheduledTask
-script: |-
+script: >-
   res = []
+
 
   if demisto.args()['taskID']:
       res =  demisto.executeCommand('scheduleEntry', {'id': demisto.args()['taskID'], 'cancel':'cancel'})
@@ -22,3 +23,4 @@ args:
   description: ID of the scheduled to stop
 scripttarget: 0
 timeout: 0s
+fromversion: 5.0.0

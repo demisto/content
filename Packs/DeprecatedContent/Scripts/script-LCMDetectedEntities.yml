@@ -2,9 +2,11 @@ commonfields:
   id: LCMDetectedEntities
   version: -1
 name: LCMDetectedEntities
-script: |
+script: >
   args = demisto.args()
+
   resp = demisto.executeCommand("lcm-entities", args)
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -28,3 +30,4 @@ dependson:
   must:
   - lcm-entities
 timeout: 0s
+fromversion: 5.0.0

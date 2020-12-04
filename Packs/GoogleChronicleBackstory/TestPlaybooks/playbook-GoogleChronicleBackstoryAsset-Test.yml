@@ -1,8 +1,7 @@
 id: Google Chronicle Backstory Asset - Test
 version: -1
 name: Google Chronicle Backstory Asset - Test
-description: This playbook uses the Google Chronicle Backstory integration and tests
-  the various scenarios of the "gcb-assets" command.
+description: This playbook uses the Google Chronicle Backstory integration and tests the various scenarios of the "gcb-assets" command.
 starttaskid: "0"
 tasks:
   "0":
@@ -37,8 +36,7 @@ tasks:
       id: f2fa2107-51d2-41c0-87df-f570e5ec454b
       version: -1
       name: Get Assets list
-      description: This command will respond with a list of the assets which accessed
-        the input artifact (ip, domain, md5, sha1, sha256) during the specified time.
+      description: This command will respond with a list of the assets which accessed the input artifact (ip, domain, md5, sha1, sha256) during the specified time.
       script: Google Chronicle Backstory|||gcb-assets
       type: regular
       iscommand: true
@@ -73,8 +71,7 @@ tasks:
       id: 286e6e68-7c92-4224-84b4-5d63884db417
       version: -1
       name: Verify
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -214,8 +211,7 @@ tasks:
       id: 3f62dd64-f446-4271-81f9-63a10eb1c409
       version: -1
       name: Invalid page size argument
-      description: This command will respond with a list of the assets which accessed
-        the input artifact (ip, domain, md5, sha1, sha256) during the specified time.
+      description: This command will respond with a list of the assets which accessed the input artifact (ip, domain, md5, sha1, sha256) during the specified time.
       script: Google Chronicle Backstory|||gcb-assets
       type: regular
       iscommand: true
@@ -250,9 +246,7 @@ tasks:
       id: 62ea068d-09a3-4ddf-88f8-4323ed0470e6
       version: -1
       name: Is error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -282,8 +276,7 @@ tasks:
       id: 9dfb2427-7dd7-443e-8e2c-85b3fc9105c5
       version: -1
       name: Invalid start date argument
-      description: This command will respond with a list of the assets which accessed
-        the input artifact (ip, domain, md5, sha1, sha256) during the specified time.
+      description: This command will respond with a list of the assets which accessed the input artifact (ip, domain, md5, sha1, sha256) during the specified time.
       script: Google Chronicle Backstory|||gcb-assets
       type: regular
       iscommand: true
@@ -319,9 +312,7 @@ tasks:
       id: ba6f0389-3fc3-4920-8a36-24580c3b71c1
       version: -1
       name: Is error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -351,8 +342,7 @@ tasks:
       id: f113c74b-88c2-42b3-8ee9-42184dc5357b
       version: -1
       name: Invalid end date argument
-      description: This command will respond with a list of the assets which accessed
-        the input artifact (ip, domain, md5, sha1, sha256) during the specified time.
+      description: This command will respond with a list of the assets which accessed the input artifact (ip, domain, md5, sha1, sha256) during the specified time.
       script: Google Chronicle Backstory|||gcb-assets
       type: regular
       iscommand: true
@@ -388,9 +378,7 @@ tasks:
       id: c9a57a20-a070-4c4a-8308-e995f07148fd
       version: -1
       name: Is error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -494,3 +482,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

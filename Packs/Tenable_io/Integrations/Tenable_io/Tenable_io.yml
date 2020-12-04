@@ -60,8 +60,7 @@ script:
       description: The targets to be scanned.
       type: string
     - contextPath: TenableIO.Scan.Status
-      description: The status of the scan (completed, aborted, imported, pending,
-        running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
+      description: The status of the scan (completed, aborted, imported, pending, running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
       type: string
     - contextPath: TenableIO.Scan.StartTime
       description: The scheduled start time for the scan.
@@ -101,16 +100,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: If specified, these targets will be scanned instead of the default.
-        Value can be an array where each index is a target, or an array with a single
-        index of comma separated targets.
+      description: If specified, these targets will be scanned instead of the default. Value can be an array where each index is a target, or an array with a single index of comma separated targets.
       isArray: false
       name: scanTargets
       required: false
       secret: false
     deprecated: false
-    description: Lauch a scan with existing or custom targets. (You can specify custom
-      targets in the arguements of this command.)
+    description: Lauch a scan with existing or custom targets. (You can specify custom targets in the arguements of this command.)
     execution: false
     name: tenable-io-launch-scan
     outputs:
@@ -121,8 +117,7 @@ script:
       description: The targets to be scanned.
       type: string
     - contextPath: TenableIO.Scan.Status
-      description: The status of the scan (completed, aborted, imported, pending,
-        running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
+      description: The status of the scan (completed, aborted, imported, pending, running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
       type: string
   - arguments:
     - default: true
@@ -134,9 +129,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: If detailed is true, the report will contain remediations and hosts
-        information as well for the given scan. Otherwise the report will only have
-        vulnerabilities.
+      description: If detailed is true, the report will contain remediations and hosts information as well for the given scan. Otherwise the report will only have vulnerabilities.
       isArray: false
       name: detailed
       predefined:
@@ -170,8 +163,7 @@ script:
       description: The targets to be scanned.
       type: string
     - contextPath: TenableIO.Scan.Status
-      description: The status of the scan (completed, aborted, imported, pending,
-        running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
+      description: The status of the scan (completed, aborted, imported, pending, running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
       type: string
     - contextPath: TenableIO.Scan.StartTime
       description: The scheduled start time for the scan.
@@ -234,8 +226,7 @@ script:
       description: The unique id of the remediation.
       type: string
     - contextPath: TenableIO.Remediations.Description
-      description: Specific information related to the vulnerability and steps to
-        remedy.
+      description: Specific information related to the vulnerability and steps to remedy.
       type: string
     - contextPath: TenableIO.Remediations.AffectedHosts
       description: The number of hosts affected.
@@ -259,15 +250,13 @@ script:
       description: The name of the vulnerability.
       type: string
     - contextPath: TenableIO.Vulnerabilities.Severity
-      description: Integer [0-4] indicating how severe the vulnerability is, where
-        0 is info only.
+      description: Integer [0-4] indicating how severe the vulnerability is, where 0 is info only.
       type: number
     - contextPath: TenableIO.Vulnerabilities.Type
       description: The type of the vulnerability.
       type: string
     - contextPath: TenableIO.Vulnerabilities.Family
-      description: Object containing plugin information such as family, type, and
-        publication and modification dates.
+      description: Object containing plugin information such as family, type, and publication and modification dates.
       type: string
     - contextPath: TenableIO.Vulnerabilities.Description
       description: The description of the vulnerability.
@@ -303,8 +292,7 @@ script:
       description: The Common Vulnerability Scoring System version 3 vector.
       type: string
     - contextPath: TenableIO.Vulnerabilities.Cvss3BaseScore
-      description: The Common Vulnerability Scoring System version 3 allotted base
-        score.
+      description: The Common Vulnerability Scoring System version 3 allotted base score.
       type: string
   - arguments:
     - default: false
@@ -320,15 +308,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of days of data prior to and including today that should
-        be returned.
+      description: The number of days of data prior to and including today that should be returned.
       isArray: false
       name: dateRange
       required: false
       secret: false
     deprecated: false
-    description: Get a list of up to 5000 of the vulnerabilities recorded for a given
-      asset.
+    description: Get a list of up to 5000 of the vulnerabilities recorded for a given asset.
     execution: false
     name: tenable-io-get-vulnerabilities-by-asset
     outputs:
@@ -345,8 +331,7 @@ script:
       description: The name of the vulnerability's.
       type: string
     - contextPath: TenableIO.Vulnerabilities.Severity
-      description: Integer [0-4] indicating how severe the vulnerability is, where
-        0 is info only.
+      description: Integer [0-4] indicating how severe the vulnerability is, where 0 is info only.
       type: number
     - contextPath: TenableIO.Vulnerabilities.Family
       description: The vulnerability's family.
@@ -355,8 +340,7 @@ script:
       description: The number of times the vulnerability was found.
       type: number
     - contextPath: TenableIO.Vulnerabilities.VulnerabilityState
-      description: The current state of the reported vulnerability (Active, Fixed,
-        New, etc.)
+      description: The current state of the reported vulnerability (Active, Fixed, New, etc.)
       type: string
   - arguments:
     - default: true
@@ -387,3 +371,4 @@ script:
   type: python
 tests:
 - Tenable.io test
+fromversion: 5.0.0

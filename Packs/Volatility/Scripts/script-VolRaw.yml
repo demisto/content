@@ -2,13 +2,13 @@ commonfields:
   id: VolRaw
   version: -1
 name: VolRaw
-script: packOutput('vol.py -f ' + args.file + ' ' + args.cmd);
+script: >-
+  packOutput('vol.py -f ' + args.file + ' ' + args.cmd);
 type: javascript
 tags:
 - agent
 - volatility
-comment: Execute volatility with command and file as parameters and returns raw output
-  from stdout.
+comment: Execute volatility with command and file as parameters and returns raw output from stdout.
 system: true
 args:
 - name: cmd
@@ -20,3 +20,4 @@ args:
 scripttarget: 1
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

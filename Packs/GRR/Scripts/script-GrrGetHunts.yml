@@ -2,7 +2,7 @@ commonfields:
   id: GrrGetHunts
   version: -1
 name: GrrGetHunts
-script: |2
+script: >2
 
   demisto.results(demisto.executeCommand("grr_get_hunts", demisto.args()))
 type: python
@@ -17,15 +17,9 @@ args:
 - name: count
   description: Max number of items to fetch
 - name: created_by
-  description: 'Only return hunts created by a given user. If approved_by or/and description_contains
-    are also supplied, then logical AND is applied to all the criterias. NOTE: this
-    filter can only be used in conjunction with ''active_within'' filter (to prevent
-    queries of death)'
+  description: 'Only return hunts created by a given user. If approved_by or/and description_contains are also supplied, then logical AND is applied to all the criterias. NOTE: this filter can only be used in conjunction with ''active_within'' filter (to prevent queries of death)'
 - name: description_contains
-  description: 'Only return hunts where description contains given substring (matching
-    is case-insensitive).If created_by or/and approved_by are also supplied, then
-    logical AND is applied to all the criterias. NOTE: this filter can only be used
-    in conjunction with ''active_within'' filter (to prevent queries of death)'
+  description: 'Only return hunts where description contains given substring (matching is case-insensitive).If created_by or/and approved_by are also supplied, then logical AND is applied to all the criterias. NOTE: this filter can only be used in conjunction with ''active_within'' filter (to prevent queries of death)'
 - name: active_within
   description: Only return hunts that were active within given time duration
 scripttarget: 0
@@ -33,3 +27,4 @@ timeout: 0s
 dependson:
   must:
   - grr_get_hunts
+fromversion: 5.0.0

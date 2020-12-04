@@ -1,7 +1,7 @@
 id: File Enrichment - Generic
 version: -1
 name: File Enrichment - Generic
-fromversion: 3.6.0
+fromversion: 5.0.0
 description: |-
   Deprecated. Use "File Enrichment - Generic v2" playbook instead. Enrich a file using one or more integrations.
 
@@ -426,4 +426,4 @@ outputs:
 - contextPath: File.VirusTotal.Scans.Result
   description: Scan result for this hash - signature, etc.
 tests:
-  - no test (new v2 playbook has an updated test)
+- no test (new v2 playbook has an updated test)

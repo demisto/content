@@ -1,3 +1,4 @@
+import pytest
 from FeedAutofocusDaily import Client, fetch_indicators_command
 
 INDICATORS = [
@@ -40,7 +41,8 @@ def test_type_finder():
         assert indicator_type == TYPES[i]
 
 
-def test_feed_tags_param(mocker):
+@pytest.mark.parametrize('tlp_color', ['', None, 'AMBER'])
+def test_feed_tags_param(mocker, tlp_color):
     """Unit test
     Given
     - fetch indicators command
@@ -55,5 +57,9 @@ def test_feed_tags_param(mocker):
     """
     client = Client(api_key="a", insecure=False)
     mocker.patch.object(client, 'daily_http_request', return_value=INDICATORS)
-    indicators = fetch_indicators_command(client, ['test_tag'])
+    indicators = fetch_indicators_command(client, ['test_tag'], tlp_color)
     assert indicators[0].get('fields').get('tags') == ['test_tag']
+    if tlp_color:
+        assert indicators[0].get('fields').get('trafficlightprotocol') == tlp_color
+    else:
+        assert not indicators[0].get('fields').get('trafficlightprotocol')

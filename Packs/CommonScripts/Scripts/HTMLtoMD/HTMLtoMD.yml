@@ -29,3 +29,4 @@ runonce: false
 subtype: python3
 tests:
 - Test_HTMLtoMD
+fromversion: 5.0.0

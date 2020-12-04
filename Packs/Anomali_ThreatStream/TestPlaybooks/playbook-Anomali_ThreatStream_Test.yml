@@ -1,6 +1,6 @@
 id: Anomali_ThreatStream_Test
 version: -1
-fromversion: 3.5.0
+fromversion: 5.0.0
 name: Anomali ThreatStream Test
 starttaskid: "0"
 tasks:

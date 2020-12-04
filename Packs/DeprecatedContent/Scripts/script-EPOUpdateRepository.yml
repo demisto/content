@@ -2,7 +2,7 @@ commonfields:
   id: EPOUpdateRepository
   version: -1
 name: EPOUpdateRepository
-script: |
+script: >
   def generateText(tbl):
       return '\n\n'.join(['\n'.join([k + ': ' + row[k] for k in row]) for row in tbl])
 
@@ -11,11 +11,17 @@ script: |
       if tbl and isinstance(tbl, list) and len(tbl) > 0:
           html = """<style type="text/css">
   .tg  {border-collapse:collapse;border-spacing:0;border-color:#bbb;}
+
   .tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#888;color:#594F4F;}
+
   .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:5px 15px 5px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#888;color:#493F3F;}
+
   .tg .tg-9zxc{vertical-align:top;text-align:left; }
+
   .tg .tg-x1ca{background-color:#dfdfdf;vertical-align:top;text-align:center;font-weight:bold;}
+
   </style>
+
   <table class="tg">
     <tr>"""
           for colName in cols:
@@ -31,7 +37,9 @@ script: |
 
 
   res = []
+
   repos = demisto.get(demisto.args(), 'repos')
+
   if not repos:
       res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Received empty repository name!"})
   else:
@@ -79,3 +87,4 @@ dependson:
   must:
   - epo-command
 timeout: 0s
+fromversion: 5.0.0

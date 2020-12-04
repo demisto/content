@@ -152,8 +152,7 @@ tasks:
       id: 0f33d7b6-d2b8-4083-8836-7394ebc2dfd6
       version: -1
       name: Has a domain category been found?
-      description: Checks if Cisco Umbrella Investigate fetched a category for the
-        domain specified.
+      description: Checks if Cisco Umbrella Investigate fetched a category for the domain specified.
       type: condition
       iscommand: false
       brand: ""
@@ -214,8 +213,7 @@ tasks:
       - "6"
     scriptarguments:
       message:
-        simple: Domain category was not found. Maybe quota was reached, or something
-          changed with the domain.
+        simple: Domain category was not found. Maybe quota was reached, or something changed with the domain.
     separatecontext: false
     view: |-
       {
@@ -267,3 +265,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

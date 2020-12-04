@@ -10,8 +10,9 @@ class CrowdStrikeClient(BaseClient):
         Args:
             params: Demisto params
         """
-        self._username = params.get('credentials', {}).get('identifier')
-        self._password = params.get('credentials', {}).get('password')
+        credentials = params.get('credentials', {})
+        self._client_id = credentials.get('identifier')
+        self._client_secret = credentials.get('password')
         super().__init__(base_url="https://api.crowdstrike.com/", verify=not params.get('insecure', False),
                          ok_codes=tuple(), proxy=params.get('proxy', False))  # type: ignore[misc]
         self._token = self._generate_token()
@@ -31,6 +32,14 @@ class CrowdStrikeClient(BaseClient):
             errors = error_entry.get('errors', [])
             err_msg += '\n'.join(f"{error.get('code')}: {error.get('message')}" for  # pylint: disable=no-member
                                  error in errors)
+            if 'Failed to issue access token - Not Authorized' in err_msg:
+                err_msg = err_msg.replace('Failed to issue access token - Not Authorized',
+                                          'Client Secret is invalid.')
+            elif 'Failed to generate access token for clientID' in err_msg:
+                err_msg = err_msg.replace('Failed to generate access token for clientID=', 'Client ID (')
+                if err_msg.endswith('.'):
+                    err_msg = err_msg[:-1]
+                err_msg += ') is invalid.'
             raise DemistoException(err_msg)
         except ValueError:
             err_msg += '\n{}'.format(res.text)
@@ -94,10 +103,10 @@ class CrowdStrikeClient(BaseClient):
         :return: valid token
         """
         body = {
-            'client_id': self._username,
-            'client_secret': self._password
+            'client_id': self._client_id,
+            'client_secret': self._client_secret
         }
-        token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self._username, self._password))
+        token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self._client_id, self._client_secret))
         return token_res.get('access_token')
 
     def check_quota_status(self) -> dict:

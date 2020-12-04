@@ -1,8 +1,7 @@
 id: generic-sql
 version: -1
 name: generic-sql
-description: The initial state of the table is that in each database there are 4 records.
-  While the playbook run, another record is added and later removed from the table.
+description: The initial state of the table is that in each database there are 4 records. While the playbook run, another record is added and later removed from the table.
 starttaskid: "0"
 tasks:
   "0":
@@ -130,8 +129,7 @@ tasks:
         simple: '"playbook,test"'
       limit: {}
       query:
-        simple: INSERT into TestTable(ID, LastName, FirstName) VALUES (11311, ? ,
-          ?)
+        simple: INSERT into TestTable(ID, LastName, FirstName) VALUES (11311, ? , ?)
       skip: {}
     continueonerror: true
     separatecontext: false
@@ -575,8 +573,7 @@ tasks:
         simple: '"playbook,test"'
       limit: {}
       query:
-        simple: INSERT into TestTable(ID, LastName, FirstName) VALUES (11211, :x ,
-          :y)
+        simple: INSERT into TestTable(ID, LastName, FirstName) VALUES (11211, :x , :y)
       skip: {}
     separatecontext: false
     view: |-
@@ -647,8 +644,7 @@ tasks:
         simple: '"playbook,test"'
       limit: {}
       query:
-        simple: INSERT into TestTable(ID, LastName, FirstName) VALUES (11311, %s ,
-          %s)
+        simple: INSERT into TestTable(ID, LastName, FirstName) VALUES (11311, %s , %s)
       skip: {}
     continueonerror: true
     separatecontext: false
@@ -756,8 +752,7 @@ tasks:
         simple: playbook,test
       limit: {}
       query:
-        simple: INSERT into TestTable(ID, LastName, FirstName) VALUES (11311, :x ,
-          :y)
+        simple: INSERT into TestTable(ID, LastName, FirstName) VALUES (11311, :x , :y)
       skip: {}
     continueonerror: true
     separatecontext: false
@@ -788,3 +783,4 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: 2423b55c-3218-4119-8323-319df9820ea8
+fromversion: 5.0.0

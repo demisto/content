@@ -2,14 +2,20 @@ commonfields:
   id: FailedInstances
   version: -1
 name: FailedInstances
-script: |
+script: >
   var INTERNAL_MODULES_BRANDS = ['Scripts', 'Builtin'];
 
-  var failedInstances = [];
+
+  var failedInstances = [{}];
+
   var all = getModules();
+
   var countFailed = 0;
+
   var countSuccess = 0;
+
   var instances = [];
+
 
   Object.keys(all).forEach(function(m) {
       if (all[m].state === 'active' && all[m].defaultIgnored !== 'true' && INTERNAL_MODULES_BRANDS.indexOf(all[m].brand) === -1) {
@@ -45,10 +51,15 @@ script: |
       }
   });
 
+
   var hr;
+
   var success = countSuccess.toString();
+
   var failed = countFailed.toString();
+
   var total = (countSuccess + countFailed).toString();
+
 
   if (failedInstances.length === 0) {
       hr = '### All active instances are available! ✅';
@@ -58,6 +69,7 @@ script: |
       hr += 'Failed Instances: ' + failed +'\n';
       hr += tableToMarkdown('Failed Instances:', failedInstances, ['instance', 'brand', 'category', 'information']);
   }
+
 
   return {
       Type: entryTypes.note,
@@ -76,8 +88,7 @@ script: |
   };
 type: javascript
 tags: []
-comment: Executes a test for all integration instances available and returns detailed
-  information about succeeded and failed integration instances.
+comment: Executes a test for all integration instances available and returns detailed information about succeeded and failed integration instances.
 enabled: true
 outputs:
 - contextPath: FailedInstances.instance
@@ -123,6 +134,6 @@ scripttarget: 0
 timeout: 10.8µs
 runonce: false
 runas: DBotWeakRole
-fromversion: 4.0.0
+fromversion: 5.0.0
 tests:
 - FailedInstances - Test

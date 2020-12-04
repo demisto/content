@@ -37,10 +37,10 @@ tasks:
       version: -1
       name: grm-create-project
       description: Create Project Resource
-      script: Google Resource Manager|||grm-create-project
+      script: "|||grm-create-project"
       type: regular
       iscommand: true
-      brand: Google Resource Manager
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
@@ -173,10 +173,10 @@ tasks:
       name: grm-delete-project
       description: Marks the Project identified by the specified project_id (for example,
         my-project-123) for deletion.
-      script: Google Resource Manager|||grm-delete-project
+      script: "|||grm-delete-project"
       type: regular
       iscommand: true
-      brand: Google Resource Manager
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -241,10 +241,10 @@ tasks:
       name: grm-undelete-project
       description: Restores the Project identified by the specified project_id (for
         example, my-project-123).
-      script: Google Resource Manager|||grm-undelete-project
+      script: "|||grm-undelete-project"
       type: regular
       iscommand: true
-      brand: Google Resource Manager
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
@@ -308,10 +308,10 @@ tasks:
       version: -1
       name: grm-get-project
       description: Get Project Resource
-      script: Google Resource Manager|||grm-get-project
+      script: "|||grm-get-project"
       type: regular
       iscommand: true
-      brand: Google Resource Manager
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
@@ -378,10 +378,10 @@ tasks:
       description: Searches Organization resources that are visible to the user and
         satisfy the specified filter. This method returns Organizations in an unspecified
         order. New Organizations do not necessarily appear at the end of the results.
-      script: Google Resource Manager|||grm-search-organizations
+      script: "|||grm-search-organizations"
       type: regular
       iscommand: true
-      brand: Google Resource Manager
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
@@ -447,10 +447,10 @@ tasks:
       name: grm-get-organization
       description: Fetches an Organization resource identified by the specified resource
         name.
-      script: Google Resource Manager|||grm-get-organization
+      script: "|||grm-get-organization"
       type: regular
       iscommand: true
-      brand: Google Resource Manager
+      brand: ""
     nexttasks:
       '#none#':
       - "13"
@@ -513,10 +513,10 @@ tasks:
       name: grm-list-projects
       description: Lists projects that are visible to the user and satisfy  the specified
         filter. This method returns the projects in an unspecified order.
-      script: Google Resource Manager|||grm-list-projects
+      script: "|||grm-list-projects"
       type: regular
       iscommand: true
-      brand: Google Resource Manager
+      brand: ""
     nexttasks:
       '#none#':
       - "16"
@@ -614,10 +614,10 @@ tasks:
       name: grm-delete-project (Cleanup Project Created for Test)
       description: Marks the Project identified by the specified project_id (for example,
         my-project-123) for deletion.
-      script: Google Resource Manager|||grm-delete-project
+      script: "|||grm-delete-project"
       type: regular
       iscommand: true
-      brand: Google Resource Manager
+      brand: ""
     scriptarguments:
       project_id:
         simple: ${ProjectId.NeedsProcessing}
@@ -793,10 +793,10 @@ tasks:
       name: grm-update-project
       description: Updates the attributes of the Project identified by the specified
         projectId
-      script: Google Resource Manager|||grm-update-project
+      script: "|||grm-update-project"
       type: regular
       iscommand: true
-      brand: Google Resource Manager
+      brand: ""
     nexttasks:
       '#none#':
       - "25"

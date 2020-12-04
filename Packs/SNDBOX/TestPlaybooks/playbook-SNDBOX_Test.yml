@@ -384,8 +384,7 @@ tasks:
     task:
       id: 377ef394-7ce1-4396-83db-a614ed322ae7
       version: -1
-      name: If the analysis is still pending or is a SNDBOX error then don't try and
-        download the report
+      name: If the analysis is still pending or is a SNDBOX error then don't try and download the report
       type: condition
       iscommand: false
       brand: ""
@@ -496,3 +495,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

@@ -3,9 +3,10 @@ commonfields:
   version: -1
 name: JiraIssueAddLink
 deprecated: true
-script: |2
+script: >2
 
   resp = demisto.executeCommand("jira-issue-add-link", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -24,8 +25,7 @@ tags:
 comment: Deprecated. Creates (or updates) issue link
 system: true
 args:
-- description: If a globalId is provided and a remote issue link exists with that
-    globalId, the remote issue link is updated
+- description: If a globalId is provided and a remote issue link exists with that globalId, the remote issue link is updated
   name: globalId
 - description: object relationship to issue , like - causes
   name: relationship
@@ -45,3 +45,4 @@ timeout: 0s
 dependson:
   must:
   - jira-issue-add-link
+fromversion: 5.0.0

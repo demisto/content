@@ -2,13 +2,18 @@ commonfields:
   id: ADGetAllUsersEmail
   version: -1
 name: ADGetAllUsersEmail
-script: |
+script: >
   mails = []
+
   MAIL_CONTEXT_KEY = "Mailboxes"
 
+
   attrs = 'mail'
+
   filterstr = r"(&(objectClass=User))"
+
   resp = demisto.executeCommand( 'ad-search' , { 'filter' : filterstr, 'attributes' : attrs } )
+
   if isError(resp[0]):
       demisto.results(resp)
   else:
@@ -32,3 +37,4 @@ deprecated: true
 outputs:
 - contextPath: Mailboxes
   description: List of all users mailbox addresses
+fromversion: 5.0.0

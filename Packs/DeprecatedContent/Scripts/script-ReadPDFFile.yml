@@ -2,17 +2,25 @@ commonfields:
   id: ReadPDFFile
   version: -1
 name: ReadPDFFile
-fromversion: 4.1.0
-script: |-
+fromversion: 5.0.0
+script: >-
   import pdfx
+
   from pdfminer.psparser import PSEOF
+
   from pdfminer.pdfdocument import PDFEncryptionError
+
   import traceback
+
   import sys
+
   reload(sys)
+
   sys.setdefaultencoding("utf-8")
 
+
   entry_id = demisto.args()["entryID"]
+
 
   def mark_suspicious(suspicious_reason):
       """Missing EOF, file may be corrupted or suspicious file"""
@@ -33,19 +41,25 @@ script: |-
 
 
   #File entity
+
   pdf_file = {
       "EntryID" : entry_id
   }
 
+
   #URLS
+
   URLs = []
 
+
   maxFileSize = demisto.get(demisto.args(), "maxFileSize")
+
   if maxFileSize:
       maxFileSize = int(maxFileSize)
   else:
       maxFileSize = 1024**2
   res = demisto.executeCommand("getFilePath", {"id": entry_id})
+
   if isError(res[0]):
       demisto.results(res)
   else:

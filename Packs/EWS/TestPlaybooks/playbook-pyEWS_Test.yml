@@ -2,7 +2,7 @@ id: pyEWS_Test
 version: -1
 name: pyEWS_Test
 description: ""
-fromversion: "3.5.0"
+fromversion: "5.0.0"
 starttaskid: "0"
 tasks:
   "0":
@@ -52,6 +52,7 @@ tasks:
       - "23"
       - "8"
       - "10"
+      - "4"
     scriptarguments:
       all:
         simple: "yes"

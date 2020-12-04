@@ -3,9 +3,10 @@ commonfields:
   version: -1
 name: JiraCreateIssue
 deprecated: true
-script: |2
+script: >2
 
   resp = demisto.executeCommand("jira-create-issue", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -54,3 +55,4 @@ timeout: 0s
 dependson:
   must:
   - jira-create-issue
+fromversion: 5.0.0

@@ -2,7 +2,7 @@ id: file_enrichment_-_virus_total_private_api
 version: -1
 name: File Enrichment - Virus Total Private API
 description: Get file information using the Virus Total Private API integration.
-fromversion: 3.6.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -200,8 +200,7 @@ tasks:
       id: f8c02720-3892-4efe-8493-3d9e8796fc16
       version: -1
       name: Is Virus Total Private API enabled?
-      description: Checks if there is an active instance of the Virus Total Private
-        API enabled.
+      description: Checks if there is an active instance of the Virus Total Private API enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -256,10 +255,7 @@ tasks:
       id: 6c579c5f-03b3-4bab-8aef-3dd75da6cf5a
       version: -1
       name: Query file behavior based on the MD5 hash
-      description: ' VirusTotal runs a distributed setup of Cuckoo sandbox machines
-        that execute the files we receive. This API allows you to retrieve the full
-        JSON report of the file''s execution as returned by the Cuckoo JSON report
-        encoder.'
+      description: ' VirusTotal runs a distributed setup of Cuckoo sandbox machines that execute the files we receive. This API allows you to retrieve the full JSON report of the file''s execution as returned by the Cuckoo JSON report encoder.'
       script: VirusTotal - Private API|||vt-private-check-file-behaviour
       type: regular
       iscommand: true
@@ -290,10 +286,7 @@ tasks:
       id: 3c24cb3f-304a-4240-8ea7-ac55c97ad637
       version: -1
       name: Query file behavior based on the SHA-256 hash
-      description: ' VirusTotal runs a distributed setup of Cuckoo sandbox machines
-        that execute the files we receive. This API allows you to retrieve the full
-        JSON report of the file''s execution as returned by the Cuckoo JSON report
-        encoder.'
+      description: ' VirusTotal runs a distributed setup of Cuckoo sandbox machines that execute the files we receive. This API allows you to retrieve the full JSON report of the file''s execution as returned by the Cuckoo JSON report encoder.'
       script: VirusTotal - Private API|||vt-private-check-file-behaviour
       type: regular
       iscommand: true
@@ -324,10 +317,7 @@ tasks:
       id: 7e7f3d3a-61bf-4911-85f7-822153166249
       version: -1
       name: Query file behavior based on the SHA-1 hash
-      description: ' VirusTotal runs a distributed setup of Cuckoo sandbox machines
-        that execute the files we receive. This API allows you to retrieve the full
-        JSON report of the file''s execution as returned by the Cuckoo JSON report
-        encoder.'
+      description: ' VirusTotal runs a distributed setup of Cuckoo sandbox machines that execute the files we receive. This API allows you to retrieve the full JSON report of the file''s execution as returned by the Cuckoo JSON report encoder.'
       script: VirusTotal - Private API|||vt-private-check-file-behaviour
       type: regular
       iscommand: true
@@ -524,4 +514,4 @@ outputs:
 - contextPath: File.VirusTotal.Scans.Result
   description: Scan result for this hash - signature, etc.
 tests:
-  - No test - need to add test
+- No test - need to add test

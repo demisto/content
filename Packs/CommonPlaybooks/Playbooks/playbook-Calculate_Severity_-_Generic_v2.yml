@@ -792,8 +792,7 @@ tasks:
       id: bbfdfe72-13f4-48a2-8cbb-79fd7952704b
       version: -1
       name: Determine incident severity
-      description: Determines the severity level based on the highest result of all
-        severity calculations.
+      description: Determines the severity level based on the highest result of all severity calculations.
       type: condition
       iscommand: false
       brand: ""
@@ -1111,8 +1110,7 @@ tasks:
       id: b20ff842-f44e-4314-8d7a-ce51e1d69c16
       version: -1
       name: Calculate Severity By Highest DBotScore
-      description: Calculates the incident severity level according to the highest
-        indicator DBotScore.
+      description: Calculates the incident severity level according to the highest indicator DBotScore.
       playbookName: Calculate Severity By Highest DBotScore
       type: playbook
       iscommand: false
@@ -1150,8 +1148,7 @@ tasks:
       id: 1a13e3e0-18fb-4c0f-8866-9d56b0df1017
       version: -1
       name: Calculate Severity By Email Authenticity
-      description: Calculates a severity according to the verdict coming from the
-        CheckEmailAuthenticity script.
+      description: Calculates a severity according to the verdict coming from the CheckEmailAuthenticity script.
       playbookName: Calculate Severity By Email Authenticity
       type: playbook
       iscommand: false
@@ -1428,8 +1425,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: 'Indicates the email authenticity resulting from the EmailAuthenticityCheck
-    script. Possible values are: Pass, Fail, Suspicious, and Undetermined.'
+  description: 'Indicates the email authenticity resulting from the EmailAuthenticityCheck script. Possible values are: Pass, Fail, Suspicious, and Undetermined.'
   playbookInputQuery:
 outputs:
 - contextPath: CriticalAssets
@@ -1447,6 +1443,6 @@ outputs:
 - contextPath: CriticalAssets.CriticalUserGroups
   description: Critical user-groups involved in the incident.
   type: unknown
-fromversion: 4.5.0
+fromversion: 5.0.0
 tests:
 - Calculate Severity - Generic v2 - Test

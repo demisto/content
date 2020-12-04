@@ -1,7 +1,7 @@
 id: PanoramaQueryTrafficLogs
 version: -1
 name: PanoramaQueryTrafficLogs
-fromversion: 4.0.0
+fromversion: 5.0.0
 description: Deprecated. Use "PAN-OS Query Logs For Indicators" playbook instead. Queries traffic logs in a PAN-OS Panorama or Firewall device.
 starttaskid: "0"
 hidden: true
@@ -366,8 +366,7 @@ inputs:
 - key: query
   value: {}
   required: false
-  description: Specify the match criteria for the logs. This is similar to the query
-    provided in the web interface under the Monitor tab when viewing the logs.
+  description: Specify the match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs.
 - key: source
   value: {}
   required: false
@@ -395,4 +394,4 @@ inputs:
   description: Action for the query.
 outputs: []
 tests:
-  - No test
+- No test

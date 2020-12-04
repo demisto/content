@@ -3,8 +3,9 @@ commonfields:
   version: -1
 name: NetwitnessSAUpdateIncident
 deprecated: true
-script: |
+script: >
   resp = demisto.executeCommand("nw-update-incident", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -23,16 +24,13 @@ system: true
 args:
 - name: idList
   required: true
-  description: 'List of incident ids which will be updated, separated by comma [,].
-    Must not contain spaces. Example: "INC-13,INC-15,INC-23"'
+  description: 'List of incident ids which will be updated, separated by comma [,]. Must not contain spaces. Example: "INC-13,INC-15,INC-23"'
 - name: name
   description: '[optional string] Set name if incident name has been changed'
 - name: summary
   description: '[optional string] Updated incident summary'
 - name: assignee
-  description: '[optional string] Set assignee login name if assignee has changed.
-    You can execute nw-get-available-assignees to get the list of users. Example:
-    demisto123'
+  description: '[optional string] Set assignee login name if assignee has changed. You can execute nw-get-available-assignees to get the list of users. Example: demisto123'
 - name: comment
   description: '[optional string] Add a journal entry describing your changes'
 - name: status
@@ -57,12 +55,10 @@ args:
 - name: categories
   description: List of categories.
 - name: incidentManagementId
-  description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
-    device/component id. It can be received by running nw-get-component command. If
-    this argument is not filled/passed, the script will automatically get the first
-    device of type INCIDENT_MANAGEMENT from the SA server.'
+  description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running nw-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
 scripttarget: 0
 dependson:
   must:
   - nw-update-incident
 timeout: 0s
+fromversion: 5.0.0

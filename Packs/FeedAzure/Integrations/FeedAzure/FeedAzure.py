@@ -1,6 +1,6 @@
 import re
 import urllib3
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 from CommonServerPython import *
 
@@ -234,12 +234,13 @@ def test_module(client: Client) -> Tuple[str, Dict, Dict]:
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client, feedTags: list) -> Tuple[str, Dict, Dict]:
+def get_indicators_command(client: Client, feedTags: list, tlp_color: Optional[str]) -> Tuple[str, Dict, Dict]:
     """Retrieves indicators from the feed to the war-room.
 
     Args:
         client (Client): Client object configured according to instance arguments.
-        feedTags: The indicator tags.
+        feedTags (list): The indicator tags.
+        tlp_color (str): Traffic Light Protocol color
 
     Returns:
         Tuple of:
@@ -247,7 +248,7 @@ def get_indicators_command(client: Client, feedTags: list) -> Tuple[str, Dict, D
             Dict. The raw data of the indicators.
     """
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-    indicators, raw_response = fetch_indicators_command(client, feedTags, limit)
+    indicators, raw_response = fetch_indicators_command(client, feedTags, tlp_color, limit)
 
     human_readable = tableToMarkdown('Indicators from Azure Feed:', indicators,
                                      headers=['value', 'type'], removeNull=True)
@@ -255,12 +256,14 @@ def get_indicators_command(client: Client, feedTags: list) -> Tuple[str, Dict, D
     return human_readable, {}, {'raw_response': raw_response}
 
 
-def fetch_indicators_command(client: Client, feedTags: list, limit: int = -1) -> Tuple[List[Dict], List]:
+def fetch_indicators_command(client: Client, feedTags: list, tlp_color: Optional[str], limit: int = -1) \
+        -> Tuple[List[Dict], List]:
     """Fetches indicators from the feed to the indicators tab.
     Args:
         client (Client): Client object configured according to instance arguments.
         limit (int): Maximum number of indicators to return.
         feedTags (list): Indicator tags
+        tlp_color (str): Traffic Light Protocol color
     Returns:
         Tuple of:
             str. Information to be printed to war room.
@@ -275,16 +278,20 @@ def fetch_indicators_command(client: Client, feedTags: list, limit: int = -1) ->
         iterator = iterator[:limit]
 
     for indicator in iterator:
-        indicators.append({
+        indicator_obj = {
             'value': indicator['value'],
             'type': indicator['type'],
             'fields': {
                 'region': indicator.get('azure_region'),
-                'tags': feedTags
+                'tags': feedTags,
             },
             'rawJSON': indicator
-        })
+        }
 
+        if tlp_color:
+            indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+
+        indicators.append(indicator_obj)
         raw_response.append(indicator)
 
     return indicators, raw_response
@@ -303,6 +310,7 @@ def main():
         services_list = ['All']
 
     feedTags = argToList(demisto.params().get('feedTags'))
+    tlp_color = demisto.params().get('tlp_color')
 
     polling_arg = demisto.params().get('polling_timeout', '')
     polling_timeout = int(polling_arg) if polling_arg.isdigit() else 20
@@ -319,9 +327,9 @@ def main():
         elif command == 'azure-get-indicators':
             if feedTags:
                 feedTags['tags'] = feedTags
-            return_outputs(*get_indicators_command(client, feedTags))
+            return_outputs(*get_indicators_command(client, feedTags, tlp_color))
         elif command == 'fetch-indicators':
-            indicators, _ = fetch_indicators_command(client, feedTags)
+            indicators, _ = fetch_indicators_command(client, feedTags, tlp_color)
 
             for single_batch in batch(indicators, batch_size=2000):
                 demisto.createIndicators(single_batch)

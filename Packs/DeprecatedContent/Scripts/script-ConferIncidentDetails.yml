@@ -2,13 +2,15 @@ commonfields:
   id: ConferIncidentDetails
   version: -1
 name: ConferIncidentDetails
-script: |-
+script: >-
   import time
+
   def formatDate(t):
       if t:
           return time.ctime(t / 1000)
       return ''
   incDetails = demisto.incidents()[0]['details']
+
   if incDetails:
       try:
           inc = json.loads(incDetails)
@@ -51,3 +53,4 @@ dependson:
   must:
   - confer
 timeout: 0s
+fromversion: 5.0.0

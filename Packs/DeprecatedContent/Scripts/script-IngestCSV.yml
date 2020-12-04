@@ -3,10 +3,13 @@ commonfields:
   version: -1
 name: IngestCSV
 deprecated: true
-script: |+
+script: >+
   # Find the CSV attachment
+
   entries = demisto.executeCommand('getEntries', {})
+
   csvEntry = None
+
   for entry in entries:
       fn = demisto.get(entry, 'File')
       if type(fn) in [unicode, str] and fn.endswith('.csv'):
@@ -35,3 +38,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0

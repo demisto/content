@@ -36,10 +36,7 @@ tasks:
       id: 02688c4e-0a73-466a-8880-16fe64babbc3
       version: -1
       name: Cherwell Create Incident - script
-      description: This script is an example script of how to create an incident in
-        Cherwell. The scruot wraps the create business bject command in the cherwell
-        integration. When writing your own script to creat a business object, follow
-        the instructions in the configuration part, leace the execution part untouched
+      description: This script is an example script of how to create an incident in Cherwell. The scruot wraps the create business bject command in the cherwell integration. When writing your own script to creat a business object, follow the instructions in the configuration part, leace the execution part untouched
       scriptName: CherwellCreateIncident
       type: regular
       iscommand: false
@@ -86,9 +83,7 @@ tasks:
       - "10"
     scriptarguments:
       json:
-        simple: "{\n\"Title\": \"Test task\", \n\"Description\": \"Test task generated
-          from scripts test playbook\", \n\"OwnedByTeam\": \"HR\",\n\"Type\":\"Work
-          Item\", \n\"Status\":\"New\"\n}"
+        simple: "{\n\"Title\": \"Test task\", \n\"Description\": \"Test task generated from scripts test playbook\", \n\"OwnedByTeam\": \"HR\",\n\"Type\":\"Work Item\", \n\"Status\":\"New\"\n}"
       type:
         simple: task
     separatecontext: false
@@ -110,11 +105,7 @@ tasks:
       id: d4029e9f-00d7-4519-889b-a33df5d2c4c9
       version: -1
       name: Cherwell Get Incident
-      description: This script is an example script of how to retreive an incident
-        from Cherwell. The script wraps the cherwell-get-business-object command of
-        the cherwell integration. When writing your own script to get a business object,
-        follow the instructions found in the configuration section of the script,
-        leave the execution part untouched.
+      description: This script is an example script of how to retreive an incident from Cherwell. The script wraps the cherwell-get-business-object command of the cherwell integration. When writing your own script to get a business object, follow the instructions found in the configuration section of the script, leave the execution part untouched.
       scriptName: CherwellGetIncident
       type: regular
       iscommand: false
@@ -146,11 +137,7 @@ tasks:
       id: b01c3e70-66ae-4f27-80d6-950bba2fda78
       version: -1
       name: Cherwell Update Incident
-      description: This script is an example script of how to update an incident in
-        Cherwell. The script wraps the update-business-object command of the cherwell
-        integration. When writing your own script to update a business object, follow
-        the instructions found in the configuration section of the script, leave the
-        execution part untouched.
+      description: This script is an example script of how to update an incident in Cherwell. The script wraps the update-business-object command of the cherwell integration. When writing your own script to update a business object, follow the instructions found in the configuration section of the script, leave the execution part untouched.
       scriptName: CherwellUpdateIncident
       type: regular
       iscommand: false
@@ -187,11 +174,7 @@ tasks:
       id: e5ac0def-5ae1-4ee8-8998-5a96b229eb6b
       version: -1
       name: Cherwell Query Incident
-      description: This script is an example script of how to query incidents from
-        Cherwell. The script wraps the cherwell-query-business-object command of the
-        cherwell integration. When writing your own script to query  business objects,
-        follow the instructions found in the configuration section of the script,
-        leave the execution part untouched.
+      description: This script is an example script of how to query incidents from Cherwell. The script wraps the cherwell-query-business-object command of the cherwell integration. When writing your own script to query  business objects, follow the instructions found in the configuration section of the script, leave the execution part untouched.
       scriptName: CherwellQueryIncidents
       type: regular
       iscommand: false
@@ -344,11 +327,7 @@ tasks:
       id: cfe5411a-35b4-443d-8cae-43c5811c4a6d
       version: -1
       name: Cherwell Incident Own Task
-      description: This script is an example script of how to link an Incident to
-        a Task in Cherwell. The script wraps the cherwell-link-business-object command
-        of the cherwell integration. When writing your own script to link business
-        objects, follow the instructions found in the configuration section of the
-        script, leave the execution part untouched.
+      description: This script is an example script of how to link an Incident to a Task in Cherwell. The script wraps the cherwell-link-business-object command of the cherwell integration. When writing your own script to link business objects, follow the instructions found in the configuration section of the script, leave the execution part untouched.
       scriptName: CherwellIncidentOwnTask
       type: regular
       iscommand: false
@@ -414,11 +393,7 @@ tasks:
       id: 24f8e464-e893-48ef-8fda-8316f96a18d2
       version: -1
       name: Cherwell Incident Unlink Task
-      description: This script is an example script of how to unlink a Task from am
-        Incident in Cherwell. The script wraps the cherwell-unlink-business-object
-        command of the cherwell integration. When writing your own script to unlink
-        business objects, follow the instructions found in the configuration section
-        of the script, leave the execution part untouched.
+      description: This script is an example script of how to unlink a Task from am Incident in Cherwell. The script wraps the cherwell-unlink-business-object command of the cherwell integration. When writing your own script to unlink business objects, follow the instructions found in the configuration section of the script, leave the execution part untouched.
       scriptName: CherwellIncidentUnlinkTask
       type: regular
       iscommand: false
@@ -789,3 +764,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

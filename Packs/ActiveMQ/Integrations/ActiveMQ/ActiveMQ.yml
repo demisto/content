@@ -88,9 +88,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The customer headers for the message, in the format: {XCorrelationId: uid, nosotros generamos
-        XReplyTo demisto:es:connectors, XType com.elevenpaths.sandas.ra.connector.CreateTicketConnectorRequest,
-        XVersion : "3.0", persistent : True}'
+      description: 'The customer headers for the message, in the format: {XCorrelationId: uid, nosotros generamos XReplyTo demisto:es:connectors, XType com.elevenpaths.sandas.ra.connector.CreateTicketConnectorRequest, XVersion : "3.0", persistent : True}'
       isArray: false
       name: headers
       required: false
@@ -120,8 +118,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Subscribes to and reads messages from a topic or queue. Must provide either queue-name
-      or topic-name. You can't provide both.
+    description: Subscribes to and reads messages from a topic or queue. Must provide either queue-name or topic-name. You can't provide both.
     execution: false
     name: activemq-subscribe
   dockerimage: demisto/stomp:latest
@@ -132,3 +129,4 @@ script:
   script: '-'
   subtype: python2
   type: python
+fromversion: 5.0.0

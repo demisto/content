@@ -1,7 +1,7 @@
 id: cve_enrichment_-_generic_-_test
 version: -1
 name: CVE Enrichment - Generic - Test
-fromversion: 3.6.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":

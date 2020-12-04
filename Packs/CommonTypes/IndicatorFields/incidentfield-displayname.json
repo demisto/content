@@ -25,13 +25,17 @@
   "shouldCommit": false,
   "shouldPublish": false,
   "associatedTypes": [
-    "Account"
+    "Account",
+	"User Profile"
   ],
   "caseInsensitive": true,
   "columns": null,
   "placeholder": "",
   "useAsKpi": false,
-  "systemAssociatedTypes": null,
+  "systemAssociatedTypes":[
+    "Account",
+	"User Profile"
+    ],
   "prevName": "Display Name",
   "locked": false,
   "name": "Display Name",

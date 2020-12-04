@@ -2,12 +2,17 @@ commonfields:
   id: DumpJSON
   version: -1
 name: DumpJSON
-script: |-
+script: >-
   import json
+
   JSON_CONTEXT_KEY = "JsonStr"
+
   key = demisto.args()['key']
+
   objStr = json.dumps(demisto.get(demisto.context(), key))
+
   demisto.setContext(JSON_CONTEXT_KEY, objStr)
+
   demisto.results(objStr)
 type: python
 subtype: python2
@@ -24,3 +29,4 @@ outputs:
 - contextPath: JsonStr
   description: The JSON object as string
 scripttarget: 0
+fromversion: 5.0.0

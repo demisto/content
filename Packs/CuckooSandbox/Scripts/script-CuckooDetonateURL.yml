@@ -2,8 +2,9 @@ commonfields:
   id: CuckooDetonateURL
   version: -1
 name: CuckooDetonateURL
-script: |-
+script: >-
   res =  demisto.executeCommand("cuckoo-create-task-from-url", demisto.args())
+
   if isError(res[0]):
       demisto.results(res)
   else:
@@ -30,4 +31,5 @@ dependson:
   - cuckoo-create-task-from-url
 timeout: 0s
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

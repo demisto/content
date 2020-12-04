@@ -1,7 +1,7 @@
-id: TestMatchRegex
+id: TestMatchRegexV2
 version: -1
-name: TestMatchRegex
-description: Testing MatchRegex Automation Script
+name: TestMatchRegexV2
+description: Testing MatchRegexV2 Automation Script
 starttaskid: "0"
 tasks:
   "0":
@@ -34,7 +34,7 @@ tasks:
       id: 268934f0-1581-41a5-8177-a949363b2274
       version: -1
       name: Match
-      scriptName: MatchRegex
+      scriptName: MatchRegexV2
       type: regular
       iscommand: false
       brand: ""
@@ -185,7 +185,7 @@ tasks:
       id: 48dd09bd-0041-4ac9-8e3c-00a5f9f806cb
       version: -1
       name: Match
-      scriptName: MatchRegex
+      scriptName: MatchRegexV2
       type: regular
       iscommand: false
       brand: ""
@@ -306,7 +306,7 @@ tasks:
       id: e1e1ed21-e6c6-420c-8173-1aa51f2fc4bc
       version: -1
       name: Match
-      scriptName: MatchRegex
+      scriptName: MatchRegexV2
       type: regular
       iscommand: false
       brand: ""
@@ -427,7 +427,7 @@ tasks:
       id: e7fedde1-dc1b-404f-82ec-45f0ec066f51
       version: -1
       name: Match
-      scriptName: MatchRegex
+      scriptName: MatchRegexV2
       type: regular
       iscommand: false
       brand: ""
@@ -552,7 +552,7 @@ tasks:
       id: 585e0e22-54cf-4d75-81d2-69e24c0c2b8a
       version: -1
       name: Match
-      scriptName: MatchRegex
+      scriptName: MatchRegexV2
       type: regular
       iscommand: false
       brand: ""
@@ -673,3 +673,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

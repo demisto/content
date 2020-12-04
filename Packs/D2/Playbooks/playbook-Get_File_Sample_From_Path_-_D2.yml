@@ -1,7 +1,7 @@
 id: get_file_sample_from_path_-_d2
 version: -1
 name: Get File Sample From Path - D2
-fromversion: "3.5.0"
+fromversion: "5.0.0"
 description: |-
   Returns a file sample to the war-room from a path on an endpoint using Demisto Dissolvable Agent (D2)
 
@@ -178,8 +178,7 @@ inputs:
   value:
     simple: Admin
   required: false
-  description: Name of the credential set from Demisto Settings -> Integrations ->
-    Credentials
+  description: Name of the credential set from Demisto Settings -> Integrations -> Credentials
 - key: Hostname
   value:
     simple: ${Endpoint.Hostname}
@@ -195,4 +194,4 @@ outputs:
   description: The file to sample.
   type: unknown
 tests:
-  - get_file_sample_from_path_-_d2_-_test
+- get_file_sample_from_path_-_d2_-_test

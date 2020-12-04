@@ -2,10 +2,13 @@ commonfields:
   id: CheckIPs
   version: -1
 name: CheckIPs
-script: |-
+script: >-
   import re
+
   import socket
+
   strIpRegex = r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b'
+
   def is_valid_ipv4_address(address):
       try:
           socket.inet_pton(socket.AF_INET, address)
@@ -19,9 +22,13 @@ script: |-
           return False
       return True
   res = []
+
   ips = []
+
   badIps = []
+
   data = demisto.args()['data'] if demisto.get(demisto.args(), 'data') else demisto.incidents()[0]['details']
+
   if isinstance(data, list):
       ips = data[:]
   else:
@@ -71,11 +78,11 @@ deprecated: true
 args:
 - name: data
   default: true
-  description: Raw text from which to extract IP addresses using the appropriate regular
-    expression. If omitted, will scan Incident Details instead.
+  description: Raw text from which to extract IP addresses using the appropriate regular expression. If omitted, will scan Incident Details instead.
 scripttarget: 0
 dependson:
   should:
   - ip
   - pt-malware
 timeout: 0s
+fromversion: 5.0.0

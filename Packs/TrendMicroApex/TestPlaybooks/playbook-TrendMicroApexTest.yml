@@ -76,8 +76,7 @@ tasks:
       id: 10ebcfbf-9522-4de9-8083-76752337ead8
       version: -1
       name: trendmicro-apex-udso-list
-      description: Retrieve a list of User-Defined Suspicious Objects from the Apex
-        Central server.
+      description: Retrieve a list of User-Defined Suspicious Objects from the Apex Central server.
       script: '|||trendmicro-apex-udso-list'
       type: regular
       iscommand: true
@@ -164,8 +163,7 @@ tasks:
       id: af97918c-fb39-46a6-877f-e8184471f857
       version: -1
       name: trendmicro-apex-udso-add
-      description: Add suspicious file SHA-1, IP address, domain, or URL objects to
-        the User-Defined Suspicious Object list.
+      description: Add suspicious file SHA-1, IP address, domain, or URL objects to the User-Defined Suspicious Object list.
       script: '|||trendmicro-apex-udso-add'
       type: regular
       iscommand: true
@@ -204,8 +202,7 @@ tasks:
       id: 53c26ffb-7b08-4ea2-8577-96000b41dfc3
       version: -1
       name: trendmicro-apex-udso-delete
-      description: Delete suspicious file SHA-1, IP address, domain, or URL objects
-        from the User-Defined Suspicious Object list.
+      description: Delete suspicious file SHA-1, IP address, domain, or URL objects from the User-Defined Suspicious Object list.
       script: '|||trendmicro-apex-udso-delete'
       type: regular
       iscommand: true
@@ -399,8 +396,7 @@ tasks:
       id: 6a3617a4-7cf9-4787-851c-e27c134d56ba
       version: -1
       name: trendmicro-apex-usdo-list
-      description: Retrieve a list of User-Defined Suspicious Objects from the Apex
-        Central server.
+      description: Retrieve a list of User-Defined Suspicious Objects from the Apex Central server.
       script: '|||trendmicro-apex-udso-list'
       type: regular
       iscommand: true
@@ -509,9 +505,7 @@ tasks:
       id: c0f4376c-fba3-4779-8c91-3ece844542c0
       version: -1
       name: trendmicro-apex-udso-file-add
-      description: Adds the uploaded file information to the User-Defined Suspicious
-        Objects list. If the file is already exist, it will be updated with the new
-        arguments.
+      description: Adds the uploaded file information to the User-Defined Suspicious Objects list. If the file is already exist, it will be updated with the new arguments.
       script: '|||trendmicro-apex-udso-file-add'
       type: regular
       iscommand: true
@@ -547,8 +541,7 @@ tasks:
       id: dad82e1e-913e-4194-8815-3f3903aa2f3c
       version: -1
       name: trendmicro-apex-udso-list
-      description: Retrieve a list of User-Defined Suspicious Objects from the Apex
-        Central server.
+      description: Retrieve a list of User-Defined Suspicious Objects from the Apex Central server.
       script: '|||trendmicro-apex-udso-list'
       type: regular
       iscommand: true
@@ -634,8 +627,7 @@ tasks:
       id: ff5275c6-e564-4a31-8d7b-b4455f15524e
       version: -1
       name: trendmicro-apex-usdo-delete
-      description: Delete suspicious file SHA-1, IP address, domain, or URL objects
-        from the User-Defined Suspicious Object list.
+      description: Delete suspicious file SHA-1, IP address, domain, or URL objects from the User-Defined Suspicious Object list.
       script: '|||trendmicro-apex-udso-delete'
       type: regular
       iscommand: true
@@ -669,9 +661,7 @@ tasks:
       id: d311cd0d-0910-4cc1-8a5a-3e9b46709132
       version: -1
       name: trendmicro-apex-list-logs
-      description: Retrieves a maximum of 1000 logs of detection types from the server.
-        The `Pattern Update Status` and `Engine Update Status` log types returns all
-        logs (no maximum) from the specified "since_time".
+      description: Retrieves a maximum of 1000 logs of detection types from the server. The `Pattern Update Status` and `Engine Update Status` log types returns all logs (no maximum) from the specified "since_time".
       script: '|||trendmicro-apex-list-logs'
       type: regular
       iscommand: true
@@ -706,8 +696,7 @@ tasks:
       id: c131d807-0de5-4cda-8c36-424f544a93ff
       version: -1
       name: trendmicro-apex-endpoint-sensors-list
-      description: Retrieves a list of Security Agents with the Endpoint Sensor feature
-        enabled.
+      description: Retrieves a list of Security Agents with the Endpoint Sensor feature enabled.
       script: '|||trendmicro-apex-endpoint-sensors-list'
       type: regular
       iscommand: true
@@ -821,3 +810,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
