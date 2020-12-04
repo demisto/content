@@ -378,9 +378,6 @@ script:
     - contextPath: Expanse.Issue.created
       description: ''
       type: Date
-    - contextPath: Expanse.Domain
-      description: ''
-      type: String
     - contextPath: Expanse.Issue.headline
       description: ''
       type: String
@@ -1036,9 +1033,6 @@ script:
     - contextPath: Expanse.Issue.created
       description: ''
       type: Date
-    - contextPath: Expanse.Domain
-      description: ''
-      type: String
     - contextPath: Expanse.Issue.headline
       description: ''
       type: String
@@ -1407,7 +1401,7 @@ script:
       type: String
     - contextPath: Expanse.Issue.providers.name
       description: ''
-      type: String   
+      type: String
   - name: expanse-list-businessunits
     description: List available business units 
     deprecated: false
@@ -1456,26 +1450,26 @@ script:
       required: false
       secret: false
     outputs:
-    - contextPath: Expanse.Issue.Expanse.Tag.created
-      description: ''
+    - contextPath: 'Expanse.Tag.created'
+      description: Tag created timestamp.
       type: Date
-    - contextPath: Expanse.Issue.Expanse.Tag.description
-      description: ''
+    - contextPath: 'Expanse.Tag.description'
+      description: Tag description.
       type: String
-    - contextPath: Expanse.Issue.Expanse.Tag.disabled
-      description: ''
+    - contextPath: 'Expanse.Tag.disabled'
+      description: Whether Tag is disabled.
       type: Boolean
-    - contextPath: Expanse.Issue.Expanse.Tag.id
-      description: ''
+    - contextPath: 'Expanse.Tag.id'
+      description: Tag ID.
       type: String
-    - contextPath: Expanse.Issue.Expanse.Tag.modified
-      description: ''
+    - contextPath: 'Expanse.Tag.modified'
+      description: Tag last modified timestamp.
       type: Date
-    - contextPath: Expanse.Issue.Expanse.Tag.name
-      description: ''
+    - contextPath: 'Expanse.Tag.name'
+      description: Tag name.
       type: String
-    - contextPath: Expanse.Issue.Expanse.Tag.tenantId
-      description: ''
+    - contextPath: 'Expanse.Tag.tenantId'
+      description: Associated Tenant ID.
       type: String
   - name: expanse-assign-tags-to-asset
     description: Assign tags to Asset.
@@ -1710,25 +1704,25 @@ script:
       secret: false
     outputs:
     - contextPath: 'Expanse.Tag.created'
-      description: ''
+      description: Tag created timestamp.
       type: Date
     - contextPath: 'Expanse.Tag.description'
-      description: ''
+      description: Tag description.
       type: String
     - contextPath: 'Expanse.Tag.disabled'
       description: ''
       type: Boolean
     - contextPath: 'Expanse.Tag.id'
-      description: ''
+      description: Tag ID.
       type: String
     - contextPath: 'Expanse.Tag.modified'
-      description: ''
+      description: Tag last modified timestamp.
       type: Date
     - contextPath: 'Expanse.Tag.name'
-      description: ''
+      description: Tag name.
       type: String
     - contextPath: 'Expanse.Tag.tenantId'
-      description: ''
+      description: Associated Tenant ID.
       type: String      
   - name: expanse-get-iprange
     description: Get ip-range by id or search ip-ranges
@@ -1795,13 +1789,13 @@ script:
       description: ''
       type: String
     - contextPath: Expanse.IPRange.attributionReasons.reason
-      description: ''
+      description: A reason why Expanse attributed the given resource to your organization.
       type: String
     - contextPath: Expanse.IPRange.businessUnits.id
-      description: ''
+      description: ID of the organization or subsidiary which Expanse has defined as being part of your public organizational structure.
       type: String
     - contextPath: Expanse.IPRange.businessUnits.name
-      description: ''
+      description: Name of the organization or subsidiary which Expanse has defined as being part of your public organizational structure.
       type: String
     - contextPath: Expanse.IPRange.cidr
       description: ''
@@ -1810,40 +1804,40 @@ script:
       description: ''
       type: Date
     - contextPath: Expanse.IPRange.id
-      description: ''
+      description: IP Range unique identifier.
       type: String
     - contextPath: Expanse.IPRange.ipVersion
-      description: ''
+      description: IP version (4 or 6).
       type: String
     - contextPath: Expanse.IPRange.locationInformation.geolocation.city
-      description: ''
+      description: Geolocation city.
       type: String
     - contextPath: Expanse.IPRange.locationInformation.geolocation.countryCode
-      description: ''
+      description: Geolocation country code.
       type: String
     - contextPath: Expanse.IPRange.locationInformation.geolocation.latitude
-      description: ''
+      description: Geolocation latitude.
       type: Number
     - contextPath: Expanse.IPRange.locationInformation.geolocation.longitude
-      description: ''
+      description: Geolocation longitude.
       type: Number
     - contextPath: Expanse.IPRange.locationInformation.geolocation.regionCode
-      description: ''
+      description: Geolocation region code.
       type: String
     - contextPath: Expanse.IPRange.locationInformation.ip
-      description: ''
+      description: Location of the IP address.
       type: String
     - contextPath: Expanse.IPRange.modified
       description: ''
       type: Date
     - contextPath: Expanse.IPRange.rangeIntroduced
-      description: ''
+      description: Date when the IP range was added to Expanse.
       type: Date
     - contextPath: Expanse.IPRange.rangeSize
-      description: ''
+      description: IP range size.
       type: Number
     - contextPath: Expanse.IPRange.rangeType
-      description: ''
+      description: IP range type (parent or custom)
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.country
       description: ''
@@ -1870,34 +1864,34 @@ script:
       description: ''
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.events.action
-      description: ''
+      description: Registry entity event action.
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.events.actor
-      description: ''
+      description: Registry entity event actor.
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.events.date
-      description: ''
+      description: Registry entity event date.
       type: Date
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.firstRegistered
-      description: ''
+      description: Registry entity first registered date.
       type: Date
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.formattedName
-      description: ''
+      description: Registry entity formatted name.
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.handle
-      description: ''
+      description: Registry entity handle.
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.id
-      description: ''
+      description: Expanse ID of points of contact as maintained by the global internet registries (ARIN, APNIC, etc.), which identifies people or a role (group of people) within your organization that is responsible for the day-to-day management of this IP Network.
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.lastChanged
-      description: ''
+      description: Registry entity latest update date.
       type: Date
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.org
-      description: ''
+      description: Registry entity organization.
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.phone
-      description: ''
+      description: Registry entity phone number.
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.relatedEntityHandles
       description: ''
@@ -1918,19 +1912,19 @@ script:
       description: ''
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.updatedDate
-      description: ''
+      description: Date when this IP Network was last processed by Expanse from the given global internet registry.
       type: Date
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.whoisServer
       description: ''
       type: String
     - contextPath: Expanse.IPRange.responsiveIpCount
-      description: ''
+      description: Count of responsive IP addresses in the range.
       type: Number
     - contextPath: Expanse.IPRange.severityCounts.count
-      description: ''
+      description: Count of issues of this type.
       type: Number
     - contextPath: Expanse.IPRange.severityCounts.type
-      description: ''
+      description: Severity of related issues of this type (CRITICAL, WARNING or ROUTINE)
       type: String
     - contextPath: DBotScore.Score
       description: The actual score.
@@ -1956,7 +1950,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Last Observed Date (YYYY-MM-DD), to be used with domain arg
+      description: Last Observed Date (YYYY-MM-DD)
       isArray: false
       name: last_observed_date
       required: false
@@ -2436,14 +2430,29 @@ script:
     execution: false
     outputs:
     - contextPath: Expanse.AssociatedDomain.name
-      description: Name of the domain
+      description: Name of the domain.
       type: String
     - contextPath: Expanse.AssociatedDomain.IP
-      description: IP Address the domain resolved to
+      description: IP Address the domain resolved to.
       type: String
     - contextPath: Expanse.AssociatedDomain.certificate
-      description: Expanse ID of the certificate associated to this domain
+      description: Expanse ID of the certificate associated to this domain.
       type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number            
   - name: expanse-get-certificate
     description: Get certificate details by certificate md5 hash or search certificates
     deprecated: false
@@ -2525,48 +2534,284 @@ script:
       required: false
       secret: false
     outputs:
-    - contextPath: 'Expanse.Certificate.annotations'
-      description: ''
-      type: Unknown
-    - contextPath: 'Expanse.Certificate.businessUnits'
-      description: ''
-      type: Unknown
-    - contextPath: 'Expanse.Certificate.certificate'
-      description: ''
-      type: Unknown
-    - contextPath: 'Expanse.Certificate.certificateAdvertisementStatus'
+    - contextPath: Expanse.Certificate.annotations.note
       description: ''
       type: String
-    - contextPath: 'Expanse.Certificate.commonName'
+    - contextPath: Expanse.Certificate.businessUnits.id
       description: ''
       type: String
-    - contextPath: 'Expanse.Certificate.dateAdded'
+    - contextPath: Expanse.Certificate.businessUnits.name
       description: ''
-      type: Date
-    - contextPath: 'Expanse.Certificate.details'
+      type: String
+    - contextPath: Expanse.Certificate.businessUnits.tenantId
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.formattedIssuerOrg
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.issuer
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.issuerAlternativeNames
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.issuerCountry
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.issuerEmail
       description: ''
       type: Unknown
-    - contextPath: 'Expanse.Certificate.firstObserved'
+    - contextPath: Expanse.Certificate.certificate.issuerLocality
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.issuerName
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.issuerOrg
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.issuerOrgUnit
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.issuerState
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.md5Hash
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.pemSha1
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.pemSha256
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.publicKey
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.publicKeyAlgorithm
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.publicKeyBits
+      description: ''
+      type: Number
+    - contextPath: Expanse.Certificate.certificate.publicKeyModulus
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.publicKeyRsaExponent
+      description: ''
+      type: Number
+    - contextPath: Expanse.Certificate.certificate.publicKeySpki
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.serialNumber
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.signatureAlgorithm
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.subject
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.subjectAlternativeNames
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.subjectCountry
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.subjectEmail
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.subjectLocality
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.subjectName
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.subjectOrg
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.subjectOrgUnit
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.subjectState
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.validNotAfter
       description: ''
       type: Date
-    - contextPath: 'Expanse.Certificate.hasLinkedCloudResources'
+    - contextPath: Expanse.Certificate.certificate.validNotBefore
+      description: ''
+      type: Date
+    - contextPath: Expanse.Certificate.certificate.version
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificateAdvertisementStatus
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.commonName
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.dateAdded
+      description: ''
+      type: Date
+    - contextPath: Expanse.Certificate.details.base64Encoded
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.assetKey
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.assetType
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.businessUnits.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.businessUnits.name
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.businessUnits.tenantId
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.commonName
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.domain
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.details.recentIps.ip
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.lastObserved
+      description: ''
+      type: Date
+    - contextPath: Expanse.Certificate.details.recentIps.provider.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.provider.name
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.tenant.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.tenant.name
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.tenant.tenantId
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.type
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.firstObserved
+      description: ''
+      type: Date
+    - contextPath: Expanse.Certificate.hasLinkedCloudResources
       description: ''
       type: Boolean
-    - contextPath: 'Expanse.Certificate.id'
+    - contextPath: Expanse.Certificate.id
       description: ''
       type: String
-    - contextPath: 'Expanse.Certificate.lastObserved'
+    - contextPath: Expanse.Certificate.lastObserved
       description: ''
       type: Date
-    - contextPath: 'Expanse.Certificate.properties'
+    - contextPath: Expanse.Certificate.properties
       description: ''
       type: String
-    - contextPath: 'Expanse.Certificate.providers'
+    - contextPath: Expanse.Certificate.providers.id
       description: ''
-      type: Unknown
-    - contextPath: 'Expanse.Certificate.tenant'
+      type: String
+    - contextPath: Expanse.Certificate.providers.name
       description: ''
-      type: Unknown
+      type: String
+    - contextPath: Expanse.Certificate.serviceStatus
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.tenant.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.tenant.name
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.tenant.tenantId
+      description: ''
+      type: String
+    - contextPath: Certificate.Name
+      description: Name (CN or SAN) appearing in the certificate.
+      type: String
+    - contextPath: Certificate.SubjectDN
+      description: |
+        The Subject Distinguished Name of the certificate.
+        This field includes the Common Name of the certificate.
+      type: String
+    - contextPath: Certificate.PEM
+      description: Certificate in PEM format.
+      type: String
+    - contextPath: Certificate.IssuerDN
+      description: The Issuer Distinguished Name of the certificate.
+      type: String
+    - contextPath: Certificate.SerialNumber
+      description: The Serial Number of the certificate.
+      type: String
+    - contextPath: Certificate.ValidityNotAfter
+      description: End of certificate validity period.
+      type: Date
+    - contextPath: Certificate.ValidityNotBefore
+      description: Start of certificate validity period.
+      type: Date
+    - contextPath: Certificate.SubjectAlternativeName.Value
+      description: Name of the SAN.
+      type: String
+    - contextPath: Certificate.SHA256
+      description: SHA256 Fingerprint of the certificate in DER format.
+      type: String
+    - contextPath: Certificate.SHA1
+      description: SHA1 Fingerprint of the certificate in DER format.
+      type: String
+    - contextPath: Certificate.MD5
+      description: MD5 Fingerprint of the certificate in DER format.
+      type: String
+    - contextPath: Certificate.PublicKey.Algorithm
+      description: Algorithm used for public key of the certificate.
+      type: String
+    - contextPath: Certificate.PublicKey.Length
+      description: Length in bits of the public key of the certificate.
+      type: Number
+    - contextPath: Certificate.PublicKey.Modulus
+      description: Modulus of the public key for RSA keys.
+      type: String
+    - contextPath: Certificate.PublicKey.Exponent
+      description: Exponent of the public key for RSA keys.
+      type: Number
+    - contextPath: Certificate.PublicKey.PublicKey
+      description: The public key for DSA/Unknown keys.
+      type: String
+    - contextPath: Certificate.SPKISHA256
+      description: SHA256 fingerprint of the certificate Subject Public Key Info.
+      type: String
+    - contextPath: Certificate.Signature.Algorithm
+      description: Algorithm used in the signature of the certificate.
+      type: String      
+    - contextPath: Certificate.Malicious.Vendor
+      description: The vendor that reported the file as malicious.
+      type: String
+    - contextPath: Certificate.Malicious.Description
+      description: A description explaining why the file was determined to be malicious.
+      type: String     
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String        
   - name: certificate
     arguments:
     - default: true
@@ -2576,7 +2821,7 @@ script:
         the script looks first for an indicator with the given hash to retrieve the
         corresponding MD5 hash.
       isArray: true
-      name: hash
+      name: certificate
       required: false
       secret: false
     - default: false
@@ -2592,9 +2837,275 @@ script:
       - 'true'
       - 'false'
     deprecated: false
-    description: Provides data enrichment for ExpanseCertificate.
+    description: Provides data enrichment for an X509 Certificate from Expanse.
     execution: false
     outputs:
+    - contextPath: Expanse.Certificate.annotations.note
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.businessUnits.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.businessUnits.name
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.businessUnits.tenantId
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.formattedIssuerOrg
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.issuer
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.issuerAlternativeNames
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.issuerCountry
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.issuerEmail
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.issuerLocality
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.issuerName
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.issuerOrg
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.issuerOrgUnit
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.issuerState
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.md5Hash
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.pemSha1
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.pemSha256
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.publicKey
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.publicKeyAlgorithm
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.publicKeyBits
+      description: ''
+      type: Number
+    - contextPath: Expanse.Certificate.certificate.publicKeyModulus
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.publicKeyRsaExponent
+      description: ''
+      type: Number
+    - contextPath: Expanse.Certificate.certificate.publicKeySpki
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.serialNumber
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.signatureAlgorithm
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.subject
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.subjectAlternativeNames
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.subjectCountry
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.subjectEmail
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.subjectLocality
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.subjectName
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificate.subjectOrg
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.subjectOrgUnit
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.subjectState
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.certificate.validNotAfter
+      description: ''
+      type: Date
+    - contextPath: Expanse.Certificate.certificate.validNotBefore
+      description: ''
+      type: Date
+    - contextPath: Expanse.Certificate.certificate.version
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.certificateAdvertisementStatus
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.commonName
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.dateAdded
+      description: ''
+      type: Date
+    - contextPath: Expanse.Certificate.details.base64Encoded
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.assetKey
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.assetType
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.businessUnits.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.businessUnits.name
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.businessUnits.tenantId
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.commonName
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.domain
+      description: ''
+      type: Unknown
+    - contextPath: Expanse.Certificate.details.recentIps.ip
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.lastObserved
+      description: ''
+      type: Date
+    - contextPath: Expanse.Certificate.details.recentIps.provider.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.provider.name
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.tenant.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.tenant.name
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.tenant.tenantId
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.details.recentIps.type
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.firstObserved
+      description: ''
+      type: Date
+    - contextPath: Expanse.Certificate.hasLinkedCloudResources
+      description: ''
+      type: Boolean
+    - contextPath: Expanse.Certificate.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.lastObserved
+      description: ''
+      type: Date
+    - contextPath: Expanse.Certificate.properties
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.providers.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.providers.name
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.serviceStatus
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.tenant.id
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.tenant.name
+      description: ''
+      type: String
+    - contextPath: Expanse.Certificate.tenant.tenantId
+      description: ''
+      type: String
+    - contextPath: Certificate.Name
+      description: Name (CN or SAN) appearing in the certificate.
+      type: String
+    - contextPath: Certificate.SubjectDN
+      description: |
+        The Subject Distinguished Name of the certificate.
+        This field includes the Common Name of the certificate.
+      type: String
+    - contextPath: Certificate.PEM
+      description: Certificate in PEM format.
+      type: String
+    - contextPath: Certificate.IssuerDN
+      description: The Issuer Distinguished Name of the certificate.
+      type: String
+    - contextPath: Certificate.SerialNumber
+      description: The Serial Number of the certificate.
+      type: String
+    - contextPath: Certificate.ValidityNotAfter
+      description: End of certificate validity period.
+      type: Date
+    - contextPath: Certificate.ValidityNotBefore
+      description: Start of certificate validity period.
+      type: Date
+    - contextPath: Certificate.SubjectAlternativeName.Value
+      description: Name of the SAN.
+      type: String
+    - contextPath: Certificate.SHA256
+      description: SHA256 Fingerprint of the certificate in DER format.
+      type: String
+    - contextPath: Certificate.SHA1
+      description: SHA1 Fingerprint of the certificate in DER format.
+      type: String
+    - contextPath: Certificate.MD5
+      description: MD5 Fingerprint of the certificate in DER format.
+      type: String
+    - contextPath: Certificate.PublicKey.Algorithm
+      description: Algorithm used for public key of the certificate.
+      type: String
+    - contextPath: Certificate.PublicKey.Length
+      description: Length in bits of the public key of the certificate.
+      type: Number
+    - contextPath: Certificate.PublicKey.Modulus
+      description: Modulus of the public key for RSA keys.
+      type: String
+    - contextPath: Certificate.PublicKey.Exponent
+      description: Exponent of the public key for RSA keys.
+      type: Number
+    - contextPath: Certificate.PublicKey.PublicKey
+      description: The public key for DSA/Unknown keys.
+      type: String
+    - contextPath: Certificate.SPKISHA256
+      description: SHA256 fingerprint of the certificate Subject Public Key Info.
+      type: String
+    - contextPath: Certificate.Signature.Algorithm
+      description: Algorithm used in the signature of the certificate.
+      type: String      
+    - contextPath: Certificate.Malicious.Vendor
+      description: The vendor that reported the file as malicious.
+      type: String
+    - contextPath: Certificate.Malicious.Description
+      description: A description explaining why the file was determined to be malicious.
+      type: String     
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
@@ -2734,25 +3245,25 @@ script:
       secret: false
     outputs:
     - contextPath: Expanse.RiskRule.abbreviatedName
-      description: ''
+      description: Risk rule abbreviated name.
       type: String
     - contextPath: Expanse.RiskRule.businessUnits.id
-      description: ''
+      description: ID of the business unit associated to the risk rule.
       type: String
     - contextPath: Expanse.RiskRule.dataFields
-      description: ''
+      description: Risk rule data fields.
       type: String
     - contextPath: Expanse.RiskRule.description
-      description: ''
+      description: Risk rule description.
       type: String
     - contextPath: Expanse.RiskRule.direction
-      description: ''
+      description: Risk rule direction (INBOUND or OUTBOUND).
       type: String
     - contextPath: Expanse.RiskRule.id
-      description: ''
+      description: Risk rule ID.
       type: String
     - contextPath: Expanse.RiskRule.name
-      description: ''
+      description: Risk rule name.
       type: String
   - name: domain
     arguments:
