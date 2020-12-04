@@ -1936,7 +1936,7 @@ def certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         indicator_value = base64.urlsafe_b64decode(ec_sha256).hex()
 
         if find_indicator_md5_by_hash(indicator_value) is None:
-            demisto.debug(f'XXX Update: Indicator {indicator_value} not found')
+            demisto.debug(f'Update: Indicator {indicator_value} not found')
             continue
 
         annotations = certificate.get('annotations', {})
@@ -1983,7 +1983,6 @@ def certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         }
         indicators.append(indicator)
 
-    demisto.debug(f'XXX - indicators: {indicators!r}')
     demisto.createIndicators(indicators)
 
     return result

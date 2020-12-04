@@ -12,69 +12,94 @@
         }
     ],
     "certificate": {
-        "formattedIssuerOrg": "Test Company",
-        "id": "ce382bba-1a79-3e1a-8b4e-f3acbe064663",
-        "issuer": "C=US,ST=CA,L=SantaClara,O=TestCompany,OU=MGMT,CN=TestCompanyCA,E=devops@testcompany.example",
+        "formattedIssuerOrg": "Let's Encrypt",
+        "id": "9918b6d6-ff0c-305c-afce-307569b1272b",
+        "issuer": "C=US,O=Let's Encrypt,CN=Let's Encrypt Authority X3",
         "issuerAlternativeNames": "",
         "issuerCountry": "US",
-        "issuerEmail": "devops@testcompany.example,devops@testcompany.example",
-        "issuerLocality": "SantaClara",
-        "issuerName": "TestCompanyCA",
-        "issuerOrg": "TestCompany",
-        "issuerOrgUnit": "MGMT",
-        "issuerState": "CA",
-        "md5Hash": "zjgruhp5zhqLTvOsvgZGYw==",
-        "pemSha1": "K9PfQ1tkeUqEw9K_LKL1kIzGQfs=",
-        "pemSha256": "ra1c5iRmRTXIK4KFMkOofN1qvNCi795X8ZdBmMFGoOw=",
-        "publicKey": "pubkey",
+        "issuerEmail": null,
+        "issuerLocality": null,
+        "issuerName": "Let's Encrypt Authority X3",
+        "issuerOrg": "Let's Encrypt",
+        "issuerOrgUnit": null,
+        "issuerState": null,
+        "md5Hash": "mRi21v8MwFzvzjB1abEnKw==",
+        "pemSha1": "xPaoNW9DWlrp9HbiVNzk2Kgpeb8=",
+        "pemSha256": "gWgarWB-ZqGnfBrWKx7aCz4dC3f5orkB3ago0ItBLy8=",
+        "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2DbRZMv5JUeu5Uo3LSEs1SU5R4rQQN0RX+vCyqSJPfIgBIrYBfNo4XczxNVToj/EQpUycSZ27GZIp4YiIXz7QKUppdEaS3oStUzob58dA4Aw1gg6ZZ7X32FEWsoqYf8X3Czfrq+NAzA/vFTBxA+xIqGKvPVWg6lgsGBDwU4XwhYm5p3zCJbqp9FlcRSX1NriSV6Qbn8qnc/+k+c2frmsViswJyZpIvKZ19zIalUS2Kk1zxfnO+vJnerWw1EbTkxI2G03QW2e5Eb32h63ONQ/8yGJf7pGpsbY67fdv4Cc48qxOSwM15I0w8ml3+/FiePNN4hKjXT4C5dGuknYj2fOEQIDAQAB",
         "publicKeyAlgorithm": "RSA",
         "publicKeyBits": 2048,
-        "publicKeyModulus": "af6aa9f98dbeabd681b51534d50f7bcf6e6b753a5b6aa79ee78ba08e75d25a7c97d8d02f0d420510e858f181e229a6f9d82dd772312861839380168c5239522ee0f2f266a93fa845903e65b1d334f075f58869bb7a49195b6dae66326daf8cca8de786c27fe3d38580d451d4a52e33e29aa309c0ab61d4a8b781ecec91dbb29794d43b97e0a28ae7695f03bfdd45115f77d487cf6bdb199e77eb16740e5bba43c69bc7f4b31234cc95edb39a0d7e99b41c9b57c1e03e03e65aa8ac46c564116c7a00cd515ff8ad8ac64bbf485a25511a28242870b96efab1ef9ee1cd781ec526ca5651a71a5d4ca828afd07b643d09592f8c106dc7dc6e79a63c397364328fe9",
+        "publicKeyModulus": "d836d164cbf92547aee54a372d212cd52539478ad040dd115febc2caa4893df220048ad805f368e17733c4d553a23fc4429532712676ec6648a78622217cfb40a529a5d11a4b7a12b54ce86f9f1d038030d6083a659ed7df61445aca2a61ff17dc2cdfaeaf8d03303fbc54c1c40fb122a18abcf55683a960b06043c14e17c21626e69df30896eaa7d165711497d4dae2495e906e7f2a9dcffe93e7367eb9ac562b3027266922f299d7dcc86a5512d8a935cf17e73bebc99dead6c3511b4e4c48d86d37416d9ee446f7da1eb738d43ff321897fba46a6c6d8ebb7ddbf809ce3cab1392c0cd79234c3c9a5dfefc589e3cd37884a8d74f80b9746ba49d88f67ce11",
         "publicKeyRsaExponent": 65537,
-        "publicKeySpki": "ChczHPXxgGCsrUZ1Ai5-_h3RFGpKulYOQ1anaUN61YY=",
-        "serialNumber": "1",
+        "publicKeySpki": "8JRelbq1e3nDcRQdQjvqd0e816hREKN9RFrJEqpyPFU=",
+        "serialNumber": "343786058877416862049673426398503330032570",
         "signatureAlgorithm": "SHA256withRSA",
-        "subject": "C=US,ST=CA,L=SantaClara,O=TestCompany,OU=MGMT,CN=*.dev.gw.something.example.local",
-        "subjectAlternativeNames": "",
-        "subjectCountry": "US",
+        "subject": "CN=*.pan.dev",
+        "subjectAlternativeNames": "*.pan.dev demisto.developers.paloaltonetworks.com pan.dev",
+        "subjectCountry": null,
         "subjectEmail": null,
-        "subjectLocality": "SantaClara",
-        "subjectName": "*.dev.gw.something.example.local",
-        "subjectOrg": "TestCompany",
-        "subjectOrgUnit": "MGMT",
-        "subjectState": "CA",
-        "validNotAfter": "2019-04-23T22:07:23Z",
-        "validNotBefore": "2018-04-23T22:07:23Z",
-        "version": "1"
+        "subjectLocality": null,
+        "subjectName": "*.pan.dev",
+        "subjectOrg": null,
+        "subjectOrgUnit": null,
+        "subjectState": null,
+        "validNotAfter": "2021-02-06T18:15:41Z",
+        "validNotBefore": "2020-11-08T18:15:41Z",
+        "version": "3"
     },
     "certificateAdvertisementStatus": [
-        "NO_CERTIFICATE_ADVERTISEMENT"
+        "HAS_CERTIFICATE_ADVERTISEMENT"
     ],
-    "commonName": "*.0mizwwr0v7.gw.panclouddev.com",
-    "dateAdded": "2020-09-28T14:28:35.274Z",
+    "commonName": "*.pan.dev",
+    "dateAdded": "2020-11-11T04:15:52.160Z",
     "details": {
-        "base64Encoded": "b64encodedcert",
+        "base64Encoded": "MIIFezCCBGOgAwIBAgISA/JL4oaGczW5OqvCy9cEQqu6MA0GCSqGSIb3DQEBCwUAMEoxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MSMwIQYDVQQDExpMZXQncyBFbmNyeXB0IEF1dGhvcml0eSBYMzAeFw0yMDExMDgxODE1NDFaFw0yMTAyMDYxODE1NDFaMBQxEjAQBgNVBAMMCSoucGFuLmRldjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANg20WTL+SVHruVKNy0hLNUlOUeK0EDdEV/rwsqkiT3yIASK2AXzaOF3M8TVU6I/xEKVMnEmduxmSKeGIiF8+0ClKaXRGkt6ErVM6G+fHQOAMNYIOmWe199hRFrKKmH/F9ws366vjQMwP7xUwcQPsSKhirz1VoOpYLBgQ8FOF8IWJuad8wiW6qfRZXEUl9Ta4klekG5/Kp3P/pPnNn65rFYrMCcmaSLymdfcyGpVEtipNc8X5zvryZ3q1sNRG05MSNhtN0FtnuRG99oetzjUP/MhiX+6RqbG2Ou33b+AnOPKsTksDNeSNMPJpd/vxYnjzTeISo10+AuXRrpJ2I9nzhECAwEAAaOCAo8wggKLMA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQUuENucz/GeiKrE10fxExRWTUydqMwHwYDVR0jBBgwFoAUqEpqYwR93brm0Tm3pkVl7/Oo7KEwbwYIKwYBBQUHAQEEYzBhMC4GCCsGAQUFBzABhiJodHRwOi8vb2NzcC5pbnQteDMubGV0c2VuY3J5cHQub3JnMC8GCCsGAQUFBzAChiNodHRwOi8vY2VydC5pbnQteDMubGV0c2VuY3J5cHQub3JnLzBGBgNVHREEPzA9ggkqLnBhbi5kZXaCJ2RlbWlzdG8uZGV2ZWxvcGVycy5wYWxvYWx0b25ldHdvcmtzLmNvbYIHcGFuLmRldjBMBgNVHSAERTBDMAgGBmeBDAECATA3BgsrBgEEAYLfEwEBATAoMCYGCCsGAQUFBwIBFhpodHRwOi8vY3BzLmxldHNlbmNyeXB0Lm9yZzCCAQMGCisGAQQB1nkCBAIEgfQEgfEA7wB2AESUZS6w7s6vxEAH2Kj+KMDa5oK+2MsxtT/TM5a1toGoAAABdalJF6wAAAQDAEcwRQIgY7UA7lCiPYQi2OiML/mgZ7LQyFegVH1tX2dBG23D5tgCIQC9c9UX886gpx4ROpDyHdSd+k0a9BR5dDdyPfj0cRm1LgB1AH0+8viP/4hVaCTCwMqeUol5K8UOeAl/LmqXaJl+IvDXAAABdalJF+MAAAQDAEYwRAIgKMtxuyKPcT0QxAJKN0uNl4jcJn0pdBzHqafHQXni9gYCIGqdT8l53OEkoiQ17boLs4saRFlg2a2zx0cB4jEPg6/eMA0GCSqGSIb3DQEBCwUAA4IBAQBDGb01zj3OJ5cntlFldFGzlNDMMrsJxYPNZJfjKr/USMZ/OTjN9snr2HvWnhFTrD8L7HxDbYWXt0dMwQZtA0ZIKrlUIZrxhnyPsehYRrKm9+G8X2n/K6vseCwxxTfIlL2ROvmeIWc8NBxJ6bu/s2xIYuIk07fHOpw537pk8NIZnkeOL9VPwKsAgotCyB+6AQ1fraEqZXkLJYnNYoYh24QVrP9RX/wZdPqDaFAAesTRwiSP7EF/jZpDR9qV97wHHf5YIS4pZ6GLGp6w0cVySp0mZR2yOtMeb64Dj1egdJQEU5HMnoO3OpTu2l3FzqVZ2TkODFO4KRA2df7pJLNqY7Db",
         "cloudResources": [],
-        "recentIps": ["1.1.1.1"]
+        "recentIps": [
+            {
+                "assetKey": "mRi21v8MwFzvzjB1abEnKw==",
+                "assetType": "CERTIFICATE",
+                "businessUnits": [
+                    {
+                        "id": "0188ec31-04fb-447d-8217-f398f6552f23",
+                        "name": "Test Company Dev",
+                        "tenantId": "0188ec31-04fb-447d-8217-f398f6552f23"
+                    }
+                ],
+                "commonName": "*.pan.dev",
+                "domain": null,
+                "ip": "198.51.100.185",
+                "lastObserved": "2020-12-03T02:00:11Z",
+                "provider": {
+                    "id": "Google",
+                    "name": "Google"
+                },
+                "tenant": {
+                    "id": "69b6f467-45f9-4bed-a7d8-e15706cf2bdc",
+                    "name": "Test Company",
+                    "tenantId": "69b6f467-45f9-4bed-a7d8-e15706cf2bdc"
+                },
+                "type": "CERTIFICATE_SIGHTING"
+            }
+        ]
     },
-    "firstObserved": null,
+    "firstObserved": "2020-11-09T00:00:00Z",
     "hasLinkedCloudResources": false,
-    "id": "bd96a5e2-e146-3f5a-9aa8-dfbe39b2e20b",
-    "lastObserved": null,
+    "id": "e492d487-9b83-3218-8bcc-9788a1ac1451",
+    "lastObserved": "2020-12-03T00:00:00Z",
     "properties": [
-        "WILDCARD",
-        "EXPIRED"
+        "WILDCARD"
     ],
     "providers": [
         {
-            "id": "Unknown",
-            "name": "None"
+            "id": "Google",
+            "name": "Google"
         }
     ],
     "serviceStatus": [
-        "NO_ACTIVE_SERVICE",
         "NO_ACTIVE_ON_PREM_SERVICE",
-        "NO_ACTIVE_CLOUD_SERVICE"
+        "HAS_ACTIVE_CLOUD_SERVICE",
+        "HAS_ACTIVE_SERVICE"
     ],
     "tenant": {
         "id": "69b6f467-45f9-4bed-a7d8-e15706cf2bdc",
@@ -82,4 +107,3 @@
         "tenantId": "69b6f467-45f9-4bed-a7d8-e15706cf2bdc"
     }
 }
-
