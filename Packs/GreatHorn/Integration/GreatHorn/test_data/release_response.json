@@ -1,0 +1,216 @@
+{
+    "results": [
+        {
+            "aliases": [],
+            "anomalyScore": 0,
+            "authScore": 0,
+            "authenticationResults": [
+                "spf=pass (sender IP is 209.85.167.51) smtp.mailfrom=gmail.com; scuftysails.com; dkim=pass (signature was verified) header.d=gmail.com;scuftysails.com; dmarc=pass action=none header.from=gmail.com;compauth=pass reason=100"
+            ],
+            "bodyOnlyWhitespace": false,
+            "collector": null,
+            "contentHash": "a36c74150961d8fb13b4e63f4c1bd71e80bf2a1f08575d248aa6f0611b2f66ef",
+            "country": "United States",
+            "displayName": "test user",
+            "dkim": "pass",
+            "dmarc": "pass",
+            "eventId": 17076,
+            "files": [],
+            "flag": [
+                16243
+            ],
+            "headers": {
+                "authentication-results": [
+                    "spf=pass (sender IP is 209.85.167.51) smtp.mailfrom=gmail.com; scuftysails.com; dkim=pass (signature was verified) header.d=gmail.com;scuftysails.com; dmarc=pass action=none header.from=gmail.com;compauth=pass reason=100"
+                ],
+                "bcc": [],
+                "cc": [],
+                "content-type": [
+                    "multipart/alternative"
+                ],
+                "date": [
+                    "Sat, 5 Dec 2020 15:17:10 -0500"
+                ],
+                "dkim-signature": [
+                    "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=gmail.com; s=20161025;        h=mime-version:from:date:message-id:subject:to;        bh=RfI8G2QMpZDBAG224/kYDMcNM7Icx5jP5htEKEe9rHo=;        b=kxyWemXcszOy/1QBPC2ZCx5IgQuaIwfpNUpWjslr+dOGj1wQp1va08mVlBqj7rrq/N         uhp7xLcuVr1VRlCmkD3pezw470bcqoRNEkbp4LwQawaur57/0EoZmXc5HQBBI3H85P3N         Nn0c+0MmLKJuu99L646VaUZYkwj4AVpup8aFO/v5d3ikN3VvSGRchbRaRGttMY6xfQnc         8wRJ6or+X159tq+TJjIFE7gEcfrCkGgJf98AEYXeqmbrAACahto9AcPVpDfALYZlVp3u         OR/zHpq3yz/zMioJXfL5QmfiI/rtJGd1dwQbagORS1EJlv/jOWh7Qxl8mSV+jNTfbtWz         DBVw=="
+                ],
+                "from": [
+                    "\"test user\" <testing@gmail.com>"
+                ],
+                "message-id": [
+                    "<CA+gb04FjYQm30ywk2YX4-yxfwW3P=Q9zCtQG_SWFJYhC9-iQPg@mail.gmail.com>"
+                ],
+                "mime-version": [
+                    "1.0"
+                ],
+                "received": [
+                    "from BN6PR13MB0964.namprd13.prod.outlook.com (2603:10b6:404:1f::23) by DM6PR13MB4114.namprd13.prod.outlook.com with HTTPS; Sat, 5 Dec 2020 20:17:28 +0000",
+                    "from MWHPR17CA0061.namprd17.prod.outlook.com (2603:10b6:300:93::23) by BN6PR13MB0964.namprd13.prod.outlook.com (2603:10b6:404:1f::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.9; Sat, 5 Dec 2020 20:17:26 +0000",
+                    "from MW2NAM10FT027.eop-nam10.prod.protection.outlook.com (2603:10b6:300:93:cafe::ec) by MWHPR17CA0061.outlook.office365.com (2603:10b6:300:93::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17 via Frontend Transport; Sat, 5 Dec 2020 20:17:25 +0000",
+                    "from mail-lf1-f51.google.com (209.85.167.51) by MW2NAM10FT027.mail.protection.outlook.com (10.13.155.187) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.20 via Frontend Transport; Sat, 5 Dec 2020 20:17:25 +0000",
+                    "by mail-lf1-f51.google.com with SMTP id u9so6941016lfm.1        for <penguin@scuftysails.com>; Sat, 05 Dec 2020 12:17:25 -0800 (PST)"
+                ],
+                "received-spf": [
+                    "Pass (protection.outlook.com: domain of gmail.com designates 209.85.167.51 as permitted sender) receiver=protection.outlook.com; client-ip=209.85.167.51; helo=mail-lf1-f51.google.com;"
+                ],
+                "reply-to": [],
+                "return-path": [
+                    "testing@gmail.com"
+                ],
+                "sender": [
+                    "\"test user\" <testing@gmail.com>"
+                ],
+                "subject": [
+                    "Test"
+                ],
+                "to": [
+                    "\"Scufty Sails\" <penguin@scuftysails.com>"
+                ],
+                "x-eopattributedmessage": [
+                    "0"
+                ],
+                "x-eoptenantattributedmessage": [
+                    "7333cf3a-8bd0-4ebd-877d-a14cafb1741a:0"
+                ],
+                "x-forefront-antispam-report": [
+                    "CIP:209.85.167.51;CTRY:US;LANG:en;SCL:-1;SRV:;IPV:NLI;SFV:SFE;H:mail-lf1-f51.google.com;PTR:mail-lf1-f51.google.com;CAT:NONE;SFS:;DIR:INB;"
+                ],
+                "x-gm-message-state": [
+                    "AOAM530qO5DYwT5nmt5SjVqwa5q+nfCViCj5k5DJlj3FVljk43+c8SM9\tlcofyanaROI4rfVRK7EKtnS/Al8s1hkF8rO33U24wSYB"
+                ],
+                "x-google-dkim-signature": [
+                    "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=1e100.net; s=20161025;        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;        bh=RfI8G2QMpZDBAG224/kYDMcNM7Icx5jP5htEKEe9rHo=;        b=Voo7KwdNhgDfKPsu8mwbuB7YsIpRxw1hHDT/M/trgRo111VULsFoOcjgPYWXl1eyEt         wJJsDGMlLKocuvERMG5YnPLQE9Z4TKbYfc7Vu1v3RKqE4w1fy7XUlFtoJJYgdUZqPlOI         o9zm07jD+hVlRuKMFrhvM9jOSXPsGy/1A2cprBXfOPkYbUO/lwfHZ9uq1hMyyMDsJ4wW         T+xRXdrdw7gRZ0VTSnXk/0UNmEvYPMXe1GecN70SKD1O3v/fVEs3qbRBds+ADB+rl8c+         hoKCN1rdfPvSuAOpwJD88xZUqM5RqsszdHoAAa6t0yDrpCfBj4yb03gqbHjVQJHhEAEz         JIWQ=="
+                ],
+                "x-google-smtp-source": [
+                    "ABdhPJwcaJdbejGcbRyELXkHK+brILYM+wPK4XFUVLEDyHkDK3id8rOOJLBM/LI7zG+BakMioSkGeq4umnQLPZLO0Vk="
+                ],
+                "x-microsoft-antispam": [
+                    "BCL:0;"
+                ],
+                "x-microsoft-antispam-mailbox-delivery": [
+                    "wl:1;pcwl:1;ucf:1;jmr:0;auth:0;dest:C;OFR:CustomRules;ENG:(750128)(520011016)(520004050)(702028)(944506458)(944626604);"
+                ],
+                "x-microsoft-antispam-message-info": [
+                    "nREI7Jcj+JE9znLNAySt+OIP3Cg3BNSlfaxHYeRWQ1dZYMVfDMl0umrLs6fzTEwjwcIqg4DNGqQUE/EFioVv8VGgskJuPYiCyRkxxx8b1yq2LVe3LEEFm/d3rfci+4b8HcCron6M4FBbCaGko4gRtSSasfrnjF9STWLKs4cizcrzaFD+NkGDGYGA11Z6gHSmMVldnkhlbV+UrKGnwPQiv+r+qUamoscUT5w8fezkk63mNxCx+y9VO5caIUrVfpLu3TX054mSWBd5paofF/9D5qML6cfYi9sumbkZSNQLiOH44ui4W0P+oOqJC9zojQemcCd5We/hbx/kSkc3jNJZzWiuurkSv4iou+T/Q/iWxw94SrqZBGs4JOrtRJ+zHjLAYHrtG+3Mxk1nlSgxweVpERASq1fKN46cRt6/6wbR/3o5S5npJ3sJIswFmtbEdGoDIHlTt+qhSPVb+IsijLjeWef1q3m3l4F29porddPovqU21Tf4f68lUEkN40AAOsWpZtDnwxeOwjZGAD5bbZ9pSOLibunJy8a+9nJlgovT4ZmYPutx0s5FqzEuCB+5p788Pdsbp5g6175SSwffy7rxR5jrvPtSS5W9Ta0KLxyUZFwArGVBjOagq729HR3HqbvfRRkDwlK2zNNb5e8YlZg+zk8suyneBdykYRuHaslqADVu5gO4Ugcy30Mru9pjQtxd+omvGTn+Us7kwa+cDrzxXPd8z+R7ACWvuZxioGi6sEzHAjzJ13sjws+pBm5y7REM64q9XG5hI9igqkdU+EQ4SbCT+/pczSEv4lvarrnp7K5rnVZ4dOip8OahaQqZtlSjCtn+xZLrDSTMOIwUB7EkQ2pzfrg5SE4smrSv7nnrgOGdpeCWfBVboUJfnjDfza6SOkpc5roVwoxLHG7zvm1GjJstJJxrlDydTaSfhZQhBHv92IL/6Pnu+j6enU79V5sJwZvnzZE6GpeeWmYERFU+8J6Ow46CFITOvmA1yOW7/iBTglpFjE4EsOMH4udKKL6qFlKjWvLWEN7/MzT0eMCIV0y7/euv3+tNe5Q4ZXeOevyi/qnRO0Wq/E7P/eFRM4CgOeb4DgLeatAaatqkNf4ChETby48WjGwBx8DVW5qBKBdzb2QbyKszyoi0pPi9Mx+azRhPybsnX9FQCgAc5vBhZGnu+tsDuXYuieaCz/rWIYW1nY3h33ZhJw0Q75hsuP/X+iR4malJ+GuV22BDaGYzBH6OV0Uqrc9FnRp9Quyeyc4YE174mY/r5JhF5fXvuZ4x2rmAqe5pzqkOP1WpX4MCs9KPVaLoJiJDT0rsh94oF6s5jd9CMVM88qMdtY8hdd+C"
+                ],
+                "x-ms-exchange-crosstenant-authas": [
+                    "Anonymous"
+                ],
+                "x-ms-exchange-crosstenant-authsource": [
+                    "MW2NAM10FT027.eop-nam10.prod.protection.outlook.com"
+                ],
+                "x-ms-exchange-crosstenant-fromentityheader": [
+                    "Internet"
+                ],
+                "x-ms-exchange-crosstenant-id": [
+                    "7333cf3a-8bd0-4ebd-877d-a14cafb1741a"
+                ],
+                "x-ms-exchange-crosstenant-network-message-id": [
+                    "e44ac1b7-3a5a-46e8-4a57-08d8995ac806"
+                ],
+                "x-ms-exchange-crosstenant-originalarrivaltime": [
+                    "05 Dec 2020 20:17:25.4027 (UTC)"
+                ],
+                "x-ms-exchange-organization-authas": [
+                    "Anonymous"
+                ],
+                "x-ms-exchange-organization-authsource": [
+                    "MW2NAM10FT027.eop-nam10.prod.protection.outlook.com"
+                ],
+                "x-ms-exchange-organization-expirationinterval": [
+                    "1:00:00:00.0000000"
+                ],
+                "x-ms-exchange-organization-expirationintervalreason": [
+                    "OriginalSubmit"
+                ],
+                "x-ms-exchange-organization-expirationstarttime": [
+                    "05 Dec 2020 20:17:25.4886 (UTC)"
+                ],
+                "x-ms-exchange-organization-expirationstarttimereason": [
+                    "OriginalSubmit"
+                ],
+                "x-ms-exchange-organization-messagedirectionality": [
+                    "Incoming"
+                ],
+                "x-ms-exchange-organization-network-message-id": [
+                    "e44ac1b7-3a5a-46e8-4a57-08d8995ac806"
+                ],
+                "x-ms-exchange-organization-scl": [
+                    "-1"
+                ],
+                "x-ms-exchange-processed-by-bccfoldering": [
+                    "15.20.3654.011"
+                ],
+                "x-ms-exchange-transport-crosstenantheadersstamped": [
+                    "BN6PR13MB0964"
+                ],
+                "x-ms-exchange-transport-endtoendlatency": [
+                    "00:00:02.7800457"
+                ],
+                "x-ms-office365-filtering-correlation-id": [
+                    "e44ac1b7-3a5a-46e8-4a57-08d8995ac806"
+                ],
+                "x-ms-oob-tlc-oobclassifiers": [
+                    "OLM:1728;"
+                ],
+                "x-ms-publictraffictype": [
+                    "Email"
+                ],
+                "x-ms-traffictypediagnostic": [
+                    "BN6PR13MB0964:"
+                ],
+                "x-received": [
+                    "by 2002:a19:89d6:: with SMTP id l205mr4281398lfd.297.1607199443337; Sat, 05 Dec 2020 12:17:23 -0800 (PST)"
+                ]
+            },
+            "homographScore": 0,
+            "ip": "209.85.167.51",
+            "links": [],
+            "location": "United States",
+            "messageId": [
+                "<CA+gb04FjYQm30ywk2YX4-yxfwW3P=Q9zCtQG_SWFJYhC9-iQPg@mail.gmail.com>"
+            ],
+            "origin": "penguin@scuftysails.com",
+            "owlScore": 0,
+            "quarDeleted": false,
+            "quarDeletedBy": null,
+            "quarDenied": false,
+            "quarExpired": false,
+            "quarReleaseRequested": true,
+            "quarReleased": false,
+            "quarReleasedBy": null,
+            "quarantined": true,
+            "reason": [],
+            "received": [
+                "from BN6PR13MB0964.namprd13.prod.outlook.com (2603:10b6:404:1f::23) by DM6PR13MB4114.namprd13.prod.outlook.com with HTTPS; Sat, 5 Dec 2020 20:17:28 +0000",
+                "from MWHPR17CA0061.namprd17.prod.outlook.com (2603:10b6:300:93::23) by BN6PR13MB0964.namprd13.prod.outlook.com (2603:10b6:404:1f::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.9; Sat, 5 Dec 2020 20:17:26 +0000",
+                "from MW2NAM10FT027.eop-nam10.prod.protection.outlook.com (2603:10b6:300:93:cafe::ec) by MWHPR17CA0061.outlook.office365.com (2603:10b6:300:93::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17 via Frontend Transport; Sat, 5 Dec 2020 20:17:25 +0000",
+                "from mail-lf1-f51.google.com (209.85.167.51) by MW2NAM10FT027.mail.protection.outlook.com (10.13.155.187) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.20 via Frontend Transport; Sat, 5 Dec 2020 20:17:25 +0000",
+                "by mail-lf1-f51.google.com with SMTP id u9so6941016lfm.1        for <penguin@scuftysails.com>; Sat, 05 Dec 2020 12:17:25 -0800 (PST)"
+            ],
+            "region": null,
+            "remediation": "quarantined",
+            "replyTo": null,
+            "returnPath": [
+                "testing@gmail.com"
+            ],
+            "source": "testing@gmail.com",
+            "sourcePath": "gmail.com",
+            "spf": "pass",
+            "status": "policy",
+            "subject": "Test",
+            "targets": [
+                "penguin@scuftysails.com"
+            ],
+            "timestamp": "2020-12-05T20:17:28.000Z",
+            "violations": [
+                16243
+            ],
+            "workflow": "unreviewed",
+            "xAuthResults": null,
+            "xMailer": null
+        }
+    ],
+    "success": true,
+    "total": 1
+}
