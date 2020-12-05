@@ -2,6 +2,9 @@
 from PagerDuty import get_incidents_command
 from CommonServerPython import *
 
+reload(sys)
+sys.setdefaultencoding('utf8')  # pylint: disable=no-member
+
 
 def test_get_incidents(requests_mock):
     """
