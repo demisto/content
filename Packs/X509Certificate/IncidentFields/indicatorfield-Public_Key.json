@@ -114,6 +114,30 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150
+        },
+        {
+            "key": "x",
+            "displayName": "X",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "y",
+            "displayName": "Y",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
         }
     ],
     "content": true,

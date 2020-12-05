@@ -17,10 +17,7 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
-    "selectValues": [
-        "WILDCARD_CERTIFICATE",
-        "DOMAIN_CONTROL_VALIDATED"
-    ],
+    "selectValues": [],
     "sla": 0,
     "system": false,
     "threshold": 72,
