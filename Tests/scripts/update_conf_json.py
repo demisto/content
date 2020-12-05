@@ -14,8 +14,6 @@ from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.common.constants import TEST_PLAYBOOKS_DIR, INTEGRATIONS_DIR, CONF_PATH, PACKS_DIR, \
     FileType
 
-from Tests.scripts.utils.content_packs_util import should_test_content_pack
-
 INITIAL_FROM_VERSION = "4.5.0"
 NEW_CONF_JSON_OBJECT = []
 
@@ -78,13 +76,11 @@ def load_test_data_from_conf_json():
 
 
 def generate_pack_tests_configuration(pack_name, existing_test_playbooks):
-    install_logging('Update Tests step.log', include_process_name=True)
+    install_logging('Update_Tests_step.log', include_process_name=True)
     pack_integrations = []
     pack_test_playbooks = []
 
     pack_path = os.path.join(PACKS_DIR, pack_name)
-    if not should_test_content_pack(pack_name):
-        return pack_integrations, pack_test_playbooks, pack_name
 
     integration_dir_path = os.path.join(pack_path, INTEGRATIONS_DIR)
     test_playbook_dir_path = os.path.join(pack_path, TEST_PLAYBOOKS_DIR)
@@ -127,7 +123,7 @@ def update_new_conf_json(future):
 
 
 def main():
-    install_logging('Update Tests step.log', include_process_name=True)
+    install_logging('Update_Tests_step.log', include_process_name=True)
     existing_test_playbooks = load_test_data_from_conf_json()
     with ProcessPool(max_workers=os.cpu_count(), max_tasks=100) as pool:
         for pack_name in os.listdir(PACKS_DIR):
