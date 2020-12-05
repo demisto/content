@@ -69,6 +69,7 @@ def certificate_fields_to_context(certindicator_fields: Dict[str, Any]) -> Optio
         if k != Common.Certificate.CONTEXT_PATH:
             entry_context.pop(k)
 
+    demisto.debug(f"{entry_context!r}")
     return entry_context
 
 
@@ -267,9 +268,12 @@ def certificate_reputation_command(args: Dict[str, Any]) -> Dict[str, Any]:
         elif (certificate_context := certificate_fields_to_context(fields)) is not None:
             standard_context.update(certificate_context)
 
-    tags, check_comments, dbot_score = dbot_context(
-        indicator_value, standard_context.get(
-            Common.Certificate.CONTEXT_PATH, {}))
+    if (certificate_stdcontext := standard_context.get(Common.Certificate.CONTEXT_PATH)) is not None:
+        demisto.debug(f"{certificate_stdcontext!r}")
+        if isinstance(certificate_stdcontext, list):
+            certificate_stdcontext = certificate_stdcontext[0] if certificate_stdcontext else {}
+        demisto.debug(f"{certificate_stdcontext!r}")
+        tags, check_comments, dbot_score = dbot_context(indicator_value, certificate_stdcontext)
 
     standard_context.update(dbot_score)
 
