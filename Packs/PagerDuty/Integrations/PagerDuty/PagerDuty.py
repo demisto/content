@@ -123,7 +123,7 @@ def unicode_to_str_recur(obj):
     elif isinstance(obj, list):
         obj = map(unicode_to_str_recur, obj)
     elif isinstance(obj, unicode):
-        obj = obj.encode('utf-8')
+        obj = obj.encode('utf-8', 'ignore')
     return obj
 
 
