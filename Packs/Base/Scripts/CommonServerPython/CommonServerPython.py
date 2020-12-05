@@ -3267,8 +3267,8 @@ class Common(object):
             CERTIFICATEPOLICIES = "CertificatePolicies"
             AUTHORITYINFORMATIONACCESS = "AuthorityInformationAccess"
             BASICCONSTRAINTS = "BasicConstraints"
-            SIGNEDCERTIFICATETIMESTAMPS = "SignedCertificateTimestamps",
-            PRESIGNEDCERTIFICATETIMESTAMPS = "PreCertSignedCertificateTimestamps",
+            SIGNEDCERTIFICATETIMESTAMPS = "SignedCertificateTimestamps"
+            PRESIGNEDCERTIFICATETIMESTAMPS = "PreCertSignedCertificateTimestamps"
             OTHER = "Other"
 
             @staticmethod
@@ -4055,7 +4055,7 @@ class CommandResults:
         if self.indicators_timeline:
             indicators_timeline = self.indicators_timeline.indicators_timeline
 
-        if self.outputs is not None:
+        if self.outputs is not None and self.outputs != []:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
                 human_readable = tableToMarkdown('Results', self.outputs)
