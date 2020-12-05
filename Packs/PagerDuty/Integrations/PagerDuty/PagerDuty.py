@@ -21,7 +21,7 @@ FETCH_INTERVAL = ''
 SERVER_URL = 'https://api.pagerduty.com/'
 CREATE_EVENT_URL = 'https://events.pagerduty.com/v2/enqueue'
 
-DEFAULT_HEADERS = {}
+DEFAULT_HEADERS = {}  # type: Dict[str, str]
 
 '''HANDLE PROXY'''
 if not USE_PROXY:
