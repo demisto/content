@@ -42,7 +42,7 @@ def format_time(datetime_object: datetime, use_european_time: bool) -> str:
         A string formatted:
         7/22/2017 3:58 PM (American) or 22/7/2017 3:58 PM (European)
     """
-    time_format = '%d/%m/%Y %I:%M %p' if use_european_time else '%m/%d/%Y %I:%M %p'
+    time_format = '%d/%m/%Y %I:%M:%S %p' if use_european_time else '%m/%d/%Y %I:%M:%S %p'
     return datetime_object.strftime(time_format)
 
 
@@ -57,7 +57,10 @@ def parse_date_to_datetime(date: str, day_first: bool = False) -> datetime:
     Returns:
         a datetime object
     """
-    date_order = {'DATE_ORDER': 'DMY' if day_first else 'MDY'}
+    if 'z' in date.lower():  # For OCCURRED like time stamps
+        date_order = None
+    else:
+        date_order = {'DATE_ORDER': 'DMY' if day_first else 'MDY'}
     try:
         date_obj = parser(date, settings=date_order)
     except AssertionError as exc:
@@ -1101,7 +1104,6 @@ def fetch_incidents(
     fields_to_display = argToList(params.get('fields_to_fetch'))
     fields_to_display.append(date_field)
     day_first = argToBoolean(params.get('useEuropeanTime', False))
-    # TODO: tzinfo=timezone.utc + offset if needed
     from_time_utc = format_time(from_time, day_first)
     # API Call
     records, raw_res = client.search_records(
