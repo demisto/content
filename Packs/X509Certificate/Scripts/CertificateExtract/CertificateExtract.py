@@ -348,9 +348,9 @@ def extension_context(oid: str, extension_name: str, critical: bool, extension_v
                 timestamp=presct.timestamp.strftime(format="%Y-%m-%dT%H:%M:%S.000Z"),
             ))
         return Common.CertificateExtension(
-            extension_type=Common.CertificateExtension.ExtensionType.OTHER,
+            extension_type=Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS,
             oid=oid, extension_name=extension_name, critical=critical,
-            value=[ts.to_context() for ts in presigcerttimestamps]
+            signed_certificate_timestamps=presigcerttimestamps
         )
     elif isinstance(extension_value, extensions.SignedCertificateTimestamps):
         sigcerttimestamps: List[Common.CertificateExtension.SignedCertificateTimestamp] = []
@@ -363,9 +363,9 @@ def extension_context(oid: str, extension_name: str, critical: bool, extension_v
                 timestamp=sct.timestamp.strftime(format="%Y-%m-%dT%H:%M:%S.000Z"),
             ))
         return Common.CertificateExtension(
-            extension_type=Common.CertificateExtension.ExtensionType.OTHER,
+            extension_type=Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
             oid=oid, extension_name=extension_name, critical=critical,
-            value=[ts.to_context() for ts in sigcerttimestamps]
+            signed_certificate_timestamps=sigcerttimestamps
         )
 
     return Common.CertificateExtension(
