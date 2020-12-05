@@ -132,7 +132,7 @@ script:
     description: Get's file sharing details
     execution: false
     name: concentricai-get-file-sharing-details
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: true
   longRunning: false
