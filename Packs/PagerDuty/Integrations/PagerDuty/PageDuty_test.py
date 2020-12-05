@@ -1,4 +1,4 @@
-# coding=utf-8
+# coding=utf8
 from PagerDuty import get_incidents_command
 from CommonServerPython import *
 
