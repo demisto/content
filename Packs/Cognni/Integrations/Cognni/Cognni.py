@@ -432,7 +432,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     """
 
     last_fetch = last_run.get('last_fetch', None)
-
+    is_initial_run = last_run.get('is_initial_run', True)
     offset = last_run.get('offset')
     if last_fetch is None:
         last_fetch = first_fetch_time
@@ -442,7 +442,8 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     latest_created_time = cast(int, last_fetch)
 
     if offset is None or (
-        datetime.utcnow().isoweekday() == SUNDAY_ISO_WEEKDAY
+        not is_initial_run
+            and datetime.utcnow().isoweekday() == SUNDAY_ISO_WEEKDAY
             and datetime.utcfromtimestamp(latest_created_time).isoweekday() != SUNDAY_ISO_WEEKDAY):
         offset = 0
 
@@ -453,31 +454,22 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         min_severity=min_severity
     )
 
-    if last_fetch:
-        last_fetch_ms = last_fetch * 1000
-        new_events = list(filter(lambda event: date_to_timestamp(
-            date_str_or_dt=event.get('date'),
-            date_format='%Y-%m-%dT%H:%M:%S.000Z'
-        ) > last_fetch_ms,
-            events))
-    else:
-        new_events = events
-
-    if not new_events:
-        next_run = {'last_fetch': latest_created_time, 'offset': offset+len(events)}
+    if not events:
+        next_run = {'last_fetch': latest_created_time, 'offset': offset, 'is_initial_run': False}
         return next_run, list()
 
-    latest_event = find_latest_event(new_events)
+    latest_event = find_latest_event(events)
     if latest_event:
         latest_created_time = int(date_to_timestamp(
             date_str_or_dt=latest_event.get('date', latest_created_time),
             date_format='%Y-%m-%dT%H:%M:%S.000Z'
         ) / 1000)
 
-    incidents = convert_events_to_incidents(new_events)
+    incidents = convert_events_to_incidents(events)
 
     next_run = {'last_fetch': latest_created_time,
-                'offset': offset + len(events)}
+                'offset': offset + len(events),
+                'is_initial_run': is_initial_run}
 
     return next_run, incidents
 

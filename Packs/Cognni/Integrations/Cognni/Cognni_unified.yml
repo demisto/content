@@ -310,50 +310,49 @@ script:
     \ Contains the timestamp that will be\n                    used in ``last_run``\
     \ on the next fetch.\n            incidents (``List[dict]``): List of incidents\
     \ that will be created in XSOAR\n\n    :rtype: ``Tuple[Dict[str, int], List[dict]]``\n\
-    \    \"\"\"\n\n    last_fetch = last_run.get('last_fetch', None)\n\n    offset\
-    \ = last_run.get('offset')\n    if last_fetch is None:\n        last_fetch = first_fetch_time\n\
-    \    else:\n        last_fetch = int(last_fetch)\n\n    latest_created_time =\
-    \ cast(int, last_fetch)\n\n    if offset is None or (\n        datetime.utcnow().isoweekday()\
+    \    \"\"\"\n\n    last_fetch = last_run.get('last_fetch', None)\n    is_initial_run\
+    \ = last_run.get('is_initial_run', True)\n    offset = last_run.get('offset')\n\
+    \    if last_fetch is None:\n        last_fetch = first_fetch_time\n    else:\n\
+    \        last_fetch = int(last_fetch)\n\n    latest_created_time = cast(int, last_fetch)\n\
+    \n    if offset is None or (\n        not is_initial_run\n            and datetime.utcnow().isoweekday()\
     \ == SUNDAY_ISO_WEEKDAY\n            and datetime.utcfromtimestamp(latest_created_time).isoweekday()\
     \ != SUNDAY_ISO_WEEKDAY):\n        offset = 0\n\n    events = client.fetch_events(\n\
     \        events_limit=events_limit,\n        offset=offset,\n        start_time=timestamp_to_datestring(timestamp=latest_created_time\
-    \ * 1000, is_utc=True),\n        min_severity=min_severity\n    )\n\n    if last_fetch:\n\
-    \        last_fetch_ms = last_fetch * 1000\n        new_events = list(filter(lambda\
-    \ event: date_to_timestamp(\n            date_str_or_dt=event.get('date'),\n \
-    \           date_format='%Y-%m-%dT%H:%M:%S.000Z'\n        ) > last_fetch_ms,\n\
-    \            events))\n    else:\n        new_events = events\n\n    if not new_events:\n\
-    \        next_run = {'last_fetch': latest_created_time, 'offset': offset+len(events)}\n\
-    \        return next_run, list()\n\n    latest_event = find_latest_event(new_events)\n\
-    \    if latest_event:\n        latest_created_time = int(date_to_timestamp(\n\
-    \            date_str_or_dt=latest_event.get('date', latest_created_time),\n \
-    \           date_format='%Y-%m-%dT%H:%M:%S.000Z'\n        ) / 1000)\n\n    incidents\
-    \ = convert_events_to_incidents(new_events)\n\n    next_run = {'last_fetch': latest_created_time,\n\
-    \                'offset': offset + len(events)}\n\n    return next_run, incidents\n\
-    \n\ndef get_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:\n\
-    \    \"\"\"cognni-get-event command: Returns a Cognni event\n\n    :type client:\
-    \ ``Client``\n    :param client: Cognni client to use\n\n    :type args: ``Dict[str,\
-    \ Any]``\n    :param args:\n        all command arguments, usually passed from\
-    \ ``demisto.args()``.\n        ``args['event_id']`` alert ID to return\n\n   \
-    \ :return:\n        A ``CommandResults`` object that is then passed to ``return_results``,\n\
-    \        that contains an alert\n\n    :rtype: ``CommandResults``\n    \"\"\"\n\
-    \n    event_id = args.get('event_id', None)\n    if not event_id:\n        raise\
-    \ ValueError('event_id not specified')\n\n    event = client.get_event(event_id=event_id)\n\
-    \    readable_output = tableToMarkdown(f'Cognni event {event_id}', event)\n\n\
-    \    return CommandResults(\n        readable_output=readable_output,\n      \
-    \  outputs_prefix='Cognni.event',\n        outputs_key_field='id',\n        outputs=event\n\
-    \    )\n\n\ndef fetch_insights_command(client: Client, args: Dict[str, Any]) ->\
-    \ CommandResults:\n    min_severity = int(args.get('min_severity', 2))\n\n   \
-    \ insights = client.fetch_insights(min_severity=min_severity)\n\n    readable_output\
-    \ = tableToMarkdown(f'Cognni {len(insights)} insights', insights)\n\n    return\
-    \ CommandResults(\n        readable_output=readable_output,\n        outputs_prefix='Cognni.insights',\n\
-    \        outputs_key_field='id',\n        outputs=insights\n    )\n\n\ndef get_insight_command(client:\
-    \ Client, args: Dict[str, Any]) -> CommandResults:\n    \"\"\"cognni-get-insight\
-    \ command: Returns a Cognni event\n\n    :type client: ``Client``\n    :param\
-    \ client: Cognni client to use\n\n    :type args: ``Dict[str, Any]``\n    :param\
-    \ args:\n        all command arguments, usually passed from ``demisto.args()``.\n\
-    \        ``args['event_id']`` alert ID to return\n\n    :return:\n        A ``CommandResults``\
-    \ object that is then passed to ``return_results``,\n        that contains an\
-    \ alert\n\n    :rtype: ``CommandResults``\n    \"\"\"\n\n    insight_id = args.get('insight_id',\
+    \ * 1000, is_utc=True),\n        min_severity=min_severity\n    )\n\n    if not\
+    \ events:\n        next_run = {'last_fetch': latest_created_time, 'offset': offset,\
+    \ 'is_initial_run': False}\n        return next_run, list()\n\n    latest_event\
+    \ = find_latest_event(events)\n    if latest_event:\n        latest_created_time\
+    \ = int(date_to_timestamp(\n            date_str_or_dt=latest_event.get('date',\
+    \ latest_created_time),\n            date_format='%Y-%m-%dT%H:%M:%S.000Z'\n  \
+    \      ) / 1000)\n\n    incidents = convert_events_to_incidents(events)\n\n  \
+    \  next_run = {'last_fetch': latest_created_time,\n                'offset': offset\
+    \ + len(events),\n                'is_initial_run': is_initial_run}\n\n    return\
+    \ next_run, incidents\n\n\ndef get_event_command(client: Client, args: Dict[str,\
+    \ Any]) -> CommandResults:\n    \"\"\"cognni-get-event command: Returns a Cognni\
+    \ event\n\n    :type client: ``Client``\n    :param client: Cognni client to use\n\
+    \n    :type args: ``Dict[str, Any]``\n    :param args:\n        all command arguments,\
+    \ usually passed from ``demisto.args()``.\n        ``args['event_id']`` alert\
+    \ ID to return\n\n    :return:\n        A ``CommandResults`` object that is then\
+    \ passed to ``return_results``,\n        that contains an alert\n\n    :rtype:\
+    \ ``CommandResults``\n    \"\"\"\n\n    event_id = args.get('event_id', None)\n\
+    \    if not event_id:\n        raise ValueError('event_id not specified')\n\n\
+    \    event = client.get_event(event_id=event_id)\n    readable_output = tableToMarkdown(f'Cognni\
+    \ event {event_id}', event)\n\n    return CommandResults(\n        readable_output=readable_output,\n\
+    \        outputs_prefix='Cognni.event',\n        outputs_key_field='id',\n   \
+    \     outputs=event\n    )\n\n\ndef fetch_insights_command(client: Client, args:\
+    \ Dict[str, Any]) -> CommandResults:\n    min_severity = int(args.get('min_severity',\
+    \ 2))\n\n    insights = client.fetch_insights(min_severity=min_severity)\n\n \
+    \   readable_output = tableToMarkdown(f'Cognni {len(insights)} insights', insights)\n\
+    \n    return CommandResults(\n        readable_output=readable_output,\n     \
+    \   outputs_prefix='Cognni.insights',\n        outputs_key_field='id',\n     \
+    \   outputs=insights\n    )\n\n\ndef get_insight_command(client: Client, args:\
+    \ Dict[str, Any]) -> CommandResults:\n    \"\"\"cognni-get-insight command: Returns\
+    \ a Cognni event\n\n    :type client: ``Client``\n    :param client: Cognni client\
+    \ to use\n\n    :type args: ``Dict[str, Any]``\n    :param args:\n        all\
+    \ command arguments, usually passed from ``demisto.args()``.\n        ``args['event_id']``\
+    \ alert ID to return\n\n    :return:\n        A ``CommandResults`` object that\
+    \ is then passed to ``return_results``,\n        that contains an alert\n\n  \
+    \  :rtype: ``CommandResults``\n    \"\"\"\n\n    insight_id = args.get('insight_id',\
     \ None)\n    if not insight_id:\n        raise ValueError('insight_id not specified')\n\
     \n    insight = client.get_insight(insight_id=insight_id)\n\n    readable_output\
     \ = tableToMarkdown(f'Cognni event {insight_id}', insight)\n\n    return CommandResults(\n\
