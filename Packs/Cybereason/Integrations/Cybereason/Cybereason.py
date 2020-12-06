@@ -675,7 +675,7 @@ def malop_processes_command():
 
             output = {}
             for info in PROCESS_INFO:
-                if item['type'] == 'filterData':
+                if item.get('type', '') == 'filterData':
                     output[info['header']] = dict_safe_get(item, ['filterData', 'groupByValue'])
 
             output = update_output(output, simple_values, element_values, PROCESS_INFO)
