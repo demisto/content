@@ -511,10 +511,10 @@ class OAuth2DeviceCodeClient {
         catch {
             $response_body = ConvertFrom-Json $_.ErrorDetails.Message
             if ($response_body.error -eq "authorization_pending" -or $response_body.error -eq "invalid_grant") {
-                $error_details = "Please run command !ews-start-auth , before running this command."
+                $error_details = "Please run command !$script:COMMAND_PREFIX-auth-start , before running this command."
             }
             elseif ($response_body.error -eq "expired_token") {
-                $error_details = "At least $($this.access_token_expires_in) seconds have passed from executing !ews-start-auth, Please run the ***ews-start-auth*** command again."
+                $error_details = "At least $($this.access_token_expires_in) seconds have passed from executing !$script:COMMAND_PREFIX-auth-start, Please run the ***$script:COMMAND_PREFIX-auth-start*** command again."
             } else {
                 $error_details = $response_body
             }
@@ -561,7 +561,7 @@ class OAuth2DeviceCodeClient {
         catch {
             $response_body = ConvertFrom-Json $_.ErrorDetails.Message
             if ($response_body.error -eq "invalid_grant") {
-                $error_details = "Please login to grant account permissions (After 90 days grant is expired) !ews-start-auth."
+                $error_details = "Please login to grant account permissions (After 90 days grant is expired) !$script:COMMAND_PREFIX-auth-start."
             }
             else {
                 $error_details = $response_body
