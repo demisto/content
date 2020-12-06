@@ -12,6 +12,7 @@ requests.packages.urllib3.disable_warnings()
 BASE_URL = re.sub(r"/+$", "", demisto.params().get('serverURL'))
 SERVER_PORT = demisto.params().get('serverPort')
 SERVER_URL = BASE_URL + ':' + SERVER_PORT
+SERVER_ADMIN_URL = BASE_URL
 
 USERNAME = demisto.params().get('credentials').get('identifier')
 PASSWORD = demisto.params().get('credentials').get('password')
@@ -21,14 +22,28 @@ USE_SSL = not demisto.params().get('insecure', False)
 DEFAULT_HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'Connection': 'keep_alive'
+    'Connection': 'keep_alive',
+}
+
+DEFAULT_ADMIN_HEADERS = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/xml',
+    'Connection': 'keep_alive',
 }
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params={}, data=None, headers=DEFAULT_HEADERS):
-    try:
+def http_request(method, url_suffix, params=None, data=None, headers=None, is_admin_api=False):
+    params = params if params is not None else {}
+    if headers is None:
+        headers = DEFAULT_ADMIN_HEADERS if is_admin_api else DEFAULT_HEADERS
+
+    if is_admin_api:
+        url = SERVER_ADMIN_URL + url_suffix
+    else:
         url = SERVER_URL + url_suffix
+
+    try:
         LOG(f'running {method} request with url={url}')
 
         response = requests.request(
@@ -46,15 +61,19 @@ def http_request(method, url_suffix, params={}, data=None, headers=DEFAULT_HEADE
     except requests.exceptions.ConnectionError:
         err_msg = 'Connection Error. Verify that the Server URL and port are correct, and that the port is open.'
         return_error(err_msg)
+
     # handle request failure
     if response.status_code not in {200, 201, 202, 204}:
         message = parse_error_response(response)
         err_msg = f'Error in API call to Cisco ISE Integration [{response.status_code}] - {response.reason}, {message}'
-
         return_error(err_msg)
 
     if response.status_code in (201, 204):
         return
+
+    if is_admin_api:
+        return response.content
+
     try:
         response = response.json()
     except ValueError:
@@ -265,7 +284,7 @@ def reauthenticate_endpoint_command():
     mac_address = demisto.args().get('macAddress').upper()
     if not is_mac_address(mac_address):
         return "Please enter a valid mac address"
-    mac_address = (':').join([x.upper() for x in mac_address.split(':')])
+    mac_address = mac_address.upper()
     mac_address_psn = get_psn_for_mac(mac_address)
     if not mac_address_psn:
         return "Couldn't find psn address for mac: " + mac_address
@@ -473,7 +492,6 @@ def get_policies_request():
 
 
 def get_policies():
-
     """
     Return all ANC policies
     """
@@ -546,7 +564,6 @@ def create_policy_request(data):
 
 
 def create_policy():
-
     """
     Create ANC Policy
     """
@@ -616,6 +633,50 @@ def assign_policy_to_endpoint():
     return_outputs(f'The policy "{policy_name}" has been assigned successfully', context)
 
 
+def remove_policy_request(data):
+
+    api_endpoint = '/ers/config/ancendpoint/clear'
+
+    http_request('PUT', api_endpoint, data=json.dumps(data))
+
+
+def remove_policy_from_endpoint():
+    """
+    Remove ANC policy from an endpoint
+    """
+
+    policy_name = demisto.args().get('policy_name')
+    mac_address = demisto.args().get('mac_address')
+    if not is_mac_address(mac_address):
+        return_error('Please enter a valid mac address')
+
+    data = {
+        'OperationAdditionalData': {
+            'additionalData': [{
+                'name': 'macAddress',
+                'value': mac_address
+            },
+                {
+                'name': 'policyName',
+                'value': policy_name
+            }
+            ]
+        }
+    }
+    remove_policy_request(data)
+
+    endpoint_context = {
+        'MACAddress': mac_address,
+        'PolicyName': policy_name
+    }
+
+    context = {
+        'CiscoISE.Endpoint(val.ID && val.ID === obj.ID)': endpoint_context
+    }
+
+    return_outputs(f'The policy "{policy_name}" has been removed successfully', context)
+
+
 def get_blacklist_group_id():
 
     api_endpoint = '/ers/config/endpointgroup?filter=name.EQ.Blacklist'
@@ -661,6 +722,31 @@ def get_blacklist_endpoints():
     return_outputs(tableToMarkdown('CiscoISE Blacklist Endpoints', data, removeNull=True), context, endpoints)
 
 
+def get_session_data_by_ip_request(ip):
+    ip_address = f'/admin/API/mnt/Session/EndPointIPAddress/{ip}'
+    response = http_request('GET', ip_address, is_admin_api=True)
+    byte_conversion = str(response, 'utf-8')
+    json_data = xml2json(byte_conversion)
+    session_data = json.loads(json_data)
+
+    context = {
+        'CiscoISE.Endpoint(val.ID && val.ID === obj.ID)': session_data
+    }
+
+    return_outputs('The targeted users session xml is being returned.', context)
+
+
+def get_session_data_by_ip():
+    """
+    Returns: the session data given an ip address
+    """
+    ip = demisto.args().get('ip_address')
+    if not ip:
+        return_error('Please enter the ip')
+
+    get_session_data_by_ip_request(ip)
+
+
 ''' EXECUTION CODE '''
 
 
@@ -696,8 +782,12 @@ def main():
             create_policy()
         elif demisto.command() == 'cisco-ise-assign-policy':
             assign_policy_to_endpoint()
+        elif demisto.command() == 'cisco-ise-remove-policy':
+            remove_policy_from_endpoint()
         elif demisto.command() == 'cisco-ise-get-blacklist-endpoints':
             get_blacklist_endpoints()
+        elif demisto.command() == 'cisco-ise-get-session-data-by-ip':
+            get_session_data_by_ip()
 
     except Exception as e:
         return_error(str(e))

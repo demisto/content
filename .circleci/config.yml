@@ -9,9 +9,6 @@ parameters:
   server_branch_name:
     type: string
     default: ""
-  backward_compatibility:
-    type: string
-    default: ""
   nightly:
     type: string
     default: ""
@@ -45,20 +42,16 @@ parameters:
   bucket_upload:
     type: string
     default: ""
-  force_previous_commit:
-    type: string
-    default: ""
 
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.11.0"
+      CONTENT_VERSION: "20.11.1"
       SERVER_VERSION: "6.0.0"
-      GIT_SHA1: "dd304e3091c9d0ef1b5ab8ec6ebcdc1b7be15cdf" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "8068abfc3865fcfd9c6efd4002982ba1fd91885c" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
-      BACKWARD_COMPATIBILITY: << pipeline.parameters.backward_compatibility >>
       MEM_CHECK: << pipeline.parameters.mem_check >>
       CONTRIB_BRANCH: << pipeline.parameters.contrib_branch >>
       CONTRIB_PACK_NAME: << pipeline.parameters.contrib_pack_name >>
@@ -72,7 +65,6 @@ references:
       FORCE_PACK_UPLOAD_PARAMETER: << pipeline.parameters.force_pack_upload >>
       PACKS_TO_UPLOAD_PARAMETER: << pipeline.parameters.packs_to_upload >>
       BUCKET_UPLOAD_PARAMETER: << pipeline.parameters.bucket_upload >>
-      FORCE_PREVIOUS_COMMIT_PARAMETER: << pipeline.parameters.force_previous_commit >>
 
   container_config: &container_config
     docker:
@@ -137,10 +129,6 @@ references:
         then
             echo "export BUCKET_UPLOAD=$BUCKET_UPLOAD_PARAMETER" >> $BASH_ENV
         fi
-        if [ -n "${FORCE_PREVIOUS_COMMIT_PARAMETER}" ];
-        then
-            echo "export FORCE_PREVIOUS_COMMIT=$FORCE_PREVIOUS_COMMIT_PARAMETER" >> $BASH_ENV
-        fi
 
         echo "=== sourcing $BASH_ENV ==="
         source $BASH_ENV
@@ -169,7 +157,7 @@ references:
         fi
 
         echo "========== Build Parameters =========="
-        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^FORCE_PREVIOUS_COMMIT="
+        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD="
         python --version
         python3 --version
         demisto-sdk --version
@@ -244,6 +232,11 @@ references:
         export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
         zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
         rm -f $CIRCLE_ARTIFACTS/server*.log
+        if [ -f $CIRCLE_ARTIFACTS/logs/Run_Tests.log ];
+        then
+            zip -P $PSWD $CIRCLE_ARTIFACTS/logs/Run_Tests.zip $CIRCLE_ARTIFACTS/logs/Run_Tests.log
+            rm -f $CIRCLE_ARTIFACTS/logs/Run_Tests.log
+        fi
       when: always
 
   persist_to_workspace: &persist_to_workspace
@@ -268,7 +261,6 @@ references:
         ./Tests/scripts/pyflake.sh *.py
         find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
 
-        [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
         ./Tests/scripts/validate.sh
 
   run_unit_testing_and_lint: &run_unit_testing_and_lint
@@ -401,6 +393,7 @@ references:
           demisto-sdk upload -i Packs/HelloWorld/Layouts/layoutscontainer-Hello_World_Test_Layout.json --insecure
           demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_Incident_Test.json --insecure
           demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert_Test.json --insecure
+          demisto-sdk upload -i Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json --insecure
 
 
   sdk_nightly_jobs: &sdk_nightly_jobs
@@ -752,6 +745,7 @@ jobs:
                   ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
             - run:
                 name: Run Tests - Server 5.0
+                no_output_timeout: 5h
                 shell: /bin/bash
                 command: |
                   if [ -z $INSTANCE_WAS_CREATED ];
@@ -830,6 +824,7 @@ jobs:
                   ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
             - run:
                 name: Run Tests - 5.5
+                no_output_timeout: 5h
                 shell: /bin/bash
                 command: |
                   if [ -z $INSTANCE_WAS_CREATED ];
@@ -878,10 +873,17 @@ jobs:
             - *add_ssh_keys
             - *prepare_environment
             - run:
-                name: Collect Instance Role
+                name: Collect Instance Role And Check If Instance Was Created
                 when: always
                 command: |
                   echo 'export INSTANCE_ROLE="Demisto 6.0"' >> $BASH_ENV
+                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto 6.0"')
+                  echo "Demisto PreGA filter=$TEMP"
+                  if [[ "$TEMP" == "true" ]];
+                    then
+                      echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
+                      exit 0
+                  fi
                   source $BASH_ENV
             - run:
                 name: Wait until server ready
@@ -894,6 +896,11 @@ jobs:
                 shell: /bin/bash
                 when: always
                 command: |
+                  if [ -z $INSTANCE_WAS_CREATED ];
+                    then
+                      echo "Skipping - instance was not created"
+                      exit 0
+                  fi
                   ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
             - run:
                 name: Run Tests - Demisto 6.0
@@ -901,6 +908,11 @@ jobs:
                 when: always
                 no_output_timeout: 5h
                 command: |
+                  if [ -z $INSTANCE_WAS_CREATED ];
+                    then
+                      echo "Skipping - instance was not created"
+                      exit 0
+                  fi
                   ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
                   export RETVAL=$?
                   if [ -f ./Tests/failed_tests.txt ];
@@ -908,23 +920,6 @@ jobs:
                       cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
                   fi
                   exit $RETVAL
-            - run:
-                name: Upload Packs To Marketplace Storage
-                command: |
-                  # IMPORTANT! By removing this condition, branch changes will be uploaded to production bucket.
-                  if [[ $CIRCLE_BRANCH != master ]]; then
-                    echo "Skipping packs uploading on non master branch"
-                    exit 0
-                  fi
-                  EXTRACT_FOLDER=$(mktemp -d)
-                  PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
-                  PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
-                  ID_SET=$CIRCLE_ARTIFACTS/id_set.json
-                  GCS_PATH=$(mktemp)
-                  echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -o false -rt true -bu false -c $CIRCLE_BRANCH
-                  rm $GCS_PATH
-                when: on_success
             - run:
                 name: Slack Notifier
                 shell: /bin/bash
@@ -960,10 +955,17 @@ jobs:
             - *add_ssh_keys
             - *prepare_environment
             - run:
-                name: Collect Instance Role
+                name: Collect Instance Role And Check If Instance Was Created
                 when: always
                 command: |
                   echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
+                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
+                  echo "Demisto Marketplace filter=$TEMP"
+                  if [[ "$TEMP" == "true" || -n "${NIGHTLY}" ]];
+                    then
+                      echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
+                      exit 0
+                  fi
                   source $BASH_ENV
             - run:
                 name: Wait until server ready
@@ -976,6 +978,11 @@ jobs:
                 shell: /bin/bash
                 when: always
                 command: |
+                  if [ -z $INSTANCE_WAS_CREATED ];
+                    then
+                      echo "Skipping - instance was not created"
+                      exit 0
+                  fi
                   ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
             - run:
                 name: Run Tests - Demisto Master
@@ -983,6 +990,11 @@ jobs:
                 when: always
                 no_output_timeout: 5h
                 command: |
+                  if [ -z $INSTANCE_WAS_CREATED ];
+                    then
+                      echo "Skipping - instance was not created"
+                      exit 0
+                  fi
                   ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
                   export RETVAL=$?
                   if [ -f ./Tests/failed_tests.txt ];
@@ -1000,7 +1012,7 @@ jobs:
             - *destroy_instances
             - *store_artifacts
 
-  Force Pack Upload:
+  Force Upload Packs To Marketplace:
     <<: *container_config
     resource_class: medium
     <<: *environment
@@ -1010,18 +1022,22 @@ jobs:
       - *prepare_environment
       - *check_user_permissions_to_upload_packs
       - run:
-          name: Upload Packs To Marketplace Storage
+          name: Force Upload Packs To Marketplace Storage
           command: |
             EXTRACT_FOLDER=$(mktemp -d)
             PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
             PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
-            ID_SET=$CIRCLE_ARTIFACTS/id_set.json
             GCS_PATH=$(mktemp)
+            CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
+            CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
             echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -p "${PACKS_TO_UPLOAD}" -o true -bu false -rt true -c $CIRCLE_BRANCH
+
+            GCS_BUILD_BUCKET="marketplace-ci-build"
+            GCS_MARKET_BUCKET="marketplace-dist"
+
+            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}"
             rm $GCS_PATH
           when: on_success
-      - *destroy_instances
       - *store_artifacts
 
   Upload Packs To Marketplace:
@@ -1051,10 +1067,9 @@ jobs:
                   echo $GCS_MARKET_KEY > $GCS_PATH
 
                   GCS_BUILD_BUCKET="marketplace-ci-build"
-                  GCS_MARKET_TESTING_BUCKET="marketplace-dist-dev"
-                  SOURCE_TESTING_PATH="dev/content/packs"
+                  GCS_MARKET_BUCKET="marketplace-dist"
 
-                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_TESTING_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -pbp "$SOURCE_TESTING_PATH"
+                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH
                   rm $GCS_PATH
       - run:
           name: Slack Notifier
@@ -1064,7 +1079,6 @@ jobs:
               ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
             fi
           when: always
-      - *destroy_instances
       - *store_artifacts
 
   Instance Test:
@@ -1160,7 +1174,7 @@ jobs:
           name: Unlock HelloWorld integration and playbook
           command: python3 Tests/sdknightly/unlock_entity.py integration HelloWorld
       - run:
-          name: Create and upload incident type, incident field and a layout to Cortex XSOAR
+          name: Create and upload incident type, incident field, mapper and a layout to Cortex XSOAR
           command: python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $CIRCLE_ARTIFACTS
       - *upload_entities_to_cortex_xsoar
       - run:
@@ -1170,6 +1184,7 @@ jobs:
             demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
             demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Incident Test" --insecure -f
             demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Alert Test" --insecure -f
+            demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Test - Incoming Mapper" --insecure -f
       - run:
           name: Format the entities
           command: demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
@@ -1197,7 +1212,12 @@ jobs:
       - *attach_workspace
       - *add_ssh_keys
       - *prepare_environment
-      - *wait_until_server_ready
+      - run:
+          name: Wait until server ready
+          shell: /bin/bash
+          when: always
+          command: |
+            python3 ./Tests/scripts/wait_until_server_ready.py "Demisto 6.0"
       - run:
           name: Install Packs
           shell: /bin/bash
@@ -1217,6 +1237,8 @@ jobs:
             fi
           when: always
       - *persist_to_workspace
+      - *destroy_instances
+      - *store_artifacts
 
   Install Packs in Demisto Marketplace - Master:
     <<: *container_config
@@ -1245,6 +1267,8 @@ jobs:
               ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
             fi
           when: always
+      - *destroy_instances
+      - *store_artifacts
 
 workflows:
   version: 2
@@ -1299,15 +1323,18 @@ workflows:
   force_pack_upload:
     when: << pipeline.parameters.force_pack_upload >>
     jobs:
-      - Setup Environment
+      - Setup Environment:
+          context: bucket_upload_env
       - Create Instances:
+          context: bucket_upload_env
           filters:
             branches:
               only:
                 - master
           requires:
             - Setup Environment
-      - Force Pack Upload:
+      - Force Upload Packs To Marketplace:
+          context: bucket_upload_env
           filters:
             branches:
               only:
@@ -1373,8 +1400,8 @@ workflows:
   bucket_upload:
     triggers:
       - schedule:
-          # should trigger every day at 9 PM UTC (00:00 AM Israel Time)
-          cron: "0 22 * * *"
+          # should trigger every day at 10 AM & 10 PM UTC (12:00 PM & 00:00 AM Israel Time)
+          cron: "0 10,22 * * *"
           filters:
             branches:
               only:
