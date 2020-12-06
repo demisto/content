@@ -1,0 +1,67 @@
+commonfields:
+  id: generic-polling-dummy-command
+  version: 53
+vcShouldKeepItemLegacyProdMachine: false
+name: generic-polling-dummy-command
+script: |-
+  # Python template - reading arguments, calling a command, handling errors and returning results
+  res = []
+  # Constant and mandatory arguments
+  args = demisto.args()
+  ids = argToList(args.get('ids'))
+  additional_arg1 = args.get('arg1')
+  additional_arg2 = args.get('arg2')
+
+
+  # res = demisto.executeCommand("getList", {"listName":"pending_ids"})
+  # lst = argToList(res[0]['Contents'])
+  # print(len(lst))
+
+
+  if not additional_arg1 or not additional_arg2:
+      return_error('arg1 or arg2 was not passed correctly')
+
+  # list does not exist - first time
+  res = demisto.executeCommand("getList", {"listName":"pending_ids"})
+  lst = argToList(res[0]['Contents'])
+  if isError(res) or len(lst) == 0:
+      demisto.executeCommand("createList", {"listName":"pending_ids","listData":ids})
+      context = [{'ID': _id, 'Status': 'Pending'} for _id in ids]
+
+  # list exists
+  else:
+      # First run of schedule
+      if len(lst) <= len(ids):
+          new_lst = ids[1:]
+          demisto.executeCommand("setList", {"listName":"pending_ids","listData":new_lst})
+          context = [{'ID': _id, 'Status': 'Pending'} for _id in new_lst] + [{'ID': ids[0], 'Status': 'Success'}]
+
+      # Call for run polling command
+      else:
+          context = [{'ID': _id, 'Status': 'Pending'} for _id in ids]
+
+
+  print(f"New context: {context}")
+  print(f"List saved: {lst}")
+  return_results(CommandResults(
+          outputs_prefix='GP.Dummy',
+          outputs_key_field='ID',
+          outputs=context,
+          readable_output=tableToMarkdown(f'IDs status with args "{additional_arg1}" and "{additional_arg2}" is: ', context),
+          raw_response=context
+      ))
+type: python
+tags: []
+enabled: true
+args:
+- name: ids
+  required: true
+  isArray: true
+- name: arg1
+- name: arg2
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.8.6.13358
+runas: DBotWeakRole
