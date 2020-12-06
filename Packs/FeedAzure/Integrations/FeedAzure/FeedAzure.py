@@ -158,6 +158,9 @@ class Client(BaseClient):
 
         for indicators_group in values_from_file:
             demisto.debug(F'{INTEGRATION_NAME} - Extracting value: {indicators_group.get("id")}')
+            if indicators_group.get("id") == 'AzureDevOps':
+                demisto.info(indicators_group)
+
 
             indicator_metadata = self.extract_metadata_of_indicators_group(indicators_group)
             if not indicator_metadata:
@@ -180,7 +183,6 @@ class Client(BaseClient):
                                             azure_platform=indicator_metadata['platform'],
                                             azure_system_service=indicator_metadata['system_service'])
                 )
-
         return results
 
     def build_iterator(self) -> List:
@@ -190,6 +192,7 @@ class Client(BaseClient):
         """
         try:
             download_link = self.get_azure_download_link()
+            demisto.info(download_link)
             values_from_file = self.get_download_file_content_values(download_link)
             results = self.extract_indicators_from_values_dict(values_from_file)
 
@@ -331,7 +334,6 @@ def main():
             return_outputs(*get_indicators_command(client, feedTags, tlp_color))
         elif command == 'fetch-indicators':
             indicators, _ = fetch_indicators_command(client, feedTags, tlp_color)
-
             for single_batch in batch(indicators, batch_size=2000):
                 demisto.createIndicators(single_batch)
 
