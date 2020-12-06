@@ -679,7 +679,8 @@
             "playbookID": "Create ServiceNow Ticket and Mirror Test",
             "integrations": "ServiceNow v2",
             "instance_names": "snow_basic_auth",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout": 500
         },
         {
             "playbookID": "Create ServiceNow Ticket and State Polling Test",
@@ -3134,7 +3135,6 @@
             "playbookID": "playbook_TrendmicroCAS_Test",
             "fromversion": "5.0.0",
             "timeout": 300
-
         },
         {
             "playbookID": "IfThenElse-Test",
@@ -3296,7 +3296,9 @@
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
         "urlscan_malicious_Test": "Issue 20111",
         "Test-Detonate URL - Crowdstrike": "Issue 30879",
-        "nexpose_test": "Issue 31019"
+        "nexpose_test": "Issue 31019",
+        "CuckooTest": "Issue 25601",
+        "Cisco Umbrella Test": "Issue 24338"
     },
     "skipped_integrations": {
 
@@ -3436,6 +3438,12 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Symantec Messaging Gateway": "Test playbook uses a random string",
+        "Cylance Protect": "Test playbook (get_file_sample_by_hash_-_cylance_protect_-_test) downloads a file",
+        "WildFire-v2": "has a command that uploads file (!wildfire-upload)",
+        "carbonblackliveresponse": "has a command that uploads file (!cb-push-file-to-endpoint)",
+        "ServiceNow v2": "has a command that uploads file (!servicenow-upload-file)",
+        "AlienVault OTX TAXII Feed": "Client from 'cabby' package generates uuid4 in the request",
         "Generic Webhook": "Does not send HTTP traffic",
         "Microsoft Endpoint Configuration Manager": "Uses Microsoft winRM",
         "VirusTotal - Private API": "proxy failures with recording. related issues: 26463, 28888",
