@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [[source]]
 name = "pypi"
 url = "https://pypi.org/simple"
@@ -18,3 +19,23 @@ fastapi = "*"
 
 [requires]
 python_version = "3.8"
+=======
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+pytest = "==5.0.1"
+pytest-mock = "*"
+requests-mock = "*"
+pytest-asyncio = "*"
+
+[packages]
+pytest = "*"
+requests = "*"
+
+[requires]
+python_version = "3.7"
+>>>>>>> 192e32561a2cc181939547693c9d08c196039d28

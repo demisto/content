@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
     "name": "SumoLogic",
     "description": "Cloud-based service for logs & metrics management",
@@ -13,4 +14,21 @@
     "tags": [],
     "useCases": [],
     "keywords": []
+=======
+{
+    "name": "SumoLogic",
+    "description": "Cloud-based service for logs & metrics management",
+    "support": "xsoar",
+    "currentVersion": "1.0.2",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+>>>>>>> 192e32561a2cc181939547693c9d08c196039d28
 }

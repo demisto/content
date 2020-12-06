@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
     "name": "AlphaSOC Network Behavior Analytics",
     "description": "Retrieve alerts from the AlphaSOC Analytics Engine",
@@ -17,4 +18,25 @@
         "ioj"
     ],
     "certification": "certified"
+=======
+{
+    "name": "AlphaSOC Network Behavior Analytics",
+    "description": "Retrieve alerts from the AlphaSOC Analytics Engine",
+    "support": "partner",
+    "currentVersion": "1.0.1",
+    "author": "AlphaSOC",
+    "url": "",
+    "email": "support@alphasoc.com",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "ioj"
+    ],
+    "certification": "certified"
+>>>>>>> 192e32561a2cc181939547693c9d08c196039d28
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
     "name": "PAN-OS",
     "description": "Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.",
@@ -23,4 +24,31 @@
             "display_name": "Common Scripts"
         }
     }
+=======
+{
+    "name": "PAN-OS",
+    "description": "Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.",
+    "support": "xsoar",
+    "currentVersion": "1.6.7",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        }
+    }
+>>>>>>> 192e32561a2cc181939547693c9d08c196039d28
 }

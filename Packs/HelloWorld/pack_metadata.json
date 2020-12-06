@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
     "name": "HelloWorld",
     "description": "This is the Hello World integration for getting started.",
@@ -25,3 +26,32 @@
         }
     }
 }
+=======
+{
+    "name": "HelloWorld",
+    "description": "This is the Hello World integration for getting started.",
+    "support": "community",
+    "currentVersion": "1.1.12",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-03-10T08:37:18Z",
+    "certification": "verified",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        }
+    }
+}
+>>>>>>> 192e32561a2cc181939547693c9d08c196039d28

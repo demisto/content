@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
     "name": "Check Point Firewall",
     "description": "Manage Check Point firewall via API",
@@ -17,3 +18,24 @@
         "firewall"
     ]
 }
+=======
+{
+    "name": "Check Point Firewall",
+    "description": "Manage Check Point firewall via API",
+    "support": "xsoar",
+    "currentVersion": "2.0.3",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-08-04T00:00:00Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "checkpoint",
+        "firewall"
+    ]
+}
+>>>>>>> 192e32561a2cc181939547693c9d08c196039d28

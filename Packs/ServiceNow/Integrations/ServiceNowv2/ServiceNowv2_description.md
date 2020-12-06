@@ -1,3 +1,4 @@
+<<<<<<< HEAD
  To use ServiceNow on Demisto, ensure your user account has the rest_api_explorer and web_service_admin roles.
  These roles are required to make API calls.
  However, they may not suffice for viewing records in some tables.
@@ -30,3 +31,9 @@ If MFA is enabled for your user, follow the next steps:
 **Notes:**
 1. When using basic authorization, you will have to update your password with the current OTP every time the current code expires (30 seconds), hence we recommend using OAuth 2.0 authorization.
 2. For using OAuth 2.0 see the above instructions. The OTP code should be appended to the password parameter in the `!servicenow-oauth-login` command.
+=======
+ To use ServiceNow on Demisto, ensure your user account has the rest_api_explorer and web_service_admin roles.
+ These roles are required to make API calls.
+ However, they may not suffice for viewing records in some tables.
+ Please make sure you have the correct role so you have permissions to work with the relevant table.
+>>>>>>> 192e32561a2cc181939547693c9d08c196039d28
