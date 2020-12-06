@@ -982,9 +982,10 @@ def check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time_tim
 
 
 def get_last_mirrored_in_time(args):
-    demisto_incident = demisto.get_incidents()[0]  # type: ignore
+    demisto_incidents = demisto.get_incidents()  # type: ignore
 
-    if demisto_incident:  # handling 5.5 version
+    if demisto_incidents:  # handling 5.5 version
+        demisto_incident = demisto_incidents[0]
         last_mirrored_in_time = demisto_incident.get('CustomFields', {}).get('lastmirroredintime')
         last_mirrored_in_time_timestamp = arg_to_timestamp(last_mirrored_in_time, 'last_mirrored_in_time')
 

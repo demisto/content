@@ -911,6 +911,7 @@ def test_get_remote_data_command_should_update(requests_mock, mocker):
         expected_modified_incident.get('alerts')[0].get('host_ip').split(',')
 
     # make sure get-extra-data is returning an incident
+    mocker.patch('PaloAltoNetworks_XDR.get_last_mirrored_in_time', return_value=0)
     mocker.patch('PaloAltoNetworks_XDR.check_if_incident_was_modified_in_xdr', return_value=True)
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
@@ -977,6 +978,7 @@ def test_get_remote_data_command_should_not_update(requests_mock, mocker):
     sort_all_list_incident_fields(expected_modified_incident)
 
     # make sure get-extra-data is returning an incident
+    mocker.patch('PaloAltoNetworks_XDR.get_last_mirrored_in_time', return_value=0)
     mocker.patch('PaloAltoNetworks_XDR.check_if_incident_was_modified_in_xdr', return_value=False)
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
@@ -1036,6 +1038,7 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
     }
 
     # make sure get-extra-data is returning an incident
+    mocker.patch('PaloAltoNetworks_XDR.get_last_mirrored_in_time', return_value=0)
     mocker.patch('PaloAltoNetworks_XDR.check_if_incident_was_modified_in_xdr', return_value=True)
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
@@ -1088,6 +1091,7 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
         expected_modified_incident.get('alerts')[0].get('host_ip').split(',')
 
     # make sure get-extra-data is returning an incident
+    mocker.patch('PaloAltoNetworks_XDR.get_last_mirrored_in_time', return_value=0)
     mocker.patch('PaloAltoNetworks_XDR.check_if_incident_was_modified_in_xdr', return_value=True)
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
