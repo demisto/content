@@ -1,4 +1,4 @@
-from Tests.configure_and_test_integration_instances import configure_old_and_new_integrations
+from Tests.configure_and_test_integration_instances import configure_modified_and_new_integrations
 
 
 def test_configure_old_and_new_integrations(mocker):
@@ -19,9 +19,9 @@ def test_configure_old_and_new_integrations(mocker):
 
     mocker.patch('Tests.configure_and_test_integration_instances.configure_integration_instance',
                  side_effect=configure_integration_instance_mocker)
-    old_modules_instances, new_modules_instances = configure_old_and_new_integrations(
+    old_modules_instances, new_modules_instances = configure_modified_and_new_integrations(
         build=mocker.MagicMock(servers=['server1']),
-        old_integrations_to_configure=['old_integration1', 'old_integration2'],
+        modified_integrations_to_configure=['old_integration1', 'old_integration2'],
         new_integrations_to_configure=['new_integration1', 'new_integration2'],
         demisto_client=None
     )
