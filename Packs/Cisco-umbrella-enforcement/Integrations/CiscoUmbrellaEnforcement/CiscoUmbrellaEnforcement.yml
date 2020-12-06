@@ -56,6 +56,51 @@ script:
       name: device_version
       required: true
       secret: false
+    - default: false
+      description: The destination IP of the domain, specified in IPv4 dotted-decimal
+        notation. An example would be '8.8.8.8'
+      isArray: false
+      name: destination_ip
+      required: false
+      secret: false
+    - default: false
+      description: 'The parter threat level or rating, eg: severe, bad, high, and
+        so on.'
+      isArray: false
+      name: event_severity
+      required: false
+      secret: false
+    - default: false
+      description: Common name or classification of threat.
+      isArray: false
+      name: event_type
+      required: false
+      secret: false
+    - default: false
+      description: Variant or other descriptor of event type.
+      isArray: false
+      name: event_description
+      required: false
+      secret: false
+    - default: false
+      description: Path to file exhibiting malicious behavior.
+      isArray: false
+      name: file_name
+      required: false
+      secret: false
+    - default: false
+      description: SHA-1 of file reported by appliance.
+      isArray: false
+      name: file_hash
+      required: false
+      secret: false
+    - default: false
+      description: IP/Host of the infected computer/device that was patient 0 for
+        the event.
+      isArray: false
+      name: source
+      required: false
+      secret: false
     deprecated: false
     description: Posts a Malware event to the API for processing and optionally adding
       to a customer's domain lists.
@@ -110,6 +155,8 @@ script:
   dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: true
   script: '-'
   subtype: python3

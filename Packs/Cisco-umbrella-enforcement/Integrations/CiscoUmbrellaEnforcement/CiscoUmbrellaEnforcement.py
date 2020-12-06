@@ -90,6 +90,13 @@ def domain_event_add_command(client: Client, args: dict) -> str:
     dst_domain = args.get('destination_domain')
     dst_url = args.get('destination_url')
     device_version = args.get('device_version')
+    destination_ip = args.get('destination_ip')
+    event_severity = args.get('event_severity')
+    event_type = args.get('event_type')
+    event_description = args.get('event_description')
+    file_name = args.get('file_name')
+    file_hash = args.get('file_hash')
+    source = args.get('source')
 
     new_event = {
         "alertTime": alert_time,
@@ -99,7 +106,14 @@ def domain_event_add_command(client: Client, args: dict) -> str:
         "dstUrl": dst_url,
         "eventTime": alert_time,
         "protocolVersion": "1.0a",
-        "providerName": "Security Platform"
+        "providerName": "Security Platform",
+        "dstIP": destination_ip,
+        "eventSeverity": event_severity,
+        "eventType": event_type,
+        "eventDescription": event_description,
+        "fileName": file_name,
+        "fileHash": file_hash,
+        "src": source
     }
 
     response: dict = client.add_event_to_domain(new_event)
