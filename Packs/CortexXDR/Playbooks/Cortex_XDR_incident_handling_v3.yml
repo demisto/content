@@ -1651,6 +1651,7 @@ inputs:
     simple: "Yes"
   required: false
   description: This input indicates whether the playbook will link similar incidents.
+    To link similar incidents you must enable Demisto REST API integration.
     Specify Yes/No.
   playbookInputQuery: null
 - key: Hunting
