@@ -29,7 +29,8 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Fetch additional incident data (Asset tags, Attribution Reasons)
+- display: Fetch additional incident data
+  additionalinfo: Fetch asset tags and attribution Reasons from issues
   hidden: false
   name: fetch_details
   required: false
@@ -45,7 +46,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- display: Fetch issues with priority
+- display: Fetch issues with Priority
   name: priority
   options:
   - Low
@@ -101,12 +102,14 @@ configuration:
   required: false
   defaultvalue: false
   type: 8
-- display: Tag(s) to assign to incoming mirrored comments (comma separated)
+- display: Tag(s) for mirrored comments
+  additionalinfo: Assign these XSOAR tags (comma separated list) to the incoming comments mirrored from the Expanse Issue (must be different from the sync_tags to prevent loops).
   name: incoming_tags
   required: false
   type: 0
   defaultvalue: FromExpanse
-- display: Mirror out Entries with tag(s) (comma separated)
+- display: Mirror out Entries with tag(s)
+  additionalinfo: Mirror XSOAR entries with these XSOAR tags (comma separate list) to the corresponding Expanse Issue as comments (must be different from the incoming_tags to prevent loops).
   name: sync_tags
   required: false
   type: 0  
