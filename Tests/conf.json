@@ -3544,7 +3544,8 @@
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
         "QRadar": "Playbooks has parallel steps which are causing inconsistent results",
-        "MISP V2": "Issue 26905"
+        "MISP V2": "Issue 26905",
+        "AlienVault OTX TAXII Feed": "Issue 29197"
     },
     "parallel_integrations": [
         "SNDBOX",
