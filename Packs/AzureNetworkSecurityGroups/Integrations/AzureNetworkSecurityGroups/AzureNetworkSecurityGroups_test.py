@@ -37,7 +37,7 @@ def test_format_rule():
     assert '### Rules RuleName' in cr.readable_output
 
 
-def  test_list_groups_command(mocker):
+def test_list_groups_command(mocker):
     """
     Validate that list_groups_command returns the output in the correct format
     """
