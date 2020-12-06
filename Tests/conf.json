@@ -3438,8 +3438,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
-        "RSA NetWitness Packets and Logs": "Test playbook runs with multiple branches in parallel (related issue: 31333)",
-        "FireEye HX": "Test playbook runs with multiple branches in parallel (related issue: 31332)",
+        "Symantec Messaging Gateway": "Test playbook uses a random string",
         "Cylance Protect": "Test playbook (get_file_sample_by_hash_-_cylance_protect_-_test) downloads a file",
         "WildFire-v2": "has a command that uploads file (!wildfire-upload)",
         "carbonblackliveresponse": "has a command that uploads file (!cb-push-file-to-endpoint)",
