@@ -42,7 +42,7 @@ def format_time(datetime_object: datetime, use_european_time: bool) -> str:
         A string formatted:
         7/22/2017 3:58 PM (American) or 22/7/2017 3:58 PM (European)
     """
-    time_format = '%d/%m/%Y %I:%M %p' if use_european_time else '%m/%d/%Y %I:%M %p'
+    time_format = '%d/%m/%Y %I:%M:%S %p' if use_european_time else '%m/%d/%Y %I:%M:%S %p'
     return datetime_object.strftime(time_format)
 
 
@@ -57,8 +57,10 @@ def parse_date_to_datetime(date: str, day_first: bool = False) -> datetime:
     Returns:
         a datetime object
     """
-    date_order = {'DATE_ORDER': 'DMY' if day_first else 'MDY'}
-    date_obj = parser(date, settings=date_order)
+    date_obj = parser(date)
+    if date_obj.tzinfo is None or date_obj.tzinfo.utcoffset(date_obj) is None:  # if no timezone provided
+        date_order = {'DATE_ORDER': 'DMY' if day_first else 'MDY'}
+        date_obj = parser(date, settings=date_order)  # Could throw `AssertionError` if could not parse the timestamp
     return date_obj
 
 
@@ -388,16 +390,30 @@ class Client(BaseClient):
     def record_to_incident(
             self, record_item, app_id, date_field, day_first: bool = False, offset: int = 0
     ) -> Tuple[dict, datetime]:
+        """Transform a recotrd to incident
+
+        Args:
+            record_item: The record item dict
+            app_id: IF of the app
+            date_field: what is the date field
+            day_first: should the day be first in the day field (european date)
+            offset: what is the offset to the server
+
+        Returns:
+            incident, incident created time (in Archer's local time)
+        """
         labels = []
         raw_record = record_item['raw']
         record_item = record_item['record']
         incident_created_time = datetime(1, 1, 1)
-        if record_item.get(date_field):
+        occurred_time = incident_created_time
+        if date_field := record_item.get(date_field):
             incident_created_time = parse_date_to_datetime(
-                record_item[date_field], day_first=day_first
-            ).replace(tzinfo=None)
-            # fix occurred by offset
-            incident_created_time = incident_created_time + timedelta(minutes=offset)
+                date_field, day_first=day_first
+            ).replace(tzinfo=timezone.utc)
+            # fix ocurred time. if the offset is -120 minutes (Archer is two hours behind
+            # Cortex XSOAR, we should add 120 minutes to the occurred. So negative the incident_created_time
+            occurred_time = incident_created_time - timedelta(minutes=offset)
 
         # Will convert value to strs
         for k, v in record_item.items():
@@ -415,15 +431,13 @@ class Client(BaseClient):
         labels.append({'type': 'ModuleId', 'value': app_id})
         labels.append({'type': 'ContentId', 'value': record_item.get("Id")})
         labels.append({'type': 'rawJSON', 'value': json.dumps(raw_record)})
-
         incident = {
             'name': f'RSA Archer Incident: {record_item.get("Id")}',
             'details': json.dumps(record_item),
-            'occurred': incident_created_time.strftime(OCCURRED_FORMAT),
+            'occurred': occurred_time.strftime(OCCURRED_FORMAT),
             'labels': labels,
             'rawJSON': json.dumps(raw_record)
         }
-        demisto.debug(f'Going out with a new incident. occurred={incident["occurred"]}')
         return incident, incident_created_time
 
     def search_records(
@@ -1078,8 +1092,8 @@ def print_cache_command(client: Client, args: Dict[str, str]):
 
 
 def fetch_incidents(
-        client: Client, params: dict, from_time: str
-) -> Tuple[list, str]:
+        client: Client, params: dict, from_time: datetime
+) -> Tuple[list, datetime]:
     """Fetches incidents.
 
     Args:
@@ -1088,7 +1102,7 @@ def fetch_incidents(
         from_time: Time to start the fetch from
 
     Returns:
-        next_run object, incidents
+        incidents, next_run datetime in archer's local time
     """
     # Not using get method as those params are a must
     app_id = params['applicationId']
@@ -1098,9 +1112,7 @@ def fetch_incidents(
     fields_to_display = argToList(params.get('fields_to_fetch'))
     fields_to_display.append(date_field)
     day_first = argToBoolean(params.get('useEuropeanTime', False))
-
-    from_time_utc_obj = parser(from_time).replace(tzinfo=timezone.utc)
-    from_time_utc = format_time(from_time_utc_obj, day_first)
+    from_time_utc = format_time(from_time, day_first)
     # API Call
     records, raw_res = client.search_records(
         app_id, fields_to_display, date_field,
@@ -1111,7 +1123,7 @@ def fetch_incidents(
 
     # Build incidents
     incidents = list()
-    next_fetch = from_time_utc_obj
+    next_fetch = from_time
     for record in records:
         incident, incident_created_time = client.record_to_incident(
             record, app_id, date_field, day_first=day_first, offset=offset
@@ -1120,10 +1132,10 @@ def fetch_incidents(
             next_fetch = incident_created_time
         incidents.append(incident)
 
-    return incidents, next_fetch.strftime(OCCURRED_FORMAT)
+    return incidents, next_fetch
 
 
-def get_fetch_time(last_fetch: dict, first_fetch_time: str, offset: int = 0) -> str:
+def get_fetch_time(last_fetch: dict, first_fetch_time: str, offset: int = 0) -> datetime:
     """Gets lastRun object and first fetch time (str, 3 days) and returns
     a datetime object of the last run if exists, else datetime of the first fetch time
 
@@ -1134,15 +1146,15 @@ def get_fetch_time(last_fetch: dict, first_fetch_time: str, offset: int = 0) -> 
 
     Returns:
         Time to start fetch from
+
     """
     if next_run := last_fetch.get('last_fetch'):
         start_fetch = parser(next_run)
     else:
         start_fetch, _ = parse_date_range(first_fetch_time)
-        if offset:
-            start_fetch = start_fetch - timedelta(minutes=offset)
-    start_fetch = start_fetch.replace(tzinfo=None)
-    return start_fetch.strftime(OCCURRED_FORMAT)
+        start_fetch += timedelta(minutes=offset)
+    start_fetch = start_fetch.replace(tzinfo=timezone.utc)
+    return start_fetch
 
 
 def main():
@@ -1200,7 +1212,7 @@ def main():
                 from_time=from_time
             )
             demisto.debug(f'Setting next run to {next_fetch}')
-            demisto.setLastRun({'last_fetch': next_fetch})
+            demisto.setLastRun({'last_fetch': next_fetch.strftime(OCCURRED_FORMAT)})
             demisto.incidents(incidents)
         elif command == 'test-module':
             demisto.results(test_module(client, params))
