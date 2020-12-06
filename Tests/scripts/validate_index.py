@@ -85,8 +85,7 @@ def verify_pack(pack):
     Returns: True if pack is valid, False otherwise.
     """
     id_exists = log_message_if_statement(statement=(pack.get("id", "") != ""),
-                                         error_message="There is a missing pack id.",
-                                         success_message=f"Found pack with a valid id: {pack['id']}.")
+                                         error_message="There is a missing pack id.")
     price_is_valid = log_message_if_statement(statement=(pack.get("price", -1) > 0),
                                               error_message=f"The price on the pack {pack['id']} is 0 or less.",
                                               success_message=f"The price on the pack {pack['id']} is valid.")
