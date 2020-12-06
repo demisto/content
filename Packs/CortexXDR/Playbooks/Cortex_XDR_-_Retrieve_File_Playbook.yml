@@ -111,10 +111,8 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: PaloAltoNetworksXDR.GetActionStatus(val.status != "CANCELLED" || val.status
-          != "ABORTED" || val.status != "EXPIRED" || val.status != "COMPLETED_PARTIAL"
-          || val.status != "COMPLETED_SUCCESSFULLY" || val.status != "FAILED" || val.status
-          != "TIMEOUT")
+        simple: PaloAltoNetworksXDR.GetActionStatus(val.status == "PENDING" || val.status
+          == "IN_PROGRESS" || val.status == "PENDING_ABORT" ).action_id
     separatecontext: true
     loop:
       iscommand: false
