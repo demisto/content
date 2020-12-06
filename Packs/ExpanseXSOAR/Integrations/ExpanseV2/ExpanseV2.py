@@ -2181,7 +2181,10 @@ def main() -> None:
 
         elif demisto.command() == "get-remote-data":
             sync_owners = argToBoolean(demisto.params().get('sync_owners'))
-            mirror_details = argToBoolean(demisto.params().get('mirror_details'))
+            # XXX: forced to be disabled to reduce API calls in the backend.
+            # Will be reviewed in next versions to use XSOAR 6.1 mirroring enhancements.
+            mirror_details = False
+            # mirror_details = argToBoolean(demisto.params().get('mirror_details'))
             incoming_tags = argToList(demisto.params().get('incoming_tags', None))
             return_results(get_remote_data_command(client, demisto.args(), sync_owners, incoming_tags, mirror_details))
 
