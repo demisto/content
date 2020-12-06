@@ -1311,8 +1311,12 @@ def slack_send():
     thread_id = demisto.args().get('threadID', '')
     severity = demisto.args().get('severity')  # From server
     blocks = demisto.args().get('blocks')
-    entry_object = demisto.args().get('entryObject')  # From server
+    entry_object = demisto.args().get('entryObject')  # From server, available from demisto v6.1 and above
     entitlement = ''
+
+    if message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
+        # return so there will not be a loop of messages
+        return
 
     if message_type == MIRROR_TYPE:
         tags = argToList(demisto.params().get('filtered_tags', []))
@@ -1324,10 +1328,6 @@ def slack_send():
         # return if the entry tags is not containing any of the filtered_tags
         if tags and not any(elem in entry_tags for elem in tags):
             return
-
-    if message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
-        # return so there will not be a loop of messages
-        return
 
     if (to and group) or (to and original_channel) or (to and original_channel and group):
         return_error('Only one destination can be provided.')
