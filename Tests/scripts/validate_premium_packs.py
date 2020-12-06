@@ -165,7 +165,7 @@ def verify_server_paid_packs_by_index(server_paid_packs, index_data_packs):
     for server_pack in server_paid_packs:
         server_pack_in_index = verify_pack_in_list(server_pack, index_data_packs, "index packs")
         if not server_pack_in_index:
-            missing_server_packs.append(server_pack)
+            missing_server_packs.append({"id": server_pack["id"], "price": server_pack["price"]})
 
     all_server_packs_in_index = log_message_if_statement(statement=(len(missing_server_packs) == 0),
                                                          error_message=f'The following premium server packs were'
@@ -177,7 +177,7 @@ def verify_server_paid_packs_by_index(server_paid_packs, index_data_packs):
     for index_pack in index_data_packs:
         index_pack_in_server = verify_pack_in_list(index_pack, server_paid_packs, "premium server packs")
         if not index_pack_in_server:
-            missing_index_packs.append(index_pack)
+            missing_index_packs.append({"id": index_pack["id"], "price": index_pack["price"]})
 
     all_index_packs_in_server = log_message_if_statement(statement=(len(missing_index_packs) == 0),
                                                          error_message=f'The following index packs were'
