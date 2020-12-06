@@ -515,7 +515,7 @@ script:
       used after running the msgraph-auth-start command.
     execution: false
     name: azure-nsg-auth-complete
-  dockerimage: demisto/crypto:1.0.0.11287
+  dockerimage: demisto/crypto:1.0.0.13944
   feed: false
   isfetch: false
   longRunning: false

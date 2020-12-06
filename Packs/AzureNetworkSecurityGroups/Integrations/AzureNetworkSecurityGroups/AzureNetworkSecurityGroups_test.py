@@ -7,12 +7,7 @@ from AzureNetworkSecurityGroups import AzureNSGClient
 def mock_client(mocker, http_request_result=None):
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={'current_refresh_token': 'refresh_token'})
     client = AzureNSGClient(
-        self_deployed=True,
         app_id='app_id',
-        tenant_id='tenant_id',
-        redirect_uri='redirect_uri',
-        app_secret='app_secret',
-        auth_code='auth_code',
         subscription_id='subscriptionID',
         resource_group_name='resourceGroupName',
         verify=False,
@@ -42,7 +37,7 @@ def test_format_rule():
     assert '### Rules RuleName' in cr.readable_output
 
 
-def test_list_groups_command(mocker):
+def  test_list_groups_command(mocker):
     """
     Validate that list_groups_command returns the output in the correct format
     """
