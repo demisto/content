@@ -48,4 +48,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Cortex XDR - Retrieve File Playbook](https://raw.githubusercontent.com/demisto/content/cortex-xdr-enhancement/Packs/CortexXDR/doc_files/Cortex%20XDR%20-%20Retrieve%20File%20Playbook.png)
+![Cortex XDR - Retrieve File Playbook](https://raw.githubusercontent.com/demisto/content/0b71472b92a1bfa604215334b27c49a40c0260dd/Packs/CortexXDR/doc_files/Cortex%20XDR%20-%20Retrieve%20File%20Playbook.png)

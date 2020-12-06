@@ -35,4 +35,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Cortex XDR - Check Action Status](https://raw.githubusercontent.com/demisto/content/cortex-xdr-enhancement/Packs/CortexXDR/doc_files/Cortex%20XDR%20-%20Check%20Action%20Status.png)
+![Cortex XDR - Check Action Status](https://raw.githubusercontent.com/demisto/content/0b71472b92a1bfa604215334b27c49a40c0260dd/Packs/CortexXDR/doc_files/Cortex%20XDR%20-%20Check%20Action%20Status.png)
