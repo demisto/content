@@ -9,9 +9,6 @@ parameters:
   server_branch_name:
     type: string
     default: ""
-  backward_compatibility:
-    type: string
-    default: "true"
   nightly:
     type: string
     default: ""
@@ -55,7 +52,6 @@ references:
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
-      CHECK_BACKWARD: << pipeline.parameters.backward_compatibility >>
       MEM_CHECK: << pipeline.parameters.mem_check >>
       CONTRIB_BRANCH: << pipeline.parameters.contrib_branch >>
       CONTRIB_PACK_NAME: << pipeline.parameters.contrib_pack_name >>
