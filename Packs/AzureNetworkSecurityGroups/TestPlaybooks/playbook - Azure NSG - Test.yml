@@ -22,7 +22,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": 65
         }
       }
     note: false
@@ -45,7 +45,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "9"
     scriptarguments:
       all:
         simple: "yes"
@@ -58,7 +58,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 225
         }
       }
     note: false
@@ -90,7 +90,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 750
         }
       }
     note: false
@@ -130,7 +130,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 925
         }
       }
     note: false
@@ -164,7 +164,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1420
+          "y": 1100
         }
       }
     note: false
@@ -212,7 +212,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1275
         }
       }
     note: false
@@ -257,7 +257,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 1625
         }
       }
     note: false
@@ -291,7 +291,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 1975
         }
       }
     note: false
@@ -325,7 +325,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2150
         }
       }
     note: false
@@ -354,7 +354,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 400
         }
       }
     note: false
@@ -392,7 +392,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 575
         }
       }
     note: false
@@ -446,7 +446,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1450
         }
       }
     note: false
@@ -500,7 +500,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1800
         }
       }
     note: false
@@ -525,7 +525,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2325
         }
       }
     note: false
@@ -535,10 +535,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 2abd8da3-bb7c-4bd0-805a-9f9e247b7bab
+    taskid: 6c1e6790-2b3a-4ec9-85a9-ec87eebdc77b
     type: regular
     task:
-      id: 2abd8da3-bb7c-4bd0-805a-9f9e247b7bab
+      id: 6c1e6790-2b3a-4ec9-85a9-ec87eebdc77b
       version: -1
       name: Get Refresh Token
       description: Connects to the user and client set up in the parameters.
@@ -546,9 +546,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
     scriptarguments:
       client_id:
         simple: d4736600-e3d5-4c97-8e65-57abd2b979fe
@@ -556,41 +553,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "15":
-    id: "15"
-    taskid: 135d1e42-a913-45a9-8e55-f30e2f8fb53c
-    type: regular
-    task:
-      id: 135d1e42-a913-45a9-8e55-f30e2f8fb53c
-      version: -1
-      name: Finish Logging in
-      description: Run this command to complete the authorization process. Should
-        be used after running the msgraph-auth-start command.
-      script: '|||azure-nsg-auth-complete'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      refresh_token:
-        simple: ${MicrosoftLoginHelper.refreshToken}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
+          "x": 480,
+          "y": 50
         }
       }
     note: false
@@ -603,8 +567,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2660,
-        "width": 492.5,
+        "height": 2340,
+        "width": 810,
         "x": 50,
         "y": 50
       }
@@ -612,5 +576,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
-description: Test Playbook for Azure NSG
+fromversion: 6.0.0
+description: ''
