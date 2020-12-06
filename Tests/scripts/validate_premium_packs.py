@@ -206,9 +206,9 @@ def main():
     install_logging('Validate Premium Packs.log')
     options = options_handler()
 
-    index_data = get_index_json_data(service_account=options.service_account,
-                                     production_bucket_name=options.production_bucket_name,
-                                     extract_path=options.extract_path)
+    index_data, index_path = get_index_json_data(service_account=options.service_account,
+                                                 production_bucket_name=options.production_bucket_name,
+                                                 extract_path=options.extract_path)
 
     # Get the first host by the ami env
     hosts, _ = Build.get_servers(ami_env=options.ami_env)
