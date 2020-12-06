@@ -3,14 +3,6 @@ from CommonServerPython import *
 from JSONFeedApiModule import *  # noqa: E402
 
 
-def _get_fetch_time() -> int:
-    try:
-        fetch_time = int(demisto.params().get('fetch_time', ''))
-    except ValueError:
-        fetch_time = 14
-    return fetch_time
-
-
 def global_integration_context():
     integration_context: dict = get_integration_context()
 
@@ -38,15 +30,16 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
     Returns:
         list of indicators returned from api. Each indicator is represented in dictionary
     """
-    fetch_time = _get_fetch_time()
+    fetch_time = demisto.params().get('fetch_time', '14 days')
     params: dict = feed.get('filters', {})
     current_indicator_type = feed.get('indicator_type', '')
     update_feed_integration_context, get_feed_integration_context, \
         set_feed_integration_context = global_integration_context()
+    start_date, end_date = parse_date_range(fetch_time, utc=True)
     last_fetch = get_feed_integration_context(f'{current_indicator_type}_fetch_time')
-
+    if last_fetch:
+        start_date = last_fetch
     page_number = 1
-    start_date, end_date = parse_date_range(fetch_time)
     params['end_date'] = end_date
     params['start_date'] = start_date
     params['page_size'] = 200
