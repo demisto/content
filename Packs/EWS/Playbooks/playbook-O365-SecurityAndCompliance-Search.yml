@@ -44,7 +44,7 @@ tasks:
     task:
       id: 87bad7a0-c354-4a32-89d6-32c17cdfa210
       version: -1
-      name: Waiting for compliance search to complete
+      name: Waiting for the compliance search to complete.
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -128,7 +128,7 @@ tasks:
       id: 7181ccf2-3524-495e-82da-4bbeb6b9c97c
       version: -1
       name: Start search
-      description: Start stopped, completed, or not started compliance search in the
+      description: Start a stopped, completed, or not started compliance search in the
         Security & Compliance Center.
       script: '|||o365-sc-start-search'
       type: regular
@@ -162,7 +162,7 @@ tasks:
       id: d4c8f250-3be4-4f86-84d2-5a8f6e4ed207
       version: -1
       name: Get compliance search
-      description: Gets the compliance search by name from the Security & Compliance Center.
+      description: Get the compliance search by name from the Security & Compliance Center.
       script: '|||o365-sc-get-search'
       type: regular
       iscommand: true
@@ -203,7 +203,7 @@ tasks:
     task:
       id: bd133499-2ef6-42de-8c66-4a5788fe8bb6
       version: -1
-      name: Is compliance search exists ?
+      name: Does the compliance search exist?
       description: Check whether the compliance search exists.
       type: condition
       iscommand: false
@@ -301,7 +301,7 @@ tasks:
     task:
       id: d8372ac1-3b56-495e-8dd9-a49d972ee5a5
       version: -1
-      name: Should preview?
+      name: Whether to preview the search results.
       type: condition
       iscommand: false
       brand: ""
@@ -343,8 +343,8 @@ tasks:
     task:
       id: d31133f0-1710-4962-895b-e69a1ebd4b5e
       version: -1
-      name: Should overwrite existing search?
-      description: If compliance search exists and force == "true", the existing compliance
+      name: Whether to overwrite the existing search.
+      description: If the compliance search exists and force == "true", the existing compliance
         search will be removed and a new will be created. If force == "false", the existing
         search will be used.
       type: condition
@@ -404,7 +404,7 @@ tasks:
     task:
       id: 0770250d-1006-4693-894e-6776626c32ef
       version: -1
-      name: Remove compliance search
+      name: Remove a compliance search.
       description: Remove a compliance search by name from the Security & Compliance
         Center.
       script: '|||o365-sc-remove-search'
@@ -479,14 +479,14 @@ tasks:
       id: 4256eb8a-4764-48bf-8071-aee55b0fe087
       version: -1
       name: Error - Invalid force parameter
-      description: Prints an error entry with a given message.
+      description: Print an error entry with a given message.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
       message:
-        simple: Force parameter isn't valid. Accepted values are true/false.
+        simple: Force parameter isn't valid. Accepted values are true or false.
     separatecontext: false
     view: |-
       {
@@ -508,7 +508,7 @@ tasks:
       id: 06101d5f-eb62-4ad4-896e-5147445f0713
       version: -1
       name: Get compliance search
-      description: Gets a compliance search by name from the Security & Compliance Center.
+      description: Get a compliance search by name from the Security & Compliance Center.
       script: '|||o365-sc-get-search'
       type: regular
       iscommand: true
@@ -563,8 +563,8 @@ inputs:
   value:
     simple: "false"
   required: true
-  description: 'If false, will use the existing search without modifying any search parameters.
-    If true, will overwrite the existing search. Possible values are: "true" and "false".'
+  description: 'If false, use the existing search without modifying any search parameters.
+    If true, overwrite the existing search. Possible values are: "true" and "false".'
   playbookInputQuery: null
 - key: preview
   value:
