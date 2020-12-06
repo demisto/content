@@ -518,99 +518,11 @@ def convert_to_demisto_severity(severity: str) -> int:
     # might be required in your integration, so a dedicated function is
     # recommended. This mapping should also be documented.
     return {
-        'Low': 1,  # low severity
-        'Medium': 2,  # medium severity
-        'High': 3,  # high severity
-        'Critical': 4   # critical severity
+        'Low': IncidentSeverity.LOW,
+        'Medium': IncidentSeverity.MEDIUM,
+        'High': IncidentSeverity.HIGH,
+        'Critical': IncidentSeverity.CRITICAL
     }[severity]
-
-
-def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
-    """Converts an XSOAR argument to a Python int
-
-    This function is used to quickly validate an argument provided to XSOAR
-    via ``demisto.args()`` into an ``int`` type. It will throw a ValueError
-    if the input is invalid. If the input is None, it will throw a ValueError
-    if required is ``True``, or ``None`` if required is ``False.
-
-    :type arg: ``Any``
-    :param arg: argument to convert
-
-    :type arg_name: ``str``
-    :param arg_name: argument name
-
-    :type required: ``bool``
-    :param required:
-        throws exception if ``True`` and argument provided is None
-
-    :return:
-        returns an ``int`` if arg can be converted
-        returns ``None`` if arg is ``None`` and required is set to ``False``
-        otherwise throws an Exception
-    :rtype: ``Optional[int]``
-    """
-
-    if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
-        return None
-    if isinstance(arg, str):
-        if arg.isdigit():
-            return int(arg)
-        raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
-    if isinstance(arg, int):
-        return arg
-    raise ValueError(f'Invalid number: "{arg_name}"')
-
-
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
-    """Converts an XSOAR argument to a timestamp (seconds from epoch)
-
-    This function is used to quickly validate an argument provided to XSOAR
-    via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
-    since epoch). It will throw a ValueError if the input is invalid.
-    If the input is None, it will throw a ValueError if required is ``True``,
-    or ``None`` if required is ``False.
-
-    :type arg: ``Any``
-    :param arg: argument to convert
-
-    :type arg_name: ``str``
-    :param arg_name: argument name
-
-    :type required: ``bool``
-    :param required:
-        throws exception if ``True`` and argument provided is None
-
-    :return:
-        returns an ``int`` containing a timestamp (seconds from epoch) if conversion works
-        returns ``None`` if arg is ``None`` and required is set to ``False``
-        otherwise throws an Exception
-    :rtype: ``Optional[int]``
-    """
-
-    if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
-        return None
-
-    if isinstance(arg, str) and arg.isdigit():
-        # timestamp is a str containing digits - we just convert it to int
-        return int(arg)
-    if isinstance(arg, str):
-        # we use dateparser to handle strings either in ISO8601 format, or
-        # relative time stamps.
-        # For example: format 2019-10-23T00:00:00 or "3 days", etc
-        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
-        if date is None:
-            # if d is None it means dateparser failed to parse it
-            raise ValueError(f'Invalid date: {arg_name}')
-
-        return int(date.timestamp())
-    if isinstance(arg, (int, float)):
-        # Convert to int if the input is a float
-        return int(arg)
-    raise ValueError(f'Invalid date: "{arg_name}"')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -1127,14 +1039,14 @@ def search_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResult
     alert_type = args.get('alert_type')
 
     # Convert the argument to a timestamp using helper function
-    start_time = arg_to_timestamp(
+    start_time = arg_to_datetime(
         arg=args.get('start_time'),
         arg_name='start_time',
         required=False
     )
 
     # Convert the argument to an int using helper function
-    max_results = arg_to_int(
+    max_results = arg_to_number(
         arg=args.get('max_results'),
         arg_name='max_results',
         required=False
@@ -1145,7 +1057,7 @@ def search_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResult
         severity=','.join(severities),
         alert_status=status,
         alert_type=alert_type,
-        start_time=start_time,
+        start_time=int(start_time.timestamp()) if start_time else None,
         max_results=max_results
     )
 
@@ -1441,13 +1353,14 @@ def main() -> None:
     verify_certificate = not demisto.params().get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = arg_to_timestamp(
+    first_fetch_time = arg_to_datetime(
         arg=demisto.params().get('first_fetch', '3 days'),
         arg_name='First fetch time',
         required=True
     )
+    first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
     # Using assert as a type guard (since first_fetch_time is always an int when required=True)
-    assert isinstance(first_fetch_time, int)
+    assert isinstance(first_fetch_timestamp, int)
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
@@ -1472,7 +1385,7 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, first_fetch_time)
+            result = test_module(client, first_fetch_timestamp)
             return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
@@ -1482,7 +1395,7 @@ def main() -> None:
             min_severity = demisto.params().get('min_severity', None)
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
-            max_results = arg_to_int(
+            max_results = arg_to_number(
                 arg=demisto.params().get('max_fetch'),
                 arg_name='max_fetch',
                 required=False
@@ -1494,7 +1407,7 @@ def main() -> None:
                 client=client,
                 max_results=max_results,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
-                first_fetch_time=first_fetch_time,
+                first_fetch_time=first_fetch_timestamp,
                 alert_status=alert_status,
                 min_severity=min_severity,
                 alert_type=alert_type
