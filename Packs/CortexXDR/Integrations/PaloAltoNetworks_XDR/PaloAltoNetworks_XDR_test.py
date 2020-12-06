@@ -962,7 +962,6 @@ def test_get_remote_data_command_should_not_update(requests_mock, mocker):
         - returns an empty dict
     """
     from PaloAltoNetworks_XDR import get_remote_data_command, Client, sort_all_list_incident_fields
-    import copy
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )

@@ -971,8 +971,8 @@ def check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time_tim
         incident_modification_time_in_xdr = int(str(last_modified_incidents_dict[incident_id]))
 
         demisto.debug(f"XDR incident {incident_id}\n"
-                     f"modified time:         {incident_modification_time_in_xdr}\n"
-                     f"last mirrored in time: {last_mirrored_in_time_timestamp}")
+                      f"modified time:         {incident_modification_time_in_xdr}\n"
+                      f"last mirrored in time: {last_mirrored_in_time_timestamp}")
 
         if incident_modification_time_in_xdr > last_mirrored_in_time_timestamp:  # need to update this incident
             demisto.info(f"Incident '{incident_id}' was modified. performing extra-data request.")
@@ -982,7 +982,7 @@ def check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time_tim
 
 
 def get_last_mirrored_in_time(args):
-    demisto_incident = demisto.get_incidents()[0]
+    demisto_incident = demisto.get_incidents()[0]  # type: ignore
 
     if demisto_incident:  # handling 5.5 version
         last_mirrored_in_time = demisto_incident.get('CustomFields', {}).get('lastmirroredintime')
@@ -1923,7 +1923,6 @@ def get_remote_data_command(client, args):
                     reformatted_entries.append(entry)
 
             incident_data['in_mirror_error'] = ''
-            incident_data['last_mirrored_in_time'] = int(datetime.now().timestamp() * 1000)
 
             return GetRemoteDataResponse(
                 mirrored_object=incident_data,
