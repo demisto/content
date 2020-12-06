@@ -9,14 +9,12 @@ Validate the pack id's in the index file are present on the server and the price
 import demisto_client
 import argparse
 import logging
-import urllib3
 import ast
 import sys
 
 from Tests.scripts.validate_index import log_message_if_statement, get_index_json_data
 from Tests.configure_and_test_integration_instances import Build, Server
 from Tests.Marketplace.marketplace_services import GCPConfig
-from demisto_client.demisto_api.rest import ApiException
 from Tests.scripts.utils.log_util import install_logging
 from Tests.test_content import get_json_file
 from pprint import pformat
