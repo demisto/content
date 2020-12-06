@@ -64,26 +64,25 @@ class Client(BaseClient):
         if port_url is None or params is None:
             raise ValueError('Failed to initiate an upload operation')
 
-        # Creating a temp file with the same data of the given file
-        # This way the uploaded file has a path that the API can parse properly
-        # The reason is that the API asserts the file type by the file extension,
-        # and getFilePath returns a file name without that extension
-        demisto.debug('creating a temp file for upload operation')
-        with tempfile.TemporaryFile(suffix=file_name) as temp_file:
-            with open(file_path, 'rb') as file:
-                temp_file.write(file.read())
-            temp_file.seek(0)
-            file_dict = {file_name: temp_file}
-
-            self._http_request(
-                method='POST',
-                url_suffix=None,
-                full_url=port_url,
-                files=file_dict,
-                empty_valid_codes=[201, 204],
-                return_empty_response=True,
-                data=params
-            )
+        # # Creating a temp file with the same data of the given file
+        # # This way the uploaded file has a path that the API can parse properly
+        # # The reason is that the API asserts the file type by the file extension,
+        # # and getFilePath returns a file name without that extension
+        # demisto.debug('creating a temp file for upload operation')
+        # with tempfile.NamedTemporaryFile(suffix=file_name) as temp_file:
+        #     with open(file_path, 'rb') as file:
+        #         temp_file.write(file.read())
+        #     temp_file.seek(0)
+        file_dict = {'file': (file_name, open(file_path, 'rb'))}
+        self._http_request(
+            method='POST',
+            url_suffix=None,
+            full_url=port_url,
+            files=file_dict,
+            empty_valid_codes=[201, 204],
+            return_empty_response=True,
+            data=params
+        )
 
         # As shown, this operation has two requests
         # The data about the operation is within the first request's response,
@@ -369,11 +368,11 @@ def modify_results_dict(results_data: Dict[str, Any]):
 
     """
     if results_data.get('result'):
-        results_info = results_data.get('result', {}).get('files', [])[0]
+        results_info = results_data.get('result', {}).get('files')
         if results_info:
-            results_data['file_name'] = results_info.get('filename')
-            results_data['url'] = results_info.get('url')
-            results_data['size'] = results_info.get('size')
+            results_data['file_name'] = results_info[0].get('filename')
+            results_data['url'] = results_info[0].get('url')
+            results_data['size'] = results_info[0].get('size')
 
 @logger
 def download_command(client: Client, arguments: Dict[str, Any]):
