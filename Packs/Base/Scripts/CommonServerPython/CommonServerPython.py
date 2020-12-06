@@ -17,7 +17,7 @@ import traceback
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
-from datetime import tzinfo, datetime, timedelta
+from datetime import datetime, timedelta
 from abc import abstractmethod
 
 import demistomock as demisto
@@ -47,28 +47,13 @@ ZERO = timedelta(0)
 HOUR = timedelta(hours=1)
 
 
-class UTC(tzinfo):
-    """UTC"""
-
-    def utcoffset(self, dt):
-        return ZERO
-
-    def tzname(self, dt):
-        return "UTC"
-
-    def dst(self, dt):
-        return ZERO
-
-
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
     STRING_OBJ_TYPES = (str,)
-    TIMEZONE_UTC = timezone.utc
 
 else:
     STRING_TYPES = (str, unicode)  # type: ignore # noqa: F821
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
-    TIMEZONE_UTC = UTC()
 # pylint: enable=undefined-variable
 
 # DEPRECATED - use EntryType enum instead
@@ -3923,7 +3908,7 @@ def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=No
             ms = ms / 1000.0
 
         if is_utc:
-            return datetime.utcfromtimestamp(ms).replace(tzinfo=TIMEZONE_UTC)
+            return datetime.utcfromtimestamp(ms).replace(tzinfo=timezone.utc)
         else:
             return datetime.fromtimestamp(ms)
     if isinstance(arg, str):
