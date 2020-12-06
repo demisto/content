@@ -1,8 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-import tempfile
-
 import urllib3
 
 from typing import Any, Dict
