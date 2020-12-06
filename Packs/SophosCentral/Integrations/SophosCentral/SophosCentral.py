@@ -34,7 +34,7 @@ class Client(BaseClient):
             headers (dict): Headers for the client.
             base_url (str): Base URL for the client.
         """
-        headers = {'Authorization': 'Bearer ' + bearer_token}
+        headers = {'Authorization': f'Bearer {bearer_token}'}
         response = requests.get(headers=headers,
                                 url='https://api.central.sophos.com/whoami/v1')
         try:
@@ -623,34 +623,6 @@ class Client(BaseClient):
         response = self._http_request(method='GET', headers=self.headers,
                                       url_suffix=url_suffix)
         return response
-
-
-def get_client_data(bearer_token: str):
-    """
-    Set the tenant ID required for the API endpoints. Updates the existing self.headers.
-
-    Args:
-        bearer_token (str): A JWT token.
-
-    Returns:
-        headers (dict): Headers for the client.
-        base_url (str): Base URL for the client.
-    """
-    headers = {'Authorization': 'Bearer ' + bearer_token}
-    response = requests.get(headers=headers,
-                            url='https://api.central.sophos.com/whoami/v1')
-    try:
-        response_data = response.json()
-    except (json.JSONDecodeError, DemistoException) as exception:
-        raise DemistoException('Failed getting a whoami response JSON: ', exception) from exception
-    headers.update({'X-Tenant-ID': response_data.get('id')})
-    if not headers.get('X-Tenant-ID'):
-        raise DemistoException('Error retrieving tenant ID.')
-    data_region = response_data.get('apiHosts', {}).get('dataRegion')
-    if not data_region:
-        raise DemistoException(f'Error finding data region. {str(response)}')
-    base_url = f'{data_region}/'
-    return headers, base_url
 
 
 def create_alert_output(item: Dict, table_headers: List[str]) -> Dict[str, Optional[Any]]:
@@ -1536,7 +1508,7 @@ def create_detected_exploit_output(item: Dict) -> Dict:
         object_data (dict(str)): The output dictionary.
     """
     data_fields = ['id', 'thumbprint', 'count', 'description', 'firstSeenAt', 'lastSeenAt']
-    outputs = {field: item.get('field') for field in data_fields}
+    outputs = {field: item.get(field) for field in data_fields}
 
     last_user = item.get('lastUser')
     if last_user:
@@ -1632,7 +1604,6 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     else:
         first_fetch_date = dateparser.parse(first_fetch_time).replace(tzinfo=None)
         last_fetch = first_fetch_date
-
     incidents = []
     next_run = last_fetch
     alerts = client.search_alert(last_fetch.strftime(DATE_FORMAT)[:-4] + 'Z', None, None,
@@ -1653,7 +1624,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         if created_time > next_run:
             next_run = created_time
 
-    next_run = next_run + timedelta(milliseconds=1)
+    next_run += timedelta(milliseconds=1)
     next_run_timestamp = int(datetime.timestamp(next_run) * 1000)
     return {'last_fetch': next_run_timestamp}, incidents
 
