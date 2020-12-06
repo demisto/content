@@ -109,7 +109,7 @@ tasks:
       id: c7e20a76-efed-4d9f-8535-2988816ecf72
       version: -1
       name: Remove compliance search
-      description: Removes the compliance search by name from the Security & Compliance
+      description: Remove the compliance search by name from the Security & Compliance
         Center.
       script: '|||o365-sc-remove-search'
       type: regular
@@ -143,7 +143,7 @@ tasks:
       id: e2d22a23-9414-4516-8be7-ec07d06cbd0b
       version: -1
       name: Remove search action
-      description: Removes the compliance search action by searching for the action name in
+      description: Remove the compliance search action by searching for the action name in
         the Security & Compliance Center.
       script: '|||o365-sc-remove-search-action'
       type: regular
@@ -247,8 +247,8 @@ tasks:
     task:
       id: e1bfc91e-420b-48c1-853e-863e75244881
       version: -1
-      name: Should preview results?
-      description: Whether to preview results using the search action "Preview". Possible 
+      name: Whether to preview the results.
+      description: Whether to preview the results using the search action "Preview". Possible 
         values are "true" and "false" or leave empty to select manually.
       type: condition
       iscommand: false
@@ -317,8 +317,8 @@ tasks:
     task:
       id: 04a93a93-5487-4451-8179-9995b9ea4a93
       version: -1
-      name: Manually select if to preview search results
-      description: Manual selection for preview.
+      name: Manually select whether to preview the search results.
+      description: Manual selection for the preview.
       type: condition
       iscommand: false
       brand: ""
@@ -388,7 +388,7 @@ tasks:
     task:
       id: 89853810-9d59-45d7-8357-7779a853585a
       version: -1
-      name: Should search action - Delete?
+      name: Should the search action delete the results?
       description: Specify the delete type to perform on the search results. Possible values are "Hard" and "Soft" or leave empty to select manually. (Hard = Unrecoverable, Soft=Recoverable)
       type: condition
       iscommand: false
@@ -457,7 +457,7 @@ tasks:
     task:
       id: 9c36f4cd-af01-4719-80c0-499f1599f5c1
       version: -1
-      name: Which type of delete you want to perform?
+      name: Which type of delete do you want to perform?
       description: Manually select either Hard or Soft delete.
       type: condition
       iscommand: false
@@ -490,8 +490,8 @@ tasks:
       id: 2bd67dce-59ae-465a-813f-e2a00e7b2304
       version: -1
       name: Soft delete
-      description: This playbook creates a new search action in security and
-        compliance and then waits for the search action to complete.
+      description: This playbook creates a new search action in the Security and
+        Compliance Center and then waits for the search action to complete.
       playbookName: O365 - Security And Compliance - Search Action - Delete
       type: playbook
       iscommand: false
@@ -531,8 +531,8 @@ tasks:
       id: f87e0644-d91c-46d5-8f8c-cc4db0ddf845
       version: -1
       name: Hard delete
-      description: This playbook creates a new search action in security and
-        compliance and then waits for the search action to complete.
+      description: This playbook creates a new search action in the Security and
+        Compliance Center and then waits for the search action to complete.
       playbookName: O365 - Security And Compliance - Search Action - Delete
       type: playbook
       iscommand: false
@@ -572,7 +572,7 @@ tasks:
       id: f63f830a-4742-4b27-818b-b9bfdbdb6717
       version: -1
       name: Error - Preview parameter
-      description: Prints an error entry with a given message.
+      description: Print an error entry with a given message.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -601,14 +601,14 @@ tasks:
       id: e998044a-c6b6-44c4-8ab8-25854a769f5e
       version: -1
       name: Error - delete_type parameter
-      description: Prints an error entry with a given message.
+      description: Print an error entry with a given message.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
       message:
-        simple: delete_type parameter should be empty or soft/delete.
+        simple: delete_type parameter should be empty or soft or hard delete.
     separatecontext: false
     view: |-
       {
