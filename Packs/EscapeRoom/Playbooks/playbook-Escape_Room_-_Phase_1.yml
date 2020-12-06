@@ -1,33 +1,23 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 id: Escape Room - Phase 1
-inputs: []
+version: -1
 name: Escape Room - Phase 1
-outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: 4581b7dd-1819-44dc-8aaa-b8296108f1dc
+    type: start
+    task:
+      id: 4581b7dd-1819-44dc-8aaa-b8296108f1dc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 0daaccb4-2ed4-457b-8c3c-29c3d1ce6331
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: 0daaccb4-2ed4-457b-8c3c-29c3d1ce6331
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -35,35 +25,33 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    ignoreworker: false
+    taskid: fc533ac7-db74-4bbd-86f3-82a3e7b5f9dd
+    type: regular
+    task:
+      id: fc533ac7-db74-4bbd-86f3-82a3e7b5f9dd
+      version: -1
+      name: The clock is ticking
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
-    note: false
-    quietmode: 0
     scriptarguments:
       value:
         simple: |-
           ![](https://media.giphy.com/media/2S3Aj8OeKtf0c/giphy.gif)
           No time to waste, we are on a tight schedule!
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Prints text to war room (Markdown supported)
-      id: 56bcea12-b87c-4837-8ee6-e9d895765bf5
-      iscommand: false
-      name: The clock is ticking
-      script: Print
-      type: regular
-      version: -1
-    taskid: 56bcea12-b87c-4837-8ee6-e9d895765bf5
-    timertriggers:
-    - action: start
-      fieldname: escaperoomsla
-    type: regular
     view: |-
       {
         "position": {
@@ -71,27 +59,30 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers:
+    - fieldname: escaperoomsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
   "4":
     id: "4"
-    ignoreworker: false
+    taskid: 23c0f528-04da-4ced-87f7-46a312415f3c
+    type: regular
+    task:
+      id: 23c0f528-04da-4ced-87f7-46a312415f3c
+      version: -1
+      name: Welcome
+      scriptName: Welcome
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 880c097e-9a08-436b-818d-302b38a24fea
-      iscommand: false
-      name: Welcome
-      script: c0fd5a15-f4d1-482d-8bf3-419b7ca0e047
-      type: regular
-      version: -1
-    taskid: 880c097e-9a08-436b-818d-302b38a24fea
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -99,31 +90,31 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
   "5":
     id: "5"
-    ignoreworker: false
+    taskid: 4fde1b39-6f37-48e4-80b1-0a4ced10a74d
+    type: regular
+    task:
+      id: 4fde1b39-6f37-48e4-80b1-0a4ced10a74d
+      version: -1
+      name: Wait for it - *change
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
-    note: false
-    quietmode: 0
     scriptarguments:
       seconds:
         simple: "3"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Sleep for X seconds
-      id: f2063213-99eb-4e6d-889a-ef0e3b57eacf
-      iscommand: false
-      name: Wait for it - *change
-      script: Sleep
-      type: regular
-      version: -1
-    taskid: f2063213-99eb-4e6d-889a-ef0e3b57eacf
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -131,27 +122,27 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    ignoreworker: false
+    taskid: aca75999-30f9-48e5-85dd-8935a5d59890
+    type: title
+    task:
+      id: aca75999-30f9-48e5-85dd-8935a5d59890
+      version: -1
+      name: yay
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: e714b683-6651-48f1-89df-99766e5a1209
-      iscommand: false
-      name: yay
-      type: title
-      version: -1
-      description: ''
-    taskid: e714b683-6651-48f1-89df-99766e5a1209
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
@@ -159,42 +150,43 @@ tasks:
           "y": 910
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    ignoreworker: false
-    loop:
-      exitCondition: "yes"
+    taskid: 7da59123-e6b6-493e-8b7d-385443d415c3
+    type: playbook
+    task:
+      id: 7da59123-e6b6-493e-8b7d-385443d415c3
+      version: -1
+      name: Questionnaire - 1
+      playbookName: Questionnaire - 1
+      scriptName: AreValuesEqual
+      type: playbook
       iscommand: false
-      max: 100
-      scriptArguments:
-        left:
-          complex:
-            accessor: Answers
-            root: Questionnaire.Time
-        right:
-          simple: Correct
-      scriptId: AreValuesEqual
-      wait: 1
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
-    note: false
-    quietmode: 0
+    results:
+    - AreValuesEqual
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 672ac42d-2f4a-45e0-8792-a8dd3811abf2
+    loop:
       iscommand: false
-      name: d0cd9137-6694-4ad5-8a51-4a75a76c5cec
-      playbookId: d0cd9137-6694-4ad5-8a51-4a75a76c5cec
-      script: AreValuesEqual
-      type: playbook
-      version: -1
-      description: ''
-    taskid: 672ac42d-2f4a-45e0-8792-a8dd3811abf2
-    timertriggers: []
-    type: playbook
+      scriptArguments:
+        left:
+          complex:
+            root: Questionnaire.Time
+            accessor: Answers
+        right:
+          simple: Correct
+      exitCondition: "yes"
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -202,28 +194,28 @@ tasks:
           "y": 730
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    ignoreworker: false
-    note: false
-    quietmode: 0
+    taskid: c80001d7-ed6e-4f2b-8e57-432e6d404465
+    type: regular
+    task:
+      id: c80001d7-ed6e-4f2b-8e57-432e6d404465
+      version: -1
+      name: Print
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
     scriptarguments:
       value:
         simple: '"You are a prince!"'
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Prints text to war room (Markdown supported)
-      id: 96905957-2b39-47d5-8cf8-e53606f35913
-      iscommand: false
-      name: Print
-      script: Print
-      type: regular
-      version: -1
-    taskid: 96905957-2b39-47d5-8cf8-e53606f35913
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -231,7 +223,11 @@ tasks:
           "y": 1070
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},

@@ -9,26 +9,20 @@ import traceback
 
 
 def validate_token(token):
-    if token.islower() != 'the auto extract feature':
-        raise ValueError('Unsupported indicator. Try again later...')
+    if token.lower() != 'the auto extract feature':
+        raise ValueError('Unsupported indicator. Try another one...')
 
 
 def reputation_command(args: Dict[str, Any]) -> CommandResults:
-    token = args.get('value', None)
+    token = args.get('token', '')
+
+    markdown = f'## {token}\n\nArgs:{args}'
+    demisto.info(markdown)
 
     validate_token(token)
 
-    markdown = f'## {token}\n\nArgs:{args}'
-    # outputs = {
-    #     'HelloWorld': {
-    #         'hello': original_result
-    #     }
-    # }
-
     return CommandResults(
         readable_output=markdown,
-        # outputs=outputs,
-        # outputs_key_field=None
     )
 
 
@@ -40,7 +34,7 @@ def main():
         return_results(reputation_command(demisto.args()))
     except Exception as exc:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute HelloWorldScript. Error: {str(exc)}')
+        return_error(f'Failed to execute ERTokenReputation. Error: {str(exc)}')
 
 
 ''' ENTRY POINT '''

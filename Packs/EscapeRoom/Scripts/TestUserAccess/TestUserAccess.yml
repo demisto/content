@@ -5,6 +5,7 @@ args:
 - description: The user name to test.
   name: user_name
   required: true
+comment: ''
 commonfields:
   id: TestUserAccess
   version: -1

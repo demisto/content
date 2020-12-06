@@ -1,6 +1,7 @@
 commonfields:
   id: Welcome
   version: -1
+comment: ''
 dockerimage: demisto/python3:3.8.6.13358
 enabled: true
 name: Welcome

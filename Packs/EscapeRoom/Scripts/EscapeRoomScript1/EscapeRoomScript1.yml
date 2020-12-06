@@ -3,6 +3,7 @@ args:
   description: A base64 representation of encrypted text.
   name: cipher_text
   required: true
+comment: ''
 commonfields:
   id: EscapeRoomScript1
   version: -1

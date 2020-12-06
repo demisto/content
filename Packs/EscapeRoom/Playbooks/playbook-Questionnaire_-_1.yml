@@ -1,36 +1,23 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 id: Questionnaire - 1
-inputs: []
+version: -1
 name: Questionnaire - 1
-outputs:
-- contextPath: Questionnaire.Time.Answers
-  description: Whether answers are correct or not.
-  type: string
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: bb47b102-e26e-4d3d-80ea-d0d6bccf08a1
+    type: start
+    task:
+      id: bb47b102-e26e-4d3d-80ea-d0d6bccf08a1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 44c49dc4-c86f-4e02-8b15-5e5ad761aada
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: 44c49dc4-c86f-4e02-8b15-5e5ad761aada
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -38,82 +25,27 @@ tasks:
           "y": 40
         }
       }
-  "1":
-    form:
-      description: ""
-      expired: false
-      questions:
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "0"
-        label: ""
-        labelarg:
-          simple: When should we schedule our morning coffee?
-        options: []
-        optionsarg: []
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: ""
-        type: shortText
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "1"
-        label: ""
-        labelarg:
-          simple: Who are our early dev-birds (one per team)?
-        options: []
-        optionsarg:
-        - simple: Yuval Ben-Shalom, Shai Yaakovi, Rony Kozakish, Itay Keren
-        - simple: Bar Katzir, Bar Genish, Bar Chen, Bar Hochman
-        - simple: Orel Haim, Adi Daud, Dan Tavori, Itay Keren
-        - simple: Yana Orhov, Eli Sharf, Guy Keller, Itay Keren
-        - simple: Jasmine Beilin, Noy Maimon, Aviya Baumgarten, Darya Koval
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: ""
-        type: singleSelect
-      sender: ""
-      title: Content - Office Hours
-      totalanswers: 0
-    id: "1"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    message:
-      bcc:
-      body:
-        simple: hello
-      cc:
-      format: ""
-      methods:
-      - email
-      subject:
-        simple: hello
-      timings:
-        completeafterreplies: 1
-        retriescount: 2
-        retriesinterval: 360
-      to:
-        simple: Administrator
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: a09707cc-f75a-48aa-8d66-8f4b543a26ab
+    type: collection
+    task:
+      id: a09707cc-f75a-48aa-8d66-8f4b543a26ab
+      version: -1
+      name: Questionnaire - 1
+      description: ""
+      type: collection
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 649334a4-6a2d-4504-837e-67effae019c5
-      iscommand: false
-      name: Questionnaire - 1
-      type: collection
-      version: -1
-    taskid: 649334a4-6a2d-4504-837e-67effae019c5
-    timertriggers: []
-    type: collection
     view: |-
       {
         "position": {
@@ -121,51 +53,107 @@ tasks:
           "y": 370
         }
       }
-  "2":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: "0"
-                root: Content - Office Hours.Answers
-          operator: isEqualString
-          right:
-            value:
-              simple: "09:00"
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: "1"
-                root: Content - Office Hours.Answers
-          operator: isEqualString
-          right:
-            value:
-              simple: Yana Orhov, Eli Sharf, Guy Keller, Itay Keren
-      label: "yes"
-    id: "2"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    message:
+      to:
+        simple: Administrator
+      subject:
+        simple: hello
+      body:
+        simple: hello
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: When should we schedule our morning coffee?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Who are our early dev-birds (one per team)?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Yuval Ben-Shalom, Shai Yaakovi, Rony Kozakish, Itay Keren
+        - simple: Bar Katzir, Bar Genish, Bar Chen, Bar Hochman
+        - simple: Orel Haim, Adi Daud, Dan Tavori, Itay Keren
+        - simple: Yana Orhov, Eli Sharf, Guy Keller, Itay Keren
+        - simple: Jasmine Beilin, Noy Maimon, Aviya Baumgarten, Darya Koval
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Content - Office Hours
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: fd5abeb8-975d-4d12-809f-7ed032116eff
+    type: condition
+    task:
+      id: fd5abeb8-975d-4d12-809f-7ed032116eff
+      version: -1
+      name: Is the answers correct?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "4"
       "yes":
       - "3"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 6076b6b9-bea9-4438-8276-96dced287576
-      iscommand: false
-      name: Is the answers correct?
-      type: condition
-      version: -1
-    taskid: 6076b6b9-bea9-4438-8276-96dced287576
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Content - Office Hours.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: "09:00"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Content - Office Hours.Answers
+                accessor: "1"
+            iscontext: true
+          right:
+            value:
+              simple: Yana Orhov, Eli Sharf, Guy Keller, Itay Keren
     view: |-
       {
         "position": {
@@ -173,14 +161,27 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    ignoreworker: false
+    taskid: 998cf1b3-1cfc-4f45-8468-635420e2bb96
+    type: regular
+    task:
+      id: 998cf1b3-1cfc-4f45-8468-635420e2bb96
+      version: -1
+      name: You are correct!
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 0
     scriptarguments:
       append: {}
       key:
@@ -189,19 +190,6 @@ tasks:
       value:
         simple: Correct
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Set a value in context under the key you entered.
-      id: 128298bd-0aad-4ecd-8827-cd6f47cb2003
-      iscommand: false
-      name: You are correct!
-      script: Set
-      type: regular
-      version: -1
-    taskid: 128298bd-0aad-4ecd-8827-cd6f47cb2003
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -209,14 +197,27 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    ignoreworker: false
+    taskid: 2784bc33-4eab-4f80-8371-e2a9d69e9d0f
+    type: regular
+    task:
+      id: 2784bc33-4eab-4f80-8371-e2a9d69e9d0f
+      version: -1
+      name: Incorrect stupid
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 0
     scriptarguments:
       append: {}
       key:
@@ -225,19 +226,6 @@ tasks:
       value:
         simple: Incorrect
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Set a value in context under the key you entered.
-      id: 67a6bb00-4e02-4f6d-845a-314b9167313e
-      iscommand: false
-      name: Incorrect stupid
-      script: Set
-      type: regular
-      version: -1
-    taskid: 67a6bb00-4e02-4f6d-845a-314b9167313e
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -245,27 +233,27 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    ignoreworker: false
+    taskid: f57e1999-f0f0-4b27-89d2-b863df052b68
+    type: title
+    task:
+      id: f57e1999-f0f0-4b27-89d2-b863df052b68
+      version: -1
+      name: Set score
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 176b0d70-1bcd-4893-813e-fa84debb7293
-      iscommand: false
-      name: Set score
-      type: title
-      version: -1
-      description: ''
-    taskid: 176b0d70-1bcd-4893-813e-fa84debb7293
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
@@ -273,24 +261,24 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: c88d0a4c-57e3-4d18-8a64-1355cca44f7b
+    type: title
     task:
-      brand: ""
-      id: 200f3581-7e9f-4cb6-8800-8a45c4c60177
-      iscommand: false
+      id: c88d0a4c-57e3-4d18-8a64-1355cca44f7b
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ""
       description: ''
-    taskid: 200f3581-7e9f-4cb6-8800-8a45c4c60177
-    timertriggers: []
-    type: title
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -298,14 +286,27 @@ tasks:
           "y": 1050
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    ignoreworker: false
+    taskid: 464ddf14-dfe6-4b14-8a95-1e3ff181d208
+    type: regular
+    task:
+      id: 464ddf14-dfe6-4b14-8a95-1e3ff181d208
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "1"
-    note: false
-    quietmode: 0
     scriptarguments:
       all:
         simple: "no"
@@ -315,19 +316,6 @@ tasks:
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Delete field from context
-      id: 8f8247f2-f949-4e18-81e3-bc26f677fb78
-      iscommand: false
-      name: Delete Context
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: 8f8247f2-f949-4e18-81e3-bc26f677fb78
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -335,7 +323,11 @@ tasks:
           "y": 185
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -348,6 +340,11 @@ view: |-
       }
     }
   }
+inputs: []
+outputs:
+- contextPath: Questionnaire.Time.Answers
+  description: Whether answers are correct or not.
+  type: string
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

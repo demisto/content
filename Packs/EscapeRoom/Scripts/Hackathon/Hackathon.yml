@@ -1,7 +1,10 @@
 args:
 - name: step
+  description: ''
 - name: answer
+  description: ''
   required: true
+comment: ''
 commonfields:
   id: hackathon
   version: -1
