@@ -103,7 +103,7 @@ To setup the mirroring follow these instructions:
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Cortex XDR - IR and select your integration instance.
 3. Enable **Fetches incidents**.
-4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents shouldbe mirrored:
+4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
   * Incoming - Any changes in XDR incidents will be reflected in XSOAR incidents.
   * Outgoing - Any changes in XSOAR incidents will be reflected in XDR incidents.
   * Both - Changes in XSOAR and XDR incidents will be reflected in both directions.
