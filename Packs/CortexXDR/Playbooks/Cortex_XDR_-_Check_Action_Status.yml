@@ -193,12 +193,12 @@ tasks:
       id: cb32c787-21a2-4488-8948-b1bc28943d7a
       version: -1
       name: xdr-action-status-get
-      description: Retrieves the status of the requested actions according to the action
-        ID.
-      script: Cortex XDR - IR|||xdr-action-status-get
+      description: Retrieves the status of the requested actions according to the
+        action ID.
+      script: '|||xdr-action-status-get'
       type: regular
       iscommand: true
-      brand: Cortex XDR - IR
+      brand: ""
     nexttasks:
       '#none#':
       - "4"

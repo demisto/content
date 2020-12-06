@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 from datetime import timezone
 import secrets
 import string
@@ -12,7 +11,6 @@ import urllib3
 import traceback
 from operator import itemgetter
 import copy
-
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -929,7 +927,7 @@ class Client(BaseClient):
                                                ip_list: list, vendor: list, vendor_id: list, product: list,
                                                product_id: list,
                                                serial: list,
-                                               hostname: list, violation_ids: list, username: list)\
+                                               hostname: list, violation_ids: list, username: list) \
             -> Dict[str, Any]:
         arg_list = {'type': type_of_violation,
                     'endpoint_id_list': endpoint_ids,
@@ -1122,7 +1120,6 @@ class Client(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
-
         return reply.get('reply').get('data')
 
     def get_file(self, file_link):
@@ -2426,11 +2423,13 @@ def retrieve_file_details_command(client: Client, args):
                 file_results.append(fileResult(filename=f'{endpoint}_{retrived_files_count}.zip', data=file))
             result.append(obj)
 
+    hr = f'### Action id : {args.get("action_id", "")} \n Retrieved {retrived_files_count} files from ' \
+         f'{endpoints_count} endpoints. \n To get the exact action status run the xdr-action-status-get command'
+
     return_entry = {'Type': entryTypes['note'],
                     'ContentsFormat': formats['json'],
                     'Contents': raw_result,
-                    'HumanReadable': f'### Action id : {action_id} \n'
-                                     f'Retrieved {retrived_files_count} files from {endpoints_count} endpoints. ',
+                    'HumanReadable': hr,
                     'ReadableContentsFormat': formats['markdown'],
                     'EntryContext': {}
                     }
@@ -2457,7 +2456,7 @@ def get_scripts_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict
         macos_supported=[macos_supported],
         is_high_risk=[is_high_risk]
     )
-    scripts = copy.deepcopy(result.get('scripts')[offset:limit])  # type: ignore
+    scripts = copy.deepcopy(result.get('scripts')[offset:offset+limit])  # type: ignore
     for script in scripts:
         timestamp = script.get('modification_date')
         script['modification_date_timestamp'] = timestamp
@@ -2486,7 +2485,8 @@ def get_script_metadata_command(client: Client, args: Dict[str, str]) -> Tuple[s
     script_metadata['modification_date'] = timestamp_to_datestring(timestamp, TIME_FORMAT)
 
     return (
-        tableToMarkdown(name='Script Metadata', t=script_metadata, removeNull=True, headerTransform=string_to_table_header),
+        tableToMarkdown(name='Script Metadata', t=script_metadata, removeNull=True,
+                        headerTransform=string_to_table_header),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.ScriptMetadata(val.script_uid == obj.script_uid)': reply
         },
@@ -2528,7 +2528,7 @@ def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:
             })
 
     return (
-        tableToMarkdown(name='Get Action Status', t=result, removeNull=True, headers=['endpoint_id', 'status']),
+        tableToMarkdown(name='Get Action Status', t=result, removeNull=True),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.GetActionStatus(val.action_id == obj.action_id)': result
         },

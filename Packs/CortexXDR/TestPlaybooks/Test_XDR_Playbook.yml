@@ -1981,6 +1981,11 @@ tasks:
       id: e49fbb96-1ebf-4076-8435-19cca09eb886
       version: -1
       name: Cortex XDR - Retrieve File Playbook
+      description: |-
+        Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints.
+        Inputs for this playbook are:
+        - A comma-separated list of endpoint IDs.
+        - A comma-separated list of file paths for your operating system, either Windows, Linux, or Mac. At least one file path is required.
       playbookName: Cortex XDR - Retrieve File Playbook
       type: playbook
       iscommand: false
@@ -2013,7 +2018,7 @@ tasks:
       linux_file_paths: {}
       mac_file_paths: {}
       windows_file_paths:
-        simple: '"C:\\Users\\demisto\\Desktop\\demisto.txt"'
+        simple: C:\Users\demisto\Desktop\demisto.txt
     separatecontext: true
     loop:
       iscommand: false
@@ -2023,8 +2028,103 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 8215
+          "x": 260,
+          "y": 8220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: a886fe96-9618-4c3f-8fa8-3c9e497a2f15
+    type: regular
+    task:
+      id: a886fe96-9618-4c3f-8fa8-3c9e497a2f15
+      version: -1
+      name: xdr-retrieve-files
+      description: Retrieves files from selected endpoints. You can retrieve up to
+        20 files, from no more than 10 endpoints. At least one endpoint ID and one
+        file path are necessary in order to run the command. After running this command,
+        you can use the xdr-action-status-get command with returned action_id, to
+        check the action status.
+      script: Cortex XDR - IR|||xdr-retrieve-files
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: PaloAltoNetworksXDR.Endpoint
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
+                iscontext: true
+              right:
+                value:
+                  simple: CONNECTED
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Endpoint.agent_type
+                iscontext: true
+              right:
+                value:
+                  simple: Workstation
+          accessor: endpoint_id
+      linux_file_paths: {}
+      mac_file_paths: {}
+      windows_file_paths:
+        simple: C:\Users\demisto\Desktop\demisto.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 8220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: f13f4913-dde0-41b4-8f33-72313127522c
+    type: playbook
+    task:
+      id: f13f4913-dde0-41b4-8f33-72313127522c
+      version: -1
+      name: Cortex XDR - Check Action Status
+      playbookName: Cortex XDR - Check Action Status
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      action_id:
+        simple: ${PaloAltoNetworksXDR.RetrievedFiles.action_id}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 8400
         }
       }
     note: false
@@ -2037,8 +2137,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 8405,
-        "width": 922.5,
+        "height": 8645,
+        "width": 1000,
         "x": 50,
         "y": 50
       }
