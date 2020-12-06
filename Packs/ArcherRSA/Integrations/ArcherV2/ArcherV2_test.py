@@ -399,12 +399,15 @@ class TestArcherV2:
         assert incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ') == '2018-03-26T10:03:00Z'
         assert incident['occurred'] == '2018-03-26T10:03:00Z'
 
-    @pytest.mark.parametrize('date_time_reported, use_european_time', [
-        ('2018-04-03T10:03:00.000Z', False),
-        ('03/04/2018 10:03 AM', True),
-        ('04/03/2018 10:03 AM', False)
+    @pytest.mark.parametrize('date_time_reported, use_european_time, occurred', [
+        ('2018-04-03T10:03:00.000Z', False, '2018-04-03T10:03:00Z'),
+        ('2018-04-03T10:03:00.000Z', True, '2018-04-03T10:03:00Z'),
+        ('03/04/2018 10:03 AM', True, '2018-04-03T10:03:00Z'),
+        ('04/03/2018 10:03 AM', False, '2018-04-03T10:03:00Z')
     ])
-    def test_fetch_time_change(self, mocker, date_time_reported: str, use_european_time: bool):
+    def test_fetch_time_change(
+            self, mocker, date_time_reported: str, use_european_time: bool, occurred: str
+    ):
         """
         Given:
             incident with date/time reported
@@ -416,6 +419,7 @@ class TestArcherV2:
         Then:
             Check that the new next fetch is greater than last_fetch
             Check the wanted next_fetch is true
+            Assert occurred time
         """
         client = Client(BASE_URL, '', '', '', '')
         params = {
@@ -431,9 +435,49 @@ class TestArcherV2:
             0
         )
         mocker.patch.object(client, 'search_records', return_value=([record], {}))
-        _, next_fetch = fetch_incidents(client, params, last_fetch)
+        incidents, next_fetch = fetch_incidents(client, params, last_fetch)
         assert last_fetch < next_fetch
         assert next_fetch == datetime(2018, 4, 3, 10, 3, tzinfo=timezone.utc)
+        assert incidents[0]['occurred'] == occurred
+
+    @pytest.mark.parametrize('date_time_reported, use_european_time, occurred', [
+        ('11/29/2018 10:03 AM', False, '2018-11-29T10:03:00Z'),
+        ('29/11/2018 10:03 AM', True, '2018-11-29T10:03:00Z')
+    ])
+    def test_fetch_times_with_impossible_date(
+            self, mocker, date_time_reported: str, use_european_time: bool, occurred: str
+    ):
+        """
+        Given:
+            incident with date/time reported. The day/months can't be misplaced (29-11, 11-29)
+            european time (day first) - True or false
+
+        When:
+            Fetching incidents
+
+        Then:
+            Check that the new next fetch is greater than last_fetch
+            Check the wanted next_fetch is true
+            Assert occurred time
+        """
+        client = Client(BASE_URL, '', '', '', '')
+        params = {
+            'applicationId': '75',
+            'applicationDateField': 'Date/Time Reported',
+            'time_zone': 0,
+            'useEuropeanTime': use_european_time
+        }
+        record = copy.deepcopy(INCIDENT_RECORD)
+        record['record']['Date/Time Reported'] = date_time_reported
+        last_fetch = get_fetch_time(
+            {'last_fetch': '2018-03-01T10:03:00Z'}, params.get('fetch_time', '3 days'),
+            0
+        )
+        mocker.patch.object(client, 'search_records', return_value=([record], {}))
+        incidents, next_fetch = fetch_incidents(client, params, last_fetch)
+        assert last_fetch < next_fetch
+        assert next_fetch == datetime(2018, 11, 29, 10, 3, tzinfo=timezone.utc)
+        assert incidents[0]['occurred'] == occurred
 
     def test_fetch_time_change_with_offset(self, mocker):
         """
@@ -445,6 +489,7 @@ class TestArcherV2:
 
         Then:
             Check that the new last fetch is equals to record reported time (no delta) and is after the last_fetch
+            Assert occurred time
         """
         client = Client(BASE_URL, '', '', '', '')
         record = copy.deepcopy(INCIDENT_RECORD)
@@ -460,9 +505,10 @@ class TestArcherV2:
             0
         )
         mocker.patch.object(client, 'search_records', return_value=([record], {}))
-        _, next_fetch = fetch_incidents(client, params, last_fetch)
+        incidents, next_fetch = fetch_incidents(client, params, last_fetch)
         assert last_fetch < next_fetch
         assert next_fetch == datetime(2018, 4, 3, 10, 3, tzinfo=timezone.utc)
+        assert incidents[0]['occurred'] == '2018-04-03T08:03:00Z'
 
     def test_two_fetches(self, mocker):
         """
@@ -476,6 +522,7 @@ class TestArcherV2:
         Then:
             Check that the new next fetch is greater than last_fetch on both calls.
             Check the wanted next_fetch is equals to the date in the incident in both calls.
+            Assert occurred time
         """
         client = Client(BASE_URL, '', '', '', '')
         params = {
@@ -494,9 +541,12 @@ class TestArcherV2:
                 ([record2], {})
             ]
         )
-        _, next_fetch = fetch_incidents(client, params, last_fetch)
+        incidents, next_fetch = fetch_incidents(client, params, last_fetch)
         assert last_fetch < next_fetch
         assert next_fetch == datetime(2020, 3, 18, 10, 30, tzinfo=timezone.utc)
-        _, next_fetch = fetch_incidents(client, params, next_fetch)
+        assert incidents[0]['occurred'] == '2020-03-18T10:30:00Z'
+        incidents, next_fetch = fetch_incidents(client, params, next_fetch)
         assert last_fetch < next_fetch
         assert next_fetch == datetime(2020, 3, 18, 15, 30, tzinfo=timezone.utc)
+        assert incidents[0]['occurred'] == '2020-03-18T15:30:00Z'
+

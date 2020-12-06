@@ -57,15 +57,10 @@ def parse_date_to_datetime(date: str, day_first: bool = False) -> datetime:
     Returns:
         a datetime object
     """
-    if 'z' in date.lower():  # For OCCURRED like time stamps
-        date_order = None
-    else:
+    date_obj = parser(date)
+    if date_obj.tzinfo is None or date_obj.tzinfo.utcoffset(date_obj) is None:  # if no timezone provided
         date_order = {'DATE_ORDER': 'DMY' if day_first else 'MDY'}
-    try:
-        date_obj = parser(date, settings=date_order)
-    except AssertionError as exc:
-        demisto.debug(f'Could not parse date {date} with DATE_ORDER. Parsing without it. {exc=}')
-        date_obj = parser(date)
+        date_obj = parser(date, settings=date_order)  # Could throw `AssertionError` if could not parse the timestamp
     return date_obj
 
 
