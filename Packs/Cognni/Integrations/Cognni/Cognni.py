@@ -465,7 +465,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         new_events = events
 
     if not new_events:
-        next_run = {'last_fetch': latest_created_time}
+        next_run = {'last_fetch': latest_created_time, 'offset': offset+len(events)}
         return next_run, list()
 
     latest_event = find_latest_event(new_events)
@@ -609,8 +609,12 @@ def main() -> None:
             verify=verify_certificate,
             headers=headers,
             proxy=proxy)
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration Test button.
+            result = test_module(client)
+            return_results(result)
 
-        if demisto.command() == 'fetch-incidents':
+        elif demisto.command() == 'fetch-incidents':
             min_severity = demisto.params().get('min_severity', None)
 
             max_fetch = arg_to_int(
