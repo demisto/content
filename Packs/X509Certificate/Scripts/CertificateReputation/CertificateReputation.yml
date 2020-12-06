@@ -8,7 +8,7 @@ args:
 - default: false
   description: Set validation checks in the indicator
   isArray: false
-  name: update_checks
+  name: update_indicator
   required: false
   secret: false
   predefined:

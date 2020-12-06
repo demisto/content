@@ -228,7 +228,7 @@ def dbot_context(value: str, certificate_context: Dict[str, Any]
     return tags, comments, {
         'DBotScore': {
             'Score': current_score,
-            'Vendor': 'CertificateReputation',
+            'Vendor': 'X509Certificate',
             'Type': 'certificate',
             'Indicator': value
         }
@@ -243,7 +243,7 @@ def certificate_reputation_command(args: Dict[str, Any]) -> Dict[str, Any]:
     if input_ is None:
         raise ValueError("input argument is required")
 
-    update_checks = argToBoolean(args.get('update_check', 'true'))
+    update_indicator = argToBoolean(args.get('update_indicator', 'true'))
 
     indicator = get_indicator_from_value(input_)
 
@@ -277,7 +277,7 @@ def certificate_reputation_command(args: Dict[str, Any]) -> Dict[str, Any]:
 
     standard_context.update(dbot_score)
 
-    if update_checks:
+    if update_indicator:
         # we use this because it seems that enrichIndicators is ignoring additional context
         # in the output
         indicator_set_validation_checks(indicator_value, tags)

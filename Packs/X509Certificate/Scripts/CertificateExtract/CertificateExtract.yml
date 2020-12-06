@@ -1,14 +1,14 @@
 args:
 - default: false
-  description: Certificate in PEM format. This argument is mutually exclusive with the "input" argument.
+  description: Certificate in PEM format. This argument is mutually exclusive with the "entry_id" argument.
   isArray: false
   name: pem
   required: false
   secret: false
 - default: false
-  description: Certificate file ID (DER or PEM). This argument is mutually exclusive with the "pem" argument.
+  description: Certificate entry ID (in DER or PEM format). This argument is mutually exclusive with the "pem" argument.
   isArray: false
-  name: input
+  name: entry_id
   required: false
   secret: false
 comment: Extract fields from a certificate file and return the standard context.

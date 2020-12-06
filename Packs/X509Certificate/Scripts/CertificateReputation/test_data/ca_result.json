@@ -62,7 +62,7 @@
       "Indicator": "fake-sha256",
       "Score": 2,
       "Type": "certificate",
-      "Vendor": "CertificateReputation"
+      "Vendor": "X509Certificate"
     }
   },
   [

@@ -1,24 +1,34 @@
-id: X509Certificate Test Playbook
-version: -1
-name: X509Certificate Test Playbook
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
 description: Test Playbook for X509Certificate Scripts
+id: X509Certificate Test Playbook
+inputs: []
+name: X509Certificate Test Playbook
+outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0ba97589-575e-4130-8fe5-a51f4831b6e7
-    type: start
-    task:
-      id: 0ba97589-575e-4130-8fe5-a51f4831b6e7
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "1"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0ba97589-575e-4130-8fe5-a51f4831b6e7
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 0ba97589-575e-4130-8fe5-a51f4831b6e7
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
@@ -26,27 +36,15 @@ tasks:
           "y": 50
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "1":
     id: "1"
-    taskid: d0dac6c9-e54e-4315-8c04-60131b4f1bc6
-    type: regular
-    task:
-      id: d0dac6c9-e54e-4315-8c04-60131b4f1bc6
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "3"
+      - "8"
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
         simple: "yes"
@@ -55,6 +53,19 @@ tasks:
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: d0dac6c9-e54e-4315-8c04-60131b4f1bc6
+      iscommand: false
+      name: Delete Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: d0dac6c9-e54e-4315-8c04-60131b4f1bc6
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -62,27 +73,14 @@ tasks:
           "y": 230
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "2":
     id: "2"
-    taskid: 09b14890-6e55-48c9-8be6-6ac4cb38ee68
-    type: regular
-    task:
-      id: 09b14890-6e55-48c9-8be6-6ac4cb38ee68
-      version: -1
-      name: Create Certificate Indicator
-      description: commands.local.cmd.new.indicator
-      script: Builtin|||createNewIndicator
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "4"
+    note: false
+    quietmode: 0
     scriptarguments:
       accounttype: {}
       actor: {}
@@ -249,36 +247,36 @@ tasks:
       xdrstatus: {}
       zipcode: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.new.indicator
+      id: 09b14890-6e55-48c9-8be6-6ac4cb38ee68
+      iscommand: true
+      name: Create Certificate Indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      version: -1
+    taskid: 09b14890-6e55-48c9-8be6-6ac4cb38ee68
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 580
+          "y": 830
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
     id: "3"
-    taskid: c14ced02-1e23-4c2f-80c2-76e8b94d5123
-    type: regular
-    task:
-      id: c14ced02-1e23-4c2f-80c2-76e8b94d5123
-      version: -1
-      name: CertificateExtract
-      description: Extract fields from a certificate file and return the standard
-        context
-      scriptName: CertificateExtract
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "2"
+    note: false
+    quietmode: 0
     scriptarguments:
+      entry_id: {}
       input: {}
       pem:
         simple: |-
@@ -315,6 +313,20 @@ tasks:
           DFO4KRA2df7pJLNqY7Db
           -----END CERTIFICATE-----
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Extract fields from a certificate file and return the standard
+        context
+      id: 18018a63-0766-43f4-8cb2-ef3833d1778b
+      iscommand: false
+      name: CertificateExtract
+      script: CertificateExtract
+      type: regular
+      version: -1
+    taskid: 18018a63-0766-43f4-8cb2-ef3833d1778b
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -322,88 +334,73 @@ tasks:
           "y": 410
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "4":
     id: "4"
-    taskid: f92842ca-1c29-4242-83ae-88c0293e0b37
-    type: regular
-    task:
-      id: f92842ca-1c29-4242-83ae-88c0293e0b37
-      version: -1
-      name: Certificate Reputation
-      description: Enrich and calculate reputation of a Certificate indicator.
-      scriptName: CertificateReputation
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "6"
+    note: false
+    quietmode: 0
     scriptarguments:
       input:
         simple: ${Certificate.SHA256}
       update_checks:
         simple: "true"
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Enrich and calculate reputation of a Certificate indicator.
+      id: f92842ca-1c29-4242-83ae-88c0293e0b37
+      iscommand: false
+      name: Certificate Reputation
+      script: CertificateReputation
+      type: regular
+      version: -1
+    taskid: f92842ca-1c29-4242-83ae-88c0293e0b37
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 760
+          "y": 990
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "5":
     id: "5"
-    taskid: 345ed494-22d6-4be2-8c1c-0576fcf6a8c8
-    type: title
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ""
       id: 345ed494-22d6-4be2-8c1c-0576fcf6a8c8
-      version: -1
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
+      version: -1
       description: ''
-    separatecontext: false
+    taskid: 345ed494-22d6-4be2-8c1c-0576fcf6a8c8
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 1300
+          "y": 1520
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "6":
     id: "6"
-    taskid: 04eba5cb-b48a-49a3-81a2-91ffb0d52be2
-    type: regular
-    task:
-      id: 04eba5cb-b48a-49a3-81a2-91ffb0d52be2
-      version: -1
-      name: Find Indicator
-      description: Gets a list of indicator objects and the associated indicator outputs
-        that match the specified query and filters. The results are returned in a
-        structured data file.
-      scriptName: GetIndicatorsByQuery
-      type: regular
-      iscommand: false
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "7"
+    note: false
+    quietmode: 0
     scriptarguments:
       addRandomSalt: {}
       dontPopulateFields: {}
@@ -417,78 +414,211 @@ tasks:
         simple: id
       query:
         complex:
-          root: Certificate
           accessor: SHA256
+          root: Certificate
           transformers:
-          - operator: concat
-            args:
+          - args:
               prefix:
                 value:
                   simple: 'value:'
               suffix:
                 value:
                   simple: ' and -certificatevalidationchecks:"" and type:Certificate'
+            operator: concat
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Gets a list of indicator objects and the associated indicator outputs
+        that match the specified query and filters. The results are returned in a
+        structured data file.
+      id: 15554eca-2a53-4121-89cf-ea27df522460
+      iscommand: false
+      name: Find Indicator
+      script: GetIndicatorsByQuery
+      type: regular
+      version: -1
+    taskid: 15554eca-2a53-4121-89cf-ea27df522460
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 940
+          "y": 1160
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: FoundIndicator
+          operator: hasLength
+          right:
+            value:
+              simple: "2"
+      label: "yes"
     id: "7"
-    taskid: c78c8293-cfd7-46ae-8fb0-fd6b3d412e8c
-    type: condition
-    task:
-      id: c78c8293-cfd7-46ae-8fb0-fd6b3d412e8c
-      version: -1
-      name: Indicator found?
-      description: Check if find indicator found the updated indicator
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       "yes":
       - "5"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: FoundIndicator
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if find indicator found the updated indicator
+      id: de34c4ad-c886-4470-88aa-c7f4592fb27d
+      iscommand: false
+      name: Indicator found?
+      type: condition
+      version: -1
+    taskid: de34c4ad-c886-4470-88aa-c7f4592fb27d
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 1120
+          "y": 1340
         }
       }
-    note: false
-    timertriggers: []
+  "8":
+    id: "8"
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
     quietmode: 0
+    scriptarguments:
+      data:
+        simple: |-
+          -----BEGIN CERTIFICATE-----
+          MIIGdDCCBVygAwIBAgIIAQ2G6iqf0yAwDQYJKoZIhvcNAQELBQAwgbQxCzAJBgNV
+          BAYTAlVTMRAwDgYDVQQIEwdBcml6b25hMRMwEQYDVQQHEwpTY290dHNkYWxlMRow
+          GAYDVQQKExFHb0RhZGR5LmNvbSwgSW5jLjEtMCsGA1UECxMkaHR0cDovL2NlcnRz
+          LmdvZGFkZHkuY29tL3JlcG9zaXRvcnkvMTMwMQYDVQQDEypHbyBEYWRkeSBTZWN1
+          cmUgQ2VydGlmaWNhdGUgQXV0aG9yaXR5IC0gRzIwHhcNMjAwNTI5MDkzNDA0WhcN
+          MjEwNTI5MDkzNDA0WjBQMSEwHwYDVQQLExhEb21haW4gQ29udHJvbCBWYWxpZGF0
+          ZWQxKzApBgNVBAMMIiouZ3BneXlqZ3l5Zy5ndy5ncGNsb3Vkc2VydmljZS5jb20w
+          ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDcrQMUbheHQYPhUEAP+osO
+          JfmJL+1/bZjOZN5XSw945kzCC3p90E3Sqh0beTn1eJH89j+jGREjnRk/75lEBbQG
+          SMKKstra/zb6iiVkYn7DUTflt0AJVVgsXAQbB9VFLuTcSnOBCqUx+QTDMJR2efH6
+          QsMB4Tln/IKdXiiuzk6hnv1G1CgBVOtlfOuVAEy2luIA49GmO4F4K6aupX2oeWnj
+          eGagWlMjb37Ar0NGA76vSBhJU/jE+1X28FV2kdC5qjC/PP9p04CnbnSm4brReijR
+          bpCzgXNwhfY1hYK9S43S2ywI49OPKjOuu0rvElge311luJED4qxjb2JRx5mDReNB
+          AgMBAAGjggLrMIIC5zAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUFBwMB
+          BggrBgEFBQcDAjAOBgNVHQ8BAf8EBAMCBaAwOAYDVR0fBDEwLzAtoCugKYYnaHR0
+          cDovL2NybC5nb2RhZGR5LmNvbS9nZGlnMnMxLTIwMDAuY3JsMF0GA1UdIARWMFQw
+          SAYLYIZIAYb9bQEHFwEwOTA3BggrBgEFBQcCARYraHR0cDovL2NlcnRpZmljYXRl
+          cy5nb2RhZGR5LmNvbS9yZXBvc2l0b3J5LzAIBgZngQwBAgEwdgYIKwYBBQUHAQEE
+          ajBoMCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5nb2RhZGR5LmNvbS8wQAYIKwYB
+          BQUHMAKGNGh0dHA6Ly9jZXJ0aWZpY2F0ZXMuZ29kYWRkeS5jb20vcmVwb3NpdG9y
+          eS9nZGlnMi5jcnQwHwYDVR0jBBgwFoAUQMK9J47MNIMwojPX+2yz8LQsgM4wTwYD
+          VR0RBEgwRoIiKi5ncGd5eWpneXlnLmd3LmdwY2xvdWRzZXJ2aWNlLmNvbYIgZ3Bn
+          eXlqZ3l5Zy5ndy5ncGNsb3Vkc2VydmljZS5jb20wHQYDVR0OBBYEFG5nHl64lygE
+          t3xHg297lCqhPnanMIIBBAYKKwYBBAHWeQIEAgSB9QSB8gDwAHYA9lyUL9F3MCIU
+          VBgIMJRWjuNNExkzv98MLyALzE7xZOMAAAFyX8ggnwAABAMARzBFAiAWHEdWCSQs
+          8oeWb9HOOjV5zwCirDN7AIaNIzwlZL+CWwIhAKmnXAum7FHu2z65BLqUodFtbD13
+          pWg44Zlf3qAEUnVMAHYAXNxDkv7mq0VEsV6a1FbmEDf71fpH3KFzlLJe5vbHDsoA
+          AAFyX8girQAABAMARzBFAiBYLbE+evWoNDZk0kQEfjTFzCWb/PD+bp7zpzfPodgS
+          VgIhAL3/b3VPsgPbD3iZjbBk7WU8S1J5cI1UDANJGzYZNVySMA0GCSqGSIb3DQEB
+          CwUAA4IBAQAnpbpip1Bl803IUzchh7/hjYu8U0IUNigG08CJo2ZYAIHuAXd4h5s4
+          s7n59KM9oXcCo+jsD4dKGk08r13uMbSScaxQyJI3WNGVIonU8EvkwRmPQra3pLPy
+          UQKMGldJnaUWNkaJ5/Gza/Z8jPg4J+U9OpXMe5NBILEFqCbpF4oZId+BK7D3l6P/
+          QNOfg3wlT0TrwsUxyYVFe0B/5SeM0KRZmz34MZ+jE2mRor87e1JFeD2My2YxUMaA
+          6vGpxPC0KxalQsB7P5A/B5j9Dbf/ATcy7cTqyRXdPr/6cNNzk2SRHXFzx7lHIkWb
+          35JJ9NHFDwQrc2c6YK6xnDUoZUq6lOsi
+          -----END CERTIFICATE-----
+      entryId: {}
+      filename:
+        simple: panw.pem
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      id: 9acb3ca2-79b7-489f-8677-d4251e8f87ee
+      iscommand: false
+      name: Create File
+      script: FileCreateAndUpload
+      type: regular
+      version: -1
+    taskid: 9acb3ca2-79b7-489f-8677-d4251e8f87ee
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 410
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entry_id:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: isEqualString
+              right:
+                value:
+                  simple: panw.pem
+          root: File
+      input: {}
+      pem: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Extract fields from a certificate file and return the standard
+        context
+      id: 1846b2d6-9338-4df8-872c-e61208e0d948
+      iscommand: false
+      name: CertificateExtract
+      script: CertificateExtract
+      type: regular
+      version: -1
+    taskid: 1846b2d6-9338-4df8-872c-e61208e0d948
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 570
+        }
+      }
+version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1315,
-        "width": 380,
+        "height": 1535,
+        "width": 860,
         "x": 450,
         "y": 50
       }
     }
   }
-inputs: []
-outputs: []
 fromversion: 6.0.0

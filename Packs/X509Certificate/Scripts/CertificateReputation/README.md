@@ -15,7 +15,7 @@ Enrich and calculate reputation of a Certificate indicator.
 | **Argument Name** | **Description** |
 | --- | --- |
 | input | Value of the indicator. |
-| update_checks | Set validation checks in the indicator |
+| update_indicator | Set validation checks in the indicator |
 
 ## Outputs
 ---
@@ -62,7 +62,7 @@ Enrich and calculate reputation of a Certificate indicator.
 
 
 ## Script Example
-```!CertificateReputation input="fead39be0bc680baaaf282d915b44c803e7ab66e61ff5afc356bcf0d12d73f2c" update_check=false```
+```!CertificateReputation input="fead39be0bc680baaaf282d915b44c803e7ab66e61ff5afc356bcf0d12d73f2c" update_indicator=false```
 
 ## Context Example
 ```json
