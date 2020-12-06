@@ -140,30 +140,10 @@ def get_index_json_data(service_account, production_bucket_name, extract_path):
 
 def main():
     install_logging('Validate index.log')
-    # options = options_handler()
-    # index_data, index_file_path = get_index_json_data(service_account=options.service_account,
-    #                                                  production_bucket_name=options.production_bucket_name,
-    #                                                  extract_path=options.extract_path)
-    index_data = {
-        "revision": "187903",
-        "modified": "2020-11-15T10:12:21Z",
-        "packs": [
-            {
-                "id": "SafeBreach_Insights",
-                "price": 3,
-                "vendorId": "safebreach-129",
-                "vendorName": "SafeBreach"
-            },
-            {
-                "id": "BadPack",
-                "price": 0,
-                "vendorId": "bad-127",
-                "vendorName": "RiskIQ"
-            }],
-        "commit": "BadCommit"
-    }
-    index_file_path = "price 0 example index.json"
-    logging.info(f"Index data is:\n {pformat(index_data)}")  # for demo
+    options = options_handler()
+    index_data, index_file_path = get_index_json_data(service_account=options.service_account,
+                                                      production_bucket_name=options.production_bucket_name,
+                                                      extract_path=options.extract_path)
 
     # Validate index.json file
     index_is_valid = check_index_data(index_data)
