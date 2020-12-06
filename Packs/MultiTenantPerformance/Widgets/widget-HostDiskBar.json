@@ -1,7 +1,7 @@
 {
  "id": "host-disk-bar",
  "version": -1,
- "fromVersion": "6.2.0",
+ "fromVersion": "6.1.0-beta",
  "name": "Disk Usage % per host",
  "description": "Disk usage percentage per host",
  "dataType": "system",

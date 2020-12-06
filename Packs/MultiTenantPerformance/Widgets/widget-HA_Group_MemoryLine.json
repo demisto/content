@@ -1,7 +1,7 @@
 {
  "id": "ha-group-memory-line",
  "version": -1,
- "fromVersion": "6.2.0",
+ "fromVersion": "6.1.0-beta",
  "name": "Average Hosts Group Memory Usage % per group (last 24h)",
  "description": "Average hosts group Memory usage percentage per group in the previous 24 hours",
  "dataType": "system",

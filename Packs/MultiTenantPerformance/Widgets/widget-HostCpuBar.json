@@ -1,7 +1,7 @@
 {
  "id": "host-cpu-bar",
  "version": -1,
- "fromVersion": "6.2.0",
+ "fromVersion": "6.1.0-beta",
  "name": "CPU Usage % per Host",
  "description": "CPU usage percentage per host",
  "dataType": "system",
