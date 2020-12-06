@@ -402,6 +402,14 @@ references:
     - Demisto SDK Nightly - Run against Cortex XSOAR:
         context: sdk_nightly_env
 
+  instance_tests_jobs: &instance_tests_jobs
+    - Create Instances:
+        context: instances_test_env
+    - Instance Test:
+        context: instances_test_env
+        requires:
+          - Create Instances
+
   nightly_jobs: &nightly_jobs
     - Setup Environment:
         context: nightly_env
@@ -934,92 +942,75 @@ jobs:
     resource_class: medium
     <<: *environment
     steps:
-      - when:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-          steps:
-            - run:
-                name: Not running this job
-                when: always
-                command: |
-                  echo "Not running this job when triggered with one of instance_tests or demisto_sdk_nightly"
-      - unless:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-          steps:
-            - *attach_workspace
-            - *add_ssh_keys
-            - *prepare_environment
-            - run:
-                name: Collect Instance Role And Check If Instance Was Created
-                when: always
-                command: |
-                  echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
-                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
-                  echo "Demisto Marketplace filter=$TEMP"
-                  if [[ "$TEMP" == "true" || -n "${NIGHTLY}" ]];
-                    then
-                      echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
-                      exit 0
-                  fi
-                  source $BASH_ENV
-            - run:
-                name: Wait until server ready
-                shell: /bin/bash
-                when: always
-                command: |
-                  python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
-            - run:
-                name: Install Content And Configure Integrations On Server
-                shell: /bin/bash
-                when: always
-                command: |
-                  if [ -z $INSTANCE_WAS_CREATED ];
-                    then
-                      echo "Skipping - instance was not created"
-                      exit 0
-                  fi
-                  ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
-            - run:
-                name: Validate Premium Packs
-                shell: /bin/bash
-                when: always
-                command: |
-                  if [ -n "${NIGHTLY}" ] ;
-                    then
-                        ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
-                  fi
-            - run:
-                name: Run Tests - Demisto Master
-                shell: /bin/bash
-                when: always
-                no_output_timeout: 5h
-                command: |
-                  if [ -z $INSTANCE_WAS_CREATED ];
-                    then
-                      echo "Skipping - instance was not created"
-                      exit 0
-                  fi
-                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-                  export RETVAL=$?
-                  if [ -f ./Tests/failed_tests.txt ];
-                    then
-                      cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
-                  fi
-                  exit $RETVAL
-            - run:
-                name: Slack Notifier
-                shell: /bin/bash
-                command: |
-                  ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
-                when: always
-            - *comment_on_contrib_pr
-            - *destroy_instances
-            - *store_artifacts
+      - *attach_workspace
+      - *add_ssh_keys
+      - *prepare_environment
+      - run:
+          name: Collect Instance Role And Check If Instance Was Created
+          when: always
+          command: |
+            echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
+            echo "Demisto Marketplace filter=$TEMP"
+            if [[ "$TEMP" == "true" || -n "${NIGHTLY}" ]];
+              then
+                echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
+                exit 0
+            fi
+            source $BASH_ENV
+      - run:
+          name: Wait until server ready
+          shell: /bin/bash
+          when: always
+          command: |
+            python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+      - run:
+          name: Install Content And Configure Integrations On Server
+          shell: /bin/bash
+          when: always
+          command: |
+            if [ -z $INSTANCE_WAS_CREATED ];
+              then
+                echo "Skipping - instance was not created"
+                exit 0
+            fi
+            ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
+      - run:
+          name: Validate Premium Packs
+          shell: /bin/bash
+          when: always
+          command: |
+            if [ -n "${NIGHTLY}" ] ;
+              then
+                  ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
+            fi
+      - run:
+          name: Run Tests - Demisto Master
+          shell: /bin/bash
+          when: always
+          no_output_timeout: 5h
+          command: |
+            if [ -z $INSTANCE_WAS_CREATED ];
+              then
+                echo "Skipping - instance was not created"
+                exit 0
+            fi
+            ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+            export RETVAL=$?
+            if [ -f ./Tests/failed_tests.txt ];
+              then
+                cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+            fi
+            exit $RETVAL
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
+          when: always
+      - *comment_on_contrib_pr
+      - *destroy_instances
+      - *store_artifacts
 
   Force Upload Packs To Marketplace:
     <<: *container_config
