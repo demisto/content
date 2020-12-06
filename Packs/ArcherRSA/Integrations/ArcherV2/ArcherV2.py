@@ -390,16 +390,30 @@ class Client(BaseClient):
     def record_to_incident(
             self, record_item, app_id, date_field, day_first: bool = False, offset: int = 0
     ) -> Tuple[dict, datetime]:
+        """Transform a recotrd to incident
+
+        Args:
+            record_item: The record item dict
+            app_id: IF of the app
+            date_field: what is the date field
+            day_first: should the day be first in the day field (european date)
+            offset: what is the offset to the server
+
+        Returns:
+            incident, incident created time (in Archer's local time)
+        """
         labels = []
         raw_record = record_item['raw']
         record_item = record_item['record']
         incident_created_time = datetime(1, 1, 1)
+        occurred_time = incident_created_time
         if date_field := record_item.get(date_field):
             incident_created_time = parse_date_to_datetime(
                 date_field, day_first=day_first
             ).replace(tzinfo=timezone.utc)
-            # fix occurred by offset
-            incident_created_time += timedelta(minutes=offset)
+            # fix ocurred time. if the offset is -120 minutes (Archer is two hours behind
+            # Cortex XSOAR, we should add 120 minutes to the occurred. So negative the incident_created_time
+            occurred_time = incident_created_time - timedelta(minutes=offset)
 
         # Will convert value to strs
         for k, v in record_item.items():
@@ -417,11 +431,10 @@ class Client(BaseClient):
         labels.append({'type': 'ModuleId', 'value': app_id})
         labels.append({'type': 'ContentId', 'value': record_item.get("Id")})
         labels.append({'type': 'rawJSON', 'value': json.dumps(raw_record)})
-
         incident = {
             'name': f'RSA Archer Incident: {record_item.get("Id")}',
             'details': json.dumps(record_item),
-            'occurred': incident_created_time.strftime(OCCURRED_FORMAT),
+            'occurred': occurred_time.strftime(OCCURRED_FORMAT),
             'labels': labels,
             'rawJSON': json.dumps(raw_record)
         }
@@ -1089,7 +1102,7 @@ def fetch_incidents(
         from_time: Time to start the fetch from
 
     Returns:
-        next_run object, incidents
+        incidents, next_run datetime in archer's local time
     """
     # Not using get method as those params are a must
     app_id = params['applicationId']
@@ -1119,11 +1132,6 @@ def fetch_incidents(
             next_fetch = incident_created_time
         incidents.append(incident)
 
-    # If next fetch was updated, need to fix the time delta made in
-    # record_to_incidents and revert it to the original time.
-    # We want the next fetch to pull incidents without the delta.
-    if next_fetch != from_time:
-        next_fetch -= timedelta(minutes=offset)
     return incidents, next_fetch
 
 

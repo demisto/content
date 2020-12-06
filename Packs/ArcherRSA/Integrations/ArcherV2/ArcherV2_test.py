@@ -5,7 +5,7 @@ import pytest
 
 import demistomock as demisto
 from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value, \
-    fetch_incidents, get_fetch_time, parser
+    fetch_incidents, get_fetch_time, parser, main
 
 BASE_URL = 'https://test.com/'
 
@@ -508,7 +508,7 @@ class TestArcherV2:
         incidents, next_fetch = fetch_incidents(client, params, last_fetch)
         assert last_fetch < next_fetch
         assert next_fetch == datetime(2018, 4, 3, 10, 3, tzinfo=timezone.utc)
-        assert incidents[0]['occurred'] == '2018-04-03T08:03:00Z'
+        assert incidents[0]['occurred'] == '2018-04-03T12:03:00Z'
 
     def test_two_fetches(self, mocker):
         """
