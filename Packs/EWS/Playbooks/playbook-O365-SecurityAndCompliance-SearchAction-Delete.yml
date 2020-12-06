@@ -165,7 +165,7 @@ tasks:
     task:
       id: 639b4a44-9d7f-444d-821b-8fbcd4013457
       version: -1
-      name: Should hard delete compliance search results?
+      name: Perform a hard delete on the compliance search results?
       type: condition
       iscommand: false
       brand: ""
@@ -224,7 +224,7 @@ tasks:
     task:
       id: 51c3a18f-f252-4a4c-893f-c6274048264a
       version: -1
-      name: Search action - Soft delete
+      name: Search action - Soft delete.
       description: After you create a content search using the !o365-sc-new-search
         command and run it using the !o365-sc-start-search command, you assign a search
         action to the search using the !o365-sc-new-search-action command.
@@ -263,8 +263,8 @@ tasks:
     task:
       id: 6d749512-d68b-465d-8543-8c31f1200b94
       version: -1
-      name: Get search action after complete
-      description: Gets compliance search action from the Security & Compliance Center.
+      name: Get the search action.
+      description: Get the compliance search action from the Security & Compliance Center.
       script: '|||o365-sc-get-search-action'
       type: regular
       iscommand: true
@@ -301,15 +301,15 @@ tasks:
     task:
       id: c934dc98-9fbe-4a31-8306-464511500f3d
       version: -1
-      name: Error - Invalid delete_type parameter
-      description: Prints an error entry with a given message.
+      name: Error - Invalid delete_type parameter.
+      description: Print an error entry with a given message.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
       message:
-        simple: delete_type parameter should be Soft or Hard
+        simple: delete_type parameter should be Soft or Hard.
     separatecontext: false
     view: |-
       {
