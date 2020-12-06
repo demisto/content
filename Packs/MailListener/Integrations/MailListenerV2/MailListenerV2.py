@@ -194,10 +194,9 @@ def fetch_incidents(client: IMAPClient,
     # Handle first time fetch
     if last_fetch is None:
         latest_created_time = parse(f'{first_fetch_time} UTC')
-        uid_to_fetch_from = 1
     else:
         latest_created_time = datetime.fromisoformat(last_fetch)
-        uid_to_fetch_from = last_run.get('last_uid', 1)
+    uid_to_fetch_from = last_run.get('last_uid', 1)
     mails_fetched, messages, uid_to_fetch_from = fetch_mails(
         client=client,
         include_raw_body=include_raw_body,
