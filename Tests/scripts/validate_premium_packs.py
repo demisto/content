@@ -26,12 +26,12 @@ def options_handler():
     parser = argparse.ArgumentParser(description='Test for validating premium packs on servers.')
     parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
                                           '"Demisto 6.0", "Demisto Marketplace". The server url is determined by the'
-                                          ' AMI environment.', default="Demisto Marketplace")
+                                          ' AMI environment.', default='Demisto Marketplace')
     parser.add_argument('-e', '--extract_path',
-                        help=f"Full path of folder to extract the {GCPConfig.INDEX_NAME}.zip to",
+                        help=f'Full path of folder to extract the {GCPConfig.INDEX_NAME}.zip to',
                         required=True)
-    parser.add_argument('-pb', '--production_bucket_name', help="Production bucket name", required=True)
-    parser.add_argument('-sa', '--service_account', help="Path to gcloud service account", required=True)
+    parser.add_argument('-pb', '--production_bucket_name', help='Production bucket name', required=True)
+    parser.add_argument('-sa', '--service_account', help='Path to gcloud service account', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file', required=True)
 
     options = parser.parse_args()
@@ -41,7 +41,7 @@ def options_handler():
 def get_paid_packs_page(client: demisto_client,
                         page: int = 0,
                         size: int = DEFAULT_PAGE_SIZE,
-                        request_timeout: int = 999999):
+                        request_timeout: int = 999999) -> (dict, int):
     """Get premium packs from client.
 
     Trigger an API request to demisto server.
@@ -57,19 +57,17 @@ def get_paid_packs_page(client: demisto_client,
         (Dict: premium packs as found in the server, int: Total premium packs that exist)
         (None, 0) if no premium packs were found.
     """
-    request_data = \
-        {
-            'page': page,
-            'size': size,
-            'sort':
-                [{
-                    'field': 'updated',
-                    'asc': False
-                }],
-            'general': ["generalFieldPaid"]
-        }
+    request_data = {
+        'page': page,
+        'size': size,
+        'sort': [{
+            'field': 'updated',
+            'asc': False
+        }],
+        'general': ["generalFieldPaid"]
+    }
 
-    logging.info(f'Getting premium packs from server {client.api_client.configuration.host}:')
+    logging.info(f"Getting premium packs from server {client.api_client.configuration.host}:")
 
     try:
         # make the pack installation request
@@ -84,18 +82,18 @@ def get_paid_packs_page(client: demisto_client,
         return None, 0
 
     if status_code == 200:
-        logging.debug(f'Got response data {pformat(response_data)}')
+        logging.debug(f"Got response data {pformat(response_data)}")
         response = ast.literal_eval(response_data)
-        logging.info('Got premium packs from server.')
+        logging.info("Got premium packs from server.")
         return response["packs"], response["total"]
 
     result_object = ast.literal_eval(response_data)
     message = result_object.get('message', '')
-    logging.error(f'Failed to retrieve premium packs - with status code {status_code}\n{message}\n')
+    logging.error(f"Failed to retrieve premium packs - with status code {status_code}\n{message}\n")
     return None, 0
 
 
-def get_premium_packs(client: demisto_client, request_timeout: int = 999999):
+def get_premium_packs(client: demisto_client, request_timeout: int = 999999) -> dict:
     """Get premium packs from client.
 
     Handle the pagination.
@@ -128,7 +126,7 @@ def get_premium_packs(client: demisto_client, request_timeout: int = 999999):
     return server_packs
 
 
-def verify_pack_in_list(pack, pack_list, pack_list_name="pack list"):
+def verify_pack_in_list(pack: dict, pack_list: list, pack_list_name: str = "pack list") -> bool:
     """Verify pack is in the pack list with same id and price.
 
     Args:
@@ -151,7 +149,7 @@ def verify_pack_in_list(pack, pack_list, pack_list_name="pack list"):
     return False
 
 
-def verify_server_paid_packs_by_index(server_paid_packs, index_data_packs):
+def verify_server_paid_packs_by_index(server_paid_packs: list, index_data_packs: list) -> bool:
     """Compare two pack dictionaries and assert id's and prices are identical.
 
     Log errors if the lists differ.
@@ -164,7 +162,7 @@ def verify_server_paid_packs_by_index(server_paid_packs, index_data_packs):
         True if all packs are identical, False otherwise.
     """
 
-    logging.info('Verifying all premium server packs are in the index.json')
+    logging.info("Verifying all premium server packs are in the index.json")
     missing_server_packs = []
     for server_pack in server_paid_packs:
         server_pack_in_index = verify_pack_in_list(server_pack, index_data_packs, "index packs")
@@ -172,11 +170,11 @@ def verify_server_paid_packs_by_index(server_paid_packs, index_data_packs):
             missing_server_packs.append({"id": server_pack["id"], "price": server_pack["price"]})
 
     all_server_packs_in_index = log_message_if_statement(statement=(len(missing_server_packs) == 0),
-                                                         error_message=f'The following premium server packs were'
-                                                                       f' not found exactly the same as in the index'
-                                                                       f' packs:\n{pformat(missing_server_packs)}')
+                                                         error_message=f"The following premium server packs were"
+                                                                       f" not found exactly the same as in the index"
+                                                                       f" packs:\n{pformat(missing_server_packs)}")
 
-    logging.info('Verifying all premium index packs are in the server')
+    logging.info("Verifying all premium index packs are in the server")
     missing_index_packs = []
     for index_pack in index_data_packs:
         index_pack_in_server = verify_pack_in_list(index_pack, server_paid_packs, "premium server packs")
@@ -184,14 +182,14 @@ def verify_server_paid_packs_by_index(server_paid_packs, index_data_packs):
             missing_index_packs.append({"id": index_pack["id"], "price": index_pack["price"]})
 
     all_index_packs_in_server = log_message_if_statement(statement=(len(missing_index_packs) == 0),
-                                                         error_message=f'The following index packs were'
-                                                                       f' not found exactly the same as in the server'
-                                                                       f' packs:\n{pformat(missing_index_packs)}')
+                                                         error_message=f"The following index packs were"
+                                                                       f" not found exactly the same as in the server"
+                                                                       f" packs:\n{pformat(missing_index_packs)}")
 
     return all([all_index_packs_in_server, all_server_packs_in_index])
 
 
-def extract_credentials_from_secret(secret_path):
+def extract_credentials_from_secret(secret_path: str) -> (str, str):
     """Extract Credentials from secret file.
 
     Args:
@@ -199,15 +197,15 @@ def extract_credentials_from_secret(secret_path):
 
     Returns: (username, password) found in the secret file.
     """
-    logging.info('Retrieving the credentials for Cortex XSOAR server')
+    logging.info("Retrieving the credentials for Cortex XSOAR server")
     secret_conf_file = get_json_file(path=secret_path)
-    username: str = secret_conf_file.get('username')
-    password: str = secret_conf_file.get('userPassword')
+    username: str = secret_conf_file.get("username")
+    password: str = secret_conf_file.get("userPassword")
     return username, password
 
 
 def main():
-    install_logging('Validate Premium Packs.log')
+    install_logging("Validate Premium Packs.log")
     options = options_handler()
 
     index_data, index_path = get_index_json_data(service_account=options.service_account,
@@ -223,15 +221,15 @@ def main():
     # Verify premium packs in the server
     paid_packs = get_premium_packs(client=server.client)
     if paid_packs is not None:
-        logging.info(f'Verifying premium packs in {server.host}')
+        logging.info(f"Verifying premium packs in {server.host}")
         paid_packs_are_identical = verify_server_paid_packs_by_index(paid_packs, index_data["packs"])
         log_message_if_statement(statement=paid_packs_are_identical,
-                                 error_message=f'Test failed on host: {server.host}.',
-                                 success_message=f'All premium packs in host: {server.host} are valid')
+                                 error_message=f"Test failed on host: {server.host}.",
+                                 success_message=f"All premium packs in host: {server.host} are valid")
         if not paid_packs_are_identical:
             sys.exit(1)
     else:
-        logging.critical(f'Missing all premium packs in host: {server.host}')
+        logging.critical(f"Missing all premium packs in host: {server.host}")
         sys.exit(1)
 
 

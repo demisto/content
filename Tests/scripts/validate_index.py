@@ -8,6 +8,7 @@ import argparse
 import logging
 import json
 import sys
+import git
 import os
 
 from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig, CONTENT_ROOT_PATH
@@ -22,16 +23,16 @@ DEFAULT_PAGE_SIZE = 50
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for instantiating integration instances')
     parser.add_argument('-e', '--extract_path',
-                        help=f"Full path of folder to extract the {GCPConfig.INDEX_NAME}.zip to",
+                        help=f'Full path of folder to extract the {GCPConfig.INDEX_NAME}.zip to',
                         required=True)
-    parser.add_argument('-pb', '--production_bucket_name', help="Production bucket name", required=True)
-    parser.add_argument('-sa', '--service_account', help="Path to gcloud service account", required=True)
+    parser.add_argument('-pb', '--production_bucket_name', help='Production bucket name', required=True)
+    parser.add_argument('-sa', '--service_account', help='Path to gcloud service account', required=True)
 
     options = parser.parse_args()
     return options
 
 
-def log_message_if_statement(statement, error_message, success_message=None):
+def log_message_if_statement(statement: bool, error_message: str, success_message: str = None) -> bool:
     """Log error message if statement is false, Log success otherwise
 
     Args:
@@ -43,12 +44,12 @@ def log_message_if_statement(statement, error_message, success_message=None):
     """
     if not statement:
         logging.error(error_message)
-    elif success_message is not None:
+    elif success_message:
         logging.success(success_message)
     return statement
 
 
-def check_index_data(index_data):
+def check_index_data(index_data: dict) -> bool:
     """Check index.json file inside the index.zip archive in the cloud.
 
     Validate by running verify_pack on each pack.
@@ -76,7 +77,7 @@ def check_index_data(index_data):
     return packs_are_valid
 
 
-def verify_pack(pack):
+def verify_pack(pack: dict) -> bool:
     """Verify the pack id is not empty and it's price is positive.
 
     Args:
@@ -92,12 +93,12 @@ def verify_pack(pack):
     return all([id_exists, price_is_valid])
 
 
-def get_hexsha(commit):
+def get_hexsha(commit: git.repo.commit) -> str:
     """Return hash of the git commit object"""
     return commit.hexsha
 
 
-def check_commit_in_master_history(index_commit_hash):
+def check_commit_in_master_history(index_commit_hash: str) -> bool:
     """Assert commit hash is in master history.
 
     Args:
@@ -109,11 +110,11 @@ def check_commit_in_master_history(index_commit_hash):
     master_commits = list(map(get_hexsha, list(content_repo.iter_commits("master"))))
 
     return log_message_if_statement(statement=(index_commit_hash in master_commits),
-                                    error_message=f'Commit hash {index_commit_hash} is not in master history',
+                                    error_message=f"Commit hash {index_commit_hash} is not in master history",
                                     success_message="Commit hash in index file is valid.")
 
 
-def get_index_json_data(service_account, production_bucket_name, extract_path):
+def get_index_json_data(service_account: str, production_bucket_name: str, extract_path: str) -> (dict, str):
     """Retrieve the index.json file from production bucket.
 
     Args:
@@ -130,8 +131,8 @@ def get_index_json_data(service_account, production_bucket_name, extract_path):
     index_folder_path, build_index_blob, build_index_generation = \
         download_and_extract_index(production_bucket, extract_path)
 
-    logging.info('Retrieving the index file')
-    index_file_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
+    logging.info("Retrieving the index file")
+    index_file_path = os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")
     with open(index_file_path, 'r') as index_file:
         index_data = json.load(index_file)
 
@@ -139,7 +140,7 @@ def get_index_json_data(service_account, production_bucket_name, extract_path):
 
 
 def main():
-    install_logging('Validate index.log')
+    install_logging("Validate index.log")
     options = options_handler()
     index_data, index_file_path = get_index_json_data(service_account=options.service_account,
                                                       production_bucket_name=options.production_bucket_name,
@@ -155,7 +156,7 @@ def main():
     commit_hash_is_valid = check_commit_in_master_history(index_data.get("commit", ""))
 
     if not all([index_is_valid, commit_hash_is_valid]):
-        logging.critical('Index content is invalid. Aborting.')
+        logging.critical("Index content is invalid. Aborting.")
         sys.exit(1)
 
 
