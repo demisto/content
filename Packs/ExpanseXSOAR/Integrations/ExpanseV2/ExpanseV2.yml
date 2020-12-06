@@ -35,12 +35,6 @@ configuration:
   required: false
   defaultvalue: false
   type: 8
-- display: Mirror additional incident data (Asset tags, Attribution Reasons)
-  hidden: false
-  name: mirror_details
-  required: false
-  defaultvalue: false
-  type: 8
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
