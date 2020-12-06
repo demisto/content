@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - Utility
-comment: Converts a date from a different timezone to UTC timezone
+comment: Converts a date from a different timezone to UTC timezone.
 enabled: true
 args:
 - name: date
