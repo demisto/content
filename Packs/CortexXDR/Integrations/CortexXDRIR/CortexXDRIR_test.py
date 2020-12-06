@@ -1264,7 +1264,7 @@ def test_retrieve_file_details_command(requests_mock):
         'ContentsFormat': 'json',
         'Contents': [data.get('reply').get('data')],
         'HumanReadable': '### Action id : 1788 \nRetrieved 1 files from 1 '
-                         'endpoints. ',
+                         'endpoints. \n To get the exact action status run the xdr-action-status-get command',
         'ReadableContentsFormat': 'markdown',
         'EntryContext': {}
     }
@@ -1433,7 +1433,7 @@ def test_action_status_get_command(requests_mock):
     }
 
     hr, context, raw_response = action_status_get_command(client, args)
-    assert hr == tableToMarkdown(name='Get Action Status', t=result, removeNull=True, headers=['endpoint_id', 'status'])
+    assert hr == tableToMarkdown(name='Get Action Status', t=result, removeNull=True)
     assert context == action_status_get_command_expected_result
     assert raw_response == result
 
