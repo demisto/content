@@ -113,7 +113,6 @@ class Client(BaseClient):
             },
             "severityValue": str(min_severity),
         }
-
         res = self.graphql(
             query=query,
             variables=variables
@@ -479,6 +478,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
 
     next_run = {'last_fetch': latest_created_time,
                 'offset': offset + len(events)}
+
     return next_run, incidents
 
 
@@ -630,9 +630,8 @@ def main() -> None:
                 events_limit=max_fetch,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
                 first_fetch_time=first_fetch_time,
-                min_severity=min_severity
+                min_severity=convert_to_demisto_severity(min_severity)
             )
-
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
