@@ -205,7 +205,7 @@ def fetch_incidents(client: IMAPClient,
         permitted_from_addresses=permitted_from_addresses,
         permitted_from_domains=permitted_from_domains,
         save_file=save_file,
-        uid_to_fetch_from=uid_to_fetch_from
+        uid_to_fetch_from=uid_to_fetch_from,
     )
     incidents = []
     for mail in mails_fetched:
@@ -214,7 +214,7 @@ def fetch_incidents(client: IMAPClient,
         uid_to_fetch_from = max(uid_to_fetch_from, mail.id)
     next_run = {
         'last_fetch': latest_created_time.isoformat(),  # type: ignore[union-attr]
-        'last_uid': uid_to_fetch_from
+        'last_uid': uid_to_fetch_from,
     }
     if delete_processed:
         client.delete_messages(messages)
