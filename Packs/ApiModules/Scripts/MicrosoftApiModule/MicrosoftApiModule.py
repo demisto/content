@@ -200,7 +200,7 @@ class MicrosoftClient(BaseClient):
         if self.multi_resource:
             integration_context.update(self.resource_to_access_token)
 
-        demisto.setIntegrationContext(integration_context)
+        set_to_integration_context_with_retries(integration_context)
 
         if self.multi_resource:
             return self.resource_to_access_token[resource]
@@ -529,5 +529,5 @@ class MicrosoftClient(BaseClient):
             response_json = response.json()
         except Exception as e:
             return_error(f'Error in Microsoft authorization: {str(e)}')
-        demisto.setIntegrationContext({'device_code': response_json.get('device_code')})
+        set_to_integration_context_with_retries({'device_code': response_json.get('device_code')})
         return response_json.get('user_code', '')

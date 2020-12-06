@@ -2,7 +2,7 @@
     "name": "Microsoft Graph Files",
     "description": "Use the Microsoft Graph Files integration to enable your app get authorized access to files in OneDrive, SharePoint, and MS Teams across your entire organization. This integration requires admin consent.",
     "support": "xsoar",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
