@@ -1017,7 +1017,7 @@ class TestCommandResults:
         """
         from CommonServerPython import CommandResults
 
-        files = []
+        files = [{"key": "value"}]  # if outputs is empty list, no results are returned
         results = CommandResults(outputs_prefix='File(val.sha1 == obj.sha1 && val.md5 == obj.md5)',
                                  outputs_key_field='', outputs=files)
 
@@ -1043,7 +1043,28 @@ class TestCommandResults:
     def test_empty_outputs(self):
         """
         Given:
-        - Empty outputs
+        - Outputs as None
+
+        When:
+        - Returning results
+
+        Then:
+        - Validate EntryContext key value
+
+        """
+        from CommonServerPython import CommandResults
+        res = CommandResults(
+            outputs_prefix='FoundIndicators',
+            outputs_key_field='value',
+            outputs=None
+        )
+        context = res.to_context()
+        assert {} == context.get('EntryContext')
+
+    def test_empty_list_outputs(self):
+        """
+        Given:
+        - Outputs with empty list
 
         When:
         - Returning results
@@ -1059,7 +1080,7 @@ class TestCommandResults:
             outputs=[]
         )
         context = res.to_context()
-        assert {'FoundIndicators(val.value == obj.value)': []} == context.get('EntryContext')
+        assert {} == context.get('EntryContext')
 
     def test_return_command_results(self, clear_version_cache):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
@@ -1550,6 +1571,24 @@ class TestCommandResults:
                 ],
                 critical=False
             ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
+                signed_certificate_timestamps=[
+                    Common.CertificateExtension.SignedCertificateTimestamp(
+                        version=0,
+                        log_id="f65c942fd1773022145418083094568ee34d131933bfdf0c2f200bcc4ef164e3",
+                        timestamp="2020-10-23T19:31:49.000Z",
+                        entry_type="X509Certificate"
+                    ),
+                    Common.CertificateExtension.SignedCertificateTimestamp(
+                        version=0,
+                        log_id="5cdc4392fee6ab4544b15e9ad456e61037fbd5fa47dca17394b25ee6f6c70eca",
+                        timestamp="2020-10-23T19:31:49.000Z",
+                        entry_type="X509Certificate"
+                    )
+                ],
+                critical=False
+            )
         ]
         certificate = Common.Certificate(
             subject_dn='CN=*.paloaltonetworks.com,O=Palo Alto Networks\\, Inc.,L=Santa Clara,ST=California,C=US',
@@ -1761,11 +1800,30 @@ class TestCommandResults:
                                     "EntryType": "PreCertificate"
                                 }
                             ]
+                        },
+                        {
+                            "OID": "1.3.6.1.4.1.11129.2.4.5",
+                            "Name": "signedCertificateTimestampList",
+                            "Critical": False,
+                            "Value": [
+                                {
+                                    "Version": 0,
+                                    "LogId": "f65c942fd1773022145418083094568ee34d131933bfdf0c2f200bcc4ef164e3",
+                                    "Timestamp": "2020-10-23T19:31:49.000Z",
+                                    "EntryType": "X509Certificate"
+                                },
+                                {
+                                    "Version": 0,
+                                    "LogId": "5cdc4392fee6ab4544b15e9ad456e61037fbd5fa47dca17394b25ee6f6c70eca",
+                                    "Timestamp": "2020-10-23T19:31:49.000Z",
+                                    "EntryType": "X509Certificate"
+                                }
+                            ]
                         }
                     ]
                 }],
                 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                'val.Vendor == obj.Vendor && val.Type == obj.Type)':[{
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': [{
                     "Indicator": "bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d",
                     "Type": "certificate",
                     "Vendor": "test",
@@ -3113,3 +3171,229 @@ def test_return_results_multiple_dict_results(mocker):
     args, kwargs = demisto_results_mock.call_args_list[0]
     assert demisto_results_mock.call_count == 1
     assert [{'MockContext': 0}, {'MockContext': 1}] in args
+
+
+def test_arg_to_int__valid_numbers():
+    """
+    Given
+        valid numbers
+    When
+        converting them to int
+    Then
+        ensure proper int returned
+    """
+    from CommonServerPython import arg_to_number
+
+    result = arg_to_number(
+        arg='5',
+        arg_name='foo')
+
+    assert result == 5
+
+    result = arg_to_number(
+        arg='2.0',
+        arg_name='foo')
+
+    assert result == 2
+
+    result = arg_to_number(
+        arg=3,
+        arg_name='foo')
+
+    assert result == 3
+
+    result = arg_to_number(
+        arg=4,
+        arg_name='foo',
+        required=True)
+
+    assert result == 4
+
+    result = arg_to_number(
+        arg=5,
+        required=True)
+
+    assert result == 5
+
+
+def test_arg_to_int__invalid_numbers():
+    """
+    Given
+        invalid numbers
+    When
+        converting them to int
+    Then
+        raise ValueError
+    """
+    from CommonServerPython import arg_to_number
+
+    try:
+        arg_to_number(
+            arg='aa',
+            arg_name='foo')
+
+        assert False
+
+    except ValueError as e:
+        assert 'Invalid number' in str(e)
+
+
+def test_arg_to_int_required():
+    """
+    Given
+        argument foo which with value None
+
+    When
+        converting the arg to number via required flag as True
+
+    Then
+        ensure ValueError raised
+    """
+    from CommonServerPython import arg_to_number
+
+    # required set to false
+    result = arg_to_number(
+        arg=None,
+        arg_name='foo',
+        required=False)
+
+    assert result is None
+
+    try:
+        arg_to_number(
+            arg=None,
+            arg_name='foo',
+            required=True)
+
+        assert False
+
+    except ValueError as e:
+        assert 'Missing' in str(e)
+
+    try:
+        arg_to_number(
+            arg='',
+            arg_name='foo',
+            required=True)
+
+        assert False
+
+    except ValueError as e:
+        assert 'Missing' in str(e)
+
+    try:
+        arg_to_number(arg='goo')
+
+        assert False
+
+    except ValueError as e:
+        assert '"goo" is not a valid number' in str(e)
+
+
+def test_arg_to_timestamp_valid_inputs():
+    """
+    Given
+        valid dates provided
+
+    When
+        converting dates into timestamp
+
+    Then
+        ensure returned int which represents timestamp in milliseconds
+    """
+    if sys.version_info.major == 2:
+        # skip for python 2 - date
+        assert True
+        return
+
+    from CommonServerPython import arg_to_datetime
+    from datetime import datetime, timezone
+
+    # hard coded date
+    result = arg_to_datetime(
+        arg='2020-11-10T21:43:43Z',
+        arg_name='foo'
+    )
+
+    assert result == datetime(2020, 11, 10, 21, 43, 43, tzinfo=timezone.utc)
+
+    # relative dates also work
+    result = arg_to_datetime(
+        arg='2 hours ago',
+        arg_name='foo'
+    )
+
+    assert result > datetime(2020, 11, 10, 21, 43, 43)
+
+    # relative dates also work
+    result = arg_to_datetime(
+        arg=1581982463,
+        arg_name='foo'
+    )
+
+    assert int(result.timestamp()) == 1581982463
+
+    result = arg_to_datetime(
+        arg='2 hours ago'
+    )
+
+    assert result > datetime(2020, 11, 10, 21, 43, 43)
+
+
+def test_arg_to_timestamp_invalid_inputs():
+    """
+    Given
+        invalid date like 'aaaa' or '2010-32-01'
+
+    When
+        when converting date to timestamp
+
+    Then
+        ensure ValueError is raised
+    """
+    from CommonServerPython import arg_to_datetime
+    if sys.version_info.major == 2:
+        # skip for python 2 - date
+        assert True
+        return
+
+    try:
+        arg_to_datetime(
+            arg=None,
+            arg_name='foo',
+            required=True)
+
+        assert False
+
+    except ValueError as e:
+        assert 'Missing' in str(e)
+
+    try:
+        arg_to_datetime(
+            arg='aaaa',
+            arg_name='foo')
+
+        assert False
+
+    except ValueError as e:
+        assert 'Invalid date' in str(e)
+
+    try:
+        arg_to_datetime(
+            arg='2010-32-01',
+            arg_name='foo')
+
+        assert False
+
+    except ValueError as e:
+        assert 'Invalid date' in str(e)
+
+    try:
+        arg_to_datetime(
+            arg='2010-32-01')
+
+        assert False
+
+    except ValueError as e:
+        assert '"2010-32-01" is not a valid date' in str(e)
+
