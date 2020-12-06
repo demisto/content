@@ -402,6 +402,14 @@ references:
     - Demisto SDK Nightly - Run against Cortex XSOAR:
         context: sdk_nightly_env
 
+  instance_tests_jobs: &instance_tests_jobs
+    - Create Instances:
+        context: instances_test_env
+    - Instance Test:
+        context: instances_test_env
+        requires:
+          - Create Instances
+
   nightly_jobs: &nightly_jobs
     - Setup Environment:
         context: nightly_env
@@ -506,28 +514,25 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - unless:
-          condition: << pipeline.parameters.instance_tests >>
-          steps:
-            - setup_remote_docker
-            - *restore_cache
-            - *add_ssh_keys
-            - *prepare_environment
-            - *infrastructure_testing
-            - *run_unit_testing_and_lint
-            - store_test_results:
-                path: ./unit-tests
-            - run:
-                name: Slack Notifier
-                shell: /bin/bash
-                command: |
-                  if [ -n "${BUCKET_UPLOAD}" ]; then
-                    ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
-                  else
-                    ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
-                  fi
-                when: always
-            - *store_artifacts
+      - setup_remote_docker
+      - *restore_cache
+      - *add_ssh_keys
+      - *prepare_environment
+      - *infrastructure_testing
+      - *run_unit_testing_and_lint
+      - store_test_results:
+          path: ./unit-tests
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+            else
+              ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
+            fi
+          when: always
+      - *store_artifacts
 
   Run Validations:
     <<: *container_config
@@ -535,61 +540,56 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - unless:
-          condition: << pipeline.parameters.instance_tests >>
-          steps:
-            - *restore_cache
-            - *add_ssh_keys
-            - *prepare_environment
-            - *secrets
-            - *create_id_set
-            - *update_tests_step
-            - *validate_files_and_yaml
-            - run:
-                name: Content Docs Site
-                when: always
-                command: |
-                  ./Documentation/docs_site_update.sh
-            - run:
-                name: Spell Checks
-                command: |
-                  python3 ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
-            - run:
-                name: Check if CircleCI's config file is up to date
-                when: always
-                command: |
-                  if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-                    echo "Skipping, Should not run on contributor's branch."
+      - *restore_cache
+      - *add_ssh_keys
+      - *prepare_environment
+      - *secrets
+      - *create_id_set
+      - *update_tests_step
+      - *validate_files_and_yaml
+      - run:
+          name: Content Docs Site
+          when: always
+          command: |
+            ./Documentation/docs_site_update.sh
+      - run:
+          name: Spell Checks
+          command: |
+            python3 ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
+      - run:
+          name: Check if CircleCI's config file is up to date
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping, Should not run on contributor's branch."
+              exit 0
+            fi
+            # Checks if there's any diff from master
+            if [[ `git diff origin/master -- .circleci/config.yml` ]]; then
+                # Checks if part of the branch's changes
+                if [[ -z `git diff origin/master..."$CIRCLE_BRANCH" --name-only | grep .circleci/config.yml` ]]; then
+                    echo ".circleci/config.yml has been changed. Merge from master"
+                    exit 1
+                else
+                    echo ".circleci/config.yml is part of the branch changes, proceeding"
                     exit 0
-                  fi
-                  # Checks if there's any diff from master
-                  if [[ `git diff origin/master -- .circleci/config.yml` ]]; then
-                      # Checks if part of the branch's changes
-                      if [[ -z `git diff origin/master..."$CIRCLE_BRANCH" --name-only | grep .circleci/config.yml` ]]; then
-                          echo ".circleci/config.yml has been changed. Merge from master"
-                          exit 1
-                      else
-                          echo ".circleci/config.yml is part of the branch changes, proceeding"
-                          exit 0
-                      fi
-                  else
-                      echo ".circleci/config.yml is up to date!"
-                  fi
-            - run:
-                name: Verify Base Branch for Contribution
-                when: always
-                command: |
-                  if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
-                    then
-                      python3 ./Tests/scripts/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
-                  fi
+                fi
+            else
+                echo ".circleci/config.yml is up to date!"
+            fi
+      - run:
+          name: Verify Base Branch for Contribution
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
+              then
+                python3 ./Tests/scripts/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
+            fi
       - unless:
           condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - equal:
-                  - master
-                  - << pipeline.git.branch >>
+            equal:
+              - master
+              - << pipeline.git.branch >>
           steps:
             - run:
                 name: validate content-test-conf branch merged
@@ -690,24 +690,18 @@ jobs:
       - when:
           condition:
             or:
-              - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
               - << pipeline.parameters.non_ami_run >>
           steps:
             - run:
                 name:  Not running this job
                 when: always
                 command: |
-                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
+                  echo "Not running this job when triggered with one of contrib_branch, non_ami_run"
       - unless:
           condition:
             or:
-              - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
               - << pipeline.parameters.non_ami_run >>
           steps:
             - *attach_workspace
@@ -770,24 +764,18 @@ jobs:
       - when:
           condition:
             or:
-              - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
               - << pipeline.parameters.non_ami_run >>
           steps:
             - run:
                 name: Not running this job
                 when: always
                 command: |
-                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
+                  echo "Not running this job when triggered with one of instance_tests or non_ami_run"
       - unless:
           condition:
             or:
-              - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
               - << pipeline.parameters.non_ami_run >>
           steps:
             - *attach_workspace
@@ -849,24 +837,18 @@ jobs:
       - when:
           condition:
             or:
-              - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
               - << pipeline.parameters.non_ami_run >>
           steps:
             - run:
                 name: Not running this job
                 when: always
                 command: |
-                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
+                  echo "Not running this job when triggered with one of contrib_branch or non_ami_run"
       - unless:
           condition:
             or:
-              - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
               - << pipeline.parameters.non_ami_run >>
           steps:
             - *attach_workspace
@@ -934,83 +916,66 @@ jobs:
     resource_class: medium
     <<: *environment
     steps:
-      - when:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-          steps:
-            - run:
-                name: Not running this job
-                when: always
-                command: |
-                  echo "Not running this job when triggered with one of instance_tests or demisto_sdk_nightly"
-      - unless:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-          steps:
-            - *attach_workspace
-            - *add_ssh_keys
-            - *prepare_environment
-            - run:
-                name: Collect Instance Role And Check If Instance Was Created
-                when: always
-                command: |
-                  echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
-                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
-                  echo "Demisto Marketplace filter=$TEMP"
-                  if [[ "$TEMP" == "true" || -n "${NIGHTLY}" ]];
-                    then
-                      echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
-                      exit 0
-                  fi
-                  source $BASH_ENV
-            - run:
-                name: Wait until server ready
-                shell: /bin/bash
-                when: always
-                command: |
-                  python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
-            - run:
-                name: Install Content And Configure Integrations On Server
-                shell: /bin/bash
-                when: always
-                command: |
-                  if [ -z $INSTANCE_WAS_CREATED ];
-                    then
-                      echo "Skipping - instance was not created"
-                      exit 0
-                  fi
-                  ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
-            - run:
-                name: Run Tests - Demisto Master
-                shell: /bin/bash
-                when: always
-                no_output_timeout: 5h
-                command: |
-                  if [ -z $INSTANCE_WAS_CREATED ];
-                    then
-                      echo "Skipping - instance was not created"
-                      exit 0
-                  fi
-                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-                  export RETVAL=$?
-                  if [ -f ./Tests/failed_tests.txt ];
-                    then
-                      cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
-                  fi
-                  exit $RETVAL
-            - run:
-                name: Slack Notifier
-                shell: /bin/bash
-                command: |
-                  ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
-                when: always
-            - *comment_on_contrib_pr
-            - *destroy_instances
-            - *store_artifacts
+      - *attach_workspace
+      - *add_ssh_keys
+      - *prepare_environment
+      - run:
+          name: Collect Instance Role And Check If Instance Was Created
+          when: always
+          command: |
+            echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
+            echo "Demisto Marketplace filter=$TEMP"
+            if [[ "$TEMP" == "true" || -n "${NIGHTLY}" ]];
+              then
+                echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
+                exit 0
+            fi
+            source $BASH_ENV
+      - run:
+          name: Wait until server ready
+          shell: /bin/bash
+          when: always
+          command: |
+            python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+      - run:
+          name: Install Content And Configure Integrations On Server
+          shell: /bin/bash
+          when: always
+          command: |
+            if [ -z $INSTANCE_WAS_CREATED ];
+              then
+                echo "Skipping - instance was not created"
+                exit 0
+            fi
+            ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
+      - run:
+          name: Run Tests - Demisto Master
+          shell: /bin/bash
+          when: always
+          no_output_timeout: 5h
+          command: |
+            if [ -z $INSTANCE_WAS_CREATED ];
+              then
+                echo "Skipping - instance was not created"
+                exit 0
+            fi
+            ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+            export RETVAL=$?
+            if [ -f ./Tests/failed_tests.txt ];
+              then
+                cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+            fi
+            exit $RETVAL
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
+          when: always
+      - *comment_on_contrib_pr
+      - *destroy_instances
+      - *store_artifacts
 
   Force Upload Packs To Marketplace:
     <<: *container_config
@@ -1280,6 +1245,7 @@ workflows:
           - << pipeline.parameters.bucket_upload >>
           - << pipeline.parameters.demisto_sdk_nightly >>
           - << pipeline.parameters.nightly >>
+          - << pipeline.parameters.instance_tests >>
     jobs:
       - Setup Environment
       - Create Instances:
@@ -1314,9 +1280,6 @@ workflows:
           filters:
             branches:
               ignore: /pull\/[0-9]+/
-          requires:
-            - Create Instances
-      - Instance Test:
           requires:
             - Create Instances
 
@@ -1354,12 +1317,11 @@ workflows:
               only:
                 - master
     jobs:
-      - Create Instances:
-          context: instances_test_env
-      - Instance Test:
-          context: instances_test_env
-          requires:
-            - Create Instances
+      *instance_tests_jobs
+  instances_testing_trigger:
+    when: << pipeline.parameters.instance_tests >>
+    jobs:
+      *instance_tests_jobs
 
   nightly:
     triggers:
