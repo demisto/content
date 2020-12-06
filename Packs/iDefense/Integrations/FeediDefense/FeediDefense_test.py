@@ -4,7 +4,7 @@ import pytest
 
 from JSONFeedApiModule import Client
 
-PARAMS = {'api_token': '{idef1}udCEKL15x1Qp57SWpRWvaDyyVLJGeQgUcWTuckp4G5wq0tSlYH1pD9RKTzZQyRX6', 'insecure': True,
+PARAMS = {'api_token': '{test_api_token}', 'insecure': True,
           'indicator_type': ['IP', 'Domain'],
           'feed_name_to_config': {
               'IP': {'extractor': 'results', 'indicator': 'display_text', 'insecure': True,

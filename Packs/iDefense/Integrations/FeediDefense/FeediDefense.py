@@ -2,8 +2,6 @@ from typing import Dict, Union
 from CommonServerPython import *
 from JSONFeedApiModule import *  # noqa: E402
 
-GLOBAL_INTEGRATION_CONTEXT: dict = {}  # Global variable in order to hold one dictionary that manage all indicator types
-
 
 def _get_fetch_time() -> int:
     try:
@@ -13,20 +11,19 @@ def _get_fetch_time() -> int:
     return fetch_time
 
 
-def _update_global_integration_context(key: str = None, value: str = None) -> None:
-    global GLOBAL_INTEGRATION_CONTEXT
-    if not key and not value:
-        GLOBAL_INTEGRATION_CONTEXT = get_integration_context()
-    else:
-        GLOBAL_INTEGRATION_CONTEXT[key] = value
+def global_integration_context():
+    integration_context: dict = get_integration_context()
 
+    def update_feed_integration_context(key: str = None, value: str = None) -> None:
+        integration_context[key] = value
 
-def _get_global_integration_context_by_key(key: str) -> Optional[Any]:
-    return GLOBAL_INTEGRATION_CONTEXT.get(key)
+    def get_feed_integration_context(key: str) -> Optional[Any]:
+        return integration_context.get(key)
 
+    def set_feed_integration_context():
+        set_integration_context(integration_context)
 
-def _get_global_integration_context() -> dict:
-    return GLOBAL_INTEGRATION_CONTEXT
+    return update_feed_integration_context, get_feed_integration_context, set_feed_integration_context
 
 
 def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
@@ -41,22 +38,23 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
     Returns:
         list of indicators returned from api. Each indicator is represented in dictionary
     """
-    current_datetime = datetime.now()
     fetch_time = _get_fetch_time()
     params: dict = feed.get('filters', {})
     current_indicator_type = feed.get('indicator_type', '')
-    _update_global_integration_context()
-    last_fetch = _get_global_integration_context_by_key(f'{current_indicator_type}_fetch_time')
+    update_feed_integration_context, get_feed_integration_context, \
+        set_feed_integration_context = global_integration_context()
+    last_fetch = get_feed_integration_context(f'{current_indicator_type}_fetch_time')
+
     page_number = 1
-    params['end_date'] = current_datetime.isoformat() + 'Z'
-    params['start_date'] = last_fetch if last_fetch else \
-        (current_datetime - timedelta(days=fetch_time)).isoformat() + 'Z'
+    start_date, end_date = parse_date_range(fetch_time)
+    params['end_date'] = end_date
+    params['start_date'] = start_date
     params['page_size'] = 200
 
     if not limit:
         limit = 10000
-        _update_global_integration_context(current_indicator_type + '_fetch_time', str(params['end_date']))
-        set_integration_context(_get_global_integration_context())
+        update_feed_integration_context(current_indicator_type + '_fetch_time', str(params['end_date']))
+        set_feed_integration_context()
 
     more_indicators = True
     result: list = []
@@ -143,7 +141,6 @@ def build_feed_filters(params: dict) -> Dict[str, Optional[Union[str, list]]]:
 
 
 def main():
-
     params = {k: v for k, v in demisto.params().items() if v is not None}
 
     filters: Dict[str, Optional[Union[str, list]]] = build_feed_filters(params)
