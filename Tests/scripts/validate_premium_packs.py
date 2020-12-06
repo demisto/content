@@ -115,7 +115,7 @@ def get_premium_packs(client: demisto_client, request_timeout: int = 999999):
     else:
         pages_until_all = int(total / DEFAULT_PAGE_SIZE) + 1
 
-    for page in range(1, pages_until_all + 1):
+    for page in range(1, pages_until_all):
         next_server_packs, _ = get_paid_packs_page(client=client,
                                                    page=page,
                                                    size=DEFAULT_PAGE_SIZE,
