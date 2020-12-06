@@ -2097,32 +2097,32 @@ script:
       description: The session ID used to execute the command.
       defaultValue: None
     outputs:
-    - contextPath: CheckPoint.Packages.name
+    - contextPath: CheckPoint.Package.name
       description: The name of the package.
       type: String
-    - contextPath: CheckPoint.Packages.target-name
+    - contextPath: CheckPoint.Package.target-name
       description: The name of the target.
       type: String
-    - contextPath: CheckPoint.Packages.target-uid
+    - contextPath: CheckPoint.Package.target-uid
       description: The UID of the target.
       type: String
-    - contextPath: CheckPoint.Packages.revision.domain.domain-type
+    - contextPath: CheckPoint.Package.revision.domain.domain-type
       description: The type of the domain.
       type: String
-    - contextPath: CheckPoint.Packages.revision.domain.name
+    - contextPath: CheckPoint.Package.revision.domain.name
       description: The name of the domain.
       type: String
-    - contextPath: CheckPoint.Packages.revision.domain.uid
+    - contextPath: CheckPoint.Package.revision.domain.uid
       description: The UID of the domain.
       type: String
-    - contextPath: CheckPoint.Packages.revision.type
+    - contextPath: CheckPoint.Package.revision.type
       description: The type of the revision.
       type: String
-    - contextPath: CheckPoint.Packages.revision.uid
+    - contextPath: CheckPoint.Package.revision.uid
       description: The UID of the revision.
       type: String
     description: Retrieve the details of Checkpoint packages.
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: false
   longRunning: false
