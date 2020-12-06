@@ -218,38 +218,55 @@ script:
     }
 
     function getEnvironments() {
-        var res = sendRequest('GET', '/system/state');
-        if (res.response_code !== 0) {
-            return entryError(res.response_code, res.response.error);
+        var response;
+        if (version === 'v1'){
+            var res = sendRequest('GET', '/system/state');
+            if (res.response_code !== 0) {
+                return entryError(res.response_code, res.response.error);
+            }
+            response = res.response;
         }
-
-        var response = res.response;
+        else{//v2
+            response = sendRequest('GET', '/api/v2/system/environments')
+        }
         return response;
-
     }
 
     function tableFromEnvironments(response) {
-        var environments;
-        if ('environment' in response) { // Single-server setup
-            environments = response.environment;
-        } else { // Multi-server setup
-            environments = response.backend.global_environment;
+        var environments = response; // if v2
+        if(version === 'v1'){
+            if ('environment' in response) { // Single-server setup
+                environments = response.environment;
+            } else { // Multi-server setup
+                environments = response.backend.global_environment;
+            }
         }
         var environmentsKeys = Object.keys(environments);
         var table=[];
         var envContext = [];
         for (var i = 0; i < environmentsKeys.length; i++){
             var currentEnvironment = environments[environmentsKeys[i]];
-            envContext[i] = environments[environmentsKeys[i]];
             table[i] = {
-                ID: currentEnvironment.ID,
+                'ID': (version === 'v1') ? currentEnvironment.ID : currentEnvironment.environment_id,
                 description: currentEnvironment.description,
                 architecture: currentEnvironment.architecture,
-                'total VMS': currentEnvironment.VMs_total,
-                'busy VMS': currentEnvironment.VMs_busy,
-                'analysis mode': currentEnvironment.analysisMode,
-                'group icon': currentEnvironment.groupicon ? currentEnvironment.groupicon : ''
+                'total VMS': (version === 'v1') ? currentEnvironment.VMs_total : currentEnvironment.total_virtual_machines,
+                'busy VMS': (version === 'v1') ? currentEnvironment.VMs_busy : currentEnvironment.busy_virtual_machines,
+                'analysis mode': (version === 'v1') ? currentEnvironment.analysisMode : currentEnvironment.analysis_mode,
+                'group icon': currentEnvironment.groupicon ? currentEnvironment.groupicon :
+                currentEnvironment.group_icon ? currentEnvironment.group_icon : ''
             };
+            envContext[i] = {
+                'ID': (version === 'v1') ? currentEnvironment.ID : currentEnvironment.environment_id,
+                'description': currentEnvironment.description,
+                'architecture': currentEnvironment.architecture,
+                'VMs_invalid': (version === 'v1') ? currentEnvironment.VMs_invalid : currentEnvironment.invalid_virtual_machines,
+                'VMs_total': (version === 'v1') ? currentEnvironment.VMs_total : currentEnvironment.total_virtual_machines,
+                'VMs_busy': (version === 'v1') ? currentEnvironment.VMs_busy : currentEnvironment.busy_virtual_machines,
+                'analysisMode': (version === 'v1') ? currentEnvironment.analysisMode : currentEnvironment.analysis_mode,
+                'groupicon': currentEnvironment.groupicon ? currentEnvironment.groupicon :
+                currentEnvironment.group_icon ? currentEnvironment.group_icon : ''
+            }
         }
         // create context from environments
         var context = {
@@ -590,10 +607,12 @@ script:
             environmentId = args.environmentID;
         } else {
             var environments = getEnvironments();
-            if ('environment' in environments) { // Single-server setup
-                environments = environments.environment;
-            } else { // Multi-server setup
-                environments = environments.backend.global_environment;
+            if(version === 'v1'){
+                if ('environment' in environments) { // Single-server setup
+                    environments = environments.environment;
+                } else { // Multi-server setup
+                    environments = environments.backend.global_environment;
+                }
             }
             for (var i=0; i<environments.length; i++) {
                 if (environments[i]['ID'] === 100) {
@@ -709,10 +728,12 @@ script:
             environmentId = args.environmentID;
         } else {
             var environments = getEnvironments();
-            if ('environment' in environments) { // Single-server setup
-                environments = environments.environment;
-            } else { // Multi-server setup
-                environments = environments.backend.global_environment;
+            if(version === 'v1'){
+                if ('environment' in environments) { // Single-server setup
+                    environments = environments.environment;
+                } else { // Multi-server setup
+                    environments = environments.backend.global_environment;
+                }
             }
             for (var i=0; i<environments.length; i++) {
                 if (environments[i]['ID'] === 100) {
