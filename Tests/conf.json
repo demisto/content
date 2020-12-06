@@ -667,16 +667,24 @@
         },
         {
             "integrations": "ServiceNow v2",
-            "playbookID": "servicenow_test_v2"
+            "playbookID": "servicenow_test_v2",
+            "instance_names": "snow_basic_auth"
+        },
+        {
+            "integrations": "ServiceNow v2",
+            "playbookID": "ServiceNow_OAuth_Test",
+            "instance_names": "snow_oauth"
         },
         {
             "playbookID": "Create ServiceNow Ticket and Mirror Test",
             "integrations": "ServiceNow v2",
+            "instance_names": "snow_basic_auth",
             "fromversion": "6.0.0"
         },
         {
             "playbookID": "Create ServiceNow Ticket and State Polling Test",
             "integrations": "ServiceNow v2",
+            "instance_names": "snow_basic_auth",
             "fromversion": "6.0.0",
             "timeout": 500
         },
@@ -697,7 +705,8 @@
         },
         {
             "integrations": "MISP V2",
-            "playbookID": "MISP V2 Test"
+            "playbookID": "MISP V2 Test",
+            "timeout": 300
         },
         {
             "playbookID": "test-LinkIncidentsWithRetry"
@@ -1867,13 +1876,11 @@
         },
         {
             "integrations": "AbuseIPDB",
-            "playbookID": "AbuseIPDB Test",
-            "nightly": true
+            "playbookID": "AbuseIPDB Test"
         },
         {
             "integrations": "AbuseIPDB",
-            "playbookID": "AbuseIPDB PopulateIndicators Test",
-            "nightly": true
+            "playbookID": "AbuseIPDB PopulateIndicators Test"
         },
         {
             "integrations": "LogRhythm",
@@ -3125,7 +3132,8 @@
         {
             "integrations": "TrendMicro Cloud App Security",
             "playbookID": "playbook_TrendmicroCAS_Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 300
         },
         {
             "playbookID": "IfThenElse-Test",
@@ -3287,7 +3295,9 @@
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
         "urlscan_malicious_Test": "Issue 20111",
         "Test-Detonate URL - Crowdstrike": "Issue 30879",
-        "nexpose_test": "Issue 31019"
+        "nexpose_test": "Issue 31019",
+        "CuckooTest": "Issue 25601",
+        "Cisco Umbrella Test": "Issue 24338"
     },
     "skipped_integrations": {
         

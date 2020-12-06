@@ -35,11 +35,12 @@ def test_get_incident_list(requests_mock):
 @freeze_time("1993-06-17 11:00:00 GMT")
 def test_fetch_incidents(requests_mock, mocker):
     from PaloAltoNetworks_XDR import fetch_incidents, Client, sort_all_list_incident_fields
+    import copy
 
     get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
     raw_incident = load_test_data('./test_data/get_incident_extra_data.json')
     modified_raw_incident = raw_incident['reply']['incident'].copy()
-    modified_raw_incident['alerts'] = raw_incident['reply'].get('alerts').get('data')
+    modified_raw_incident['alerts'] = copy.deepcopy(raw_incident['reply'].get('alerts').get('data'))
     modified_raw_incident['file_artifacts'] = raw_incident['reply'].get('file_artifacts').get('data')
     modified_raw_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
     modified_raw_incident['mirror_direction'] = 'In'
@@ -53,6 +54,9 @@ def test_fetch_incidents(requests_mock, mocker):
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
+
+    modified_raw_incident.get('alerts')[0]['host_ip_list'] = \
+        modified_raw_incident.get('alerts')[0].get('host_ip').split(',')
 
     next_run, incidents = fetch_incidents(client, '3 month', 'MyInstance')
     sort_all_list_incident_fields(modified_raw_incident)
@@ -126,7 +130,7 @@ def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
 def test_get_incident_extra_data(requests_mock):
     from PaloAltoNetworks_XDR import get_incident_extra_data_command, Client
 
-    get_incident_extra_data_response = load_test_data('./test_data/get_incident_extra_data.json')
+    get_incident_extra_data_response = load_test_data('./test_data/get_incident_extra_data_host_id_array.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/',
                        json=get_incident_extra_data_response)
 
@@ -139,9 +143,12 @@ def test_get_incident_extra_data(requests_mock):
     _, outputs, _ = get_incident_extra_data_command(client, args)
 
     expected_incident = get_incident_extra_data_response.get('reply').get('incident')
+    excepted_alert_modified = get_incident_extra_data_response.get('reply').get('alerts').get('data').copy()
+
+    excepted_alert_modified[0]['host_ip_list'] = excepted_alert_modified[0].get('host_ip').split(',')
 
     expected_incident.update({
-        'alerts': get_incident_extra_data_response.get('reply').get('alerts').get('data'),
+        'alerts': excepted_alert_modified,
         'network_artifacts': get_incident_extra_data_response.get('reply').get('network_artifacts').get('data', []),
         'file_artifacts': get_incident_extra_data_response.get('reply').get('file_artifacts').get('data')
     })
@@ -881,6 +888,7 @@ def test_get_remote_data_command_should_update(requests_mock, mocker):
         - the entries in the GetRemoteDataResponse in empty
     """
     from PaloAltoNetworks_XDR import get_remote_data_command, Client, sort_all_list_incident_fields
+    import copy
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
@@ -890,7 +898,7 @@ def test_get_remote_data_command_should_update(requests_mock, mocker):
     }
     raw_incident = load_test_data('./test_data/get_incident_extra_data.json')
     expected_modified_incident = raw_incident['reply']['incident'].copy()
-    expected_modified_incident['alerts'] = raw_incident['reply'].get('alerts').get('data')
+    expected_modified_incident['alerts'] = copy.deepcopy(raw_incident['reply'].get('alerts').get('data'))
     expected_modified_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
     expected_modified_incident['file_artifacts'] = raw_incident['reply'].get('file_artifacts').get('data')
     expected_modified_incident['id'] = expected_modified_incident.get('incident_id')
@@ -898,6 +906,9 @@ def test_get_remote_data_command_should_update(requests_mock, mocker):
     expected_modified_incident['assigned_user_pretty_name'] = ''
     expected_modified_incident['in_mirror_error'] = ''
     del expected_modified_incident['creation_time']
+
+    expected_modified_incident.get('alerts')[0]['host_ip_list'] = \
+        expected_modified_incident.get('alerts')[0].get('host_ip').split(',')
 
     # make sure get-extra-data is returning an incident
     mocker.patch('PaloAltoNetworks_XDR.check_if_incident_was_modified_in_xdr', return_value=True)
@@ -951,6 +962,7 @@ def test_get_remote_data_command_should_not_update(requests_mock, mocker):
         - returns an empty dict
     """
     from PaloAltoNetworks_XDR import get_remote_data_command, Client, sort_all_list_incident_fields
+    import copy
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
@@ -988,6 +1000,7 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
         - the entries in the GetRemoteDataResponse holds the closing entry
     """
     from PaloAltoNetworks_XDR import get_remote_data_command, Client, sort_all_list_incident_fields
+    import copy
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
@@ -1000,7 +1013,7 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
     raw_incident['reply']['incident']['resolve_comment'] = 'Handled'
 
     expected_modified_incident = raw_incident['reply']['incident'].copy()
-    expected_modified_incident['alerts'] = raw_incident['reply'].get('alerts').get('data')
+    expected_modified_incident['alerts'] = copy.deepcopy(raw_incident['reply'].get('alerts').get('data'))
     expected_modified_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
     expected_modified_incident['file_artifacts'] = raw_incident['reply'].get('file_artifacts').get('data')
     expected_modified_incident['id'] = expected_modified_incident.get('incident_id')
@@ -1010,6 +1023,8 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
     expected_modified_incident['closeNotes'] = 'Handled'
     expected_modified_incident['in_mirror_error'] = ''
     del expected_modified_incident['creation_time']
+    expected_modified_incident.get('alerts')[0]['host_ip_list'] = \
+        expected_modified_incident.get('alerts')[0].get('host_ip').split(',')
 
     expected_closing_entry = {
         'Type': 1,
@@ -1047,6 +1062,7 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
         - the entries in the GetRemoteDataResponse in empty
     """
     from PaloAltoNetworks_XDR import get_remote_data_command, Client, sort_all_list_incident_fields
+    import copy
     mocker.patch.object(demisto, 'params', return_value={"sync_owners": True})
     mocker.patch.object(demisto, 'findUser', return_value={"email": "moo@demisto.com", 'username': 'username'})
     client = Client(
@@ -1060,7 +1076,7 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
     raw_incident['reply']['incident']['assigned_user_mail'] = 'moo@demisto.com'
 
     expected_modified_incident = raw_incident['reply']['incident'].copy()
-    expected_modified_incident['alerts'] = raw_incident['reply'].get('alerts').get('data')
+    expected_modified_incident['alerts'] = copy.deepcopy(raw_incident['reply'].get('alerts').get('data'))
     expected_modified_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
     expected_modified_incident['file_artifacts'] = raw_incident['reply'].get('file_artifacts').get('data')
     expected_modified_incident['id'] = expected_modified_incident.get('incident_id')
@@ -1069,6 +1085,8 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
     expected_modified_incident['owner'] = 'username'
     expected_modified_incident['in_mirror_error'] = ''
     del expected_modified_incident['creation_time']
+    expected_modified_incident.get('alerts')[0]['host_ip_list'] = \
+        expected_modified_incident.get('alerts')[0].get('host_ip').split(',')
 
     # make sure get-extra-data is returning an incident
     mocker.patch('PaloAltoNetworks_XDR.check_if_incident_was_modified_in_xdr', return_value=True)
