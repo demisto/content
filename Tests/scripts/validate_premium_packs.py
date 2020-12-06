@@ -206,50 +206,9 @@ def main():
     install_logging('Validate Premium Packs.log')
     options = options_handler()
 
-    # index_data, index_path = get_index_json_data(service_account=options.service_account,
-    #                                              production_bucket_name=options.production_bucket_name,
-    #                                              extract_path=options.extract_path)
-
-    index_data = {
-        "revision": "187903",
-        "modified": "2020-11-15T10:12:21Z",
-        "packs": [
-            {
-                "id": "SafeBreach_Insights",
-                "price": 3,
-                "vendorId": "safebreach-129",
-                "vendorName": "SafeBreach"
-            },
-            {
-                "id": "Sixgill-Darkfeed-Small",
-                "price": 50,
-                "vendorId": "sixgill-195",
-                "vendorName": "Sixgill"
-            },
-            {
-                "id": "Code42InsiderThreatRemediation",
-                "price": 2,
-                "vendorId": "code42-636",
-                "vendorName": "Code42"
-            },
-            {
-                "id": "Sixgill-Darkfeed-Mid-sized",
-                "price": 85,
-                "vendorId": "sixgill-195",
-                "vendorName": "Sixgill"
-            },
-            {
-                "id": "FakePack",
-                "price": 4,
-                "vendorId": "riskiq-127",
-                "vendorName": "RiskIQ"
-            }
-        ],
-        "commit": "700f295f963369b340dc161284fa278ae87e090a"
-    }
-
-    index_path = "Packs mismatch example"
-    logging.info(f"Index data is:\n {pformat(index_data)}")  # for demo
+    index_data, index_path = get_index_json_data(service_account=options.service_account,
+                                                 production_bucket_name=options.production_bucket_name,
+                                                 extract_path=options.extract_path)
 
     # Get the first host by the ami env
     hosts, _ = Build.get_servers(ami_env=options.ami_env)
