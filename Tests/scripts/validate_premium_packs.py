@@ -9,13 +9,15 @@ Validate the pack id's in the index file are present on the server and the price
 import demisto_client
 import argparse
 import logging
+import urllib3
 import ast
 import sys
 
-from Tests.Marketplace.marketplace_services import GCPConfig
-from Tests.configure_and_test_integration_instances import Build, Server
-from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.validate_index import log_message_if_statement, get_index_json_data
+from Tests.configure_and_test_integration_instances import Build, Server
+from Tests.Marketplace.marketplace_services import GCPConfig
+from demisto_client.demisto_api.rest import ApiException
+from Tests.scripts.utils.log_util import install_logging
 from Tests.test_content import get_json_file
 from pprint import pformat
 
@@ -71,13 +73,17 @@ def get_paid_packs_page(client: demisto_client,
 
     logging.info(f'Getting premium packs from server {client.api_client.configuration.host}:')
 
-    # make the pack installation request
-    response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                        path='/contentpacks/marketplace/search',
-                                                                        method='POST',
-                                                                        body=request_data,
-                                                                        accept='application/json',
-                                                                        _request_timeout=request_timeout)
+    try:
+        # make the pack installation request
+        response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                            path='/contentpacks/marketplace/search',
+                                                                            method='POST',
+                                                                            body=request_data,
+                                                                            accept='application/json',
+                                                                            _request_timeout=request_timeout)
+    except Exception as exception:
+        logging.error(f"Error trying to communicate with demisto server: {exception}")
+        return None, 0
 
     if status_code == 200:
         logging.debug(f'Got response data {pformat(response_data)}')
