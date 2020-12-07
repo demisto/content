@@ -1418,6 +1418,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: 789f1b24-1189-43eb-8376-15fc8d73ca22
       iscommand: false
       name: Where a Recovery tool found?
