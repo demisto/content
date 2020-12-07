@@ -30,7 +30,7 @@ configuration:
   required: false
   type: 13
 - display: Fetch additional incident data
-  additionalinfo: Fetch asset tags and attribution Reasons from issues
+  additionalinfo: Fetch asset tags and attribution reasons from Expanse issues
   hidden: false
   name: fetch_details
   required: false
