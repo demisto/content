@@ -18,7 +18,6 @@ def calculate_overall(data: dict = None) -> str:
 
 def main():
 
-    args = demisto.args()
     query = "-status:closed -category:job type:\"NCSC CAF Assessment\""
 
     result_field = "cafcresultraw"
