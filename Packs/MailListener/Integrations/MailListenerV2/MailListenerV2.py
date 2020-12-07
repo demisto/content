@@ -251,18 +251,17 @@ def fetch_mails(client: IMAPClient,
         last_message_in_current_batch: The UID of the last message fetchedd
     """
     if message_id:
-        messages = [message_id]
+        messages_uids = [message_id]
     else:
         messages_query = generate_search_query(first_fetch_time,
                                                permitted_from_addresses,
                                                permitted_from_domains,
                                                uid_to_fetch_from)
-        messages = client.search(messages_query)
-        messages = messages[:limit]
+        messages_uids = client.search(messages_query)[:limit]
     mails_fetched = []
     messages_fetched = []
-    demisto.debug(f'Messages to fetch: {messages}')
-    for mail_id, message_data in client.fetch(messages, 'RFC822').items():
+    demisto.debug(f'Messages to fetch: {messages_uids}')
+    for mail_id, message_data in client.fetch(messages_uids, 'RFC822').items():
         message_bytes = message_data.get(b'RFC822')
         if not message_bytes:
             continue
@@ -277,8 +276,8 @@ def fetch_mails(client: IMAPClient,
             )
 
     last_message_in_current_batch = uid_to_fetch_from
-    if messages:
-        last_message_in_current_batch = messages[-1]
+    if messages_uids:
+        last_message_in_current_batch = messages_uids[-1]
 
     return mails_fetched, messages_fetched, last_message_in_current_batch
 
