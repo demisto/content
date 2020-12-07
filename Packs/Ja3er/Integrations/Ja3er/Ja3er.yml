@@ -18,7 +18,7 @@ script:
   commands:
   - arguments:
     - default: true
-      description: MD5 has of the JA3 fingerprint
+      description: MD5 hash of the JA3 fingerprint.
       name: JA3
       required: true
     description: Search for a MD5 hash of a JA3 fingerprint
