@@ -217,7 +217,7 @@ script:
                 }
             }
 
-            var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), true,
+            var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), !params.fetchRecords,
                 a2i(params.sleepBetweenChecks, defaultSleep), params.fetchRecords);
             var incidents = [];
             var currentFetch = lastRun.time;
@@ -247,6 +247,11 @@ script:
                         if (props[j] !== '_raw') {
                             incident.labels.push({type: props[j], value: s.records[i][props[j]]});
                         }
+                    }
+                    var recordDate = new Date("{0}T{1}".format(s.records[i].date, s.records[i].time));
+                    var recordDateEpoch = Math.ceil(recordDate);
+                    if (recordDateEpoch >= currentFetch){
+                        currentFetch = recordDateEpoch + 1
                     }
                     incidents.push(incident);
                 }

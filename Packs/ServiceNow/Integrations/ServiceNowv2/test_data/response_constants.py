@@ -3084,3 +3084,15 @@ MIRROR_ENTRIES = [
      'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3'},
     {'type': None, 'category': None, 'contents': 'This is a comment', 'contentsFormat': None,
      'tags': ['comments', 'work_notes'], 'note': True}]
+
+OAUTH_PARAMS = {
+    'insecure': False,
+    'credentials': {
+        'identifier': 'user1',
+        'password:': '12345'
+    },
+    'proxy': False,
+    'client_id': 'client_id',
+    'client_secret': 'client_secret',
+    'use_oauth': True
+}
