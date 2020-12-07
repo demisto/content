@@ -559,7 +559,7 @@ tasks:
       id: 8cc8a748-5a68-4a7a-8006-12ff6f0f56c7
       iscommand: false
       name: Transform Results
-      script: 92c8d82c-2c20-449d-8a9a-995d7cee3cdf
+      script: PrismaCloudAttribution
       type: regular
       version: -1
     taskid: 8cc8a748-5a68-4a7a-8006-12ff6f0f56c7
