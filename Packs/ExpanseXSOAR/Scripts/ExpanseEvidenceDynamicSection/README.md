@@ -7,7 +7,7 @@ Dynamic Section script used in Expanse Issue layout to display the Latest Eviden
 | --- | --- |
 | Script Type | python3 |
 | Tags | dynamic-section |
-| Demisto Version | 5.0.0 |
+| Demisto Version | 6.0.0 |
 
 ## Inputs
 ---
