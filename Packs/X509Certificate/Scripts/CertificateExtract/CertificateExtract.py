@@ -434,23 +434,23 @@ def certificate_to_context(certificate: x509.Certificate) -> Common.Certificate:
 
 def certificate_extract_command(args: Dict[str, Any]) -> CommandResults:
     pem: Optional[str] = args.get('pem')
-    input_: Optional[str] = args.get('input')
+    entry_id: Optional[str] = args.get('entry_id')
 
-    if pem is None and input_ is None:
-        raise ValueError("You should specify pem or input")
+    if pem is None and entry_id is None:
+        raise ValueError("You should specify pem or entry_id")
 
-    if pem is not None and input_ is not None:
-        raise ValueError("Only one of pem and input should be specified")
+    if pem is not None and entry_id is not None:
+        raise ValueError("Only one of pem and entry_id should be specified")
 
     certificate: x509.Certificate
-    if input_ is not None:
-        res_path = demisto.getFilePath(input_)
+    if entry_id is not None:
+        res_path = demisto.getFilePath(entry_id)
         if not res_path:
-            raise ValueError("Invalid input - not found")
+            raise ValueError("Invalid entry_id - not found")
 
-        input_path = res_path['path']
+        entry_id_path = res_path['path']
 
-        certificate = load_certificate(input_path)
+        certificate = load_certificate(entry_id_path)
 
     if pem is not None:
         certificate = x509.load_pem_x509_certificate(pem.encode('ascii'), backends.default_backend())
