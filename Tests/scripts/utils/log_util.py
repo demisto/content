@@ -99,9 +99,9 @@ def install_logging(log_file_name: str, include_process_name=False) -> str:
     fh.setFormatter(formatter)
     ch.setLevel(logging.INFO)
     fh.setLevel(logging.DEBUG)
-    logging.basicConfig(level=logging.DEBUG,
-                        handlers=[ch, fh],
-                        force=True)
+    logging.root.setLevel(logging.DEBUG)
+    logging.root.addHandler(ch)
+    logging.root.addHandler(fh)
     return log_file_path
 
 
