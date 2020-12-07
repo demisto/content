@@ -58,7 +58,8 @@ class AzureWAFClient:
         self.ms_client = MicrosoftClient(**client_args)
 
     @logger
-    def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None, resp_type='json'):
+    def http_request(self, method: str, url_suffix: str = None, full_url: str = None, params: Dict = None,
+                     data: Dict = None, resp_type: str = 'json', return_empty_response: bool = False):
         if not params:
             params = {}
         if not full_url:
@@ -69,7 +70,8 @@ class AzureWAFClient:
                                            full_url=full_url,
                                            json_data=data,
                                            params=params,
-                                           resp_type=resp_type)
+                                           resp_type=resp_type,
+                                           return_empty_response=return_empty_response)
 
     def get_policy_by_name(self, policy_name: str, resource_group_name: str) -> Dict:
         return self.http_request(
@@ -100,20 +102,17 @@ class AzureWAFClient:
             data=data
         )
 
-    def delete_policy(self, policy_name: str, resource_group_name: str) -> Dict:
+    def delete_policy(self, policy_name: str, resource_group_name: str):
 
         return self.http_request(
             method='DELETE',
+            return_empty_response=True,
             url_suffix=f'/resourceGroups/{resource_group_name}/providers/'
                        f'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/{policy_name}',
         )
 
 
 ''' COMMAND FUNCTIONS '''
-
-
-def test_module(client: AzureWAFClient) -> str:
-    pass
 
 
 @logger
@@ -134,30 +133,33 @@ def complete_auth(client: AzureWAFClient):
 
 def policy_get_command(client: AzureWAFClient, **args) -> CommandResults:
     policy_name: str = args.get('policy_name', '')
+    verbose = bool(args.get("verbose", False))
     resource_group_name: str = args.get('resource_group_name', client.resource_group_name)
     policies: List[Dict] = []
     try:
         if policy_name:
             policy = client.get_policy_by_name(policy_name, resource_group_name)
-            policies.extend(policy)
+            policies.append(policy)
         else:
-            policies.extend(client.get_policy_list_by_resource_group_name(resource_group_name))
+            policy = client.get_policy_by_name(policy_name, resource_group_name).get('value', [])
+            policies.extend(policy)
     except DemistoException:
         raise
-    res = CommandResults(readable_output=policies_to_markdown(policies),
-                         outputs=policies,
+    res = CommandResults(readable_output=policies_to_markdown(policies, verbose), outputs=policies,
+                         outputs_key_field='id', outputs_prefix='AzureWAF.Policy',
                          raw_response=policies)
     return res
 
 
 def policy_get_list_by_subscription_command(client: AzureWAFClient, **args: Dict[str, Any]) -> CommandResults:
     policies: List[Dict] = []
+    verbose = bool(args.get("verbose", False))
     try:
-        policies.extend(client.get_policy_list_by_subscription_id().get("value"))
+        policies.extend(client.get_policy_list_by_subscription_id().get("value", []))
     except DemistoException:
         raise
-    res = CommandResults(readable_output=policies_to_markdown(policies),
-                         outputs=policies,
+    res = CommandResults(readable_output=policies_to_markdown(policies, verbose),
+                         outputs=policies, outputs_key_field='id', outputs_prefix='AzureWAF.Policy',
                          raw_response=policies)
     return res
 
@@ -176,6 +178,7 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
     resource_group_name = str(args.get('resource_group_name', client.resource_group_name))
     managed_rules = args.get('managed_rules', {})
     location = args.get("location", '')
+    verbose = bool(args.get("verbose", False))
     if not policy_name or not managed_rules or not location:
         raise Exception('In order to add/ update policy, '
                         'please provide policy_name, location and managed_rules. ')
@@ -190,10 +193,10 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
         if val:
             key_hierarchy = UPSERT_PARAMS[param].split('.')
             parse_nested_keys_to_dict(base_dict=body, keys=key_hierarchy, value=val)
-
-    updated_policy = client.update_policy_upsert(policy_name, resource_group_name, data=body)
-    res = CommandResults(readable_output=policy_to_markdown(updated_policy),
+    updated_policy = [client.update_policy_upsert(policy_name, resource_group_name, data=body)]
+    res = CommandResults(readable_output=policies_to_markdown(updated_policy, verbose),
                          outputs=updated_policy,
+                         outputs_key_field='id', outputs_prefix='AzureWAF.Policy',
                          raw_response=updated_policy)
     return res
 
@@ -201,35 +204,68 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
 def policy_delete_command(client: AzureWAFClient, **args: Dict[str, str]):
     policy_name = str(args.get('policy_name', ''))
     resource_group_name = str(args.get('resource_group_name', client.resource_group_name))
+    policy_id = f'/subscriptions/{client.subscription_id}/resourceGroups/{resource_group_name}/' \
+                f'providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/{policy_name}'
     status = client.delete_policy(policy_name, resource_group_name)
-    res = CommandResults(readable_output=status.get('status'))
+    md = f"Response got {status.status_code} status code."
+    context = None
+    if status.status_code in [200, 202]:
+        md = f"Policy {policy_name} was deleted successfully."
+        old_context = demisto.dt(demisto.context(), f'AzureWAF.Policy(val.id === "{policy_id}")')
+        if old_context:
+            if isinstance(old_context, list):
+                old_context = old_context[0]
+            old_context['IsDeleted'] = True
+            context = {
+                'AzureWAF.Policy(val.id === obj.id)': old_context
+            }
+    if status.status_code == 204:
+        md = f"Policy {policy_name} was not found."
+
+    res = CommandResults(outputs=context, readable_output=md)
     return res
 
 
-def policy_to_markdown(policy: Dict):
-    deep_policy_fields = {'customRules', 'managedRules'}
-    try:
-        policy.update(policy.pop('properties', {}))
-        md = ""
-        for key in policy:
-            if isinstance(policy[key], str):
-                md += f'**{key}:** {policy[key]} \n'
-            if isinstance(policy[key], Dict):
+def policies_to_markdown(policies: List[Dict], verbose: bool = False) -> str:
+    def policy_to_full_markdown(policy_data: Dict):
+        deep_policy_fields = {'customRules', 'managedRules', 'policySettings'}
+        try:
+            policy_data.update(policy_data.pop('properties', {}))
+            short_md = ""
+            policy_for_md = {}
+            for key in policy_data:
                 if key not in deep_policy_fields:
-                    md += tableToMarkdown(key, policy[key]) + "\n"
+                    policy_for_md[key] = policy_data[key]
                 else:
-                    for data in policy[key]:
-                        md += tableToMarkdown(data, policy[key][data]) + "\n"
-        return md
-    except KeyError:
-        demisto.debug("Error in creating policy markdown")
-        raise
+                    short_md += tableToMarkdown(key, policy_data[key]) + "\n"
 
+            short_md = tableToMarkdown(f"Policy: {policy_data.get('name')}", policy_for_md) + short_md
+            return short_md
 
-def policies_to_markdown(policies: List[Dict]) -> str:
+        except KeyError:
+            demisto.debug("Policy has no 'properties' section")
+            raise Exception("Policy does not have 'properties' section, "
+                            "therefore has invalid structure, please contact a developer.")
+
+    def policy_to_short_markdown(policy_data: Dict):
+        short_md = ''
+        try:
+            policy_data.pop('properties')
+            policy_for_md = {}
+            for key in policy_data:
+                policy_for_md[key] = policy_data[key]
+
+            short_md = tableToMarkdown(f"Policy: {policy_data.get('name')}", policy_for_md) + short_md
+
+        except KeyError:
+            demisto.debug("Policy has no 'properties' section")
+            raise Exception("Policy does not have 'properties' section, "
+                            "therefore has invalid structure, please contact a developer.")
+        return short_md
+
     md = ""
     for policy in policies:
-        md += policy_to_markdown(policy)
+        md += policy_to_full_markdown(policy.copy()) if verbose else policy_to_short_markdown(policy.copy())
 
     return md
 
@@ -272,8 +308,6 @@ def main() -> None:
     try:
 
         if command == 'test-module':
-            if params.get('self_deployed'):
-                raise ValueError("Please use `!azure-waf-test` instead")
             raise ValueError("Please run `!azure-waf-auth-start` and `!azure-waf-auth-complete` to log in."
                              " For more details press the (?) button.")
         if command == 'azure-waf-test':
