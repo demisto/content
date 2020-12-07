@@ -37,7 +37,7 @@
    }
   }
  },
- "name": "XSOAR Incoming Mapper ",
+ "name": "XSOAR Incoming Mapper",
  "type": "mapping-incoming",
  "version": -1,
  "fromVersion": "6.0.0"
