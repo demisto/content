@@ -628,6 +628,41 @@ def findFirewallObjectsIdentifications(client: zClient, hostId, objectNameFilter
 
 
 
+def findAssetsbyName_command(client:zClient, args):
+
+    NameFilter = args.get("NameFilter","*")
+    size = int(args.get("size", 1))
+    start = int(args.get("start",0))
+
+    resp = findAssetsbyName(client, NameFilter,start=start,size=size)
+
+    resp = helpers.serialize_object(resp)
+
+    command_results = CommandResults (
+        outputs_prefix="Skybox.Network.Assets",
+        outputs_key_field="id",
+        outputs=resp
+    )
+
+    return command_results
+
+def findAssetsbyName(client: zClient, NameFilter,start=0,size=1):
+
+    resp = client.service.findAssetsByNames(
+        names = NameFilter,
+        subRange = {
+            'start':start,
+            'size':size
+        }
+    )
+
+    return resp
+
+
+
+
+
+
 def findFirewallsByName(client: zClient, args):
 
     resp = client.service.findFirewallsByName(
@@ -893,6 +928,88 @@ def addRequireAccess(ticket_client: zClient,network_client: zClient, args):
         )
     )
 
+
+def addRuleChange(ticket_client: zClient,network_client: zClient, args):
+
+    firewallName = args.get("firewallName","")
+
+    asset = findAssetsbyName(network_client,NameFilter=firewallName)['assets'][0]
+    #demisto.log(str(asset['assets']))
+
+    dHostId = args.get('hostId')
+    dObject = args.get('dObject')
+    destinationAddresses = args.get('destinationAddresses')
+
+    if dHostId and dObject:
+        destinationObjects = findFirewallObjectsIdentifications(network_client, hostId=dHostId,
+                                                                objectNameFilter=dObject)
+        destinationObjects = [destinationObjects]
+    elif destinationAddresses:
+        destinationObjects = None
+    else:
+        return_error("Destination Object or Address must be provided")
+
+    sHostId = args.get('hostId')
+    sObject = args.get('sObject')
+    sourceAddresses = args.get('sourceAddresses')
+
+    if sHostId and sObject:
+        sourceObjects = findFirewallObjectsIdentifications(network_client, hostId=sHostId, objectNameFilter=sObject)
+        sourceObjects = [sourceObjects]
+    elif sourceAddresses:
+        sourceObjects = None
+    else:
+        return_error("Source Object or Addresses must be provided")
+
+    addRuleChangeRequestV7_type = ticket_client.get_type('ns0:addRuleChangeRequestV7')
+    addRuleChangeRequestV7 = addRuleChangeRequestV7_type(
+
+        comment=args.get('comment'),
+        complianceStatus=args.get('complianceStatus', 'UNCOMPUTED'),
+        createdBy=args.get('createdBy', ''),
+        # creationTime = args.get('creationTime',''),
+        description=args.get('description', ''),
+        id=args.get('id', 0),
+        isRequiredStatus=args.get('isRequiredStatus', 'UNCOMPUTED'),
+        # lastModificationTime = args.get('lastModificationTime',''),
+        # lastModifiedBy = args.get('lastModifiedBy','xsoar'),
+        originalChangeRequestId=args.get('originalChangeRequestId', 0),
+        verificationStatus=args.get('verificationStatus', 'UNKNOWN'),  # END of ChangeRequestV3 BASE.
+        destinationAddresses=destinationAddresses,
+        destinationObjects=destinationObjects,
+        firewall=asset,
+        hideSourceBehindGW=True,
+        isGlobal=False,
+        isInstallOnAny=False,
+        isLogEnabled=args.get('isLogEnabled', True),
+        isSharedObject=args.get('isSharedObject', False),
+        NATPorts=args.get('NATPorts', ""),
+        ports=args.get('ports', ""),
+        ruleType=args.get('ruleType', ""),
+        sourceAddresses=args.get('sourceAddresses', ""),
+        sourceObjects=sourceObjects,
+        useApplicationDefaultPorts=True,
+
+        userUsage="ANY"
+    )
+
+    resp = ticket_client.service.addOriginalChangeRequestsV7(
+        ticketId=args.get('ticketId', 64),
+        changeRequests=addRuleChangeRequestV7
+    )
+
+    return (
+        CommandResults(
+            outputs_prefix='Skybox.ChangeRequest',
+            outputs_key_field='id',
+            outputs=helpers.serialize_object(resolve_datetime(resp[0]))
+        )
+    )
+
+
+
+
+
 def operateOnAccessChangeTicket(ticket_client:zClient, args):
 
     phaseOperation_type = ticket_client.get_type('ns0:phaseOperation')
@@ -994,6 +1111,9 @@ def main() -> None:
         elif demisto.command()== 'skybox-getDeviceVulnerabilities':
             return_results(getDeviceVulnerabilities_command(client,demisto.args()))
 
+        elif demisto.command()== 'skybox-network-findAssetsbyName':
+            return_results(findAssetsbyName_command(network_client,demisto.args()))
+
         elif demisto.command() == 'skybox-network-findfirewallsbyname':
             return_results(findFirewallsByName(network_client,demisto.args()))
 
@@ -1014,6 +1134,9 @@ def main() -> None:
 
         elif demisto.command() == 'skybox-tickets-addBlockAccess':
             return_results(addBlockAccess(network_client=network_client, ticket_client=ticket_client, args=demisto.args()))
+
+        elif demisto.command() == 'skybox-tickets-addRule':
+            return_results(addRuleChange(network_client=network_client, ticket_client=ticket_client, args=demisto.args()))
 
         elif demisto.command() == 'skybox-tickets-operateOnAccessChangeTicket':
             return_results(operateOnAccessChangeTicket(ticket_client=ticket_client,args=demisto.args()))
