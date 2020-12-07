@@ -4,7 +4,6 @@ Please notice that to add custom common code, add it to the CommonServerUserPyth
 Note that adding code to CommonServerUserPython can override functions in CommonServerPython
 """
 from __future__ import print_function
-
 import base64
 import json
 import logging
@@ -27,7 +26,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, List, Any
+    from typing import Optional, List, Any, Dict, Union
 except Exception:
     if sys.version_info[0] < 3:
         # in python 2 an exception in the imports might still be raised even though it is caught.
@@ -1311,8 +1310,8 @@ def appendContext(key, data, dedup=False):
     else:
         demisto.setContext(key, data)
 
-
-def url_to_clickable_dict(data: [dict, list], url_keys: list):
+def url_to_clickable_dict(data: Union[Dict[str, Any], List[str]], url_keys: List[str]) \
+        -> Union[Dict[str, Any], List[str]]:
     """
     Turn the given urls fields in to clickable url, used for the markdown table.
     Args:
@@ -1326,13 +1325,12 @@ def url_to_clickable_dict(data: [dict, list], url_keys: list):
         data = [url_to_clickable_dict(item, url_keys) for item in data]
 
     elif isinstance(data, dict):
-        data = {key: url_to_clickable(value) if key in url_keys else url_to_clickable_dict(data[key], url_keys)
-                for key, value in data.items()}
+        data = {key: url_to_clickable(value) if key in url_keys else url_to_clickable_dict(data[key], url_keys) for key, value in data.items()}
 
     return data
 
 
-def url_to_clickable(url: [str, list]):
+def url_to_clickable(url: Union[List[str], str]) -> Union[List[str], str]:
     """
     make the given url clickable when in markdown format by concatenating itself, with the proper brackets
     Args:
@@ -1344,6 +1342,7 @@ def url_to_clickable(url: [str, list]):
     if isinstance(url, list):
         return [f'[{item}]({item})' for item in url]
     return f'[{url}]({url})'
+
 
 
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None):
