@@ -216,6 +216,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: 75fb198a-a1c0-4aec-82d5-ba490633a3c7
       iscommand: false
       name: Did a compromised account detected?
@@ -282,6 +283,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: c6bfd504-a4b5-4359-8574-8be3eacd17e1
       iscommand: false
       name: Remediate according to Event log findings.

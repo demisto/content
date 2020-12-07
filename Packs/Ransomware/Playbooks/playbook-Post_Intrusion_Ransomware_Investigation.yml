@@ -662,7 +662,7 @@ tasks:
             value:
               complex:
                 accessor: Answers.0
-                root: Retrive Ransomware Files
+                root: Retrieve Ransomware Files
           operator: isEqualString
           right:
             value:
@@ -682,9 +682,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Data collection task to retrieve the ransomware files.
       id: c972be9a-49ed-43ad-8552-f74602f2659e
       iscommand: false
-      name: Where binary files retrived?
+      name: Where binary files retrieved?
       type: condition
       version: -1
     taskid: c972be9a-49ed-43ad-8552-f74602f2659e
@@ -783,6 +784,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: d61da26f-5140-4e91-8007-6e65e24c1253
       iscommand: false
       name: Where binary files retrieved?
@@ -885,6 +887,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: 28800055-3082-4220-819f-f0b3061c9eaf
       iscommand: false
       name: Auto Isolation/User revocation?
@@ -1244,6 +1247,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: a7851a1d-b672-44ea-825c-a8fd86e01806
       iscommand: false
       name: Is Active Directory enabled?
@@ -3414,6 +3418,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: 78a34ba4-9246-4f0b-80d8-168b41aff2fb
       iscommand: false
       name: Notify Ransomware?
@@ -3443,6 +3448,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: 1020bfa8-f139-4c58-88e0-89cf37626fc4
       iscommand: false
       name: Manual - Get analyst approval for auto-remediation
