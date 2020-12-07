@@ -204,7 +204,11 @@ class TimestampReplacer:
         if req.method == 'POST':
             raw_content = req.raw_content
             if raw_content is not None:
-                content = req.raw_content.decode()
+                try:
+                    content = raw_content.decode()
+                except UnicodeDecodeError:
+                    logging.error('Failed to decode request content')
+                    content = ''
             else:
                 content = ''
             logging.info(f'cleaning json body: content={content}')
@@ -213,8 +217,15 @@ class TimestampReplacer:
                 try:
                     content = OrderedDict(literal_eval(content))
                     self.modify_json_body(req, content)
+                    return
                 except Exception:
                     logging.exception(f'failed to run literal_eval on content {content}')
+                try:
+                    logging.info('parsing the request body with "literal_eval" failed - trying with "json.loads"')
+                    content = json.loads(content, object_pairs_hook=OrderedDict)
+                    self.modify_json_body(req, content)
+                except Exception:
+                    logging.exception(f'failed to run json.loads on content {content}')
 
     def modify_json_body(self, req: HTTPRequest, json_body: dict) -> None:
         """Modify the json body of a request by replacing any timestamp data with constant data
@@ -317,7 +328,11 @@ class TimestampReplacer:
         if req.method == 'POST':
             raw_content = req.raw_content
             if raw_content is not None:
-                content = req.raw_content.decode()
+                try:
+                    content = raw_content.decode()
+                except UnicodeDecodeError:
+                    logging.error('Failed to decode request content')
+                    content = ''
             else:
                 content = ''
             logging.info(f'handling json body: content={content}')
@@ -327,8 +342,16 @@ class TimestampReplacer:
                     content = OrderedDict(literal_eval(content))
                     json_keys = self.determine_problematic_keys(content)
                     self.json_keys.update(json_keys)
+                    return
                 except Exception:
-                    logging.exception(f'failed while parsing content: {content}')
+                    logging.exception(f'failed to run literal_eval content: {content}')
+                try:
+                    logging.info('parsing the request body with "literal_eval" failed - trying with "json.loads"')
+                    content = json.loads(content, object_pairs_hook=OrderedDict)
+                    json_keys = self.determine_problematic_keys(content)
+                    self.json_keys.update(json_keys)
+                except Exception:
+                    logging.exception(f'failed to run json.loads on content {content}')
 
     def determine_problematic_keys(self, content: dict) -> List[str]:
         """Given a json request body, return the keys (in dot notation) whose values are potentially timestamp data.
