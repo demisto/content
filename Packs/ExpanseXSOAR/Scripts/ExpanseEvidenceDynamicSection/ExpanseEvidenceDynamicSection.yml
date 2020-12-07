@@ -13,5 +13,5 @@ subtype: python3
 tags:
 - dynamic-section
 type: python
-fromversion: 5.0.0
+fromersion: 6.0.0
 tests: []

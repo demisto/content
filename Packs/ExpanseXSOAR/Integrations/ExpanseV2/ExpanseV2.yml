@@ -1785,6 +1785,9 @@ script:
     - contextPath: Expanse.IPRange.annotations.additionalNotes
       description: ''
       type: String
+    - contextPath: Expanse.IPRange.annotations.tags
+      description: ''
+      type: Unknown      
     - contextPath: Expanse.IPRange.attributionReasons.reason
       description: A reason why Expanse attributed the given resource to your organization.
       type: String
@@ -2031,6 +2034,9 @@ script:
     - contextPath: Expanse.Domain.annotations.note
       description: ''
       type: String
+    - contextPath: Expanse.Domain.annotations.tags
+      description: ''
+      type: Unknown
     - contextPath: Expanse.Domain.businessUnits.id
       description: ''
       type: String
@@ -2534,6 +2540,9 @@ script:
     - contextPath: Expanse.Certificate.annotations.note
       description: ''
       type: String
+    - contextPath: Expanse.Certificate.annotations.tags
+      description: ''
+      type: Unknown
     - contextPath: Expanse.Certificate.businessUnits.id
       description: ''
       type: String
@@ -2840,6 +2849,9 @@ script:
     - contextPath: Expanse.Certificate.annotations.note
       description: ''
       type: String
+    - contextPath: Expanse.Certificate.annotations.tags
+      description: ''
+      type: Unknown
     - contextPath: Expanse.Certificate.businessUnits.id
       description: ''
       type: String
@@ -3277,6 +3289,9 @@ script:
     - contextPath: Expanse.Domain.annotations.note
       description: ''
       type: String
+    - contextPath: Expanse.Domain.annotations.tags
+      description: ''
+      type: Unknown
     - contextPath: Expanse.Domain.businessUnits.id
       description: ''
       type: String
@@ -3764,6 +3779,9 @@ script:
     - contextPath: Expanse.IPRange.annotations.additionalNotes
       description: ''
       type: String
+    - contextPath: Expanse.IPRange.annotations.tags
+      description: ''
+      type: Unknown      
     - contextPath: Expanse.IPRange.attributionReasons.reason
       description: ''
       type: String
@@ -3926,4 +3944,4 @@ script:
   dockerimage: demisto/python3:3.8.6.13358
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- Expanse V2 Test
