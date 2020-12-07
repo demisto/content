@@ -826,7 +826,7 @@ def format_certificate_data(certificates: List[Dict[str, Any]]) -> CommandResult
 
         pem = None
         if (details := certificate.get('details')) is not None:
-            if (base64Encoded := details.get('base64Encoded')) is not None:
+            if (base64Encoded := details.get('base64Encoded')) is not None and base64Encoded != '':
                 pem_lines = '\n'.join([base64Encoded[i:i + 64] for i in range(0, len(base64Encoded), 64)])
                 pem = f"-----BEGIN CERTIFICATE-----\n{pem_lines}\n-----END CERTIFICATE-----"
 
