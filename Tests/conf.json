@@ -13,6 +13,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "GoogleDrive",
+            "playbookID": "GoogleDrive-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "FireEyeNX",
             "playbookID": "FireEyeNX-Test"
         },
@@ -29,7 +34,8 @@
         {
             "integrations": "Microsoft Endpoint Configuration Manager",
             "playbookID": "Microsoft ECM - Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "timeout": 400
         },
         {
             "integrations": "CrowdStrike Falcon Intel v2",
@@ -45,7 +51,7 @@
             "integrations": "Majestic Million",
             "playbookID": "Majestic Million Test Playbook",
             "fromversion": "5.5.0",
-            "memory_threshold": 250,
+            "memory_threshold": 300,
             "timeout": 500
         },
         {
@@ -691,7 +697,8 @@
         },
         {
             "integrations": "MISP V2",
-            "playbookID": "MISP V2 Test"
+            "playbookID": "MISP V2 Test",
+            "timeout": 300
         },
         {
             "playbookID": "test-LinkIncidentsWithRetry"
@@ -735,7 +742,7 @@
             "playbookID": "WordTokenizeTest",
             "toversion": "4.5.9"
         },
-                {
+        {
             "integrations": "QRadar",
             "playbookID": "test playbook - QRadarCorrelations",
             "timeout": 2000,
@@ -1861,13 +1868,11 @@
         },
         {
             "integrations": "AbuseIPDB",
-            "playbookID": "AbuseIPDB Test",
-            "nightly": true
+            "playbookID": "AbuseIPDB Test"
         },
         {
             "integrations": "AbuseIPDB",
-            "playbookID": "AbuseIPDB PopulateIndicators Test",
-            "nightly": true
+            "playbookID": "AbuseIPDB PopulateIndicators Test"
         },
         {
             "integrations": "LogRhythm",
@@ -1876,7 +1881,8 @@
         },
         {
             "integrations": "FireEye HX",
-            "playbookID": "FireEye HX Test"
+            "playbookID": "FireEye HX Test",
+            "timeout": 500
         },
         {
             "integrations": "FireEyeFeed",
@@ -2957,11 +2963,6 @@
             "fromversion": "4.5.0"
         },
         {
-            "integrations": "Logz.io",
-            "playbookID": "Logzio - Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "IBM Resilient Systems",
             "playbookID": "IBM Resilient Systems Test"
         },
@@ -3000,8 +3001,8 @@
             "playbookID": "Endace-Test",
             "fromversion": "5.0.0"
         },
-		{
-			"integrations": "Deep Instinct",
+        {
+            "integrations": "Deep Instinct",
             "playbookID": "Deep_Instinct-Test",
             "fromversion": "5.0.0"
         },
@@ -3123,7 +3124,9 @@
         {
             "integrations": "TrendMicro Cloud App Security",
             "playbookID": "playbook_TrendmicroCAS_Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 300
+
         },
         {
             "playbookID": "IfThenElse-Test",
@@ -3144,13 +3147,13 @@
             "integrations": "Whois",
             "fromversion": "4.5.0"
         },
-		{
+        {
             "integrations": "F5 ASM",
             "playbookID": "playbook-F5_ASM-Test",
             "timeout": 600,
             "fromversion": "5.0.0",
             "nightly": true
-		},
+        },
         {
             "playbookID": "Hatching Triage - Detonate File",
             "integrations": "Hatching Triage",
@@ -3276,7 +3279,16 @@
         "Test-BPA": "Issue 28406",
         "SymantecEndpointProtection_Test": "Issue 30157",
         "forcepoint test": "Issue 28043",
-        "Test-BPA_Integration": "Issue 28236"
+        "Test-BPA_Integration": "Issue 28236",
+        "CanaryTools Test": "Issue 30796",
+        "Generic Webhook - Test": "Issue 30797",
+        "VxStream Test": "Issue 29280",
+        "PhishLabsIOC TestPlaybook": "Issue 30874",
+        "Test-VulnDB": "Issue 30875",
+        "Malware Domain List Active IPs Feed Test": "Issue 30878",
+        "urlscan_malicious_Test": "Issue 20111",
+        "Test-Detonate URL - Crowdstrike": "Issue 30879",
+        "nexpose_test": "Issue 31019"
     },
     "skipped_integrations": {
 
@@ -3401,6 +3413,7 @@
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
+        "FortiManager": "Can only be run within PANW network",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Cymulate": "Partner didn't provided test playbook",
@@ -3507,6 +3520,7 @@
         "Google Resource Manager": "googleclient sdk has time based challenge exchange",
         "Google Cloud Storage": "SDK",
         "GoogleCalendar": "googleclient sdk has time based challenge exchange",
+        "GoogleDrive": "googleclient sdk has time based challenge exchange",
         "Syslog Sender": "syslog",
         "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
