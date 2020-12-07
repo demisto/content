@@ -753,10 +753,9 @@ def sophos_central_alert_search_command(client: Client, args: dict) -> CommandRe
     end_date = args.get('end')
     date_range = args.get('date_range')
     if date_range:
-        start_date, end_date = parse_date_range(date_range=date_range, date_format=DATE_FORMAT)
-        start_date = start_date[:-4] + 'Z'
-        end_date = end_date[:-4] + 'Z'
-
+        start_date, end_date = parse_date_range(date_range=date_range)
+        start_date = start_date.isoformat(timespec='milliseconds')
+        end_date = end_date.isoformat(timespec='milliseconds')
     results = client.search_alert(start_date, end_date,
                                   argToList(args.get('product')),
                                   argToList(args.get('category')),
@@ -1606,7 +1605,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         last_fetch = first_fetch_date
     incidents = []
     next_run = last_fetch
-    alerts = client.search_alert(last_fetch.strftime(DATE_FORMAT)[:-4] + 'Z', None, None,
+    alerts = client.search_alert(last_fetch.isoformat(timespec='milliseconds'), None, None,
                                  fetch_category, None, fetch_severity, None, max_fetch)
     data_fields = ['id', 'description', 'severity', 'raisedAt', 'allowedActions', 'managedAgentId',
                    'category', 'type']
@@ -1620,10 +1619,9 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
             'rawJSON': json.dumps(alert)
         }
         incidents.append(incident)
-        created_time = datetime.strptime(alert_created_time, DATE_FORMAT)
-        if created_time > next_run:
-            next_run = created_time
-
+    if incidents:
+        last_incident_time = incidents[-1].get('occurred', '')
+        next_run = datetime.strptime(last_incident_time, DATE_FORMAT)
     next_run += timedelta(milliseconds=1)
     next_run_timestamp = int(datetime.timestamp(next_run) * 1000)
     return {'last_fetch': next_run_timestamp}, incidents
