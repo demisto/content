@@ -1893,7 +1893,7 @@ def get_remote_data_command(client, args):
         incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
                                                                  "alerts_limit": 1000,
                                                                  "return_only_updated_incident": True,
-                                                                 "last_update:": remote_args.last_update})
+                                                                 "last_update": remote_args.last_update})
         if 'The incident was not modified' not in incident_data[0]:
             demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
 

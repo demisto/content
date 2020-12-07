@@ -705,3 +705,133 @@ def test_incident_was_modified_in_demisto(mocker):
     #     xdr_incident_from_previous_run has severity=high
     is_called, scheduled_command_args = get_execute_command_call(demisto.executeCommand, 'ScheduleCommand')
     assert is_called is True
+
+
+EXPECTED_INCIDENT = {
+     'incident_id': '697567',
+     'manual_severity': None,
+     'assigned_user_mail': None,
+     'high_severity_alert_count': None,
+     'host_count': None,
+     'xdr_url': 'http://example.com/incident-view/697567',
+     'assigned_user_pretty_name': '',
+     'alert_count': 1,
+     'med_severity_alert_count': None,
+     'user_count': None, 'severity': 1,
+     'low_severity_alert_count': None,
+     'status': 'new',
+     'description': 'WildFire Malware detected on host HostNameFFM8VIP9',
+     'resolve_comment': None,
+     'notes': None,
+     'modification_time': 1559463309323
+     }
+
+
+def test_create_incident_from_saved_data_without_extra_data():
+    """
+    Given
+    - incident in demisto
+    - fields_mapping:
+        status: xdrstatus,
+        severity: xdrseverity,
+        manual_severity: severity
+    - include_extra_data = False
+
+    When
+    - creating an incident object from the context incident
+
+    Then
+    - ensure date fields are parsed correctly
+    - ensure all relevant fields are present
+
+    """
+    fields_mapping = {
+        "alert_count": "xdralertcount",
+        "assigned_user_mail": "xdrassigneduseremail",
+        "assigned_user_pretty_name": "xdrassigneduserprettyname",
+        "description": "xdrdescription",
+        "high_severity_alert_count": "xdrhighseverityalertcount",
+        "host_count": "xdrhostcount",
+        "incident_id": "10",
+        "low_severity_alert_count": "xdrlowseverityalertcount",
+        "manual_severity": "xdrmanualseverity",
+        "med_severity_alert_count": "xdrmediumseverityalertcount",
+        "modification_time": "xdrmodificationtime",
+        "notes": "xdrnotes",
+        "resolve_comment": "xdrresolvecomment",
+        "severity": "severity",
+        "status": "xdrstatus",
+        "user_count": "xdrusercount",
+        "xdr_url": "xdrurl"
+}
+
+    incident_from_context = copy.deepcopy(INCIDENT_IN_DEMISTO)
+
+    created_incident = xdr_script.create_incident_from_saved_data(incident_from_context, fields_mapping)
+
+    assert created_incident == EXPECTED_INCIDENT
+
+
+EXPECTED_INCIDENT_EXTRA_DATA = {
+    "xdralerts": [
+        {
+            "category": "WildFirePostDetection",
+            "action_pretty": "Detected (Reported)",
+            "description": "Suspicious executable detected",
+            "severity": "high",
+            "host_ip": "8.8.8.8",
+            "source": "Traps",
+            "alert_id": "50820",
+            "host_name": "HostNameFFM8VIP9",
+            "detection_timestamp": 1559215835437,
+            "action": "REPORTED",
+            "user_name": "N/A",
+            "name": "WildFire Malware"
+        }
+    ],
+    "xdrfileartifacts": [
+        {
+            "file_signature_status": "SIGNATURE_UNAVAILABLE",
+            "is_process": None,
+            "file_name": "LCTGSK7IML.docx",
+            "file_wildfire_verdict": "UNKNOWN",
+            "alert_count": 1,
+            "is_malicious": None,
+            "is_manual": None,
+            "file_signature_vendor_name": None,
+            "type": "HASH",
+            "file_sha256": "384654fa409c7a500a4a843d33a005c9d670d4845d3a9e096efc8b00ad05a621"
+        }
+    ],
+    "xdrnetworkartifacts": []
+     }
+
+
+def test_create_incident_from_saved_data_with_extra_data():
+    """
+    Given
+    - incident in demisto
+    - fields_mapping:
+        status: xdrstatus,
+        severity: xdrseverity,
+        manual_severity: severity
+    - include_extra_data = True
+
+    When
+    - creating an incident object from the context incident
+
+    Then
+    - ensure date fields are parsed correctly
+    - ensure all relevant fields are present
+
+    """
+    fields_mapping = {
+        "status": "xdrstatus",
+        "severity": "severity"
+    }
+
+    incident_from_context = copy.deepcopy(INCIDENT_IN_DEMISTO)
+
+    created_incident = xdr_script.create_incident_from_saved_data(incident_from_context, fields_mapping, True)
+
+    assert created_incident == EXPECTED_INCIDENT_EXTRA_DATA

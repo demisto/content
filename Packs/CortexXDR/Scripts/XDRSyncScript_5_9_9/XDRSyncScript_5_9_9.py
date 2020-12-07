@@ -404,7 +404,6 @@ def main(args):
     xdr_file_artifacts_field = args.get('xdr_file_artifacts')
     xdr_network_artifacts_field = args.get('xdr_network_artifacts')
     verbose = args.get('verbose') == 'true'
-    # playbook_to_run = args.get('playbook_to_run')
 
     # get current running incident
     incident_in_demisto = demisto.incident()
