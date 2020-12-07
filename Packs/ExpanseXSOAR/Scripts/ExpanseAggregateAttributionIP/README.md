@@ -7,7 +7,7 @@ Aggregate entries from multiple sources into AttributionIP
 | --- | --- |
 | Script Type | python3 |
 | Tags | |
-| Demisto Version | 5.0.0 |
+| Demisto Version | 6.0.0 |
 
 ## Used In
 ---
