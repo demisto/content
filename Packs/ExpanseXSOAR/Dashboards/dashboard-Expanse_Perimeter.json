@@ -1349,7 +1349,7 @@
     },
     "toDate": "0001-01-01T00:00:00Z",
     "version": -1,
-    "fromVersion": "5.0.0",
+    "fromVersion": "6.0.0",
     "description": "",
     "isPredefined": true
 }
