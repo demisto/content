@@ -3,7 +3,7 @@ import argparse
 from Tests.Marketplace.download_private_id_set import download_private_id_set_from_gcp
 
 
-def merge_private_id_set_with_new_pack(private_id_set_path, new_pack_name):
+def remove_old_pack_from_private_id_set(private_id_set_path, new_pack_name):
     with open(private_id_set_path, 'r') as id_set_file:
         private_id_set = json.load(id_set_file)
 
@@ -28,7 +28,7 @@ def main():
     private_id_set = download_private_id_set_from_gcp()
 
     new_pack_name = options.new_pack_name
-    merged_private_id_set = merge_private_id_set_with_new_pack(private_id_set, new_pack_name)
+    merged_private_id_set = remove_old_pack_from_private_id_set(private_id_set, new_pack_name)
 
     return merged_private_id_set
 

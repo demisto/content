@@ -1,0 +1,27 @@
+{
+    "scripts": [],
+    "playbooks": [],
+    "integrations": [
+      {
+            "abuse.ch SSL Blacklist Feed": {
+                "pack": "Feedsslabusech"
+            }
+        },
+        {
+            "Workday": {
+                "pack": "Workday"
+            }
+        }
+    ],
+    "TestPlaybooks": [],
+    "Classifiers": [],
+    "Dashboards": [],
+    "IncidentFields": [],
+    "IncidentTypes": [],
+    "IndicatorFields": [],
+    "IndicatorTypes": [],
+    "Layouts": [],
+    "Reports": [],
+    "Widgets": [],
+    "Mappers": []
+}

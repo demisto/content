@@ -1,45 +1,24 @@
-from Tests.Marketplace.prepare_private_id_set_for_merge import merge_private_id_set_with_new_pack
-from Tests.scripts.infrastructure_tests import test_collect_tests_and_content_packs as test_utils
-
-NEW_PACK_NAME = 'Workday'
-PRIVATE_ID_PATH = 'Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json'
+from Tests.Marketplace.prepare_private_id_set_for_merge import remove_old_pack_from_private_id_set
 
 
-def test_merge_private_id_set_with_new_pack(repo):
-    script_name = 'script_a'
-    fake_script = test_utils.TestUtils.create_script(name=script_name)
-    fake_id_set = test_utils.TestUtils.create_id_set(
-        with_scripts=fake_script['id_set']
-    )
-    private_id_set = merge_private_id_set_with_new_pack(PRIVATE_ID_PATH, NEW_PACK_NAME)
-    assert private_id_set == 1
+def test_remove_old_pack_from_private_id_set():
+    workday_pack = {
+            "Workday": {
+                "pack": "Workday"
+            }
+        }
 
+    Feedsslabusech_pack = {
+            "abuse.ch SSL Blacklist Feed": {
+                "pack": "Feedsslabusech"
+            }
+        }
+    private_id_set = remove_old_pack_from_private_id_set('test_data/id_set.json', 'Workday')
+    assert workday_pack not in private_id_set['integrations']
 
-# CLASSIFIER_WITH_VALID_INCIDENT_FIELD = {"mapping": {"0": {"internalMapping": {"Incident Field": "incident field"}}}}
-#
-#     ID_SET_WITH_INCIDENT_FIELD = {"IncidentFields": [{"name": {"name": "Incident Field"}}],
-#                                   "IndicatorFields": [{"name": {"name": "Incident Field"}}]}
-#
-#     ID_SET_WITHOUT_INCIDENT_FIELD = {"IncidentFields": [{"name": {"name": "name"}}],
-#                                      "IndicatorFields": [{"name": {"name": "name"}}]}
-#
-#     IS_INCIDENT_FIELD_EXIST = [
-#         (CLASSIFIER_WITH_VALID_INCIDENT_FIELD, ID_SET_WITH_INCIDENT_FIELD, True),
-#         (CLASSIFIER_WITH_VALID_INCIDENT_FIELD, ID_SET_WITHOUT_INCIDENT_FIELD, False)
-#     ]
-#
-#     @pytest.mark.parametrize("classifier_json, id_set_json, expected_result", IS_INCIDENT_FIELD_EXIST)
-#     def test_is_incident_field_exist(self, repo, classifier_json, id_set_json, expected_result):
-#         """
-#         Given
-#         - A mapper with incident fields
-#         - An id_set file.
-#         When
-#         - validating mapper
-#         Then
-#         - validating that incident fields exist in id_set.
-#         """
-#         repo.id_set.write_json(id_set_json)
-#         structure = mock_structure("", classifier_json)
-#         validator = ClassifierValidator(structure)
-#         assert validator.is_incident_field_exist(id_set_json) == expected_result
+    private_id_set = remove_old_pack_from_private_id_set('test_data/id_set.json', 'Feedsslabusech')
+    assert Feedsslabusech_pack not in private_id_set['integrations']
+
+    private_id_set = remove_old_pack_from_private_id_set('test_data/id_set.json', '')
+    assert Feedsslabusech_pack in private_id_set['integrations']
+    assert workday_pack in private_id_set['integrations']
