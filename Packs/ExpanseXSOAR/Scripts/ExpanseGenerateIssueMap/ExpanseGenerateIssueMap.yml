@@ -28,5 +28,5 @@ subtype: python3
 tags:
 - widget
 type: python
-fromversion: 5.0.0
+fromersion: 6.0.0
 tests: []
