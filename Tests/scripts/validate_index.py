@@ -93,7 +93,7 @@ def verify_pack(pack: dict) -> bool:
     return all([id_exists, price_is_valid])
 
 
-def get_hexsha(commit: git.repo.commit) -> str:
+def get_hexsha(commit: git.repo.base.Commit) -> str:
     """Return hash of the git commit object"""
     return commit.hexsha
 
