@@ -22,6 +22,7 @@ OK_STATUS_CODE = 200
 CREATED_STATUS_CODE = 201
 UNAUTHORIZED_STATUS_CODE = 401
 TOO_MANY_REQUESTS_STATUS_CODE = 429
+NOT_FOUND_STATUS_CODE = 404
 
 
 class Client(BaseClient):
@@ -75,7 +76,8 @@ class Client(BaseClient):
                         OK_STATUS_CODE,
                         CREATED_STATUS_CODE,
                         UNAUTHORIZED_STATUS_CODE,
-                        TOO_MANY_REQUESTS_STATUS_CODE
+                        TOO_MANY_REQUESTS_STATUS_CODE,
+                        NOT_FOUND_STATUS_CODE,
                     ),
                 )
                 if res.ok:
@@ -107,6 +109,9 @@ class Client(BaseClient):
                     )
                     time.sleep(time_to_wait)
                     demisto.debug('Finished waiting - retrying')
+                elif res.status_code == NOT_FOUND_STATUS_CODE:
+                    demisto.debug(f'Got status code 400 - {str(res.content)}')
+                    return {}
             except Exception as e:
                 demisto.debug(f'Got unexpected exception in the API HTTP request - {str(e)}')
 
@@ -173,7 +178,13 @@ class EventStream:
                 demisto.debug('Starting stream refresh')
                 try:
                     response = await client.refresh_stream_session(self.refresh_token)
-                    demisto.debug(f'Refresh stream response: {response}')
+                    if not response:
+                        # Should get here in case we got 404 from the refresh stream query
+                        demisto.debug('Clearing refresh stream URL to trigger stream discovery.')
+                        client.refresh_stream_url = ''
+                        refreshed = False
+                    else:
+                        demisto.debug(f'Refresh stream response: {response}')
                 except Exception as e:
                     demisto.updateModuleHealth('Failed refreshing stream session, will retry in 30 seconds.')
                     demisto.debug(f'Failed refreshing stream session: {e}')
@@ -189,10 +200,14 @@ class EventStream:
                 demisto.debug('Finished stream discovery')
                 resources = discover_stream_response.get('resources', [])
                 if not resources:
+                    # If we got here we will either timeout on the event 10 seconds timeout (from fetch_event)
+                    # or we are discovering a stream after we failed to refresh a stream cause we got 404
                     demisto.updateModuleHealth('Did not discover event stream resources, verify the App ID is not used'
                                                ' in another integration instance')
                     demisto.error(f'Did not discover event stream resources - {str(discover_stream_response)}')
-                    return
+                    await sleep(10)
+                    demisto.debug('Done sleeping for 10 seconds, will try to discover stream again.')
+                    continue
                 resource = resources[0]
                 self.data_feed_url = resource.get('dataFeedURL')
                 demisto.debug(f'Discovered data feed URL: {self.data_feed_url}')
