@@ -40,5 +40,5 @@ args:
 system: false
 timeout: '0'
 subtype: python3
-dockerimage: demisto/python3:3.8.3.9324
+dockerimage: demisto/python3:3.8.6.13358
 fromversion: 5.0.0
