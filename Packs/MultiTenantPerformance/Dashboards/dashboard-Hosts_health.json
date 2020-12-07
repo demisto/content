@@ -1,7 +1,7 @@
 {
     "id": "Hosts - health",
     "version": -1,
-    "fromVersion": "6.1.0-beta",
+    "fromVersion": "6.1.0",
     "description": "",
     "period": {
         "by": "",
@@ -34,7 +34,6 @@
                 "fromServerVersion": "5.0.0",
                 "toServerVersion": "",
                 "propagationLabels": [
-
                 ],
                 "packPropagationLabels": [
                     "all"
@@ -93,7 +92,6 @@
                 "fromServerVersion": "5.0.0",
                 "toServerVersion": "",
                 "propagationLabels": [
-
                 ],
                 "packPropagationLabels": [
                     "all"
@@ -153,7 +151,6 @@
                 "fromServerVersion": "5.0.0",
                 "toServerVersion": "",
                 "propagationLabels": [
-
                 ],
                 "packPropagationLabels": [
                     "all"
@@ -212,7 +209,6 @@
                 "fromServerVersion": "5.0.0",
                 "toServerVersion": "",
                 "propagationLabels": [
-
                 ],
                 "packPropagationLabels": [
                     "all"
@@ -272,7 +268,6 @@
                 "fromServerVersion": "5.0.0",
                 "toServerVersion": "",
                 "propagationLabels": [
-
                 ],
                 "packPropagationLabels": [
                     "all"
@@ -332,7 +327,6 @@
                 "fromServerVersion": "5.0.0",
                 "toServerVersion": "",
                 "propagationLabels": [
-
                 ],
                 "packPropagationLabels": [
                     "all"
@@ -391,7 +385,6 @@
                 "fromServerVersion": "5.0.0",
                 "toServerVersion": "",
                 "propagationLabels": [
-
                 ],
                 "packPropagationLabels": [
                     "all"
@@ -451,7 +444,6 @@
                 "fromServerVersion": "5.0.0",
                 "toServerVersion": "",
                 "propagationLabels": [
-
                 ],
                 "packPropagationLabels": [
                     "all"

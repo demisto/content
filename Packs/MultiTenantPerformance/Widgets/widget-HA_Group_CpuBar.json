@@ -1,7 +1,7 @@
 {
  "id": "ha-group-cpu-bar",
  "version": -1,
- "fromVersion": "6.1.0-beta",
+ "fromVersion": "6.1.0",
  "name": "Average Hosts Group CPU Usage % per Group",
  "description": "Average Hosts Group CPU usage percentage per group",
  "dataType": "system",
