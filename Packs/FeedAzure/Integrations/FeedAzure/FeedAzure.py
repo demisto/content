@@ -152,33 +152,16 @@ class Client(BaseClient):
         Returns:
             List. List of filtered indicator objects (no indicator value appear twice)
         """
-        filtered_list: list = []
+        indicator_objects = {}
         for item_to_search in address_list:
+            current_value = item_to_search.get('value')
+            ind_obj = indicator_objects.get(current_value)
+            if ind_obj:
+                indicator_objects[current_value].update(item_to_search)
+            else:
+                indicator_objects[current_value] = item_to_search
 
-            # if the value of the current item being searched is already in filtered_list it means we have already
-            # found the best candidate for this indicator object
-            if item_to_search.get('value') in [item.get('value') for item in filtered_list]:
-                continue
-
-            list_of_duplicate_addresses = []
-            current_address = item_to_search.get('value')
-
-            # Collect all the objects in the list with the same indicator value (duplicate value)
-            for item_to_compare in address_list:
-                compared_address = item_to_compare.get('value')
-                if current_address == compared_address:
-                    list_of_duplicate_addresses.append(item_to_compare)
-
-            # Create a list of the number of keys each of the object has
-            number_of_keys_list = [duplicate_item.keys() for duplicate_item in list_of_duplicate_addresses]
-
-            # Grab the index of the object which holds the maximal number of keys
-            max_number_of_keys_index = number_of_keys_list.index(max(number_of_keys_list))
-
-            # Add the object with the most data to the filtered list
-            filtered_list.append(list_of_duplicate_addresses[max_number_of_keys_index])
-
-        return filtered_list
+        return [value for value in indicator_objects.values()]
 
     def extract_indicators_from_values_dict(self, values_from_file: Dict) -> List:
         """Builds a list of all IP indicators in the input dict.

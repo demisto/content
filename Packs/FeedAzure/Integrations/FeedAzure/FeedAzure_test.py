@@ -206,7 +206,7 @@ indicator_objects = [
     ),
     (
         [{'value': 1, 'another_key': 3}, {'value': 1, 'some_key': 2}, {'value': 2, 'some_key': 2}],
-        [{'value': 1, 'another_key': 3}, {'value': 2, 'some_key': 2}]
+        [{'value': 1, 'another_key': 3, 'some_key': 2}, {'value': 2, 'some_key': 2}]
     ),
     (
         [{'value': 2}, {'value': 1, 'some_key': 2}, {'value': 2, 'some_key': 2}, {'value': 1}],
@@ -231,4 +231,4 @@ def test_filter_duplicate_addresses(list_to_filter, expected_result):
         - Ensure the resulted list contains the object with the maximal number of keys for each value.
     """
     client = Client([], [])
-    assert client.filter_duplicate_addresses(list_to_filter) == expected_result
+    assert expected_result == client.filter_duplicate_addresses(list_to_filter)
