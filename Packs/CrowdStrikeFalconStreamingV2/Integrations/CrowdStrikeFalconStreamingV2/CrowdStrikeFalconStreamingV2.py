@@ -182,7 +182,7 @@ class EventStream:
                         # Should get here in case we got 404 from the refresh stream query
                         demisto.debug('Clearing refresh stream URL to trigger stream discovery.')
                         client.refresh_stream_url = ''
-                        refreshed = False
+                        raise RuntimeError()
                     else:
                         demisto.debug(f'Refresh stream response: {response}')
                 except Exception as e:
@@ -205,7 +205,9 @@ class EventStream:
                     demisto.updateModuleHealth('Did not discover event stream resources, verify the App ID is not used'
                                                ' in another integration instance')
                     demisto.error(f'Did not discover event stream resources - {str(discover_stream_response)}')
-                    return
+                    await sleep(10)
+                    demisto.debug('Done sleeping for 10 seconds, will try to discover stream again.')
+                    continue
                 resource = resources[0]
                 self.data_feed_url = resource.get('dataFeedURL')
                 demisto.debug(f'Discovered data feed URL: {self.data_feed_url}')
