@@ -1,7 +1,7 @@
 """Run validation on the index.json file.
 
 Check index.json file inside the index.zip archive in the cloud.
-Validate no missing ids are found and that all packs have a positive price.
+Validate no missing ids are found and that all packs have a non negative price.
 Validate commit hash is in master's history.
 """
 import argparse
@@ -11,6 +11,7 @@ import sys
 import git
 import os
 
+from Tests.Marketplace.mandatory_premium_packs import MANDATORY_PREMIUM_PACKS
 from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig, CONTENT_ROOT_PATH
 from Tests.Marketplace.upload_packs import download_and_extract_index, get_content_git_client
 from Tests.scripts.utils.log_util import install_logging
@@ -65,20 +66,30 @@ def check_index_data(index_data: dict) -> bool:
     packs_list_exists = log_message_if_statement(statement=(len(index_data.get("packs", [])) != 0),
                                                  error_message="Found 0 packs in index file."
                                                                "\nAborting the rest of the check.")
+    # If all packs are gone, return False
     if not packs_list_exists:
         return False
+
+    mandatory_pack_ids = MANDATORY_PREMIUM_PACKS.copy()
 
     packs_are_valid = True
     for pack in index_data["packs"]:
         pack_is_good = verify_pack(pack)
         if not pack_is_good:
             packs_are_valid = False
+        if pack["id"] in mandatory_pack_ids:
+            mandatory_pack_ids.remove(pack["id"])
 
-    return packs_are_valid
+    all_mandatory_packs_are_found = log_message_if_statement(statement=(mandatory_pack_ids == []),
+                                                             error_message=f"index json is missing some mandatory"
+                                                                           f" pack ids: {pformat(mandatory_pack_ids)}",
+                                                             success_message=f"All premium mandatory pack ids were"
+                                                                             f" found in the index.json file.")
+    return all([packs_are_valid, all_mandatory_packs_are_found])
 
 
 def verify_pack(pack: dict) -> bool:
-    """Verify the pack id is not empty and it's price is positive.
+    """Verify the pack id is not empty and it's price is non negative.
 
     Args:
         pack: The pack to verify.
@@ -87,8 +98,8 @@ def verify_pack(pack: dict) -> bool:
     """
     id_exists = log_message_if_statement(statement=(pack.get("id", "") != ""),
                                          error_message="There is a missing pack id.")
-    price_is_valid = log_message_if_statement(statement=(pack.get("price", -1) > 0),
-                                              error_message=f"The price on the pack {pack['id']} is 0 or less.",
+    price_is_valid = log_message_if_statement(statement=(pack.get("price", -1) >= 0),
+                                              error_message=f"The price on the pack {pack['id']} is invalid.",
                                               success_message=f"The price on the pack {pack['id']} is valid.")
     return all([id_exists, price_is_valid])
 
