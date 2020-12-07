@@ -935,7 +935,7 @@ def test_fetch_incidents_no_last_fetch(requests_mock):
                     client_secret='b', proxy=False)
     mock_response = load_mock_response('alert_list.json')
     requests_mock.post(f'{BASE_URL}/common/v1/alerts/search', json=mock_response)
-    last_fetch, incidents = fetch_incidents(client, {}, '12 weeks', ['x'], ['x'], '50')
+    last_fetch, incidents = fetch_incidents(client, {}, '12 years', ['x'], ['x'], '50')
     wanted_time = datetime.timestamp(datetime.strptime('2020-11-04T09:31:19.895Z', DATE_FORMAT))
     assert last_fetch.get('last_fetch') == wanted_time * 1000
     assert len(incidents) == 3
