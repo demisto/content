@@ -42,7 +42,7 @@ script:
       required: true
       description: The name of the rule to create.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.BlockConversation.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
@@ -60,7 +60,7 @@ script:
       required: true
       description: The name of the rule to delete.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.UnblockConversation.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
@@ -119,7 +119,7 @@ script:
     - name: trigger_value
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191. If the trigger_type is re-trigger-ms or re-triggersec, this is the total amount of time (in msecs or secs), respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.RecordConversation.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
@@ -137,7 +137,7 @@ script:
       required: true
       description: The name of the rule to delete.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.StopRecordingConversation.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
@@ -192,7 +192,7 @@ script:
       required: true
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191. If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.AlertConversation.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
@@ -210,7 +210,7 @@ script:
       required: true
       description: The name of the rule to delete.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.MuteAlertConversation.Rule
       description: 'The name of the rule and the settings that define the rule.'
@@ -231,7 +231,7 @@ script:
       required: true
       description: The name of the rule to create.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.BlockDestPort.Rule
       description: 'The name of the rule and the settings that define the rule.'
@@ -249,7 +249,7 @@ script:
       required: true
       description: The name of the rule to delete.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.UnblockDestPort.Rule
       description: 'The name of the rule and the settings that define the rule.'
@@ -299,7 +299,7 @@ script:
     - name: trigger_value
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.RecordDestPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
@@ -317,7 +317,7 @@ script:
       required: true
       description: The name of the rule to delete.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.StopRecordingDestPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
@@ -363,7 +363,7 @@ script:
       required: true
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.AlertDestPort.Rule
       description: 'The name of the rule and the settings that define the rule.'
@@ -381,7 +381,7 @@ script:
       required: true
       description: The name of the rule to delete.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.MuteAlertDestPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
@@ -402,7 +402,7 @@ script:
       required: true
       description: The name of the rule to create.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.BlockSrcPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
@@ -420,7 +420,7 @@ script:
       required: true
       description: The name of the rule to delete.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.UnblockSrcPort.Rule
       description: 'The name of the rule and the settings that define the rule.'
@@ -470,7 +470,7 @@ script:
     - name: trigger_value
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.RecordSrcPort.Rule
       description: 'The name of the rule and the settings that define the rule.'
@@ -488,7 +488,7 @@ script:
       required: true
       description: The name of the rule to delete.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.StopRecordingSrcPort.Rule
       description: 'The name of the rule and the settings that define the rule.'
@@ -534,7 +534,7 @@ script:
       required: true
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.AlertSrcPort.Rule
       description: 'The name of the rule and the settings that define the rule.'
@@ -552,7 +552,7 @@ script:
       required: true
       description: The name of the rule to delete.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.MuteAlertSrcPort.Rule
       description: 'The name of the rule and the settings that define the rule.'
@@ -573,7 +573,7 @@ script:
       required: true
       description: The name of the rule to create.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.BlockDestSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
@@ -591,7 +591,7 @@ script:
       required: true
       description: The name of the rule to delete.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.UnblockDestSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
@@ -641,7 +641,7 @@ script:
     - name: trigger_value
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.RecordDestSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
@@ -659,7 +659,7 @@ script:
       required: true
       description: The name of the rule to delete.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.StopRecordingDestSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
@@ -705,7 +705,7 @@ script:
       required: true
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.AlertDestSubnet.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
@@ -723,7 +723,7 @@ script:
       required: true
       description: The name of the rule to delete.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.MuteAlertDestSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
@@ -744,7 +744,7 @@ script:
       required: true
       description: The name of the rule to create.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.BlockSrcSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
@@ -762,7 +762,7 @@ script:
       required: true
       description: The name of the rule to delete.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.UnblockSrcSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
@@ -812,7 +812,7 @@ script:
     - name: trigger_value
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.RecordSrcSubnet.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
@@ -830,7 +830,7 @@ script:
       required: true
       description: The name of the rule to delete.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.StopRecordingSrcSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
@@ -876,7 +876,7 @@ script:
       required: true
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.AlertSrcSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
@@ -894,7 +894,7 @@ script:
       required: true
       description: The name of the rule to delete.
     - name: rcs
-      description: 'The remediation configuration string.'
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.MuteAlertSrcSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'

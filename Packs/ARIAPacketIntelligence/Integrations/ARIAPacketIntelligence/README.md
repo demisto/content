@@ -38,7 +38,7 @@ Creates a rule that drops all packets that match the specified 5-tuple values.
 | target_port | The destination port(s). This accepts a comma-separated list (e.g., “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”). | Optional | 
 | protocol | The protocol used for the packets (e.g., TCP). | Optional | 
 | rule_name | The name of the rule to create. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -115,7 +115,7 @@ Deletes a named rule from the 5-tuple logic block. This allows the previously bl
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The name of the rule to delete. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -202,7 +202,7 @@ Creates a rule that redirects a conversation that matches 5-tuple values to the 
 | aio_index | The index of the entry in the alert information object table. | Optional | 
 | trigger_type | The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again. | Optional | 
 | trigger_value | The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191. If the trigger_type is re-trigger-ms or re-triggersec, this is the total amount of time (in msecs or secs), respectively, that must elapse before the alert is triggered again. The valid range is 1-8191. | Optional | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -279,7 +279,7 @@ Removes the named rule from the 5-tuple block. This stops redirecting traffic to
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The name of the rule to delete. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -364,7 +364,7 @@ Adds a rule that generates an alert when a conversation that matches the specifi
 | aio_index | The index of the entry in the alert information object table. | Required | 
 | trigger_type | The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again. | Required | 
 | trigger_value | The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191. If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -441,7 +441,7 @@ Removes a named rule from the 5-tuple logic block, disabling the alerts.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The name of the rule to delete. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -517,7 +517,7 @@ Creates a rule that blocks packets destined for one or more specified ports.
 | --- | --- | --- |
 | port_range | The destination port(s) to block. This accepts a comma-separated list (e.g., “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”). | Required | 
 | rule_name | The name of the rule to create. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -594,7 +594,7 @@ Removes a named rule from the destination port logic block. This allows the prev
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The name of the rule to delete. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -677,7 +677,7 @@ Adds a rule that redirects traffic that is destined for one or more ports to the
 | aio_index | The index of the entry in the alert information object table. | Optional | 
 | trigger_type | The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again. | Optional | 
 | trigger_value | The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191. | Optional | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -744,7 +744,7 @@ Removes a named rule from the destination port logic block. This stops redirecti
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The name of the rule to delete. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -816,7 +816,7 @@ Creates a rule that generates an alert when traffic destined for one or more por
 | aio_index | The index of the entry in the alert information object table. | Required | 
 | trigger_type | The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again. | Required | 
 | trigger_value | The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -883,7 +883,7 @@ Removes a named rule from the destination port logic block, disabling the alerts
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The name of the rule to delete. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -950,7 +950,7 @@ Adds a rule that blocks packets originating from one or more specific ports.
 | --- | --- | --- |
 | port_range | The source port(s). This accepts a comma-separated list (e.g., “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”). | Required | 
 | rule_name | The name of the rule to create. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -1017,7 +1017,7 @@ Removes a named rule from the source port logic block. This allows the previousl
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The name of the rule to delete. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -1091,7 +1091,7 @@ Adds a rule that redirects traffic originating from one or more ports to the Pac
 | aio_index | The index of the entry in the alert information object table. | Optional | 
 | trigger_type | The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again. | Optional | 
 | trigger_value | The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191. | Optional | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -1158,7 +1158,7 @@ Removes a named rule from the source port logic block. This stops redirecting tr
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The name of the rule to delete. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -1230,7 +1230,7 @@ Creates a rule that generates an alert when traffic originating from one or more
 | aio_index | The index of the entry in the alert information object table. | Required | 
 | trigger_type | The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again. | Required | 
 | trigger_value | The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -1307,7 +1307,7 @@ Removes a named rule from the source port logic block, disabling the alerts.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The name of the rule to delete. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -1383,7 +1383,7 @@ Adds a rule that blocks packets destined for a specific IP address or range of I
 | --- | --- | --- |
 | target_ip | The IP address and mask of the destination IP address(es), in the format &lt;IP_address&gt;/&lt;mask&gt;. If the mask is omitted, a value of 32 is used. | Required | 
 | rule_name | The name of the rule to create. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -1460,7 +1460,7 @@ Removes a named rule from the destination subnet logic block. This allows the pr
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The name of the rule to delete. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -1543,7 +1543,7 @@ Creates a rule that redirects traffic destined for a specific IP address or rang
 | aio_index | The index of the entry in the alert information object table. | Optional | 
 | trigger_type | The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again. | Optional | 
 | trigger_value | The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191. | Optional | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -1610,7 +1610,7 @@ Removes a named rule from the destination subnet logic block. This stops redirec
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The name of the rule to delete. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -1682,7 +1682,7 @@ Creates a rule that generates an alert when traffic destined for a specific IP a
 | aio_index | The index of the entry in the alert information object table. | Required | 
 | trigger_type | The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again. | Required | 
 | trigger_value | The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -1749,7 +1749,7 @@ Removes a named rule from the destination subnet logic block, disabling the aler
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The name of the rule to delete. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -1816,7 +1816,7 @@ Adds a rule that blocks packets originating from a specific IP address or range 
 | --- | --- | --- |
 | src_ip | The IP address and mask of the source IP address(es), in the format &lt;IP_address&gt;/&lt;mask&gt;. If the mask is omitted, a value of 32 is used. | Required | 
 | rule_name | The name of the rule to create. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -1883,7 +1883,7 @@ Removes a named rule from the source subnet logic block. This allows the previou
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The name of the rule to delete. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -1957,7 +1957,7 @@ Creates a rule that redirects traffic originating from one or more specific IP a
 | aio_index | The index of the entry in the alert information object table. | Optional | 
 | trigger_type | The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again. | Optional | 
 | trigger_value | The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191. | Optional | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -2024,7 +2024,7 @@ Removes a named rule from the source subnet logic block. This stops redirecting 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The name of the rule to delete. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -2096,7 +2096,7 @@ Adds a rule that generates an alert when traffic originating from a specific IP 
 | aio_index | The index of the entry in the alert information object table. | Required | 
 | trigger_type | The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again. | Required | 
 | trigger_value | The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
@@ -2173,7 +2173,7 @@ Removes a named rule from the source subnet logic block, disabling the alerts.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_name | The name of the rule to delete. | Required | 
-| rcs | The remediation configuration string. | Optional | 
+| rcs | The remediation configuration string. Please refer to the integration documentation for more information. | Optional | 
 
 
 #### Context Output
