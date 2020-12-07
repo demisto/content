@@ -162,14 +162,14 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 1f76e683-13a2-44dc-8026-e3f4c839ae6a
+    taskid: 748f408d-f39a-46fc-8046-71000732f322
     type: regular
     task:
-      id: 1f76e683-13a2-44dc-8026-e3f4c839ae6a
+      id: 748f408d-f39a-46fc-8046-71000732f322
       version: -1
       name: setList
-      description: Set data in list
-      script: Builtin|||setList
+      description: commands.local.cmd.list.create
+      script: Builtin|||createList
       type: regular
       iscommand: true
       brand: Builtin
