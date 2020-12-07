@@ -3,8 +3,6 @@ from CommonServerPython import *  # noqa: F401
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, *args, **kwarg):
-        super().__init__(base_url, *args, **kwarg)
 
 
 def test_module(client: Client, **args) -> str:
