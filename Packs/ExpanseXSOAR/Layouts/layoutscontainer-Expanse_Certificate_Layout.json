@@ -3,451 +3,505 @@
     "id": "expansecertificate",
     "indicatorsDetails": {
 		"tabs": [
-			{
-				"id": "default-main",
-				"name": "Info",
-				"sections": [
-					{
-						"h": 2,
-						"hideName": true,
-						"i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-relatedIncidents",
-						"maxH": null,
-						"maxW": 2,
-						"minH": 1,
-						"minW": 2,
-						"moved": false,
-						"name": "Related Incidents",
-						"static": false,
-						"type": "relatedIncidents",
-						"w": 2,
-						"x": 0,
-						"y": 8
-					},
-					{
-						"displayType": "ROW",
-						"h": 4,
-						"i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "indicatortype",
-								"height": 22,
-								"id": "indicator-type",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "issuerdn",
-								"height": 22,
-								"id": "343aadc0-2ef8-11eb-a790-7560f0e58777",
-								"index": 1,
-								"listId": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "subjectdn",
-								"height": 22,
-								"id": "24510a30-2ef8-11eb-a790-7560f0e58777",
-								"index": 2,
-								"listId": "default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "certificatenames",
-								"height": 44,
-								"id": "a179eaa0-300a-11eb-8b8a-83eb3313ef95",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "validitynotbefore",
-								"height": 22,
-								"id": "58cd9fd0-2ef8-11eb-a790-7560f0e58777",
-								"index": 4,
-								"listId": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "validitynotafter",
-								"height": 22,
-								"id": "5351f7e0-2ef8-11eb-a790-7560f0e58777",
-								"index": 5,
-								"listId": "default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "certificatesignature",
-								"height": 106,
-								"id": "cf6f6d60-2efa-11eb-a790-7560f0e58777",
-								"index": 6,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "modified",
-								"height": 22,
-								"id": "indicator-modified",
-								"index": 7,
-								"listId": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "timestamp",
-								"height": 22,
-								"id": "indicator-timestamp",
-								"index": 8,
-								"listId": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "expiration",
-								"height": 22,
-								"id": "indicator-expiration",
-								"index": 9,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "serialnumber",
-								"height": 22,
-								"id": "455cf860-2ef8-11eb-a790-7560f0e58777",
-								"index": 10,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxH": null,
-						"maxW": 1,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Basic Information",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 1
-					},
-					{
-						"displayType": "ROW",
-						"h": 3,
-						"i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-indicatorTimeline",
-						"maxH": null,
-						"maxW": 1,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Timeline",
-						"static": false,
-						"type": "indicatorTimeline",
-						"w": 1,
-						"x": 2,
-						"y": 1
-					},
-					{
-						"h": 1,
-						"hideName": true,
-						"i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-reputationStatus",
-						"maxH": null,
-						"maxW": 1,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Reputation Status",
-						"static": false,
-						"type": "reputationStatus",
-						"w": 1,
-						"x": 1,
-						"y": 0
-					},
-					{
-						"h": 1,
-						"hideName": true,
-						"i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-expirationStatus",
-						"maxH": null,
-						"maxW": 1,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Expiration Status",
-						"static": false,
-						"type": "expirationStatus",
-						"w": 1,
-						"x": 0,
-						"y": 0
-					},
-					{
-						"h": 2,
-						"i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-reputationSources",
-						"maxH": null,
-						"maxW": 1,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Reputation",
-						"static": false,
-						"type": "reputationSources",
-						"w": 1,
-						"x": 1,
-						"y": 1
-					},
-					{
-						"h": 3,
-						"i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-sources",
-						"maxH": null,
-						"maxW": 2,
-						"minH": 1,
-						"minW": 2,
-						"moved": false,
-						"name": "Sources Data",
-						"static": false,
-						"type": "sources",
-						"w": 2,
-						"x": 0,
-						"y": 12
-					},
-					{
-						"displayType": "ROW",
-						"h": 1,
-						"i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039b",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "firstseen",
-								"height": 22,
-								"id": "indicator-first-seen",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "lastseen",
-								"height": 22,
-								"id": "indicator-last-seen",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxH": null,
-						"maxW": 2,
-						"minH": 1,
-						"minW": 2,
-						"moved": false,
-						"name": "Related Incidents",
-						"static": false,
-						"w": 2,
-						"x": 0,
-						"y": 7
-					},
-					{
-						"displayType": "ROW",
-						"h": 1,
-						"hideName": false,
-						"i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-24f92eb0-0f07-11eb-a27c-f7f192fa4e0c",
-						"items": [
-							{
-								"args": {},
-								"endCol": 1,
-								"fieldId": "",
-								"height": 44,
-								"id": "34054380-0f07-11eb-a27c-f7f192fa4e0c",
-								"index": 0,
-								"name": "Enrich",
-								"scriptId": "Builtin|||enrichIndicators",
-								"sectionItemType": "button",
-								"startCol": 0
-							},
-							{
-								"args": {},
-								"buttonClass": "error",
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "",
-								"height": 44,
-								"id": "429104c0-0f07-11eb-a27c-f7f192fa4e0c",
-								"index": 0,
-								"listId": "default-main-24f92eb0-0f07-11eb-a27c-f7f192fa4e0c",
-								"name": "Expire",
-								"scriptId": "Builtin|||expireIndicators",
-								"sectionItemType": "button",
-								"startCol": 1
-							}
-						],
-						"maxH": null,
-						"maxW": 1,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Actions",
-						"static": false,
-						"w": 1,
-						"x": 2,
-						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideItemTitleOnlyOne": true,
-						"hideName": false,
-						"i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-92499ef0-0f2f-11eb-9064-8b4f430ebd51",
-						"items": [
-							{
-								"endCol": 4,
-								"fieldId": "feedrelatedindicators",
-								"height": 106,
-								"id": "ab60cee0-0f2f-11eb-9064-8b4f430ebd51",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxH": null,
-						"maxW": 2,
-						"minH": 1,
-						"minW": 2,
-						"moved": false,
-						"name": "Feed Related Indicators",
-						"static": false,
-						"w": 2,
-						"x": 0,
-						"y": 10
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-87385610-2efa-11eb-a790-7560f0e58777",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "md5",
-								"height": 22,
-								"id": "b1ddb1d0-2efa-11eb-a790-7560f0e58777",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "sha1",
-								"height": 22,
-								"id": "abef23d0-2efa-11eb-a790-7560f0e58777",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "sha256",
-								"height": 22,
-								"id": "a8ab1c60-2efa-11eb-a790-7560f0e58777",
-								"index": 2,
-								"listId": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-87385610-2efa-11eb-a790-7560f0e58777",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "sha512",
-								"height": 22,
-								"id": "c38e9640-300a-11eb-8b8a-83eb3313ef95",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "pemmd5",
-								"height": 22,
-								"id": "27098350-2fd0-11eb-ba36-a1dbbe00805f",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxH": null,
-						"maxW": 1,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Fingerprint",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 5
-					},
-					{
-						"h": 11,
-						"i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-bcc43c00-2efe-11eb-b2b7-47c69914d000",
-						"items": [],
-						"maxH": null,
-						"maxW": 1,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Comments",
-						"static": false,
-						"type": "comments",
-						"w": 1,
-						"x": 2,
-						"y": 4
-					},
-					{
-						"displayType": "ROW",
-						"h": 4,
-						"hideItemTitleOnlyOne": true,
-						"hideName": false,
-						"i": "default-main-e5b884d0-33be-11eb-8d01-bb16aae218f4",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "subjectalternativenames",
-								"height": 22,
-								"id": "fcf06d70-33be-11eb-8d01-bb16aae218f4",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Subject Alternative Names",
-						"static": false,
-						"w": 1,
-						"x": 1,
-						"y": 3
-					}
-				],
-				"type": "custom"
-			},
+            {
+                "id": "default-main",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 2,
+                        "hideName": true,
+                        "i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-relatedIncidents",
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 2,
+                        "x": 0,
+                        "y": 9
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "serialnumber",
+                                "height": 22,
+                                "id": "455cf860-2ef8-11eb-a790-7560f0e58777",
+                                "index": 0,
+                                "listId": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "issuerdn",
+                                "height": 22,
+                                "id": "343aadc0-2ef8-11eb-a790-7560f0e58777",
+                                "index": 1,
+                                "listId": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "subjectdn",
+                                "height": 22,
+                                "id": "24510a30-2ef8-11eb-a790-7560f0e58777",
+                                "index": 2,
+                                "listId": "default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "validitynotbefore",
+                                "height": 22,
+                                "id": "58cd9fd0-2ef8-11eb-a790-7560f0e58777",
+                                "index": 3,
+                                "listId": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "validitynotafter",
+                                "height": 22,
+                                "id": "5351f7e0-2ef8-11eb-a790-7560f0e58777",
+                                "index": 4,
+                                "listId": "default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "certificatenames",
+                                "height": 44,
+                                "id": "a179eaa0-300a-11eb-8b8a-83eb3313ef95",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "certificatesignature",
+                                "height": 106,
+                                "id": "cf6f6d60-2efa-11eb-a790-7560f0e58777",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Certificate Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-indicatorTimeline",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 1
+                    },
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-reputationStatus",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Reputation Status",
+                        "static": false,
+                        "type": "reputationStatus",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-expirationStatus",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Expiration Status",
+                        "static": false,
+                        "type": "expirationStatus",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-reputationSources",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Reputation",
+                        "static": false,
+                        "type": "reputationSources",
+                        "w": 1,
+                        "x": 1,
+                        "y": 1
+                    },
+                    {
+                        "h": 3,
+                        "i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-sources",
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Sources Data",
+                        "static": false,
+                        "type": "sources",
+                        "w": 2,
+                        "x": 0,
+                        "y": 13
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039b",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseen",
+                                "height": 22,
+                                "id": "indicator-first-seen",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastseen",
+                                "height": 22,
+                                "id": "indicator-last-seen",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-24f92eb0-0f07-11eb-a27c-f7f192fa4e0c",
+                        "items": [
+                            {
+                                "args": {
+
+                                },
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "34054380-0f07-11eb-a27c-f7f192fa4e0c",
+                                "index": 0,
+                                "name": "Enrich",
+                                "scriptId": "Builtin|||enrichIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+
+                                },
+                                "buttonClass": "error",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "429104c0-0f07-11eb-a27c-f7f192fa4e0c",
+                                "index": 0,
+                                "listId": "default-main-24f92eb0-0f07-11eb-a27c-f7f192fa4e0c",
+                                "name": "Expire",
+                                "scriptId": "Builtin|||expireIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Actions",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-92499ef0-0f2f-11eb-9064-8b4f430ebd51",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "feedrelatedindicators",
+                                "height": 106,
+                                "id": "ab60cee0-0f2f-11eb-9064-8b4f430ebd51",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Feed Related Indicators",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 11
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-87385610-2efa-11eb-a790-7560f0e58777",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "md5",
+                                "height": 22,
+                                "id": "b1ddb1d0-2efa-11eb-a790-7560f0e58777",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sha1",
+                                "height": 22,
+                                "id": "abef23d0-2efa-11eb-a790-7560f0e58777",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "sha256",
+                                "height": 22,
+                                "id": "a8ab1c60-2efa-11eb-a790-7560f0e58777",
+                                "index": 2,
+                                "listId": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-87385610-2efa-11eb-a790-7560f0e58777",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sha512",
+                                "height": 22,
+                                "id": "c38e9640-300a-11eb-8b8a-83eb3313ef95",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "pemmd5",
+                                "height": 22,
+                                "id": "27098350-2fd0-11eb-ba36-a1dbbe00805f",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Fingerprint",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "h": 11,
+                        "i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-bcc43c00-2efe-11eb-b2b7-47c69914d000",
+                        "items": [
+
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-e5b884d0-33be-11eb-8d01-bb16aae218f4",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "subjectalternativenames",
+                                "height": 22,
+                                "id": "fcf06d70-33be-11eb-8d01-bb16aae218f4",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Subject Alternative Names",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-81ab9f70-3492-11eb-b68b-0f038587190e",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "certificatevalidationchecks",
+                                "height": 22,
+                                "id": "930db230-3492-11eb-b68b-0f038587190e",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Validation Checks",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "default-main-66b93080-37ab-11eb-b6ff-0368b670024a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "indicatortype",
+                                "height": 22,
+                                "id": "indicator-type",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expiration",
+                                "height": 22,
+                                "id": "indicator-expiration",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "indicator-modified",
+                                "index": 2,
+                                "listId": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 22,
+                                "id": "indicator-timestamp",
+                                "index": 3,
+                                "listId": "default-main-58cb0f03-3b63-4832-8a79-029c09535bbe-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-af568900-e170-4110-8118-485df84d5bbc-default-main-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Indicator Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    }
+                ],
+                "type": "custom"
+            },
 			{
 				"hidden": false,
 				"id": "q2e8fvdnsm",
