@@ -1158,8 +1158,10 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
         for artifact_dict in artifacts:
             for artifact_details in artifact_dict.values():
                 if artifact_details.get('file_path') in all_modified_files_paths:
-                    from_version = artifact_details.get('fromversion')
-                    to_version = artifact_details.get('toversion')
+                    # in yml files, the field is written with lower case 'v': fromversion, toversion
+                    # in json files, the field is written with upper case 'V': fromVersion, toVersion
+                    from_version = artifact_details.get('fromversion') or artifact_details.get('fromVersion')
+                    to_version = artifact_details.get('toversion') or artifact_details.get('toVersion')
                     if from_version:
                         min_from_version = min(min_from_version, LooseVersion(from_version))
                         max_from_version = max(max_from_version, LooseVersion(from_version))
