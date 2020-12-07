@@ -1,6 +1,6 @@
 {
     "group": "indicator",
-    "id": "Certificate",
+    "id": "certificate",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -714,7 +714,7 @@
             }
         ]
     },
-    "name": "Certificate Layout",
+    "name": "Certificate Indicator",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

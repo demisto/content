@@ -3,8 +3,8 @@
     "disabled": false,
     "expiration": 0,
     "file": false,
-    "id": "Certificate",
-    "layout": "Certificate",
+    "id": "certificate",
+    "layout": "certificate",
     "locked": false,
     "manualMapping": {
         "certificatenames": {
