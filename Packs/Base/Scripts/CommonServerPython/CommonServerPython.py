@@ -1311,23 +1311,55 @@ def appendContext(key, data, dedup=False):
     else:
         demisto.setContext(key, data)
 
-
-def urlify_dict(table, url_keys, urlify_inner_urls):
+def url_to_clickable_dict(data, url_keys):
     """
+    Turn the given urls fields in to clickable url, used for the markdown table.
+    Args:
+        data: a dictionary containing data with some values that are urls
+        url_keys: the keys of the url's wished to turn clickable
+    Returns:
+
     """
-    if not isinstance(table, dict): # is this the only option?
-        return
-    for key in url_keys:
-        if key in table.keys():
-            value = table[key]
-            table[key] = f'[{value}]({value})'
-        # handle nested url fields in the table
-        if isinstance(table[key], dict):
-            if urlify_inner_urls:
-                urlify_dict(table, url_keys, urlify_inner_urls)
+
+    # def format_response(response):
+    #     if response and isinstance(response, dict):
+    #         response = {pascalToSpace(key).replace(" ", ""): format_response(value) for key, value in response.items()}
+    #     elif response and isinstance(response, list):
+    #         response = [format_response(item) for item in response]
+    #     return response
+
+    if isinstance(data, list) and len(data) > 0:  # list of dicts
+        if isinstance(data[0], dict):
+            data = [url_to_clickable_dict(item, url_keys) for item in data]
+
+    if isinstance(data, dict):
+        for key, value in data.items():
+            if key in url_keys:
+                data[key] = url_to_clickable(value) # this goes over both strings and lists that are in 'url_keys'
+            else:
+                data[key] = url_to_clickable(data[key], url_keys)
+
+        return data
 
 
-def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None, urlify_inner_urls=False):
+
+
+def url_to_clickable(url):
+    """
+    make the given url clickable when in markdown format by concatenating itself, with the proper brackets
+    Args:
+        url: the url of interest
+
+    Returns:
+        markdown format for clickable url
+    """
+    if isinstance(url, list):
+        return [f'[{item}]({item})' for item in url]
+    return f'[{url}]({url})'
+
+
+
+def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1350,13 +1382,15 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :type metadata: ``str``
        :param metadata: Metadata about the table contents
 
+       :type url_keys: ``list``
+       :param metadata: a list of keys in the given JSON table that should be turned in to clickable
+
        :return: A string representation of the markdown table
        :rtype: ``str``
     """
-    print('##################')
     # Turning the urls in the table to clickable
     if url_keys:
-        urlify_dict(t, url_keys, urlify_inner_urls)
+        t = url_to_clickable_dict(t, url_keys)
 
     mdResult = ''
     if name:
