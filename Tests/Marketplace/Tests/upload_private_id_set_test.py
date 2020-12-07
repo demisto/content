@@ -11,6 +11,6 @@ def test_upload_private_id_set(mocker):
     dummy_storage_bucket.name = GCPConfig.PRODUCTION_BUCKET
     upload_private_id_set(dummy_storage_bucket, os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                                              "test_data", "id_set.json"))
-    storage_client = storage.Client()
+    storage_client = mocker.storage.Client()
     stats = storage.Blob(bucket=dummy_storage_bucket, name=dummy_storage_bucket.name).exists(storage_client)
     assert stats
