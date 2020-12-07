@@ -987,15 +987,13 @@ def get_last_mirrored_in_time(args):
     if demisto_incidents:  # handling 5.5 version
         demisto_incident = demisto_incidents[0]
         last_mirrored_in_time = demisto_incident.get('CustomFields', {}).get('lastmirroredintime')
-        last_mirrored_in_time_timestamp = arg_to_timestamp(last_mirrored_in_time, 'last_mirrored_in_time')
+        last_mirrored_in_timestamp = arg_to_timestamp(last_mirrored_in_time, 'last_mirrored_in_time')
 
     else:  # handling 6.0 version
-        last_mirrored_in_time = args.get('last_update')
-        last_mirrored_in_time_date = dateparser.parse(last_mirrored_in_time,
-                                                      settings={'TIMEZONE': 'UTC'}) - timedelta(minutes=2)
-        last_mirrored_in_time_timestamp = int(last_mirrored_in_time_date.timestamp() * 1000)
+        last_mirrored_in_time = arg_to_timestamp(args.get('last_update'), 'last_update')
+        last_mirrored_in_timestamp = (last_mirrored_in_time - 120)
 
-    return last_mirrored_in_time_timestamp
+    return last_mirrored_in_timestamp
 
 
 def get_incident_extra_data_command(client, args):
