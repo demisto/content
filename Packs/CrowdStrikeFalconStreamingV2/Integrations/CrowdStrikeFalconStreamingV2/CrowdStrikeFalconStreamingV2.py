@@ -6,7 +6,7 @@ import requests
 import traceback
 from asyncio import Event, create_task, sleep, run, wait_for, TimeoutError
 from contextlib import asynccontextmanager
-from aiohttp import ClientSession, TCPConnector
+from aiohttp import ClientSession, TCPConnector, ClientTimeout
 from typing import Dict, AsyncGenerator, AsyncIterator
 from collections import deque
 from random import uniform
@@ -205,9 +205,7 @@ class EventStream:
                     demisto.updateModuleHealth('Did not discover event stream resources, verify the App ID is not used'
                                                ' in another integration instance')
                     demisto.error(f'Did not discover event stream resources - {str(discover_stream_response)}')
-                    await sleep(10)
-                    demisto.debug('Done sleeping for 10 seconds, will try to discover stream again.')
-                    continue
+                    return
                 resource = resources[0]
                 self.data_feed_url = resource.get('dataFeedURL')
                 demisto.debug(f'Discovered data feed URL: {self.data_feed_url}')
@@ -224,7 +222,7 @@ class EventStream:
                 await sleep(30)
 
     async def fetch_event(
-            self, first_fetch_time: datetime, initial_offset: int = 0, event_type: str = ''
+            self, first_fetch_time: datetime, initial_offset: int = 0, event_type: str = '', sock_read: int = 120
     ) -> AsyncGenerator[Dict, None]:
         """Retrieves events from a CrowdStrike Falcon stream starting from given offset.
 
@@ -232,6 +230,7 @@ class EventStream:
             first_fetch_time (datetime): The start time to fetch from retroactively for the first fetch.
             initial_offset (int): Stream offset to start the fetch from.
             event_type (str): Stream event type to fetch.
+            sock_read (int) Client session sock read timeout.
 
         Yields:
             AsyncGenerator[Dict, None]: Event fetched from the stream.
@@ -259,7 +258,7 @@ class EventStream:
                         'Connection': 'keep-alive'
                     },
                     trust_env=self.proxy,
-                    timeout=None
+                    timeout=ClientTimeout(total=None, connect=60, sock_connect=60, sock_read=sock_read)
                 ) as session:
                     try:
                         integration_context = get_integration_context()
@@ -447,7 +446,8 @@ async def long_running_loop(
         proxy: bool,
         incident_type: str,
         first_fetch_time: datetime,
-        store_samples: bool = False
+        store_samples: bool = False,
+        sock_read: int = 120,
 ) -> None:
     """Connects to a CrowdStrike Falcon stream and fetches events from it in a loop.
 
@@ -463,6 +463,7 @@ async def long_running_loop(
         incident_type (str): Type of incident to create.
         store_samples (bool): Whether to store sample events in the integration context or not.
         first_fetch_time (datetime): The start time to fetch from retroactively for the first fetch.
+        sock_read (int) Client session sock read timeout.
 
     Returns:
         None: No data returned.
@@ -474,7 +475,7 @@ async def long_running_loop(
             stream.set_refresh_token(refresh_token)
             demisto.debug('Finished initializing refresh token, starting fetch events loop')
             async for event in stream.fetch_event(
-                    first_fetch_time=first_fetch_time, initial_offset=offset, event_type=event_type
+                    first_fetch_time=first_fetch_time, initial_offset=offset, event_type=event_type, sock_read=sock_read
             ):
                 event_metadata = event.get('metadata', {})
                 event_type = event_metadata.get('eventType', '')
@@ -595,6 +596,7 @@ def main():
     app_id = params.get('app_id') or 'Demisto'
     if not re.match(r'^[A-Za-z0-9]{0,32}$', app_id):
         raise ValueError('App ID is invalid: Must be a max. of 32 alphanumeric characters (a-z, A-Z, 0-9).')
+    sock_read = int(params.get('sock_read_timeout', 120))
 
     stream = EventStream(base_url=base_url, app_id=app_id, verify_ssl=verify_ssl, proxy=proxy)
 
@@ -606,7 +608,7 @@ def main():
         elif demisto.command() == 'long-running-execution':
             run(long_running_loop(
                 base_url, client_id, client_secret, stream, offset, event_type, verify_ssl, proxy, incident_type,
-                first_fetch_time, store_samples
+                first_fetch_time, store_samples, sock_read
             ))
         elif demisto.command() == 'fetch-incidents':
             fetch_samples()
