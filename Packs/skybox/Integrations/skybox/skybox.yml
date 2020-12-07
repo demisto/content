@@ -425,6 +425,78 @@ script:
     deprecated: false
     execution: false
     name: skybox-tickets-operateOnAccessChangeTicket
+  - arguments:
+    - default: false
+      isArray: false
+      name: hostId
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: dObject
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: sObject
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: destinationAddresses
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: sourceAddresses
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ports
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ticketId
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: firewallName
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: ruleType
+      predefined:
+      - DENY
+      - ACCESS_RULE
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: skybox-tickets-addRule
+  - arguments:
+    - default: false
+      isArray: false
+      name: NameFilter
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: skybox-network-findAssetsbyName
   dockerimage: demisto/zeep:1.0.0.8900
   feed: false
   isfetch: false
