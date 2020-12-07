@@ -141,6 +141,45 @@ class Client(BaseClient):
 
         return indicator_metadata
 
+    @staticmethod
+    def filter_duplicate_addresses(address_list: List) -> List:
+        """For each indicator value from the given list collect the object with the most keys (as it holds the most
+        data).
+
+        Args:
+            address_list (List): list of indicator objects containing objects with duplicate values.
+
+        Returns:
+            List. List of filtered indicator objects (no indicator value appear twice)
+        """
+        filtered_list: list = []
+        for item_to_search in address_list:
+
+            # if the value of the current item being searched is already in filtered_list it means we have already
+            # found the best candidate for this indicator object
+            if item_to_search.get('value') in [item.get('value') for item in filtered_list]:
+                continue
+
+            list_of_duplicate_addresses = []
+            current_address = item_to_search.get('value')
+
+            # Collect all the objects in the list with the same indicator value (duplicate value)
+            for item_to_compare in address_list:
+                compared_address = item_to_compare.get('value')
+                if current_address == compared_address:
+                    list_of_duplicate_addresses.append(item_to_compare)
+
+            # Create a list of the number of keys each of the object has
+            number_of_keys_list = [duplicate_item.keys() for duplicate_item in list_of_duplicate_addresses]
+
+            # Grab the index of the object which holds the maximal number of keys
+            max_number_of_keys_index = number_of_keys_list.index(max(number_of_keys_list))
+
+            # Add the object with the most data to the filtered list
+            filtered_list.append(list_of_duplicate_addresses[max_number_of_keys_index])
+
+        return filtered_list
+
     def extract_indicators_from_values_dict(self, values_from_file: Dict) -> List:
         """Builds a list of all IP indicators in the input dict.
 
@@ -158,9 +197,6 @@ class Client(BaseClient):
 
         for indicators_group in values_from_file:
             demisto.debug(F'{INTEGRATION_NAME} - Extracting value: {indicators_group.get("id")}')
-            if indicators_group.get("id") == 'AzureDevOps':
-                demisto.info(indicators_group)
-
 
             indicator_metadata = self.extract_metadata_of_indicators_group(indicators_group)
             if not indicator_metadata:
@@ -183,7 +219,7 @@ class Client(BaseClient):
                                             azure_platform=indicator_metadata['platform'],
                                             azure_system_service=indicator_metadata['system_service'])
                 )
-        return results
+        return self.filter_duplicate_addresses(results)
 
     def build_iterator(self) -> List:
         """Retrieves all entries from the feed.
@@ -192,7 +228,6 @@ class Client(BaseClient):
         """
         try:
             download_link = self.get_azure_download_link()
-            demisto.info(download_link)
             values_from_file = self.get_download_file_content_values(download_link)
             results = self.extract_indicators_from_values_dict(values_from_file)
 
