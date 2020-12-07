@@ -22,8 +22,9 @@ from Rundeck import (
 
 
 from CommonServerPython import DemistoException
-from datetime import datetime
+from datetime import datetime, timezone
 import demistomock as demisto
+from dateparser import parse
 
 
 def test_filter_results_when_response_is_dict(mocker):
@@ -691,12 +692,11 @@ def test_calc_run_at_time():
     Then:
         - ISO 8601 time
     """
-    cur_date = datetime.now()
-    result = calc_run_at_time("1 hour")
-    year, month, day = result.split("T")[0].split("-")
-    assert cur_date.year == int(year)
-    assert cur_date.month == int(month)
-    assert cur_date.day == int(day)
+    cur_date = datetime.now().replace(tzinfo=timezone.utc)
+    result = parse(calc_run_at_time("1 second")).replace(tzinfo=timezone.utc)
+    assert cur_date.year == result.year
+    assert cur_date.month == result.month
+    assert cur_date.day == result.day
 
 
 def test_collect_headers():

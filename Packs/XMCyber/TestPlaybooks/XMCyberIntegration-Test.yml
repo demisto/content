@@ -1,0 +1,625 @@
+id: XMCyberIntegration-Test
+name: XMCyberIntegration-Test
+version: -1
+fromversion: 5.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: xmcyber-affected-critical-assets-list
+      description: ''
+      script: '|||xmcyber-affected-critical-assets-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      entityId:
+        simple: "6324751896077844368"
+      timeId: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.criticalAssetsAtRiskList.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.criticalAssetsAtRiskList.average
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.criticalAssetsAtRiskList.minimum
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: xmcyber-affected-entities-list
+      description: ''
+      script: '|||xmcyber-affected-entities-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      entityId:
+        simple: "6324751896077844368"
+      timeId: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '5'
+    type: condition
+    task:
+      id: '5'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entitiesAtRiskList.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entitiesAtRiskList.technique
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: xmcyber-version-supported
+      description: ''
+      script: '|||xmcyber-version-supported'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '7'
+    type: condition
+    task:
+      id: '7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.IsVersion.valid
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '8'
+    type: regular
+    task:
+      id: '8'
+      version: -1
+      name: xmcyber-version-get
+      description: ''
+      script: '|||xmcyber-version-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '9'
+    type: condition
+    task:
+      id: '9'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.Version.system
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '10'
+    type: regular
+    task:
+      id: '10'
+      version: -1
+      name: ip
+      description: ''
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      ip:
+        simple: 192.168.111.185
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: '11'
+    type: condition
+    task:
+      id: '11'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.displayName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.isAsset
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entitiesAtRiskList
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.averageComplexity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.criticalAssetsAtRisk
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.averageComplexityLevel
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.compromisingTechniques.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.compromisingTechniques.count
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityType
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityReport
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: '12'
+    type: regular
+    task:
+      id: '12'
+      version: -1
+      name: xmcyber-entity-get
+      description: ''
+      script: '|||xmcyber-entity-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      hostname:
+        simple: USERCC59
+      ip: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: '13'
+    type: condition
+    task:
+      id: '13'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.displayName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.isAsset
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entitiesAtRiskList
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.averageComplexity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.criticalAssetsAtRisk
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.averageComplexityLevel
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.compromisingTechniques.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.compromisingTechniques.count
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityType
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityReport
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: '14'
+    type: regular
+    task:
+      id: '14'
+      version: -1
+      name: hostname
+      description: ''
+      script: '|||hostname'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      hostname:
+        simple: USERCC59
+      ip: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: '15'
+    taskid: '15'
+    type: condition
+    task:
+      id: '15'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.displayName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.isAsset
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entitiesAtRiskList
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.averageComplexity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.criticalAssetsAtRisk
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.averageComplexityLevel
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.compromisingTechniques.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.compromisingTechniques.count
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityType
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityReport
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: '16'
+    taskid: '16'
+    type: title
+    task:
+      id: '16'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
