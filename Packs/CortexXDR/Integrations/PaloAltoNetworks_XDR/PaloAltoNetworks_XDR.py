@@ -2097,6 +2097,7 @@ def main():
         timeout=timeout
     )
 
+    # test
     try:
         if demisto.command() == 'test-module':
             client.test_module(first_fetch_time)
