@@ -456,7 +456,7 @@ def create_content_descriptor(release_notes, version, asset_id, github_token):
 
 
 def main():
-    install_logging('Build Content Descriptor.log')
+    install_logging('Build_Content_Descriptor.log')
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('version', help='Release version')
     arg_parser.add_argument('git_sha1', help='commit sha1 to compare changes with')

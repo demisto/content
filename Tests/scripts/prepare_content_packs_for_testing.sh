@@ -53,6 +53,7 @@ if [ ! -n "${NIGHTLY}" ] && [ ! -n "${BUCKET_UPLOAD}" ]; then
     fi
   fi
 else
+  IS_FORCE_UPLOAD=false
   if [ -n "${NIGHTLY}" ]; then
     echo "Updating all content packs for nightly build..."
     # In content nightly we include test-pbs in the zipped packs, we override all packs and we test all packs in the repo
@@ -65,7 +66,6 @@ else
       REMOVE_PBS=true
       BUCKET_UPLOAD_FLOW=true
       GCS_PRIVATE_BUCKET="marketplace-dist-private"
-      IS_FORCE_UPLOAD=false
     if [ -n "${FORCE_PACK_UPLOAD}" ] && [ -n "${PACKS_TO_UPLOAD}" ]; then
       # In case the workflow is force upload, we override the forced packs
       echo "Force uploading to production the following packs: ${PACKS_TO_UPLOAD}"
