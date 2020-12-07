@@ -3,5 +3,4 @@ MANDATORY_PREMIUM_PACKS = ['HelloWorldPremium',
                            'IdentityLifecycleManagement-Enterprise',
                            'IdentityLifecycleManagement-LargeEnterprise',
                            'PassiveTotalPremium',
-                           'RiskIQDigitalFootprintPremium',
-                           'FakePack']
+                           'RiskIQDigitalFootprintPremium']
