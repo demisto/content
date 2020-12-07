@@ -226,7 +226,7 @@ def fetch_mails(client: IMAPClient,
                 permitted_from_addresses: str = '',
                 permitted_from_domains: str = '',
                 include_raw_body: bool = False,
-                limit: int = -1,
+                limit: int = 200,
                 save_file: bool = False,
                 message_id: int = None,
                 uid_to_fetch_from: int = 1) -> Tuple[list, list, int]:
@@ -258,7 +258,6 @@ def fetch_mails(client: IMAPClient,
                                                permitted_from_domains,
                                                uid_to_fetch_from)
         messages = client.search(messages_query)
-        limit = len(messages) if limit == -1 else limit
         messages = messages[:limit]
     mails_fetched = []
     messages_fetched = []
@@ -396,7 +395,7 @@ def main():
     permitted_from_addresses = demisto.params().get('permittedFromAdd', '')
     permitted_from_domains = demisto.params().get('permittedFromDomain', '')
     delete_processed = demisto.params().get("delete_processed", False)
-    limit = int(demisto.params().get('limit', '50'))
+    limit = min(int(demisto.params().get('limit', '50')), 200)
     save_file = params.get('save_file', False)
     first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
     ssl_context = ssl.create_default_context()
