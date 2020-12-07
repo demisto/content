@@ -1,5 +1,5 @@
 import demistomock as demisto
-from dateutil.parser import ParserError, parse
+from dateutil.parser import ParserError, parse  # type: ignore[attr-defined]
 from datetime import timezone
 
 
