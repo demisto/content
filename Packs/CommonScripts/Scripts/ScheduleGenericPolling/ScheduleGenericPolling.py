@@ -8,7 +8,7 @@ def parseIds(idsArg):
     if idsArg is None:
         return
     if isinstance(idsArg, list):
-        return ','.join(map(lambda item: str(item).encode('utf-8'), idsArg))
+        return ','.join(map(lambda item: str(item) if type(item) == int else item.encode('utf-8'), idsArg))
     if isinstance(idsArg, str) or isinstance(idsArg, bytes) or isinstance(idsArg, unicode):
         return ','.join(argToList(idsArg.encode('utf-8')))
     return str(idsArg)
