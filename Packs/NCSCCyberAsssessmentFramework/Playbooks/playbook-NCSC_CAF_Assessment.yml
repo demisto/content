@@ -6,7 +6,7 @@ contentitemexportablefields:
     propagationLabels:
     - all
     toServerVersion: ""
-id: 2fd1efe9-6f59-42e5-8db2-43a8799898e8
+id: NCSC CAF Assessment
 inputs:
 - description: The receiver of the Assessment A questions.
   key: CAF A Email
