@@ -15,7 +15,7 @@
  "mergeContext": false,
  "formatScript": "CryptoCurrenciesFormat",
  "manualMapping": {
-  "addresstype": {
+  "cryptocurrencyaddresstype": {
    "simple": "Cryptocurrency.AddressType",
    "complex": null
   }

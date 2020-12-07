@@ -1,10 +1,10 @@
 {
- "id": "indicator_addresstype",
+ "id": "indicator_cryptocurrencyaddresstype",
  "version": -1,
  "modified": "2020-11-10T11:16:35.081954+02:00",
- "name": "Address Type",
+ "name": "Cryptocurrency Address Type",
  "ownerOnly": false,
- "cliName": "addresstype",
+ "cliName": "cryptocurrencyaddresstype",
  "type": "shortText",
  "closeForm": false,
  "editForm": true,

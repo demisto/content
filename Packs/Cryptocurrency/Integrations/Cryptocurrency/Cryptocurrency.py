@@ -38,7 +38,13 @@ def get_bitcoin_reputation(addresses) -> List[CommandResults]:
             address_type=BITCOIN,
             dbot_score=dbot_score
         )
-        hr = f'Cryptocurrency reputation for address {address} was set to {SCORE[score]}'
+        table_data = {
+            'Address': address,
+            'Cryptocurrency Address Type': BITCOIN,
+            'Reputation': SCORE[score]
+        }
+        table_name = f'{INTEGRATION_NAME} reputation for {address}'
+        hr = tableToMarkdown(table_name, table_data)
 
         command_results.append(CommandResults(
             outputs_prefix='Cryptocurrency',

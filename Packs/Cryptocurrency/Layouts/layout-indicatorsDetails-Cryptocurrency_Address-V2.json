@@ -66,7 +66,7 @@
       "items": [
        {
         "endCol": 2,
-        "fieldId": "addresstype",
+        "fieldId": "cryptocurrencyaddresstype",
         "height": 24,
         "id": "1aa17e40-28f2-11eb-aafb-5b941276df73",
         "index": 0,

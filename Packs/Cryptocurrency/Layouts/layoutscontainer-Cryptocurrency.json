@@ -71,7 +71,7 @@
        },
        {
         "endCol": 2,
-        "fieldId": "addresstype",
+        "fieldId": "cryptocurrencyaddresstype",
         "height": 22,
         "id": "942b2cc0-2834-11eb-825a-1db518e7104a",
         "index": 5,
