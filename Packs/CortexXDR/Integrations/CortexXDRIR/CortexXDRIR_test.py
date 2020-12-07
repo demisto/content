@@ -1263,8 +1263,8 @@ def test_retrieve_file_details_command(requests_mock):
         'Type': 1,
         'ContentsFormat': 'json',
         'Contents': [data.get('reply').get('data')],
-        'HumanReadable': '### Action id : 1788 \n Retrieved 1 files from 1 '
-                         'endpoints. \n To get the exact action status run the xdr-action-status-get command',
+        'HumanReadable': '### Action id : 1788 \n Retrieved 1 files from 1 endpoints. \n '
+                         'To get the exact action status run the xdr-action-status-get command',
         'ReadableContentsFormat': 'markdown',
         'EntryContext': {}
     }
