@@ -4262,7 +4262,6 @@ def test_fail_connect_threads(mocker):
 def test_slack_send_filter_one_mirro_tag(mocker):
     # When filtered_tags parameter contains the same tag as the entry tag - slack_send method should send the message
     import Slack
-    from Slack import slack_send
 
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
@@ -4272,14 +4271,13 @@ def test_slack_send_filter_one_mirro_tag(mocker):
                                                        'entryObject': {'tags': ['tag1']}})
 
     mocker.patch.object(demisto, 'params', return_value={'filtered_tags': 'tag1'})
-    slack_send()
+    Slack.slack_send()
     assert demisto.results.mock_calls[0][1][0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: None'
 
 
 def test_slack_send_filter_no_mirror_tags(mocker):
     # When filtered_tags parameter is empty slack_send method should send the message
     import Slack
-    from Slack import slack_send
 
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
@@ -4289,7 +4287,7 @@ def test_slack_send_filter_no_mirror_tags(mocker):
                                                        'entryObject': {'tags': ['tag1']}})
 
     mocker.patch.object(demisto, 'params', return_value={'filtered_tags': ''})
-    slack_send()
+    Slack.slack_send()
     assert demisto.results.mock_calls[0][1][0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: None'
 
 
@@ -4297,7 +4295,6 @@ def test_slack_send_filter_no_entry_tags(mocker):
     # When filtered_tags parameter contains one tag to filter messages and the entry have no tags -
     # slack_send method should exit and demisto.results.mock_calls should be empty
     import Slack
-    from Slack import slack_send
 
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
@@ -4307,5 +4304,5 @@ def test_slack_send_filter_no_entry_tags(mocker):
                                                        'entryObject': {'tags': []}})
 
     mocker.patch.object(demisto, 'params', return_value={'filtered_tags': 'tag1'})
-    slack_send()
+    Slack.slack_send()
     assert demisto.results.mock_calls == []
