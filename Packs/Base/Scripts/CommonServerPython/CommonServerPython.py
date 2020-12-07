@@ -1311,44 +1311,32 @@ def appendContext(key, data, dedup=False):
     else:
         demisto.setContext(key, data)
 
-def url_to_clickable_dict(data, url_keys):
+
+def url_to_clickable_dict(data: [dict, list], url_keys: list):
     """
     Turn the given urls fields in to clickable url, used for the markdown table.
     Args:
-        data: a dictionary containing data with some values that are urls
+        data: a dictionary or a list containing data with some values that are urls
         url_keys: the keys of the url's wished to turn clickable
     Returns:
-
+        the modified data structure
     """
 
-    # def format_response(response):
-    #     if response and isinstance(response, dict):
-    #         response = {pascalToSpace(key).replace(" ", ""): format_response(value) for key, value in response.items()}
-    #     elif response and isinstance(response, list):
-    #         response = [format_response(item) for item in response]
-    #     return response
+    if data and isinstance(data, list):
+        data = [url_to_clickable_dict(item, url_keys) for item in data]
 
-    if isinstance(data, list) and len(data) > 0:  # list of dicts
-        if isinstance(data[0], dict):
-            data = [url_to_clickable_dict(item, url_keys) for item in data]
+    elif isinstance(data, dict):
+        data = {key: url_to_clickable(value) if key in url_keys else url_to_clickable_dict(data[key], url_keys)
+                for key, value in data.items()}
 
-    if isinstance(data, dict):
-        for key, value in data.items():
-            if key in url_keys:
-                data[key] = url_to_clickable(value) # this goes over both strings and lists that are in 'url_keys'
-            else:
-                data[key] = url_to_clickable(data[key], url_keys)
-
-        return data
+    return data
 
 
-
-
-def url_to_clickable(url):
+def url_to_clickable(url: [str, list]):
     """
     make the given url clickable when in markdown format by concatenating itself, with the proper brackets
     Args:
-        url: the url of interest
+        url: the url of interest or a list of urls
 
     Returns:
         markdown format for clickable url
@@ -1356,7 +1344,6 @@ def url_to_clickable(url):
     if isinstance(url, list):
         return [f'[{item}]({item})' for item in url]
     return f'[{url}]({url})'
-
 
 
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None):
