@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Post Intrusion Ransomware"
+    ],
+    "caseInsensitive": true,
+    "cliName": "users",
+    "closeForm": false,
+    "content": true,
+    "description": "affected usernames from Ransomware",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_users",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Users",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "",
+        "''"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

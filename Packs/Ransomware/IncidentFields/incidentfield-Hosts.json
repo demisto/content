@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Post Intrusion Ransomware"
+    ],
+    "caseInsensitive": true,
+    "cliName": "hosts",
+    "closeForm": false,
+    "content": true,
+    "description": "Affected hostnames from Ransomware",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_hosts",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Hosts",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "",
+        "''"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}
