@@ -1151,6 +1151,9 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
         (string, string). The boundaries of the lowest from version (defaults to 0.0.0)
          and highest to version (defaults to 99.99.99)
     """
+
+    logging.debug(f'check bounderies for {all_modified_files_paths}')
+
     max_to_version = LooseVersion('0.0.0')
     min_from_version = LooseVersion('99.99.99')
     max_from_version = LooseVersion('0.0.0')
