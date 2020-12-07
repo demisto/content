@@ -1,14 +1,7 @@
 {
-	"close": null,
-	"description": "",
-	"details": null,
-	"detailsV2": null,
-	"edit": null,
-	"fromServerVersion": "",
-	"group": "indicator",
-	"id": "expansecertificate",
-	"indicatorsDetails": {
-		"TypeName": "",
+    "group": "indicator",
+    "id": "expansecertificate",
+    "indicatorsDetails": {
 		"tabs": [
 			{
 				"id": "default-main",
@@ -673,7 +666,6 @@
 		]
 	},
 	"indicatorsQuickView": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "indicator-quick-view-info",
@@ -792,19 +784,10 @@
 				"type": "custom"
 			}
 		]
-	},
-	"itemVersion": "",
-	"locked": false,
-	"mobile": null,
-	"name": "Expanse Certificate Layout",
-	"packID": "4e7e4282-613f-49db-8727-7abba575f7b7",
-	"propagationLabels": [
-		"all"
-	],
-	"quickView": null,
-	"sortValues": null,
+    },
+	"name": "Expanse Certificate Indicator Layout",
 	"system": false,
-	"toServerVersion": "",
-	"version": -1,
-	"fromVersion": "6.0.0"
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": ""
 }
