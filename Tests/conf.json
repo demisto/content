@@ -3438,6 +3438,8 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Feodo Tracker IP Blocklist Feed": "test-module downloads a file",
+        "McAfee Advanced Threat Defense": "has a command that uploads file (!atd-file-upload)",
         "Symantec Messaging Gateway": "Test playbook uses a random string",
         "Cylance Protect": "Test playbook (get_file_sample_by_hash_-_cylance_protect_-_test) downloads a file",
         "WildFire-v2": "has a command that uploads file (!wildfire-upload)",
