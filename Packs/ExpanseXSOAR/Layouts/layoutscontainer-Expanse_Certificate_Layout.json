@@ -6,7 +6,7 @@
 	"edit": null,
 	"fromServerVersion": "",
 	"group": "indicator",
-	"id": "19bbdb14-b844-454f-8cc4-333852ef2c5a",
+	"id": "expansecertificate",
 	"indicatorsDetails": {
 		"TypeName": "",
 		"tabs": [
@@ -805,5 +805,6 @@
 	"sortValues": null,
 	"system": false,
 	"toServerVersion": "",
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.0.0"
 }
