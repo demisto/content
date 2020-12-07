@@ -499,7 +499,7 @@
                                 "id": "47ba5a20-1a90-11eb-b073-b3d10be54f98",
                                 "index": 8,
                                 "name": "↻ Refresh Assets",
-                                "scriptId": "6b12ee90-b89f-4a02-88d0-c4bc432f569c",
+                                "scriptId": "ExpanseRefreshIssueAssets",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -700,7 +700,7 @@
                         "minW": 3,
                         "moved": false,
                         "name": "Expanse Latest Evidence",
-                        "query": "6cf2ed3b-e900-4b48-806f-434dfdb1ff06",
+                        "query": "ExpanseEvidenceDynamicSection",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
