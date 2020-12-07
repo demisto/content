@@ -500,10 +500,11 @@ def validate_connection_name(client, arg_input):
         results = client.do_request('GET', f'/plugin/products/trace/computers?name={ip_input}')
         if results and len(results) == 1:
             return results[0]
-    results = client.do_request('GET', f'/plugin/products/trace/computers?name={arg_input}')
-    if results and len(results) == 1 and results[0].lower() == arg_input.lower():
-        return results[0]
-    raise ValueError('The specified connection name does not exist.')
+    return arg_input
+    # results = client.do_request('GET', f'/plugin/products/trace/computers?name={arg_input}')
+    # if results and len(results) == 1 and results[0].lower() == arg_input.lower():
+    #     return results[0]
+    # raise ValueError('The specified connection name does not exist.')
 
 
 def test_module(client, data_args):
