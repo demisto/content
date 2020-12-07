@@ -23,11 +23,13 @@ class Client(BaseClient):
     SHA256_LEN = 64
     DEFAULT_THRESHOLD = 70
 
-    def __init__(self, base_url: str, api_params: Dict, verify=True, proxy=False, credentials: Dict = None,
-                 use_credentials_login=False):
-        self.use_credentials_login = use_credentials_login
+    def __init__(self, base_url: str, api_params: Dict, verify=True, proxy=False, credentials: Dict = None):
         self.command_params = api_params
-        self.credentials = credentials
+
+        if credentials:
+            self.credentials = {'username': credentials.get('identifier'), 'password': credentials.get('password')}
+        else:
+            self.credentials = {}
 
         super(Client, self).__init__(base_url, verify, proxy)
 
@@ -73,7 +75,7 @@ class Client(BaseClient):
         result = self.http_request('/analysis/get_completed')
         if 'data' in result:
             context_entry: List = []
-            if self.use_credentials_login:
+            if self.credentials:
                 context_entry = self.get_status_and_time_from_get_history_response(argToList(result['data']))
             else:
                 context_entry = self.get_status_and_time(argToList(result['data'].get('tasks')))
@@ -155,7 +157,7 @@ class Client(BaseClient):
                 file_to_upload = {'file': (file_to_upload, _file.read())}
 
         result: Dict = {}
-        if self.use_credentials_login:
+        if self.credentials:
             url_suffix = SUFFIX_TRANSFORMER[path]
             result = self._http_request(url_suffix['method'], url_suffix['url'], data=self.credentials,
                                         params=self.command_params, files=file_to_upload, timeout=2000)
@@ -308,30 +310,21 @@ def main():
     base_url = params.get('url')
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy')
+    credentials = params.get('credentials')
+    api_params = {
+        'key': params.get('api_key'),
+        'api_token': params.get('api_token')
+    }
+    api_params.update(demisto.args())
 
-    if params.get('username') and params.get('password'):
-        credentials = {
-            'username': params.get('username'),
-            'password': params.get('password')
-        }
-        api_params = demisto.args()
-        cred_login = True
-
-    elif params.get('api_key') and params.get('api_token'):
-        api_params = {
-            'key': params.get('api_key'),
-            'api_token': params.get('api_token')
-        }
-        api_params.update(demisto.args())
+    if not credentials.get('identifier') or not credentials.get('password'):
         credentials = {}
-        cred_login = False
 
-    else:
+    if not ((params.get('api_key') and params.get('api_token')) or credentials):
         raise DemistoException('Please fill the credentials in the integration params'
                                ' - api key and token or username and password')
 
-    client = Client(base_url, api_params, verify=verify_ssl, proxy=proxy, credentials=credentials,
-                    use_credentials_login=cred_login)
+    client = Client(base_url, api_params, verify=verify_ssl, proxy=proxy, credentials=credentials)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
