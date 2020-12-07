@@ -83,8 +83,8 @@ def check_index_data(index_data: dict) -> bool:
     all_mandatory_packs_are_found = log_message_if_statement(statement=(mandatory_pack_ids == []),
                                                              error_message=f"index json is missing some mandatory"
                                                                            f" pack ids: {pformat(mandatory_pack_ids)}",
-                                                             success_message=f"All premium mandatory pack ids were"
-                                                                             f" found in the index.json file.")
+                                                             success_message="All premium mandatory pack ids were"
+                                                                             " found in the index.json file.")
     return all([packs_are_valid, all_mandatory_packs_are_found])
 
 
