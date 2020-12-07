@@ -21,7 +21,7 @@ script:
       description: MD5 hash of the JA3 fingerprint.
       name: JA3
       required: true
-    description: Search for a MD5 hash of a JA3 fingerprint
+    description: Search for "User-Agents" matching an MD5 hash of a JA3 fingerprint.
     name: ja3-search
   dockerimage: demisto/python3:3.8.6.13358
   runonce: false
