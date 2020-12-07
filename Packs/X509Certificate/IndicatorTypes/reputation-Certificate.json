@@ -3,7 +3,7 @@
     "disabled": false,
     "expiration": 0,
     "file": false,
-    "id": "certificate",
+    "id": "Certificate",
     "layout": "certificate",
     "locked": false,
     "manualMapping": {
