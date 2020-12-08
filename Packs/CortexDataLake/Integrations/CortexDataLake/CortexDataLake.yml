@@ -81,8 +81,8 @@ configuration:
   - sctp
   required: false
   type: 16
-- additionalinfo: Comma-separated fields that will be fetched with every incident,
-    e.g., "pcap,session_id". Enter "*" for all possible fields.
+- additionalinfo: Comma-separated fields that will be fetched with every incident, e.g., "pcap,session_id".
+    Enter "*" for all possible fields.
   defaultvalue: '*'
   display: Fetch Fields
   hidden: false
@@ -230,6 +230,17 @@ script:
       - minutes
       - days
       - weeks
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: If set to false, query results are not mapped into the standard command context. Default is "true".
+      isArray: false
+      name: transform_results
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
