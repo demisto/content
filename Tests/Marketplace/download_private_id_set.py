@@ -1,25 +1,13 @@
 import os
-import json
 import argparse
-from google.cloud import storage
 from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig
 
 
-STORAGE_BUCKET_NAME = 'marketplace-dist-private-test'
 STORAGE_ID_SET_PATH = 'content/id_set.json'
 ARTIFACTS_PATH = '/home/circleci/project/artifacts/'
 
 
 def download_private_id_set_from_gcp(public_storage_bucket):
-
-    # file_path = "creds.json"
-    # json_content = json.loads(os.environ.get('GCS_ARTIFACTS_KEY'))
-    # with open(file_path, "w") as file:
-    #     json.dump(json_content, file)
-    # os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = file_path
-    # storage_client = storage.Client()
-    #
-    # storage_bucket = storage_client.bucket(STORAGE_BUCKET_NAME)
 
     index_blob = public_storage_bucket.blob(STORAGE_ID_SET_PATH)
 
