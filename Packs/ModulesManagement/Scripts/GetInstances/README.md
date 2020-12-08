@@ -1,4 +1,4 @@
-Returns all the Instance that existing in xsoar
+Returns all the instances existing in Cortex XSOAR.
 
 ## Script Data
 ---

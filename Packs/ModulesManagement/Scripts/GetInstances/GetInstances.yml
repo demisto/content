@@ -6,7 +6,7 @@ script: ''
 type: python
 tags: []
 enabled: true
-comment: Returns all the Instance that existing in xsoar
+comment: Returns all the instances existing in Cortex XSOAR.
 args:
 - name: brand
   description: Filter by the brand name
