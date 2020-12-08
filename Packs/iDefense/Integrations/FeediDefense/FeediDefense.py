@@ -3,21 +3,6 @@ from CommonServerPython import *
 from JSONFeedApiModule import *  # noqa: E402
 
 
-def global_integration_context():
-    integration_context: dict = get_integration_context()
-
-    def update_feed_integration_context(key: str = None, value: str = None) -> None:
-        integration_context[key] = value
-
-    def get_feed_integration_context(key: str) -> Optional[Any]:
-        return integration_context.get(key)
-
-    def set_feed_integration_context():
-        set_integration_context(integration_context)
-
-    return update_feed_integration_context, get_feed_integration_context, set_feed_integration_context
-
-
 def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
     """
     Implement the http_request with api that works with pagination and filtering. Uses GLOBAL_INTEGRATION_CONTEXT to
@@ -33,10 +18,9 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
     fetch_time = demisto.params().get('fetch_time', '14 days')
     params: dict = feed.get('filters', {})
     current_indicator_type = feed.get('indicator_type', '')
-    update_feed_integration_context, get_feed_integration_context, \
-        set_feed_integration_context = global_integration_context()
     start_date, end_date = parse_date_range(fetch_time, utc=True)
-    last_fetch = get_feed_integration_context(f'{current_indicator_type}_fetch_time')
+    integration_context = get_integration_context()
+    last_fetch = integration_context.get(f'{current_indicator_type}_fetch_time')
     if last_fetch:
         start_date = last_fetch
     page_number = 1
@@ -46,8 +30,8 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
 
     if not limit:
         limit = 10000
-        update_feed_integration_context(current_indicator_type + '_fetch_time', str(params['end_date']))
-        set_feed_integration_context()
+        integration_context[current_indicator_type + '_fetch_time'] = str(params['end_date'])
+        set_integration_context(integration_context)
 
     more_indicators = True
     result: list = []
@@ -79,6 +63,16 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
         except TypeError as TE:
             raise TypeError(f'Error massage: {TE}\n\n Try To check extractor value')
+        except ConnectionError as exception:
+            # Get originating Exception in Exception chain
+            error_class = str(exception.__class__)
+            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+            err_msg = 'Verify that the server URL parameter' \
+                      ' is correct and that you have access to the server from your host.' \
+                      '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
+                .format(err_type, exception.errno, exception.strerror)
+            raise DemistoException(err_msg, exception)
+
     demisto.debug(f"Received in total {len(result)} indicators from iDefense Feed")
     return result
 
