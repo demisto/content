@@ -321,7 +321,8 @@ references:
         python3 Tests/Marketplace/download_private_id_set.py -b 'marketplace-dist-private-test' -s $GCS_PATH
         rm $GCS_PATH
 
-        demisto-sdk merge-id-sets -i1 /home/circleci/project/artifacts/private_id_set.json -i2 ./Tests/id_set.json -o /home/circleci/project/artifacts/private_and_public_id_sets.json
+        demisto-sdk merge-id-sets -i1 /home/circleci/project/artifacts/private_id_set.json -i2 ./Tests/id_set.json -o ./Tests/private_and_public_id_sets.json
+        cp ./Tests/private_and_public_id_sets.json $CIRCLE_ARTIFACTS
 
   build_content_descriptor: &build_content_descriptor
     run:
@@ -363,7 +364,7 @@ references:
       name: Calculate Packs Dependencies
       when: always
       command: |
-        python3 ./Tests/Marketplace/packs_dependencies.py -i $CIRCLE_ARTIFACTS/private_and_public_id_sets.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
+        python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/private_and_public_id_sets.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
 
   update_tests_step: &update_tests_step
     run:
