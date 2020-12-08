@@ -114,15 +114,22 @@ def test_import_ioc_without_approval(mocker):
     assert expected_import_json == http_mock.call_args[1]['json']
 
 
-@pytest.mark.parametrize('file_hash, expected_result, raw_response', [
-    ('178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1',
-     util_load_json('test_data/file_256_context.json'),
-     util_load_json('test_data/file_256_response.json')),
-    ('665564674b6b4a7a3a69697221acef98ee5ca3664ce6b370059cb7d3b0942589556e5a9d69d83d038339535ea4ced2d4d300e07013a16'
-     '43c17d64464b77d89ef',
-     util_load_json('test_data/file_512_context.json'), util_load_json('test_data/file_512_response.json'))
+SHA_256_FILE_HASH = '178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1'
+SHA_512_FILE_HASH = '665564674b6b4a7a3a69697221acef98ee5ca3664ce6b370059cb7d3b0942589556e5a9d69d83d038339535ea4ced2d4d' \
+                    '300e07013a16'
+
+
+@pytest.mark.parametrize('file_hash, expected_result_file_path, raw_response_file_path', [
+    (SHA_256_FILE_HASH,
+     'test_data/file_256_context.json',
+     'test_data/file_256_response.json'),
+    (SHA_512_FILE_HASH,
+     'test_data/file_512_context.json',
+     'test_data/file_512_response.json')
 ])
-def test_get_file_reputation(mocker, file_hash, expected_result, raw_response):
+def test_get_file_reputation(mocker, file_hash, expected_result_file_path, raw_response_file_path):
+    expected_result = util_load_json(expected_result_file_path)
+    raw_response = util_load_json(raw_response_file_path)
     mocker.patch('Anomali_ThreatStream_v2.search_indicator_by_params', return_value=raw_response)
     mocker.patch.object(demisto, 'results')
 

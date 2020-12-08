@@ -239,11 +239,11 @@ def get_domain_context(indicator, threshold):
     return domain_context
 
 
-def get_file_type(indicator):
+def get_file_type(file_indicator):
     """
         The function gets a file indicator data and returns it's subtype.
     """
-    indicator_type = indicator.get('subtype', '')
+    indicator_type = file_indicator.get('subtype', '')
     return indicator_type
 
 
@@ -277,6 +277,7 @@ def get_threat_generic_context(indicator, indicator_mapping=None):
         Receives indicator and builds new dictionary from values that were defined in
         INDICATOR_MAPPING keys and adds the Severity key with indicator severity value.
     """
+    # True when the indicator isn't a file (file indicator has a modified indicator_mapping).
     if not indicator_mapping:
         indicator_mapping = INDICATOR_MAPPING
     threat_ip_context = {indicator_mapping[k]: v for (k, v) in indicator.items() if
@@ -501,12 +502,12 @@ def get_file_reputation(file, threshold=None, status="active,inactive"):
     file_type = get_file_type(indicator)
     file_context = get_file_context(indicator, threshold)
 
-    indicator_mapping = INDICATOR_MAPPING.copy()
+    file_indicator_mapping = INDICATOR_MAPPING.copy()
     # The real type of the hash is in subtype field.
-    indicator_mapping.pop('type', '')
-    indicator_mapping['subtype'] = 'Type'
+    file_indicator_mapping.pop('type', '')
+    file_indicator_mapping['subtype'] = 'Type'
 
-    threat_file_context = get_threat_generic_context(indicator, indicator_mapping)
+    threat_file_context = get_threat_generic_context(indicator, file_indicator_mapping)
     threat_file_context[file_type] = threat_file_context.pop('Address')
     threat_file_context.pop("ASN", None)
     threat_file_context.pop("Organization", None)
