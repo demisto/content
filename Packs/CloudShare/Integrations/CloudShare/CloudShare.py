@@ -1164,87 +1164,87 @@ def main() -> None:
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
-    # try:
-    commands = {
-        'cloudshare-get-envs': get_envs_command,
-        'cloudshare-get-projects': get_projects_command,
-        'cloudshare-get-project': get_project_command,
-        'cloudshare-get-project-policies': get_project_policies_command,
-        'cloudshare-get-project-blueprints': get_project_blueprints_command,
-        'cloudshare-get-project-blueprint': get_project_blueprint_command,
-        'cloudshare-get-classes': get_classes_command,
-        'cloudshare-get-class': get_class_command,
-        'cloudshare-delete-class': delete_class_command,
-        'cloudshare-delete-class-environemtns': delete_class_environments_command,
-        'cloudshare-get-classes-countries': get_classes_countries_command,
-        'cloudshare-get-classes-customfields': get_classes_customfields_command,
-        'cloudshare-get-classes-detailed': get_classes_detailed_command,
-        'cloudshare-get-classes-instructors': get_classes_instructors_command,
-        'cloudshare-create-class': create_class_command,
-        'cloudshare-send-class-invitations': send_class_invitations_command,
-        'cloudshare-suspend-class-environments': suspend_class_environments_command,
-        'cloudshare-modify-class': modify_class_command,
-        'cloudshare-get-students': get_students_command,
-        'cloudshare-get-student': delete_student_command,
-        'cloudshare-register-student': register_student_command,
-        'cloudshare-modify-student': modify_student_command,
-        'cloudshare-get-regions': get_regions_command,
-        'cloudshare-get-timezones': get_timezones_command,
-        'cloudshare-get-env-resource': get_env_resources_command,
-        'cloudshare-get-env-extended': get_env_extended_command,
-        'cloudshare-get-env-extended-vanity': get_env_extended_vanity_command,
-        'cloudshare-get-env-extended-token': get_env_extended_token_command,
-        'cloudshare-get-env-multiple-resources': get_env_multiple_resources_command,
-        'cloudshare-extend-env': extend_env_command,
-        'cloudshare-postpone-env-suspend': postpone_env_suspend_command,
-        'cloudshare-resume-env': resume_env_command,
-        'cloudshare-revert-env': revert_env_command,
-        'cloudshare-suspend-env': suspend_env_command,
-        'cloudshare-get-env': get_env_command,
-        'cloudshare-delete-env': delete_env_command,
-        'cloudshare-create-env': create_env_command,
-        'cloudshare-modify-env': modify_env_command,
-        'cloudshare-delete-vm': delete_vm_command,
-        'cloudshare-check-vm-execution-status': vm_check_execution_status_command,
-        'cloudshare-get-vm-remote-access-file': vm_get_remote_command,
-        'cloudshare-execute-vm-command': vm_execute_command,
-        'cloudshare-modify-vm-hardware': vm_modify_hardware_command,
-        'cloudshare-reboot-vm': reboot_vm_command,
-        'cloudshare-revert-vm': revert_vm_command,
-        'cloudshare-get-cloud-folders': get_cloud_folders_command,
-        'cloudshare-get-env-cloud-folders': get_env_cloud_folders_command,
-        'cloudshare-generate-cloud-folder-password': generate_password_folder_command,
-        'cloudshare-unmount-env-folders': unmount_env_folders_command,
-        'cloudshare-get-templates': get_templates_command,
-        'cloudshare-get-snapshot': get_snapshot_command,
-        'cloudshare-get-env-snapshots': get_env_snapshots_command,
-        'cloudshare-mark-default-snapshot': mark_default_snapshot_command,
-        'cloudshare-take-snapshot-env': take_snapshot_env_command,
-        'cloudshare-get-teams': get_teams_command,
-        'cloudshare-invite-user-poc': invite_user_poc_command,
-        'cloudshare-get-poc-invitations': get_poc_invitations_command
+    try:
+        commands = {
+            'cloudshare-get-envs': get_envs_command,
+            'cloudshare-get-projects': get_projects_command,
+            'cloudshare-get-project': get_project_command,
+            'cloudshare-get-project-policies': get_project_policies_command,
+            'cloudshare-get-project-blueprints': get_project_blueprints_command,
+            'cloudshare-get-project-blueprint': get_project_blueprint_command,
+            'cloudshare-get-classes': get_classes_command,
+            'cloudshare-get-class': get_class_command,
+            'cloudshare-delete-class': delete_class_command,
+            'cloudshare-delete-class-environemtns': delete_class_environments_command,
+            'cloudshare-get-classes-countries': get_classes_countries_command,
+            'cloudshare-get-classes-customfields': get_classes_customfields_command,
+            'cloudshare-get-classes-detailed': get_classes_detailed_command,
+            'cloudshare-get-classes-instructors': get_classes_instructors_command,
+            'cloudshare-create-class': create_class_command,
+            'cloudshare-send-class-invitations': send_class_invitations_command,
+            'cloudshare-suspend-class-environments': suspend_class_environments_command,
+            'cloudshare-modify-class': modify_class_command,
+            'cloudshare-get-students': get_students_command,
+            'cloudshare-get-student': delete_student_command,
+            'cloudshare-register-student': register_student_command,
+            'cloudshare-modify-student': modify_student_command,
+            'cloudshare-get-regions': get_regions_command,
+            'cloudshare-get-timezones': get_timezones_command,
+            'cloudshare-get-env-resource': get_env_resources_command,
+            'cloudshare-get-env-extended': get_env_extended_command,
+            'cloudshare-get-env-extended-vanity': get_env_extended_vanity_command,
+            'cloudshare-get-env-extended-token': get_env_extended_token_command,
+            'cloudshare-get-env-multiple-resources': get_env_multiple_resources_command,
+            'cloudshare-extend-env': extend_env_command,
+            'cloudshare-postpone-env-suspend': postpone_env_suspend_command,
+            'cloudshare-resume-env': resume_env_command,
+            'cloudshare-revert-env': revert_env_command,
+            'cloudshare-suspend-env': suspend_env_command,
+            'cloudshare-get-env': get_env_command,
+            'cloudshare-delete-env': delete_env_command,
+            'cloudshare-create-env': create_env_command,
+            'cloudshare-modify-env': modify_env_command,
+            'cloudshare-delete-vm': delete_vm_command,
+            'cloudshare-check-vm-execution-status': vm_check_execution_status_command,
+            'cloudshare-get-vm-remote-access-file': vm_get_remote_command,
+            'cloudshare-execute-vm-command': vm_execute_command,
+            'cloudshare-modify-vm-hardware': vm_modify_hardware_command,
+            'cloudshare-reboot-vm': reboot_vm_command,
+            'cloudshare-revert-vm': revert_vm_command,
+            'cloudshare-get-cloud-folders': get_cloud_folders_command,
+            'cloudshare-get-env-cloud-folders': get_env_cloud_folders_command,
+            'cloudshare-generate-cloud-folder-password': generate_password_folder_command,
+            'cloudshare-unmount-env-folders': unmount_env_folders_command,
+            'cloudshare-get-templates': get_templates_command,
+            'cloudshare-get-snapshot': get_snapshot_command,
+            'cloudshare-get-env-snapshots': get_env_snapshots_command,
+            'cloudshare-mark-default-snapshot': mark_default_snapshot_command,
+            'cloudshare-take-snapshot-env': take_snapshot_env_command,
+            'cloudshare-get-teams': get_teams_command,
+            'cloudshare-invite-user-poc': invite_user_poc_command,
+            'cloudshare-get-poc-invitations': get_poc_invitations_command
 
-    }
-    client = Client(
-        hostname,
-        api_id=api_id,
-        api_key=api_key,
-        verify=verify_certificate,
-        proxy=proxy
-    )
+        }
+        client = Client(
+            hostname,
+            api_id=api_id,
+            api_key=api_key,
+            verify=verify_certificate,
+            proxy=proxy
+        )
 
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration Test button.
-        result = test_module_command(client, args)
-        return_results(result)
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration Test button.
+            result = test_module_command(client, args)
+            return_results(result)
 
-    else:
-        commands[command](client, args)
+        else:
+            commands[command](client, args)
 
     # Log exceptions and return errors
-    # except Exception as e:
-    #    demisto.error(traceback.format_exc())  # print the traceback
-    #    return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+    except Exception as e:
+       demisto.error(traceback.format_exc())  # print the traceback
+       return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
