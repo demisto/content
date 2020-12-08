@@ -33,7 +33,7 @@ def main():
     if list_results:
         demisto.results(list_results)
     else:
-        demisto.results("")
+        demisto.results('')
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
