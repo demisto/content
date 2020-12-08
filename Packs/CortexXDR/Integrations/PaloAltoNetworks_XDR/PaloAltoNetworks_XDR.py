@@ -987,6 +987,8 @@ def get_last_mirrored_in_time(args):
     if demisto_incidents:  # handling 5.5 version
         demisto_incident = demisto_incidents[0]
         last_mirrored_in_time = demisto_incident.get('CustomFields', {}).get('lastmirroredintime')
+        if not last_mirrored_in_time:  # this is an old incident, update anyway
+            return 0
         last_mirrored_in_timestamp = arg_to_timestamp(last_mirrored_in_time, 'last_mirrored_in_time')
 
     else:  # handling 6.0 version

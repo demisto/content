@@ -18,12 +18,44 @@ INCIDENT_IN_DEMISTO = {
         "xdralertcount": 1,
         "xdrstatus": "new",
         "xdrassignedusermail": "",
-        "xdrassigneduserprettyname": ""
+        "xdrassigneduserprettyname": "",
+        "xdrmodificationtime": "2019-06-02T11:15:09.323251+03:00",
+        "xdralerts": [
+            {
+                "category": "WildFirePostDetection",
+                "action_pretty": "Detected (Reported)",
+                "description": "Suspicious executable detected",
+                "severity": "high",
+                "host_ip": "8.8.8.8",
+                "source": "Traps",
+                "alert_id": "50820",
+                "host_name": "HostNameFFM8VIP9",
+                "detection_timestamp": 1559215835437,
+                "action": "REPORTED",
+                "user_name": "N/A",
+                "name": "WildFire Malware"
+            }
+        ],
+        "xdrfileartifacts": [
+            {
+                "file_signature_status": "SIGNATURE_UNAVAILABLE",
+                "is_process": None,
+                "file_name": "LCTGSK7IML.docx",
+                "file_wildfire_verdict": "UNKNOWN",
+                "alert_count": 1,
+                "is_malicious": None,
+                "is_manual": None,
+                "file_signature_vendor_name": None,
+                "type": "HASH",
+                "file_sha256": "384654fa409c7a500a4a843d33a005c9d670d4845d3a9e096efc8b00ad05a621"
+            }
+        ],
+        "xdrnetworkartifacts": []
     },
     "severity": 1,
     "name": "#697567 - WildFire Malware detected on host HostNameFFM8VIP9",
     "created": "2019-06-02T11:13:54.674006+03:00",
-    "sourceBrand": "Palo Alto Networks Cortext XDR IR"
+    "sourceBrand": "Palo Alto Networks Cortext XDR IR",
 }
 
 INCIDENT_FROM_XDR = {
@@ -107,7 +139,7 @@ def test_compare_incident_in_demisto_vs_xdr_context___incident_not_modified():
 
     incident_in_demisto = copy.deepcopy(INCIDENT_IN_DEMISTO)
     xdr_incident_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
-
+    xdr_incident_in_context['severity'] = 1
     is_modified, update_args = xdr_script.compare_incident_in_demisto_vs_xdr_context(incident_in_demisto,
                                                                                      xdr_incident_in_context,
                                                                                      incident_id,
@@ -140,6 +172,7 @@ def test_compare_incident_in_demisto_vs_xdr_context___status_was_modified():
     incident_in_demisto["CustomFields"]["xdrstatus"] = "closed"
 
     xdr_incident_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
+    xdr_incident_in_context['severity'] = 1
 
     is_modified, update_args = xdr_script.compare_incident_in_demisto_vs_xdr_context(incident_in_demisto,
                                                                                      xdr_incident_in_context,
@@ -256,6 +289,7 @@ def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_
 
     incident_in_xdr_latest = copy.deepcopy(INCIDENT_FROM_XDR)
     incident_from_xdr_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
+    incident_from_xdr_in_context['severity'] = 1
 
     is_modified, update_args = xdr_script.compare_incident_in_xdr_vs_previous_xdr_in_context(
         incident_in_xdr_latest,
@@ -293,6 +327,7 @@ def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_
     incident_in_xdr_latest["modification_time"] += 100
 
     incident_from_xdr_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
+    incident_from_xdr_in_context['severity'] = 1
 
     is_modified, update_args = xdr_script.compare_incident_in_xdr_vs_previous_xdr_in_context(
         incident_in_xdr_latest,
@@ -325,14 +360,15 @@ def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_
     """
     fields_mapping = {
         "status": "xdrstatus",
-        "severity": "severity"
+        "manual_severity": "severity"
     }
 
     incident_in_xdr_latest = copy.deepcopy(INCIDENT_FROM_XDR)
-    incident_in_xdr_latest["severity"] = "medium"
+    incident_in_xdr_latest["manual_severity"] = "medium"
     incident_in_xdr_latest["modification_time"] += 100
 
     incident_from_xdr_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
+    incident_from_xdr_in_context['severity'] = 1
 
     is_modified, update_args = xdr_script.compare_incident_in_xdr_vs_previous_xdr_in_context(
         incident_in_xdr_latest,
@@ -377,6 +413,7 @@ def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_
     incident_in_xdr_latest["modification_time"] += 100
 
     incident_from_xdr_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
+    incident_from_xdr_in_context['severity'] = 1
 
     is_modified, update_args = xdr_script.compare_incident_in_xdr_vs_previous_xdr_in_context(
         incident_in_xdr_latest,
@@ -708,23 +745,23 @@ def test_incident_was_modified_in_demisto(mocker):
 
 
 EXPECTED_INCIDENT = {
-     'incident_id': '697567',
-     'manual_severity': None,
-     'assigned_user_mail': None,
-     'high_severity_alert_count': None,
-     'host_count': None,
-     'xdr_url': 'http://example.com/incident-view/697567',
-     'assigned_user_pretty_name': '',
-     'alert_count': 1,
-     'med_severity_alert_count': None,
-     'user_count': None, 'severity': 1,
-     'low_severity_alert_count': None,
-     'status': 'new',
-     'description': 'WildFire Malware detected on host HostNameFFM8VIP9',
-     'resolve_comment': None,
-     'notes': None,
-     'modification_time': 1559463309323
-     }
+    'incident_id': '697567',
+    'manual_severity': None,
+    'assigned_user_mail': None,
+    'high_severity_alert_count': None,
+    'host_count': None,
+    'xdr_url': 'http://example.com/incident-view/697567',
+    'assigned_user_pretty_name': '',
+    'alert_count': 1,
+    'med_severity_alert_count': None,
+    'user_count': None, 'severity': 1,
+    'low_severity_alert_count': None,
+    'status': 'new',
+    'description': 'WildFire Malware detected on host HostNameFFM8VIP9',
+    'resolve_comment': None,
+    'notes': None,
+    'modification_time': 1559463309323
+}
 
 
 def test_create_incident_from_saved_data_without_extra_data():
@@ -763,7 +800,7 @@ def test_create_incident_from_saved_data_without_extra_data():
         "status": "xdrstatus",
         "user_count": "xdrusercount",
         "xdr_url": "xdrurl"
-}
+    }
 
     incident_from_context = copy.deepcopy(INCIDENT_IN_DEMISTO)
 
@@ -804,7 +841,7 @@ EXPECTED_INCIDENT_EXTRA_DATA = {
         }
     ],
     "xdrnetworkartifacts": []
-     }
+}
 
 
 def test_create_incident_from_saved_data_with_extra_data():

@@ -746,23 +746,23 @@ def test_incident_was_modified_in_demisto(mocker):
 
 
 EXPECTED_INCIDENT = {
-     'incident_id': '697567',
-     'manual_severity': None,
-     'assigned_user_mail': None,
-     'high_severity_alert_count': None,
-     'host_count': None,
-     'xdr_url': 'http://example.com/incident-view/697567',
-     'assigned_user_pretty_name': '',
-     'alert_count': 1,
-     'med_severity_alert_count': None,
-     'user_count': None, 'severity': 1,
-     'low_severity_alert_count': None,
-     'status': 'new',
-     'description': 'WildFire Malware detected on host HostNameFFM8VIP9',
-     'resolve_comment': None,
-     'notes': None,
-     'modification_time': 1559463309323
-     }
+    'incident_id': '697567',
+    'manual_severity': None,
+    'assigned_user_mail': None,
+    'high_severity_alert_count': None,
+    'host_count': None,
+    'xdr_url': 'http://example.com/incident-view/697567',
+    'assigned_user_pretty_name': '',
+    'alert_count': 1,
+    'med_severity_alert_count': None,
+    'user_count': None, 'severity': 1,
+    'low_severity_alert_count': None,
+    'status': 'new',
+    'description': 'WildFire Malware detected on host HostNameFFM8VIP9',
+    'resolve_comment': None,
+    'notes': None,
+    'modification_time': 1559463309323
+}
 
 
 def test_create_incident_from_saved_data_without_extra_data():
@@ -801,7 +801,7 @@ def test_create_incident_from_saved_data_without_extra_data():
         "status": "xdrstatus",
         "user_count": "xdrusercount",
         "xdr_url": "xdrurl"
-}
+    }
 
     incident_from_context = copy.deepcopy(INCIDENT_IN_DEMISTO)
 
@@ -842,7 +842,7 @@ EXPECTED_INCIDENT_EXTRA_DATA = {
         }
     ],
     "xdrnetworkartifacts": []
-     }
+}
 
 
 def test_create_incident_from_saved_data_with_extra_data():
@@ -873,4 +873,3 @@ def test_create_incident_from_saved_data_with_extra_data():
     created_incident = xdr_script.create_incident_from_saved_data(incident_from_context, fields_mapping, True)
 
     assert created_incident == EXPECTED_INCIDENT_EXTRA_DATA
-

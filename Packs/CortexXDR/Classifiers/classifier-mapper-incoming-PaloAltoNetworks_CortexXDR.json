@@ -27,6 +27,20 @@
 					},
 					"simple": ""
 				},
+				"XDR Modification Time": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "modification_time",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "TimeStampToDate"
+							}
+						]
+					},
+					"simple": ""
+				},
 				"XDR Alerts": {
 					"complex": null,
 					"simple": "alerts"

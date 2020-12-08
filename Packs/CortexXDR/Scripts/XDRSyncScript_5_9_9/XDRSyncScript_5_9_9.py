@@ -251,13 +251,18 @@ def create_incident_from_saved_data(demisto_incident, field_mapping, include_ext
         if field_in_xdr:
             if field_in_xdr == 'xdrmodificationtime':
                 modification_time_in_utc_format = custom_fields.get(field_in_xdr)
-                date = dateparser.parse(modification_time_in_utc_format, settings={'TIMEZONE': 'UTC'})
-                if date is None:
-                    # if date is None it means dateparser failed to parse it
-                    raise ValueError(f'The modification date of the incident is invalid: '
-                                     f'{modification_time_in_utc_format}')
+                if not modification_time_in_utc_format:
+                    modification_time = [label.get('value') for label in demisto_incident.get('labels') if
+                                         label.get('type') == 'modification_time']
+                    created_incident[field] = modification_time * 1000
+                else:
+                    date = dateparser.parse(modification_time_in_utc_format, settings={'TIMEZONE': 'UTC'})
+                    if date is None:
+                        # if date is None it means dateparser failed to parse it
+                        raise ValueError(f'The modification date of the incident is invalid: '
+                                         f'{modification_time_in_utc_format}')
 
-                created_incident[field] = int(date.timestamp() * 1000)
+                    created_incident[field] = int(date.timestamp() * 1000)
 
             elif field == 'severity':
                 created_incident[field] = demisto_incident.get(field)  # severity fields is in the incident root
