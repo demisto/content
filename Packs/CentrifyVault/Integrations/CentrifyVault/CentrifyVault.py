@@ -3,7 +3,7 @@ import time
 
 import demistomock as demisto  # noqa: F401
 # IMPORTS
-import requests
+
 from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
@@ -170,7 +170,6 @@ def test_module(client: Client):
 
 def fetch_secret_set_id(client: Client, setName):
     urlSuffix = '/Collection/GetObjectCollectionsAndFilters'
-    # retrieve_set_id_url = TENANT_URL + '/Collection/GetObjectCollectionsAndFilters'
     payload = {"ObjectType": "DataVault", "CollectionType": "ManualBucket"}
     centrify_setid_response = client.request_secret_set_id(url_suffix=urlSuffix, data=payload)
     for set_item in centrify_setid_response.get('Result').get('Results'):
@@ -184,7 +183,6 @@ def fetch_secret_set_id(client: Client, setName):
 
 def fetch_secretids_set(client: Client, set_id, secret_ids_list):
     urlSuffix = '/Collection/GetMembers'
-    # retrieve_secretids_url = TENANT_URL + '/Collection/GetMembers'
     payload = {"ID": set_id}
     centrify_secretids_response = client.request_fetch_secretids_set(url_suffix=urlSuffix, data=payload)
     for secret_id_item in centrify_secretids_response.get("Result"):
@@ -197,7 +195,6 @@ def fetch_secretids_set(client: Client, set_id, secret_ids_list):
 
 def fetch_secret_folder_id(client: Client, folderName):
     urlSuffix = '/ServerManage/GetSecretFolder'
-    # retrieve_folder_id_url = TENANT_URL + '/ServerManage/GetSecretFolder'
     payload = {"Name": folderName}
     centrify_folderid_response = client.request_fetch_secret_folder_id(url_suffix=urlSuffix, data=payload)
     return centrify_folderid_response.get('Result').get('Results')[0].get('Row').get('ID')
@@ -208,7 +205,6 @@ def fetch_secret_folder_id(client: Client, folderName):
 
 def fetch_secretids_folder(client: Client, folder_id, secret_ids_list, recursive):
     urlSuffix = '/ServerManage/GetSecretsAndFolders'
-    # retrieve_secretids_url = TENANT_URL + '/ServerManage/GetSecretsAndFolders'
     payload = {"Parent": folder_id}
     centrify_secretids_response = client.request_fetch_secretids_folder(url_suffix=urlSuffix, data=payload)
     secret_ids_count = centrify_secretids_response.get('Result').get('FullCount')
@@ -264,7 +260,6 @@ def centrify_secret_details(centrify_secret):
 
 def fetch_secret(client: Client, secret_id, secret_name, regex_match):
     urlSuffix = '/ServerManage/RetrieveDataVaultItemContents'
-    # retrieve_secret_url = TENANT_URL + '/ServerManage/RetrieveDataVaultItemContents'
     payload = {"ID": secret_id}
     centrify_secret_response = client.request_fetch_secret(url_suffix=urlSuffix, data=payload)
     if secret_name:
@@ -288,7 +283,6 @@ def fetch_secret(client: Client, secret_id, secret_name, regex_match):
 
 def fetch_folderids(client: Client, folder_id, folders_list):
     urlSuffix = '/ServerManage/GetSecretsAndFolders'
-    # retrieve_folderids_url = TENANT_URL + '/ServerManage/GetSecretsAndFolders'
     payload = {"Parent": folder_id}
     centrify_folderids_response = client.request_fetch_folderids(url_suffix=urlSuffix, data=payload)
     folder_ids_count = centrify_folderids_response.get('Result').get('FullCount')
@@ -314,7 +308,6 @@ def fetch_folderids(client: Client, folder_id, folders_list):
 
 def create_folder(client: Client, folderName, description, parent_id):
     urlSuffix = '/ServerManage/AddSecretsFolder'
-    # create_folder_url = TENANT_URL + '/ServerManage/AddSecretsFolder'
     payload = {"Name": folderName, "Description": description, "Parent": parent_id}
     centrify_folder_response = client.request_create_folder(url_suffix=urlSuffix, data=payload)
     if centrify_folder_response.get('success') is True:
@@ -328,7 +321,6 @@ def create_folder(client: Client, folderName, description, parent_id):
 
 def create_set(client: Client, setName, description):
     urlSuffix = '/Collection/CreateManualCollection'
-    # create_set_url = TENANT_URL + '/Collection/CreateManualCollection'
     payload = {"ObjectType": "DataVault", "Name": setName, "Description": description}
     centrify_set_response = client.request_create_set(url_suffix=urlSuffix, data=payload)
     if centrify_set_response.get('success') is True:
@@ -342,7 +334,6 @@ def create_set(client: Client, setName, description):
 
 def create_secret(client: Client, folderId, secret_name, secret_text, secret_type, secret_description):
     urlSuffix = '/ServerManage/AddSecret'
-    # create_secret_url = TENANT_URL + '/ServerManage/AddSecret'
     payload = {"SecretName": secret_name, "SecretText": secret_text, "Type": secret_type,
                "FolderId": folderId, "Description": secret_description}
     centrify_secret_response = client.request_create_secret(url_suffix=urlSuffix, data=payload)
@@ -357,7 +348,6 @@ def create_secret(client: Client, folderId, secret_name, secret_text, secret_typ
 
 def add_secret_set(client: Client, setId, secretId):
     urlSuffix = '/Collection/UpdateMembersCollection'
-    # add_secretset_url = TENANT_URL + '/Collection/UpdateMembersCollection'
     payload = {"id": setId, "add": [{"MemberType": "Row", "Table": "DataVault", "Key": secretId}]}
     add_secretset_response = client.request_add_secret_set(url_suffix=urlSuffix, data=payload)
     if add_secretset_response.get('success') is True:
@@ -371,7 +361,6 @@ def add_secret_set(client: Client, setId, secretId):
 
 def delete_folder(client: Client, folderId):
     urlSuffix = '/ServerManage/DeleteSecretsFolder'
-    # delete_folder_url = TENANT_URL + '/ServerManage/DeleteSecretsFolder'
     payload = {"ID": folderId}
     delete_folder_response = client.request_delete_folder(url_suffix=urlSuffix, data=payload)
     if delete_folder_response.get('success') is True:
@@ -385,7 +374,6 @@ def delete_folder(client: Client, folderId):
 
 def delete_set(client: Client, setId):
     urlSuffix = '/Collection/DeleteCollection'
-    # delete_set_url = TENANT_URL + '/Collection/DeleteCollection'
     payload = {"ID": setId}
     delete_set_response = client.request_delete_set(url_suffix=urlSuffix, data=payload)
     if delete_set_response.get('success') is True:
@@ -399,7 +387,6 @@ def delete_set(client: Client, setId):
 
 def delete_secret(client: Client, secretId):
     urlSuffix = '/ServerManage/DeleteSecret'
-    # delete_secret_url = TENANT_URL + '/ServerManage/DeleteSecret'
     payload = {"ID": secretId}
     delete_secret_response = client.request_delete_secret(url_suffix=urlSuffix, data=payload)
     if delete_secret_response.get('success') is True:
@@ -412,7 +399,6 @@ def fetch_secrets(args: dict, client: Client):
     try:
         holder_type = args.get('holderType')
         secret_name = args.get('secretName')
-        folder_id = ""
         secret_ids_list: list = []
         if holder_type == 'Set':
             set_name = args.get('holderName')
@@ -463,7 +449,6 @@ def create_secret_folder(args: dict, client: Client):
         else:
             parent_folder_id = ""
         status, folder_id = create_folder(client, folder_name, folder_description, parent_folder_id)
-        fcreate = list()
         if status == "Folder Created":
             CENTRIFY_VAULT = {}
             CENTRIFY_VAULT['FolderName'] = folder_name
@@ -521,7 +506,6 @@ def create_vault_secret(args: dict, client: Client):
             if 'set name not found' in setId_list:
                 return_error("Set name not found. Please provide a valid set name")
         status, secret_id = create_secret(client, folder_id, secret_name, secret_text, secret_type, secret_description)
-        screate: list = []
         if status == "Secret Created":
             CENTRIFY_VAULT = {}
             CENTRIFY_VAULT['holderType'] = holder_type
@@ -559,12 +543,10 @@ def create_vault_secret(args: dict, client: Client):
 def create_vault_set(args: dict, client: Client):
     try:
         set_name = args.get('setName')
-        # parent_set = args.get('parentSet')
         set_description = args.get('setDescription')
         if not set_description:
             set_description = ""
         status, set_id = create_set(client, set_name, set_description)
-        set_create: list = []
         if status == "Set Created":
             CENTRIFY_VAULT = {}
             CENTRIFY_VAULT['SetName'] = set_name
@@ -640,7 +622,6 @@ def add_vault_secret_set(args: dict, client: Client):
     try:
         set_name = args.get('setName')
         secret_id = args.get('secretId')
-        # parent_set = args.get('parentSet')
         set_id = fetch_secret_set_id(client, set_name)
         if set_id == "set name not found":
             return_error("Set name not found. Please provide a valid set name")
@@ -754,17 +735,13 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    tenant_url = demisto.params().get('tenantUrl')
+    tenant_url = demisto.params().get('tenantUrl', '').rstrip('/')
     client_id = demisto.params().get('clientId')
     client_secret = demisto.params().get('clientSecret')
     scope = demisto.params().get('scope')
     app_id = demisto.params().get('appId')
-    # verify_certificate = not demisto.params().get('insecure', False)
     verify_certificate = demisto.params()['insecure'] is False
     proxy = demisto.params().get('proxy', False)
-
-    if tenant_url[-1] == '/':
-        tenant_url = tenant_url[:-1]
 
     payload = {'grant_type': 'client_credentials', 'client_id': client_id, 'client_secret': client_secret, 'scope': scope}
 
@@ -820,7 +797,6 @@ def main():
             result = delete_vault_set(args, client)
 
         demisto.results(result)
-        sys.exit(0)
 
     # Log exceptions
     except Exception as e:
