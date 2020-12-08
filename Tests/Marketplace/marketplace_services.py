@@ -575,7 +575,7 @@ class Pack(object):
                                                                   user_metadata.get('displayedImages', []),
                                                                   dependencies_data)
         pack_metadata['useCases'] = input_to_list(input_data=user_metadata.get('useCases'), capitalize_input=True)
-        if pack_metadata['useCases']:
+        if pack_metadata['useCases'] and 'Use Case' not in pack_metadata['tags']:
             pack_metadata['tags'].append('Use Case')
         pack_metadata['keywords'] = input_to_list(user_metadata.get('keywords'))
         pack_metadata['dependencies'] = Pack._parse_pack_dependencies(user_metadata.get('dependencies', {}),
