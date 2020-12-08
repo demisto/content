@@ -315,7 +315,12 @@ references:
       name: Merge private and public ID sets
       when: always
       command: |
-        python3 Tests/Marketplace/download_private_id_set.py
+        GCS_PATH=$(mktemp)
+        ZIP_FOLDER=$(mktemp -d)
+        echo $GCS_MARKET_KEY > $GCS_PATH
+        python3 Tests/Marketplace/download_private_id_set.py -b 'marketplace-dist-private-test' -s $GCS_PATH
+        rm $GCS_PATH
+
         demisto-sdk merge-id-sets -i1 /home/circleci/project/artifacts/private_id_set.json -i2 "/home/circleci/project/artifacts/id_set.json" -o ./Tests/public_and_private_id_sets.json
         cp ./Tests/public_and_private_id_sets.json $CIRCLE_ARTIFACTS
 
