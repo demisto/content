@@ -368,7 +368,7 @@ def get_file_360_link(cid: str):
         return None
     else:
         link = url[0:p1] + url[p2 + 1:length]
-        link = link + "/file360?" + cid
+        link = link + "file360?cid=" + cid
         return link
 
 
