@@ -9,15 +9,19 @@ def remove_old_pack_from_private_id_set(private_id_set_path, new_pack_name):
 
     for entity, entity_list in private_id_set.items():
         for item in entity_list[:]:
-            if item.get(list(item.keys())[0], {}).get('pack') == new_pack_name:
+            item_value = item.get(list(item.keys())[0], {})
+            if item_value.get('pack') == new_pack_name:
                 entity_list.remove(item)
 
-    return private_id_set
+    with open(private_id_set_path, 'w') as id_set_file:
+        json.dump(private_id_set, id_set_file)
 
 
 def options_handler():
-    parser = argparse.ArgumentParser(description='Returns the new pack name')
+    parser = argparse.ArgumentParser(description='Removes the old information that exists on the changed pack,'
+                                                 ' from private ID set')
     parser.add_argument('-np', '--new_pack_name', help='New pack name', required=True)
+    parser.add_argument('-pis', '--private_id_set_path', help='Private ID set path', required=True)
 
     options = parser.parse_args()
     return options
@@ -25,12 +29,9 @@ def options_handler():
 
 def main():
     options = options_handler()
-    private_id_set = download_private_id_set_from_gcp()
-
+    private_id_set_path = options
     new_pack_name = options.new_pack_name
-    merged_private_id_set = remove_old_pack_from_private_id_set(private_id_set, new_pack_name)
-
-    return merged_private_id_set
+    remove_old_pack_from_private_id_set(private_id_set_path, new_pack_name)
 
 
 if __name__ == '__main__':

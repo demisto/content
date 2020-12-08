@@ -308,20 +308,15 @@ references:
       when: always
       command: |
         demisto-sdk create-id-set -o ./Tests/id_set.json
-        cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
 
-  merge_private_and_public_id_sets: &merge_private_and_public_id_sets
-    run:
-      name: Merge private and public ID sets
-      when: always
-      command: |
         GCS_PATH=$(mktemp)
         ZIP_FOLDER=$(mktemp -d)
         echo $GCS_MARKET_KEY > $GCS_PATH
         python3 Tests/Marketplace/download_private_id_set.py -b 'marketplace-dist-private-test' -s $GCS_PATH
         rm $GCS_PATH
 
-        demisto-sdk merge-id-sets -i1 /home/circleci/project/artifacts/private_id_set.json -i2 ./Tests/id_set.json -o ./Tests/id_set.json
+        demisto-sdk merge-id-sets -i1 $CIRCLE_ARTIFACTS/private_id_set.json -i2 ./Tests/id_set.json -o ./Tests/id_set.json
+
         cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
 
   build_content_descriptor: &build_content_descriptor
@@ -559,7 +554,6 @@ jobs:
       - *prepare_environment
       - *secrets
       - *create_id_set
-      - *merge_private_and_public_id_sets
       - *update_tests_step
       - *validate_files_and_yaml
       - run:
@@ -641,7 +635,6 @@ jobs:
       - *get_contribution_pack
       - *add_ssh_keys
       - *create_id_set
-      - *merge_private_and_public_id_sets
       - *build_content_descriptor
       - *common_server_documentation
       - *create_artifact
