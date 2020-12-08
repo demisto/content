@@ -305,4 +305,4 @@ outputs:
   description: Stream results for the search.
   type: unknown
 tests:
- - Anomali Enterprise Forensic Search - Test
+ - Anomali Match Forensic Search - Test
