@@ -224,7 +224,7 @@ def domain_command(client: Client, args: dict) -> List[CommandResults]:
         domain = Common.Domain(
             domain=domain,
             dbot_score=dbot_score,
-            tags='DGA'
+            tags='DGA' if score in [Common.DBotScore.SUSPICIOUS, Common.DBotScore.BAD] else None
         )
 
         command_results = CommandResults(
