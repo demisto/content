@@ -1,5 +1,5 @@
 import pytest
-from Anomali_Match import *
+from Anomali_Enterprise import *
 
 
 def test_domain_command_benign(mocker):
