@@ -132,6 +132,13 @@ script:
     description: Get's file sharing details
     execution: false
     name: concentricai-get-file-sharing-details
+    outputs:
+      - contextPath: ConcentricAI.FileSharingInfo.type
+        description: Sharing type.
+        type: Array
+      - contextPath: ConcentricAI.FileSharingInfo.user_name
+        description: User name.
+        type: Array
   dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: true
