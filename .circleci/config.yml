@@ -312,7 +312,7 @@ references:
 
   merge_private_and_public_id_sets: &merge_private_and_public_id_sets
     run:
-      name: Merge Id Set And Private Id Iet
+      name: Merge private and public ID sets
       when: always
       command: |
         python3 Tests/Marketplace/download_private_id_set.py
