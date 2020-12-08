@@ -12,7 +12,7 @@ import jwt
 import re
 from distutils.util import strtobool
 from datetime import timezone
-from typing import Any, Dict, Tuple, List, Optional, Union, BinaryIO
+from typing import Any, Dict, Tuple, List, Optional, BinaryIO
 from requests.models import Response
 from hashlib import sha1
 from cryptography import exceptions
@@ -22,10 +22,9 @@ from cryptography.hazmat.primitives.serialization import load_pem_private_key
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S%z'
 MAX_INCIDENTS_TO_FETCH = 50
 
 ''' CLIENT CLASS '''
@@ -36,21 +35,31 @@ class QueryHandler:
     Class which handles the search query parameters for the box-search-content command.
     """
     def __init__(self, args):
-        self.type = args.get('type'),
-        self.ancestor_folder_ids = args.get('ancestor_folder_ids'),
-        self.item_name = args.get('item_name'),
-        self.item_description = args.get('item_description'),
-        self.comments = args.get('comments'),
-        self.tag = args.get('tag'),
-        self.created_range = args.get('created_range'),
-        self.file_extensions = args.get('file_extensions'),
-        self.limit = args.get('limit'),
-        self.offset = args.get('offset'),
-        self.owner_uids = args.get('owner_uids'),
-        self.trash_content = args.get('trash_content'),
-        self.updated_at_range = args.get('updated_at_range'),
+        self.content_types = []
+        self.type = args.get('type')
+        self.ancestor_folder_ids = args.get('ancestor_folder_ids')
+        self.item_name = args.get('item_name')
+        self.item_description = args.get('item_description')
+        self.comments = args.get('comments')
+        self.tag = args.get('tag')
+        self.created_range = format_time_range(args.get('created_range'))
+        self.file_extensions = args.get('file_extensions')
+        self.limit = args.get('limit')
+        self.offset = args.get('offset')
+        self.owner_uids = args.get('owner_uids')
+        self.trash_content = args.get('trash_content')
+        self.updated_at_range = format_time_range(args.get('updated_at_range'))
         self.query = args.get('query')
         self.args = args
+
+        if self.item_name:
+            self.content_types.append('name')
+        if self.item_description:
+            self.content_types.append('description')
+        if self.tag:
+            self.content_types.append('tag')
+        if self.comments:
+            self.content_types.append('comments')
 
     def prepare_params_object(self):
         """
@@ -67,6 +76,7 @@ class FileShareLink:
     """
     Class which handles the File Share Link object for CRUD operations.
     """
+
     def __init__(self, args):
         self.access = args.get('access')
         self.password = args.get('password')
@@ -91,6 +101,7 @@ class FolderShareLink:
     """
     Class which handles the Folder Share Link object for CRUD operations.
     """
+
     def __init__(self, args):
         self.access = args.get('access')
         self.password = args.get('password')
@@ -120,6 +131,7 @@ class Event:
     """
     Class which handles the Event objects for incident creation.
     """
+
     def __init__(self, raw_input):
         source = raw_input.get('source', {})
         self.created_at = source.get('created_at')
@@ -136,22 +148,23 @@ class Event:
         return incident
 
 
-class JWTTokenAuth:
+class Client(BaseClient):
     """
-    Class which handles the exchange, request, and creation of the authorization token required for
-    requests made to the Box API.
+    Client class to interact with the service API
     """
-    def __init__(self, params):
-        self.client_id = params.get('client_id')
-        self.client_secret = params.get('client_secret')
-        self.public_key_id = params.get('pub_key_id')
-        self.private_key = params.get('private_key')
-        self.passphrase = params.get('passphrase')
-        self.enterprise_id = params.get('enterprise_id')
-        self.verify = params.get('insecure')
+    def __init__(self, base_url, verify, proxy, auth_params):
+        self.client_id = auth_params.get('client_id')
+        self.client_secret = auth_params.get('client_secret')
+        self.public_key_id = auth_params.get('pub_key_id')
+        self.private_key = auth_params.get('private_key')
+        self.passphrase = auth_params.get('passphrase')
+        self.enterprise_id = auth_params.get('enterprise_id')
         self.authentication_url = 'https://api.box.com/oauth2/token'
 
-    def decrypt_private_key(self):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self._headers = self._request_token()
+
+    def _decrypt_private_key(self):
         """
         Attempts to load the private key as given in the integration configuration.
 
@@ -167,7 +180,7 @@ class JWTTokenAuth:
             raise DemistoException(f"An error occurred while loading the private key.", exception)
         return key
 
-    def create_jwt_assertion(self):
+    def _create_jwt_assertion(self):
         """
         Establishes the claims based on information retrieved from the integration configuration.
         Afterwards the assertion is encoded to be sent as a parameter for the token request.
@@ -185,7 +198,7 @@ class JWTTokenAuth:
 
         assertion = jwt.encode(
             payload=claims,
-            key=self.decrypt_private_key(),
+            key=self._decrypt_private_key(),
             algorithm='RS512',
             headers={
                 'kid': self.public_key_id
@@ -193,7 +206,7 @@ class JWTTokenAuth:
         )
         return assertion
 
-    def request_token(self):
+    def _request_token(self):
         """
         Handles the actual request made to retrieve the access token.
 
@@ -201,26 +214,20 @@ class JWTTokenAuth:
         """
         params = {
             'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-            'assertion': self.create_jwt_assertion().decode("utf-8"),
+            'assertion': self._create_jwt_assertion().decode("utf-8"),
             'client_id': self.client_id,
             'client_secret': self.client_secret
         }
-        try:
-            #  TODO - Try to use the base client, or add this into the base client's flow. If not
-            #   possible, add the proxy handling and other features typically handled by the
-            #   BaseClient
 
-            response = requests.request('POST', self.authentication_url, data=params, verify=self.verify)
-        except requests.exceptions.RequestException as exception:
-            raise DemistoException("An error occurred while requesting an access token.", exception)
-        access_token = response.json().get('access_token')
-        return access_token
-
-
-class Client(BaseClient):
-    """
-    Client class to interact with the service API
-    """
+        response = self._http_request(
+            method='POST',
+            url_suffix=None,
+            full_url=self.authentication_url,
+            json_data=params
+        )
+        access_token = response.get('access_token')
+        auth_header = {'Authorization': f'Bearer {access_token}'}
+        return auth_header
 
     def search_content(self, as_user: str, query_object: QueryHandler) -> Dict[str, Any]:
         """
@@ -274,14 +281,16 @@ class Client(BaseClient):
             params=request_params
         )
 
-    def crud_file_share_link(self, file_share_link: FileShareLink, as_user: str, is_delete: bool = False
+    def crud_file_share_link(self, file_share_link: FileShareLink, as_user: str,
+                             is_delete: bool = False
                              ) -> Dict[str, Any]:
         """
         CRUD function which makes the request to the API based on the given parameters.
 
         :param file_share_link: FileShareLink object containing the formatted request object.
         :param as_user: str - The ID of the user making the request.
-        :param is_delete: bool - Indicates if the request should result in the deletion of the share link.
+        :param is_delete: bool - Indicates if the request should result in the deletion of the
+        share link.
         :return: dict containing the results from the http request.
         """
         url_suffix = f'/files/{file_share_link.file_id}/'
@@ -311,9 +320,9 @@ class Client(BaseClient):
         request_params = {'fields': 'shared_link'}
         self._headers.update({'As-User': as_user})
         return self._http_request(
-                    method='GET',
-                    url_suffix=url_suffix,
-                    params=request_params
+            method='GET',
+            url_suffix=url_suffix,
+            params=request_params
         )
 
     def crud_folder_share_link(self, folder_share_link: FolderShareLink, as_user: str,
@@ -323,7 +332,8 @@ class Client(BaseClient):
 
         :param folder_share_link: FolderShareLink object containing the formatted request object.
         :param as_user: str - The ID of the user making the request.
-        :param is_delete: bool - Indicates if the request should result in the deletion of the share link.
+        :param is_delete: bool - Indicates if the request should result in the deletion of the
+        share link.
         :return: dict containing the results from the http request.
         """
         url_suffix = f'/folders/{folder_share_link.folder_id}/'
@@ -350,6 +360,7 @@ class Client(BaseClient):
         :return: dict containing the results from the http request.
         """
         url_suffix = f'/folders/{folder_id}/'
+
         self._headers.update({'As-User': as_user})
         return self._http_request(
             method='GET',
@@ -385,7 +396,8 @@ class Client(BaseClient):
         Creates a folder with the given name. For files residing under the root of the users
         directory, please use '0'.
 
-        :param name: str - The name of the folder. Must be ASCII characters and devoid of `/` or `\`.
+        :param name: str - The name of the folder. Must be ASCII characters and devoid of `/` or
+        `\`.
         :param parent_id: - The ID of the folder which the folder will be created under.
         :param as_user: str - The ID of the user making the request.
         :return: dict containing the results from the http request.
@@ -423,7 +435,7 @@ class Client(BaseClient):
         )
 
     def list_users(self, fields: str = None, filter_term: str = None, limit: int = None,
-                   offset: int = None):
+                   offset: int = None, user_type: str = None):
         """
         Lists the users found in the enterprise. Used for finding the `as_user` argument/parameter
         which is required to make requests on behalf of that user.
@@ -432,6 +444,7 @@ class Client(BaseClient):
         :param filter_term: str - The term used in the search.
         :param limit: int - limits the returned results.
         :param offset: int - Used for rudimentary pagination of results.
+        :param user_type: str - Indicates the type of user being searched for.
         :return: dict containing the results from the http request.
         """
         url_suffix = '/users/'
@@ -439,7 +452,8 @@ class Client(BaseClient):
             'fields': fields,
             'filter_term': filter_term,
             'limit': limit,
-            'offset': offset
+            'offset': offset,
+            'user_type': user_type
         }
         return self._http_request(
             method='GET',
@@ -447,7 +461,8 @@ class Client(BaseClient):
             params=remove_empty_elements(query_params)
         )
 
-    def _create_upload_session(self, file_name: str, file_size: str, folder_id: str, as_user: str) -> dict:
+    def _create_upload_session(self, file_name: str, file_size: str, folder_id: str,
+                               as_user: str) -> dict:
         """
         Each file upload where the file is greater than the maximum_chunk_size of 50MBs requires a
         session to be created. This session returns the endpoints and determined chunk size required
@@ -474,7 +489,7 @@ class Client(BaseClient):
         )
 
     @staticmethod
-    def read_in_chunks(file_object: BinaryIO, chunk_size: int =65536):
+    def read_in_chunks(file_object: BinaryIO, chunk_size: int = 65536):
         """
         Generator function used to read the file according to the chunk_size given by the Box API.
 
@@ -488,10 +503,12 @@ class Client(BaseClient):
                 break
             yield data
 
-    def chunk_upload(self, file_name: str, file_size: int, file_path: str, folder_id: str, as_user: str):
+    def chunk_upload(self, file_name: str, file_size: int, file_path: str, folder_id: str,
+                     as_user: str):
         """
         Handles the uploading of the file parts to the session endpoint. Box requires a SHA1 digest
-        hash to be included as part of the request headers. This function handles that as it iterates
+        hash to be included as part of the request headers. This function handles that as it
+        iterates
         over the file object.
 
         :param file_name: str - The name of the file.
@@ -507,8 +524,8 @@ class Client(BaseClient):
         """
         upload_session_data = self._create_upload_session(file_name=file_name, file_size=file_size,
                                                           folder_id=folder_id, as_user=as_user)
-        session_id = upload_session_data.get('id')
-        part_size = upload_session_data.get('part_size')
+        session_id: str = upload_session_data.get('id')
+        part_size: int = upload_session_data.get('part_size')
         upload_url_suffix = f'/files/upload_sessions/{session_id}'
         parts = []
         index = 0
@@ -535,7 +552,8 @@ class Client(BaseClient):
                 index = offset
         return parts, upload_url_suffix
 
-    def commit_file(self, file_path: str, as_user: str, parts: List[Dict], upload_url_suffix: str) -> dict:
+    def commit_file(self, file_path: str, as_user: str, parts: List[Dict],
+                    upload_url_suffix: str) -> dict:
         """
         Once a file has been uploaded, the file must be committed. This request requires the SHA1
         digest of the entire file to be sent in the header. We reread the file to ensure the SHA is
@@ -559,7 +577,6 @@ class Client(BaseClient):
                 'Digest': f"SHA={base64.b64encode(whole_file_sha_digest).decode('utf-8')}",
                 'Authorization': self._headers.get('Authorization')
             }
-            self._headers = None
             return self._http_request(
                 method='POST',
                 url_suffix=upload_url_suffix + '/commit',
@@ -567,7 +584,8 @@ class Client(BaseClient):
                 headers=final_headers
             )
 
-    def upload_file(self, entry_id: str, file_name: str = None, folder_id: str = None, as_user: str = None) -> dict:
+    def upload_file(self, entry_id: str, file_name: str = None, folder_id: str = None,
+                    as_user: str = None) -> dict:
         """
         Main function used to handle the `box-upload-file` command. Box enforces size limitations
         which determines which endpoint is used to upload a file. for files under 50MB, the generic
@@ -585,10 +603,14 @@ class Client(BaseClient):
         demisto_file_object = demisto.getFilePath(entry_id)
         if not file_name:
             file_name = demisto_file_object.get('name')
+        #  Box requires files to have a file extension. We validate that here.
+        if '.' not in file_name:
+            raise DemistoException('A file extension is required in the filename.')
         file_path = demisto_file_object.get('path')
         file_size = os.path.getsize(file_path)
         if file_size > maximum_chunk_size:
-            parts, upload_url_suffix = self.chunk_upload(file_name, file_size, file_path, folder_id, as_user)
+            parts, upload_url_suffix = self.chunk_upload(file_name, file_size, file_path, folder_id,
+                                                         as_user)
             return self.commit_file(file_path, as_user, parts, upload_url_suffix)
         else:
             with open(file_path, 'rb') as file:
@@ -640,7 +662,7 @@ class Client(BaseClient):
         :return: dict containing the results of the request.
         """
         # The url requires a plural version of the item.
-        url_suffix = f'/{type+"s"}/{item_id}'
+        url_suffix = f'/{type + "s"}/{item_id}'
         self._headers.update({'As-User': as_user})
         return self._http_request(
             method='POST',
@@ -665,7 +687,8 @@ class Client(BaseClient):
             return_empty_response=True
         )
 
-    def list_events(self, as_user: str, stream_type: str, created_after: str = None, limit: int = None):
+    def list_events(self, as_user: str, stream_type: str, created_after: str = None,
+                    limit: int = None):
         """
         Lists the events which have occurred given the as_user argument/parameter. Same endpoint is
         used to also handle the enterprise logs as well.
@@ -691,17 +714,124 @@ class Client(BaseClient):
             params=request_params
         )
 
+    def get_current_user(self, as_user: str):
+        """
+        Gets the details for the user currently logged in. The current user is identified by the
+        `As-User` header value.
+
+        :param as_user: str - The ID of the user making the request.
+        :return: dict - The details for the current user.
+        """
+        url_suffix = '/users/me/'
+        self._headers.update({'As-User': as_user})
+        return self._http_request(
+            method='GET',
+            url_suffix=url_suffix
+        )
+
+    def create_update_user(self, as_user: str = None, login: str = None, name: str = None,
+                           role: str = None,
+                           language: str = None, is_sync_enabled: bool = False,
+                           job_title: str = None, phone: int = None, address: str = None,
+                           space_amount: int = None, tracking_codes: List[Dict] = None,
+                           can_see_managed_users: bool = False, time_zone: str = None,
+                           is_exempt_from_device_limits: bool = False,
+                           is_exempt_from_login_verification: bool = False,
+                           is_external_collab_restricted: bool = False,
+                           is_platform_access_only: bool = False, status: str = None,
+                           user_id: str = None,
+                           update_user: bool = False) -> dict:
+        """
+        This function handles the creation and update of users for Box. The same request object is
+        sent for both calls.
+
+        :param update_user: bool - Indicates if the function should update the user instead of
+                                   create one.
+        :param user_id: str - The ID of the user. Only used for updates.
+        :param as_user: str - The ID of the user making the request.
+        :param login: str - The email which will be used to login.
+        :param name: str - The name of the user.
+        :param role: str - The role for the user's account. (user, admin, etc.)
+        :param language: str - ISO639 formatted str for the language (e.g. EN for English)
+        :param is_sync_enabled: bool - Indicates if sync will be enabled on the account.
+        :param job_title: str - The job title for the user.
+        :param phone: int - The user's phone number. Non integer characters are not valid.
+        :param address: str - The address for the user.
+        :param space_amount: int - Space in bytes which are allocated to the user.
+        :param tracking_codes: List[Dict] - Array containing key value pairs as defined by the
+                                            admin.
+        :param can_see_managed_users: bool - Indicates if this user can see managed users.
+        :param time_zone: str - The timezone of the user. e.g. US/Eastern.
+        :param is_exempt_from_device_limits: bool - Indicates if user is exempt from device limits.
+        :param is_exempt_from_login_verification: bool - Indicates if user is exempt for login
+                                                         verification
+        :param is_external_collab_restricted: bool - Indicates if user is collab restricted.
+        :param is_platform_access_only: bool - Indicates if user has acces to only the platform.
+        :param status: str - The account status for the user. e.g. `active`
+        :return: dict - The details of the created user.
+        """
+        if update_user:
+            url_suffix = f'/users/{user_id}/'
+            method = 'PUT'
+        else:
+            url_suffix = '/users/'
+            method = 'POST'
+        self._headers.update({'As-User': as_user})
+        request_body = {
+            "role": role,
+            "address": address,
+            "job_title": job_title,
+            "language": language,
+            "login": login,
+            "name": name,
+            "phone": phone,
+            "space_amount": space_amount,
+            "status": status,
+            "timezone": time_zone,
+            "is_sync_enabled": is_sync_enabled,
+            "is_exempt_from_device_limits": is_exempt_from_device_limits,
+            "is_external_collab_restricted": is_external_collab_restricted,
+            "is_exempt_from_login_verification": is_exempt_from_login_verification,
+            "is_platform_access_only": is_platform_access_only,
+            "can_see_managed_users": can_see_managed_users,
+            "tracking_codes": tracking_codes
+        }
+
+        return self._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            json_data=remove_empty_elements(request_body)
+        )
+
+    def delete_user(self, as_user: str, user_id: str, force: bool = False):
+        """
+        Deletes a user with the given `user_id`. If force is True, then the user will be deleted
+        including all of their files. If not, then all files must be moved before deletion.
+
+        :param as_user: str - The user who is making the request.
+        :param user_id: str - The ID of the user who is being deleted.
+        :param force: bool - Indicates if the command will be executed forcefully.
+        :return: Status code indicating success or not.
+        """
+        url_suffix = f'/users/{user_id}/'
+        self._headers.update({'As-User': as_user})
+        query_params = {'force': force}
+        return self._http_request(
+            method='DELETE',
+            url_suffix=url_suffix,
+            params=query_params,
+            return_empty_response=True
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
 
-def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_int(arg: Any, arg_name: str, default: int = None) -> int:
     """Converts an XSOAR argument to a Python int
 
     This function is used to quickly validate an argument provided to XSOAR
-    via ``demisto.args()`` into an ``int`` type. It will throw a ValueError
-    if the input is invalid. If the input is None, it will throw a ValueError
-    if required is ``True``, or ``None`` if required is ``False.
+    via ``demisto.args()`` into an ``int`` type.
 
     :type arg: ``Any``
     :param arg: argument to convert
@@ -709,21 +839,19 @@ def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]
     :type arg_name: ``str``
     :param arg_name: argument name
 
-    :type required: ``bool``
-    :param required:
-        throws exception if ``True`` and argument provided is None
+    :type default: ``int``
+    :param default:
+        Provides a default value if the arg is None.
 
     :return:
         returns an ``int`` if arg can be converted
         returns ``None`` if arg is ``None`` and required is set to ``False``
         otherwise throws an Exception
-    :rtype: ``Optional[int]``
+    :rtype: ``int``
     """
 
     if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
-        return None
+        return default
     if isinstance(arg, str):
         if arg.isdigit():
             return int(arg)
@@ -783,6 +911,23 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
     raise ValueError(f'Invalid date: "{arg_name}"')
 
 
+def format_time_range(range_arg: str):
+    """
+    Formats time range arguments since Box requires the format as a CSV string.
+
+    :param range_arg:
+    :return: Returns a formatted string or None depending on the input.
+    """
+    if range_arg:
+        dt_from, dt_to = parse_date_range(
+            date_range=range_arg,
+            date_format=DATE_FORMAT
+        )
+        return f"{dt_from},{dt_to}"
+    else:
+        return None
+
+
 def handle_default_user(args: dict, params: dict) -> None:
     """
     When the as-user argument is absent when executing a command, the argument will be updated to
@@ -792,8 +937,36 @@ def handle_default_user(args: dict, params: dict) -> None:
     :param params:  demisto.params() object
     :return: None - Updates the args object in place.
     """
-    if args.get('as-user') is None:
-        args.update({'as-user': params.get('as-user')})
+    if 'as_user' not in args:
+        args.update({'as_user': params.get('default_user')})
+
+
+def parse_key_value_arg(arg_str):
+    """
+    In some cases it is necessary to pass an argument with a specific name. The common usecase is
+    for Tags. This function allows a user to create their own key value pairs.
+
+    :param arg_str: Argument given as a string in the format `key=SomeKey,value=SomeValue`
+    :return: List of sets.
+    """
+    if arg_str:
+        tags = []
+        regex = re.compile(r'key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)', flags=re.I)
+        for f in arg_str.split(';'):
+            match = regex.match(f)
+            if match is None:
+                raise DemistoException(
+                    'Unable to parse the given key value pair argument. Please verify'
+                    ' the argument is formatted correctly. '
+                    '`key=ExampleKey,value=ExampleValue`. For more than one KV pair,'
+                    ' please use the separator `;`')
+            tags.append({
+                match.group(1): match.group(2)
+            })
+
+        return tags
+    else:
+        return None
 
 
 ''' COMMAND FUNCTIONS '''
@@ -806,9 +979,9 @@ def find_file_folder_by_share_link_command(client: Client, args: Dict[str, Any])
     :param args:
     :return:
     """
-    share_link = args.get('shared_link')
-    password = args.get('password', None)
-    response = client.find_file_folder_by_share_link(shared_link=share_link, password=password)
+    share_link: str = args.get('shared_link')
+    password: str = args.get('password', None)
+    response: dict = client.find_file_folder_by_share_link(shared_link=share_link, password=password)
     readable_output = tableToMarkdown(f'File Share Link for {share_link}', response)
     return CommandResults(
         readable_output=readable_output,
@@ -846,12 +1019,12 @@ def create_update_file_share_link_command(client: Client, args: Dict[str, Any]) 
     :param client: Client - Initialized Client object.
     :param args: demisto.args() dictionary - Used to initiate the FileShareLink object and pass the
                                              `as_user` argument to the client function.
-    :return: CommandResults - Returns a CommandResults object which is consumed by the return_results
-                              function in main()
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
     """
-    file_share_link_obj = FileShareLink(args)
-    as_user = args.get('as_user')
-    response = client.crud_file_share_link(file_share_link=file_share_link_obj, as_user=as_user)
+    file_share_link_obj: FileShareLink = FileShareLink(args)
+    as_user: str = args.get('as_user')
+    response: dict = client.crud_file_share_link(file_share_link=file_share_link_obj, as_user=as_user)
     readable_output = tableToMarkdown(
         name=f'File Share Link was created/updated for file_id: {file_share_link_obj.file_id}',
         t=response.get('shared_link'),
@@ -875,16 +1048,17 @@ def remove_file_share_link_command(client: Client, args: Dict[str, Any]) -> Comm
     :param client: Client - Initialized Client object.
     :param args: demisto.args() dictionary - Used to initiate the FileShareLink object and pass the
                                              `as_user` argument to the client function.
-    :return: CommandResults - Returns a CommandResults object which is consumed by the return_results
-                              function in main()
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
     """
-    file_share_link_obj = FileShareLink(args)
-    as_user = args.get('as_user')
-    response = client.crud_file_share_link(file_share_link=file_share_link_obj, as_user=as_user,
+    file_share_link_obj: FileShareLink = FileShareLink(args)
+    as_user: str = args.get('as_user')
+    response: dict = client.crud_file_share_link(file_share_link=file_share_link_obj, as_user=as_user,
                                            is_delete=True)
 
     return CommandResults(
-        readable_output=f'File Share Link for the file_id {file_share_link_obj.file_id} was removed.',
+        readable_output=f'File Share Link for the file_id {file_share_link_obj.file_id} was '
+                        f'removed.',
         outputs_prefix='Box.FileShareLink',
         outputs_key_field='shared_link',
         outputs=response
@@ -898,8 +1072,8 @@ def get_shared_link_for_file_command(client: Client, args: Dict[str, Any]) -> Co
     :param client: Client - Initialized Client object.
     :param args: demisto.args() dictionary - Used to pass the `as_user` and `file_id` argument to
                                              the client function.
-    :return: CommandResults - Returns a CommandResults object which is consumed by the return_results
-                              function in main()
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
     """
     file_id: str = args.get('file_id')
     as_user: str = args.get('as_user')
@@ -928,13 +1102,14 @@ def get_shared_link_by_folder_command(client: Client, args: Dict[str, Any]) -> C
     :param client: Client - Initialized Client object.
     :param args: demisto.args() dictionary - Used to pass the `as_user` and `folder_id` argument to
                                              the client function.
-    :return: CommandResults - Returns a CommandResults object which is consumed by the return_results
-                              function in main()
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
     """
     folder_id: str = args.get('folder_id')
     as_user: str = args.get('as_user')
     response: dict = client.get_shared_link_by_folder(folder_id=folder_id, as_user=as_user)
-    readable_output: str = tableToMarkdown(f'Shared link information for the folder {folder_id}', response)
+    readable_output: str = tableToMarkdown(f'Shared link information for the folder {folder_id}',
+                                           response)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Box.FolderShareLink',
@@ -946,23 +1121,25 @@ def get_shared_link_by_folder_command(client: Client, args: Dict[str, Any]) -> C
 def create_update_folder_share_link_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Command function which uses the `crud_folder_share_link` client function to create or update a
-    folder's share link. Since the API does not differentiate between creation or update of the links,
-    this function handles both use-cases.
+    folder's share link. Since the API does not differentiate between creation or update of the
+    links, this function handles both use-cases.
 
     :param client: Client - Initialized Client object.
-    :param args: demisto.args() dictionary - Used to initiate the FolderShareLink object and pass the
-                                             `as_user` argument to the client function.
-    :return: CommandResults - Returns a CommandResults object which is consumed by the return_results
-                              function in main()
+    :param args: demisto.args() dictionary - Used to initiate the FolderShareLink object and pass
+    the `as_user` argument to the client function.
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
     """
     folder_share_link_obj: FolderShareLink = FolderShareLink(args)
     as_user: str = args.get('as_user')
-    response: dict = client.crud_folder_share_link(folder_share_link=folder_share_link_obj, as_user=as_user)
-    readable_output: str = tableToMarkdown(name=f'Folder Share Link for {folder_share_link_obj.folder_id}',
-                                           t=response,
-                                           removeNull=True,
-                                           headerTransform=string_to_table_header
-                                           )
+    response: dict = client.crud_folder_share_link(folder_share_link=folder_share_link_obj,
+                                                   as_user=as_user)
+    readable_output: str = tableToMarkdown(
+        name=f'Folder Share Link for {folder_share_link_obj.folder_id}',
+        t=response,
+        removeNull=True,
+        headerTransform=string_to_table_header
+    )
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Box.FolderShareLink',
@@ -974,23 +1151,25 @@ def create_update_folder_share_link_command(client: Client, args: Dict[str, Any]
 def remove_folder_share_link_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Command function which uses the `crud_folder_share_link` client function to delete/remove a
-    folder's share link. This is done by passing the `is_delete` parameter to the crud function which
-    sends an empty JSON object to the API.
+    folder's share link. This is done by passing the `is_delete` parameter to the crud function
+    which sends an empty JSON object to the API.
 
     :param client: Client - Initialized Client object.
-    :param args: demisto.args() dictionary - Used to initiate the FolderShareLink object and pass the
-                                             `as_user` argument to the client function.
-    :return: CommandResults - Returns a CommandResults object which is consumed by the return_results
-                              function in main()
+    :param args: demisto.args() dictionary - Used to initiate the FolderShareLink object and pass
+    the `as_user` argument to the client function.
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
     """
     folder_share_link_obj: FolderShareLink = FolderShareLink(args)
     as_user: str = args.get('as_user')
-    response: dict = client.crud_folder_share_link(folder_share_link=folder_share_link_obj, as_user=as_user, is_delete=True)
-    readable_output: str = tableToMarkdown(f'Folder Share Link for {folder_share_link_obj.folder_id} was removed.',
-                                           response)
+    response: dict = client.crud_folder_share_link(folder_share_link=folder_share_link_obj,
+                                                   as_user=as_user, is_delete=True)
+    readable_output: str = tableToMarkdown(
+        f'Folder Share Link for {folder_share_link_obj.folder_id} was removed.',
+        response)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Box.FileShareLink',
+        outputs_prefix='Box.FolderShareLink',
         outputs_key_field='shared_link',
         outputs=response
     )
@@ -1003,8 +1182,8 @@ def get_folder_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     :param client: Client - Initialized Client object.
     :param args: demisto.args() dictionary - Used to pass the `as_user` and `folder_id` argument to
                                              the client function.
-    :return: CommandResults - Returns a CommandResults object which is consumed by the return_results
-                              function in main()
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
     """
     folder_id: str = args.get('folder_id')
     as_user: str = args.get('as_user')
@@ -1016,10 +1195,11 @@ def get_folder_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         removeNull=True,
         headerTransform=string_to_table_header
     )
-    response.pop('item_collection')
+    overview_response = response.copy()
+    overview_response.pop('item_collection')
     overview_output: str = tableToMarkdown(
         name=f'Folder overview for {folder_id}.',
-        t=response,
+        t=overview_response,
         removeNull=True,
         headerTransform=string_to_table_header
     )
@@ -1027,7 +1207,7 @@ def get_folder_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Box.Folder',
-        outputs_key_field='shared_link',
+        outputs_key_field='id',
         outputs=response
     )
 
@@ -1037,14 +1217,15 @@ def list_folder_items_command(client: Client, args: Dict[str, Any]) -> CommandRe
     Command which lists the items within a given folder.
 
     :param client: Client - Initialized Client object.
-    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client function.
-    :return: CommandResults - Returns a CommandResults object which is consumed by the return_results
-                              function in main()
+    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client
+    function.
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
     """
     folder_id: str = args.get('folder_id')
     as_user: str = args.get('as_user')
-    limit: int = int(args.get('limit', '100'))
-    offset: int = int(args.get('offset', '0'))
+    limit: int = arg_to_int(arg_name='limit', arg=args.get('limit'), default=100)
+    offset: int = arg_to_int(arg_name='offset', arg=args.get('offset'), default=0)
     sort: str = args.get('sort')
     response: dict = client.list_folder_items(folder_id=folder_id, as_user=as_user, limit=limit,
                                               offset=offset, sort=sort)
@@ -1055,10 +1236,11 @@ def list_folder_items_command(client: Client, args: Dict[str, Any]) -> CommandRe
         removeNull=True,
         headerTransform=string_to_table_header
     )
-    response.pop('item_collection')
+    overview_response = response.copy()
+    overview_response.pop('item_collection')
     overview_output: str = tableToMarkdown(
         name=f'Folder overview for {folder_id}.',
-        t=response,
+        t=overview_response,
         removeNull=True,
         headerTransform=string_to_table_header
     )
@@ -1066,7 +1248,7 @@ def list_folder_items_command(client: Client, args: Dict[str, Any]) -> CommandRe
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Box.Folder',
-        outputs_key_field='shared_link',
+        outputs_key_field='id',
         outputs=response
     )
 
@@ -1077,9 +1259,10 @@ def folder_create_command(client: Client, args: Dict[str, Any]) -> CommandResult
     will be created under the root (0) folder.
 
     :param client: Client - Initialized Client object.
-    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client function.
-    :return: CommandResults - Returns a CommandResults object which is consumed by the return_results
-                              function in main()
+    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client
+    function.
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
     """
     name: str = args.get('name')
     parent_id: str = args.get('parent_id')
@@ -1089,7 +1272,7 @@ def folder_create_command(client: Client, args: Dict[str, Any]) -> CommandResult
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Box.Folder',
-        outputs_key_field='shared_link',
+        outputs_key_field='id',
         outputs=response
     )
 
@@ -1101,9 +1284,10 @@ def file_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     `box-trashed-item-delete-permanently` command after executing this command.
 
     :param client: Client - Initialized Client object.
-    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client function.
-    :return: CommandResults - Returns a CommandResults object which is consumed by the return_results
-                              function in main()
+    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client
+    function.
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
     """
     file_id: str = args.get('file_id')
     as_user: str = args.get('as_user')
@@ -1124,15 +1308,18 @@ def list_users_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     necessary for subsequent calls made to the API.
 
     :param client: Client - Initialized Client object.
-    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client function.
-    :return: CommandResults - Returns a CommandResults object which is consumed by the return_results
-                              function in main()
+    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client
+    function.
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
     """
     fields: str = args.get('fields')
     filter_term: str = args.get('filter_term')
-    limit: int = int(args.get('limit', '100'))
-    offset: int = int(args.get('offset', '0'))
-    response: dict = client.list_users(fields=fields, filter_term=filter_term, limit=limit, offset=offset)
+    limit: int = arg_to_int(arg_name='limit', arg=args.get('limit'), default=100)
+    offset: int = arg_to_int(arg_name='offset', arg=args.get('offset'), default=0)
+    user_type: str = args.get('user_type')
+    response: dict = client.list_users(fields=fields, filter_term=filter_term, limit=limit,
+                                       offset=offset, user_type=user_type)
     readable_output: str = tableToMarkdown(f'The following users were found.', response)
     return CommandResults(
         readable_output=readable_output,
@@ -1146,15 +1333,17 @@ def upload_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
 
     :param client: Client - Initialized Client object.
-    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client function.
-    :return: CommandResults - Returns a CommandResults object which is consumed by the return_results
-                              function in main()
+    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client
+    function.
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
     """
-    entry_id = args.get('entry_id')
-    file_name = args.get('file_name')
-    folder_id = args.get('folder_id')
-    as_user = args.get('as_user')
-    response = client.upload_file(entry_id=entry_id, file_name=file_name, folder_id=folder_id, as_user=as_user)
+    entry_id: str = args.get('entry_id')
+    file_name: str = args.get('file_name')
+    folder_id: str = args.get('folder_id')
+    as_user: str = args.get('as_user')
+    response: dict = client.upload_file(entry_id=entry_id, file_name=file_name, folder_id=folder_id,
+                                        as_user=as_user)
     readable_output = "File was successfully uploaded"
     return CommandResults(
         readable_output=readable_output,
@@ -1168,14 +1357,15 @@ def trashed_items_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     """
 
     :param client: Client - Initialized Client object.
-    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client function.
-    :return: CommandResults - Returns a CommandResults object which is consumed by the return_results
-                              function in main()
+    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client
+    function.
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
     """
-    limit = int(args.get('limit', '100'))
-    offset = int(args.get('offset', '0'))
-    as_user = args.get('as_user')
-    response = client.trashed_items_list(limit=limit, offset=offset, as_user=as_user)
+    limit: int = arg_to_int(arg_name='limit', arg=args.get('limit'), default=100)
+    offset: int = arg_to_int(arg_name='offset', arg=args.get('offset'), default=0)
+    as_user: str = args.get('as_user')
+    response: dict = client.trashed_items_list(limit=limit, offset=offset, as_user=as_user)
     if len(response.get('entries')) == 0:
         readable_output = "No trashed items were found."
     else:
@@ -1192,14 +1382,15 @@ def trashed_item_restore_command(client: Client, args: Dict[str, Any]) -> Comman
     """
 
     :param client: Client - Initialized Client object.
-    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client function.
-    :return: CommandResults - Returns a CommandResults object which is consumed by the return_results
-                              function in main()
+    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client
+    function.
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
     """
-    item_id = args.get('item_id')
-    type = args.get('type')
-    as_user = args.get('as_user')
-    response = client.trashed_item_restore(item_id=item_id, type=type, as_user=as_user)
+    item_id: str = args.get('item_id')
+    type: str = args.get('type')
+    as_user: str = args.get('as_user')
+    response: dict = client.trashed_item_restore(item_id=item_id, type=type, as_user=as_user)
     readable_output = f'Item with the ID {item_id} was restored.'
     return CommandResults(
         readable_output=readable_output,
@@ -1213,14 +1404,15 @@ def trashed_item_delete_permanently_command(client: Client, args: Dict[str, Any]
     """
 
     :param client: Client - Initialized Client object.
-    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client function.
-    :return: CommandResults - Returns a CommandResults object which is consumed by the return_results
-                              function in main()
+    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client
+    function.
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
     """
-    item_id = args.get('item_id')
-    type = args.get('type')
-    as_user = args.get('as_user')
-    response = client.trashed_item_permanently_delete(item_id=item_id, type=type, as_user=as_user)
+    item_id: str = args.get('item_id')
+    type: str = args.get('type')
+    as_user: str = args.get('as_user')
+    response: Response = client.trashed_item_permanently_delete(item_id=item_id, type=type, as_user=as_user)
     if response.status_code == 204:
         readable_output = f'Item with the ID {item_id} was deleted permanently.'
     else:
@@ -1234,13 +1426,14 @@ def list_user_events_command(client: Client, args: Dict[str, Any]) -> CommandRes
     """
 
     :param client: Client - Initialized Client object.
-    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client function.
-    :return: CommandResults - Returns a CommandResults object which is consumed by the return_results
-                              function in main()
+    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client
+    function.
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
     """
-    as_user = args.get('as_user')
-    stream_type = args.get('stream_type')
-    response = client.list_events(as_user=as_user, stream_type=stream_type)
+    as_user: str = args.get('as_user')
+    stream_type: str = args.get('stream_type')
+    response: dict = client.list_events(as_user=as_user, stream_type=stream_type)
     if len(response.get('entries')) == 0:
         readable_output = f'No events were found for the user {as_user}.'
     else:
@@ -1257,12 +1450,13 @@ def list_enterprise_events_command(client: Client, args: Dict[str, Any]) -> Comm
     """
 
     :param client: Client - Initialized Client object.
-    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client function.
-    :return: CommandResults - Returns a CommandResults object which is consumed by the return_results
-                              function in main()
+    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client
+    function.
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
     """
-    as_user = args.get('as_user')
-    response = client.list_events(as_user=as_user, stream_type='admin_logs')
+    as_user: str = args.get('as_user')
+    response: dict = client.list_events(as_user=as_user, stream_type='admin_logs')
     if len(response.get('entries')) == 0:
         readable_output = 'No enterprise events were found.'
     else:
@@ -1272,6 +1466,176 @@ def list_enterprise_events_command(client: Client, args: Dict[str, Any]) -> Comm
         outputs_prefix='Box.Events',
         outputs_key_field='entries',
         outputs=response
+    )
+
+
+def get_current_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Command executed when `box-get-current-user` is called. Uses the `As-User` header parameter to
+    set the current user for the request.
+
+    :param client: Client - Initialized Client object.
+    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client
+    function.
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
+    """
+    as_user: str = args.get('as_user')
+    response: dict = client.get_current_user(as_user=as_user)
+
+    readable_output = tableToMarkdown(
+        name=f'The current user is {response.get("login")}.',
+        t=response,
+        removeNull=True,
+        headerTransform=string_to_table_header
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Box.User',
+        outputs_key_field='id',
+        outputs=response
+    )
+
+
+def create_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Command executed when `box-create_user` is called. Will create a user based on the given
+    arguments.
+
+    :param client: Client - Initialized Client object.
+    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client
+    function.
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
+    """
+    as_user: str = args.get('as_user')
+    login: str = args.get('login')
+    name: str = args.get('name')
+    role: str = args.get('role')
+    language: str = args.get('language')
+    is_sync_enabled: bool = bool(strtobool(args.get('is_sync_enabled')))
+    job_title: str = args.get('job_title')
+    phone: int = arg_to_int(arg_name='name', arg=args.get('phone'), default=0000000000)
+    address: str = args.get('address')
+    space_amount: int = arg_to_int(arg_name='space_amount', arg=args.get('space_amount'), default=-1)
+    tracking_codes: List[Dict] = parse_key_value_arg(arg_str=args.get('tracking_codes'))
+    can_see_managed_users: bool = bool(strtobool(args.get('can_see_managed_users')))
+    time_zone: str = args.get('timezone')
+    is_exempt_from_device_limits: bool = bool(strtobool(args.get('is_exempt_from_device_limits')))
+    is_exempt_from_login_verification: bool = bool(strtobool(args.get('is_exempt_from_login_verification')))
+    is_external_collab_restricted: bool = bool(strtobool(args.get('is_external_collab_restricted')))
+    is_platform_access_only: bool = bool(strtobool(args.get('is_platform_access_only')))
+    status: str = args.get('status')
+
+    if is_platform_access_only is False and login is None:
+        raise DemistoException("Box requires the Login argument when the argument"
+                               " `is_platform_access_only` is False")
+
+    response = client.create_update_user(as_user=as_user, login=login, name=name, role=role,
+                                         language=language, is_sync_enabled=is_sync_enabled,
+                                         job_title=job_title, phone=phone, address=address,
+                                         space_amount=space_amount, tracking_codes=tracking_codes,
+                                         can_see_managed_users=can_see_managed_users,
+                                         time_zone=time_zone,
+                                         is_exempt_from_device_limits=is_exempt_from_device_limits,
+                                         is_exempt_from_login_verification=is_exempt_from_login_verification,
+                                         is_external_collab_restricted=is_external_collab_restricted,
+                                         is_platform_access_only=is_platform_access_only,
+                                         status=status)
+    readable_output = tableToMarkdown(
+        name=f'The user {response.get("login")} has been created.',
+        t=response,
+        removeNull=True,
+        headerTransform=string_to_table_header
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Box.User',
+        outputs_key_field='id',
+        outputs=response
+    )
+
+
+def update_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Command executed when `box-create_user` is called. Will create a user based on the given
+    arguments.
+
+    :param client: Client - Initialized Client object.
+    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client
+    function.
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
+    """
+    as_user: str = args.get('as_user')
+    user_id: str = args.get('user_id')
+    login: str = args.get('login')
+    name: str = args.get('name')
+    role: str = args.get('role')
+    language: str = args.get('language')
+    is_sync_enabled: bool = bool(strtobool(args.get('is_sync_enabled')))
+    job_title: str = args.get('job_title')
+    phone: int = arg_to_int(arg_name='name', arg=args.get('phone'), default=0000000000)
+    address: str = args.get('address')
+    space_amount: int = arg_to_int(arg_name='space_amount', arg=args.get('space_amount'), default=-1)
+    tracking_codes: List[Dict] = parse_key_value_arg(arg_str=args.get('tracking_codes'))
+    can_see_managed_users: bool = bool(strtobool(args.get('can_see_managed_users')))
+    time_zone: str = args.get('timezone')
+    is_exempt_from_device_limits: bool = bool(strtobool(args.get('is_exempt_from_device_limits')))
+    is_exempt_from_login_verification: bool = bool(strtobool(args.get('is_exempt_from_login_verification')))
+    is_external_collab_restricted: bool = bool(strtobool(args.get('is_external_collab_restricted')))
+    is_platform_access_only: bool = bool(strtobool(args.get('is_platform_access_only')))
+    status: str = args.get('status')
+
+    response = client.create_update_user(as_user=as_user, login=login, name=name, role=role,
+                                         language=language, is_sync_enabled=is_sync_enabled,
+                                         job_title=job_title, phone=phone, address=address,
+                                         space_amount=space_amount, tracking_codes=tracking_codes,
+                                         can_see_managed_users=can_see_managed_users,
+                                         time_zone=time_zone,
+                                         is_exempt_from_device_limits=is_exempt_from_device_limits,
+                                         is_exempt_from_login_verification=is_exempt_from_login_verification,
+                                         is_external_collab_restricted=is_external_collab_restricted,
+                                         is_platform_access_only=is_platform_access_only,
+                                         status=status, user_id=user_id, update_user=True)
+    readable_output = tableToMarkdown(
+        name=f'The user {response.get("login")} has been updated.',
+        t=response,
+        removeNull=True,
+        headerTransform=string_to_table_header
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Box.User',
+        outputs_key_field='id',
+        outputs=response
+    )
+
+
+def delete_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Command executed when `box-create_user` is called. Will create a user based on the given
+    arguments.
+
+    :param client: Client - Initialized Client object.
+    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client
+    function.
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
+    """
+    as_user: str = args.get('as_user')
+    user_id: str = args.get('user_id')
+    force: bool = bool(strtobool(args.get('force')))
+
+    response = client.delete_user(as_user=as_user, user_id=user_id, force=force)
+
+    if response.status_code == 204:
+        readable_output: str = f'The user {user_id} was successfully deleted.'
+    else:
+        readable_output: str = f'The user {user_id} was not deleted successfully.'
+        raise DemistoException(readable_output)
+    return CommandResults(
+        readable_output=readable_output
     )
 
 
@@ -1294,28 +1658,28 @@ def test_module(client: Client) -> str:
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: int,
-                    stream_type: str, as_user: str) -> Tuple[str, List[Dict]]:
+                    as_user: str) -> Tuple[str, List[Dict]]:
     """
 
     :param client:
     :param max_results:
     :param last_run:
     :param first_fetch_time:
-    :param stream_type:
     :param as_user:
     :return:
     """
     created_after = last_run.get('time', None)
     incidents = []
     if not created_after:
-        created_after = datetime.fromtimestamp(first_fetch_time, tz=timezone.utc).strftime('%Y-%m-%dT%H:%M:%S%z')
-    results = client.list_events(stream_type=stream_type, as_user=as_user, limit=max_results,
+        created_after = datetime.fromtimestamp(first_fetch_time, tz=timezone.utc).strftime(
+            DATE_FORMAT)
+    results = client.list_events(stream_type='admin_logs', as_user=as_user, limit=max_results,
                                  created_after=created_after)
     raw_incidents = results.get('entries', [])
     for raw_incident in raw_incidents:
         xsoar_incident = Event(raw_input=raw_incident).format_incident()
         incidents.append(xsoar_incident)
-    next_run = datetime.now(tz=timezone.utc).strftime('%Y-%m-%dT%H:%M:%S%z')
+    next_run = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
     return next_run, incidents
 
 
@@ -1340,14 +1704,10 @@ def main() -> None:
     proxy = demisto.params().get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        access_token = JWTTokenAuth(demisto.params()).request_token()
-        headers = {
-            'Authorization': f'Bearer {access_token}'
-        }
         client = Client(
+            auth_params=demisto.params(),
             base_url=base_url,
             verify=verify_certificate,
-            headers=headers,
             proxy=proxy)
         if not any(command in demisto.command() for command in ['test-module', 'fetch-incidents',
                                                                 'box-find-file-folder-by-share-link']):
@@ -1361,13 +1721,16 @@ def main() -> None:
                 if re.match(emailRegex, as_user_arg):
                     matched_user_id = None
                     try:
-                        response = client.list_users(fields='id,name', filter_term=as_user_arg, limit=1,
+                        response = client.list_users(fields='id,name', filter_term=as_user_arg,
+                                                     limit=1,
                                                      offset=0)
-                        # In all cases, we retrieve the first (and ideally only) entry from the query.
+                        # In all cases, we retrieve the first (and ideally only) entry from the
+                        # query.
                         matched_user_id = response.get('entries')[0].get('id')
                     except Exception as exception:
-                        raise DemistoException("An error occurred while attempting to match the as_user to a"
-                                     " valid ID", exception)
+                        raise DemistoException(
+                            "An error occurred while attempting to match the as_user to a"
+                            " valid ID", exception)
                     demisto.args().update({'as_user': str(matched_user_id)})
 
         if demisto.command() == 'test-module':
@@ -1398,13 +1761,15 @@ def main() -> None:
 
         elif demisto.command() == 'box-create-file-share-link' or \
                 demisto.command() == 'box-update-file-share-link':
-            return_results(create_update_file_share_link_command(client=client, args=demisto.args()))
+            return_results(
+                create_update_file_share_link_command(client=client, args=demisto.args()))
 
         elif demisto.command() == 'box-remove-file-share-link':
             return_results(remove_file_share_link_command(client=client, args=demisto.args()))
 
         elif demisto.command() == 'box-find-file-folder-by-share-link':
-            return_results(find_file_folder_by_share_link_command(client=client, args=demisto.args()))
+            return_results(
+                find_file_folder_by_share_link_command(client=client, args=demisto.args()))
 
         elif demisto.command() == 'box-get-shared-link-by-file':
             return_results(get_shared_link_for_file_command(client=client, args=demisto.args()))
@@ -1414,7 +1779,8 @@ def main() -> None:
 
         elif demisto.command() == 'box-create-folder-share-link' or \
                 demisto.command() == 'box-update-folder-share-link':
-            return_results(create_update_folder_share_link_command(client=client, args=demisto.args()))
+            return_results(
+                create_update_folder_share_link_command(client=client, args=demisto.args()))
 
         elif demisto.command() == 'box-remove-folder-share-link':
             return_results(remove_folder_share_link_command(client=client, args=demisto.args()))
@@ -1444,11 +1810,23 @@ def main() -> None:
             return_results(trashed_item_restore_command(client=client, args=demisto.args()))
 
         elif demisto.command() == 'box-trashed-item-delete-permanently':
-            return_results(trashed_item_delete_permanently_command(client=client, args=demisto.args()))
+            return_results(
+                trashed_item_delete_permanently_command(client=client, args=demisto.args()))
 
         elif demisto.command() == 'box-list-user-events':
             return_results(list_user_events_command(client=client, args=demisto.args()))
 
+        elif demisto.command() == 'box-get-current-user':
+            return_results(get_current_user_command(client=client, args=demisto.args()))
+
+        elif demisto.command() == 'box-create-user':
+            return_results(create_user_command(client=client, args=demisto.args()))
+
+        elif demisto.command() == 'box-update-user':
+            return_results(update_user_command(client=client, args=demisto.args()))
+
+        elif demisto.command() == 'box-delete-user':
+            return_results(delete_user_command(client=client, args=demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
