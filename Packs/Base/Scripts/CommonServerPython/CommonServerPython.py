@@ -1404,7 +1404,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :param metadata: Metadata about the table contents
 
        :type url_keys: ``list``
-       :param metadata: a list of keys in the given JSON table that should be turned in to clickable
+       :param url_keys: a list of keys in the given JSON table that should be turned in to clickable
 
        :return: A string representation of the markdown table
        :rtype: ``str``
