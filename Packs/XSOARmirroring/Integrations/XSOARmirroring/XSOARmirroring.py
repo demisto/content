@@ -52,17 +52,21 @@ class Client(BaseClient):
         )
 
     def get_file_entry(self, entry_id: str) -> requests.Response:
-        return requests.get(self._base_url + f'/entry/download/{entry_id}', verify=self._verify, headers={
-            'Authorization': demisto.params().get('apikey')
-        })
+        return self._http_request(
+            method='GET',
+            url_suffix=f'/entry/download/{entry_id}',
+            resp_type='content'
+        )
 
     def get_incident_entries(self, incident_id: str, from_date: Optional[int], max_results: Optional[int],
-                             categories: Optional[List[str]], tags: Optional[List[str]]) -> List[Dict[str, Any]]:
+                             categories: Optional[List[str]], tags: Optional[List[str]],
+                             tags_and_operator: bool) -> List[Dict[str, Any]]:
         data = {
             'pageSize': max_results or 50,
             'fromTime': timestamp_to_datestring(from_date),
             'categories': categories,
-            'tags': tags
+            'tags': tags,
+            'tagsAndOperator': tags_and_operator
         }
         inv_with_entries = self._http_request(
             method='POST',
@@ -197,52 +201,6 @@ def arg_to_timestamp(arg: str, arg_name: str, required: bool = False):
     raise ValueError(f'Invalid date: "{arg_name}"')
 
 
-def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
-    """Converts an XSOAR argument to a Python int
-
-    This function is used to quickly validate an argument provided to XSOAR
-    via ``demisto.args()`` into an ``int`` type. It will throw a ValueError
-    if the input is invalid. If the input is None, it will throw a ValueError
-    if required is ``True``, or ``None`` if required is ``False.
-
-    :type arg: ``Any``
-    :param arg: argument to convert
-
-    :type arg_name: ``str``
-    :param arg_name: argument name
-
-    :type required: ``bool``
-    :param required:
-        throws exception if ``True`` and argument provided is None
-
-    :return:
-        returns an ``int`` if arg can be converted
-        returns ``None`` if arg is ``None`` and required is set to ``False``
-        otherwise throws an Exception
-    :rtype: ``Optional[int]``
-    """
-
-    if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
-
-        return None
-
-    if isinstance(arg, str):
-        if arg.isdigit():
-            return int(arg)
-
-        raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
-
-    if isinstance(arg, int):
-        return arg
-
-    raise ValueError(f'Invalid number: "{arg_name}"')
-
-
-''' COMMAND FUNCTIONS '''
-
-
 def test_module(client: Client, first_fetch_time: int) -> str:
     """Tests API connectivity and authentication
 
@@ -336,7 +294,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     )
 
     for incident in incidents:
-        incident_result = dict()
+        incident_result: Dict[str, Any] = dict()
         incident_result['dbotMirrorDirection'] = MIRROR_DIRECTION[mirror_direction]  # type: ignore
         incident['dbotMirrorInstance'] = demisto.integrationInstance()
         incident_result['dbotMirrorTags'] = mirror_tag if mirror_tag else None  # type: ignore
@@ -348,6 +306,31 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
         incident_result['rawJSON'] = json.dumps(incident)
 
+        file_attachments = []
+        if incident.get('attachment') and len(incident.get('attachment', [])) > 0:
+            entries = client.get_incident_entries(
+                incident_id=incident['id'],  # type: ignore
+                from_date=0,
+                max_results=10,
+                categories=['attachments'],
+                tags=None,
+                tags_and_operator=False
+            )
+
+            for entry in entries:
+                if 'file' in entry and entry.get('file'):
+                    file_entry_content = client.get_file_entry(entry.get('id'))  # type: ignore
+                    file_result = fileResult(entry['file'], file_entry_content)
+                    if any(attachment.get('name') == entry['file'] for attachment in incident.get('attachment', [])):
+                        if file_result['Type'] == EntryType.ERROR:
+                            raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
+
+                        file_attachments.append({
+                            'path': file_result.get('FileID', ''),
+                            'name': file_result.get('File', '')
+                        })
+
+        incident_result['attachment'] = file_attachments
         incidents_result.append(incident_result)
         incident_created_time = arg_to_timestamp(
             arg=incident.get('created'),  # type: ignore
@@ -386,28 +369,28 @@ def search_incidents_command(client: Client, args: Dict[str, Any]) -> CommandRes
     """
 
     query = args.get('query')
-    start_time = arg_to_timestamp(
+    start_date = arg_to_datetime(
         arg=args.get('start_time', '3 days'),
         arg_name='start_time',
         required=False
     )
-    max_results = arg_to_int(
+    max_results = arg_to_number(
         arg=args.get('max_results'),
         arg_name='max_results',
         required=False
     )
-    alerts = client.search_incidents(
+    incidents = client.search_incidents(
         query=query,
-        start_time=start_time * 1000,
+        start_time=int(start_date.timestamp() * 1000) if start_date else 0,
         max_results=max_results
     )
-    if not alerts:
-        alerts = []
+    if not incidents:
+        incidents = []
 
     return CommandResults(
         outputs_prefix='XSOAR.Incident',
         outputs_key_field='id',
-        outputs=alerts
+        outputs=incidents
     )
 
 
@@ -442,7 +425,7 @@ def get_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults
         arg_name='from_date',
         required=False
     )
-    max_results = arg_to_int(
+    max_results = arg_to_number(
         arg=args.get('max_results'),
         arg_name='max_results',
         required=False
@@ -465,7 +448,8 @@ def get_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults
         from_date=from_date * 1000,
         max_results=max_results,
         categories=categories,
-        tags=tags
+        tags=tags,
+        tags_and_operator=True,
     )
 
     readable_output += '\n\n' + tableToMarkdown(f'Last entries since {timestamp_to_datestring(from_date * 1000)}',
@@ -524,6 +508,13 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     return all_mappings
 
 
+def demisto_debug(msg):
+    if demisto.params().get('debug_mode'):
+        demisto.info(msg)
+    else:
+        demisto.debug(msg)
+
+
 def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> GetRemoteDataResponse:
     """get-remote-data command: Returns an updated incident and entries
 
@@ -541,6 +532,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
 
     :rtype: ``List[Dict[str, Any]]``
     """
+    demisto_debug(f'##### get-remote-data args: {json.dumps(args, indent=4)}')
     incident = None
     try:
         args['lastUpdate'] = arg_to_timestamp(
@@ -549,7 +541,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
             required=True
         )
         remote_args = GetRemoteDataArgs(args)
-        demisto.debug(f'Getting update for remote [{remote_args.remote_incident_id}]')
+        demisto_debug(f'Getting update for remote [{remote_args.remote_incident_id}]')
 
         categories = params.get('categories', None)
         if categories:
@@ -581,31 +573,27 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
             remote_args.last_update = occurred + 1
             # in case new entries created less than a minute after incident creation
 
+        demisto_debug(f'tags: {tags}')
+        demisto_debug(f'tags: {categories}')
         entries = client.get_incident_entries(
             incident_id=remote_args.remote_incident_id,  # type: ignore
             from_date=remote_args.last_update * 1000,
             max_results=100,
             categories=categories,
-            tags=tags
+            tags=tags,
+            tags_and_operator=True
         )
 
         formatted_entries = []
-        file_attachments = []
+        # file_attachments = []
 
         if entries:
             for entry in entries:
                 if 'file' in entry and entry.get('file'):
-                    file_entry = client.get_file_entry(entry.get('id'))  # type: ignore
-                    file_result = fileResult(entry['file'], file_entry.content)
-                    if any(attachment.get('name') == entry['file'] for attachment in incident.get('attachment', [])):
-                        if file_result['Type'] == entryTypes['error']:
-                            raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
-                        file_attachments.append({
-                            'path': file_result.get('FileID', ''),
-                            'name': file_result.get('File', '')
-                        })
-                    else:
-                        formatted_entries.append(file_result)
+                    file_entry_content = client.get_file_entry(entry.get('id'))  # type: ignore
+                    file_result = fileResult(entry['file'], file_entry_content)
+
+                    formatted_entries.append(file_result)
                 else:
                     formatted_entries.append({
                         'Type': entry.get('type'),
@@ -636,7 +624,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
 
         incident['dbotMirrorInstance'] = demisto.integrationInstance()
         incident['id'] = remote_args.remote_incident_id
-        incident['attachment'] = file_attachments
+        # incident['attachment'] = file_attachments
         mirror_data = GetRemoteDataResponse(
             mirrored_object=incident,
             entries=formatted_entries
@@ -644,7 +632,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         return mirror_data
 
     except Exception as e:
-        demisto.debug(f"Error in XSOAR incoming mirror for incident {args['id']} \nError message: {str(e)}")
+        demisto.error(f"Error in XSOAR incoming mirror for incident {args['id']} \nError message: {str(e)}")
         incident = {
             'id': args['id'],
             'in_mirror_error': str(e)
@@ -747,6 +735,19 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     mirror_tags = set(demisto.params().get('mirror_tag', '').split(',')) \
         if demisto.params().get('mirror_tag') else set([])
+
+    query = demisto.params().get('query', '') or ''
+    disable_from_same_integration = demisto.params().get('disable_from_same_integration')
+    if disable_from_same_integration:
+        query += ' -sourceBrand:"XSOAR Mirroring"'
+
+    max_results = arg_to_number(
+        arg=demisto.params().get('max_fetch'),
+        arg_name='max_fetch'
+    )
+    if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
+        max_results = MAX_INCIDENTS_TO_FETCH
+
     try:
         headers = {
             'Authorization': api_key
@@ -759,21 +760,20 @@ def main() -> None:
         )
 
         if demisto.command() == 'test-module':
+            if demisto.params().get('isFetch'):
+                fetch_incidents(
+                    client=client,
+                    max_results=max_results,
+                    last_run=demisto.getLastRun(),
+                    first_fetch_time=first_fetch_time,
+                    query=query,
+                    mirror_direction=demisto.params().get('mirror_direction'),
+                    mirror_tag=list(mirror_tags)
+                )
+
             return_results(test_module(client, first_fetch_time))
 
         elif demisto.command() == 'fetch-incidents':
-            query = demisto.params().get('query', None)
-            disable_from_same_integration = demisto.params().get('disable_from_same_integration')
-            if disable_from_same_integration:
-                query += ' -sourceBrand:"XSOAR Mirroring"'
-
-            max_results = arg_to_int(
-                arg=demisto.params().get('max_fetch'),
-                arg_name='max_fetch'
-            )
-            if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
-                max_results = MAX_INCIDENTS_TO_FETCH
-
             next_run, incidents = fetch_incidents(
                 client=client,
                 max_results=max_results,
@@ -801,7 +801,11 @@ def main() -> None:
         elif demisto.command() == 'update-remote-system':
             return_results(update_remote_system_command(client, demisto.args(), mirror_tags))
 
-    # Log exceptions and return errors
+        else:
+            raise NotImplementedError('Command not implemented')
+
+    except NotImplementedError:
+        raise
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
