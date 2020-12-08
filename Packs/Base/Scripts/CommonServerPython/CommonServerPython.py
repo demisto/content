@@ -1321,7 +1321,7 @@ def url_to_clickable_dict(data, url_keys):
         the modified data structure
     """
 
-    if data and isinstance(data, list):
+    if isinstance(data, list):
         data = [url_to_clickable_dict(item, url_keys) for item in data]
 
     elif isinstance(data, dict):
@@ -1340,9 +1340,9 @@ def url_to_clickable(url):
     Returns:
         markdown format for clickable url
     """
-    if isinstance(url, list):
-        return [f'[{item}]({item})' for item in url]
-    return f'[{url}]({url})'
+    if url and isinstance(url, list):
+        return ['[{}]({})'.format(item, item) for item in url]
+    return '[{}]({})'.format(url, url)
 
 
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None):
