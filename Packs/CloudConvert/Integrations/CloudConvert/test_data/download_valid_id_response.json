@@ -1,0 +1,28 @@
+{
+    "data": {
+        "id": "55d20b3f-e886-461d-90a6-51c5252d1316",
+        "job_id": null,
+        "status": "waiting",
+        "credits": null,
+        "code": null,
+        "message": null,
+        "percent": 100,
+        "operation": "export/url",
+        "result": null,
+        "created_at": "2020-10-27T13:46:28+00:00",
+        "started_at": null,
+        "ended_at": null,
+        "retry_of_task_id": null,
+        "copy_of_task_id": null,
+        "user_id": 45698979,
+        "priority": -10,
+        "host_name": null,
+        "storage": "ovh-lim",
+        "depends_on_task_ids": [
+            "bf262445-1110-4c21-9957-b55b59d1384e"
+        ],
+        "links": {
+            "self": "https://api.cloudconvert.com/v2/tasks/55d20b3f-e886-461d-90a6-51c5252d1316"
+        }
+    }
+}
