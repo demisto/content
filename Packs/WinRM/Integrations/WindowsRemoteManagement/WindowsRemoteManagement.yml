@@ -1,9 +1,8 @@
 commonfields:
   id: Windows Remote Management
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Windows Remote Management
-display: Windows Remote Management
+display: Windows Remote Management (Beta)
 category: Endpoint
 description: Uses the Python pywinrm library and commands to execute either a process
   or using Powershell scripts.
@@ -338,7 +337,6 @@ script:
       description: Decode codec to use when decoding command outputs (overrides value
         set in the instance)
     outputs:
-    - contextPath: WinRM.Powershell
     - contextPath: WinRM.Powershell.Output
       description: STDOUT of the WinRM command
     - contextPath: WinRM.Powershell.Error
@@ -346,6 +344,9 @@ script:
     - contextPath: WinRM.Powershell.Status
       description: Status code of the WInRM command
     description: Executes a Powershell script on the endpoint
-  dockerimage: demisto/winrm:1.0.0.8882
+  dockerimage: demisto/winrm:1.0.0.13142
   runonce: false
   subtype: python3
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
