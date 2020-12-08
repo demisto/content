@@ -1,0 +1,14 @@
+{
+    "name": "Tenable.io_Custom",
+    "description": "Tenable Scan Monitoring Script",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Rod Castillo",
+    "url": "",
+    "email": "",
+    "created": "2020-12-08T20:55:02Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
