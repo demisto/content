@@ -62,15 +62,6 @@ class Client(BaseClient):
         if port_url is None or params is None:
             raise ValueError('Failed to initiate an upload operation')
 
-        # # Creating a temp file with the same data of the given file
-        # # This way the uploaded file has a path that the API can parse properly
-        # # The reason is that the API asserts the file type by the file extension,
-        # # and getFilePath returns a file name without that extension
-        # demisto.debug('creating a temp file for upload operation')
-        # with tempfile.NamedTemporaryFile(suffix=file_name) as temp_file:
-        #     with open(file_path, 'rb') as file:
-        #         temp_file.write(file.read())
-        #     temp_file.seek(0)
         file_dict = {'file': (file_name, open(file_path, 'rb'))}
         self._http_request(
             method='POST',
