@@ -1343,11 +1343,15 @@ def appendContext(key, data, dedup=False):
 def url_to_clickable_dict(data, url_keys):
     """
     Turn the given urls fields in to clickable url, used for the markdown table.
-    Args:
-        data: a dictionary or a list containing data with some values that are urls
-        url_keys: the keys of the url's wished to turn clickable
-    Returns:
-        the modified data structure
+
+    :type data: ``[Union[str, List[Any], Dict[str, Any]]]``
+    :param data: a dictionary or a list containing data with some values that are urls
+
+    :type url_keys: ``List[str]``
+    :param url_keys: the keys of the url's wished to turn clickable
+
+    :return: markdown format for clickable url
+    :rtype: ``[Union[str, List[Any], Dict[str, Any]]]``
     """
 
     if isinstance(data, list):
@@ -1362,12 +1366,14 @@ def url_to_clickable_dict(data, url_keys):
 
 def url_to_clickable(url):
     """
-    make the given url clickable when in markdown format by concatenating itself, with the proper brackets
-    Args:
-        url: the url of interest or a list of urls
+    Make the given url clickable when in markdown format by concatenating itself, with the proper brackets
 
-    Returns:
-        markdown format for clickable url
+    :type url: ``Union[List[str], str]``
+    :param url: the url of interest or a list of urls
+
+    :return: markdown format for clickable url
+    :rtype: ``str``
+
     """
     if url and isinstance(url, list):
         return ['[{}]({})'.format(item, item) for item in url]
