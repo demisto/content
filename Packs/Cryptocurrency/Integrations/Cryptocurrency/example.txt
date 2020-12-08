@@ -1,0 +1,1 @@
+crypto crypto=bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i
