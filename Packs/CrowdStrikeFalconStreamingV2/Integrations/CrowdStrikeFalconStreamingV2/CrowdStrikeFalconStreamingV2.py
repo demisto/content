@@ -270,7 +270,7 @@ class EventStream:
                         async with session.get(
                             self.data_feed_url,
                             params={'offset': offset, 'eventType': event_type},
-                            timeout=None
+                            timeout=ClientTimeout(total=None, connect=60, sock_connect=60, sock_read=sock_read)
                         ) as res:
                             demisto.updateModuleHealth('')
                             demisto.debug(f'Fetched event: {res.content}')
