@@ -1,5 +1,4 @@
 Azure.CloudIPs Feed Integration.
-This integration was integrated and tested with version xx of AzureFeed
 ## Configure AzureFeed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
