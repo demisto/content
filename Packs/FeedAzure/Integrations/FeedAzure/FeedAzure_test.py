@@ -231,4 +231,4 @@ def test_filter_duplicate_addresses(list_to_filter, expected_result):
         - Ensure the resulted list contains the object with the maximal number of keys for each value.
     """
     client = Client([], [])
-    assert expected_result == client.filter_duplicate_addresses(list_to_filter)
+    assert expected_result == client.filter_and_aggregate_values(list_to_filter)

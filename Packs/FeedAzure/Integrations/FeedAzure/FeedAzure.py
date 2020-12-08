@@ -142,17 +142,16 @@ class Client(BaseClient):
         return indicator_metadata
 
     @staticmethod
-    def filter_duplicate_addresses(address_list: List) -> List:
-        """For each indicator value from the given list collect the object with the most keys (as it holds the most
-        data).
+    def filter_and_aggregate_values(address_list: List) -> List:
+        """For each indicator value from the given list we aggregate the all the different keys found.
 
         Args:
             address_list (List): list of indicator objects containing objects with duplicate values.
 
         Returns:
-            List. List of filtered indicator objects (no indicator value appear twice)
+            List. List of filtered indicator objects (no indicator value appear twice) and aggregated data
         """
-        indicator_objects = {}
+        indicator_objects: dict = {}
         for item_to_search in address_list:
             current_value = item_to_search.get('value')
             ind_obj = indicator_objects.get(current_value)
@@ -202,7 +201,7 @@ class Client(BaseClient):
                                             azure_platform=indicator_metadata['platform'],
                                             azure_system_service=indicator_metadata['system_service'])
                 )
-        return self.filter_duplicate_addresses(results)
+        return self.filter_and_aggregate_values(results)
 
     def build_iterator(self) -> List:
         """Retrieves all entries from the feed.
