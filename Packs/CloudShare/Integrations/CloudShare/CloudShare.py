@@ -21,12 +21,12 @@ urllib3.disable_warnings()
 
 
 class Client():
-    def __init__(self, hostname, api_id=None, api_key=None, verify=True, proxy=False, ok_codes=tuple(), headers=None):
+    def __init__(self, hostname: str, api_id: str=None, api_key: str=None, verify: bool=True, proxy=False):
         self.hostname = hostname
         self.apiId = api_id
         self.apiKey = api_key
 
-    def send_request(self, method, path, queryParams: dict = None, content: dict = None):
+    def send_request(self, method:str, path:str, queryParams: dict = None, content: dict = None):
         res = cloudshare.req(
             hostname=self.hostname,
             method=method,
@@ -861,7 +861,7 @@ def vm_get_remote_command(client, args):
         )
         return_results(command_results)
     else:
-        return_error(f"Error retrieving {vmID} remote file - {res.content}")
+        return_error(f"Error retrieving {VmID} remote file - {res.content}")
 
 
 def vm_execute_command(client, args):
@@ -1160,6 +1160,7 @@ def main() -> None:
     api_key = params.get('api_key')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    handle_proxy()
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -1235,8 +1236,7 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module_command(client, args)
-            return_results(result)
+            test_module_command(client, args)
 
         else:
             commands[command](client, args)
