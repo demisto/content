@@ -3,7 +3,7 @@ import json
 from google.cloud import storage
 
 
-STORAGE_BUCKET_NAME = 'marketplace-dist-private'
+STORAGE_BUCKET_NAME = 'marketplace-dist-private-test'
 STORAGE_ID_SET_PATH = 'content/id_set.json'
 ARTIFACTS_PATH = '/home/circleci/project/artifacts/'
 
