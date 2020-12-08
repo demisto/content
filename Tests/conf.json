@@ -195,6 +195,13 @@
             "playbookID": "APIVoid Test"
         },
         {
+            "integrations": "CloudConvert",
+            "playbookID": "CloudConvert-test",
+            "fromversion": "5.0.0",
+            "timeout": 2000
+        },
+
+        {
             "integrations": "Cisco Firepower",
             "playbookID": "Cisco Firepower - Test",
             "timeout": 1000,
