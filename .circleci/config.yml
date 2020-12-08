@@ -321,7 +321,7 @@ references:
         python3 Tests/Marketplace/download_private_id_set.py -b 'marketplace-dist-private-test' -s $GCS_PATH
         rm $GCS_PATH
 
-        demisto-sdk merge-id-sets -i1 /home/circleci/project/artifacts/private_id_set.json -i2 "/home/circleci/project/artifacts/id_set.json" -o /home/circleci/project/artifacts/private_and_public_id_sets.json
+        demisto-sdk merge-id-sets -i1 /home/circleci/project/artifacts/private_id_set.json -i2 ./Tests/id_set.json -o /home/circleci/project/artifacts/private_and_public_id_sets.json
 
   build_content_descriptor: &build_content_descriptor
     run:

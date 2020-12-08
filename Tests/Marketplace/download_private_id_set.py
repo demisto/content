@@ -1,6 +1,6 @@
 import os
 import argparse
-from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig
+from Tests.Marketplace.marketplace_services import init_storage_client
 
 
 STORAGE_ID_SET_PATH = 'content/id_set.json'
@@ -18,7 +18,7 @@ def download_private_id_set_from_gcp(public_storage_bucket):
     if os.path.exists(f'{ARTIFACTS_PATH}/private_id_set.json'):
         return f'{ARTIFACTS_PATH}/private_id_set.json'
 
-    return 'bla bla'
+    return ''
 
 
 def option_handler():
