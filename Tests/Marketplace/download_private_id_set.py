@@ -28,7 +28,7 @@ def download_private_id_set_from_gcp():
     if os.path.exists(f'{ARTIFACTS_PATH}/private_id_set.json'):
         return f'{ARTIFACTS_PATH}/private_id_set.json'
 
-    return ''
+    return 'bla bla'
 
 
 def main():
