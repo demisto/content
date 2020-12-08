@@ -2599,9 +2599,9 @@ script:
       description: Identifies the origin of the data (the system that produced the
         data.
       type: String
-  - name: cdl-reset-failure-times
+  - name: cdl-reset-authentication-timeout
     deprecated: false
-    description: Reset the failure times of retrieving the access token
+    description: Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
     execution: false
   dockerimage: demisto/python_pancloud_v2:1.0.0.13988
   feed: false
