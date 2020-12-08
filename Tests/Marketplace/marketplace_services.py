@@ -4,8 +4,9 @@ import stat
 import subprocess
 import fnmatch
 import re
-import shutil
 import git
+import sys
+import shutil
 import yaml
 import google.auth
 from google.cloud import storage
@@ -21,7 +22,6 @@ from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
 from typing import Tuple, Any
-import sys
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
