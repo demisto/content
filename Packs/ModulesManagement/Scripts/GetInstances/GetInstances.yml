@@ -1,0 +1,45 @@
+commonfields:
+  id: GetInstances
+  version: -1
+name: GetInstances
+script: ''
+type: python
+tags: []
+enabled: true
+comment: Returns all the Instance that existing in xsoar
+args:
+- name: brand
+  description: Filter by the brand name
+  isArray: true
+- defaultValue: "active"
+  name: is_enabled
+  auto: PREDEFINED
+  predefined:
+  - "active"
+  - "both"
+  - "disabled"
+  description: Filter by the instance status
+outputs:
+- contextPath: Modules.name
+  description: The instance name
+  type: string
+- contextPath: Modules.category
+  description: The instance category
+  type: string
+- contextPath: Modules.defaultIgnored
+  description: Is the instance avilable by default
+  type: string
+- contextPath: Modules.state
+  description: Is the instance enabled
+  type: string
+- contextPath: Modules.brand
+  description: The instance brand
+  type: string
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.6.13358
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
