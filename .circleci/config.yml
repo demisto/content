@@ -363,7 +363,7 @@ references:
       name: Calculate Packs Dependencies
       when: always
       command: |
-        python3 ./Tests/Marketplace/packs_dependencies.py -i /home/circleci/project/artifacts/private_and_public_id_sets.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
+        python3 ./Tests/Marketplace/packs_dependencies.py -i $CIRCLE_ARTIFACTS/private_and_public_id_sets.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
 
   update_tests_step: &update_tests_step
     run:
