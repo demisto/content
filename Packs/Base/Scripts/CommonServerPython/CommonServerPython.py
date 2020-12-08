@@ -56,7 +56,6 @@ else:
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
 # pylint: enable=undefined-variable
 
-
 # DEPRECATED - use EntryType enum instead
 entryTypes = {
     'note': 1,
@@ -1344,7 +1343,7 @@ def appendContext(key, data, dedup=False):
         demisto.setContext(key, data)
 
 
-def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None):
+def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1389,7 +1388,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         headers = [headers]
 
     if not isinstance(t[0], dict):
-        # the table cotains only simple objects (strings, numbers)
+        # the table contains only simple objects (strings, numbers)
         # should be only one header
         if headers and len(headers) > 0:
             header = headers[0]
@@ -5132,7 +5131,7 @@ if 'requests' in sys.modules:
                           params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                          error_handler=None, **kwargs):
+                          error_handler=None, empty_valid_codes=None, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -5223,6 +5222,11 @@ if 'requests' in sys.modules:
             :type error_handler ``callable``
             :param error_handler: Given an error entery, the error handler outputs the
                 new formatted error message.
+
+            :type empty_valid_codes: ``list``
+            :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
+                can vary)
+
             """
             try:
                 # Replace params if supplied
@@ -5260,7 +5264,9 @@ if 'requests' in sys.modules:
                             err_msg += '\n{}'.format(res.text)
                             raise DemistoException(err_msg, res=res)
 
-                is_response_empty_and_successful = (res.status_code == 204)
+                if not empty_valid_codes:
+                    empty_valid_codes = [204]
+                is_response_empty_and_successful = (res.status_code in empty_valid_codes)
                 if is_response_empty_and_successful and return_empty_response:
                     return res
 
