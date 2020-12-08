@@ -310,27 +310,6 @@ class TestHelperFunctions:
         assert os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/Integrations')
         shutil.rmtree('Tests/Marketplace/Tests/test_data/pack_to_test')
 
-    @pytest.mark.parametrize('file_name, result', [
-        ('Author_image.png', False),
-        ('Integration_image.png', True),
-        ('Integration_image.jpeg', False)
-    ])
-    def test_is_integration_image(self, file_name, result):
-        """
-           Given:
-               - Image name of an author.
-               - Image name of integration.
-               - Image name of integration with the wrong extension.
-            When:
-            - Checking whether the image in integration image or not
-           Then:
-               - Validate that the answer is False
-               - Validate that the answer is True
-               - Validate that the answer is False
-       """
-        from Tests.Marketplace.marketplace_services import is_integration_image
-        assert is_integration_image(file_name) == result
-
 
 class TestVersionSorting:
     """ Class for sorting of changelog.json versions
@@ -1220,3 +1199,64 @@ class TestReleaseNotes:
         task_stat, pack_stat = dummy_pack.is_failed_to_upload(failed_packs_dict)
         assert task_stat == task_status
         assert pack_stat == status
+
+
+class TestImageClassification:
+    """ Test class for all image classifications.
+
+    """
+
+    @pytest.fixture(scope="class")
+    def dummy_pack(self):
+        """ dummy pack fixture
+        """
+        return Pack(pack_name="TestPack", pack_path="dummy_path")
+
+    @pytest.mark.parametrize('file_path, result', [
+        ('Packs/TestPack/Author_image.png', False),
+        ('Packs/TestPack/Integration_image.png', True),
+        ('Packs/TestPack/Integration_image.jpeg', False),
+        ('Integration_image.png', False),
+        ('Integration_pic.png', False),
+    ])
+    def test_is_integration_image(self, file_path, result, dummy_pack):
+        """
+           Given:
+               - File path of an author image.
+               - File path of an integration image.
+               - File path of an integration image with the wrong extension.
+               - File path not starting with Packs/TestPack
+               - File path not containing the 'image' constant
+            When:
+            - Checking whether the image in integration image or not
+           Then:
+               - Validate that the answer is False
+               - Validate that the answer is True
+               - Validate that the answer is False
+               - Validate that the answer is False
+               - Validate that the answer is False
+       """
+        assert dummy_pack.is_integration_image(file_path) is result
+
+    @pytest.mark.parametrize('file_path, result', [
+        ('Packs/TestPack/Author_image.png', True),
+        ('Packs/TestPack/Author_image.jpeg', False),
+        ('Packs/TestPack/Integration_image.png', False),
+        ('Author_image.png', False)
+    ])
+    def test_is_author_image(self, file_path, result, dummy_pack):
+        """
+           Given:
+               - File path of an author image.
+               - File path of an author image with bad suffix.
+               - File path of an integration image.
+               - File path not starting with Packs/TestPack
+            When:
+            - Checking whether the image in integration image or not
+           Then:
+               - Validate that the answer is True
+               - Validate that the answer is False
+               - Validate that the answer is False
+               - Validate that the answer is False
+       """
+        assert dummy_pack.is_author_image(file_path) is result
