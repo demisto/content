@@ -570,7 +570,7 @@ inputs:
   value:
     simple: "false"
   required: true
-  description: 'Whether to preview results using the search action. Possible values are: "true" and "false".'.
+  description: 'Whether to preview results using the search action. Possible values are: "true" and "false".'
   playbookInputQuery: null
 - key: case
   value: {}
