@@ -322,7 +322,6 @@ references:
         rm $GCS_PATH
 
         demisto-sdk merge-id-sets -i1 /home/circleci/project/artifacts/private_id_set.json -i2 "/home/circleci/project/artifacts/id_set.json" -o /home/circleci/project/artifacts/private_and_public_id_sets.json
-        cp ./Tests/public_and_private_id_sets.json $CIRCLE_ARTIFACTS
 
   build_content_descriptor: &build_content_descriptor
     run:
