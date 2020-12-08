@@ -1340,7 +1340,7 @@ def appendContext(key, data, dedup=False):
         demisto.setContext(key, data)
 
 
-def url_to_clickable_dict(data, url_keys):
+def url_to_clickable_markdown(data, url_keys):
     """
     Turn the given urls fields in to clickable url, used for the markdown table.
 
@@ -1355,16 +1355,16 @@ def url_to_clickable_dict(data, url_keys):
     """
 
     if isinstance(data, list):
-        data = [url_to_clickable_dict(item, url_keys) for item in data]
+        data = [url_to_clickable_markdown(item, url_keys) for item in data]
 
     elif isinstance(data, dict):
-        data = {key: url_to_clickable(value) if key in url_keys else url_to_clickable_dict(data[key], url_keys)
+        data = {key: create_clickable_url(value) if key in url_keys else url_to_clickable_markdown(data[key], url_keys)
                 for key, value in data.items()}
 
     return data
 
 
-def url_to_clickable(url):
+def create_clickable_url(url):
     """
     Make the given url clickable when in markdown format by concatenating itself, with the proper brackets
 
@@ -1375,7 +1375,9 @@ def url_to_clickable(url):
     :rtype: ``str``
 
     """
-    if url and isinstance(url, list):
+    if not url:
+        return None
+    elif isinstance(url, list):
         return ['[{}]({})'.format(item, item) for item in url]
     return '[{}]({})'.format(url, url)
 
@@ -1411,7 +1413,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     """
     # Turning the urls in the table to clickable
     if url_keys:
-        t = url_to_clickable_dict(t, url_keys)
+        t = url_to_clickable_markdown(t, url_keys)
 
     mdResult = ''
     if name:

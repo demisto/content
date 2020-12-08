@@ -16,7 +16,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers,\
-    url_to_clickable_dict
+    url_to_clickable_markdown
 
 try:
     from StringIO import StringIO
@@ -469,8 +469,8 @@ def test_tbl_to_md_clickable_url(data, expected_table):
 
 
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
-def test_url_to_clickable_dict(data, expected_data):
-    table = url_to_clickable_dict(data, url_keys=['url', 'links'])
+def test_url_to_clickable_markdown(data, expected_data):
+    table = url_to_clickable_markdown(data, url_keys=['url', 'links'])
     assert table == expected_data
 
 def test_flatten_cell():
