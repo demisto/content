@@ -31,17 +31,17 @@ def get_bitcoin_reputation(addresses) -> List[CommandResults]:
             indicator=address,
             indicator_type=DBotScoreType.CRYPTOCURRENCY,
             integration_name=INTEGRATION_NAME,  # Vendor
-            score=score  # Suspicious
+            score=score,  # Suspicious
         )
         crypto_context = Common.Cryptocurrency(
             address=address,
             address_type=BITCOIN,
-            dbot_score=dbot_score
+            dbot_score=dbot_score,
         )
         table_data = {
             'Address': address,
             'Cryptocurrency Address Type': BITCOIN,
-            'Reputation': SCORE[score]
+            'Reputation': SCORE[score],
         }
         table_name = f'{INTEGRATION_NAME} reputation for {address}'
         hr = tableToMarkdown(table_name, table_data)
@@ -50,7 +50,7 @@ def get_bitcoin_reputation(addresses) -> List[CommandResults]:
             outputs_prefix='Cryptocurrency',
             readable_output=hr,
             outputs_key_field='Address',
-            indicator=crypto_context
+            indicator=crypto_context,
         ))
     return command_results
 
