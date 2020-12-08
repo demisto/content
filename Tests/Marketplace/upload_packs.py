@@ -13,7 +13,7 @@ from zipfile import ZipFile
 from typing import Any, Tuple, Union
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
-    get_packs_statistics_dataframe, PACKS_RESULTS_FILE, get_recent_commits_data, get_content_git_client
+    get_packs_statistics_dataframe, PACKS_RESULTS_FILE, load_json, get_content_git_client, get_recent_commits_data
 from demisto_sdk.commands.common.tools import run_command, str2bool
 
 from Tests.scripts.utils.log_util import install_logging
@@ -432,27 +432,6 @@ def build_summary_table_md(packs_input_list: list, include_pack_status: bool = F
         table.append(row_hr)
 
     return '\n'.join(table)
-
-
-def load_json(file_path: str) -> dict:
-    """ Reads and loads json file.
-
-    Args:
-        file_path (str): full path to json file.
-
-    Returns:
-        dict: loaded json file.
-
-    """
-    try:
-        if file_path:
-            with open(file_path, 'r') as json_file:
-                result = json.load(json_file)
-        else:
-            result = {}
-        return result
-    except json.decoder.JSONDecodeError:
-        return {}
 
 
 def update_index_with_priced_packs(private_storage_bucket: Any, extract_destination_path: str,
