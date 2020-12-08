@@ -224,6 +224,7 @@ def domain_command(client: Client, args: dict) -> List[CommandResults]:
         domain = Common.Domain(
             domain=domain,
             dbot_score=dbot_score,
+            tags='DGA'
         )
 
         command_results = CommandResults(
