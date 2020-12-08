@@ -569,14 +569,14 @@ class Pack(object):
         pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'))
         if is_feed_pack and 'TIM' not in pack_metadata['tags']:
             pack_metadata['tags'].append('TIM')
-        if pack_metadata['useCases']:
-            pack_metadata['tags'].append('Use Case')
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
         pack_metadata['integrations'] = Pack._get_all_pack_images(integration_images,
                                                                   user_metadata.get('displayedImages', []),
                                                                   dependencies_data)
         pack_metadata['useCases'] = input_to_list(input_data=user_metadata.get('useCases'), capitalize_input=True)
+        if pack_metadata['useCases']:
+            pack_metadata['tags'].append('Use Case')
         pack_metadata['keywords'] = input_to_list(user_metadata.get('keywords'))
         pack_metadata['dependencies'] = Pack._parse_pack_dependencies(user_metadata.get('dependencies', {}),
                                                                       dependencies_data)
