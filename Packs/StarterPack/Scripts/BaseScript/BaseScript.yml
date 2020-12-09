@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: [Enter a description of the argument, including any important information users need to know, for example, default values.]
+  description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
   isArray: false
   name: dummy
   required: true
