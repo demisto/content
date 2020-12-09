@@ -53,7 +53,7 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
-      - "15"
+      - "3"
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -111,8 +111,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 370,
-          "y": 860
+          "x": 580,
+          "y": 690
         }
       }
     note: false
@@ -736,7 +736,7 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
-      - "18"
+      - "6"
     scriptarguments:
       query:
         simple: -status:closed and runStatus:error
@@ -799,8 +799,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -500,
-          "y": 860
+          "x": -280,
+          "y": 690
         }
       }
     note: false
@@ -851,8 +851,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "15"
-      - "18"
+      - "3"
+      - "6"
     separatecontext: false
     view: |-
       {
@@ -882,175 +882,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 130,
-          "y": 1050
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "15":
-    id: "15"
-    taskid: fc81e1a2-887b-4000-80fc-92c26798491b
-    type: condition
-    task:
-      id: fc81e1a2-887b-4000-80fc-92c26798491b
-      version: -1
-      name: Checks if found failed integrations
-      description: Checks if the 'failedinstances' script found any results.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "17"
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEqualString
-          left:
-            value:
-              complex:
-                root: InstancesCount
-                accessor: FailedCount
-            iscontext: true
-          right:
-            value:
-              simple: "0"
-    view: |-
-      {
-        "position": {
-          "x": 580,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "17":
-    id: "17"
-    taskid: 66a21bfd-dfab-43dd-865f-0516b63e37fe
-    type: regular
-    task:
-      id: 66a21bfd-dfab-43dd-865f-0516b63e37fe
-      version: -1
-      name: Set empty fields to integrations grid
-      description: Creates a Grid table from items or key-value pairs.
-      scriptName: SetGridField
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      columns:
-        simple: Brand
-      context_path:
-        simple: InstancesCount
-      grid_id:
-        simple: integrationstestgrid
-      keys:
-        simple: FailedCount
-      overwrite: {}
-      sort_by: {}
-      unpack_nested_elements: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 790,
-          "y": 860
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "18":
-    id: "18"
-    taskid: fe0b8794-3589-4c5f-867b-ff1830879b94
-    type: condition
-    task:
-      id: fe0b8794-3589-4c5f-867b-ff1830879b94
-      version: -1
-      name: Checks if found failed incidents
-      description: Checks if found failed incidents.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "19"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
-            value:
-              complex:
-                root: NumberofFailedIncidents
-                accessor: total of failed incidents
-            iscontext: true
-          right:
-            value:
-              simple: "0"
-    view: |-
-      {
-        "position": {
-          "x": -280,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "19":
-    id: "19"
-    taskid: cb8c0971-ce81-4d50-84a9-2296c7b0b309
-    type: regular
-    task:
-      id: cb8c0971-ce81-4d50-84a9-2296c7b0b309
-      version: -1
-      name: Set empty fields to incident grid
-      description: Creates a Grid table from items or key-value pairs.
-      scriptName: SetGridField
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      columns:
-        simple: Command Name
-      context_path:
-        simple: NumberofFailedIncidents
-      grid_id:
-        simple: playbooktaskserrors
-      keys:
-        simple: total of failed incidents
-      overwrite: {}
-      sort_by: {}
-      unpack_nested_elements: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -80,
+          "x": 150,
           "y": 860
         }
       }
@@ -1065,9 +897,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1195,
-        "width": 1670,
-        "x": -500,
+        "height": 1005,
+        "width": 1240,
+        "x": -280,
         "y": -80
       }
     }

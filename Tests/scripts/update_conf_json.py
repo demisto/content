@@ -1,50 +1,21 @@
 #!/usr/bin/env python3
 import os
+from pprint import pformat
+
 import yaml
 import json
-from datetime import datetime
 from distutils.version import LooseVersion
+import logging
 
+from pebble import ProcessPool
+
+from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.common.constants import TEST_PLAYBOOKS_DIR, INTEGRATIONS_DIR, CONF_PATH, PACKS_DIR, \
-    FileType, PACKS_PACK_META_FILE_NAME, PACK_METADATA_SUPPORT, PACK_METADATA_CERTIFICATION
+    FileType
 
 INITIAL_FROM_VERSION = "4.5.0"
-SKIPPED_PACKS = [
-    'DeprecatedContent',
-    'NonSupported'
-]
-
-
-def get_pack_metadata(file_path):
-    """
-    Args:
-        file_path: The Pack metadata file path
-
-    Returns:
-        The file content.
-    """
-    with open(file_path) as pack_metadata:
-        return json.load(pack_metadata)
-
-
-def is_pack_certified(pack_path):
-    """
-        Checks whether the pack is certified or not (Supported by xsoar/certified partner).
-        Tests are not being collected for uncertified packs.
-    Args:
-        pack_path: The pack path
-
-    Returns:
-        True if the pack is certified, False otherwise.
-
-    """
-    pack_metadata_path = os.path.join(pack_path, PACKS_PACK_META_FILE_NAME)
-    if not os.path.isfile(pack_metadata_path):
-        return False
-    pack_metadata = get_pack_metadata(pack_metadata_path)
-    return pack_metadata.get(PACK_METADATA_SUPPORT, '').lower() == "xsoar" or\
-        pack_metadata.get(PACK_METADATA_CERTIFICATION, '').lower() == "certified"
+NEW_CONF_JSON_OBJECT = []
 
 
 def get_integration_data(file_path):
@@ -104,59 +75,66 @@ def load_test_data_from_conf_json():
     return test_playbooks
 
 
-def run():
-    new_conf_json_objects = []
-    existing_test_playbooks = load_test_data_from_conf_json()
+def generate_pack_tests_configuration(pack_name, existing_test_playbooks):
+    install_logging('Update_Tests_step.log', include_process_name=True)
+    pack_integrations = []
+    pack_test_playbooks = []
 
-    for pack_name in os.listdir(PACKS_DIR):
-        if pack_name in SKIPPED_PACKS:
-            continue
+    pack_path = os.path.join(PACKS_DIR, pack_name)
 
-        pack_path = os.path.join(PACKS_DIR, pack_name)
-        if not is_pack_certified(pack_path):
-            continue
-        pack_integrations = []
-        pack_test_playbooks = []
+    integration_dir_path = os.path.join(pack_path, INTEGRATIONS_DIR)
+    test_playbook_dir_path = os.path.join(pack_path, TEST_PLAYBOOKS_DIR)
+    if not os.path.isdir(test_playbook_dir_path) or not os.listdir(test_playbook_dir_path):
+        return pack_integrations, pack_test_playbooks, pack_name
 
-        integration_dir_path = os.path.join(pack_path, INTEGRATIONS_DIR)
-        test_playbook_dir_path = os.path.join(pack_path, TEST_PLAYBOOKS_DIR)
-        if not os.path.isdir(test_playbook_dir_path) or not os.listdir(test_playbook_dir_path):
-            continue
-
-        print(f'Going over {pack_name}')
-        if os.path.exists(integration_dir_path):
-            for file_or_dir in os.listdir(integration_dir_path):
-                if os.path.isdir(os.path.join(integration_dir_path, file_or_dir)):
-                    inner_dir_path = os.path.join(integration_dir_path, file_or_dir)
-                    for integration_file in os.listdir(inner_dir_path):
-                        is_yml_file = integration_file.endswith('.yml')
-                        file_path = os.path.join(inner_dir_path, integration_file)
-                        if is_yml_file:
-                            pack_integrations.append(get_integration_data(file_path))
-                else:
-                    is_yml_file = file_or_dir.endswith('.yml')
-                    file_path = os.path.join(integration_dir_path, file_or_dir)
+    logging.info(f'Going over {pack_name}')
+    if os.path.exists(integration_dir_path):
+        for file_or_dir in os.listdir(integration_dir_path):
+            if os.path.isdir(os.path.join(integration_dir_path, file_or_dir)):
+                inner_dir_path = os.path.join(integration_dir_path, file_or_dir)
+                for integration_file in os.listdir(inner_dir_path):
+                    is_yml_file = integration_file.endswith('.yml')
+                    file_path = os.path.join(inner_dir_path, integration_file)
                     if is_yml_file:
                         pack_integrations.append(get_integration_data(file_path))
+            else:
+                is_yml_file = file_or_dir.endswith('.yml')
+                file_path = os.path.join(integration_dir_path, file_or_dir)
+                if is_yml_file:
+                    pack_integrations.append(get_integration_data(file_path))
 
-        for file_path in os.listdir(test_playbook_dir_path):
-            is_yml_file = file_path.endswith('.yml')
-            file_path = os.path.join(test_playbook_dir_path, file_path)
-            if is_yml_file and find_type(file_path) == FileType.TEST_PLAYBOOK:
-                test_playbook_id, fromversion = get_playbook_data(file_path)
-                if test_playbook_id not in existing_test_playbooks:
-                    pack_test_playbooks.append((test_playbook_id, fromversion))
+    for file_path in os.listdir(test_playbook_dir_path):
+        is_yml_file = file_path.endswith('.yml')
+        file_path = os.path.join(test_playbook_dir_path, file_path)
+        if is_yml_file and find_type(file_path) == FileType.TEST_PLAYBOOK:
+            test_playbook_id, fromversion = get_playbook_data(file_path)
+            if test_playbook_id not in existing_test_playbooks:
+                pack_test_playbooks.append((test_playbook_id, fromversion))
+    return pack_integrations, pack_test_playbooks, pack_name
 
+
+def update_new_conf_json(future):
+    try:
+        pack_integrations, pack_test_playbooks, pack_name = future.result()  # blocks until results ready
         if pack_test_playbooks:
-            new_conf_json_objects.extend(calc_conf_json_object(pack_integrations, pack_test_playbooks))
+            NEW_CONF_JSON_OBJECT.extend(calc_conf_json_object(pack_integrations, pack_test_playbooks))
+    except Exception:
+        logging.exception('Failed to collect pack test configurations')
 
-    add_to_conf_json(new_conf_json_objects)
-    print(f'Added {len(new_conf_json_objects)} tests to the conf.json')
-    print(f'Added the following objects to the conf.json:\n{json.dumps(new_conf_json_objects, indent=4)}')
+
+def main():
+    install_logging('Update_Tests_step.log', include_process_name=True)
+    existing_test_playbooks = load_test_data_from_conf_json()
+    with ProcessPool(max_workers=os.cpu_count(), max_tasks=100) as pool:
+        for pack_name in os.listdir(PACKS_DIR):
+            future_object = pool.schedule(generate_pack_tests_configuration,
+                                          args=(pack_name, existing_test_playbooks), timeout=20)
+            future_object.add_done_callback(update_new_conf_json)
+
+    add_to_conf_json(NEW_CONF_JSON_OBJECT)
+    logging.success(f'Added {len(NEW_CONF_JSON_OBJECT)} tests to the conf.json')
+    logging.success(f'Added the following objects to the conf.json:\n{pformat(NEW_CONF_JSON_OBJECT)}')
 
 
 if __name__ == '__main__':
-    start_time = datetime.now()
-    run()
-    total_time = datetime.now() - start_time
-    print(f'Total time {total_time}')
+    main()

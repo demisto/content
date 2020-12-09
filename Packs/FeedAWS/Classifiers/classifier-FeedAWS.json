@@ -1,5 +1,5 @@
 {
-    "id": "AWS Feed",
+    "id": "AWS Feed Classifier",
     "name": "AWS Feed - Classifier",
     "type": "classification",
     "description": "Classifies AWS IOCs.",

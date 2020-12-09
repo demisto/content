@@ -47,14 +47,14 @@ class Client(BaseClient):
         self.use_ssl = use_ssl
         # Trust environment settings for proxy configuration
         self.trust_env = proxy
-        self._get_access_token()
+        self._set_access_token()
 
-    def _get_access_token(self):
+    def _set_access_token(self):
         """
-        Checks if access token exists in the integration context and return it if it exists, if not, a new token
+        Checks if access token exists in the integration context and set it to the object properties, if not, a new token
         is generated and saved in the integration context along with the query api_url and the instance_id
         Returns:
-            The access token from the integration context or from the request.
+            None
         """
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get(ACCESS_TOKEN_CONST)
@@ -64,6 +64,8 @@ class Client(BaseClient):
                 self.access_token = access_token
                 self.api_url = integration_context.get(API_URL_CONST, DEFAULT_API_URL)
                 self.instance_id = integration_context.get(INSTANCE_ID_CONST)
+                return
+        demisto.debug(f'access token time: {valid_until} expired/none. Will call oproxy')
         access_token, api_url, instance_id, refresh_token, expires_in = self._oproxy_authorize()
         updated_integration_context = {
             ACCESS_TOKEN_CONST: access_token,
@@ -188,6 +190,31 @@ def human_readable_time_from_epoch_time(epoch_time: int, utc_time: bool = False)
     if result:
         result += 'Z' if utc_time else ''
     return result
+
+
+def add_milliseconds_to_epoch_time(epoch_time):
+    """
+    Add 1 millisecond so we would not get duplicate incidents.
+    Args:
+        epoch_time: Epoch time as it is in the raw_content
+    Returns:
+        epoch_time with 1 more millisecond.
+    """
+    epoch_time = int(epoch_time / 1000 + 1) / 1000
+    return epoch_time
+
+
+def epoch_to_timestamp_and_add_milli(epoch_time: int):
+    """
+    Create human readable time in the format of '1970-01-01T02:00:00.000Z'
+    Args:
+        epoch_time: Epoch time as it is in the raw_content
+    Returns:
+        human readable time in the format of '1970-01-01T02:00:00.000Z'
+    """
+    epoch_time = add_milliseconds_to_epoch_time(epoch_time)
+    epoch_time_str = datetime.fromtimestamp(epoch_time).isoformat(timespec='milliseconds') + "Z"
+    return epoch_time_str
 
 
 def common_context_transformer(row_content):
@@ -760,6 +787,7 @@ def query_logs_command(args: dict, client: Client) -> Tuple[str, Dict[str, List[
     """
     query = args.get('query', '')
     limit = args.get('limit', '')
+    transform_results = argToBoolean(args.get('transform_results', 'true'))
 
     if 'limit' not in query.lower():
         query += f' LIMIT {limit}'
@@ -767,10 +795,10 @@ def query_logs_command(args: dict, client: Client) -> Tuple[str, Dict[str, List[
     records, raw_results = client.query_loggings(query)
 
     table_name = get_table_name(query)
-    transformed_results = [common_context_transformer(record) for record in records]
-    human_readable = tableToMarkdown('Logs ' + table_name + ' table', transformed_results, removeNull=True)
+    output_results = records if not transform_results else [common_context_transformer(record) for record in records]
+    human_readable = tableToMarkdown('Logs ' + table_name + ' table', output_results, removeNull=True)
     ec = {
-        'CDL.Logging': transformed_results
+        'CDL.Logging': output_results
     }
     return human_readable, ec, raw_results
 
@@ -906,7 +934,6 @@ def query_url_logs_command(args: dict, client: Client) -> Tuple[str, dict, List[
 
 
 def query_file_data_command(args: dict, client: Client) -> Tuple[str, dict, List[Dict[str, Any]]]:
-
     query_table_name: str = 'file_data'
     context_transformer_function = files_context_transformer
     table_context_path: str = 'CDL.Logging.File'
@@ -976,7 +1003,8 @@ def fetch_incidents(client: Client,
     incidents = [convert_log_to_incident(record, fetch_table) for record in records]
     max_fetched_event_timestamp = max(records, key=lambda record: record.get('time_generated', 0)).get('time_generated',
                                                                                                        0)
-    next_run = {'lastRun': human_readable_time_from_epoch_time(max_fetched_event_timestamp)}
+
+    next_run = {'lastRun': epoch_to_timestamp_and_add_milli(max_fetched_event_timestamp)}
     return next_run, incidents
 
 

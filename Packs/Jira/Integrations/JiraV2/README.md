@@ -40,6 +40,7 @@ ConsumerKey__
 ## Fetched Incidents Data
 ---
 When you enable fetched incidents, Demisto fetches the first batch of Jira issues from the 10 minutes prior to when the integration was added. After the first batch of fetched issues, Demisto fetches new Jira issues as soon as they are generated in Jira. By default, 50 issues are pulled for each call. To pull older Jira issues, use the query to fetch issues option.
+If mirror `Mirror incoming incidents` is enabled, any incident data changed in remote JIRA server will reflected on existing fetched incidents.
 
 ## Commands
 ---
@@ -203,7 +204,7 @@ Creates a new issue in Jira.
 | priority | The priority name, for example: "High" or "Medium". | Optional | 
 | dueDate | The due date for the issue (in the format: 2018-03-11). | Optional | 
 | assignee | The name of the assignee. | Optional | 
-| reporter | The ID of the reporter. | Optional | 
+| reporter | The account ID of the reporter. | Optional | 
 | parentIssueKey | The parent issue key (if you create a sub-task). | Optional | 
 | parentIssueId | The parent issue ID (if you create a sub-task). | Optional | 
 
@@ -217,7 +218,7 @@ Creates a new issue in Jira.
 
 
 ##### Command Example
-```!jira-create-issue summary="test SOC issue26" projectKey=DEM issueJson=\`{"fields":{"issuetype":{"name":"Request for Action"}}}\````
+```!jira-create-issue summary="test SOC issue26" issueTypeId=10008 projectKey=DEM issueJson=\`{"fields":{"issuetype":{"name":"Request for Action"}}}\````
 
 ##### Context Example
 ```

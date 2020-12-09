@@ -2,7 +2,7 @@
     "name": "Cisco Threat Grid",
     "description": "Query and upload samples to Cisco threat grid.",
     "support": "xsoar",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

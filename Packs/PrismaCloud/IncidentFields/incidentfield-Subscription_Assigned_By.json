@@ -3,6 +3,7 @@
 	"associatedTypes": [
 		"Prisma Cloud",
 		"GCP Compute Engine Misconfiguration",
+		"GCP Kubernetes Engine Misconfiguration",
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration"

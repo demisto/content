@@ -12,5 +12,5 @@ comment: Common CrowdStrike code that will be appended to each CrowdStrike integ
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/python3:3.8.5.10845
+dockerimage: demisto/python3:3.8.6.12176
 fromversion: 5.0.0

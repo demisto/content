@@ -1,0 +1,478 @@
+{
+ "kind": "mobile",
+ "layout": {
+  "id": "Google Drive Activity",
+  "kind": "mobile",
+  "modified": "2020-09-19T16:01:37.960067978+05:30",
+  "name": "",
+  "sections": [
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_type",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_severity",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_owner",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbotstatus",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_sourcebrand",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_sourceinstance",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_playbookid",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_phase",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_roles",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Basic Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_googledriveactivityassignedcurrentuser",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivityassigneddeleteduser",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivityassignedpersonname",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivityassignedunknownuser",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivityassignmentsubtype",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivitycopiedfoldertype",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivitycopieditemisfile",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivitycopieditemname",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivitycopieditemtitle",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivitycopiedshareddrivename",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivitycopiedshareddrivetitle",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivitycreatednew",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivitydeletetype",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivitydlpchangetype",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivityidentifiedas",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivitynewtitle",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivityoldtitle",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivitypostsubtype",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivityreferencetype",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivityrestoretype",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivitysuggestionsubtype",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_googledriveactivityuploaded",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Google Drive Activity Detail",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_occurred",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbotcreated",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbotduedate",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbotmodified",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbottotaltime",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Timeline Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_agentid",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_app",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_assigneduser",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_assignmentgroup",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_caller",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_chronicleassetsupportcontact",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_chronicleautoblockentities",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_chronicleskipentityisolation",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_commandline",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_country",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbotprediction",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbotpredictionprobability",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_destinationhostname",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_destinationip",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_destinationnetwork",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_destinationport",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_detectionsla",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_detectionurl",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_deviceexternalip",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_devicehash",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_devicelocalip",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_devicemodel",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_devicename",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_escalation",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_eventid",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_eventtype",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_filehash",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_filename",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_filepath",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_filesize",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_firstname",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_incomingmirrorerror",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_investigationstage",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_lastname",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_logsource",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_macaddress",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_md5",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_mobiledevicemodel",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_os",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_osversion",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_outgoingmirrorerror",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_phonenumber",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_pid",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_protocol",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_remediationsla",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_riskiqassetawssecuritygroupname",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_riskiqassetgcpfirewallname",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_riskiqassetoktazoneid",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_riskiqsupportcontact",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_sha256",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_sourcehostname",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_sourceip",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_sourcenetwork",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_sourceport",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_sourceusername",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_state",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_subcategory",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_tenantname",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_ticketcloseddate",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_ticketnumber",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_ticketopeneddate",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_timetoassignment",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_urlsslverification",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_useraccountcontrol",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Custom Fields",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_labels",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Labels",
+    "query": null,
+    "queryType": "",
+    "readOnly": true,
+    "type": "labels"
+   }
+  ],
+  "system": false,
+  "typeId": "Google Drive Activity",
+  "version": -1
+ },
+ "typeId": "Google Drive Activity",
+ "version": -1,
+ "toVersion": "5.9.9",
+ "fromVersion": "5.0.0",
+ "description": ""
+}

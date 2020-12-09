@@ -137,6 +137,7 @@ configuration:
   - AzureContainerRegistry
   - AzureCosmosDB
   - AzureDataLake
+  - AzureDevOps
   - AzureEventHub
   - AzureFrontDoor
   - AzureIdentity
@@ -194,7 +195,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: azure-get-indicators
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.6.13358
   feed: true
   isfetch: false
   longRunning: false

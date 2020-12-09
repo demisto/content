@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3644e4f5-e3b6-47f9-8328-79da4d72df74
+    taskid: a120d747-7790-492f-8be2-1c7ee9b9b6c0
     type: start
     task:
-      id: 3644e4f5-e3b6-47f9-8328-79da4d72df74
+      id: a120d747-7790-492f-8be2-1c7ee9b9b6c0
       version: -1
       name: ""
       iscommand: false
@@ -20,20 +20,26 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 695,
           "y": 50
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 23730283-bf3f-4308-8673-cd9a4e94d76d
+    taskid: 3c5965f0-9214-4cbc-80cd-0183d082e3e5
     type: regular
     task:
-      id: 23730283-bf3f-4308-8673-cd9a4e94d76d
+      id: 3c5965f0-9214-4cbc-80cd-0183d082e3e5
       version: -1
       name: cylance-protect-get-devices
-      description: Allows a caller to request a page with a list of Console device resources belongings to a Tenant, sorted by registration (created) date in descending order (most recent device registered listed first)
+      description: Allows a caller to request a page with a list of Console device
+        resources belongings to a Tenant, sorted by registration (created) date in
+        descending order (most recent device registered listed first)
       script: '|||cylance-protect-get-devices'
       type: regular
       iscommand: true
@@ -48,20 +54,25 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 695,
           "y": 370
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: cef538aa-1852-47ed-8bc9-0f0505b69d2b
+    taskid: 4e4d00a3-fad2-4037-8386-60d8c8319328
     type: regular
     task:
-      id: cef538aa-1852-47ed-8bc9-0f0505b69d2b
+      id: 4e4d00a3-fad2-4037-8386-60d8c8319328
       version: -1
       name: cylance-protect-get-device-threats
-      description: Allows a caller to request a page with a list of threats found on a specific device
+      description: Allows a caller to request a page with a list of threats found
+        on a specific device
       script: '|||cylance-protect-get-device-threats'
       type: regular
       iscommand: true
@@ -83,24 +94,30 @@ tasks:
                 value:
                   simple: Online
           accessor: Device.ID
-      pageNumber: {}
-      pageSize: {}
+      pageNumber:
+        simple: "1"
+      pageSize:
+        simple: "1"
       threshold: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 695,
           "y": 545
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: be5f9fdf-4ef1-4bdd-8ee9-6f25b6581522
+    taskid: 10ade97d-4207-4cd3-8a09-0b49cf6c40e9
     type: regular
     task:
-      id: be5f9fdf-4ef1-4bdd-8ee9-6f25b6581522
+      id: 10ade97d-4207-4cd3-8a09-0b49cf6c40e9
       version: -1
       name: cylance-protect-get-list
       description: Gets a list of global list resources for a tenant
@@ -110,27 +127,35 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "18"
     scriptarguments:
       listTypeId:
         simple: GlobalQuarantine
-      page: {}
-      page_size: {}
+      page:
+        simple: "1"
+      page_size:
+        simple: "1"
+      pageNumber: {}
+      pageSize: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 480,
+          "y": 1245
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: bd96cd9a-9b13-47e7-8bba-19db5f6f476b
+    taskid: 82a54b5e-4119-4c7e-85b5-dcdb0366b9e5
     type: regular
     task:
-      id: bd96cd9a-9b13-47e7-8bba-19db5f6f476b
+      id: 82a54b5e-4119-4c7e-85b5-dcdb0366b9e5
       version: -1
       name: cylance-protect-get-policies
       description: Allows the caller to get a list of tenant policies
@@ -140,53 +165,68 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "28"
     scriptarguments:
-      pageItems: {}
-      pageNumber: {}
+      pageItems:
+        simple: "1"
+      pageNumber:
+        simple: "1"
+      pageSize: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1595
+          "x": 1340,
+          "y": 1245
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 76546d6f-1c33-44bd-8dde-db457eeba6a7
+    taskid: c63a2434-c614-47dd-8f6f-0df9143c991e
     type: regular
     task:
-      id: 76546d6f-1c33-44bd-8dde-db457eeba6a7
+      id: c63a2434-c614-47dd-8f6f-0df9143c991e
       version: -1
       name: cylance-protect-get-zones
-      description: Request zone information for your organization. This will return the top 100 records
+      description: Request zone information for your organization. This will return
+        the top 100 records
       script: '|||cylance-protect-get-zones'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "24"
     scriptarguments:
-      pageItems: {}
-      pageNumber: {}
+      pageItems:
+        simple: "1"
+      pageNumber:
+        simple: "1"
+      pageSize: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 910,
           "y": 1245
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 0e459a16-e6df-41b4-8e7f-db8d2f860ebf
+    taskid: a6e5c692-0cbb-466c-828a-f9686ae52338
     type: regular
     task:
-      id: 0e459a16-e6df-41b4-8e7f-db8d2f860ebf
+      id: a6e5c692-0cbb-466c-828a-f9686ae52338
       version: -1
       name: cylance-protect-get-threat
       description: Request threat details for a specific threat
@@ -229,125 +269,71 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 695,
           "y": 720
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 03012a7a-81f9-4154-8938-d1dcab6ab930
-    type: regular
+    taskid: b0bd44a2-4a26-4047-8d4e-c83412bccc80
+    type: condition
     task:
-      id: 03012a7a-81f9-4154-8938-d1dcab6ab930
+      id: b0bd44a2-4a26-4047-8d4e-c83412bccc80
       version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      name: VerifyContextExists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Classification,SubClassification,Name,Sha256
-      path:
-        simple: File
+      "yes":
+      - "19"
+      - "5"
+      - "4"
+      - "12"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${CylanceProtect.Device}
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${File}
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${DBotScore}
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 695,
           "y": 895
         }
       }
     note: false
-  "8":
-    id: "8"
-    taskid: caecfbe9-2f35-4568-8c80-827fc9bac0f3
-    type: regular
-    task:
-      id: caecfbe9-2f35-4568-8c80-827fc9bac0f3
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: DateAdded,DateModified,DeviceCount,Id,Name,ZoneCount
-      path:
-        simple: CylanceProtect.Policies
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-  "9":
-    id: "9"
-    taskid: 06289097-7762-4e25-8101-dc8e0027f4e0
-    type: regular
-    task:
-      id: 06289097-7762-4e25-8101-dc8e0027f4e0
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Criticality,DateCreated,DateModified,Id,Name,PolicyId,UpdateType
-      path:
-        simple: CylanceProtect.Zones
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 519f6dd9-3e8a-48e1-8555-1b14054b1cbc
+    taskid: 5458887d-3ef7-458a-86be-7fc35a9171c8
     type: title
     task:
-      id: 519f6dd9-3e8a-48e1-8555-1b14054b1cbc
+      id: 5458887d-3ef7-458a-86be-7fc35a9171c8
       version: -1
       name: Success
       type: title
@@ -357,17 +343,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2995
+          "x": 695,
+          "y": 2120
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: c42b5733-418f-4049-833d-9266f0c6599e
+    taskid: 713c0b4a-3909-428d-8bc4-ce6bdbd20bd9
     type: regular
     task:
-      id: c42b5733-418f-4049-833d-9266f0c6599e
+      id: 713c0b4a-3909-428d-8bc4-ce6bdbd20bd9
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -388,17 +378,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 695,
           "y": 195
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: a31df2c3-15b5-4f5d-8fe9-9e10bd075034
+    taskid: a32db3c9-c51b-4814-85a8-3c719c36bfbd
     type: regular
     task:
-      id: a31df2c3-15b5-4f5d-8fe9-9e10bd075034
+      id: a32db3c9-c51b-4814-85a8-3c719c36bfbd
       version: -1
       name: cylance-protect-download-threat
       script: '|||cylance-protect-download-threat'
@@ -419,16 +413,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 1070
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: bf9913e5-e9c8-4cdc-87d3-5baeca19ed10
+    taskid: 6455d736-ed77-42ee-8124-1379f602739f
     type: condition
     task:
-      id: bf9913e5-e9c8-4cdc-87d3-5baeca19ed10
+      id: 6455d736-ed77-42ee-8124-1379f602739f
       version: -1
       name: Check if file was downloaded
       type: condition
@@ -466,16 +464,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1245
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: 78afc8a3-23cf-4e54-8a1c-7d71f15ca442
+    taskid: 6f672627-9d10-42ed-8825-157a5cf60995
     type: regular
     task:
-      id: 78afc8a3-23cf-4e54-8a1c-7d71f15ca442
+      id: 6f672627-9d10-42ed-8825-157a5cf60995
       version: -1
       name: cylance-protect-add-hash-to-list
       script: '|||cylance-protect-add-hash-to-list'
@@ -497,16 +499,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 1420
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: b9cd16c1-c004-4c13-8d44-ef25c730f3bf
+    taskid: 2c06a347-7407-4838-8437-b7168d99e394
     type: regular
     task:
-      id: b9cd16c1-c004-4c13-8d44-ef25c730f3bf
+      id: 2c06a347-7407-4838-8437-b7168d99e394
       version: -1
       name: 'cylance-protect-delete-hash-from-lists '
       script: '|||cylance-protect-delete-hash-from-lists'
@@ -526,16 +532,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 1595
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: 9490e14b-571f-49fc-8b20-a421341f3cc6
+    taskid: 2e73c5bd-bf42-4db2-85cc-3935189bdeea
     type: regular
     task:
-      id: 9490e14b-571f-49fc-8b20-a421341f3cc6
+      id: 2e73c5bd-bf42-4db2-85cc-3935189bdeea
       version: -1
       name: cylance-protect-get-policy-details
       script: '|||cylance-protect-get-policy-details'
@@ -553,16 +563,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 1770
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: 9f27c661-3171-4a45-895f-cb8e97d9f4d2
+    taskid: 7f590a53-3bd8-4265-89ae-d1a0b51c37d9
     type: condition
     task:
-      id: 9f27c661-3171-4a45-895f-cb8e97d9f4d2
+      id: 7f590a53-3bd8-4265-89ae-d1a0b51c37d9
       version: -1
       name: Test if policy was recieved
       type: condition
@@ -595,17 +609,522 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 1945
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 372c1d1a-0c3d-4eaa-893b-e032c1a5a493
+    type: condition
+    task:
+      id: 372c1d1a-0c3d-4eaa-893b-e032c1a5a493
+      version: -1
+      name: verify get list before fix
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualNumber
+          left:
+            value:
+              complex:
+                root: ${File}
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 04ad5f1a-432b-4764-879c-35b13ecc5c07
+    type: regular
+    task:
+      id: 04ad5f1a-432b-4764-879c-35b13ecc5c07
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: fa992adf-ecdd-4c68-834a-88671361ac8f
+    type: regular
+    task:
+      id: fa992adf-ecdd-4c68-834a-88671361ac8f
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: fa2259df-4391-45a0-8639-64d7b05e1e54
+    type: regular
+    task:
+      id: fa2259df-4391-45a0-8639-64d7b05e1e54
+      version: -1
+      name: cylance-protect-get-list
+      description: Gets a list of global list resources for a tenant
+      script: '|||cylance-protect-get-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      listTypeId:
+        simple: GlobalQuarantine
+      page: {}
+      page_size: {}
+      pageNumber:
+        simple: "1"
+      pageSize:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: c70f9c7d-2732-4d9e-8b99-85ca57e6e641
+    type: condition
+    task:
+      id: c70f9c7d-2732-4d9e-8b99-85ca57e6e641
+      version: -1
+      name: verify get list after fix
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: ${File}
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 586cc385-50b2-4c97-86f7-e2540fb2c9d5
+    type: condition
+    task:
+      id: 586cc385-50b2-4c97-86f7-e2540fb2c9d5
+      version: -1
+      name: verify zones before fix
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualNumber
+          left:
+            value:
+              complex:
+                root: ${CylanceProtect
+                accessor: Zones}
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 0f92ae59-8642-4599-8e63-96e93950bbf0
+    type: regular
+    task:
+      id: 0f92ae59-8642-4599-8e63-96e93950bbf0
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 7740b8e1-b9e2-45d0-89c1-05715f0d522f
+    type: regular
+    task:
+      id: 7740b8e1-b9e2-45d0-89c1-05715f0d522f
+      version: -1
+      name: cylance-protect-get-zones
+      description: Request zone information for your organization. This will return
+        the top 100 records
+      script: '|||cylance-protect-get-zones'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      pageItems: {}
+      pageNumber:
+        simple: "1"
+      pageSize:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 2913e9d2-bf8c-41a5-8927-8c422b6966d5
+    type: condition
+    task:
+      id: 2913e9d2-bf8c-41a5-8927-8c422b6966d5
+      version: -1
+      name: verify zones after fix
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: ${CylanceProtect
+                accessor: Zones}
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 38c35dfb-c818-4cb2-8732-76147c7c83f9
+    type: condition
+    task:
+      id: 38c35dfb-c818-4cb2-8732-76147c7c83f9
+      version: -1
+      name: verify policies before fix
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualNumber
+          left:
+            value:
+              complex:
+                root: ${CylanceProtect
+                accessor: Policies}
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 51ffc604-9cdd-43e6-89a0-2f60a4fdfcdf
+    type: regular
+    task:
+      id: 51ffc604-9cdd-43e6-89a0-2f60a4fdfcdf
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 33c79f59-b594-4175-8b00-a64fce8bc234
+    type: regular
+    task:
+      id: 33c79f59-b594-4175-8b00-a64fce8bc234
+      version: -1
+      name: cylance-protect-get-policies
+      description: Allows the caller to get a list of tenant policies
+      script: '|||cylance-protect-get-policies'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      pageItems: {}
+      pageNumber:
+        simple: "1"
+      pageSize:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: e8c12d3e-039d-405f-8c04-f76975af340e
+    type: condition
+    task:
+      id: e8c12d3e-039d-405f-8c04-f76975af340e
+      version: -1
+      name: verify policies after fix
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: ${CylanceProtect
+                accessor: Policies}
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "7_19_yes": 0.9
+    },
     "paper": {
       "dimensions": {
-        "height": 3010,
-        "width": 380,
+        "height": 2135,
+        "width": 1670,
         "x": 50,
         "y": 50
       }

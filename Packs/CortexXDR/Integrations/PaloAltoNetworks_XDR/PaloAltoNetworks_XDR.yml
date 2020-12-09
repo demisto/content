@@ -45,6 +45,7 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+  additionalinfo: The maximum number of incidents per fetch cannot exceed 100.
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
@@ -332,9 +333,9 @@ script:
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.description
       description: Textual description of the alert.
       type: String
-    - contextPath: PaloAltoNetworksXDR.Incident.alerts.host_ip
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.host_ip_list
       description: Host IP involved in the alert.
-      type: String
+      type: Unknown
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.host_name
       description: Host name involved in the alert.
       type: String
@@ -1626,7 +1627,20 @@ script:
       will not update the current incident, it's here for debugging purposes.
     execution: false
     name: get-remote-data
-  dockerimage: demisto/python3:3.8.6.12176
+  - arguments:
+    - default: false
+      description: Date string representing the local time.The incident is only returned
+        if it was modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the list of incidents that were modified since the last update.
+      Please note that this method is here for debugging purposes. get-modified-remote-data is used as part of a Mirroring feature, which is available since version 6.1.
+    execution: false
+    name: get-modified-remote-data
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: true
   ismappable: true
