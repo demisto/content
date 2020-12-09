@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "IP"
+    ],
+    "caseInsensitive": true,
+    "cliName": "cyrenipclass",
+    "closeForm": false,
+    "content": true,
+    "description": "Type of IP found in Cyren threat intelligence",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_cyrenipclass",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Cyren IP Class",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

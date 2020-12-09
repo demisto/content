@@ -1,0 +1,32 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "IP",
+        "URL",
+        "File"
+    ],
+    "caseInsensitive": true,
+    "cliName": "cyrendetectionmethods",
+    "closeForm": false,
+    "content": true,
+    "description": "Methods used in Cyren threat intelligence",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_cyrendetectionmethods",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Cyren Detection Methods",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "tagsSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

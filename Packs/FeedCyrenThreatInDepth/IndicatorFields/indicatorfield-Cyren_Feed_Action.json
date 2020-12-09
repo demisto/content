@@ -1,0 +1,32 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "IP",
+        "URL",
+        "File"
+    ],
+    "caseInsensitive": true,
+    "cliName": "cyrenfeedaction",
+    "closeForm": false,
+    "content": true,
+    "description": "Type of Cyren feed action (like add, update etc.)",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_cyrenfeedaction",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Cyren Feed Action",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

@@ -32,6 +32,10 @@ class FeedAction(str, Enum):
     UPDATE = "="
     REMOVE = "-"
 
+    def get_human_readable_name(self):
+        name = str(self.name)
+        return name.lower()
+
 
 class FeedCategory(str, Enum):
     SPAM = "spam"
@@ -45,19 +49,17 @@ class FeedEntryBase(object):
         self.entry = entry
         self.feed_name = feed_name
         self.payload = self.entry.get("payload", dict())
+        self.meta = self.payload.get("meta", dict())
         self.detection = self.payload.get("detection", dict())
         self.categories = self.detection.get("category", [])
+        self.action = FeedAction(self.payload.get("action"))
+        self.relationships = self.payload.get("relationships", [])
 
-    def to_indicator_object(self) -> Dict:
-        fields = dict(name=self.feed_name, tags=self.categories,
-                      associations=self.payload.get("detection_methods", []),
-                      firstseenbysource=self.payload.get("first_seen"),
-                      lastseenbysource=self.payload.get("last_seen"))
-
-        relationships = self.payload.get("relationships", [])
-        if any(relationships):
+    def to_indicator_objects(self) -> Dict:
+        fields = self.get_fields()
+        if any(self.relationships):
             relationship_indicators = []
-            for relationship in relationships:
+            for relationship in self.relationships:
                 relationship_value = None
                 relationship_type = "Indicator"
                 if "sha256_hash" in relationship:
@@ -71,25 +73,49 @@ class FeedEntryBase(object):
                                                     description=relationship.get("relationship_description", "")))
             fields["feedrelatedindicators"] = relationship_indicators
 
-        return dict(value=self.get_value(),
-                    type=self.get_type(),
-                    rawJSON=self.entry,
-                    score=self.get_score(),
-                    fields=fields)
+        primary = dict(value=self.get_value(), type=self.get_type(),
+                       rawJSON=self.entry, score=self.get_score(),
+                       fields=fields)
+
+        indicators = self.get_indicators_from_relationships(primary)
+        indicators.append(primary)
+        return indicators
+
+    def get_indicators_from_relationships(self, primary_indicator):
+        return []
 
     def get_score(self) -> int:
-        action = self.payload.get("action")
-        if action in [FeedAction.ADD, FeedAction.UPDATE]:
+        if self.action in [FeedAction.ADD, FeedAction.UPDATE]:
             if FeedCategory.CONFIRMED_CLEAN in self.categories:
                 return 0
             else:
                 return 3
 
-        if action == FeedAction.REMOVE:
+        if self.action == FeedAction.REMOVE:
             return 0
 
-        # TODO good idea?
         return 3
+
+    def get_fields(self) -> Dict:
+        detection_methods = self.payload.get("detection_methods", [])
+        tags = self.categories + detection_methods
+        fields = dict(tags=tags,
+                      indicatoridentification=self.payload.get("identifier"),
+                      firstseenbysource=self.payload.get("first_seen"),
+                      lastseenbysource=self.payload.get("last_seen"),
+                      cyrendetectiondate=self.detection.get("detection_ts"),
+                      cyrenfeedaction=self.action.get_human_readable_name(),
+                      cyrendetectioncategories=self.categories,
+                      cyrendetectionmethods=detection_methods)
+
+        timestamp = self.entry.get("timestamp")
+        if self.action == FeedAction.ADD:
+            fields["creationdate"] = timestamp
+            fields["published"] = timestamp
+        elif self.action == FeedAction.UPDATE:
+            fields["updateddate"] = timestamp
+
+        return fields
 
     def get_offset(self) -> int:
         offset = self.entry.get("offset")
@@ -114,6 +140,37 @@ class UrlFeedEntry(FeedEntryBase):
         value = value.rstrip("\n").rstrip("/")
         return value
 
+    def get_fields(self) -> Dict:
+        industries = self.detection.get("industry", [])
+        brands = self.detection.get("brand", [])
+        port = self.meta.get("port")
+        fields = super().get_fields()
+        tags = fields["tags"] + industries + brands
+        fields.update(dict(port=[port],
+                           cyrenport=port,
+                           cyrenprotocol=self.meta.get("protocol"),
+                           cyrenindustries=industries,
+                           cyrenphishingbrands=brands,
+                           tags=tags))
+        return fields
+
+
+class MalwareUrlFeedEntry(UrlFeedEntry):
+    def get_indicators_from_relationships(self, primary_indicator):
+        indicators = super().get_indicators_from_relationships(primary_indicator)
+        file_relationships = [r for r in self.relationships if "sha256_hash" in r]
+        if primary_indicator["score"] < 2:
+            return indicators
+        for file_relationship in file_relationships:
+            fields = dict(feedrelatedindicators=[dict(type="Indicator", value=primary_indicator["value"],
+                                                      description="served by malware URL")])
+            indicators.append(dict(value=file_relationship["sha256_hash"],
+                                   type=FeedIndicatorType.File,
+                                   rawJSON=file_relationship,
+                                   score=primary_indicator["score"],
+                                   fields=fields))
+        return indicators
+
 
 class IpReputationFeedEntry(FeedEntryBase):
     def get_type(self) -> str:
@@ -123,8 +180,7 @@ class IpReputationFeedEntry(FeedEntryBase):
         return self.payload.get("identifier")
 
     def get_score(self) -> int:
-        action = self.payload.get("action")
-        if action in [FeedAction.ADD, FeedAction.UPDATE]:
+        if self.action in [FeedAction.ADD, FeedAction.UPDATE]:
             if FeedCategory.SPAM in self.categories:
                 return 3
             if FeedCategory.PHISHING in self.categories or FeedCategory.MALWARE in self.categories:
@@ -132,11 +188,23 @@ class IpReputationFeedEntry(FeedEntryBase):
             if FeedCategory.CONFIRMED_CLEAN in self.categories:
                 return 0
 
-        if action == FeedAction.REMOVE:
+        if self.action == FeedAction.REMOVE:
             return 0
 
-        # TODO good idea?
         return 3
+
+    def get_fields(self) -> Dict:
+        port = self.meta.get("port")
+        country_code = self.meta.get("country_code")
+        fields = super().get_fields()
+        fields.update(dict(port=[port],
+                           geocountry=country_code,
+                           cyrenport=port,
+                           cyrenprotocol=self.meta.get("protocol"),
+                           cyrenobjecttype=self.meta.get("object_type"),
+                           cyrenipclass=self.meta.get("ip_class"),
+                           cyrencountrycode=country_code))
+        return fields
 
 
 class MalwareFileFeedEntry(FeedEntryBase):
@@ -146,11 +214,19 @@ class MalwareFileFeedEntry(FeedEntryBase):
     def get_value(self) -> str:
         return self.payload.get("identifier")
 
+    def get_fields(self) -> Dict:
+        family_names = self.detection.get("family_name", [])
+        fields = super().get_fields()
+        tags = fields["tags"] + family_names
+        fields.update(dict(malwarefamily=",".join(family_names),
+                           tags=tags))
+        return fields
+
 
 FEED_TO_ENTRY_CLASS: Dict[str, Callable] = {
     FeedName.IP_REPUTATION: IpReputationFeedEntry,
     FeedName.PHISHING_URLS: UrlFeedEntry,
-    FeedName.MALWARE_URLS: UrlFeedEntry,
+    FeedName.MALWARE_URLS: MalwareUrlFeedEntry,
     FeedName.MALWARE_FILES: MalwareFileFeedEntry,
 }
 
@@ -242,7 +318,7 @@ def feed_entries_to_indicator(entries: List[Dict], feed_name: str) -> Tuple[List
     for entry in entries:
         entry_obj = FEED_TO_ENTRY_CLASS[feed_name](entry, feed_name)
         max_offset = max(entry_obj.get_offset() + 1, max_offset)
-        indicators.append(entry_obj.to_indicator_object())
+        indicators = indicators + entry_obj.to_indicator_objects()
 
     return indicators, max_offset
 

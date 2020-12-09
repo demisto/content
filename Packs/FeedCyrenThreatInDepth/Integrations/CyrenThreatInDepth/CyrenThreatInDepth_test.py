@@ -129,47 +129,102 @@ def test_fetch_indicators_output_ip_reputation(requests_mock, ip_reputation):
 
     assert len(created) == 5
 
-    assert created[0]["fields"] == dict(associations=["Botnet detection"],
-                                        firstseenbysource="2020-08-14T15:24:26.463Z",
+    assert created[0]["fields"] == dict(firstseenbysource="2020-08-14T15:24:26.463Z",
                                         lastseenbysource="2020-10-29T05:07:34.017Z",
-                                        name="ip_reputation",
-                                        tags=["spam"])
+                                        updateddate="2020-10-29T05:15:29.062Z",
+                                        indicatoridentification="45.193.212.54",
+                                        tags=["spam", "Botnet detection"],
+                                        geocountry="HK",
+                                        port=[25],
+                                        cyrendetectiondate="2020-08-14T15:24:26.463Z",
+                                        cyrenfeedaction="update",
+                                        cyrendetectioncategories=["spam"],
+                                        cyrendetectionmethods=["Botnet detection"],
+                                        cyrenobjecttype="ipv4",
+                                        cyrenipclass="static",
+                                        cyrenport=25,
+                                        cyrenprotocol="smtp",
+                                        cyrencountrycode="HK")
     assert created[0]["score"] == 3
     assert created[0]["type"] == FeedIndicatorType.IP
     assert created[0]["value"] == "45.193.212.54"
 
-    assert created[1]["fields"] == dict(associations=["Botnet detection"],
-                                        firstseenbysource="2020-08-14T15:24:26.463Z",
+    assert created[1]["fields"] == dict(firstseenbysource="2020-08-14T15:24:26.463Z",
                                         lastseenbysource="2020-10-29T05:07:39.423Z",
-                                        name="ip_reputation",
-                                        tags=["malware"])
+                                        updateddate="2020-10-29T05:15:29.062Z",
+                                        indicatoridentification="45.193.216.182",
+                                        tags=["malware", "Botnet detection"],
+                                        geocountry="HK",
+                                        port=[25],
+                                        cyrendetectiondate="2020-08-14T15:24:26.463Z",
+                                        cyrenfeedaction="update",
+                                        cyrendetectioncategories=["malware"],
+                                        cyrendetectionmethods=["Botnet detection"],
+                                        cyrenobjecttype="ipv4",
+                                        cyrenipclass="static",
+                                        cyrenport=25,
+                                        cyrenprotocol="smtp",
+                                        cyrencountrycode="HK")
     assert created[1]["score"] == 2
     assert created[1]["type"] == FeedIndicatorType.IP
     assert created[1]["value"] == "45.193.216.182"
 
-    assert created[2]["fields"] == dict(associations=["Botnet detection"],
-                                        firstseenbysource="2020-08-14T15:24:26.463Z",
+    assert created[2]["fields"] == dict(firstseenbysource="2020-08-14T15:24:26.463Z",
                                         lastseenbysource="2020-10-29T05:07:39.423Z",
-                                        name="ip_reputation",
-                                        tags=["phishing"])
+                                        creationdate="2020-10-29T05:15:29.062Z",
+                                        published="2020-10-29T05:15:29.062Z",
+                                        indicatoridentification="45.193.216.183",
+                                        tags=["phishing", "Botnet detection"],
+                                        geocountry="HK",
+                                        port=[25],
+                                        cyrendetectiondate="2020-08-14T15:24:26.463Z",
+                                        cyrenfeedaction="add",
+                                        cyrendetectioncategories=["phishing"],
+                                        cyrendetectionmethods=["Botnet detection"],
+                                        cyrenobjecttype="ipv4",
+                                        cyrenipclass="static",
+                                        cyrenport=25,
+                                        cyrenprotocol="smtp",
+                                        cyrencountrycode="HK")
     assert created[2]["score"] == 2
     assert created[2]["type"] == FeedIndicatorType.IP
     assert created[2]["value"] == "45.193.216.183"
 
-    assert created[3]["fields"] == dict(associations=["Botnet detection"],
-                                        firstseenbysource="2020-08-14T15:24:26.463Z",
+    assert created[3]["fields"] == dict(firstseenbysource="2020-08-14T15:24:26.463Z",
                                         lastseenbysource="2020-10-29T05:07:39.423Z",
-                                        name="ip_reputation",
-                                        tags=["spam"])
+                                        indicatoridentification="45.193.216.184",
+                                        tags=["spam", "Botnet detection"],
+                                        geocountry="HK",
+                                        port=[25],
+                                        cyrendetectiondate="2020-08-14T15:24:26.463Z",
+                                        cyrenfeedaction="remove",
+                                        cyrendetectioncategories=["spam"],
+                                        cyrendetectionmethods=["Botnet detection"],
+                                        cyrenobjecttype="ipv4",
+                                        cyrenipclass="static",
+                                        cyrenport=25,
+                                        cyrenprotocol="smtp",
+                                        cyrencountrycode="HK")
     assert created[3]["score"] == 0
     assert created[3]["type"] == FeedIndicatorType.IP
     assert created[3]["value"] == "45.193.216.184"
 
-    assert created[4]["fields"] == dict(associations=["Botnet detection"],
-                                        firstseenbysource="2020-08-14T15:24:26.463Z",
+    assert created[4]["fields"] == dict(firstseenbysource="2020-08-14T15:24:26.463Z",
                                         lastseenbysource="2020-10-29T05:07:39.423Z",
-                                        name="ip_reputation",
-                                        tags=["confirmed clean"])
+                                        updateddate="2020-10-29T05:15:29.062Z",
+                                        indicatoridentification="45.193.216.185",
+                                        tags=["confirmed clean", "Botnet detection"],
+                                        geocountry="HK",
+                                        port=[25],
+                                        cyrendetectiondate="2020-08-14T15:24:26.463Z",
+                                        cyrenfeedaction="update",
+                                        cyrendetectioncategories=["confirmed clean"],
+                                        cyrendetectionmethods=["Botnet detection"],
+                                        cyrenobjecttype="ipv4",
+                                        cyrenipclass="static",
+                                        cyrenport=25,
+                                        cyrenprotocol="smtp",
+                                        cyrencountrycode="HK")
     assert created[4]["score"] == 0
     assert created[4]["type"] == FeedIndicatorType.IP
     assert created[4]["value"] == "45.193.216.185"
@@ -181,11 +236,18 @@ def test_fetch_indicators_output_malware_files(requests_mock, malware_files):
 
     assert len(created) == 4
 
-    assert created[0]["fields"] == dict(associations=["Malware detection"],
-                                        firstseenbysource="2020-10-27T17:36:59.000Z",
+    assert created[0]["fields"] == dict(firstseenbysource="2020-10-27T17:36:59.000Z",
                                         lastseenbysource="2020-10-28T14:44:00.413Z",
-                                        name="malware_files",
-                                        tags=["malware"],
+                                        creationdate="2020-10-28T14:45:24.921Z",
+                                        published="2020-10-28T14:45:24.921Z",
+                                        indicatoridentification=("0f6dbfb291ba1b84601b0372f70db"
+                                                                 "3430df636c631d074c1c2463f9e5a033f21"),
+                                        tags=["malware", "Malware detection", "js/clickjack.d"],
+                                        cyrendetectiondate="2020-10-28T14:42:14.000Z",
+                                        cyrenfeedaction="add",
+                                        cyrendetectioncategories=["malware"],
+                                        cyrendetectionmethods=["Malware detection"],
+                                        malwarefamily="js/clickjack.d",
                                         feedrelatedindicators=[
                                             dict(type="Indicator",
                                                  value="172.217.4.65",
@@ -194,11 +256,18 @@ def test_fetch_indicators_output_malware_files(requests_mock, malware_files):
     assert created[0]["type"] == FeedIndicatorType.File
     assert created[0]["value"] == "0f6dbfb291ba1b84601b0372f70db3430df636c631d074c1c2463f9e5a033f21"
 
-    assert created[1]["fields"] == dict(associations=["Malware detection"],
-                                        firstseenbysource="2020-10-28T11:40:19.000Z",
+    assert created[1]["fields"] == dict(firstseenbysource="2020-10-28T11:40:19.000Z",
                                         lastseenbysource="2020-10-28T14:41:49.667Z",
-                                        name="malware_files",
-                                        tags=["malware"],
+                                        creationdate="2020-10-28T14:45:24.921Z",
+                                        published="2020-10-28T14:45:24.921Z",
+                                        indicatoridentification=("243f68c5fffe1e868c012b7fcf20bd8"
+                                                                 "c9025ec199b18d569a497a2e3f1aaca0a"),
+                                        tags=["malware", "Malware detection", "js/coinhive.a!eldorado"],
+                                        cyrendetectiondate="2020-10-28T11:50:21.000Z",
+                                        cyrenfeedaction="add",
+                                        cyrendetectioncategories=["malware"],
+                                        cyrendetectionmethods=["Malware detection"],
+                                        malwarefamily="js/coinhive.a!eldorado",
                                         feedrelatedindicators=[
                                             dict(type="Indicator",
                                                  value="62.149.142.116",
@@ -207,11 +276,17 @@ def test_fetch_indicators_output_malware_files(requests_mock, malware_files):
     assert created[1]["type"] == FeedIndicatorType.File
     assert created[1]["value"] == "243f68c5fffe1e868c012b7fcf20bd8c9025ec199b18d569a497a2e3f1aaca0a"
 
-    assert created[2]["fields"] == dict(associations=["Malware detection"],
-                                        firstseenbysource="2020-10-28T11:40:19.000Z",
+    assert created[2]["fields"] == dict(firstseenbysource="2020-10-28T11:40:19.000Z",
                                         lastseenbysource="2020-10-28T14:41:49.667Z",
-                                        name="malware_files",
-                                        tags=["confirmed clean"],
+                                        updateddate="2020-10-28T14:45:24.921Z",
+                                        indicatoridentification=("243f68c5fffe1e868c012b7fcf20bd8c9"
+                                                                 "025ec199b18d569a497a2e3f1aaca0b"),
+                                        tags=["confirmed clean", "Malware detection", "js/coinhive.a!eldorado"],
+                                        cyrendetectiondate="2020-10-28T11:50:21.000Z",
+                                        cyrenfeedaction="update",
+                                        cyrendetectioncategories=["confirmed clean"],
+                                        cyrendetectionmethods=["Malware detection"],
+                                        malwarefamily="js/coinhive.a!eldorado",
                                         feedrelatedindicators=[
                                             dict(type="Indicator",
                                                  value="62.149.142.116",
@@ -220,11 +295,16 @@ def test_fetch_indicators_output_malware_files(requests_mock, malware_files):
     assert created[2]["type"] == FeedIndicatorType.File
     assert created[2]["value"] == "243f68c5fffe1e868c012b7fcf20bd8c9025ec199b18d569a497a2e3f1aaca0b"
 
-    assert created[3]["fields"] == dict(associations=["Malware detection"],
-                                        firstseenbysource="2020-10-28T11:40:19.000Z",
+    assert created[3]["fields"] == dict(firstseenbysource="2020-10-28T11:40:19.000Z",
                                         lastseenbysource="2020-10-28T14:41:49.667Z",
-                                        name="malware_files",
-                                        tags=["malware"],
+                                        indicatoridentification=("243f68c5fffe1e868c012b7fcf20bd8c"
+                                                                 "9025ec199b18d569a497a2e3f1aaca0c"),
+                                        tags=["malware", "Malware detection", "js/coinhive.a!eldorado"],
+                                        cyrendetectiondate="2020-10-28T11:50:21.000Z",
+                                        cyrenfeedaction="remove",
+                                        cyrendetectioncategories=["malware"],
+                                        cyrendetectionmethods=["Malware detection"],
+                                        malwarefamily="js/coinhive.a!eldorado",
                                         feedrelatedindicators=[
                                             dict(type="Indicator",
                                                  value="62.149.142.116",
@@ -238,13 +318,33 @@ def test_fetch_indicators_output_malware_urls(requests_mock, malware_urls):
     fetch, _ = _create_instance(requests_mock, "malware_urls", malware_urls, dict(startOffset=0, endOffset=0))
     created = fetch()
 
-    assert len(created) == 4
+    assert len(created) == 6
 
-    assert created[0]["fields"] == dict(associations=["Malware detection"],
-                                        firstseenbysource="2020-11-01T16:11:54.000Z",
+    assert created[0]["fields"] == dict(
+        feedrelatedindicators=[
+            dict(type="Indicator", value="http://radiobarreradigitall.blogspot.com",
+                 description="served by malware URL")
+        ]
+    )
+    assert created[0]["score"] == 3
+    assert created[0]["type"] == FeedIndicatorType.File
+    assert created[0]["value"] == "a18c43948195abd429ba42ef66b26483a097d987e55289010bc8f935fc950515"
+
+    assert created[1]["fields"] == dict(firstseenbysource="2020-11-01T16:11:54.000Z",
                                         lastseenbysource="2020-11-01T17:41:54.113Z",
-                                        name="malware_urls",
-                                        tags=["malware"],
+                                        tags=["malware", "Malware detection", "finance"],
+                                        indicatoridentification="045541ea-fd19-5c08-bb60-437ce08cc08f",
+                                        creationdate="2020-11-01T17:45:16.268Z",
+                                        published="2020-11-01T17:45:16.268Z",
+                                        port=[80],
+                                        cyrendetectiondate="2020-11-01T16:20:57.000Z",
+                                        cyrendetectioncategories=["malware"],
+                                        cyrendetectionmethods=["Malware detection"],
+                                        cyrenfeedaction="add",
+                                        cyrenindustries=["finance"],
+                                        cyrenphishingbrands=[],
+                                        cyrenport=80,
+                                        cyrenprotocol="http",
                                         feedrelatedindicators=[
                                             dict(type="Indicator",
                                                  value="172.217.4.65",
@@ -252,31 +352,35 @@ def test_fetch_indicators_output_malware_urls(requests_mock, malware_urls):
                                             dict(type="Indicator",
                                                  value="a18c43948195abd429ba42ef66b26483a097d987e55289010bc8f935fc950515",
                                                  description="serves malware file")])
-    assert created[0]["score"] == 3
-    assert created[0]["type"] == FeedIndicatorType.URL
-    assert created[0]["value"] == "http://radiobarreradigitall.blogspot.com"
-
-    assert created[1]["fields"] == dict(associations=["Malware detection"],
-                                        firstseenbysource="2020-11-01T17:39:10.000Z",
-                                        lastseenbysource="2020-11-01T17:40:25.020Z",
-                                        name="malware_urls",
-                                        tags=["malware"],
-                                        feedrelatedindicators=[
-                                            dict(type="Indicator",
-                                                 value="172.217.4.193",
-                                                 description="resolves to malware ip"),
-                                            dict(type="Indicator",
-                                                 value="2bbeeaa4139b8e033fc1e114f55917e7180b305e75ac56701a0b6dcda4495494",
-                                                 description="serves malware file")])
     assert created[1]["score"] == 3
     assert created[1]["type"] == FeedIndicatorType.URL
-    assert created[1]["value"] == "https://wizkhalifanoticias.blogspot.com/2014/01/wiz-khalifa-adormece-durante.html"
+    assert created[1]["value"] == "http://radiobarreradigitall.blogspot.com"
 
-    assert created[2]["fields"] == dict(associations=["Malware detection"],
-                                        firstseenbysource="2020-11-01T17:39:10.000Z",
+    assert created[2]["fields"] == dict(
+        feedrelatedindicators=[
+            dict(type="Indicator", value="https://wizkhalifanoticias.blogspot.com/2014/01/wiz-khalifa-adormece-durante.html",
+                 description="served by malware URL")
+        ]
+    )
+    assert created[2]["score"] == 3
+    assert created[2]["type"] == FeedIndicatorType.File
+    assert created[2]["value"] == "2bbeeaa4139b8e033fc1e114f55917e7180b305e75ac56701a0b6dcda4495494"
+
+    assert created[3]["fields"] == dict(firstseenbysource="2020-11-01T17:39:10.000Z",
                                         lastseenbysource="2020-11-01T17:40:25.020Z",
-                                        name="malware_urls",
-                                        tags=["confirmed clean"],
+                                        tags=["malware", "Malware detection"],
+                                        indicatoridentification="05040e64-a035-5014-8564-9c8faaf4da83",
+                                        creationdate="2020-11-01T17:45:16.268Z",
+                                        published="2020-11-01T17:45:16.268Z",
+                                        port=[443],
+                                        cyrendetectiondate="2020-11-01T17:39:16.000Z",
+                                        cyrendetectioncategories=["malware"],
+                                        cyrendetectionmethods=["Malware detection"],
+                                        cyrenfeedaction="add",
+                                        cyrenindustries=[],
+                                        cyrenphishingbrands=[],
+                                        cyrenport=443,
+                                        cyrenprotocol="https",
                                         feedrelatedindicators=[
                                             dict(type="Indicator",
                                                  value="172.217.4.193",
@@ -284,25 +388,58 @@ def test_fetch_indicators_output_malware_urls(requests_mock, malware_urls):
                                             dict(type="Indicator",
                                                  value="2bbeeaa4139b8e033fc1e114f55917e7180b305e75ac56701a0b6dcda4495494",
                                                  description="serves malware file")])
-    assert created[2]["score"] == 0
-    assert created[2]["type"] == FeedIndicatorType.URL
-    assert created[2]["value"] == "https://wizkhalifanoticias.blogspot.com/2014/01/wiz-khalifa-adormece-durante-2.html"
-
-    assert created[3]["fields"] == dict(associations=["Malware detection"],
-                                        firstseenbysource="2020-11-01T17:39:10.000Z",
-                                        lastseenbysource="2020-11-01T17:40:25.020Z",
-                                        name="malware_urls",
-                                        tags=["malware"],
-                                        feedrelatedindicators=[
-                                            dict(type="Indicator",
-                                                 value="172.217.4.193",
-                                                 description="resolves to malware ip"),
-                                            dict(type="Indicator",
-                                                 value="2bbeeaa4139b8e033fc1e114f55917e7180b305e75ac56701a0b6dcda4495494",
-                                                 description="serves malware file")])
-    assert created[3]["score"] == 0
+    assert created[3]["score"] == 3
     assert created[3]["type"] == FeedIndicatorType.URL
-    assert created[3]["value"] == "https://wizkhalifanoticias.blogspot.com/2014/01/wiz-khalifa-adormece-durante-3.html"
+    assert created[3]["value"] == "https://wizkhalifanoticias.blogspot.com/2014/01/wiz-khalifa-adormece-durante.html"
+
+    assert created[4]["fields"] == dict(firstseenbysource="2020-11-01T17:39:10.000Z",
+                                        lastseenbysource="2020-11-01T17:40:25.020Z",
+                                        tags=["confirmed clean", "Malware detection"],
+                                        indicatoridentification="05040e64-a035-5014-8564-9c8faaf4da84",
+                                        updateddate="2020-11-01T17:45:16.268Z",
+                                        port=[443],
+                                        cyrendetectiondate="2020-11-01T17:39:16.000Z",
+                                        cyrendetectioncategories=["confirmed clean"],
+                                        cyrendetectionmethods=["Malware detection"],
+                                        cyrenfeedaction="update",
+                                        cyrenindustries=[],
+                                        cyrenphishingbrands=[],
+                                        cyrenport=443,
+                                        cyrenprotocol="https",
+                                        feedrelatedindicators=[
+                                            dict(type="Indicator",
+                                                 value="172.217.4.193",
+                                                 description="resolves to malware ip"),
+                                            dict(type="Indicator",
+                                                 value="2bbeeaa4139b8e033fc1e114f55917e7180b305e75ac56701a0b6dcda4495494",
+                                                 description="serves malware file")])
+    assert created[4]["score"] == 0
+    assert created[4]["type"] == FeedIndicatorType.URL
+    assert created[4]["value"] == "https://wizkhalifanoticias.blogspot.com/2014/01/wiz-khalifa-adormece-durante-2.html"
+
+    assert created[5]["fields"] == dict(firstseenbysource="2020-11-01T17:39:10.000Z",
+                                        lastseenbysource="2020-11-01T17:40:25.020Z",
+                                        tags=["malware", "Malware detection"],
+                                        indicatoridentification="05040e64-a035-5014-8564-9c8faaf4da85",
+                                        port=[443],
+                                        cyrendetectiondate="2020-11-01T17:39:16.000Z",
+                                        cyrendetectioncategories=["malware"],
+                                        cyrendetectionmethods=["Malware detection"],
+                                        cyrenfeedaction="remove",
+                                        cyrenindustries=[],
+                                        cyrenphishingbrands=[],
+                                        cyrenport=443,
+                                        cyrenprotocol="https",
+                                        feedrelatedindicators=[
+                                            dict(type="Indicator",
+                                                 value="172.217.4.193",
+                                                 description="resolves to malware ip"),
+                                            dict(type="Indicator",
+                                                 value="2bbeeaa4139b8e033fc1e114f55917e7180b305e75ac56701a0b6dcda4495494",
+                                                 description="serves malware file")])
+    assert created[5]["score"] == 0
+    assert created[5]["type"] == FeedIndicatorType.URL
+    assert created[5]["value"] == "https://wizkhalifanoticias.blogspot.com/2014/01/wiz-khalifa-adormece-durante-3.html"
 
 
 def test_fetch_indicators_output_phishing_urls(requests_mock, phishing_urls):
@@ -311,11 +448,20 @@ def test_fetch_indicators_output_phishing_urls(requests_mock, phishing_urls):
 
     assert len(created) == 4
 
-    assert created[0]["fields"] == dict(associations=["URL Categorization", "Active URL inspection"],
-                                        firstseenbysource="2020-10-31T00:41:08.000Z",
+    assert created[0]["fields"] == dict(firstseenbysource="2020-10-31T00:41:08.000Z",
                                         lastseenbysource="2020-11-01T17:01:45.000Z",
-                                        name="phishing_urls",
-                                        tags=["phishing"],
+                                        tags=["phishing", "URL Categorization", "Active URL inspection", "finance", "apple"],
+                                        indicatoridentification="025859f4-4b07-58de-953b-0ed2bdc7ee0f",
+                                        updateddate="2020-11-01T17:05:26.347Z",
+                                        port=[443],
+                                        cyrendetectiondate="2020-11-01T09:10:33.000Z",
+                                        cyrendetectioncategories=["phishing"],
+                                        cyrendetectionmethods=["URL Categorization", "Active URL inspection"],
+                                        cyrenfeedaction="update",
+                                        cyrenindustries=["finance"],
+                                        cyrenphishingbrands=["apple"],
+                                        cyrenport=443,
+                                        cyrenprotocol="https",
                                         feedrelatedindicators=[
                                             dict(type="Indicator",
                                                  value="195.201.98.73",
@@ -324,11 +470,21 @@ def test_fetch_indicators_output_phishing_urls(requests_mock, phishing_urls):
     assert created[0]["type"] == FeedIndicatorType.URL
     assert created[0]["value"] == "https://verify.paypalc.o.m.accoun.t-updates.info"
 
-    assert created[1]["fields"] == dict(associations=["Active URL inspection"],
-                                        firstseenbysource="2019-05-11T17:03:55.000Z",
+    assert created[1]["fields"] == dict(firstseenbysource="2019-05-11T17:03:55.000Z",
                                         lastseenbysource="2020-11-01T17:03:40.000Z",
-                                        name="phishing_urls",
-                                        tags=["phishing"],
+                                        tags=["phishing", "Active URL inspection", "cloudapp"],
+                                        indicatoridentification="054f305a-f39c-51b7-b2c3-9f8c281ff1ea",
+                                        creationdate="2020-11-01T17:05:26.347Z",
+                                        published="2020-11-01T17:05:26.347Z",
+                                        port=[80],
+                                        cyrendetectiondate="2020-11-01T17:03:40.000Z",
+                                        cyrendetectioncategories=["phishing"],
+                                        cyrendetectionmethods=["Active URL inspection"],
+                                        cyrenfeedaction="add",
+                                        cyrenindustries=["cloudapp"],
+                                        cyrenphishingbrands=[],
+                                        cyrenport=80,
+                                        cyrenprotocol="http",
                                         feedrelatedindicators=[
                                             dict(type="Indicator",
                                                  value="192.163.194.76",
@@ -337,11 +493,20 @@ def test_fetch_indicators_output_phishing_urls(requests_mock, phishing_urls):
     assert created[1]["type"] == FeedIndicatorType.URL
     assert created[1]["value"] == "http://secureapplelock.servebeer.com/manage"
 
-    assert created[2]["fields"] == dict(associations=["Active URL inspection"],
-                                        firstseenbysource="2019-05-11T17:03:55.000Z",
+    assert created[2]["fields"] == dict(firstseenbysource="2019-05-11T17:03:55.000Z",
                                         lastseenbysource="2020-11-01T17:03:40.000Z",
-                                        name="phishing_urls",
-                                        tags=["confirmed clean"],
+                                        tags=["confirmed clean", "Active URL inspection", "cloudapp"],
+                                        indicatoridentification="054f305a-f39c-51b7-b2c3-9f8c281ff1eb",
+                                        updateddate="2020-11-01T17:05:26.347Z",
+                                        port=[80],
+                                        cyrendetectiondate="2020-11-01T17:03:40.000Z",
+                                        cyrendetectioncategories=["confirmed clean"],
+                                        cyrendetectionmethods=["Active URL inspection"],
+                                        cyrenfeedaction="update",
+                                        cyrenindustries=["cloudapp"],
+                                        cyrenphishingbrands=[],
+                                        cyrenport=80,
+                                        cyrenprotocol="http",
                                         feedrelatedindicators=[
                                             dict(type="Indicator",
                                                  value="192.163.194.76",
@@ -350,11 +515,19 @@ def test_fetch_indicators_output_phishing_urls(requests_mock, phishing_urls):
     assert created[2]["type"] == FeedIndicatorType.URL
     assert created[2]["value"] == "http://secureapplelock.servebeer.com/manage-2"
 
-    assert created[3]["fields"] == dict(associations=["Active URL inspection"],
-                                        firstseenbysource="2019-05-11T17:03:55.000Z",
+    assert created[3]["fields"] == dict(firstseenbysource="2019-05-11T17:03:55.000Z",
                                         lastseenbysource="2020-11-01T17:03:40.000Z",
-                                        name="phishing_urls",
-                                        tags=["phishing"],
+                                        tags=["phishing", "Active URL inspection", "cloudapp"],
+                                        indicatoridentification="054f305a-f39c-51b7-b2c3-9f8c281ff1ec",
+                                        port=[80],
+                                        cyrendetectiondate="2020-11-01T17:03:40.000Z",
+                                        cyrendetectioncategories=["phishing"],
+                                        cyrendetectionmethods=["Active URL inspection"],
+                                        cyrenfeedaction="remove",
+                                        cyrenindustries=["cloudapp"],
+                                        cyrenphishingbrands=[],
+                                        cyrenport=80,
+                                        cyrenprotocol="http",
                                         feedrelatedindicators=[
                                             dict(type="Indicator",
                                                  value="192.163.194.76",
