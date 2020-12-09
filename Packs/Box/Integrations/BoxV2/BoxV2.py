@@ -46,7 +46,7 @@ class QueryHandler:
         self.file_extensions = args.get('file_extensions')
         self.limit = args.get('limit')
         self.offset = args.get('offset')
-        self.owner_uids = args.get('owner_uids')
+        self.owner_user_ids = args.get('owner_uids')
         self.trash_content = args.get('trash_content')
         self.updated_at_range = format_time_range(args.get('updated_at_range'))
         self.query = args.get('query')
@@ -54,12 +54,20 @@ class QueryHandler:
 
         if self.item_name:
             self.content_types.append('name')
+            self.query = self.item_name
+            self.item_name = None
         if self.item_description:
             self.content_types.append('description')
+            self.query = self.item_description
+            self.item_description = None
         if self.tag:
             self.content_types.append('tag')
+            self.query = self.tag
+            self.tag = None
         if self.comments:
             self.content_types.append('comments')
+            self.query = self.comments
+            self.comments = None
 
     def prepare_params_object(self):
         """
@@ -239,6 +247,7 @@ class Client(BaseClient):
         :return: dict containing the results from the http request.
         """
         self._headers.update({'As-User': as_user})
+        print(query_object.prepare_params_object())
         return self._http_request(
             method='GET',
             url_suffix='/search/',
@@ -982,10 +991,10 @@ def find_file_folder_by_share_link_command(client: Client, args: Dict[str, Any])
     share_link: str = args.get('shared_link')
     password: str = args.get('password', None)
     response: dict = client.find_file_folder_by_share_link(shared_link=share_link, password=password)
-    readable_output = tableToMarkdown(f'File Share Link for {share_link}', response)
+    readable_output = tableToMarkdown(f'File/Folder Share Link for {share_link}', response)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Box.FileShareLink',
+        outputs_prefix='Box.ShareLink',
         outputs_key_field='shared_link',
         outputs=response
     )
@@ -1001,6 +1010,7 @@ def search_content_command(client: Client, args: Dict[str, Any]) -> CommandResul
     query_object = QueryHandler(args=args)
     as_user = args.get('as_user')
     response = client.search_content(as_user=as_user, query_object=query_object)
+    demisto.results(response)
     readable_output = tableToMarkdown(f'Search results', response)
     return CommandResults(
         readable_output=readable_output,
@@ -1089,7 +1099,7 @@ def get_shared_link_for_file_command(client: Client, args: Dict[str, Any]) -> Co
         )
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Box.FileShareLink',
+        outputs_prefix='Box.ShareLink',
         outputs_key_field='shared_link',
         outputs=response
     )
@@ -1827,6 +1837,9 @@ def main() -> None:
 
         elif demisto.command() == 'box-delete-user':
             return_results(delete_user_command(client=client, args=demisto.args()))
+
+        elif demisto.command() == 'box-search-content':
+            return_results(search_content_command(client=client, args=demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
