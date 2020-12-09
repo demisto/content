@@ -6245,3 +6245,158 @@ class IAMUserProfile:
         if not isinstance(app_data, dict):
             app_data = safe_load_json(app_data)
         self._user_profile = demisto.mapObject(app_data, mapper_name, mapping_type)
+
+
+class IAMCommand:
+    def __init__(self, is_create_enabled, is_disable_enabled, is_update_enabled,
+                 create_if_not_exists, mapper_in, mapper_out):
+        self.is_create_enabled = is_create_enabled
+        self.is_disable_enabled = is_disable_enabled
+        self.is_update_enabled = is_update_enabled
+        self.create_if_not_exists = create_if_not_exists
+        self.mapper_in = mapper_in
+        self.mapper_out = mapper_out
+
+    def get_mapping_fields(self, client):
+        app_fields = client.get_app_fields()
+        incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
+
+        for field, description in app_fields.items():
+            incident_type_scheme.add_field(field, description)
+
+        return GetMappingFieldsResponse([incident_type_scheme])
+
+    def get_user(self, client, args):
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+        try:
+            email = user_profile.get_attribute('email')
+            user_id, username, is_active, user_app_data = client.get_user(email)
+            if not user_app_data:
+                error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
+                user_profile.set_result(action=IAMActions.GET_USER,
+                                        success=False,
+                                        error_code=error_code,
+                                        error_message=error_message)
+            else:
+                user_profile.update_with_app_data(user_app_data, self.mapper_in)
+                user_profile.set_result(
+                    action=IAMActions.GET_USER,
+                    success=True,
+                    active=is_active,
+                    iden=user_id,
+                    email=email,
+                    username=username,
+                    details=user_app_data
+                )
+
+        except Exception as e:
+            client.handle_exception(user_profile, e, IAMActions.GET_USER)
+
+        return user_profile
+
+    def disable_user(self, client, args):
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+        if not self.is_disable_enabled:
+            user_profile.set_result(action=IAMActions.DISABLE_USER,
+                                    skip=True,
+                                    skip_reason='Command is disabled.')
+        else:
+            try:
+                email = user_profile.get_attribute('email')
+                user_id, username, is_active, user_app_data = client.get_user(email)
+                if not user_app_data:
+                    _, error_message = IAMErrors.USER_DOES_NOT_EXIST
+                    user_profile.set_result(action=IAMActions.DISABLE_USER,
+                                            skip=True,
+                                            skip_reason=error_message)
+                else:
+                    if is_active:
+                        user_app_data = client.disable_user(user_id)
+                    user_profile.set_result(
+                        action=IAMActions.DISABLE_USER,
+                        success=True,
+                        active=False,
+                        iden=user_id,
+                        email=email,
+                        username=username,
+                        details=user_app_data
+                    )
+
+            except Exception as e:
+                client.handle_exception(user_profile, e, IAMActions.DISABLE_USER)
+
+        return user_profile
+
+    def create_user(self, client, args):
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+
+        if not self.is_create_enabled:
+            user_profile.set_result(action=IAMActions.CREATE_USER,
+                                    skip=True,
+                                    skip_reason='Command is disabled.')
+        else:
+            try:
+                email = user_profile.get_attribute('email')
+                user_id, username, is_active, user_app_data = client.get_user(email)
+                if user_app_data:
+                    # if user exists, update it
+                    user_profile = self.update_user(client, args)
+
+                else:
+                    app_profile = user_profile.map_object(self.mapper_out)
+                    created_user = client.create_user(app_profile)
+                    user_profile.set_result(
+                        action=IAMActions.CREATE_USER,
+                        success=True,
+                        active=is_active,
+                        iden=user_id,
+                        email=user_profile.get_attribute('email'),
+                        username=username,
+                        details=created_user
+                    )
+
+            except Exception as e:
+                client.handle_exception(user_profile, e, IAMActions.CREATE_USER)
+
+        return user_profile
+
+    def update_user(self, client, args):
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+        allow_enable = args.get('allow-enable') == 'true'
+        if not self.is_update_enabled:
+            user_profile.set_result(action=IAMActions.UPDATE_USER,
+                                    skip=True,
+                                    skip_reason='Command is disabled.')
+        else:
+            try:
+                email = user_profile.get_attribute('email')
+                user_id, username, is_active, user_app_data = client.get_user(email)
+                if user_app_data:
+                    app_profile = user_profile.map_object(self.mapper_out)
+
+                    if allow_enable and not is_active:
+                        client.enable_user(user_id)
+
+                    user_app_data = self.update_user(user_id, app_profile)
+                    user_profile.set_result(
+                        action=IAMActions.UPDATE_USER,
+                        success=True,
+                        active=True if allow_enable else is_active,
+                        iden=user_id,
+                        email=email,
+                        username=username,
+                        details=user_app_data
+                    )
+                else:
+                    if self.create_if_not_exists:
+                        user_profile = self.create_user(client, args)
+                    else:
+                        _, error_message = IAMErrors.USER_DOES_NOT_EXIST
+                        user_profile.set_result(action=IAMActions.UPDATE_USER,
+                                                skip=True,
+                                                skip_reason=error_message)
+
+            except Exception as e:
+                client.handle_exception(user_profile, e, IAMActions.UPDATE_USER)
+
+        return user_profile
