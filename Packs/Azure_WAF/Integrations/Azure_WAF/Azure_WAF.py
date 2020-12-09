@@ -25,8 +25,7 @@ API_VERSION = '2020-05-01'
 
 class AzureWAFClient:
     @logger
-    def __init__(self, self_deployed, tenant_id, app_id, app_secret, redirect_uri, auth_code,
-                 subscription_id, resource_group_name, verify, proxy):
+    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy):
 
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
@@ -50,10 +49,7 @@ class AzureWAFClient:
             'scope': 'https://management.azure.com/user_impersonation offline_access user.read',
             'ok_codes': (200, 201, 202, 204)
         }
-        if not self_deployed:
-            client_args['grant_type'] = DEVICE_CODE
-            client_args['token_retrieval_url'] = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
-            client_args['scope'] = 'https://management.azure.com/user_impersonation offline_access user.read'
+
         self.ms_client = MicrosoftClient(**client_args)
 
     @logger
@@ -149,21 +145,15 @@ def policy_get_command(client: AzureWAFClient, **args) -> CommandResults:
     limit = int(limit)
 
     policies: List[Dict] = []
-    if policy_name:
-        try:
+    try:
+        if policy_name:
             policy = client.get_policy_by_name(policy_name, resource_group_name)
-        except Exception as e:
-            print("####### 1")
-            raise
-        policies.append(policy)
-    else:
-        try:
+            policies.append(policy)
+        else:
             policy = client.get_policy_by_name(policy_name, resource_group_name).get('value', [])
-        except Exception as e:
-            print("######## 2")
-            raise
-        policies.extend(policy)
-
+            policies.extend(policy)
+    except Exception:
+        raise
     res = CommandResults(readable_output=policies_to_markdown(policies, verbose, limit), outputs=policies,
                          outputs_key_field='id', outputs_prefix='AzureWAF.Policy',
                          raw_response=policies)
@@ -175,7 +165,7 @@ def policy_get_list_by_subscription_command(client: AzureWAFClient, **args: Dict
     verbose = True if args.get("verbose", "false") == "true" else False
     limit = str(args.get("limit"))
     if not limit.isdigit():
-         raise Exception("please provide a numeric limit")
+        raise Exception("please provide a numeric limit")
     limit = int(limit)
     try:
         policies.extend(client.get_policy_list_by_subscription_id().get("value", []))
