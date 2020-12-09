@@ -2444,7 +2444,7 @@ class Common(object):
                      domain_status=None, name_servers=None,
                      registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
                      registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
-                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None):
+                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None, tags=None):
             self.domain = domain
             self.dns = dns
             self.detection_engines = detection_engines
@@ -2468,6 +2468,7 @@ class Common(object):
             self.admin_email = admin_email
             self.admin_phone = admin_phone
             self.admin_country = admin_country
+            self.tags = tags
 
             self.domain_status = domain_status
             self.name_servers = name_servers
@@ -2540,6 +2541,9 @@ class Common(object):
             if self.name_servers:
                 domain_context['NameServers'] = self.name_servers
                 whois_context['NameServers'] = domain_context['NameServers']
+
+            if self.tags:
+                domain_context['Tags'] = self.tags
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 domain_context['Malicious'] = {
