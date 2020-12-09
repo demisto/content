@@ -18,7 +18,7 @@ def upload_private_id_set_to_bucket(storage_bucket, private_id_set_path):
         logging.info("Skipping upload of private id set to gcs.")
         return
 
-    private_id_set_gcs_path = os.path.join(os.path.dirname(GCPConfig.STORAGE_PRIVATE_ID_SET_PATH),
+    private_id_set_gcs_path = os.path.join(os.path.dirname(GCPConfig.STORAGE_CONTENT_PATH),
                                            'private_id_set.json')
 
     blob = storage_bucket.blob(private_id_set_gcs_path)
