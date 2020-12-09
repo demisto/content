@@ -3,7 +3,7 @@ commonfields:
   id: azure_waf
   version: -1
 configuration:
-- defaultvalue: 4a9969a9-53f4-4f0d-a7f4-630a7ed657e6
+- defaultvalue: cf22fd73-29f1-4245-8e16-533704926d20
   display: The app ID
   hidden: false
   name: app_id
@@ -14,35 +14,10 @@ configuration:
   name: subscription_id
   required: true
   type: 0
-- display: Resource Group Name
+- display: Default Resource Group Name
   hidden: false
   name: resource_group_name
   required: true
-  type: 0
-- display: Use a self-deployed Azure application
-  hidden: false
-  name: self_deployed
-  required: false
-  type: 8
-- display: Authorization code (for self-deployed mode)
-  hidden: false
-  name: auth_code
-  required: false
-  type: 4
-- display: App Secret (for self-deployed mode)
-  hidden: false
-  name: app_secret
-  required: false
-  type: 4
-- display: Tenant ID (for self-deployed mode)
-  hidden: false
-  name: tenant_id
-  required: false
-  type: 4
-- display: Application redirect URI (for self-deployed mode)
-  hidden: false
-  name: redirect_uri
-  required: false
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
@@ -52,22 +27,24 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: This is the azure WAF integration.
-display: azure_waf
+description: The Azure WAF (Web Application Firewall) integration provides centralized
+  protection of your web applications from common exploits and vulnerabilities.
+display: Azure WAF
 name: azure_waf
 script:
   commands:
   - arguments:
     - default: false
       description: A name of a policy. Use to retrieve protection policy with specified
-        name within a resource group.
+        name within a resource group.  Iif policy_name not provided, will retrieve
+        all.
       isArray: false
       name: policy_name
       required: false
       secret: false
     - default: false
-      description: The name of the resource group. Default is same as instance's resource
-        group name.
+      description: The name of the resource group. If not provided, the instance's
+        default resource group name will be considered.
       isArray: false
       name: resource_group_name
       required: false
@@ -83,9 +60,16 @@ script:
       - ' false'
       required: false
       secret: false
+    - default: false
+      defaultValue: '10'
+      description: Number of policies to be shown. (This will only affect visualised
+        data, not context).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
-    description: Retrieves protection policies within a resource group. if policy_name
-      not provided, will retrieve all.
+    description: Retrieves protection policies within a resource group.
     execution: false
     name: azure-waf-policy-get
     outputs:
@@ -194,6 +178,14 @@ script:
       predefined:
       - 'true'
       - ' false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Number of policies to be shown. (This will only affect visualised
+        data, not context).
+      isArray: false
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -483,6 +475,10 @@ script:
       Should be used after running the azure_waf-auth-start command.
     execution: false
     name: azure-waf-auth-complete
+  - deprecated: false
+    description: Tests connectivity to Azure Web Application Firewall.
+    execution: false
+    name: azure-waf-test
   dockerimage: demisto/crypto:1.0.0.13944
   feed: false
   isfetch: false

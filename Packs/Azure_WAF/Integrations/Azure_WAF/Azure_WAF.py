@@ -28,27 +28,26 @@ class AzureWAFClient:
     def __init__(self, self_deployed, tenant_id, app_id, app_secret, redirect_uri, auth_code,
                  subscription_id, resource_group_name, verify, proxy):
 
-        refresh_token = demisto.getIntegrationContext().get('current_refresh_token')
+        if '@' in app_id:
+            app_id, refresh_token = app_id.split('@')
+            integration_context = demisto.getIntegrationContext()
+            integration_context.update(current_refresh_token=refresh_token)
+            demisto.setIntegrationContext(integration_context)
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/'
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
-        client_args = {
+        client_args = client_args = {
             'self_deployed': True,  # We always set the self_deployed key as True because when not using a self
-            # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
-            # flow and most of the same arguments should be set, as we're !not! using OProxy.
+                                    # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
+                                    # flow and most of the same arguments should be set, as we're !not! using OProxy.
             'auth_id': app_id,
-            'auth_code': auth_code,
-            'refresh_token': refresh_token,
-            'enc_key': app_secret,
-            'redirect_uri': redirect_uri,
-            'token_retrieval_url': 'https://login.microsoftonline.com/{tenant_id}/oauth2/token',
-            'grant_type': AUTHORIZATION_CODE,  # disable-secrets-detection
-            'app_name': '',  # TODO: Do we need an appname?
+            'token_retrieval_url': 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            'grant_type': DEVICE_CODE,  # disable-secrets-detection
             'base_url': base_url,
             'verify': verify,
             'proxy': proxy,
-            'resource': 'https://management.core.windows.net',
-            'tenant_id': tenant_id,
+            'resource': 'https://management.core.windows.net',   # disable-secrets-detection
+            'scope': 'https://management.azure.com/user_impersonation offline_access user.read',
             'ok_codes': (200, 201, 202, 204)
         }
         if not self_deployed:
@@ -71,6 +70,7 @@ class AzureWAFClient:
                                            json_data=data,
                                            params=params,
                                            resp_type=resp_type,
+                                           timeout=20,
                                            return_empty_response=return_empty_response)
 
     def get_policy_by_name(self, policy_name: str, resource_group_name: str) -> Dict:
@@ -107,12 +107,20 @@ class AzureWAFClient:
         return self.http_request(
             method='DELETE',
             return_empty_response=True,
+            resp_type='response',
             url_suffix=f'/resourceGroups/{resource_group_name}/providers/'
                        f'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/{policy_name}',
         )
 
 
 ''' COMMAND FUNCTIONS '''
+
+
+def test_connection(client: AzureWAFClient, params: Dict):
+    if params.get('self_deployed', False) and not params.get('auth_code'):
+        return_error('You must enter an authorization code in a self-deployed configuration.')
+    client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
+    return '✅ Success!'
 
 
 @logger
@@ -133,19 +141,30 @@ def complete_auth(client: AzureWAFClient):
 
 def policy_get_command(client: AzureWAFClient, **args) -> CommandResults:
     policy_name: str = args.get('policy_name', '')
-    verbose = bool(args.get("verbose", False))
     resource_group_name: str = args.get('resource_group_name', client.resource_group_name)
+    verbose = True if args.get("verbose", "false") == "true" else False
+    limit = str(args.get("limit"))
+    if not limit.isdigit():
+        raise Exception("please provide a numeric limit")
+    limit = int(limit)
+
     policies: List[Dict] = []
-    try:
-        if policy_name:
+    if policy_name:
+        try:
             policy = client.get_policy_by_name(policy_name, resource_group_name)
-            policies.append(policy)
-        else:
+        except Exception as e:
+            print("####### 1")
+            raise
+        policies.append(policy)
+    else:
+        try:
             policy = client.get_policy_by_name(policy_name, resource_group_name).get('value', [])
-            policies.extend(policy)
-    except DemistoException:
-        raise
-    res = CommandResults(readable_output=policies_to_markdown(policies, verbose), outputs=policies,
+        except Exception as e:
+            print("######## 2")
+            raise
+        policies.extend(policy)
+
+    res = CommandResults(readable_output=policies_to_markdown(policies, verbose, limit), outputs=policies,
                          outputs_key_field='id', outputs_prefix='AzureWAF.Policy',
                          raw_response=policies)
     return res
@@ -153,12 +172,16 @@ def policy_get_command(client: AzureWAFClient, **args) -> CommandResults:
 
 def policy_get_list_by_subscription_command(client: AzureWAFClient, **args: Dict[str, Any]) -> CommandResults:
     policies: List[Dict] = []
-    verbose = bool(args.get("verbose", False))
+    verbose = True if args.get("verbose", "false") == "true" else False
+    limit = str(args.get("limit"))
+    if not limit.isdigit():
+         raise Exception("please provide a numeric limit")
+    limit = int(limit)
     try:
         policies.extend(client.get_policy_list_by_subscription_id().get("value", []))
     except DemistoException:
         raise
-    res = CommandResults(readable_output=policies_to_markdown(policies, verbose),
+    res = CommandResults(readable_output=policies_to_markdown(policies, verbose, limit),
                          outputs=policies, outputs_key_field='id', outputs_prefix='AzureWAF.Policy',
                          raw_response=policies)
     return res
@@ -178,7 +201,8 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
     resource_group_name = str(args.get('resource_group_name', client.resource_group_name))
     managed_rules = args.get('managed_rules', {})
     location = args.get("location", '')
-    verbose = bool(args.get("verbose", False))
+    verbose = True if args.get("verbose", "false") == "true" else False
+
     if not policy_name or not managed_rules or not location:
         raise Exception('In order to add/ update policy, '
                         'please provide policy_name, location and managed_rules. ')
@@ -226,8 +250,11 @@ def policy_delete_command(client: AzureWAFClient, **args: Dict[str, str]):
     return res
 
 
-def policies_to_markdown(policies: List[Dict], verbose: bool = False) -> str:
+def policies_to_markdown(policies: List[Dict], verbose: bool = False, limit: int = 10) -> str:
     def policy_to_full_markdown(policy_data: Dict):
+        """
+        Creates a full markdown with all data field of the policy.
+        """
         deep_policy_fields = {'customRules', 'managedRules', 'policySettings'}
         try:
             policy_data.update(policy_data.pop('properties', {}))
@@ -248,6 +275,9 @@ def policies_to_markdown(policies: List[Dict], verbose: bool = False) -> str:
                             "therefore has invalid structure, please contact a developer.")
 
     def policy_to_short_markdown(policy_data: Dict):
+        """
+        Creates a short markdown containing only basic information on policy.
+        """
         short_md = ''
         try:
             policy_data.pop('properties')
@@ -264,9 +294,12 @@ def policies_to_markdown(policies: List[Dict], verbose: bool = False) -> str:
         return short_md
 
     md = ""
+    policies_num = len(policies)
+    policies = policies[:min(limit, policies_num)]
     for policy in policies:
         md += policy_to_full_markdown(policy.copy()) if verbose else policy_to_short_markdown(policy.copy())
 
+    md += f"Showing {min(limit, len(policies))} policies out of {policies_num}"
     return md
 
 
@@ -285,6 +318,7 @@ def main() -> None:
                         'azure-waf-policy-delete': policy_delete_command,
                         'azure-waf-auth-start': start_auth,
                         'azure-waf-auth-complete': complete_auth,
+                        'azure-waf-test': test_connection,
 
                         }
     params = demisto.params()
