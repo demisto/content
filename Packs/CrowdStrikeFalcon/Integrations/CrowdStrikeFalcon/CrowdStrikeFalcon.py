@@ -196,7 +196,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                     if errors:
                         error_message = errors[0].get('message')
                         reason += f'\nHost ID {host_id} - {error_message}'
-            elif res_json.get('errors') and res.status_code:
+            elif res_json.get('errors'):
                 errors = res_json.get('errors', [])
                 for error in errors:
                     reason += f"\n{error.get('message')}"
