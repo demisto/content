@@ -309,6 +309,7 @@ references:
       command: |
         demisto-sdk create-id-set -o ./Tests/id_set.json
 
+        echo "$GCS_ARTIFACTS_KEY"  | gcloud auth activate-service-account --key-file=- > auth.out 2>&1
         gsutil -m cp -r gs://marketplace-dist-private-test/content/id_set.json $CIRCLE_ARTIFACTS/private_id_set.json
         demisto-sdk merge-id-sets -i1 $CIRCLE_ARTIFACTS/private_id_set.json -i2 ./Tests/id_set.json -o ./Tests/id_set.json
 
