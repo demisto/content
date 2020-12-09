@@ -51,13 +51,8 @@ def test_get_policy_by_resource_body(mocker, demisto_args, expected_results):
 
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
     client = waf.AzureWAFClient(
-        self_deployed=False,
         app_id='',
-        tenant_id='',
-        app_secret='',
-        redirect_uri='',
         subscription_id='test',
-        auth_code='',
         resource_group_name='test',
         verify=True,
         proxy=False
@@ -110,13 +105,8 @@ def test_policy_upsert_body(mocker, demisto_args, expected_results):
 
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
     client = waf.AzureWAFClient(
-        self_deployed=False,
         app_id='',
-        tenant_id='',
-        app_secret='',
-        redirect_uri='',
         subscription_id='test',
-        auth_code='',
         resource_group_name='test',
         verify=True,
         proxy=False
@@ -169,13 +159,8 @@ def test_policy_upsert_fails(mocker, demisto_args, expected_error_msg):
 
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
     client = waf.AzureWAFClient(
-        self_deployed=False,
         app_id='',
-        tenant_id='',
-        app_secret='',
-        redirect_uri='',
         subscription_id='test',
-        auth_code='',
         resource_group_name='test',
         verify=True,
         proxy=False
