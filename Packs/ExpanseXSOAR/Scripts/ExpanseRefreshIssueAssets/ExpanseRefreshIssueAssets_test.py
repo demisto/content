@@ -68,7 +68,7 @@ def test_refresh_issue_assets_command(mocker):
             return [{'Contents': ASSET_DOMAIN}]
         elif name == "expanse-get-iprange" and args['id'] == 'fakeIPRange':
             return [{'Contents': ASSET_IPRANGE}]
-        elif name == "expanse-get-certificate" and args['pem_md5_hash'] == 'fakeMD5':
+        elif name == "expanse-get-certificate" and args['hash'] == 'fakeMD5':
             return [{'Contents': ASSET_CERTIFICATE}]
         elif name == "setIncident":
             return "OK"
