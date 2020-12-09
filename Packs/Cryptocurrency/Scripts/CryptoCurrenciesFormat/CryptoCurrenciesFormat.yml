@@ -1,0 +1,23 @@
+args:
+- default: false
+  description: The crypto address to verify.
+  isArray: true
+  name: input
+  required: true
+  secret: false
+comment: Verifies that a crypto address is valid and only returns the address if
+  it is valid.
+commonfields:
+  id: CryptoCurrenciesFormat
+  version: -1
+enabled: true
+name: CryptoCurrenciesFormat
+script: '-'
+subtype: python3
+system: false
+tags:
+- indicator-format
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.6.13358
+fromversion: 5.0.0
