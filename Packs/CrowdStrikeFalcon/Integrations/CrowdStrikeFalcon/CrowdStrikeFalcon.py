@@ -185,7 +185,8 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
     except requests.exceptions.RequestException:
         return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
     try:
-        if res.status_code not in {200, 201, 202, 204}:
+        # 404 is valid response since we want to return no entries to the war room.
+        if res.status_code not in {200, 201, 202, 204, 404}:
             res_json = res.json()
             reason = res.reason
             resources = res_json.get('resources', {})
@@ -195,7 +196,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                     if errors:
                         error_message = errors[0].get('message')
                         reason += f'\nHost ID {host_id} - {error_message}'
-            elif res_json.get('errors'):
+            elif res_json.get('errors') and res.status_code:
                 errors = res_json.get('errors', [])
                 for error in errors:
                     reason += f"\n{error.get('message')}"
@@ -1463,6 +1464,10 @@ def get_ioc_device_count_command(ioc_type: str, value: str):
     :param value: The IOC value
     """
     raw_res = get_ioc_device_count(ioc_type, value)
+    errors = raw_res.get('errors', [])
+    for error in errors:
+        if error.get('code') == 404:
+            return f'No results found for {ioc_type} - {value}'
     handle_response_errors(raw_res)
     device_count_res = raw_res.get('resources')
     ioc_id = f"{ioc_type}:{value}"
@@ -2230,6 +2235,10 @@ def get_indicator_device_id():
         value=ioc_value
     )
     raw_res = http_request('GET', '/indicators/queries/devices/v1', params=params)
+    errors = raw_res.get('errors', [])
+    for error in errors:
+        if error.get('code') == 404:
+            return f'No results found for {ioc_type} - {ioc_value}'
     context_output = ''
     if validate_response(raw_res):
         context_output = raw_res.get('resources')
