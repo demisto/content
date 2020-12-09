@@ -13,7 +13,7 @@ enabled: false
 name: BaseScript
 outputs:
   - contextPath: BaseScript.Output
-    description: [Enter a description of the data returned in this output.]
+    description: '[Enter a description of the data returned in this output.]'
     type: String
 script: '-'
 system: false
