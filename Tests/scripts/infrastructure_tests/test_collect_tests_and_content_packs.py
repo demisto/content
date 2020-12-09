@@ -2,24 +2,24 @@ import copy
 import json
 import logging
 import os
-
-import pytest
 import tempfile
-
 from pathlib import Path
 
-import Tests
-import demisto_sdk.commands.common.tools as demisto_sdk_tools
+import pytest
 from ruamel.yaml import YAML
-from demisto_sdk.commands.common.constants import PACKS_PACK_META_FILE_NAME, PACK_METADATA_SUPPORT
-from TestSuite import repo, test_tools
 
+import demisto_sdk.commands.common.tools as demisto_sdk_tools
+import Tests
+from demisto_sdk.commands.common.constants import (PACK_METADATA_SUPPORT,
+                                                   PACKS_PACK_META_FILE_NAME)
 from Tests.scripts.collect_tests_and_content_packs import (
-    TestConf, create_filter_envs_file,
-    get_test_list_and_content_packs_to_install, collect_content_packs_to_install,
-    get_from_version_and_to_version_bounderies, PACKS_DIR, remove_ignored_tests,
-    remove_tests_for_non_supported_packs, is_documentation_changes_only)
-from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
+    PACKS_DIR, TestConf, collect_content_packs_to_install,
+    create_filter_envs_file, get_from_version_and_to_version_bounderies,
+    get_test_list_and_content_packs_to_install, is_documentation_changes_only,
+    remove_ignored_tests, remove_tests_for_non_supported_packs)
+from Tests.scripts.utils.get_modified_files_for_testing import \
+    get_modified_files_for_testing
+from TestSuite import repo, test_tools
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
     MOCK_ID_SET = json.load(mock_id_set_f)
