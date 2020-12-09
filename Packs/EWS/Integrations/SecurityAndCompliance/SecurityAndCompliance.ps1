@@ -1191,7 +1191,7 @@ function TestModuleCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndCompli
         $cs_client.ListSearchActions() | Out-Null
     }
     else {
-        throw "Fill password for basic auth or use command !o365-sc-start-auth for Oauth2.0 authorization (MFA enabled accounts)."
+        throw "Fill password for basic auth or use command !$script:COMMAND_PREFIX-auth-start for Oauth2.0 authorization (MFA enabled accounts)."
     }
     $raw_response = $null
     $human_readable = "ok"
