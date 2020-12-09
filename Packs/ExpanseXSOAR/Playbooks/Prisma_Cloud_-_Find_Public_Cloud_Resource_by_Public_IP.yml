@@ -21,8 +21,8 @@ inputs:
 name: Prisma Cloud - Find Public Cloud Resource by Public IP
 outputs:
 - contextPath: PrismaCloud.Attribution
-  type: unknown
   description: Prisma Cloud attributed asset information.
+  type: unknown
 starttaskid: "0"
 tasks:
   "0":
@@ -30,26 +30,26 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "15"
+      - "16"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: e1f99a23-4c36-4cd1-89d4-06a6069ecd39
+      id: 11a6059b-98b4-4e88-8556-dc5ad8fe15c9
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: e1f99a23-4c36-4cd1-89d4-06a6069ecd39
+    taskid: 11a6059b-98b4-4e88-8556-dc5ad8fe15c9
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
-          "x": 1490,
-          "y": -270
+          "x": 1820,
+          "y": -500
         }
       }
   "1":
@@ -93,14 +93,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 74461e84-8932-440b-8ae9-23747e55d17e
+      description: Search EC2 instances in Prisma Cloud
+      id: 005fffaa-277c-41b4-8f9e-9714462bc023
       iscommand: true
       name: Search in EC2 Instances
       script: '|||redlock-search-config'
       type: regular
       version: -1
-      description: Search EC2 instances in Prisma Cloud
-    taskid: 74461e84-8932-440b-8ae9-23747e55d17e
+    taskid: 005fffaa-277c-41b4-8f9e-9714462bc023
     timertriggers: []
     type: regular
     view: |-
@@ -162,13 +162,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ab985172-80ca-4640-888a-8ed88d1d26a8
+      description: Branch based on Cloud Provider
+      id: 36c45c3d-8411-44f2-8a0f-be0278149fac
       iscommand: false
       name: What Cloud Provider?
       type: condition
       version: -1
-      description: Branch based on Cloud Provider
-    taskid: ab985172-80ca-4640-888a-8ed88d1d26a8
+    taskid: 36c45c3d-8411-44f2-8a0f-be0278149fac
     timertriggers: []
     type: condition
     view: |-
@@ -191,13 +191,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 7d55b911-def4-4fe7-88da-731dcfe678e6
+      id: 094f8f47-c412-427a-8876-de34a8502f17
       iscommand: false
       name: Search in AWS
       type: title
       version: -1
       description: ''
-    taskid: 7d55b911-def4-4fe7-88da-731dcfe678e6
+    taskid: 094f8f47-c412-427a-8876-de34a8502f17
     timertriggers: []
     type: title
     view: |-
@@ -219,13 +219,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: fe46cd1f-b3fc-4c61-8451-35666b2929b1
+      id: 3645d6a4-7536-4b2c-8930-b8ec73715486
       iscommand: false
       name: Search in Azure
       type: title
       version: -1
       description: ''
-    taskid: fe46cd1f-b3fc-4c61-8451-35666b2929b1
+    taskid: 3645d6a4-7536-4b2c-8930-b8ec73715486
     timertriggers: []
     type: title
     view: |-
@@ -247,13 +247,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: eb40d866-362f-4302-873e-12fb5acae82a
+      id: 9929d66a-c0f3-42f8-8673-5656477003b3
       iscommand: false
       name: Search in GCP
       type: title
       version: -1
       description: ''
-    taskid: eb40d866-362f-4302-873e-12fb5acae82a
+    taskid: 9929d66a-c0f3-42f8-8673-5656477003b3
     timertriggers: []
     type: title
     view: |-
@@ -277,13 +277,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e50fc375-1d5f-41c7-896e-434d83dfa934
+      id: 2f99368a-621c-4cf0-8348-c2b00831ab19
       iscommand: false
       name: Search All Cloud Providers
       type: title
       version: -1
       description: ''
-    taskid: e50fc375-1d5f-41c7-896e-434d83dfa934
+    taskid: 2f99368a-621c-4cf0-8348-c2b00831ab19
     timertriggers: []
     type: title
     view: |-
@@ -305,13 +305,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: c6073a79-da6d-476e-8129-89c2dd042e72
+      id: a9c9419e-675d-43e7-86bb-11afeee4c335
       iscommand: false
       name: Check Results
       type: title
       version: -1
       description: ''
-    taskid: c6073a79-da6d-476e-8129-89c2dd042e72
+    taskid: a9c9419e-675d-43e7-86bb-11afeee4c335
     timertriggers: []
     type: title
     view: |-
@@ -362,14 +362,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 2b522430-8f71-4522-898f-4317fc4c2a17
+      description: Search GCE instances in Prisma Cloud
+      id: aebc2c2c-ac27-4e1a-8b5a-2312897352bf
       iscommand: true
       name: Search in GCE
       script: '|||redlock-search-config'
       type: regular
       version: -1
-      description: Search GCE instances in Prisma Cloud
-    taskid: 2b522430-8f71-4522-898f-4317fc4c2a17
+    taskid: aebc2c2c-ac27-4e1a-8b5a-2312897352bf
     timertriggers: []
     type: regular
     view: |-
@@ -421,14 +421,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: a41301a8-714e-44f7-83a6-df2921ab98f7
+      description: Search EC2 Elastic Load Balancers in Prisma Cloud
+      id: c29ce175-b79f-4708-83ad-ca1b28b556c9
       iscommand: true
       name: Search in EC2 NLB
       script: '|||redlock-search-config'
       type: regular
       version: -1
-      description: Search EC2 Elastic Load Balancers in Prisma Cloud
-    taskid: a41301a8-714e-44f7-83a6-df2921ab98f7
+    taskid: c29ce175-b79f-4708-83ad-ca1b28b556c9
     timertriggers: []
     type: regular
     view: |-
@@ -480,14 +480,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: b9e88586-6717-4794-8bff-cb6097d00808
+      description: Search Azure VM instances in Prisma Cloud
+      id: 38831c47-e66b-4d9d-8595-253367887bf1
       iscommand: true
       name: Search in Azure Compute
       script: '|||redlock-search-config'
       type: regular
       version: -1
-      description: Search Azure VM instances in Prisma Cloud
-    taskid: b9e88586-6717-4794-8bff-cb6097d00808
+    taskid: 38831c47-e66b-4d9d-8595-253367887bf1
     timertriggers: []
     type: regular
     view: |-
@@ -521,13 +521,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 12ad7b0d-b6b7-4d76-877a-5ad77bc5a0fc
+      description: Check whether results are found.
+      id: 063315a1-7ff6-4348-8190-dde21ed2cb49
       iscommand: false
       name: Are Results Found?
       type: condition
       version: -1
-      description: Check whether results are found.
-    taskid: 12ad7b0d-b6b7-4d76-877a-5ad77bc5a0fc
+    taskid: 063315a1-7ff6-4348-8190-dde21ed2cb49
     timertriggers: []
     type: condition
     view: |-
@@ -556,13 +556,13 @@ tasks:
     task:
       brand: ""
       description: Prisma Cloud Attribution
-      id: 8cc8a748-5a68-4a7a-8006-12ff6f0f56c7
+      id: bd23ab14-2196-41a6-814c-09abf2d12059
       iscommand: false
       name: Transform Results
       script: PrismaCloudAttribution
       type: regular
       version: -1
-    taskid: 8cc8a748-5a68-4a7a-8006-12ff6f0f56c7
+    taskid: bd23ab14-2196-41a6-814c-09abf2d12059
     timertriggers: []
     type: regular
     view: |-
@@ -581,13 +581,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ca7ce0d8-8f88-4017-8ec6-02b43e0bd4a9
+      id: df95edc6-611a-42fd-8f79-1000d380731e
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: ca7ce0d8-8f88-4017-8ec6-02b43e0bd4a9
+    taskid: df95edc6-611a-42fd-8f79-1000d380731e
     timertriggers: []
     type: title
     view: |-
@@ -609,13 +609,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ff354269-144f-4a7e-8e3b-7ecd281010c0
+      id: ef4ca6a3-3d66-487d-82ce-34cbd5625ba6
       iscommand: false
       name: Search in Prisma Cloud
       type: title
       version: -1
       description: ''
-    taskid: ff354269-144f-4a7e-8e3b-7ecd281010c0
+    taskid: ef4ca6a3-3d66-487d-82ce-34cbd5625ba6
     timertriggers: []
     type: title
     view: |-
@@ -665,13 +665,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 35296a39-35c9-4212-8b25-9f381f61b698
+      description: Check whether Prisma Cloud integration is enabled.
+      id: d784bc5b-b0d2-4814-8eab-afed97795535
       iscommand: false
       name: Is Prisma Cloud enabled?
       type: condition
       version: -1
-      description: Check whether Prisma Cloud integration is enabled.
-    taskid: 35296a39-35c9-4212-8b25-9f381f61b698
+    taskid: d784bc5b-b0d2-4814-8eab-afed97795535
     timertriggers: []
     type: condition
     view: |-
@@ -679,6 +679,45 @@ tasks:
         "position": {
           "x": 1490,
           "y": -150
+        }
+      }
+  "16":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.PublicIPAddress
+          operator: isNotEmpty
+      label: "yes"
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if there are any IP in the input.
+      id: ad055b2c-7e6d-44c7-829f-70d6128b56eb
+      iscommand: false
+      name: Are there IPs in input?
+      type: condition
+      version: -1
+    taskid: ad055b2c-7e6d-44c7-829f-70d6128b56eb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": -330
         }
       }
 version: -1
@@ -691,13 +730,13 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2105,
-        "width": 2130,
+        "height": 2335,
+        "width": 2460,
         "x": -260,
-        "y": -270
+        "y": -500
       }
     }
   }
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
