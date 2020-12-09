@@ -45,7 +45,7 @@ configuration:
   name: mapper_out
   required: true
   type: 0
-description: IAM Template.
+description: Integrate with Slack's services to execute CRUD operations for employee lifecycle processes.
 display: Slack IAM
 name: Slack IAM
 script:
