@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
+import traceback
 from typing import Dict, Any
 
 
