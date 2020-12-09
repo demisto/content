@@ -1476,7 +1476,9 @@ def get_ioc_device_count_command(ioc_type: str, value: str):
     :param value: The IOC value
     """
     raw_res = get_ioc_device_count(ioc_type, value)
-    if 'resources' in raw_res:
+    if 'No results found for' in raw_res:
+        return raw_res
+    else:
         handle_response_errors(raw_res)
         device_count_res = raw_res.get('resources')
         ioc_id = f"{ioc_type}:{value}"
@@ -1485,8 +1487,6 @@ def get_ioc_device_count_command(ioc_type: str, value: str):
         context = [get_trasnformed_dict(device_count, IOC_DEVICE_COUNT_MAP) for device_count in device_count_res]
         hr = f'Indicator of Compromise **{ioc_id}** device count: **{device_count_res[0].get("device_count")}**'
         return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': context}, hr=hr)
-    else:
-        return raw_res
 
 
 def get_process_details_command(ids: str):
