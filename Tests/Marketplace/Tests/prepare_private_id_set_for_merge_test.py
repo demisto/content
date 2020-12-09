@@ -37,24 +37,9 @@ PRIVATE_ID_SET = {
     "Mappers": []
 }
 
-WORKDAY_PACK = {
-            "Workday": {
-                "name": "Workday",
-                "pack": "Workday"
-            }
-        }
-ACCESSDATA_PACK = {
-            "Accessdata": {
-                "name": "Accessdata",
-                "pack": "Accessdata"
-            }
-        }
-ACTIVEMQ_PACK = {
-            "ActiveMQ": {
-                "name": "ActiveMQ",
-                "pack": "ActiveMQ"
-            }
-        }
+WORKDAY_PACK = {"Workday": {"name": "Workday", "pack": "Workday"}}
+ACCESSDATA_PACK = {"Accessdata": {"name": "Accessdata", "pack": "Accessdata"}}
+ACTIVEMQ_PACK = {"ActiveMQ": {"name": "ActiveMQ", "pack": "ActiveMQ"}}
 
 
 def test_remove_old_pack_from_private_id_set():
