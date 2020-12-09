@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Generic Polling Test",
+            "timeout": 250
+        },
+        {
             "integrations": "GSuiteAdmin",
             "playbookID": "GSuiteAdmin-Test",
             "fromversion": "5.0.0"
@@ -56,7 +60,7 @@
         },
         {
             "integrations": "Anomali Enterprise",
-            "playbookID": "Anomali Enterprise Forensic Search - Test",
+            "playbookID": "Anomali Match Forensic Search - Test",
             "fromversion": "5.0.0"
         },
         {
@@ -191,6 +195,13 @@
             "playbookID": "APIVoid Test"
         },
         {
+            "integrations": "CloudConvert",
+            "playbookID": "CloudConvert-test",
+            "fromversion": "5.0.0",
+            "timeout": 2000
+        },
+
+        {
             "integrations": "Cisco Firepower",
             "playbookID": "Cisco Firepower - Test",
             "timeout": 1000,
@@ -293,7 +304,6 @@
         {
             "integrations": "Bambenek Consulting Feed",
             "playbookID": "BambenekConsultingFeed_Test",
-            "memory_threshold": 250,
             "fromversion": "5.5.0"
         },
         {
@@ -667,16 +677,25 @@
         },
         {
             "integrations": "ServiceNow v2",
-            "playbookID": "servicenow_test_v2"
+            "playbookID": "servicenow_test_v2",
+            "instance_names": "snow_basic_auth"
+        },
+        {
+            "integrations": "ServiceNow v2",
+            "playbookID": "ServiceNow_OAuth_Test",
+            "instance_names": "snow_oauth"
         },
         {
             "playbookID": "Create ServiceNow Ticket and Mirror Test",
             "integrations": "ServiceNow v2",
-            "fromversion": "6.0.0"
+            "instance_names": "snow_basic_auth",
+            "fromversion": "6.0.0",
+            "timeout": 500
         },
         {
             "playbookID": "Create ServiceNow Ticket and State Polling Test",
             "integrations": "ServiceNow v2",
+            "instance_names": "snow_basic_auth",
             "fromversion": "6.0.0",
             "timeout": 500
         },
@@ -697,7 +716,8 @@
         },
         {
             "integrations": "MISP V2",
-            "playbookID": "MISP V2 Test"
+            "playbookID": "MISP V2 Test",
+            "timeout": 300
         },
         {
             "playbookID": "test-LinkIncidentsWithRetry"
@@ -1867,13 +1887,11 @@
         },
         {
             "integrations": "AbuseIPDB",
-            "playbookID": "AbuseIPDB Test",
-            "nightly": true
+            "playbookID": "AbuseIPDB Test"
         },
         {
             "integrations": "AbuseIPDB",
-            "playbookID": "AbuseIPDB PopulateIndicators Test",
-            "nightly": true
+            "playbookID": "AbuseIPDB PopulateIndicators Test"
         },
         {
             "integrations": "LogRhythm",
@@ -3125,7 +3143,8 @@
         {
             "integrations": "TrendMicro Cloud App Security",
             "playbookID": "playbook_TrendmicroCAS_Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 300
         },
         {
             "playbookID": "IfThenElse-Test",
@@ -3190,6 +3209,10 @@
             "integrations": "Palo Alto Networks Enterprise DLP",
             "playbookID": "Palo_Alto_Networks_Enterprise_DLP - Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Cryptocurrency",
+            "playbookID": "Cryptocurrency-Test"
         }
     ],
     "skipped_tests": {
@@ -3284,7 +3307,10 @@
         "Test-VulnDB": "Issue 30875",
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
         "urlscan_malicious_Test": "Issue 20111",
-        "Test-Detonate URL - Crowdstrike": "Issue 30879"
+        "Test-Detonate URL - Crowdstrike": "Issue 30879",
+        "nexpose_test": "Issue 31019",
+        "CuckooTest": "Issue 25601",
+        "Cisco Umbrella Test": "Issue 24338"
     },
     "skipped_integrations": {
 
@@ -3389,6 +3415,7 @@
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
+        "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
@@ -3396,6 +3423,7 @@
         "FortiManager": "Can only be run within PANW network",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
+        "Cymulate": "Partner didn't provided test playbook",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "Palo Alto Minemeld": "Issue #26878",
         "AttackIQFireDrill": "License issues #29774"
@@ -3407,6 +3435,14 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Feodo Tracker IP Blocklist Feed": "test-module downloads a file",
+        "McAfee Advanced Threat Defense": "has a command that uploads file (!atd-file-upload)",
+        "Symantec Messaging Gateway": "Test playbook uses a random string",
+        "Cylance Protect": "Test playbook (get_file_sample_by_hash_-_cylance_protect_-_test) downloads a file",
+        "WildFire-v2": "has a command that uploads file (!wildfire-upload)",
+        "carbonblackliveresponse": "has a command that uploads file (!cb-push-file-to-endpoint)",
+        "ServiceNow v2": "has a command that uploads file (!servicenow-upload-file)",
+        "AlienVault OTX TAXII Feed": "Client from 'cabby' package generates uuid4 in the request",
         "Generic Webhook": "Does not send HTTP traffic",
         "Microsoft Endpoint Configuration Manager": "Uses Microsoft winRM",
         "VirusTotal - Private API": "proxy failures with recording. related issues: 26463, 28888",
