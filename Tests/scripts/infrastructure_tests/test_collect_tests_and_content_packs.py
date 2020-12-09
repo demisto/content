@@ -4,11 +4,15 @@ import logging
 import os
 
 import pytest
+import tempfile
+
+from pathlib import Path
 
 import Tests
 import demisto_sdk.commands.common.tools as demisto_sdk_tools
 from ruamel.yaml import YAML
 from demisto_sdk.commands.common.constants import PACKS_PACK_META_FILE_NAME, PACK_METADATA_SUPPORT
+from TestSuite import repo, test_tools
 
 from Tests.scripts.collect_tests_and_content_packs import (
     TestConf, create_filter_envs_file,
@@ -1213,3 +1217,33 @@ def test_remove_tests_for_non_supported_packs(tests_to_filter, should_test_conte
 def test_is_documentation_only(files_string, expected_result):
     documentation_only = is_documentation_changes_only(files_string)
     assert documentation_only == expected_result
+
+
+def test_get_from_version_and_to_version_bounderies_modified_metadata():
+    """
+    Given:
+        - metadata file with serverMinVersion 6.0.
+    When:
+        - running get_from_version_and_to_version_bounderies
+    Then:
+        - Check that the toversion is the default (99.99.99)
+        - Check that the minimum version is 6.1.0
+
+    """
+    all_modified_files_paths = set([])
+    metadata_list = {'Pack1'}
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        with test_tools.ChangeCWD(temp_dir):
+            content = repo.Repo(Path(temp_dir))
+            pack1 = content.create_pack('Pack1')
+            pack1.pack_metadata.write_json({'serverMinVersion': '6.1.0', 'name': 'Pack1'})
+
+            from_version, to_version = get_from_version_and_to_version_bounderies(
+                all_modified_files_paths,
+                {},
+                modified_metadata_list=metadata_list,
+            )
+
+    assert '6.1.0' in from_version
+    assert '99.99.99' in to_version
