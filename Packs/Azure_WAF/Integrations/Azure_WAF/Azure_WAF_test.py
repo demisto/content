@@ -4,28 +4,35 @@ import demistomock as demisto
 
 GET_COMMAND_DATA = [
     (
-        {'policy_name': 'pol1', 'resource_group_name': 'res1'},  # args, case: custom resource_group
+        {'policy_name': 'pol1', 'resource_group_name': 'res1', 'verbose': 'false', 'limit': '10'},  # args, case: custom resource_group
         {"method": "GET",
          "url_suffix":
              "/resourceGroups/res1/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/pol1"
          }  # expected
     ),
     (
-        {'policy_name': 'pol1'},  # args, case: default resource_group
+        {'policy_name': 'pol1', 'verbose': 'false', 'limit': '10'},  # args, case: default resource_group
         {"method": "GET",
          "url_suffix":
              "/resourceGroups/test/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/pol1"
          }  # expected
     ),
     (
-        {},  # args, case: list of policies in default resourse_group
+        {'verbose': 'false', 'limit': '10'},  # args, case: list of policies in default resourse_group
         {"method": "GET",
          "url_suffix":
              "/resourceGroups/test/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
          }  # expected
     ),
     (
-        {'resource_group_name': 'res1'},  # args, case: list of policies in custom resourse_group
+        {'verbose': 'true', 'limit': '10'},  # args, case: list of policies in default resourse_group with full data
+        {"method": "GET",
+         "url_suffix":
+             "/resourceGroups/test/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
+         }  # expected
+    ),
+    (
+        {'resource_group_name': 'res1', 'verbose': 'false', 'limit': '10'},  # args, case: list of policies in custom resourse_group
         {"method": "GET",
          "url_suffix":
              "/resourceGroups/res1/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
@@ -57,15 +64,15 @@ def test_get_policy_by_resource_body(mocker, demisto_args, expected_results):
         verify=True,
         proxy=False
     )
-    m = mocker.patch.object(client, 'http_request', return_value={})
+    m = mocker.patch.object(client, 'http_request', return_value={'properties': 'test'})
     waf.policy_get_command(client, **demisto_args)
-    assert m.call_args[1].get('method') == expected_results.get("method")
     assert m.call_args[1].get('url_suffix') == expected_results.get("url_suffix")
+    assert m.call_args[1].get('method') == expected_results.get("method")
 
 
 UPSERT_COMMAND_DATA = [
     (
-        {'policy_name': 'pol1', 'resource_group_name': 'res1',
+        {'policy_name': 'pol1', 'resource_group_name': 'res1' , 'verbose': 'false', 'limit': '10',
          'managed_rules': '{"test": "test"}', 'location': 'east'
          },  # args, case: custom resource_group update rule
         {"method": "PUT",
@@ -75,7 +82,7 @@ UPSERT_COMMAND_DATA = [
          }  # expected
     ),
     (
-        {'policy_name': 'pol1', 'resource_group_name': 'res1',
+        {'policy_name': 'pol1', 'resource_group_name': 'res1', 'verbose': 'false', 'limit': '10',
          'managed_rules': '{"test": "test"}', 'custom_rules': '{"test": "test"}', 'location': 'east'
          },  # args, case: custom resource_group update rule with key hierarchy
         {"method": "PUT",
@@ -111,7 +118,7 @@ def test_policy_upsert_body(mocker, demisto_args, expected_results):
         verify=True,
         proxy=False
     )
-    m = mocker.patch.object(client, 'http_request', return_value={})
+    m = mocker.patch.object(client, 'http_request', return_value={'name': 'pol1', 'id': 'id', 'properties': {}})
     waf.policy_upsert_command(client, **demisto_args)
     assert m.call_args[1].get('method') == expected_results.get("method")
     assert m.call_args[1].get('url_suffix') == expected_results.get("url_suffix")
@@ -121,7 +128,7 @@ def test_policy_upsert_body(mocker, demisto_args, expected_results):
 UPSERT_COMMAND_DATA_BAD_CASES = [
     (
         {'resource_group_name': 'res1',
-         'managed_rules': '{"test": "test"}', 'location': 'east'
+         'managed_rules': '{"test": "test"}', 'location': 'east', 'verbose': 'false', 'limit': '10'
          },  # args, case: missing policy name
         "In order to add/ update policy, please provide policy_name, location and managed_rules. "  # expected
     ),

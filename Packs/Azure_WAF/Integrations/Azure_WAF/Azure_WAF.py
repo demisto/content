@@ -113,8 +113,6 @@ class AzureWAFClient:
 
 
 def test_connection(client: AzureWAFClient, params: Dict):
-    if params.get('self_deployed', False) and not params.get('auth_code'):
-        return_error('You must enter an authorization code in a self-deployed configuration.')
     client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     return '✅ Success!'
 
@@ -150,7 +148,7 @@ def policy_get_command(client: AzureWAFClient, **args) -> CommandResults:
             policy = client.get_policy_by_name(policy_name, resource_group_name)
             policies.append(policy)
         else:
-            policy = client.get_policy_by_name(policy_name, resource_group_name).get('value', [])
+            policy = client.get_policy_list_by_resource_group_name(resource_group_name).get('value', [])
             policies.extend(policy)
     except Exception:
         raise
@@ -190,7 +188,7 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
     policy_name = str(args.get('policy_name', ''))
     resource_group_name = str(args.get('resource_group_name', client.resource_group_name))
     managed_rules = args.get('managed_rules', {})
-    location = args.get("location", '')
+    location = args.get("location", '')  # location is not required by documentation but is required by the api itself.
     verbose = True if args.get("verbose", "false") == "true" else False
 
     if not policy_name or not managed_rules or not location:
@@ -316,13 +314,8 @@ def main() -> None:
     args = demisto.args()
 
     client = AzureWAFClient(
-        self_deployed=params.get('self_deployed', False),
         app_id=params.get('app_id', ''),
-        tenant_id=params.get('tenant_id', ''),
-        app_secret=params.get('app_secret', ''),
-        redirect_uri=params.get('redirect_uri', ''),
         subscription_id=params.get('subscription_id', ''),
-        auth_code=params.get('auth_code', ''),
         resource_group_name=params.get('resource_group_name', ''),
         verify=not params.get('insecure', False),
         proxy=params.get('proxy', False),

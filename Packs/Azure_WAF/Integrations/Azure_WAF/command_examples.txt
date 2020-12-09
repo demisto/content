@@ -1,0 +1,5 @@
+!azure-waf-policy-upsert policy_name="test_policy" resource_group_name="demisto-sentinel2" location="WestUs" managed_rules="{ \"managedRuleSets\": [{\"ruleSetType\": \"OWASP\",\"ruleSetVersion\": \"3.0\"}]}"
+
+!azure-waf-policy-get limit=2
+
+!azure-waf-policy-list-all-in-subscription limit=2
