@@ -1,0 +1,142 @@
+commonfields:
+  id: CyrenThreatInDepth
+  version: -1
+name: CyrenThreatInDepth
+display: Cyren Threat InDepth Threat Intelligence
+category: Data Enrichment & Threat Intelligence
+description: Threat InDepth's actionable and contextualized intelligence helps
+  enterprises improve their threat detection and response by providing unprecedented
+  visibility into new email-borne security threats faster than other security vendors.
+fromversion: 5.5.0
+configuration:
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Indicator Reputation
+  name: feedReputation
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ""
+  name: feedExpirationInterval
+  defaultvalue: "20160"
+  type: 1
+  required: false
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "240"
+  type: 19
+  required: false
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- defaultvalue: "true"
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- defaultvalue: https://api-feeds.cyren.com/v1/feed
+  display: API URL
+  name: api_url
+  required: false
+  type: 0
+- display: API Token
+  name: apiToken
+  type: 12
+  required: true
+- display: Feed Name
+  name: feedName
+  defaultvalue: ip_reputation
+  type: 15
+  required: true
+  options:
+  - ip_reputation
+  - phishing_urls
+  - malware_urls
+  - malware_files
+- display: Maximum number of indicators to be fetched each time, cannot be higher than 100000
+  name: maxIndicators
+  defaultvalue: "100000"
+  type: 0
+  required: false
+script:
+  script: "-"
+  type: python
+  commands:
+  - arguments:
+    - default: true
+      defaultValue: "50"
+      description: The maximum number of results to return.
+      isArray: false
+      name: maxIndicators
+      required: false
+      secret: false
+    - default: true
+      defaultValue: "ip_reputation"
+      description: The feed name
+      isArray: false
+      name: feedName
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetching Cyren Threat InDepth indicators
+    execution: true
+    name: cyren-threat-indepth-get-indicators
+  dockerimage: demisto/python3:3.8.6.13358
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  subtype: python3
+tests:
+- No tests (auto formatted)

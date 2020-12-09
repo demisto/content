@@ -1,0 +1,19 @@
+{
+    "name": "Cyren Threat InDepth Threat Intelligence",
+    "description": "Threat InDepth's actionable and contextualized intelligence helps enterprises improve their threat detection and response by providing unprecedented visibility into new email-borne security threats faster than other security vendors.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Cyren",
+    "url": "https://www.cyren.com/products/threat-indepth",
+    "email": "christian.meilke@cyren.com",
+    "created": "2020-12-08T09:48:38Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "cyren"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": []
+}
