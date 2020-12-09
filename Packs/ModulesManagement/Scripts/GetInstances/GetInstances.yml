@@ -12,7 +12,7 @@ args:
   description: Brand name to filter instances by. 
   isArray: true
 - defaultValue: "active"
-  name: is_enabled
+  name: instance_status
   auto: PREDEFINED
   predefined:
   - "active"

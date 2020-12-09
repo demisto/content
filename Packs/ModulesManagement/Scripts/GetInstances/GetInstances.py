@@ -6,13 +6,13 @@ from CommonServerPython import *
 INTERNAL_MODULES_BRANDS = ['Scripts', 'Builtin', 'testmodule']
 
 
-def filter_config(module: Dict, filter_brand: Optional[List[str]] = None, is_enabled: str = 'active'):
+def filter_config(module: Dict, filter_brand: Optional[List[str]] = None, instance_status: str = 'active'):
     brand = module.get('brand')
     if brand in INTERNAL_MODULES_BRANDS:
         return False
     elif filter_brand and brand not in filter_brand:
         return False
-    elif is_enabled != 'both' and module.get('state') != is_enabled:
+    elif instance_status != 'both' and module.get('state') != instance_status:
         return False
 
     return True
@@ -22,8 +22,8 @@ def prepare_args(args: Dict):
     if 'brand' in args:
         args['filter_brand'] = argToList(args.pop('brand'))
 
-    if args.get('is_enabled') not in ['active', 'both', 'disabled']:
-        raise ValueError("is_enabled should be one of the following 'active', 'both', 'disabled'")
+    if args.get('instance_status') not in ['active', 'both', 'disabled']:
+        raise ValueError("instance_status should be one of the following 'active', 'both', 'disabled'")
 
     return args
 

@@ -15,7 +15,7 @@ Returns integration instances configured in Cortex XSOAR. You can filter by inst
 | **Argument Name** | **Description** |
 | --- | --- |
 | brand | Brand name to filter instances by. |
-| is_enabled | Instance status to filter instances by. Can be "active", "disabled", or "both". Default is "active". |
+| instance_status | Instance status to filter instances by. Can be "active", "disabled", or "both". Default is "active". |
 
 ## Outputs
 ---
