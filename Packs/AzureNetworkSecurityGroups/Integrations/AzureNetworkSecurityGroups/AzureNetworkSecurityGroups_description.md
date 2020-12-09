@@ -1,24 +1,15 @@
-In order to use the integration, there are 2 application authentication methods available:
+In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
 
-Note: Depending on the authentication method that you use, the integration parameters might change.
+In order to connect to Azure Network Security Group using either XSOAR or self deployed application, after filling out the required parameters, you'll need to run *!azure-nsg-auth-start*, follow the instructions that'll be prompted and then run *!azure-nsg-auth-complete*.
+
+At end of the process you'll see a message that you've managed to log in. 
 
 #### Cortex XSOAR Azure app
 
-In this method, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
+In order to use the Cortex XSOAR Azure application, use the default application ID (d4736600-e3d5-4c97-8e65-57abd2b979fe).
 
-To configure the integration:
+You only need to fill out your subscrition ID and resource group name. 
 
-1. The ***Application ID*** integration parameter should be set to `d4736600-e3d5-4c97-8e65-57abd2b979fe
-` (the Cortex XSOAR Azure app ID).
-
-2. The ***Application Secret*** and the ***Tenant ID*** integration parameters should be left blank.
-
-3. Run the *azure-nsg-auth-start* command - you will be prompted to open the page https://microsoft.com/devicelogin and enter the generated code.
-
-4. Run the *azure-nsg-auth-complete* command
-
-5. Run the *azure-nsg-test* command to ensure connectivity to Microsoft. 
- 
 #### Self Deployed Azure app
 
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
