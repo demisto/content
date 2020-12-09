@@ -298,7 +298,7 @@ class Client(BaseClient):
 
     def deploy_to_devices(self, force_deploy, ignore_warning, version, device_ids) -> Dict:
         data_to_post = assign_params(forceDeploy=force_deploy, ignoreWarning=ignore_warning, version=version,
-                                     deviceList=argToList(device_ids))
+                                     deviceList=argToList(device_ids), type="DeploymentRequest")
         suffix = 'deployment/deploymentrequests'
         return self._http_request('POST', suffix, json_data=data_to_post)
 
