@@ -12,7 +12,7 @@ def filter_config(module: Dict, filter_brand: Optional[List[str]] = None, is_ena
         return False
     elif filter_brand and brand not in filter_brand:
         return False
-    elif not is_enabled == 'both' and not module.get('state') == is_enabled:
+    elif is_enabled != 'both' and module.get('state') != is_enabled:
         return False
 
     return True
@@ -41,7 +41,7 @@ def main():
         context_config = list(filter_instances(demisto.getModules(), **args))
         return_results(CommandResults(
             outputs=context_config,
-            outputs_prefix='Modules'
+            outputs_prefix='Modules',
         ))
     except Exception as error:
         return_error(str(error), error)
