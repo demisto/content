@@ -6,9 +6,9 @@
 	"id": "9474188a-4cc2-4ea2-8ad5-14cef42bdb03",
 	"incidentSamples": [],
 	"indicatorSamples": null,
-	"instanceId": "28ef9b7f-eaf6-455c-81f5-c4656ad7a3db",
-	"instanceName": "Gurucul-HighRiskUsers",
 	"isDefault": false,
+	"toVersion": "5.9.9",
+ 	"fromVersion": "5.0.0",
 	"keyTypeMap": {
 		"HighRiskUser": "GraHighRiskUser"
 	},

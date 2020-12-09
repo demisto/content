@@ -3,7 +3,8 @@ from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, cast
+from typing import Any, Dict, List, Optional, Tuple, cast
+
 import dateparser
 import urllib3
 
@@ -102,7 +103,6 @@ def fetch_records(client: Client, url_suffix, prefix, key, params):
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
                     first_fetch_time: Optional[int], command_type: str
                     ) -> Tuple[Dict[str, int], List[dict]]:
-
     if command_type == 'GraCases':
         return_data = fetch_incidents_open_cases(client, max_results, last_run, first_fetch_time)
     else:
@@ -121,7 +121,6 @@ def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[
     else:
         last_fetch = int(last_fetch)
         case_url = '/cases/OPEN/riskdate/lastminute'
-
     latest_created_time = cast(int, last_fetch)
     incidents: List[Dict[str, Any]] = []
     page = 1
@@ -134,7 +133,7 @@ def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[
         else:
             page += 1
         for record in case_data:
-            incident_created_time = datetime.strptime(str(record.get('openDate')), "%m/%d/%Y %H:%M:%S").timestamp()
+            incident_created_time = datetime.now().timestamp()
             incident_created_time_ms = incident_created_time * 1000
             record['incidentType'] = 'GRACase'
             inc = {
@@ -154,7 +153,6 @@ def fetch_incidents_high_risk_users(client: Client, max_results: int, last_run: 
                                     first_fetch_time: Optional[int]
                                     ) -> Tuple[Dict[str, int], List[dict]]:
     last_fetch = last_run.get('last_fetch', None)
-
     if last_fetch is None:
         last_fetch = first_fetch_time
         high_risk_user_url = '/users/highrisk/modifieddate/' \
@@ -162,7 +160,6 @@ def fetch_incidents_high_risk_users(client: Client, max_results: int, last_run: 
     else:
         last_fetch = int(last_fetch)
         high_risk_user_url = '/users/highrisk/modifieddate/lastminute'
-
     latest_created_time = cast(int, last_fetch)
     incidents: List[Dict[str, Any]] = []
     page = 1
@@ -175,9 +172,8 @@ def fetch_incidents_high_risk_users(client: Client, max_results: int, last_run: 
         else:
             page += 1
         for record1 in users_data:
-            incident_created_time = datetime.strptime(str(record1.get('joiningDate')), "%m/%d/%Y %H:%M:%S").timestamp()
+            incident_created_time = datetime.now().timestamp()
             incident_created_time_ms = incident_created_time * 1000
-
             record1['incidentType'] = 'HighRiskUser'
             inc1 = {
                 'name': record1.get('employeeId'),

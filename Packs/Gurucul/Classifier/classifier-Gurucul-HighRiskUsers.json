@@ -16,24 +16,8 @@
 	},
 	"locked": false,
 	"logicalVersion": 0,
-	"mapping": {
-		"GraHighRiskUser": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"name": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "employeeId",
-						"transformers": []
-					},
-					"simple": ""
-				}
-			}
-		}
-	},
-	"name": "Gurucul-HighRiskUsers (custom) (classifier)",
-	"nameRaw": "Gurucul-HighRiskUsers (custom) (classifier)",
+	"name": "Gurucul-HighRiskUsers - Classifier",
+	"nameRaw": "Gurucul-HighRiskUsers - Classifier",
 	"packID": "",
 	"sortValues": null,
 	"sourceClassifierId": "",
@@ -50,5 +34,6 @@
 	},
 	"type": "classification",
 	"unclassifiedCases": null,
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.0.0"
 }

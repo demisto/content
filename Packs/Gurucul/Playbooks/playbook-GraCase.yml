@@ -1,5 +1,5 @@
 id: GraCase
-version: 1
+version: -1
 fromversion: 5.0.0
 vcShouldKeepItemLegacyProdMachine: false
 name: GraCase
@@ -16,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -109,6 +110,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     view: |-
       {

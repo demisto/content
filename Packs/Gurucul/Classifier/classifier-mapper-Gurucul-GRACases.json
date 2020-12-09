@@ -6,7 +6,7 @@
 	"description": "",
 	"feed": false,
 	"fromServerVersion": "",
-	"id": "bb1f3d2b-475a-4343-8d8c-d9b02b05017d_custom-mapper",
+	"id": "Gurucul-GRACases-mapper",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
@@ -113,23 +113,15 @@
 			}
 		}
 	},
-	"name": "Gurucul-GRACases (custom) (mapper)",
-	"nameRaw": "Gurucul-GRACases (custom) (mapper)",
+	"name": "Gurucul-GRACases Incoming Mapper",
+	"nameRaw": "Gurucul-GRACases Incoming Mapper",
 	"packID": "",
 	"sortValues": null,
 	"sourceClassifierId": "",
 	"system": false,
 	"toServerVersion": "",
-	"transformer": {
-		"complex": {
-			"accessor": "",
-			"filters": [],
-			"root": "incidentType",
-			"transformers": []
-		},
-		"simple": ""
-	},
 	"type": "mapping-incoming",
 	"unclassifiedCases": null,
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.0.0"
 }

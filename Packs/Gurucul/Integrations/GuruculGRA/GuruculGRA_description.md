@@ -1,3 +1,2 @@
-## Hello World
-- This text is markdown
-- Here you should explain how to configure the instance in Demisto
+## Gurucul GRA
+- Please contact Gurucul for getting APIKEY

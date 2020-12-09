@@ -8,6 +8,19 @@ def util_load_json(path):
 
 
 def test_gra_fetch_users(requests_mock):
+    """Unit test
+        Given
+        - fetch gra users
+        - command args page , max
+        - command raw response
+        When
+        - mock the Client's send_request.
+        Then
+        - run the gra fetch users command using the Client
+        Validate the output with mock response
+        Validate the output prefix
+        Validate key field
+    """
     from GuruculGRA import Client, fetch_record_command
     mock_response = util_load_json('test_data/gra-fetch-users.json')
     requests_mock.get('https://test.com/api/users',
@@ -28,6 +41,19 @@ def test_gra_fetch_users(requests_mock):
 
 
 def test_gra_fetch_accounts(requests_mock):
+    """Unit test
+        Given
+        - fetch gra accounts
+        - command args page , max
+        - command raw response
+        When
+        - mock the Client's send_request.
+        Then
+        - run the gra fetch users command using the Client
+        Validate the output with mock response
+        Validate the output prefix
+        Validate key field
+    """
     from GuruculGRA import Client, fetch_record_command
     mock_response = util_load_json('test_data/gra-fetch-accounts.json')
     requests_mock.get('https://test.com/api/accounts',
@@ -48,6 +74,19 @@ def test_gra_fetch_accounts(requests_mock):
 
 
 def test_gra_fetch_active_resource_accounts(requests_mock):
+    """Unit test
+        Given
+        - fetch gra active resource accounts
+        - command args page , max
+        - command raw response
+        When
+        - mock the Client's send_request.
+        Then
+        - run the gra fetch users command using the Client
+        Validate the output with mock response
+        Validate the output prefix
+        Validate key field
+    """
     from GuruculGRA import Client, fetch_record_command
     mock_response = util_load_json('test_data/gra-fetch-active-resource-accounts.json')
     requests_mock.get('https://test.com/api/resources/Linux/accounts',
@@ -68,6 +107,19 @@ def test_gra_fetch_active_resource_accounts(requests_mock):
 
 
 def test_gra_fetch_user_accounts(requests_mock):
+    """Unit test
+        Given
+        - fetch gra users accounts
+        - command args page , max
+        - command raw response
+        When
+        - mock the Client's send_request.
+        Then
+        - run the gra fetch users command using the Client
+        Validate the output with mock response
+        Validate the output prefix
+        Validate key field
+    """
     from GuruculGRA import Client, fetch_record_command
     mock_response = util_load_json('test_data/gra-fetch-user-accounts.json')
     requests_mock.get('https://test.com/api/users/AB1234/accounts',
@@ -88,6 +140,19 @@ def test_gra_fetch_user_accounts(requests_mock):
 
 
 def test_gra_fetch_resource_highrisk_accounts(requests_mock):
+    """Unit test
+        Given
+        - fetch gra resource high risk accounts
+        - command args page , max
+        - command raw response
+        When
+        - mock the Client's send_request.
+        Then
+        - run the gra fetch users command using the Client
+        Validate the output with mock response
+        Validate the output prefix
+        Validate key field
+    """
     from GuruculGRA import Client, fetch_record_command
     mock_response = util_load_json('test_data/gra-fetch-resource-highrisk-accounts.json')
     requests_mock.get('https://test.com/api/resources/Linux/accounts/highrisk',
@@ -108,6 +173,19 @@ def test_gra_fetch_resource_highrisk_accounts(requests_mock):
 
 
 def test_gra_fetch_hpa(requests_mock):
+    """Unit test
+        Given
+        - fetch high privileged accounts
+        - command args page , max
+        - command raw response
+        When
+        - mock the Client's send_request.
+        Then
+        - run the gra fetch users command using the Client
+        Validate the output with mock response
+        Validate the output prefix
+        Validate key field
+    """
     from GuruculGRA import Client, fetch_record_command
     mock_response = util_load_json('test_data/gra-fetch-hpa.json')
     requests_mock.get('https://test.com/api/accounts/highprivileged',
@@ -128,6 +206,19 @@ def test_gra_fetch_hpa(requests_mock):
 
 
 def test_gra_fetch_resource_hpa(requests_mock):
+    """Unit test
+        Given
+        - fetch high privileged accounts for resource
+        - command args page, max
+        - command raw response
+        When
+        - mock the Client's send_request.
+        Then
+        - run the gra fetch users command using the Client
+        Validate the output with mock response
+        Validate the output prefix
+        Validate key field
+    """
     from GuruculGRA import Client, fetch_record_command
     mock_response = util_load_json('test_data/gra-fetch-resource-hpa.json')
     requests_mock.get('https://test.com/api/resources/Linux/accounts/highprivileged',
@@ -148,6 +239,19 @@ def test_gra_fetch_resource_hpa(requests_mock):
 
 
 def test_gra_fetch_orphan_accounts(requests_mock):
+    """Unit test
+        Given
+        - fetch orphan accounts
+        - command args page, max
+        - command raw response
+        When
+        - mock the Client's send_request.
+        Then
+        - run the gra fetch users command using the Client
+        Validate the output with mock response
+        Validate the output prefix
+        Validate key field
+    """
     from GuruculGRA import Client, fetch_record_command
     mock_response = util_load_json('test_data/gra-fetch-orphan-accounts.json')
     requests_mock.get('https://test.com/api/accounts/orphan',
@@ -168,6 +272,19 @@ def test_gra_fetch_orphan_accounts(requests_mock):
 
 
 def test_gra_fetch_resource_orphan_accounts(requests_mock):
+    """Unit test
+        Given
+        - fetch orphan accounts for resource
+        - command args page, max, resource
+        - command raw response
+        When
+        - mock the Client's send_request.
+        Then
+        - run the gra fetch users command using the Client
+        Validate the output with mock response
+        Validate the output prefix
+        Validate key field
+    """
     from GuruculGRA import Client, fetch_record_command
     mock_response = util_load_json('test_data/gra-fetch-resource-orphan-accounts.json')
     requests_mock.get('https://test.com/api/resources/Linux/accounts/orphan',
@@ -188,6 +305,19 @@ def test_gra_fetch_resource_orphan_accounts(requests_mock):
 
 
 def test_gra_user_activities(requests_mock):
+    """Unit test
+        Given
+        - fetch gra user activities
+        - command args page, max
+        - command raw response
+        When
+        - mock the Client's send_request.
+        Then
+        - run the gra fetch users command using the Client
+        Validate the output with mock response
+        Validate the output prefix
+        Validate key field
+    """
     from GuruculGRA import Client, fetch_record_command
     mock_response = util_load_json('test_data/gra-user-activities.json')
     requests_mock.get('https://test.com/api/user/AB1234/activity',
@@ -208,6 +338,19 @@ def test_gra_user_activities(requests_mock):
 
 
 def test_fetch_gra_users_details(requests_mock):
+    """Unit test
+        Given
+        - fetch gra user details
+        - command args page, max, employeeId
+        - command raw response
+        When
+        - mock the Client's send_request.
+        Then
+        - run the gra fetch users command using the Client
+        Validate the output with mock response
+        Validate the output prefix
+        Validate key field
+    """
     from GuruculGRA import Client, fetch_record_command
     mock_response = util_load_json('test_data/fetch-gra-users-details.json')
     requests_mock.get('https://test.com/api/users/AB1234',
@@ -228,6 +371,19 @@ def test_fetch_gra_users_details(requests_mock):
 
 
 def test_gra_highRisk_users(requests_mock):
+    """Unit test
+        Given
+        - fetch gra high risk users
+        - command args page, max
+        - command raw response
+        When
+        - mock the Client's send_request.
+        Then
+        - run the gra fetch users command using the Client
+        Validate the output with mock response
+        Validate the output prefix
+        Validate key field
+    """
     from GuruculGRA import Client, fetch_record_command
     mock_response = util_load_json('test_data/gra-highRisk-users.json')
     requests_mock.get('https://test.com/api/users/highrisk',
@@ -248,6 +404,19 @@ def test_gra_highRisk_users(requests_mock):
 
 
 def test_gra_cases(requests_mock):
+    """Unit test
+        Given
+        - fetch gra cases as per status
+        - command args page, max
+        - command raw response
+        When
+        - mock the Client's send_request.
+        Then
+        - run the gra fetch users command using the Client
+        Validate the output with mock response
+        Validate the output prefix
+        Validate key field
+    """
     from GuruculGRA import Client, fetch_record_command
     mock_response = util_load_json('test_data/gra-cases.json')
     requests_mock.get('https://test.com/api/cases/OPEN',
@@ -268,6 +437,19 @@ def test_gra_cases(requests_mock):
 
 
 def test_fetch_user_anomalies(requests_mock):
+    """Unit test
+        Given
+        - fetch gra user anomalies
+        - command args page, max
+        - command raw response
+        When
+        - mock the Client's send_request.
+        Then
+        - run the gra fetch users command using the Client
+        Validate the output with mock response
+        Validate the output prefix
+        Validate key field
+    """
     from GuruculGRA import Client, fetch_record_command
     mock_response = util_load_json('test_data/gra-user-anomalies.json')
     requests_mock.get('https://test.com/api/users/AB1234/anomalies/',
@@ -285,3 +467,27 @@ def test_fetch_user_anomalies(requests_mock):
     assert response.outputs == mock_response
     assert response.outputs_prefix == 'Gra.User.Anomalies'
     assert response.outputs_key_field == 'anomaly_name'
+
+
+def test_module(mocker):
+    """
+    Given
+    - Gurucul GRA test application
+    When
+    - mock the demisto params.
+    - mock the Client's generate_token
+    Then
+    - run the test_module command using the Client
+    Validate The response is ok.
+    """
+    from GuruculGRA import Client, test_module_command
+    client = Client(
+        base_url='https://test.com/api',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+    mocker.patch.object(client, 'validate_api_key')
+    result = test_module_command(client)
+    assert result == 'ok'

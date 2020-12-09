@@ -6,9 +6,9 @@
 	"id": "bb1f3d2b-475a-4343-8d8c-d9b02b05017d",
 	"incidentSamples": [],
 	"indicatorSamples": null,
-	"instanceId": "f04ed33b-2b26-415a-8780-4c5f9dc23b79",
-	"instanceName": "Gurucul-GRACases",
 	"isDefault": false,
+	"toVersion": "5.9.9",
+ 	"fromVersion": "5.0.0",
 	"keyTypeMap": {
 		"GRACase": "GraCase"
 	},

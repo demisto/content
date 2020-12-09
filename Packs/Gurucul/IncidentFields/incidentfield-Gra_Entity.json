@@ -1,7 +1,10 @@
 {
 	"fromVersion": "5.0.0",
-	"associatedToAll": true,
-	"associatedTypes": null,
+	"associatedToAll": false,
+	"associatedTypes": [
+		"GraCase",
+		"GraHighRiskUser"
+	],
 	"breachScript": "",
 	"caseInsensitive": true,
 	"cliName": "graentity",

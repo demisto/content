@@ -6,7 +6,7 @@
 	"description": "",
 	"feed": false,
 	"fromServerVersion": "",
-	"id": "bb1f3d2b-475a-4343-8d8c-d9b02b05017d_custom",
+	"id": "Gurucul-GRACases",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
@@ -16,105 +16,8 @@
 	},
 	"locked": false,
 	"logicalVersion": 0,
-	"mapping": {
-		"GraCase": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Gra Case Id": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "caseId",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Gra Entity": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "entity",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Gra Entity Id": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "entityId",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Gra Entity Type Id": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "entityTypeId",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Gra Open Date": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "openDate",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Gra Owner Id": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "ownerId",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Gra Owner Name": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "ownerName",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Gra Owner Type": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "ownerType",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Gra Risk Date": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "riskDate",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"name": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "entity",
-						"transformers": []
-					},
-					"simple": ""
-				}
-			}
-		}
-	},
-	"name": "Gurucul-GRACases (custom) (classifier)",
-	"nameRaw": "Gurucul-GRACases (custom) (classifier)",
+	"name": "Gurucul-GRACases - Classifier",
+	"nameRaw": "Gurucul-GRACases - Classifier",
 	"packID": "",
 	"sortValues": null,
 	"sourceClassifierId": "",

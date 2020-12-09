@@ -1,7 +1,10 @@
 {
 	"fromVersion": "5.0.0",
-	"associatedToAll": true,
-	"associatedTypes": null,
+	"associatedToAll": false,
+	"associatedTypes": [
+		"GraCase",
+		"GraHighRiskUser"
+	],
 	"breachScript": "",
 	"caseInsensitive": true,
 	"cliName": "gracaseid",
@@ -18,7 +21,7 @@
 	"isReadOnly": false,
 	"locked": false,
 	"mergeStrategy": "",
-	"name": "Gra Suspect Id",
+	"name": "Gra Case Id",
 	"neverSetAsRequired": false,
 	"ownerOnly": false,
 	"placeholder": "",

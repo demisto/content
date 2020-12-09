@@ -6,7 +6,7 @@
 	"description": "",
 	"feed": false,
 	"fromServerVersion": "",
-	"id": "9474188a-4cc2-4ea2-8ad5-14cef42bdb03_custom-mapper",
+	"id": "Gurucul-HighRiskUsers-mapper",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
@@ -32,23 +32,15 @@
 			}
 		}
 	},
-	"name": "Gurucul-HighRiskUsers (custom) (mapper)",
-	"nameRaw": "Gurucul-HighRiskUsers (custom) (mapper)",
+	"name": "Gurucul-HighRiskUsers Incoming Mapper",
+	"nameRaw": "Gurucul-HighRiskUsers Incoming Mapper",
 	"packID": "",
 	"sortValues": null,
 	"sourceClassifierId": "",
 	"system": false,
 	"toServerVersion": "",
-	"transformer": {
-		"complex": {
-			"accessor": "",
-			"filters": [],
-			"root": "incidentType",
-			"transformers": []
-		},
-		"simple": ""
-	},
 	"type": "mapping-incoming",
 	"unclassifiedCases": null,
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.0.0"
 }

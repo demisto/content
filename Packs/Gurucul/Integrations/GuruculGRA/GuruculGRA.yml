@@ -1,10 +1,12 @@
 commonfields:
   id: Gurucul-GRA
   version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: Gurucul-GRA
-display: Gurucul-GRA
+display: Gurucul-GRA (Community Contribution)
 category: Analytics & SIEM
-description: This is the GRA integration for getting started.
+description: Gurucul Risk Analytics (GRA) is a Unified Security and Risk Analytics
+  platform.
 configuration:
 - display: Server URL (e.g. https://example.net)
   name: url
@@ -13,7 +15,7 @@ configuration:
   required: true
 - display: Authorization Key
   name: apikey
-  type: 0
+  type: 4
   required: true
 - display: Fetch Incident Command
   name: fetch_incident_command
@@ -756,6 +758,3 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
-fromversion: 5.0.0
-tests:
-- No tests (auto formatted)
