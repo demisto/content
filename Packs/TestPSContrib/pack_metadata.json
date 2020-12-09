@@ -1,0 +1,17 @@
+{
+    "name": "Test PS contrib",
+    "description": "test_3",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "test_2",
+    "url": "",
+    "email": "",
+    "created": "2020-12-09T07:30:39Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "DeanArbel"
+    ]
+}
