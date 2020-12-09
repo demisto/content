@@ -5,7 +5,7 @@ args:
   name: dummy
   required: true
   secret: false
-comment: [Enter a description of the script, including what function it performs and any important information users need to know, for example required permissions.]
+comment: '[Enter a description of the script, including what function it performs and any important information users need to know, for example required permissions.]'
 commonfields:
   id: BaseScript
   version: -1
