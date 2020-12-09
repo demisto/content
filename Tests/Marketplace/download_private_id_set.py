@@ -5,18 +5,27 @@ from Tests.Marketplace.marketplace_services import init_storage_client
 
 STORAGE_ID_SET_PATH = 'content/id_set.json'
 ARTIFACTS_PATH = '/home/circleci/project/artifacts/'
+PRIVATE_ID_SET_FILE = 'private_id_set.json'
 
 
 def download_private_id_set_from_gcp(public_storage_bucket):
+    """Downloads private ID set file from cloud storage.
+
+    Args:
+        public_storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where private_id_set.json
+        is stored.
+    Returns:
+        str: private ID set file full path.
+    """
 
     index_blob = public_storage_bucket.blob(STORAGE_ID_SET_PATH)
 
     if not os.path.exists(ARTIFACTS_PATH):
         os.mkdir(ARTIFACTS_PATH)
-    index_blob.download_to_filename(f'{ARTIFACTS_PATH}/private_id_set.json')
+    index_blob.download_to_filename(f'{ARTIFACTS_PATH}/{PRIVATE_ID_SET_FILE}')
 
-    if os.path.exists(f'{ARTIFACTS_PATH}/private_id_set.json'):
-        return f'{ARTIFACTS_PATH}/private_id_set.json'
+    if os.path.exists(f'{ARTIFACTS_PATH}/{PRIVATE_ID_SET_FILE}'):
+        return f'{ARTIFACTS_PATH}/{PRIVATE_ID_SET_FILE}'
 
     return ''
 
@@ -45,10 +54,10 @@ def option_handler():
 
 
 def main():
-    upload_config = option_handler()
-    service_account = upload_config.service_account
+    options = option_handler()
+    service_account = options.service_account
     storage_client = init_storage_client(service_account)
-    public_bucket_name = upload_config.public_bucket_name
+    public_bucket_name = options.public_bucket_name
     public_storage_bucket = storage_client.bucket(public_bucket_name)
     private_id_set = download_private_id_set_from_gcp(public_storage_bucket)
     return private_id_set
