@@ -64,12 +64,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 569aafc5-1607-4b78-83d2-c6bfe05c2a07
+      id: 7fe7c23e-a7b5-4373-89ac-ae2e84e45e6e
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 569aafc5-1607-4b78-83d2-c6bfe05c2a07
+    taskid: 7fe7c23e-a7b5-4373-89ac-ae2e84e45e6e
     timertriggers: []
     type: start
     view: |-
@@ -88,13 +88,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 35ccc89e-ee40-4851-8b29-075e6954c661
+      id: 26a4a765-9582-431c-89f8-8943225e1dd2
       iscommand: false
       name: Done Enrichment
       type: title
       version: -1
       description: ''
-    taskid: 35ccc89e-ee40-4851-8b29-075e6954c661
+    taskid: 26a4a765-9582-431c-89f8-8943225e1dd2
     timertriggers: []
     type: title
     view: |-
@@ -135,20 +135,20 @@ tasks:
       '#default#':
       - "174"
       "yes":
-      - "179"
+      - "100"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: bf7ad01f-8415-4226-815c-92ecda78e386
+      description: Check if there are Expanse Certificates in the inputs.
+      id: 6273470e-eed9-493f-874d-f4071fe1ff32
       iscommand: false
       name: Are there Certificates to enrich?
-      description: Check if there are Expanse Certificates in the inputs.
       type: condition
       version: -1
-    taskid: bf7ad01f-8415-4226-815c-92ecda78e386
+    taskid: 6273470e-eed9-493f-874d-f4071fe1ff32
     timertriggers: []
     type: condition
     view: |-
@@ -181,6 +181,9 @@ tasks:
       biosversion: {}
       campaign: {}
       category: {}
+      certificatenames: {}
+      certificatesignature: {}
+      certificatevalidationchecks: {}
       city: {}
       costcenter: {}
       costcentercode: {}
@@ -215,6 +218,7 @@ tasks:
       expansefirstobserved: {}
       expanseissuerdn: {}
       expanselastobserved: {}
+      expansemd5hash: {}
       expansepemmd5hash: {}
       expanseproperties: {}
       expanseprovidername: {}
@@ -230,6 +234,7 @@ tasks:
       expansevalidnotafter: {}
       expansevalidnotbefore: {}
       expirationdate: {}
+      extension: {}
       feedrelatedindicators: {}
       fileextension: {}
       filetype: {}
@@ -243,6 +248,7 @@ tasks:
       indicatoridentification: {}
       internal: {}
       ipaddress: {}
+      issuerdn: {}
       jobcode: {}
       jobfamily: {}
       jobfunction: {}
@@ -252,9 +258,15 @@ tasks:
       locationregion: {}
       macaddress: {}
       malwarefamily: {}
+      malwaretypes: {}
       manageremailaddress: {}
       managername: {}
-      md5: {}
+      md5:
+        complex:
+          accessor: MD5
+          root: Certificate
+          transformers:
+          - operator: uniq
       memory: {}
       merge: {}
       mobilephone: {}
@@ -270,11 +282,14 @@ tasks:
       organizationalunitou: {}
       osversion: {}
       path: {}
+      pem: {}
       personalemail: {}
       port: {}
       positivedetections: {}
+      primarymotivation: {}
       processor: {}
       processors: {}
+      publickey: {}
       published: {}
       quarantined: {}
       region: {}
@@ -290,9 +305,20 @@ tasks:
       reportedby: {}
       reputation: {}
       seenNow: {}
+      serialnumber: {}
       service: {}
-      sha1: {}
-      sha256: {}
+      sha1:
+        complex:
+          accessor: SHA1
+          root: Certificate
+          transformers:
+          - operator: uniq
+      sha256:
+        complex:
+          accessor: SHA256
+          root: Certificate
+          transformers:
+          - operator: uniq
       sha512: {}
       signatureauthentihash: {}
       signaturecopyright: {}
@@ -305,6 +331,7 @@ tasks:
         simple: DBot
       sourceTimeStamp: {}
       sourceoriginalseverity: {}
+      spkisha256: {}
       ssdeep: {}
       state: {}
       stixaliases: {}
@@ -324,34 +351,25 @@ tasks:
       stixtoolversion: {}
       streetaddress: {}
       subdomains: {}
+      subjectalternativenames: {}
+      subjectdn: {}
       surname: {}
       tags: {}
       threattypes: {}
       title: {}
       trafficlightprotocol: {}
       type:
-        simple: ExpanseCertificate
+        simple: Certificate
       updateddate: {}
       username: {}
+      validitynotafter: {}
+      validitynotbefore: {}
       value:
         complex:
-          filters:
-          - - ignorecase: true
-              left:
-                iscontext: true
-                value:
-                  simple: incident.expanseasset.assettype
-              operator: isEqualString
-              right:
-                value:
-                  simple: Certificate
-          root: incident.expanseasset
+          accessor: SHA256
+          root: Certificate
           transformers:
-          - args:
-              field:
-                value:
-                  simple: assetkey
-            operator: getField
+          - operator: uniq
       workphone: {}
       xdrstatus: {}
       zipcode: {}
@@ -360,20 +378,20 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.new.indicator
-      id: 55613c6b-131d-4693-8869-944b881bd126
+      id: c5913d87-f0a5-4f00-840c-e390d15978ad
       iscommand: true
       name: Create Certificate Indicators
       script: Builtin|||createNewIndicator
       type: regular
       version: -1
-    taskid: 55613c6b-131d-4693-8869-944b881bd126
+    taskid: c5913d87-f0a5-4f00-840c-e390d15978ad
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": -120
+          "x": 50,
+          "y": 90
         }
       }
   "43":
@@ -381,11 +399,54 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "100"
+      - "174"
     note: false
     quietmode: 0
     scriptarguments:
       indicatorsValues:
+        complex:
+          accessor: Value
+          root: CreatedIndicator
+      using-brand: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.enrich.indicators
+      id: 2a1484c7-ab91-46f5-88f6-47636baadde2
+      iscommand: true
+      name: Enrich Certificate Indicators
+      script: Builtin|||enrichIndicators
+      type: regular
+      version: -1
+    taskid: 2a1484c7-ab91-46f5-88f6-47636baadde2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 340
+        }
+      }
+  "100":
+    id: "100"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "179"
+      - "43"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      businessunitnames: {}
+      businessunits: {}
+      has_active_service: {}
+      has_certificate_advertisement: {}
+      has_related_cloud_resources: {}
+      last_observed_date: {}
+      limit: {}
+      md5_hash:
         complex:
           filters:
           - - left:
@@ -403,43 +464,7 @@ tasks:
                 value:
                   simple: assetkey
             operator: getField
-      using-brand: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.enrich.indicators
-      id: e335c8db-2e3f-402d-8977-ca66214fefa2
-      iscommand: true
-      name: Enrich Certificate Indicators
-      script: Builtin|||enrichIndicators
-      type: regular
-      version: -1
-    taskid: e335c8db-2e3f-402d-8977-ca66214fefa2
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 30,
-          "y": 50
-        }
-      }
-  "100":
-    id: "100"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "174"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      businessunitnames: {}
-      businessunits: {}
-      has_active_service: {}
-      has_certificate_advertisement: {}
-      has_related_cloud_resources: {}
-      last_observed_date: {}
+          - operator: uniq
       pem_md5_hash:
         complex:
           accessor: assetkey
@@ -463,20 +488,20 @@ tasks:
     task:
       brand: ""
       description: Get certificate details by certificate md5 hash or search certificates
-      id: ef595f31-b333-45d8-8737-167bec6eb71b
+      id: a19d15b5-1bab-4050-8a89-ba7d136a5a14
       iscommand: true
       name: Add Certificate details to Context
       script: '|||expanse-get-certificate'
       type: regular
       version: -1
-    taskid: ef595f31-b333-45d8-8737-167bec6eb71b
+    taskid: a19d15b5-1bab-4050-8a89-ba7d136a5a14
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 340,
-          "y": 240
+          "x": 350,
+          "y": -310
         }
       }
   "101":
@@ -502,13 +527,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 952402a0-5d10-4c85-8c80-42245aa27955
+      description: Check if there are Expanse Domains in the inputs.
+      id: a543688b-f1d7-48eb-8305-690750831c50
       iscommand: false
       name: Are there Domains to enrich?
       type: condition
       version: -1
-      description: Check if there are Expanse Domains in the inputs.
-    taskid: 952402a0-5d10-4c85-8c80-42245aa27955
+    taskid: a543688b-f1d7-48eb-8305-690750831c50
     timertriggers: []
     type: condition
     view: |-
@@ -557,13 +582,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: aff37567-6d54-482c-8767-598fd04528b7
+      description: Check if there are Expanse IP Ranges in the inputs.
+      id: 00ebed74-37ee-4d15-877b-2cc4d58b8260
       iscommand: false
       name: Are there IP Ranges to enrich?
       type: condition
       version: -1
-      description: Check if there are Expanse IP Ranges in the inputs.
-    taskid: aff37567-6d54-482c-8767-598fd04528b7
+    taskid: 00ebed74-37ee-4d15-877b-2cc4d58b8260
     timertriggers: []
     type: condition
     view: |-
@@ -606,13 +631,13 @@ tasks:
     task:
       brand: ""
       description: Get ip-range by id or search ip-ranges
-      id: e5276578-71b2-49cc-81ba-ec669d4590e4
+      id: f2a6fd6d-89b9-44ef-8662-a67edce6ac21
       iscommand: true
       name: Add IP Range details to Context
       script: '|||expanse-get-iprange'
       type: regular
       version: -1
-    taskid: e5276578-71b2-49cc-81ba-ec669d4590e4
+    taskid: f2a6fd6d-89b9-44ef-8662-a67edce6ac21
     timertriggers: []
     type: regular
     view: |-
@@ -668,13 +693,13 @@ tasks:
       brand: ""
       description: Set a value in context under the key you entered. If no value is
         entered, the script doesn't do anything.
-      id: 90af787a-a5ce-473b-8adf-e11e02271557
+      id: 0caa3254-d166-4903-8e58-a2d6a118fece
       iscommand: false
       name: Extract Domain Indicators from Expanse Assets
       script: SetAndHandleEmpty
       type: regular
       version: -1
-    taskid: 90af787a-a5ce-473b-8adf-e11e02271557
+    taskid: 0caa3254-d166-4903-8e58-a2d6a118fece
     timertriggers: []
     type: regular
     view: |-
@@ -730,13 +755,13 @@ tasks:
       brand: ""
       description: Set a value in context under the key you entered. If no value is
         entered, the script doesn't do anything.
-      id: 6b1fe0f5-a919-40d3-868f-f44bfeba3e60
+      id: c49a92e8-8dbb-4adb-87de-1b146847c1b7
       iscommand: false
       name: Extract DomainGlob indicators from Expanse Assets
       script: SetAndHandleEmpty
       type: regular
       version: -1
-    taskid: 6b1fe0f5-a919-40d3-868f-f44bfeba3e60
+    taskid: c49a92e8-8dbb-4adb-87de-1b146847c1b7
     timertriggers: []
     type: regular
     view: |-
@@ -762,13 +787,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 767ed130-a476-43dc-8e72-77a899ad0dd3
+      id: a2dfa010-52fb-4f69-806b-ad7dae16e2de
       iscommand: false
       name: Create and Enrich Indicators
       type: title
       version: -1
       description: ''
-    taskid: 767ed130-a476-43dc-8e72-77a899ad0dd3
+    taskid: a2dfa010-52fb-4f69-806b-ad7dae16e2de
     timertriggers: []
     type: title
     view: |-
@@ -790,13 +815,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 6413ba4a-5daf-49a9-8299-0b14eadb2c17
+      id: 46eb5d61-37c0-4e63-8c2f-3d150247b854
       iscommand: false
       name: Certificates
       type: title
       version: -1
       description: ''
-    taskid: 6413ba4a-5daf-49a9-8299-0b14eadb2c17
+    taskid: 46eb5d61-37c0-4e63-8c2f-3d150247b854
     timertriggers: []
     type: title
     view: |-
@@ -818,20 +843,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: b3a9fc2a-17c5-4bb9-85a6-c5628c8b4041
+      id: 7bc36881-22ef-4688-8ba7-5b841f165227
       iscommand: false
       name: Done with Certificates
       type: title
       version: -1
       description: ''
-    taskid: b3a9fc2a-17c5-4bb9-85a6-c5628c8b4041
+    taskid: 7bc36881-22ef-4688-8ba7-5b841f165227
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 540
+          "x": 580,
+          "y": 550
         }
       }
   "175":
@@ -846,13 +871,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9b19f74f-f9da-4568-8dd8-dd607a64a46f
+      id: 43140a92-b584-4961-8bd8-416e8b790795
       iscommand: false
       name: Domains
       type: title
       version: -1
       description: ''
-    taskid: 9b19f74f-f9da-4568-8dd8-dd607a64a46f
+    taskid: 43140a92-b584-4961-8bd8-416e8b790795
     timertriggers: []
     type: title
     view: |-
@@ -874,13 +899,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 094bfbba-ec0c-4e52-8921-537ad46ea5d0
+      id: 487ead84-14ab-42be-8b69-e0f4a205ae17
       iscommand: false
       name: Done with Domains
       type: title
       version: -1
       description: ''
-    taskid: 094bfbba-ec0c-4e52-8921-537ad46ea5d0
+    taskid: 487ead84-14ab-42be-8b69-e0f4a205ae17
     timertriggers: []
     type: title
     view: |-
@@ -1076,13 +1101,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.new.indicator
-      id: 36f73b85-24de-405d-8346-c66bc9a16983
+      id: 6af301d6-96bb-4b13-8385-dc87782be59d
       iscommand: true
       name: Create Domain Indicators
       script: Builtin|||createNewIndicator
       type: regular
       version: -1
-    taskid: 36f73b85-24de-405d-8346-c66bc9a16983
+    taskid: 6af301d6-96bb-4b13-8385-dc87782be59d
     timertriggers: []
     type: regular
     view: |-
@@ -1110,13 +1135,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.enrich.indicators
-      id: 3251aae8-00d4-4961-8a93-86badf85f133
+      id: 67057610-c3a5-4139-8949-5c4e8ea3f3f7
       iscommand: true
       name: Enrich Domain Indicators
       script: Builtin|||enrichIndicators
       type: regular
       version: -1
-    taskid: 3251aae8-00d4-4961-8a93-86badf85f133
+    taskid: 67057610-c3a5-4139-8949-5c4e8ea3f3f7
     timertriggers: []
     type: regular
     view: |-
@@ -1143,8 +1168,6 @@ tasks:
     id: "179"
     ignoreworker: false
     nexttasks:
-      '#default#':
-      - "100"
       "yes":
       - "42"
     note: false
@@ -1153,20 +1176,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 60de1375-77c9-4c2f-841b-f694bf822943
+      description: Check whether the playbook should create new indicators.
+      id: 4a5fae93-580e-40e0-8234-dd8128083169
       iscommand: false
       name: Create Indicators?
       type: condition
       version: -1
-      description: Check whether the playbook should create new indicators.
-    taskid: 60de1375-77c9-4c2f-841b-f694bf822943
+    taskid: 4a5fae93-580e-40e0-8234-dd8128083169
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 340,
-          "y": -315
+          "x": 50,
+          "y": -125
         }
       }
   "180":
@@ -1196,13 +1219,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: de299d21-d25c-4895-82fc-89b882f6406e
+      description: Check whether the playbook should create new indicators.
+      id: 88afe70e-9ecf-4368-8ea7-8fdbf66ecee7
       iscommand: false
       name: Create Indicators?
       type: condition
       version: -1
-      description: Check whether the playbook should create new indicators.
-    taskid: de299d21-d25c-4895-82fc-89b882f6406e
+    taskid: 88afe70e-9ecf-4368-8ea7-8fdbf66ecee7
     timertriggers: []
     type: condition
     view: |-
@@ -1235,14 +1258,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: a9af30c6-6f95-4a50-816c-fc21a66f4084
+      id: 11042a52-0f13-445c-8485-c1a65b5d82c9
       iscommand: false
       name: Domain Enrichment - Generic v2
       playbookId: Domain Enrichment - Generic v2
       type: playbook
       version: -1
       description: ''
-    taskid: a9af30c6-6f95-4a50-816c-fc21a66f4084
+    taskid: 11042a52-0f13-445c-8485-c1a65b5d82c9
     timertriggers: []
     type: playbook
     view: |-
@@ -1264,13 +1287,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 6a570da2-8f10-4173-8fcc-5cc57d15ef3d
+      id: 8e9bc964-38ef-4663-87ad-9d38b249e03c
       iscommand: false
       name: DomainGlobs
       type: title
       version: -1
       description: ''
-    taskid: 6a570da2-8f10-4173-8fcc-5cc57d15ef3d
+    taskid: 8e9bc964-38ef-4663-87ad-9d38b249e03c
     timertriggers: []
     type: title
     view: |-
@@ -1303,13 +1326,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e8297287-0165-42a2-8048-7f23d6c3b1e6
+      description: Check if there are Expanse Domain Globs in the inputs.
+      id: b064f52b-4f34-4b99-8f25-710fa900c3c0
       iscommand: false
       name: Are there DomainGlobs to enrich?
       type: condition
-      description: Check if there are Expanse Domain Globs in the inputs.
       version: -1
-    taskid: e8297287-0165-42a2-8048-7f23d6c3b1e6
+    taskid: b064f52b-4f34-4b99-8f25-710fa900c3c0
     timertriggers: []
     type: condition
     view: |-
@@ -1331,13 +1354,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: d9b45534-8646-4f32-82fb-49d1f2929189
+      id: f2f4ddda-d5ea-4ec2-865f-98b5a88da9a4
       iscommand: false
       name: Done with DomainGlobs
       type: title
       version: -1
       description: ''
-    taskid: d9b45534-8646-4f32-82fb-49d1f2929189
+    taskid: f2f4ddda-d5ea-4ec2-865f-98b5a88da9a4
     timertriggers: []
     type: title
     view: |-
@@ -1374,13 +1397,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: a2665b65-4a67-4840-8e1d-ffb9a7fc505d
+      description: Check whether the playbook should create new indicators.
+      id: 9d606698-071e-4382-8b36-06af2fa0ff05
       iscommand: false
       name: Create Indicators?
       type: condition
       version: -1
-      description: Check whether the playbook should create new indicators.
-    taskid: a2665b65-4a67-4840-8e1d-ffb9a7fc505d
+    taskid: 9d606698-071e-4382-8b36-06af2fa0ff05
     timertriggers: []
     type: condition
     view: |-
@@ -1413,14 +1436,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ca44d40a-29a2-4771-8e88-ea008c16d5b9
+      id: 5ae97ec0-209f-4943-8bd7-104a6952c607
       iscommand: false
       name: Domain Enrichment - Generic v2
       playbookId: Domain Enrichment - Generic v2
       type: playbook
       version: -1
       description: ''
-    taskid: ca44d40a-29a2-4771-8e88-ea008c16d5b9
+    taskid: 5ae97ec0-209f-4943-8bd7-104a6952c607
     timertriggers: []
     type: playbook
     view: |-
@@ -1616,13 +1639,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.new.indicator
-      id: 53cba84c-6461-49a7-8b68-2177ce3606ac
+      id: ae428ced-a2ad-47d3-82a3-509630aa3c2c
       iscommand: true
       name: Create DomainGlob Indicators
       script: Builtin|||createNewIndicator
       type: regular
       version: -1
-    taskid: 53cba84c-6461-49a7-8b68-2177ce3606ac
+    taskid: ae428ced-a2ad-47d3-82a3-509630aa3c2c
     timertriggers: []
     type: regular
     view: |-
@@ -1650,13 +1673,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.enrich.indicators
-      id: ec249e40-bf80-4211-8ba3-86677077631d
+      id: 4fea3473-5dbd-43d3-8580-a5c0730dfd52
       iscommand: true
       name: Enrich DomainGlob Indicators
       script: Builtin|||enrichIndicators
       type: regular
       version: -1
-    taskid: ec249e40-bf80-4211-8ba3-86677077631d
+    taskid: 4fea3473-5dbd-43d3-8580-a5c0730dfd52
     timertriggers: []
     type: regular
     view: |-
@@ -1678,13 +1701,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: c7e4f2a6-1f7c-44a8-88e0-d9a4bb89b4a9
+      id: 30d91afa-127a-44c0-864d-85512ba34232
       iscommand: false
       name: IP Ranges
       type: title
       version: -1
       description: ''
-    taskid: c7e4f2a6-1f7c-44a8-88e0-d9a4bb89b4a9
+    taskid: 30d91afa-127a-44c0-864d-85512ba34232
     timertriggers: []
     type: title
     view: |-
@@ -1706,13 +1729,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ed986f68-03e3-454b-8678-9097b18cb17d
+      id: b97d4455-7890-4f73-8fd8-5654b2b05d0a
       iscommand: false
       name: Done with IP Ranges
       type: title
       version: -1
       description: ''
-    taskid: ed986f68-03e3-454b-8678-9097b18cb17d
+    taskid: b97d4455-7890-4f73-8fd8-5654b2b05d0a
     timertriggers: []
     type: title
     view: |-
@@ -1734,13 +1757,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 1e17a9b0-e8cd-4563-8838-d10dcf3f3954
+      id: 4c24e375-8b73-4575-83af-f1b6dd6dd102
       iscommand: false
       name: IP
       type: title
       version: -1
       description: ''
-    taskid: 1e17a9b0-e8cd-4563-8838-d10dcf3f3954
+    taskid: 4c24e375-8b73-4575-83af-f1b6dd6dd102
     timertriggers: []
     type: title
     view: |-
@@ -1773,13 +1796,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 5059cc4e-dd79-41e4-898b-c84efc2d8b6f
+      description: Check if there are Expanse Certificates in the inputs.
+      id: 36e6db51-1bc4-40cc-8b5d-d0694872356c
       iscommand: false
       name: Is there an IP to enrich?
       type: condition
       version: -1
-      description: Check if there are Expanse Certificates in the inputs.
-    taskid: 5059cc4e-dd79-41e4-898b-c84efc2d8b6f
+    taskid: 36e6db51-1bc4-40cc-8b5d-d0694872356c
     timertriggers: []
     type: condition
     view: |-
@@ -1801,13 +1824,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f28cb932-fa0b-4ca2-8375-e178dab20a55
+      id: 44381f68-75f1-4c8c-8265-647694ff775e
       iscommand: false
       name: Done with IP
       type: title
       version: -1
       description: ''
-    taskid: f28cb932-fa0b-4ca2-8375-e178dab20a55
+    taskid: 44381f68-75f1-4c8c-8265-647694ff775e
     timertriggers: []
     type: title
     view: |-
@@ -1850,13 +1873,13 @@ tasks:
         - Provide threat information
         - Separate internal and external IP addresses
         - For internal IP addresses, get host information
-      id: 2766bce6-380e-4f7e-8009-bf6eae1453d7
+      id: 6d490d3f-2a80-4b64-8852-8982eb283cb7
       iscommand: false
       name: IP Enrichment - Generic v2
       playbookId: IP Enrichment - Generic v2
       type: playbook
       version: -1
-    taskid: 2766bce6-380e-4f7e-8009-bf6eae1453d7
+    taskid: 6d490d3f-2a80-4b64-8852-8982eb283cb7
     timertriggers: []
     type: playbook
     view: |-
@@ -1896,13 +1919,13 @@ tasks:
     task:
       brand: ""
       description: Get domain details by domain name or search certificates
-      id: a9682474-0346-4376-8707-46b6046f919f
+      id: d88734fb-b877-497d-8c31-cb2c65d12139
       iscommand: true
       name: Add Expanse Domain Details to Context
       script: '|||expanse-get-domain'
       type: regular
       version: -1
-    taskid: a9682474-0346-4376-8707-46b6046f919f
+    taskid: d88734fb-b877-497d-8c31-cb2c65d12139
     timertriggers: []
     type: regular
     view: |-
@@ -1942,13 +1965,13 @@ tasks:
     task:
       brand: ""
       description: Get domain details by domain name or search certificates
-      id: 9cec6cb8-cd47-4351-8156-3592b7ac0307
+      id: 4425a1a5-d657-478f-8ec2-745cf0e5eff1
       iscommand: true
       name: Add Expanse Domain Details to Context
       script: '|||expanse-get-domain'
       type: regular
       version: -1
-    taskid: 9cec6cb8-cd47-4351-8156-3592b7ac0307
+    taskid: 4425a1a5-d657-478f-8ec2-745cf0e5eff1
     timertriggers: []
     type: regular
     view: |-
@@ -1978,13 +2001,13 @@ tasks:
     task:
       brand: ""
       description: Returns DNS details for a domain
-      id: 54bd3a7c-fbd5-4622-8538-c08aecf8a9e4
+      id: 716cf6fc-f145-4b2f-823e-a8d51733effa
       iscommand: false
       name: Get Domain DNS Details
       script: GetDomainDNSDetails
       type: regular
       version: -1
-    taskid: 54bd3a7c-fbd5-4622-8538-c08aecf8a9e4
+    taskid: 716cf6fc-f145-4b2f-823e-a8d51733effa
     timertriggers: []
     type: regular
     view: |-
@@ -2001,12 +2024,12 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2265,
-        "width": 3760,
-        "x": 30,
+        "width": 3740,
+        "x": 50,
         "y": -1070
       }
     }
   }
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0

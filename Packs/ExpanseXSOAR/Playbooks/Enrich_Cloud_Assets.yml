@@ -76,12 +76,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 569aafc5-1607-4b78-83d2-c6bfe05c2a07
+      id: fc1987a8-7ca8-4eca-84c3-74956c9795d1
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 569aafc5-1607-4b78-83d2-c6bfe05c2a07
+    taskid: fc1987a8-7ca8-4eca-84c3-74956c9795d1
     timertriggers: []
     type: start
     view: |-
@@ -123,13 +123,13 @@ tasks:
         on: AWS, Azure, GCP
 
         using Prisma Cloud inventory
-      id: c5c0eb60-408b-4736-85e1-24e51da9723e
+      id: b6f6e1b8-0889-451e-8cce-f2321e4c1845
       iscommand: false
       name: Prisma Cloud - Find Public Cloud Resource by Public IP
       playbookId: Prisma Cloud - Find Public Cloud Resource by Public IP
       type: playbook
       version: -1
-    taskid: c5c0eb60-408b-4736-85e1-24e51da9723e
+    taskid: b6f6e1b8-0889-451e-8cce-f2321e4c1845
     timertriggers: []
     type: playbook
     view: |-
@@ -172,13 +172,13 @@ tasks:
         on: AWS, Azure, GCP
 
         using Prisma Cloud inventory
-      id: 836fb635-0ab0-46ad-80e5-f548d9da6626
+      id: 641cb833-4f8b-497d-8a0e-bcaeb57e7863
       iscommand: false
       name: Prisma Cloud - Find Public Cloud Resource by FQDN
       playbookId: Prisma Cloud - Find Public Cloud Resource by FQDN
       type: playbook
       version: -1
-    taskid: 836fb635-0ab0-46ad-80e5-f548d9da6626
+    taskid: 641cb833-4f8b-497d-8a0e-bcaeb57e7863
     timertriggers: []
     type: playbook
     view: |-
@@ -211,13 +211,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 79196058-f6f3-4bc1-8945-25b15b53ba78
+      description: Check whether any FQDN is present.
+      id: 5caa0615-7696-4ba3-8069-549f930716be
       iscommand: false
       name: Is there a FQDN?
       type: condition
       version: -1
-      description: Check whether any FQDN is present.
-    taskid: 79196058-f6f3-4bc1-8945-25b15b53ba78
+    taskid: 5caa0615-7696-4ba3-8069-549f930716be
     timertriggers: []
     type: condition
     view: |-
@@ -262,13 +262,13 @@ tasks:
       brand: ""
       description: Find Region and Service for IP Address belonging to Public Cloud,
         using Indicators (CIDRs)
-      id: b3f2f17c-1e4e-4839-820e-39eb9bc9f9ef
+      id: ced4197e-44fd-425d-8bd1-dfa0bb95e998
       iscommand: false
       name: Find Cloud IP Address Region and Service
       playbookId: Find Cloud IP Address Region and Service
       type: playbook
       version: -1
-    taskid: b3f2f17c-1e4e-4839-820e-39eb9bc9f9ef
+    taskid: ced4197e-44fd-425d-8bd1-dfa0bb95e998
     timertriggers: []
     type: playbook
     view: |-
@@ -303,13 +303,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: defecacb-2df3-46ef-883f-1f8f756e27c4
+      description: Check whether an indicator is found.
+      id: ed54ec92-008d-4e56-8349-b108825cdeb6
       iscommand: false
       name: Found Indicator?
       type: condition
       version: -1
-      description: Check whether an indicator is found.
-    taskid: defecacb-2df3-46ef-883f-1f8f756e27c4
+    taskid: ed54ec92-008d-4e56-8349-b108825cdeb6
     timertriggers: []
     type: condition
     view: |-
@@ -637,13 +637,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.set.incident
-      id: ae273bea-1699-4318-85f4-1876bd27dd43
+      id: 179e8ec4-f637-4f00-8b0d-2d8a37de871e
       iscommand: true
       name: Set Incident Region and Service
       script: Builtin|||setIncident
       type: regular
       version: -1
-    taskid: ae273bea-1699-4318-85f4-1876bd27dd43
+    taskid: 179e8ec4-f637-4f00-8b0d-2d8a37de871e
     timertriggers: []
     type: regular
     view: |-
@@ -677,13 +677,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.associate.indicator
-      id: bc955f0f-e026-4b0b-8d67-ba66bd9e799a
+      id: bc9ef03b-a6bf-4fb5-8c73-d08ad10c0ee5
       iscommand: true
       name: Link Indicator
       script: Builtin|||associateIndicatorToIncident
       type: regular
       version: -1
-    taskid: bc955f0f-e026-4b0b-8d67-ba66bd9e799a
+    taskid: bc9ef03b-a6bf-4fb5-8c73-d08ad10c0ee5
     timertriggers: []
     type: regular
     view: |-
@@ -707,13 +707,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 0626a1c7-b4ef-409d-8c02-c15222822a26
+      id: 65a1f874-59f0-4de4-8c12-933de46f246e
       iscommand: false
       name: Public Cloud Enrichment
       type: title
       version: -1
       description: ''
-    taskid: 0626a1c7-b4ef-409d-8c02-c15222822a26
+    taskid: 65a1f874-59f0-4de4-8c12-933de46f246e
     timertriggers: []
     type: title
     view: |-
@@ -732,13 +732,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e14cde57-d32c-4707-8ab5-474121788f85
+      id: 51d48b58-21cb-4734-809c-995e732f6a95
       iscommand: false
       name: Done Public Cloud Enrichment
       type: title
       version: -1
       description: ''
-    taskid: e14cde57-d32c-4707-8ab5-474121788f85
+    taskid: 51d48b58-21cb-4734-809c-995e732f6a95
     timertriggers: []
     type: title
     view: |-
@@ -796,13 +796,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: aef78ca5-e5cc-410c-8bbd-55a0fff2fcde
+      id: 5a1893fb-5e1b-4150-8200-d8a2b676c2d9
       iscommand: false
       name: Create formatted string for Set Incident
       script: Set
       type: regular
       version: -1
-    taskid: aef78ca5-e5cc-410c-8bbd-55a0fff2fcde
+    taskid: 5a1893fb-5e1b-4150-8200-d8a2b676c2d9
     timertriggers: []
     type: regular
     view: |-
@@ -835,13 +835,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 65664dbd-d1d6-4d20-8d46-7c2963bda538
+      description: Check whether an IP is present.
+      id: 4a7d2703-1890-497a-8909-4aab02fd711a
       iscommand: false
       name: Is there an IP?
       type: condition
       version: -1
-      description: Check whether an IP is present.
-    taskid: 65664dbd-d1d6-4d20-8d46-7c2963bda538
+    taskid: 4a7d2703-1890-497a-8909-4aab02fd711a
     timertriggers: []
     type: condition
     view: |-
@@ -878,13 +878,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8a24f1c3-0b75-4373-8d0d-36b71b4e0ca2
+      description: Check whether the incident has to be updated.
+      id: b9dfe0cb-97b0-48d6-8119-c28c88c01a59
       iscommand: false
       name: Update incident?
       type: condition
       version: -1
-      description: Check whether the incident has to be updated.
-    taskid: 8a24f1c3-0b75-4373-8d0d-36b71b4e0ca2
+    taskid: b9dfe0cb-97b0-48d6-8119-c28c88c01a59
     timertriggers: []
     type: condition
     view: |-
@@ -910,6 +910,6 @@ view: |-
       }
     }
   }
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0

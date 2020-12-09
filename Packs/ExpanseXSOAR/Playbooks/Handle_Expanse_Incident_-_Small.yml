@@ -42,12 +42,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 569aafc5-1607-4b78-83d2-c6bfe05c2a07
+      id: 5fb18d11-4b25-4a7e-8e87-62289a1ffd12
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 569aafc5-1607-4b78-83d2-c6bfe05c2a07
+    taskid: 5fb18d11-4b25-4a7e-8e87-62289a1ffd12
     timertriggers: []
     type: start
     view: |-
@@ -62,22 +62,22 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "12"
       - "122"
       - "65"
+      - "173"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: 8a16bf45-2f5c-402e-81f5-25bf2102e9be
+      id: c96f7ce1-cde2-4c2c-8b78-77fe3442d9d2
       iscommand: false
       name: Set Up Context Variables
       type: title
       version: -1
       description: ''
-    taskid: 8a16bf45-2f5c-402e-81f5-25bf2102e9be
+    taskid: c96f7ce1-cde2-4c2c-8b78-77fe3442d9d2
     timertriggers: []
     type: title
     view: |-
@@ -126,13 +126,13 @@ tasks:
       brand: ""
       description: Set a value in context under the key you entered. If no value is
         entered, the script doesn't do anything.
-      id: 99559d4e-9129-4847-8731-9988a6855c9a
+      id: d81eb367-026d-46df-8ff6-6cf1980f300b
       iscommand: false
       name: Extract XSOAR Incident Tags from Expanse
       script: SetAndHandleEmpty
       type: regular
       version: -1
-    taskid: 99559d4e-9129-4847-8731-9988a6855c9a
+    taskid: d81eb367-026d-46df-8ff6-6cf1980f300b
     timertriggers: []
     type: regular
     view: |-
@@ -155,13 +155,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 44d8a368-09a4-4479-8869-e697ff235fd4
+      id: 65a64e38-0902-43e5-8cb3-8766819a49e9
       iscommand: false
       name: Enrichment
       type: title
       version: -1
       description: ''
-    taskid: 44d8a368-09a4-4479-8869-e697ff235fd4
+    taskid: 65a64e38-0902-43e5-8cb3-8766819a49e9
     timertriggers: []
     type: title
     view: |-
@@ -184,13 +184,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8c6705dc-1b46-4d70-88a5-b257b6723058
+      id: f8f2b7bf-ff4d-46e6-8711-7aa5f9a353d1
       iscommand: false
       name: Validation
       type: title
       version: -1
       description: ''
-    taskid: 8c6705dc-1b46-4d70-88a5-b257b6723058
+    taskid: f8f2b7bf-ff4d-46e6-8711-7aa5f9a353d1
     timertriggers: []
     type: title
     view: |-
@@ -213,13 +213,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 44c2fff0-4c02-445e-8bcd-76475722f25d
+      id: c35833ac-7799-4d5d-8500-2554aa56d039
       iscommand: false
       name: Remediation
       type: title
       version: -1
       description: ''
-    taskid: 44c2fff0-4c02-445e-8bcd-76475722f25d
+    taskid: c35833ac-7799-4d5d-8500-2554aa56d039
     timertriggers: []
     type: title
     view: |-
@@ -264,13 +264,13 @@ tasks:
         \ Issue Port and Issue Protocol hunts for internal activity on the detected\
         \ service. \nReturns a list of potential owner BUs, owner Users, Device and\
         \ Notes"
-      id: 9a6818d9-3ace-4534-8571-af2c88f3ac08
+      id: 163bfc5a-c7b3-4d32-8a89-16eaa3fccca3
       iscommand: false
       name: Expanse Attribution Subplaybook
       playbookId: Expanse Attribution Subplaybook
       type: playbook
       version: -1
-    taskid: 9a6818d9-3ace-4534-8571-af2c88f3ac08
+    taskid: 163bfc5a-c7b3-4d32-8a89-16eaa3fccca3
     timertriggers: []
     type: playbook
     view: |-
@@ -308,13 +308,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 1241ad4f-aff1-4283-8c5c-7d596a0a0258
+      description: Check whether the asset is on prem or cloud.
+      id: 6f366232-ece5-4101-8e6c-9a33dff0eb93
       iscommand: false
       name: Is Issue Related To Cloud Asset?
       type: condition
       version: -1
-      description: Check whether the asset is on prem or cloud.
-    taskid: 1241ad4f-aff1-4283-8c5c-7d596a0a0258
+    taskid: 6f366232-ece5-4101-8e6c-9a33dff0eb93
     timertriggers: []
     type: condition
     view: |-
@@ -345,13 +345,13 @@ tasks:
     task:
       brand: Builtin
       description: Set a value in context under the key you entered.
-      id: 288b78f4-88cc-40cd-8ffe-f0e3668737fc
+      id: 7bef20c3-dff0-41a2-8682-92d833853ecd
       iscommand: false
       name: Suggest possible Shadow IT
       script: Set
       type: regular
       version: -1
-    taskid: 288b78f4-88cc-40cd-8ffe-f0e3668737fc
+    taskid: 7bef20c3-dff0-41a2-8682-92d833853ecd
     timertriggers: []
     type: regular
     view: |-
@@ -468,13 +468,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 018db405-95bb-49bf-81af-cb520d34b50f
+      description: Ask the user to perform attribution.
+      id: d2ca58fc-cf95-4d39-8fb1-ed702064e724
       iscommand: false
       name: 'Ask: What Is The Organization Unit?'
       type: collection
       version: -1
-      description: Ask the user to perform attribution.
-    taskid: 018db405-95bb-49bf-81af-cb520d34b50f
+    taskid: d2ca58fc-cf95-4d39-8fb1-ed702064e724
     timertriggers: []
     type: collection
     view: |-
@@ -783,13 +783,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.set.incident
-      id: 7672d99c-665d-48b5-853e-ab4ed11d22de
+      id: 0e6cc6ca-2117-4708-8d37-2aff00206feb
       iscommand: true
       name: Set Organization Unit
       script: Builtin|||setIncident
       type: regular
       version: -1
-    taskid: 7672d99c-665d-48b5-853e-ab4ed11d22de
+    taskid: 0e6cc6ca-2117-4708-8d37-2aff00206feb
     timertriggers: []
     type: regular
     view: |-
@@ -828,13 +828,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ee9d4e40-eb81-4e91-85d6-3e31063e5c00
+      description: Check if the incident is a possible Shadow IT one.
+      id: 4b4447a2-6770-466a-8781-34b4d52d8ee2
       iscommand: false
       name: Check for Possible Shadow IT?
       type: condition
       version: -1
-      description: Check if the incident is a possible Shadow IT one.
-    taskid: ee9d4e40-eb81-4e91-85d6-3e31063e5c00
+    taskid: 4b4447a2-6770-466a-8781-34b4d52d8ee2
     timertriggers: []
     type: condition
     view: |-
@@ -856,13 +856,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8cf5fe6e-ac93-4f74-82ac-8b196865d062
+      id: ac9514d4-ba5b-427d-8b1c-99868d81faf5
       iscommand: false
       name: Shadow IT
       type: title
       version: -1
       description: ''
-    taskid: 8cf5fe6e-ac93-4f74-82ac-8b196865d062
+    taskid: ac9514d4-ba5b-427d-8b1c-99868d81faf5
     timertriggers: []
     type: title
     view: |-
@@ -887,13 +887,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 4536e1b5-b453-4346-8d46-9ce3cac6d871
+      id: 61e0300c-b450-457c-87ac-a8967e3ac0e7
       iscommand: false
       name: Organization Unit
       type: title
       version: -1
       description: ''
-    taskid: 4536e1b5-b453-4346-8d46-9ce3cac6d871
+    taskid: 61e0300c-b450-457c-87ac-a8967e3ac0e7
     timertriggers: []
     type: title
     view: |-
@@ -932,19 +932,19 @@ tasks:
       brand: ""
       description: Set a value in context under the key you entered. If no value is
         entered, the script doesn't do anything.
-      id: 4b14142b-39e7-4017-8d16-c92cd9547d7b
+      id: cf78ff3e-9195-46e7-841c-28dbc86c2665
       iscommand: false
       name: Extract List of Low Confidence Discovery tags from PB Inputs
       script: SetAndHandleEmpty
       type: regular
       version: -1
-    taskid: 4b14142b-39e7-4017-8d16-c92cd9547d7b
+    taskid: cf78ff3e-9195-46e7-841c-28dbc86c2665
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1432.5,
+          "x": 1440,
           "y": -1130
         }
       }
@@ -978,7 +978,7 @@ tasks:
     task:
       brand: ""
       description: Convert an array to a nice table display. Usually, from the context.
-      id: 6626f11e-ebe7-4baa-8ccc-6a3d8d521e0f
+      id: 9e2147fa-7b5a-43f3-892a-902f5afe5a36
       iscommand: false
       name: Print Target Users suggestions
       script: ToTable
@@ -986,7 +986,7 @@ tasks:
       - ExpanseSuggestion
       type: regular
       version: -1
-    taskid: 6626f11e-ebe7-4baa-8ccc-6a3d8d521e0f
+    taskid: 9e2147fa-7b5a-43f3-892a-902f5afe5a36
     timertriggers: []
     type: regular
     view: |-
@@ -1026,7 +1026,7 @@ tasks:
     task:
       brand: ""
       description: Convert an array to a nice table display. Usually, from the context.
-      id: 387ba234-2e59-408a-8eec-d8c95b9f0567
+      id: 2c6408ce-83d8-4a86-8bb1-9711620f5a03
       iscommand: false
       name: Print Target IP suggestions
       script: ToTable
@@ -1034,7 +1034,7 @@ tasks:
       - ExpanseSuggestion
       type: regular
       version: -1
-    taskid: 387ba234-2e59-408a-8eec-d8c95b9f0567
+    taskid: 2c6408ce-83d8-4a86-8bb1-9711620f5a03
     timertriggers: []
     type: regular
     view: |-
@@ -1074,7 +1074,7 @@ tasks:
     task:
       brand: ""
       description: Convert an array to a nice table display. Usually, from the context.
-      id: 4f28fb04-e29d-4d4f-8a9c-99c8ff359b15
+      id: f03fe9a1-6abb-4458-89ea-92bbc55e6d66
       iscommand: false
       name: Print Target Devices suggestions
       script: ToTable
@@ -1082,7 +1082,7 @@ tasks:
       - ExpanseSuggestion
       type: regular
       version: -1
-    taskid: 4f28fb04-e29d-4d4f-8a9c-99c8ff359b15
+    taskid: f03fe9a1-6abb-4458-89ea-92bbc55e6d66
     timertriggers: []
     type: regular
     view: |-
@@ -1104,13 +1104,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f6fb92c6-f797-44af-8e79-55c91a8244d5
+      id: c1108519-3c84-4662-8441-915d1dc2ba01
       iscommand: false
       name: Close Investigation
       type: title
       version: -1
       description: ''
-    taskid: f6fb92c6-f797-44af-8e79-55c91a8244d5
+    taskid: c1108519-3c84-4662-8441-915d1dc2ba01
     timertriggers: []
     type: title
     view: |-
@@ -1134,13 +1134,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: a6416f01-09ef-47fc-893b-4c1ab7d87930
+      description: Ask the user whether to close the investigation.
+      id: ca45eb59-71b5-42fb-800a-37c7c862e2b1
       iscommand: false
       name: Close Investigation?
       type: condition
       version: -1
-      description: Ask the user whether to close the investigation.
-    taskid: a6416f01-09ef-47fc-893b-4c1ab7d87930
+    taskid: ca45eb59-71b5-42fb-800a-37c7c862e2b1
     timertriggers: []
     type: condition
     view: |-
@@ -1172,13 +1172,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.close.inv
-      id: 1a1cc7b2-5b74-4e12-8233-d6b6c88e4f4a
+      id: dbe82a32-98ad-460d-8d7b-404dc47bab97
       iscommand: true
       name: Close Investigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 1a1cc7b2-5b74-4e12-8233-d6b6c88e4f4a
+    taskid: dbe82a32-98ad-460d-8d7b-404dc47bab97
     timertriggers: []
     type: regular
     view: |-
@@ -1197,13 +1197,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 3f0f0af0-3d1b-4e2e-8469-e3d029cbf695
+      id: d256f1d7-dd3b-4f90-86c8-fc7b4f1c34ca
       iscommand: false
       name: All done
       type: title
       version: -1
       description: ''
-    taskid: 3f0f0af0-3d1b-4e2e-8469-e3d029cbf695
+    taskid: d256f1d7-dd3b-4f90-86c8-fc7b4f1c34ca
     timertriggers: []
     type: title
     view: |-
@@ -1238,13 +1238,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 3752d545-238e-4d2b-8874-2c430c22159f
+      description: Determine if a new OU has to be added.
+      id: a34fb1c9-70f7-4840-8f54-5e24838f2781
       iscommand: false
       name: Should Add New OU?
       type: condition
       version: -1
-      description: Determine if a new OU has to be added.
-    taskid: 3752d545-238e-4d2b-8874-2c430c22159f
+    taskid: a34fb1c9-70f7-4840-8f54-5e24838f2781
     timertriggers: []
     type: condition
     view: |-
@@ -1344,13 +1344,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 980d214e-ed07-4dbc-82a0-455678d9bb9a
+      description: Collect new OU details from the user.
+      id: 7811c754-fae1-4892-877e-a8d71b8fa7d9
       iscommand: false
       name: Add New OU
       type: collection
       version: -1
-      description: Collect new OU details from the user.
-    taskid: 980d214e-ed07-4dbc-82a0-455678d9bb9a
+    taskid: 7811c754-fae1-4892-877e-a8d71b8fa7d9
     timertriggers: []
     type: collection
     view: |-
@@ -1409,13 +1409,13 @@ tasks:
     task:
       brand: ""
       description: Adds/Replaces a key in key/value store backed by an XSOAR list.
-      id: 9bbd44d7-61ea-463e-879f-7c964239c486
+      id: 7d2cc45c-dbb6-4746-8b84-552f929473d1
       iscommand: false
       name: Save New Organization Unit to List
       script: AddKeyToList
       type: regular
       version: -1
-    taskid: 9bbd44d7-61ea-463e-879f-7c964239c486
+    taskid: 7d2cc45c-dbb6-4746-8b84-552f929473d1
     timertriggers: []
     type: regular
     view: |-
@@ -1720,13 +1720,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.set.incident
-      id: ef5f7179-b689-4ae9-8e9f-10cdb6f80a89
+      id: d13ae202-264c-44b5-8b11-7a5b57aca0c2
       iscommand: true
       name: Set Organization Unit
       script: Builtin|||setIncident
       type: regular
       version: -1
-    taskid: ef5f7179-b689-4ae9-8e9f-10cdb6f80a89
+    taskid: d13ae202-264c-44b5-8b11-7a5b57aca0c2
     timertriggers: []
     type: regular
     view: |-
@@ -1748,13 +1748,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 768d33de-5fa4-46d2-81c3-baf5b75aa08d
+      id: 5e3bdcc7-1409-4541-84c8-7d65eda74b7c
       iscommand: false
       name: Tag Assets
       type: title
       version: -1
       description: ''
-    taskid: 768d33de-5fa4-46d2-81c3-baf5b75aa08d
+    taskid: 5e3bdcc7-1409-4541-84c8-7d65eda74b7c
     timertriggers: []
     type: title
     view: |-
@@ -1805,13 +1805,13 @@ tasks:
     task:
       brand: ""
       description: Adds/Replaces a key in key/value store backed by an XSOAR list.
-      id: 29ca9aaa-8d54-4c84-8541-082c26853558
+      id: 801283c9-88a5-452c-8a80-ecad20e62ff3
       iscommand: false
       name: Save New Organization Tag to List
       script: AddKeyToList
       type: regular
       version: -1
-    taskid: 29ca9aaa-8d54-4c84-8541-082c26853558
+    taskid: 801283c9-88a5-452c-8a80-ecad20e62ff3
     timertriggers: []
     type: regular
     view: |-
@@ -1840,19 +1840,19 @@ tasks:
     task:
       brand: ""
       description: Create a new tag in Expanse.
-      id: a76d40b3-8c5b-4a3c-81e9-567f24dc234b
+      id: 97cbc574-76f0-4b18-8ea3-f40107c0c11f
       iscommand: true
       name: Create Tag in Expanse (if it doesn't exist already)
       script: '|||expanse-create-tag'
       type: regular
       version: -1
-    taskid: a76d40b3-8c5b-4a3c-81e9-567f24dc234b
+    taskid: 97cbc574-76f0-4b18-8ea3-f40107c0c11f
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1640,
+          "x": 1862.5,
           "y": 5060
         }
       }
@@ -1908,13 +1908,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: a573e752-0707-45e3-8cdb-7fece0dafff4
+      description: Branch depending on the OU.
+      id: 92df9a63-bbfd-4d97-8058-1dbe11b1d556
       iscommand: false
       name: Do We Have Tag To Use?
       type: condition
       version: -1
-      description: Branch depending on the OU.
-    taskid: a573e752-0707-45e3-8cdb-7fece0dafff4
+    taskid: 92df9a63-bbfd-4d97-8058-1dbe11b1d556
     timertriggers: []
     type: condition
     view: |-
@@ -1930,7 +1930,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "165"
+      - "174"
     note: false
     quietmode: 0
     scriptarguments:
@@ -1951,20 +1951,20 @@ tasks:
     task:
       brand: ""
       description: Assign tags to Asset.
-      id: 1de4b346-29d6-49c8-8c40-8d4d6b0296aa
+      id: 495b34ca-19fa-4415-884a-d1cf9792d68f
       iscommand: true
       name: Tag Assets on Expanse with AssetTag
       script: '|||expanse-assign-tags-to-asset'
       type: regular
       version: -1
-    taskid: 1de4b346-29d6-49c8-8c40-8d4d6b0296aa
+    taskid: 495b34ca-19fa-4415-884a-d1cf9792d68f
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1640,
-          "y": 5225
+          "x": 1862.5,
+          "y": 5215
         }
       }
   "103":
@@ -1997,13 +1997,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 3cda2c56-4c03-423c-8600-c60755b304dc
+      id: 24257233-0c49-408e-8c86-65f9d20698e5
       iscommand: false
       name: Set AssetTag with Known OU Tag
       script: Set
       type: regular
       version: -1
-    taskid: 3cda2c56-4c03-423c-8600-c60755b304dc
+    taskid: 24257233-0c49-408e-8c86-65f9d20698e5
     timertriggers: []
     type: regular
     view: |-
@@ -2034,13 +2034,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 07ca8506-f9d5-4561-82a3-da00fee6c51f
+      id: 44be312d-5881-461f-889b-a968795f98e4
       iscommand: false
       name: Set AssetTag with False Positive Tag from Inputs
       script: Set
       type: regular
       version: -1
-    taskid: 07ca8506-f9d5-4561-82a3-da00fee6c51f
+    taskid: 44be312d-5881-461f-889b-a968795f98e4
     timertriggers: []
     type: regular
     view: |-
@@ -2080,7 +2080,7 @@ tasks:
     task:
       brand: ""
       description: Convert an array to a nice table display. Usually, from the context.
-      id: 127914a4-cec8-443c-809a-42750550e97a
+      id: b1db577f-cce1-431f-8140-8f6f276c1a62
       iscommand: false
       name: Print Prisma Cloud suggestions
       script: ToTable
@@ -2088,7 +2088,7 @@ tasks:
       - ExpanseSuggestion
       type: regular
       version: -1
-    taskid: 127914a4-cec8-443c-809a-42750550e97a
+    taskid: b1db577f-cce1-431f-8140-8f6f276c1a62
     timertriggers: []
     type: regular
     view: |-
@@ -2128,13 +2128,13 @@ tasks:
       brand: ""
       description: Set a value in context under the key you entered. If no value is
         entered, the script doesn't do anything.
-      id: b84bb0cd-084a-41b3-85d1-e033abf14fc4
+      id: 98f0b01b-dab1-4627-889b-77a89a5efb8d
       iscommand: false
       name: Extract All Asset Tags from Expanse
       script: SetAndHandleEmpty
       type: regular
       version: -1
-    taskid: b84bb0cd-084a-41b3-85d1-e033abf14fc4
+    taskid: 98f0b01b-dab1-4627-889b-77a89a5efb8d
     timertriggers: []
     type: regular
     view: |-
@@ -2177,13 +2177,13 @@ tasks:
       brand: ""
       description: Set a value in context under the key you entered. If no value is
         entered, the script doesn't do anything.
-      id: 7ff9610d-922f-4f9d-8d0b-67b55eeaee4d
+      id: c29c4551-7f14-4550-80d7-17e329591906
       iscommand: false
       name: Extract only XSOAR-related Asset Tags
       script: SetAndHandleEmpty
       type: regular
       version: -1
-    taskid: 7ff9610d-922f-4f9d-8d0b-67b55eeaee4d
+    taskid: c29c4551-7f14-4550-80d7-17e329591906
     timertriggers: []
     type: regular
     view: |-
@@ -2214,13 +2214,13 @@ tasks:
     task:
       brand: Builtin
       description: Set a value in context under the key you entered.
-      id: 56933ed7-6e98-46d7-8990-216f21fe483a
+      id: 30bf519d-0ab8-4d05-8603-af6abced645a
       iscommand: false
       name: Suggest No Shadow IT
       script: Set
       type: regular
       version: -1
-    taskid: 56933ed7-6e98-46d7-8990-216f21fe483a
+    taskid: 30bf519d-0ab8-4d05-8603-af6abced645a
     timertriggers: []
     type: regular
     view: |-
@@ -2552,13 +2552,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.set.incident
-      id: a0d56a1f-8102-40c7-8820-ec68061dd743
+      id: 93df1b7c-4fd8-4cf8-89ad-754ad6bf9372
       iscommand: true
       name: Set Shadow IT flag based on User response
       script: Builtin|||setIncident
       type: regular
       version: -1
-    taskid: a0d56a1f-8102-40c7-8820-ec68061dd743
+    taskid: 93df1b7c-4fd8-4cf8-89ad-754ad6bf9372
     timertriggers: []
     type: regular
     view: |-
@@ -2596,13 +2596,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 5195bd32-4758-4a1c-8f5d-ff251f249a87
+      description: Check whether user answered to the Shadow IT question.
+      id: f0357630-f752-4bb9-8182-29c56d2c7fff
       iscommand: false
       name: Did User reply to the Shadow IT question?
       type: condition
-      description: Check whether user answered to the Shadow IT question.
       version: -1
-    taskid: 5195bd32-4758-4a1c-8f5d-ff251f249a87
+    taskid: f0357630-f752-4bb9-8182-29c56d2c7fff
     timertriggers: []
     type: condition
     view: |-
@@ -2635,13 +2635,13 @@ tasks:
     task:
       brand: ""
       description: Retrieve issue comments (subset of updates)
-      id: 740b4104-5654-4e75-879b-d66f0fdcae30
+      id: 7b070511-5ae2-43fe-87c4-2a64c9eaf8c1
       iscommand: true
       name: Get Expanse Comments
       script: '|||expanse-get-issue-comments'
       type: regular
       version: -1
-    taskid: 740b4104-5654-4e75-879b-d66f0fdcae30
+    taskid: 7b070511-5ae2-43fe-87c4-2a64c9eaf8c1
     timertriggers: []
     type: regular
     view: |-
@@ -2689,13 +2689,13 @@ tasks:
       brand: ""
       description: Set a value in context under the key you entered. If no value is
         entered, the script doesn't do anything.
-      id: 14e233a8-9dca-423f-849c-27606693cce6
+      id: 89d39bfe-f7dd-4983-845e-eadfa805ed83
       iscommand: false
       name: 'Set Shadow IT Condition variable: On Prisma Cloud?'
       script: SetAndHandleEmpty
       type: regular
       version: -1
-    taskid: 14e233a8-9dca-423f-849c-27606693cce6
+    taskid: 89d39bfe-f7dd-4983-845e-eadfa805ed83
     timertriggers: []
     type: regular
     view: |-
@@ -2736,13 +2736,13 @@ tasks:
       brand: ""
       description: Set a value in context under the key you entered. If no value is
         entered, the script doesn't do anything.
-      id: 431c76d4-3dce-4344-8b0d-b4f0afa0548d
+      id: 7dc3a1c9-3389-448a-8e3c-ee241e1b8903
       iscommand: false
       name: 'Set Shadow IT Condition variable: On Prem high confidence to True'
       script: SetAndHandleEmpty
       type: regular
       version: -1
-    taskid: 431c76d4-3dce-4344-8b0d-b4f0afa0548d
+    taskid: 7dc3a1c9-3389-448a-8e3c-ee241e1b8903
     timertriggers: []
     type: regular
     view: |-
@@ -2799,13 +2799,13 @@ tasks:
       brand: ""
       description: Set a value in context under the key you entered. If no value is
         entered, the script doesn't do anything.
-      id: 39177876-aad0-40c1-8fdc-8064911876a8
+      id: 2b8df499-de4f-4c96-870c-264147e19fd9
       iscommand: false
       name: 'Set Shadow IT Condition variable: any Firewall exposing service?'
       script: SetAndHandleEmpty
       type: regular
       version: -1
-    taskid: 39177876-aad0-40c1-8fdc-8064911876a8
+    taskid: 2b8df499-de4f-4c96-870c-264147e19fd9
     timertriggers: []
     type: regular
     view: |-
@@ -2829,13 +2829,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: eacd7dab-2d85-4677-8c4e-db70b3dd49d8
+      id: 89c2476e-3242-4267-81c2-b2df310b2cce
       iscommand: false
       name: Set up Shadow IT Condition Variables for report
       type: title
       version: -1
       description: ''
-    taskid: eacd7dab-2d85-4677-8c4e-db70b3dd49d8
+    taskid: 89c2476e-3242-4267-81c2-b2df310b2cce
     timertriggers: []
     type: title
     view: |-
@@ -2857,13 +2857,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 7a52930a-c1f1-404e-8a89-669768230cd7
+      id: b27e5c28-9080-4dc7-8a40-056c7a7ce541
       iscommand: false
       name: Done Setting up Shadow IT Conditions for Report
       type: title
       version: -1
       description: ''
-    taskid: 7a52930a-c1f1-404e-8a89-669768230cd7
+    taskid: b27e5c28-9080-4dc7-8a40-056c7a7ce541
     timertriggers: []
     type: title
     view: |-
@@ -2921,13 +2921,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 6b648a2e-17f7-4115-8d3f-19f0c8849332
+      description: Check whether the asset is market as on prem with a high degree
+        of confidence.
+      id: c4d2e9d2-d53b-4940-81f2-19b341f47032
       iscommand: false
       name: On-prem with high confidence?
       type: condition
       version: -1
-      description: Check whether the asset is market as on prem with a high degree of confidence.
-    taskid: 6b648a2e-17f7-4115-8d3f-19f0c8849332
+    taskid: c4d2e9d2-d53b-4940-81f2-19b341f47032
     timertriggers: []
     type: condition
     view: |-
@@ -2968,13 +2969,13 @@ tasks:
       brand: ""
       description: Set a value in context under the key you entered. If no value is
         entered, the script doesn't do anything.
-      id: fc97e33b-5328-453c-8aab-db27ac96c598
+      id: a24f6b30-3e06-438a-89dd-6f5b229a0ad8
       iscommand: false
       name: 'Set Shadow IT Condition variable: On Prem high confidence to False'
       script: SetAndHandleEmpty
       type: regular
       version: -1
-    taskid: fc97e33b-5328-453c-8aab-db27ac96c598
+    taskid: a24f6b30-3e06-438a-89dd-6f5b229a0ad8
     timertriggers: []
     type: regular
     view: |-
@@ -3060,13 +3061,13 @@ tasks:
     task:
       brand: ""
       description: 'Print '
-      id: 2a7a25ed-9c22-4f7d-8015-7aec8c2647a6
+      id: c4613a67-9393-4520-8686-0a1308629ec1
       iscommand: false
       name: Generate Report for Attribution
       script: ExpansePrintSuggestions
       type: regular
       version: -1
-    taskid: 2a7a25ed-9c22-4f7d-8015-7aec8c2647a6
+    taskid: c4613a67-9393-4520-8686-0a1308629ec1
     timertriggers: []
     type: regular
     view: |-
@@ -3108,13 +3109,13 @@ tasks:
       brand: ""
       description: Set a value in context under the key you entered. If no value is
         entered, the script doesn't do anything.
-      id: c16018a6-9317-46e5-8d6a-a21e17cdf152
+      id: f101bfd6-a312-4518-8276-443422836c70
       iscommand: false
       name: 'Extract XSOAR Incident Tags related to OU Attribtion '
       script: SetAndHandleEmpty
       type: regular
       version: -1
-    taskid: c16018a6-9317-46e5-8d6a-a21e17cdf152
+    taskid: f101bfd6-a312-4518-8276-443422836c70
     timertriggers: []
     type: regular
     view: |-
@@ -3146,13 +3147,13 @@ tasks:
     task:
       brand: ""
       description: Update Expanse issue.
-      id: ec959989-3a7a-4248-8407-2cb8afa72bad
+      id: 7cd3427f-0d74-4cca-8dc3-48a65dd8341a
       iscommand: true
       name: Set Progress Status to Investigating in Expanse issue
       script: '|||expanse-update-issue'
       type: regular
       version: -1
-    taskid: ec959989-3a7a-4248-8407-2cb8afa72bad
+    taskid: 7cd3427f-0d74-4cca-8dc3-48a65dd8341a
     timertriggers: []
     type: regular
     view: |-
@@ -3184,13 +3185,13 @@ tasks:
     task:
       brand: ""
       description: Update Expanse issue.
-      id: db886e09-c8cf-4345-8600-c71b1db84ceb
+      id: e2ac22f0-db7d-4365-824b-75fe20c526d4
       iscommand: true
       name: Add "Being investigated by XSOAR" comment to Expanse issue
       script: '|||expanse-update-issue'
       type: regular
       version: -1
-    taskid: db886e09-c8cf-4345-8600-c71b1db84ceb
+    taskid: e2ac22f0-db7d-4365-824b-75fe20c526d4
     timertriggers: []
     type: regular
     view: |-
@@ -3227,13 +3228,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: a988cee0-da44-4985-8580-325c73835f0b
+      description: Determine whether playbook should write data back to Expanse.
+      id: f5eae4df-921c-4c22-809d-508ca19ac15d
       iscommand: false
       name: Are we writing to Expanse?
       type: condition
       version: -1
-      description: Determine whether playbook should write data back to Expanse.
-    taskid: a988cee0-da44-4985-8580-325c73835f0b
+    taskid: f5eae4df-921c-4c22-809d-508ca19ac15d
     timertriggers: []
     type: condition
     view: |-
@@ -3270,13 +3271,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9dbc7b00-be76-4436-8254-7cf6761dad1b
+      description: Determine whether playbook should write data back to Expanse.
+      id: 2bf47888-5e95-4252-8322-a3c4c6b36738
       iscommand: false
       name: Are we writing to Expanse?
       type: condition
       version: -1
-      description: Determine whether playbook should write data back to Expanse.
-    taskid: 9dbc7b00-be76-4436-8254-7cf6761dad1b
+    taskid: 2bf47888-5e95-4252-8322-a3c4c6b36738
     timertriggers: []
     type: condition
     view: |-
@@ -3298,13 +3299,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e46833ec-0c59-4dba-81d3-00b15ab7b606
+      id: 68d2cf6d-6bb8-4047-8c11-05560d669f8d
       iscommand: false
       name: Done Tagging
       type: title
       version: -1
       description: ''
-    taskid: e46833ec-0c59-4dba-81d3-00b15ab7b606
+    taskid: 68d2cf6d-6bb8-4047-8c11-05560d669f8d
     timertriggers: []
     type: title
     view: |-
@@ -3326,13 +3327,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: d17dec3b-9a14-4dc4-860f-7136028549a0
+      description: Perform manual remediation
+      id: fee13f3f-acc0-4f0b-842a-6a1061eba3ae
       iscommand: false
       name: Manual Remediation
       type: regular
       version: -1
-      description: Perform manual remediation
-    taskid: d17dec3b-9a14-4dc4-860f-7136028549a0
+    taskid: fee13f3f-acc0-4f0b-842a-6a1061eba3ae
     timertriggers: []
     type: regular
     view: |-
@@ -3370,14 +3371,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 99535741-b5c4-435a-8c94-bd5946d09797
+      description: Extracts and Enriches Expanse from Indicator Assets
+      id: dbaea010-4ef0-4c97-8752-463ff217ae24
       iscommand: false
       name: Extract Expanse Indicators
       playbookId: Extract Expanse Indicators
       type: playbook
       version: -1
-      description: Extracts and Enriches Expanse from Indicator Assets
-    taskid: 99535741-b5c4-435a-8c94-bd5946d09797
+    taskid: dbaea010-4ef0-4c97-8752-463ff217ae24
     timertriggers: []
     type: playbook
     view: |-
@@ -3399,13 +3400,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8cc08777-4647-4df0-8907-51310a33c647
+      id: e7cc28cd-190e-4289-8dc5-1f212772018f
       iscommand: false
       name: Done Enrichment
       type: title
       version: -1
       description: ''
-    taskid: 8cc08777-4647-4df0-8907-51310a33c647
+    taskid: e7cc28cd-190e-4289-8dc5-1f212772018f
     timertriggers: []
     type: title
     view: |-
@@ -3453,14 +3454,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: fe1f22ee-7309-4516-8824-989a63bceb5b
+      id: 4e3e5bd2-a4e7-4bf9-8458-63d2f9a96bbb
       iscommand: false
       name: Find Cloud IP Address Region and Service
       playbookId: Find Cloud IP Address Region and Service
       type: playbook
       version: -1
       description: ''
-    taskid: fe1f22ee-7309-4516-8824-989a63bceb5b
+    taskid: 4e3e5bd2-a4e7-4bf9-8458-63d2f9a96bbb
     timertriggers: []
     type: playbook
     view: |-
@@ -3494,14 +3495,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: bc6899e4-5c0e-4c16-8408-5ec13f475150
+      id: 287ae395-dcae-4ce7-85d9-1686a72ab7fb
       iscommand: false
       name: Prisma Cloud Correlate Alerts
       playbookId: Prisma Cloud Correlate Alerts
       type: playbook
       version: -1
       description: ''
-    taskid: bc6899e4-5c0e-4c16-8408-5ec13f475150
+    taskid: 287ae395-dcae-4ce7-85d9-1686a72ab7fb
     timertriggers: []
     type: playbook
     view: |-
@@ -3509,6 +3510,66 @@ tasks:
         "position": {
           "x": 740,
           "y": 5875
+        }
+      }
+  "173":
+    id: "173"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Script to refresh tags and attribution reasons of assets inside Expanse Issue. The script should be used inside the Expanse Issue incident context.
+      id: 5792bfc9-b571-49c2-8203-410fc70deedf
+      iscommand: false
+      name: Refresh Assets
+      script: ExpanseRefreshIssueAssets
+      type: regular
+      version: -1
+    taskid: 5792bfc9-b571-49c2-8203-410fc70deedf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 907.5,
+          "y": -1480
+        }
+      }
+  "174":
+    id: "174"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "165"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Script to refresh tags and attribution reasons of assets inside Expanse Issue. The script should be used inside the Expanse Issue incident context.
+      id: feca7621-4c41-491c-88e3-b3c7f97a1b2f
+      iscommand: false
+      name: Refresh Assets
+      script: ExpanseRefreshIssueAssets
+      type: regular
+      version: -1
+    taskid: feca7621-4c41-491c-88e3-b3c7f97a1b2f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1862.5,
+          "y": 5380
         }
       }
 version: -1
@@ -3524,6 +3585,6 @@ view: |-
       }
     }
   }
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0

@@ -1,5 +1,3 @@
-contentitemexportablefields:
-  contentitemfields: {}
 description: This playbook blocks a Destination IP and Service (tcp or udp port) by
   creating a rule on a specific Device Group
 id: PAN-OS - Block Destination Service
@@ -66,12 +64,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 49a9b9d3-a97b-4473-8119-70300c0c01ed
+      id: fb6461a4-6aa1-42e5-8d9e-aada772609a9
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 49a9b9d3-a97b-4473-8119-70300c0c01ed
+    taskid: fb6461a4-6aa1-42e5-8d9e-aada772609a9
     timertriggers: []
     type: start
     view: |-
@@ -122,13 +120,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 957428b9-9a0c-4ae3-8917-83ae0a83de43
+      description: Check whether PAN-OS integration is enabled.
+      id: 731a6c61-1cd9-41cb-8992-10a80aaa825e
       iscommand: false
       name: Palo Alto Networks PAN-OS enabled?
       type: condition
       version: -1
-      description: Check whether PAN-OS integration is enabled.
-    taskid: 957428b9-9a0c-4ae3-8917-83ae0a83de43
+    taskid: 731a6c61-1cd9-41cb-8992-10a80aaa825e
     timertriggers: []
     type: condition
     view: |-
@@ -188,13 +186,13 @@ tasks:
     task:
       brand: ""
       description: Creates a policy rule.
-      id: 7745a547-20f9-4633-8c96-a761ef323f86
+      id: fde672f3-4bc2-439a-85b4-d85958213042
       iscommand: true
       name: Panorama - Create custom block rule
       script: '|||panorama-create-rule'
       type: regular
       version: -1
-    taskid: 7745a547-20f9-4633-8c96-a761ef323f86
+    taskid: fde672f3-4bc2-439a-85b4-d85958213042
     timertriggers: []
     type: regular
     view: |-
@@ -213,13 +211,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: da771405-12fa-4cf0-8e22-1ecfd2393812
+      id: 562ebca6-5238-449d-8e81-0fbf2ed2c86d
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: da771405-12fa-4cf0-8e22-1ecfd2393812
+    taskid: 562ebca6-5238-449d-8e81-0fbf2ed2c86d
     timertriggers: []
     type: title
     view: |-
@@ -252,13 +250,13 @@ tasks:
     task:
       brand: ""
       description: Creates an address object
-      id: 487327fa-0151-4546-8cd2-e8d0bc710b29
+      id: a7cdd75f-ee8d-4d47-8b05-f73e07218b6f
       iscommand: true
       name: PAN-OS - Create address object
       script: '|||panorama-create-address'
       type: regular
       version: -1
-    taskid: 487327fa-0151-4546-8cd2-e8d0bc710b29
+    taskid: a7cdd75f-ee8d-4d47-8b05-f73e07218b6f
     timertriggers: []
     type: regular
     view: |-
@@ -280,14 +278,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9d6211c7-b4b6-44c5-8c2f-a37c977fa8ed
+      id: cc70c336-169a-4b27-8efe-8118e0ab126b
       iscommand: false
       name: PAN-OS Commit Configuration
       playbookId: PAN-OS Commit Configuration
       type: playbook
       version: -1
       description: ''
-    taskid: 9d6211c7-b4b6-44c5-8c2f-a37c977fa8ed
+    taskid: cc70c336-169a-4b27-8efe-8118e0ab126b
     timertriggers: []
     type: playbook
     view: |-
@@ -309,14 +307,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e5e66a23-4540-41c9-8a59-f163ea1305e8
+      id: a222c7cc-28e4-4e82-80fc-b3f0bb8c99ba
       iscommand: false
       name: PAN-OS Commit Configuration
       playbookId: PAN-OS Commit Configuration
       type: playbook
       version: -1
       description: ''
-    taskid: e5e66a23-4540-41c9-8a59-f163ea1305e8
+    taskid: a222c7cc-28e4-4e82-80fc-b3f0bb8c99ba
     timertriggers: []
     type: playbook
     view: |-
@@ -352,13 +350,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 4d41a27f-1818-4f90-8bba-39b3881a4af3
+      description: Check whether auto-commit is enabled.
+      id: 6d5fb59d-6ae9-4b47-8ed9-9e58b3f565e5
       iscommand: false
       name: AutoCommit defined?
       type: condition
       version: -1
-      description: Check whether auto-commit is enabled.
-    taskid: 4d41a27f-1818-4f90-8bba-39b3881a4af3
+    taskid: 6d5fb59d-6ae9-4b47-8ed9-9e58b3f565e5
     timertriggers: []
     type: condition
     view: |-
@@ -380,13 +378,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 5df6d93f-8c45-4a3b-840f-cd0a24cc7ae6
+      description: Commit manually on PAN-OS.
+      id: 84dddadb-b29b-45fe-8b8e-c7218fa8a8b0
       iscommand: false
       name: Commit PAN-OS Instance manually
       type: regular
       version: -1
-      description: Commit manually on PAN-OS.
-    taskid: 5df6d93f-8c45-4a3b-840f-cd0a24cc7ae6
+    taskid: 84dddadb-b29b-45fe-8b8e-c7218fa8a8b0
     timertriggers: []
     type: regular
     view: |-
@@ -408,13 +406,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: a1caf43e-5771-4591-8b0f-1653b0fd201a
+      description: Commit manually on PAN-OS.
+      id: 376e2781-dd13-4a00-83f9-96be544deef2
       iscommand: false
       name: Commit PAN-OS Instance manually
       type: regular
       version: -1
-      description: Commit manually on PAN-OS.
-    taskid: a1caf43e-5771-4591-8b0f-1653b0fd201a
+    taskid: 376e2781-dd13-4a00-83f9-96be544deef2
     timertriggers: []
     type: regular
     view: |-
@@ -459,13 +457,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: af5fde24-508e-474c-82fe-edc727b82ebc
+      description: Check whether there is an IP/Service/Port to block.
+      id: 64c0a18a-32e8-44ec-8cf2-84cb81c32058
       iscommand: false
       name: Is there an IP/Service/Port to block?
       type: condition
       version: -1
-      description: Check whether there is an IP/Service/Port to block.
-    taskid: af5fde24-508e-474c-82fe-edc727b82ebc
+    taskid: 64c0a18a-32e8-44ec-8cf2-84cb81c32058
     timertriggers: []
     type: condition
     view: |-
@@ -493,13 +491,13 @@ tasks:
     task:
       brand: ""
       description: Returns a list of addresses.
-      id: d2c04e99-482c-4963-8fe7-c59ae1766289
+      id: 2f8f2cec-27df-4c45-8180-a07f5124606a
       iscommand: true
       name: List Panorama Services
       script: '|||panorama-list-services'
       type: regular
       version: -1
-    taskid: d2c04e99-482c-4963-8fe7-c59ae1766289
+    taskid: 2f8f2cec-27df-4c45-8180-a07f5124606a
     timertriggers: []
     type: regular
     view: |-
@@ -565,13 +563,13 @@ tasks:
       brand: ""
       description: Set a value in context under the key you entered. If no value is
         entered, the script doesn't do anything.
-      id: 573f6fe3-76d1-48a9-82d9-01708fe33449
+      id: 6f66b1a1-7aba-4e76-87c7-970443881ecc
       iscommand: false
       name: Find Panorama Service
       script: SetAndHandleEmpty
       type: regular
       version: -1
-    taskid: 573f6fe3-76d1-48a9-82d9-01708fe33449
+    taskid: 6f66b1a1-7aba-4e76-87c7-970443881ecc
     timertriggers: []
     type: regular
     view: |-
@@ -604,13 +602,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 19e455ad-0129-4304-89e1-f4650a6301c3
+      description: Check whether the service exists in PAN-OS.
+      id: 32fc4bd8-75aa-4e3c-894b-b2e83277191d
       iscommand: false
       name: Is there an existing Service?
       type: condition
       version: -1
-      description: Check whether the service exists in PAN-OS.
-    taskid: 19e455ad-0129-4304-89e1-f4650a6301c3
+    taskid: 32fc4bd8-75aa-4e3c-894b-b2e83277191d
     timertriggers: []
     type: condition
     view: |-
@@ -649,13 +647,13 @@ tasks:
     task:
       brand: ""
       description: Creates a service.
-      id: 6e19da53-3448-47f4-84b9-cc50581395e0
+      id: 36643daf-f01c-4c18-846a-b19ba19d59c6
       iscommand: true
       name: Create Panorama Service
       script: '|||panorama-create-service'
       type: regular
       version: -1
-    taskid: 6e19da53-3448-47f4-84b9-cc50581395e0
+    taskid: 36643daf-f01c-4c18-846a-b19ba19d59c6
     timertriggers: []
     type: regular
     view: |-
@@ -685,13 +683,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 4a29eca2-250b-4557-8072-fd932fea4895
+      id: 24d33e39-3917-4b59-8e5e-97d224415ae1
       iscommand: false
       name: Set Service Name
       script: Set
       type: regular
       version: -1
-    taskid: 4a29eca2-250b-4557-8072-fd932fea4895
+    taskid: 24d33e39-3917-4b59-8e5e-97d224415ae1
     timertriggers: []
     type: regular
     view: |-
@@ -751,13 +749,13 @@ tasks:
     task:
       brand: ""
       description: Creates a policy rule.
-      id: d759af14-d9ec-4804-81da-39b145a7fa62
+      id: efaa8236-fe4c-4f25-8dbc-ed4d3b1cfa6f
       iscommand: true
       name: Panorama - Create custom block rule
       script: '|||panorama-create-rule'
       type: regular
       version: -1
-    taskid: d759af14-d9ec-4804-81da-39b145a7fa62
+    taskid: efaa8236-fe4c-4f25-8dbc-ed4d3b1cfa6f
     timertriggers: []
     type: regular
     view: |-
@@ -783,6 +781,6 @@ view: |-
       }
     }
   }
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
