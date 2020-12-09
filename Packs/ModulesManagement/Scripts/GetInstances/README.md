@@ -1,4 +1,4 @@
-Returns all the instances existing in Cortex XSOAR.
+Returns integration instances configured in Cortex XSOAR. You can filter by instance status and/or brand name (vendor).
 
 ## Script Data
 ---
@@ -14,19 +14,19 @@ Returns all the instances existing in Cortex XSOAR.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| brand | Filter by the brand name |
-| is_enabled | Filter by the instance status |
+| brand | Brand name to filter instances by. |
+| is_enabled | Instance status to filter instances by. Can be "active", "disabled", or "both". Default is "active". |
 
 ## Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Modules.name | The instance name | string |
-| Modules.category | The instance category | string |
-| Modules.defaultIgnored | Is the instance avilable by default | string |
-| Modules.state | Is the instance enabled | string |
-| Modules.brand | The instance brand | string |
+| Modules.name | The instance name. | string |
+| Modules.category | The instance category. | string |
+| Modules.defaultIgnored | True if the instance avilable by default, otherwise false. | string |
+| Modules.state | True if the instance is enabled, otherwise false. | string |
+| Modules.brand | The instance brand. | string |
 
 
 ## Script Example
