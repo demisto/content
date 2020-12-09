@@ -1,7 +1,7 @@
 import os
 from google.cloud.storage.blob import Blob
 
-from Tests.Marketplace.upload_private_id_set import upload_private_id_set
+from Tests.Marketplace.upload_private_id_set import upload_private_id_set_to_bucket
 from Tests.Marketplace.marketplace_services import GCPConfig
 
 
@@ -27,5 +27,5 @@ def test_upload_private_id_set(mocker):
         return Blob
 
     dummy_storage_bucket.blob = check_path
-    upload_private_id_set(dummy_storage_bucket, os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                                             "test_data", "id_set.json"))
+    upload_private_id_set_to_bucket(dummy_storage_bucket, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                                                       "test_data", "id_set.json"))
