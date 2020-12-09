@@ -115,7 +115,7 @@ def download_email_command():
         pre_index = parsed_response.index('</PRE>')
 
     except ValueError:
-        return_error('Could not extract email content from ther server response:\n{parsed_response}')
+        return_error('Could not extract email content from the server response:\n{}'.format(parsed_response))
 
     eml_content = parsed_response[auth_index:pre_index]
     file_name = message_id + '.eml'
