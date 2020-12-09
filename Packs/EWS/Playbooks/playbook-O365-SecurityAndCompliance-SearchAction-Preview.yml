@@ -165,7 +165,7 @@ tasks:
       id: 8c86a155-8d4c-4426-81b0-9f3cc75de3e5
       version: -1
       name: Get preview results
-      description: Gets the compliance search action from the Security & Compliance Center.
+      description: Get the compliance search action from the Security & Compliance Center.
       script: '|||o365-sc-get-search-action'
       type: regular
       iscommand: true
