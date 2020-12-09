@@ -1687,7 +1687,7 @@ def test_expanse_get_risky_flows(requests_mock):
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
     requests_mock.get(
-        f"https://example.com/api/v1/behavior/risky-flows?limit={MOCK_LIMIT}&internal-ip-range={MOCK_IP}",
+        f"https://example.com/api/v1/behavior/risky-flows?page[limit]={MOCK_LIMIT}&filter[internal-ip-range]={MOCK_IP}",
         json=mock_risky_flows
     )
     result = get_risky_flows_command(client, {"limit": MOCK_LIMIT, "internal_ip_range": MOCK_IP})
@@ -1714,7 +1714,7 @@ def test_expanse_list_risk_rules(requests_mock):
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
-    requests_mock.get(f"https://example.com/api/v1/behavior/risk-rules?limit={MOCK_LIMIT}", json=mock_risk_rules)
+    requests_mock.get(f"https://example.com/api/v1/behavior/risk-rules?page[limit]={MOCK_LIMIT}", json=mock_risk_rules)
     result = list_risk_rules_command(client, {"limit": MOCK_LIMIT})
 
     assert result.outputs_prefix == "Expanse.RiskRule"
