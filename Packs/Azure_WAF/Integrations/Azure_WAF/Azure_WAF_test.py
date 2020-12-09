@@ -4,7 +4,8 @@ import demistomock as demisto
 
 GET_COMMAND_DATA = [
     (
-        {'policy_name': 'pol1', 'resource_group_name': 'res1', 'verbose': 'false', 'limit': '10'},  # args, case: custom resource_group
+        {'policy_name': 'pol1', 'resource_group_name': 'res1', 'verbose': 'false', 'limit': '10'},
+        # args, case: custom resource_group
         {"method": "GET",
          "url_suffix":
              "/resourceGroups/res1/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/pol1"
@@ -32,7 +33,8 @@ GET_COMMAND_DATA = [
          }  # expected
     ),
     (
-        {'resource_group_name': 'res1', 'verbose': 'false', 'limit': '10'},  # args, case: list of policies in custom resourse_group
+        {'resource_group_name': 'res1', 'verbose': 'false', 'limit': '10'},
+        # args, case: list of policies in custom resourse_group
         {"method": "GET",
          "url_suffix":
              "/resourceGroups/res1/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
@@ -72,7 +74,7 @@ def test_get_policy_by_resource_body(mocker, demisto_args, expected_results):
 
 UPSERT_COMMAND_DATA = [
     (
-        {'policy_name': 'pol1', 'resource_group_name': 'res1' , 'verbose': 'false', 'limit': '10',
+        {'policy_name': 'pol1', 'resource_group_name': 'res1', 'verbose': 'false', 'limit': '10',
          'managed_rules': '{"test": "test"}', 'location': 'east'
          },  # args, case: custom resource_group update rule
         {"method": "PUT",
