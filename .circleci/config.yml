@@ -312,11 +312,13 @@ references:
         GCS_PATH=$(mktemp)
         ZIP_FOLDER=$(mktemp -d)
         echo $GCS_MARKET_KEY > $GCS_PATH
-        gsutil -m cp -r gs://marketplace-dist-private-test/content/id_set.json $CIRCLE_ARTIFACTS/private_id_set.json
+        python3 Tests/Marketplace/download_private_id_set.py -b 'marketplace-dist-private-test' -s $GCS_PATH
+        rm $GCS_PATH
+
         demisto-sdk merge-id-sets -i1 $CIRCLE_ARTIFACTS/private_id_set.json -i2 ./Tests/id_set.json -o ./Tests/id_set.json
 
         cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
-        rm $GCS_PATH
+
   build_content_descriptor: &build_content_descriptor
     run:
       name: Build Content Descriptor
