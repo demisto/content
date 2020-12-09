@@ -1,0 +1,60 @@
+{
+  "fromVersion": "6.0.0",
+  "name": "Box Incident Incoming Mapper",
+  "type": "mapping-incoming",
+  "id": "Box Incoming Mapper",
+  "description": "Maps incoming Box incident fields.",
+  "defaultIncidentType": "",
+  "mapping": {
+		"Box Incident": {
+          "dontMapEventToLabels": true,
+          "internalMapping": {
+            "Box Source Created By Name": {
+              "complex": null,
+              "simple": "created_by.name"
+            },
+            "Event ID": {
+              "complex": null,
+              "simple": "event_id"
+            },
+            "Event Type": {
+              "complex": null,
+              "simple": "event_type"
+            },
+            "Resource ID": {
+              "complex": null,
+              "simple": "source.item_id"
+            },
+            "Resource Name": {
+              "complex": null,
+              "simple": "source.item_name"
+            },
+            "Resource Type": {
+              "complex": null,
+              "simple": "source.item_type"
+            },
+            "Box Source Owner ID": {
+              "complex": null,
+              "simple": "source.owned_by.id"
+            },
+            "Box Source Owner Name": {
+              "complex": null,
+              "simple": "source.owned_by.name"
+            },
+            "Box Source Parent ID": {
+              "complex": null,
+              "simple": "source.parent.id"
+            },
+            "Box Source Parent Name": {
+              "complex": null,
+              "simple": "source.parent.name"
+            },
+            "occurred": {
+              "complex": null,
+              "simple": "created_at"
+            }
+          }
+        }
+	},
+  "version": -1
+}

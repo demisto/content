@@ -1752,8 +1752,7 @@ def main() -> None:
             as_user = demisto.params().get('as_user', None)
             max_results = arg_to_int(
                 arg=demisto.params().get('max_fetch'),
-                arg_name='max_fetch',
-                required=False
+                arg_name='max_fetch'
             )
             if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
                 max_results = MAX_INCIDENTS_TO_FETCH
@@ -1763,7 +1762,6 @@ def main() -> None:
                 max_results=max_results,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
-                stream_type=stream_type,
                 as_user=as_user
             )
             demisto.setLastRun({'time': next_run})
