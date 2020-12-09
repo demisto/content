@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Generic Polling Test",
+            "timeout": 250
+        },
+        {
             "integrations": "GSuiteAdmin",
             "playbookID": "GSuiteAdmin-Test",
             "fromversion": "5.0.0"
@@ -56,7 +60,7 @@
         },
         {
             "integrations": "Anomali Enterprise",
-            "playbookID": "Anomali Enterprise Forensic Search - Test",
+            "playbookID": "Anomali Match Forensic Search - Test",
             "fromversion": "5.0.0"
         },
         {
@@ -190,6 +194,13 @@
             "integrations": "APIVoid",
             "playbookID": "APIVoid Test"
         },
+        {
+            "integrations": "CloudConvert",
+            "playbookID": "CloudConvert-test",
+            "fromversion": "5.0.0",
+            "timeout": 2000
+        },
+
         {
             "integrations": "Cisco Firepower",
             "playbookID": "Cisco Firepower - Test",
@@ -3203,6 +3214,10 @@
             "integrations": "Palo Alto Networks Enterprise DLP",
             "playbookID": "Palo_Alto_Networks_Enterprise_DLP - Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Cryptocurrency",
+            "playbookID": "Cryptocurrency-Test"
         }
     ],
     "skipped_tests": {
@@ -3423,6 +3438,7 @@
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
+        "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
@@ -3442,6 +3458,8 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Feodo Tracker IP Blocklist Feed": "test-module downloads a file",
+        "McAfee Advanced Threat Defense": "has a command that uploads file (!atd-file-upload)",
         "Symantec Messaging Gateway": "Test playbook uses a random string",
         "Cylance Protect": "Test playbook (get_file_sample_by_hash_-_cylance_protect_-_test) downloads a file",
         "WildFire-v2": "has a command that uploads file (!wildfire-upload)",
