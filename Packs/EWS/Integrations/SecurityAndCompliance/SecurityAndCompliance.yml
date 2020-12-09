@@ -701,7 +701,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Removes compliance search action by search the action name from the Security & Compliance Center.
+    description: Removes a compliance search action by searching for the action name in the Security & Compliance Center.
     execution: false
     name: o365-sc-remove-search-action
   - deprecated: false
