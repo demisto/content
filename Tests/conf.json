@@ -12,6 +12,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "AzureWAF",
+            "playbookID": "Azure WAF - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "GoogleCalendar",
             "playbookID": "GoogleCalendar-Test",
             "fromversion": "5.0.0"
@@ -287,6 +292,7 @@
             "playbookID": "AzureFeed - Test",
             "fromversion": "5.5.0"
         },
+
         {
             "playbookID": "CreateIndicatorFromSTIXTest",
             "fromversion": "5.0.0"
