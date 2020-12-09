@@ -47,11 +47,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "SecurityIntelligenceServicesFeed",
-            "playbookID": "SecurityIntelligenceServicesFeed - Test",
-            "fromversion": "5.5.0"
-        },
-        {
             "integrations": "Majestic Million",
             "playbookID": "Majestic Million Test Playbook",
             "fromversion": "5.5.0",
@@ -62,12 +57,6 @@
             "integrations": "Anomali Enterprise",
             "playbookID": "Anomali Match Forensic Search - Test",
             "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "RiskIQDigitalFootprint",
-            "playbookID": "RiskIQDigitalFootprint-Test",
-            "fromversion": "5.5.0",
-            "timeout": 500
         },
         {
             "integrations": [
@@ -91,16 +80,6 @@
         {
             "integrations": "Microsoft Advanced Threat Analytics",
             "playbookID": "Microsoft Advanced Threat Analytics - Test",
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "Humio",
-            "playbookID": "Humio-Test",
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "Infinipoint",
-            "playbookID": "Infinipoint-Test",
             "fromversion": "5.0.0"
         },
         {
@@ -140,23 +119,9 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "Group-IB TDS Polygon",
-            "playbookID": "Polygon-Test",
-            "timeout": 1000,
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "Bastille Networks",
-            "playbookID": "BastilleNetworks-Test"
-        },
-        {
             "integrations": "MITRE ATT&CK",
             "playbookID": "Mitre Attack List 10 Indicators Feed Test",
             "fromversion": "5.5.0"
-        },
-        {
-            "integrations": "Sepio",
-            "playbookID": "SepioPrimeAPI-Test"
         },
         {
             "integrations": "URLhaus",
@@ -167,15 +132,6 @@
             "integrations": "Microsoft Intune Feed",
             "playbookID": "FeedMicrosoftIntune_Test",
             "fromversion": "5.5.0"
-        },
-        {
-            "integrations": "Druva Ransomware Response",
-            "playbookID": "Druva-Test"
-        },
-        {
-            "integrations": "Smokescreen IllusionBLACK",
-            "playbookID": "Smokescreen IllusionBLACK-Test",
-            "fromversion": "5.0.0"
         },
         {
             "integrations": "Tanium Threat Response",
@@ -3007,32 +2963,8 @@
             "fromversion": "4.5.0"
         },
         {
-            "integrations": "Zabbix",
-            "playbookID": "Zabbix - Test"
-        },
-        {
             "integrations": "GCP Whitelist Feed",
             "playbookID": "GCPWhitelist_Feed_Test",
-            "fromversion": "5.5.0"
-        },
-        {
-            "integrations": "Endace",
-            "playbookID": "Endace-Test",
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "Deep Instinct",
-            "playbookID": "Deep_Instinct-Test",
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "Recorded Future v2",
-            "playbookID": "Recorded Future Test Playbook",
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "CyberTotal",
-            "playbookID": "CyberTotal_TestPlaybook",
             "fromversion": "5.5.0"
         },
         {
@@ -3108,12 +3040,6 @@
             "timeout": 60000
         },
         {
-            "integrations": "TruSTAR v2",
-            "playbookID": "TruSTAR v2-Test",
-            "fromversion": "5.0.0",
-            "timeout": 500
-        },
-        {
             "integrations": "RSA Archer v2",
             "playbookID": "Archer v2 - Test",
             "fromversion": "5.0.0"
@@ -3178,11 +3104,6 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "Talos Feed",
-            "playbookID": "FeedTalosTestPlaybook",
-            "fromversion": "5.5.0"
-        },
-        {
             "integrations": "Rundeck",
             "playbookID": "Rundeck_test",
             "fromversion": "5.5.0"
@@ -3191,14 +3112,6 @@
             "playbookID": "Field polling test",
             "timeout": 600,
             "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "Analyst1",
-            "playbookID": "Analyst1 Integration Test"
-        },
-        {
-            "integrations": "Analyst1",
-            "playbookID": "Analyst1 Integration Demonstration - Test"
         },
         {
             "integrations": "Generic Webhook",
@@ -3269,15 +3182,12 @@
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
         "hashIncidentFields-test": "Issue 26850",
-        "Luminate-TestPlaybook": "Issue 27016",
         "Fidelis Elevate Network": "Issue 26453",
-        "SepioPrimeAPI-Test": "Issue 27240",
         "Cortex XDR - IOC - Test": "Issue 25598",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Cherwell - test": "Issue 26780",
         "pyEWS_Test": "Issue 28339",
         "GmailTest": "Issue 27057",
-        "playbook-SafeBreach-Test": "Issue 21205",
         "SMB test": "Issue 26454",
         "TestCofenseFeed": "Issue 29198",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
@@ -3286,13 +3196,11 @@
         "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
         "Polygon-Test": "Issue 29060",
         "AttackIQ - Test": "Issue 29774",
-        "CyberTotal_TestPlaybook": "Issue 29776",
         "AWS-securityhub Test": "Issue 29796",
         "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
         "IAM - Test Playbook": "Issue 30013",
         "Trend Micro Apex - Test": "Issue 27280",
         "Azure Compute - Test": "Issue 28056",
-        "Recorded Future Test": "Issue 26741",
         "Test - CrowdStrike Falcon": "Issue 30068",
         "TestEmailRepPlaybook": "Issue 30070",
         "CounterCraft - Test": "Issue 30069",
@@ -3319,7 +3227,6 @@
         "ZeroFox": "Issue 29284",
         "Recorded Future v2": "Issue 29090",
         "Symantec Management Center": "Issue 23960",
-        "PerceptionPoint": "Issue 25795",
         "IntSights": "Issue 26742",
         "Traps": "Issue 24122",
         "Fidelis Elevate Network": "Issue 26453",
@@ -3396,7 +3303,6 @@
         "Ivanti Heat": "Issue 26259",
         "AWS - Athena - Beta": "Issue 19834",
         "SNDBOX": "Issue 28826",
-        "illuminate": "Will be replaced by analyst1 - Issue 9401",
         "Workday": "License expired Issue: 29595",
 
         "_comment2": "~~~ UNSTABLE ~~~",
