@@ -423,14 +423,13 @@ class Client(BaseClient):
                         internal_ip_range: Optional[str], risk_rule: Optional[str], tag_names: Optional[str]) -> Iterator[Any]:
 
         params = {
-            "limit": limit,
-            "created-before": created_before,
-            "created-after": created_after,
-            "internal-ip-range": internal_ip_range,
-            "risk-rule": risk_rule,
-            "tag-names": tag_names
+            "page[limit]": limit,
+            "filter[created-before]": created_before,
+            "filter[created-after]": created_after,
+            "filter[internal-ip-range]": internal_ip_range,
+            "filter[risk-rule]": risk_rule,
+            "filter[tag-names]": tag_names
         }
-        demisto.debug(f'DEBUGDEBUG params: {json.dumps(params)}')
         return self._paginate(
             method='GET',
             url_suffix='/v1/behavior/risky-flows',
@@ -2064,7 +2063,7 @@ def list_risk_rules_command(client: Client, args: Dict[str, Any]) -> CommandResu
     total_results, max_page_size = calculate_limits(args.get('limit', None))
 
     params = {
-        "limit": max_page_size
+        "page[limit]": max_page_size
     }
     risk_rules = list(
         islice(
