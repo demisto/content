@@ -38,12 +38,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 569aafc5-1607-4b78-83d2-c6bfe05c2a07
+      id: f0892a91-8613-4cdb-8618-330e16f69af8
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 569aafc5-1607-4b78-83d2-c6bfe05c2a07
+    taskid: f0892a91-8613-4cdb-8618-330e16f69af8
     timertriggers: []
     type: start
     view: |-
@@ -65,13 +65,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 37dbf3c9-e00b-4171-8cf7-f6b6245d5b69
+      id: cb8e4a34-210c-4701-84e7-004595c7e4b8
       iscommand: false
       name: Prisma Cloud Alert Detection
       type: title
       version: -1
       description: ''
-    taskid: 37dbf3c9-e00b-4171-8cf7-f6b6245d5b69
+    taskid: cb8e4a34-210c-4701-84e7-004595c7e4b8
     timertriggers: []
     type: title
     view: |-
@@ -104,13 +104,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 659602ca-fdfd-4b6c-8d6b-2e3481101345
+      description: Check if Prisma Cloud assets are present
+      id: a8c93e03-4367-44d4-88f4-1c778a392639
       iscommand: false
       name: Are assets in Prisma Cloud found?
       type: condition
       version: -1
-      description: Check if Prisma Cloud assets are present
-    taskid: 659602ca-fdfd-4b6c-8d6b-2e3481101345
+    taskid: a8c93e03-4367-44d4-88f4-1c778a392639
     timertriggers: []
     type: condition
     view: |-
@@ -129,13 +129,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ab24e389-a3e9-4bfc-8019-67767ecdc44c
+      id: 00a2c3af-78b7-4b01-885f-d5c2e01d6af9
       iscommand: false
       name: Done Prisma Cloud Alert Detection
       type: title
       version: -1
       description: ''
-    taskid: ab24e389-a3e9-4bfc-8019-67767ecdc44c
+    taskid: 00a2c3af-78b7-4b01-885f-d5c2e01d6af9
     timertriggers: []
     type: title
     view: |-
@@ -181,13 +181,13 @@ tasks:
     task:
       brand: ""
       description: Search alerts on the Prisma Cloud (RedLock) platform
-      id: 6b73703f-91c6-4c59-81ea-608081cd8d0d
+      id: 6dc73a58-59f7-4511-8884-1358d318e01f
       iscommand: true
       name: Find Prisma Cloud Alerts for detected assets
       script: '|||redlock-search-alerts'
       type: regular
       version: -1
-    taskid: 6b73703f-91c6-4c59-81ea-608081cd8d0d
+    taskid: 6dc73a58-59f7-4511-8884-1358d318e01f
     timertriggers: []
     type: regular
     view: |-
@@ -231,13 +231,13 @@ tasks:
     task:
       brand: ""
       description: Convert an array to a nice table display. Usually, from the context.
-      id: 56ede8ba-7f6c-45d6-8df0-df36b1f6db4d
+      id: b6b02f01-2db2-4859-8756-3e7ad37c9072
       iscommand: false
       name: Print Prisma Cloud Alerts
       script: ToTable
       type: regular
       version: -1
-    taskid: 56ede8ba-7f6c-45d6-8df0-df36b1f6db4d
+    taskid: b6b02f01-2db2-4859-8756-3e7ad37c9072
     timertriggers: []
     type: regular
     view: |-
@@ -291,13 +291,13 @@ tasks:
     task:
       brand: ""
       description: Searches Demisto incidents
-      id: 9079ea83-9a82-4d29-864e-380d032d7795
+      id: f8fef3ac-24cc-4da8-808c-f528da2e4018
       iscommand: false
       name: Find Prisma Cloud Incidents
       script: SearchIncidentsV2
       type: regular
       version: -1
-    taskid: 9079ea83-9a82-4d29-864e-380d032d7795
+    taskid: f8fef3ac-24cc-4da8-808c-f528da2e4018
     timertriggers: []
     type: regular
     view: |-
@@ -328,13 +328,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.linkIncidents
-      id: ce1ed273-f682-4492-8e40-cb2bb365eda4
+      id: d4bbc5e9-ca03-4c23-8d1c-6db397ff37b0
       iscommand: true
       name: Link Incidents
       script: Builtin|||linkIncidents
       type: regular
       version: -1
-    taskid: ce1ed273-f682-4492-8e40-cb2bb365eda4
+    taskid: d4bbc5e9-ca03-4c23-8d1c-6db397ff37b0
     timertriggers: []
     type: regular
     view: |-
@@ -368,13 +368,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: dd6c89cf-3f57-4f65-8633-cfbc7fcd46cf
+      description: Check if Prisma Cloud alerts were found
+      id: 9fe334d8-188b-4bf0-83a1-2d82effa470e
       iscommand: false
       name: Prisma Cloud Alerts found?
       type: condition
       version: -1
-      description: Check if Prisma Cloud alerts were found
-    taskid: dd6c89cf-3f57-4f65-8633-cfbc7fcd46cf
+    taskid: 9fe334d8-188b-4bf0-83a1-2d82effa470e
     timertriggers: []
     type: condition
     view: |-
@@ -417,13 +417,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 4eacb327-5a69-4f7a-8d47-f6bd17036d53
+      description: Check if we should link Prisma Cloud incidents to the current incident.
+      id: d2dfa186-ed78-4ed7-8d06-63ca91c91c0b
       iscommand: false
       name: Are we linking found Prisma Cloud Incidents?
       type: condition
       version: -1
-      description: Check if we should link Prisma Cloud incidents to the current incident.
-    taskid: 4eacb327-5a69-4f7a-8d47-f6bd17036d53
+    taskid: d2dfa186-ed78-4ed7-8d06-63ca91c91c0b
     timertriggers: []
     type: condition
     view: |-
@@ -473,13 +473,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 956d1726-3eb8-48b0-8409-ff00fa2bbfb6
+      description: Check if the Prisma Cloud integration is enabled
+      id: e44f2a90-27f4-4584-8548-e285eac679a5
       iscommand: false
       name: Is Prisma Cloud enabled?
       type: condition
       version: -1
-      description: Check if the Prisma Cloud integration is enabled
-    taskid: 956d1726-3eb8-48b0-8409-ff00fa2bbfb6
+    taskid: e44f2a90-27f4-4584-8548-e285eac679a5
     timertriggers: []
     type: condition
     view: |-
@@ -506,6 +506,6 @@ view: |-
       }
     }
   }
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
