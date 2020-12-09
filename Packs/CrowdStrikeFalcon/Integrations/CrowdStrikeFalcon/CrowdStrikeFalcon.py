@@ -1085,7 +1085,12 @@ def get_ioc_device_count(ioc_type, value):
         type=ioc_type,
         value=value
     )
-    return http_request('GET', '/indicators/aggregates/devices-count/v1', payload)
+    response = http_request('GET', '/indicators/aggregates/devices-count/v1', payload, status_code=404)
+    errors = response.get('errors', [])
+    for error in errors:
+        if error.get('code') == 404:
+            return f'No results found for {ioc_type} - {value}'
+    return response
 
 
 def get_process_details(ids):
@@ -1471,18 +1476,17 @@ def get_ioc_device_count_command(ioc_type: str, value: str):
     :param value: The IOC value
     """
     raw_res = get_ioc_device_count(ioc_type, value)
-    errors = raw_res.get('errors', [])
-    for error in errors:
-        if error.get('code') == 404:
-            return f'No results found for {ioc_type} - {value}'
-    handle_response_errors(raw_res)
-    device_count_res = raw_res.get('resources')
-    ioc_id = f"{ioc_type}:{value}"
-    if not device_count_res:
-        return create_entry_object(raw_res, hr=f"Could not find any devices the IOC **{ioc_id}** was detected in.")
-    context = [get_trasnformed_dict(device_count, IOC_DEVICE_COUNT_MAP) for device_count in device_count_res]
-    hr = f'Indicator of Compromise **{ioc_id}** device count: **{device_count_res[0].get("device_count")}**'
-    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': context}, hr=hr)
+    if 'resources' in raw_res:
+        handle_response_errors(raw_res)
+        device_count_res = raw_res.get('resources')
+        ioc_id = f"{ioc_type}:{value}"
+        if not device_count_res:
+            return create_entry_object(raw_res, hr=f"Could not find any devices the IOC **{ioc_id}** was detected in.")
+        context = [get_trasnformed_dict(device_count, IOC_DEVICE_COUNT_MAP) for device_count in device_count_res]
+        hr = f'Indicator of Compromise **{ioc_id}** device count: **{device_count_res[0].get("device_count")}**'
+        return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': context}, hr=hr)
+    else:
+        return raw_res
 
 
 def get_process_details_command(ids: str):
