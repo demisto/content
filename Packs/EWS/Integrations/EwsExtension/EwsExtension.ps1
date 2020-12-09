@@ -39,8 +39,13 @@ function CreateNewSession {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope='Function')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Scope='Function')]
     param([string]$url, [string]$upn, [string]$password, [string]$bearer_token, [bool]$insecure, [bool]$proxy)
-
-    $url = "$url/powershell-liveid?BasicAuthToOAuthConversion=true"
+    if ($password){
+        $url = "$url/powershell-liveid"
+    }
+    else
+    {
+        $url = "$url/powershell-liveid?BasicAuthToOAuthConversion=true"
+    }
 
     if ($password){
         $credential = ConvertTo-SecureString "$password" -AsPlainText -Force

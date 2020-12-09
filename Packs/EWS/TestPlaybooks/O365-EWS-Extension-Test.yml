@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 9a94d9bb-7b04-4711-861e-0b6624a9a11f
+    taskid: e7787aa8-f58c-4e81-8704-024595e4691b
     type: regular
     task:
-      id: 9a94d9bb-7b04-4711-861e-0b6624a9a11f
+      id: e7787aa8-f58c-4e81-8704-024595e4691b
       version: -1
       name: Add junk rule
       description: Set junk rules in mailbox.
@@ -57,6 +57,10 @@ tasks:
           root: inputs.mailbox
       remove_blocked_senders_and_domains: {}
       remove_trusted_senders_and_domains: {}
+      retry-count:
+        simple: "4"
+      retry-interval:
+        simple: "20"
       trusted_lists_only: {}
     separatecontext: false
     view: |-
@@ -73,10 +77,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 2d520953-cc07-4360-8cbb-53d62d4ac529
+    taskid: 962c28d5-9996-4318-8322-474093a9acc6
     type: regular
     task:
-      id: 2d520953-cc07-4360-8cbb-53d62d4ac529
+      id: 962c28d5-9996-4318-8322-474093a9acc6
       version: -1
       name: Get junk rule in mailbox
       description: Get junk rules in mailbox.
@@ -91,6 +95,10 @@ tasks:
       mailbox:
         complex:
           root: inputs.mailbox
+      retry-count:
+        simple: "4"
+      retry-interval:
+        simple: "20"
     separatecontext: false
     view: |-
       {
@@ -146,10 +154,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 6558ef60-130d-4253-8852-76a3e7a1830f
+    taskid: 20340760-f2a2-4d54-8938-9d22182b49b6
     type: regular
     task:
-      id: 6558ef60-130d-4253-8852-76a3e7a1830f
+      id: 20340760-f2a2-4d54-8938-9d22182b49b6
       version: -1
       name: Get message trace
       description: |
@@ -171,6 +179,10 @@ tasks:
       page: {}
       page_size: {}
       recipient_address: {}
+      retry-count:
+        simple: "4"
+      retry-interval:
+        simple: "20"
       sender_address: {}
       start_date: {}
       status: {}
@@ -250,10 +262,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: a07ad0fe-e067-466b-8330-de10d6464cdc
+    taskid: b92b88d9-c906-4965-8b79-b4c31bf42030
     type: regular
     task:
-      id: a07ad0fe-e067-466b-8330-de10d6464cdc
+      id: b92b88d9-c906-4965-8b79-b4c31bf42030
       version: -1
       name: Remove junk rule
       description: Set junk rules in mailbox.
@@ -276,6 +288,10 @@ tasks:
         complex:
           root: inputs.add_conf
       remove_trusted_senders_and_domains: {}
+      retry-count:
+        simple: "4"
+      retry-interval:
+        simple: "20"
       trusted_lists_only: {}
     separatecontext: false
     view: |-
@@ -292,10 +308,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: d061ffc7-4b8a-4983-8bda-ce8bed053b51
+    taskid: c161ed53-fb6a-4e29-88e4-42f360158189
     type: regular
     task:
-      id: d061ffc7-4b8a-4983-8bda-ce8bed053b51
+      id: c161ed53-fb6a-4e29-88e4-42f360158189
       version: -1
       name: Get junk rule in mailbox
       description: Get junk rules in mailbox.
@@ -310,6 +326,10 @@ tasks:
       mailbox:
         complex:
           root: inputs.mailbox
+      retry-count:
+        simple: "4"
+      retry-interval:
+        simple: "20"
     separatecontext: false
     view: |-
       {
@@ -425,4 +445,4 @@ inputs:
   description: Configuration to add when verifying integration.
   playbookInputQuery: null
 outputs: []
-fromversion: 5.5.0
+fromversion: 5.0.0
