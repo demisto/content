@@ -40,8 +40,11 @@ outputs:
 - contextPath: DomainDNSDetails.AAAA
   description: Domain AAAA records.
   type: String
-- contextPath: DomainDNSDetails.NS
+- contextPath: DomainDNSDetails.CNAME
   description: Domain CNAME records.
+  type: String
+- contextPath: DomainDNSDetails.NS
+  description: Domain NS records.
   type: String
 - contextPath: DomainDNSDetails.domain
   description: Domain name used in the query.
