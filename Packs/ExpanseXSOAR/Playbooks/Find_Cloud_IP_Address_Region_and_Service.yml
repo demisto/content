@@ -50,12 +50,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: aa318689-86f5-4fb2-84e0-3c46d3aca664
+      id: 962e831b-47d9-485a-8030-795d6b48c8db
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: aa318689-86f5-4fb2-84e0-3c46d3aca664
+    taskid: 962e831b-47d9-485a-8030-795d6b48c8db
     timertriggers: []
     type: start
     view: |-
@@ -120,13 +120,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e689a6a5-2163-4dfd-80e2-e3f567586a12
+      description: Select the appropriate branch depending on the Cloud Provider
+      id: 092e54ea-8f59-4208-89a4-b829124faf5f
       iscommand: false
       name: Cloud Provider Selector
       type: condition
       version: -1
-      description: Select the appropriate branch depending on the Cloud Provider
-    taskid: e689a6a5-2163-4dfd-80e2-e3f567586a12
+    taskid: 092e54ea-8f59-4208-89a4-b829124faf5f
     timertriggers: []
     type: condition
     view: |-
@@ -157,13 +157,13 @@ tasks:
     task:
       brand: ""
       description: Match IP address in all the CIDRs indicators (longest match)
-      id: 148e2a46-7809-4536-8452-08bcf3a66ee1
+      id: 22f35e1a-8e65-4cde-8319-a17af9ab449b
       iscommand: false
       name: Match IP in AWS CIDR Indicators
       script: MatchIPinCIDRIndicators
       type: regular
       version: -1
-    taskid: 148e2a46-7809-4536-8452-08bcf3a66ee1
+    taskid: 22f35e1a-8e65-4cde-8319-a17af9ab449b
     timertriggers: []
     type: regular
     view: |-
@@ -194,13 +194,13 @@ tasks:
     task:
       brand: ""
       description: Match IP address in all the CIDRs indicators (longest match)
-      id: 8e6e332f-0c8f-4ed5-8370-d85f7abc9166
+      id: fbcc59ad-78c3-4caf-86a2-4f40347d0434
       iscommand: false
       name: Match IP in GCP CIDR Indicators
       script: MatchIPinCIDRIndicators
       type: regular
       version: -1
-    taskid: 8e6e332f-0c8f-4ed5-8370-d85f7abc9166
+    taskid: fbcc59ad-78c3-4caf-86a2-4f40347d0434
     timertriggers: []
     type: regular
     view: |-
@@ -231,13 +231,13 @@ tasks:
     task:
       brand: ""
       description: Match IP address in all the CIDRs indicators (longest match)
-      id: 776c1eb0-eaa7-4f02-84ed-a9a56d10f9ad
+      id: 6d03c220-7552-4c0f-8209-21a511dc21fe
       iscommand: false
       name: Match IP in AZURE CIDR Indicators
       script: MatchIPinCIDRIndicators
       type: regular
       version: -1
-    taskid: 776c1eb0-eaa7-4f02-84ed-a9a56d10f9ad
+    taskid: 6d03c220-7552-4c0f-8209-21a511dc21fe
     timertriggers: []
     type: regular
     view: |-
@@ -261,13 +261,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 2020bab6-5a76-4897-8144-133c7026d71e
+      id: 602ae52b-e637-46be-831f-450c45b13dfb
       iscommand: false
       name: Check All Providers
       type: title
       version: -1
       description: ''
-    taskid: 2020bab6-5a76-4897-8144-133c7026d71e
+    taskid: 602ae52b-e637-46be-831f-450c45b13dfb
     timertriggers: []
     type: title
     view: |-
@@ -286,13 +286,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 0b1adba9-964f-4e60-8b94-b7fe46038b71
+      id: 0ae27264-35d4-4aa6-8b01-715a1c5cdae1
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: 0b1adba9-964f-4e60-8b94-b7fe46038b71
+    taskid: 0ae27264-35d4-4aa6-8b01-715a1c5cdae1
     timertriggers: []
     type: title
     view: |-
