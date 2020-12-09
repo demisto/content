@@ -30,8 +30,12 @@ class Client(BaseClient):
         )
 
         if res and len(res.get('result', [])) == 1:
-            return res.get('result')[0]
-        return None
+            user_app_data = res.get('result')[0]
+            user_id = user_app_data.get('sys_id')
+            is_active = True if user_app_data.get('active') == 'true' else False
+            username = user_app_data.get('user_name')
+            return user_id, username, is_active, user_app_data
+        return None, None, None, None
 
     def create_user(self, user_data):
         uri = 'table/sys_user'
