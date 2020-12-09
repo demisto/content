@@ -7,12 +7,11 @@ import glob
 import logging
 from typing import Any, Tuple, Union
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
-    GCPConfig, CONTENT_ROOT_PATH, \
-    get_packs_statistics_dataframe
+    GCPConfig, CONTENT_ROOT_PATH, get_packs_statistics_dataframe, load_json, get_content_git_client, \
+    get_recent_commits_data
 from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index,\
     update_index_folder, clean_non_existing_packs, upload_index_to_storage, upload_core_packs_config,\
-    upload_id_set, load_json, get_content_git_client, check_if_index_is_updated, print_packs_summary,\
-    get_packs_summary, get_recent_commits_data
+    upload_id_set, check_if_index_is_updated, print_packs_summary, get_packs_summary
 from demisto_sdk.commands.common.tools import str2bool
 
 from Tests.scripts.utils.log_util import install_logging

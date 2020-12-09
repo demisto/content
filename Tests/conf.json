@@ -60,7 +60,7 @@
         },
         {
             "integrations": "Anomali Enterprise",
-            "playbookID": "Anomali Enterprise Forensic Search - Test",
+            "playbookID": "Anomali Match Forensic Search - Test",
             "fromversion": "5.0.0"
         },
         {
@@ -194,6 +194,13 @@
             "integrations": "APIVoid",
             "playbookID": "APIVoid Test"
         },
+        {
+            "integrations": "CloudConvert",
+            "playbookID": "CloudConvert-test",
+            "fromversion": "5.0.0",
+            "timeout": 2000
+        },
+
         {
             "integrations": "Cisco Firepower",
             "playbookID": "Cisco Firepower - Test",
@@ -3202,6 +3209,10 @@
             "integrations": "Palo Alto Networks Enterprise DLP",
             "playbookID": "Palo_Alto_Networks_Enterprise_DLP - Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Cryptocurrency",
+            "playbookID": "Cryptocurrency-Test"
         }
     ],
     "skipped_tests": {
