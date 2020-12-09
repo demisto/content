@@ -22,8 +22,8 @@ inputs:
 name: Prisma Cloud - Find Public Cloud Resource by FQDN
 outputs:
 - contextPath: PrismaCloud.Attribution
-  type: unknown
   description: Prisma Cloud attributed asset information.
+  type: unknown
 starttaskid: "0"
 tasks:
   "0":
@@ -31,26 +31,26 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "15"
+      - "20"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: e1f99a23-4c36-4cd1-89d4-06a6069ecd39
+      id: 17ed1fd8-f4fb-423c-87cb-2aea369f2e65
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: e1f99a23-4c36-4cd1-89d4-06a6069ecd39
+    taskid: 17ed1fd8-f4fb-423c-87cb-2aea369f2e65
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
-          "x": 1380,
-          "y": -460
+          "x": 1830,
+          "y": -1210
         }
       }
   "1":
@@ -64,7 +64,7 @@ tasks:
     scriptarguments:
       query:
         complex:
-          root: inputs.FQDN
+          root: FQDN
           transformers:
           - args:
               prefix:
@@ -93,18 +93,20 @@ tasks:
       time-range-date-to: {}
       time-range-date-unit: {}
       time-range-date-value: {}
+      time-range-unit: {}
+      time-range-value: {}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: 7f087652-9857-449e-897f-93b74119d7fa
+      description: Search Route53 hosted zones in Prisma Cloud
+      id: 26239a5d-bf3e-4ff8-84ee-c41a8ac05089
       iscommand: true
       name: Search FQDN in Route53 HostedZone Entries
       script: '|||redlock-search-config'
       type: regular
       version: -1
-      description: Search Route53 hosted zones in Prisma Cloud
-    taskid: 7f087652-9857-449e-897f-93b74119d7fa
+    taskid: 26239a5d-bf3e-4ff8-84ee-c41a8ac05089
     timertriggers: []
     type: regular
     view: |-
@@ -166,13 +168,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ab985172-80ca-4640-888a-8ed88d1d26a8
+      description: Branch based on Cloud Provider
+      id: 453eb7c7-7e1f-4280-82e7-8669799d9f14
       iscommand: false
       name: What Cloud Provider?
       type: condition
       version: -1
-      description: Branch based on Cloud Provider
-    taskid: ab985172-80ca-4640-888a-8ed88d1d26a8
+    taskid: 453eb7c7-7e1f-4280-82e7-8669799d9f14
     timertriggers: []
     type: condition
     view: |-
@@ -197,13 +199,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 7d55b911-def4-4fe7-88da-731dcfe678e6
+      id: cff0ecbd-350d-4532-8540-1fa1e732233a
       iscommand: false
       name: Search in AWS
       type: title
       version: -1
       description: ''
-    taskid: 7d55b911-def4-4fe7-88da-731dcfe678e6
+    taskid: cff0ecbd-350d-4532-8540-1fa1e732233a
     timertriggers: []
     type: title
     view: |-
@@ -225,13 +227,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: fe46cd1f-b3fc-4c61-8451-35666b2929b1
+      id: 6a7b171f-8b2b-40d5-8585-0143daf1753f
       iscommand: false
       name: Search in Azure
       type: title
       version: -1
       description: ''
-    taskid: fe46cd1f-b3fc-4c61-8451-35666b2929b1
+    taskid: 6a7b171f-8b2b-40d5-8585-0143daf1753f
     timertriggers: []
     type: title
     view: |-
@@ -253,13 +255,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: eb40d866-362f-4302-873e-12fb5acae82a
+      id: 550c149e-3d32-4487-8d95-fa77efc31381
       iscommand: false
       name: Search in GCP
       type: title
       version: -1
       description: ''
-    taskid: eb40d866-362f-4302-873e-12fb5acae82a
+    taskid: 550c149e-3d32-4487-8d95-fa77efc31381
     timertriggers: []
     type: title
     view: |-
@@ -283,13 +285,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e50fc375-1d5f-41c7-896e-434d83dfa934
+      id: 07bcffbb-6920-45c8-8666-2392c2c3d761
       iscommand: false
       name: Search All Cloud Providers
       type: title
       version: -1
       description: ''
-    taskid: e50fc375-1d5f-41c7-896e-434d83dfa934
+    taskid: 07bcffbb-6920-45c8-8666-2392c2c3d761
     timertriggers: []
     type: title
     view: |-
@@ -311,13 +313,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: c6073a79-da6d-476e-8129-89c2dd042e72
+      id: b80dc412-f8b1-47db-8e3f-0ea44103fbd0
       iscommand: false
       name: Check Results
       type: title
       version: -1
       description: ''
-    taskid: c6073a79-da6d-476e-8129-89c2dd042e72
+    taskid: b80dc412-f8b1-47db-8e3f-0ea44103fbd0
     timertriggers: []
     type: title
     view: |-
@@ -338,7 +340,7 @@ tasks:
     scriptarguments:
       query:
         complex:
-          root: inputs.FQDN
+          root: FQDN
           transformers:
           - args:
               prefix:
@@ -364,18 +366,20 @@ tasks:
       time-range-date-to: {}
       time-range-date-unit: {}
       time-range-date-value: {}
+      time-range-unit: {}
+      time-range-value: {}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: 09bcd3fc-613c-4654-8cdc-aef8711bde8d
+      description: Search AWS Elastic Load Balancers in Prisma Cloud
+      id: c9e44f22-25f1-4672-87be-369d3460b242
       iscommand: true
       name: Search in Load Balancers
       script: '|||redlock-search-config'
       type: regular
       version: -1
-      description: Search AWS Elastic Load Balancers in Prisma Cloud
-    taskid: 09bcd3fc-613c-4654-8cdc-aef8711bde8d
+    taskid: c9e44f22-25f1-4672-87be-369d3460b242
     timertriggers: []
     type: regular
     view: |-
@@ -396,7 +400,7 @@ tasks:
     scriptarguments:
       query:
         complex:
-          root: inputs.FQDN
+          root: FQDN
           transformers:
           - args:
               prefix:
@@ -422,25 +426,27 @@ tasks:
       time-range-date-to: {}
       time-range-date-unit: {}
       time-range-date-value: {}
+      time-range-unit: {}
+      time-range-value: {}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: 62f5118f-14b1-4895-8ea7-254e80020548
+      description: Search AWS CloudFront in Prisma Cloud
+      id: de5a8270-f403-4aa4-8fb9-b8890952716f
       iscommand: true
       name: Search in CloudFront
       script: '|||redlock-search-config'
       type: regular
       version: -1
-      description: Search AWS CloudFront in Prisma Cloud
-    taskid: 62f5118f-14b1-4895-8ea7-254e80020548
+    taskid: de5a8270-f403-4aa4-8fb9-b8890952716f
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 120,
-          "y": 750
+          "y": 775
         }
       }
   "10":
@@ -458,7 +464,7 @@ tasks:
       stringify: {}
       value:
         complex:
-          root: inputs.FQDN
+          root: FQDN
           transformers:
           - args:
               groups:
@@ -477,19 +483,19 @@ tasks:
       brand: ""
       description: Set a value in context under the key you entered. If no value is
         entered, the script doesn't do anything.
-      id: 8d0e14f6-d5b9-42e8-8707-cd76d7852f11
+      id: a0e05f43-a4d7-46a4-8f87-36a0dd03e1e7
       iscommand: false
       name: Split Hostname from Domain
       script: SetAndHandleEmpty
       type: regular
       version: -1
-    taskid: 8d0e14f6-d5b9-42e8-8707-cd76d7852f11
+    taskid: a0e05f43-a4d7-46a4-8f87-36a0dd03e1e7
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": -20,
+          "x": 20,
           "y": 195
         }
       }
@@ -504,8 +510,16 @@ tasks:
     scriptarguments:
       query:
         complex:
-          accessor: domain
-          root: SplitFQDN
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: SplitFQDN.domain
+              operator: notEndWith
+              right:
+                value:
+                  simple: amazonaws.com
+          root: SplitFQDN.domain
           transformers:
           - args:
               prefix:
@@ -534,18 +548,20 @@ tasks:
       time-range-date-to: {}
       time-range-date-unit: {}
       time-range-date-value: {}
+      time-range-unit: {}
+      time-range-value: {}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: bee4c762-9183-484e-812b-dd24ea94d41e
+      description: Search Route53 Hosted Zones in Prisma Cloud
+      id: 5ffe5d00-a5f4-4c17-8ea9-b4caffb7ddf9
       iscommand: true
       name: Search Domain in Route53 HostedZone Name
       script: '|||redlock-search-config'
       type: regular
       version: -1
-      description: Search Route53 Hosted Zones in Prisma Cloud
-    taskid: bee4c762-9183-484e-812b-dd24ea94d41e
+    taskid: 5ffe5d00-a5f4-4c17-8ea9-b4caffb7ddf9
     timertriggers: []
     type: regular
     view: |-
@@ -579,13 +595,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8f98d2e1-6097-498b-86a0-75ebc26c05cd
+      description: Check whether results are found.
+      id: dc263bf9-1c94-45e5-8eda-b917da3c2a93
       iscommand: false
       name: Are results found?
       type: condition
       version: -1
-      description: Check whether results are found.
-    taskid: 8f98d2e1-6097-498b-86a0-75ebc26c05cd
+    taskid: dc263bf9-1c94-45e5-8eda-b917da3c2a93
     timertriggers: []
     type: condition
     view: |-
@@ -614,13 +630,13 @@ tasks:
     task:
       brand: ""
       description: Prisma Cloud Attribution
-      id: ebd26521-5675-4d11-8696-ac5ab7e27f1c
+      id: 3e7d876f-a4fc-4dc3-856f-2e65585b829b
       iscommand: false
       name: Transform Results
       script: PrismaCloudAttribution
       type: regular
       version: -1
-    taskid: ebd26521-5675-4d11-8696-ac5ab7e27f1c
+    taskid: 3e7d876f-a4fc-4dc3-856f-2e65585b829b
     timertriggers: []
     type: regular
     view: |-
@@ -639,13 +655,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 7c2a8ff4-7a1e-46ef-8d05-95445c53a689
+      id: f50d6c50-8316-45f7-832e-89d92b1131ed
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: 7c2a8ff4-7a1e-46ef-8d05-95445c53a689
+    taskid: f50d6c50-8316-45f7-832e-89d92b1131ed
     timertriggers: []
     type: title
     view: |-
@@ -688,27 +704,27 @@ tasks:
       '#default#':
       - "14"
       "yes":
-      - "16"
+      - "17"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: 1bdd5f5f-52f3-4399-8489-de76cc5a4c2c
+      description: Check whether Prisma Cloud integration is enabled.
+      id: edd33713-3740-4316-8160-18a3fefb8877
       iscommand: false
       name: Is Prisma Cloud enabled?
       type: condition
       version: -1
-      description: Check whether Prisma Cloud integration is enabled.
-    taskid: 1bdd5f5f-52f3-4399-8489-de76cc5a4c2c
+    taskid: edd33713-3740-4316-8160-18a3fefb8877
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 1380,
-          "y": -315
+          "x": 1410,
+          "y": -865
         }
       }
   "16":
@@ -724,13 +740,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: cbd6b949-9294-4c42-8d8d-0d84e0d59dc0
+      id: 890f9eb2-7677-4592-8d41-35d1fb35f9fc
       iscommand: false
       name: Search Prisma Cloud Inventory
       type: title
       version: -1
       description: ''
-    taskid: cbd6b949-9294-4c42-8d8d-0d84e0d59dc0
+    taskid: 890f9eb2-7677-4592-8d41-35d1fb35f9fc
     timertriggers: []
     type: title
     view: |-
@@ -738,6 +754,157 @@ tasks:
         "position": {
           "x": 480,
           "y": -80
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5edbec51-4ffa-45df-8d40-ca23b7336191
+      iscommand: false
+      name: Extract CNAMEs for domain(s)
+      type: title
+      version: -1
+      description: ''
+    taskid: 5edbec51-4ffa-45df-8d40-ca23b7336191
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": -650
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.FQDN
+      qtype:
+        simple: CNAME
+      server: {}
+      use_tcp: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns DNS details for a domain
+      id: 4f5bb066-ca47-45d0-814c-00e078cfd235
+      iscommand: false
+      name: Get Domain DNS Details
+      script: GetDomainDNSDetails
+      type: regular
+      version: -1
+    taskid: 4f5bb066-ca47-45d0-814c-00e078cfd235
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": -510
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: FQDN
+      stringify: {}
+      value:
+        complex:
+          root: inputs.FQDN
+          transformers:
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: DomainDNSDetails.CNAME
+            operator: append
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      id: 6486c5a7-d18a-4720-8b06-24aac0248f81
+      iscommand: false
+      name: Join list of inputs with CNAMEs
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 6486c5a7-d18a-4720-8b06-24aac0248f81
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": -350
+        }
+      }
+  "20":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.FQDN
+          operator: isNotEmpty
+      label: "yes"
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if there are any FQDNs in the input.
+      id: e4dfe7ec-3710-4533-8242-1382d7b104b5
+      iscommand: false
+      name: Are there FQDNs in input?
+      type: condition
+      version: -1
+    taskid: e4dfe7ec-3710-4533-8242-1382d7b104b5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": -1080
         }
       }
 version: -1
@@ -750,10 +917,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2375,
-        "width": 2550,
+        "height": 3125,
+        "width": 3000,
         "x": -790,
-        "y": -460
+        "y": -1210
       }
     }
   }
