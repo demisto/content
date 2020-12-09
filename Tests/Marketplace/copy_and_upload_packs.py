@@ -325,9 +325,11 @@ def main():
     if production_base_path:
         GCPConfig.STORAGE_BASE_PATH = production_base_path
 
-    # Download and extract build index from build and prod buckets
+    # Download and extract index from build and prod buckets
     build_index_folder_path, build_index_blob, build_index_generation = \
         download_and_extract_index(build_bucket, extract_destination_path)
+    prod_index_folder_path, _, _ = \
+        download_and_extract_index(production_bucket, extract_destination_path)
 
     # Get the successful and failed packs file from Prepare Content step in Create Instances job if there are
     pc_successful_packs_dict, pc_failed_packs_dict = get_successful_and_failed_packs(
@@ -339,7 +341,7 @@ def main():
 
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
-    current_commit_hash, previous_commit_hash = get_recent_commits_data(content_repo, build_index_folder_path,
+    current_commit_hash, previous_commit_hash = get_recent_commits_data(content_repo, prod_index_folder_path,
                                                                         is_bucket_upload_flow=True)
 
     # Detect packs to upload

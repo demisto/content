@@ -647,7 +647,7 @@ class TestImagesUpload:
         assert len(expected_result) == len(integration_images)
         assert integration_images == expected_result
 
-    def test_copy_and_upload_integration_images(self, mocker, dummy_pack):
+    def test_copy_integration_images(self, mocker, dummy_pack):
         """
            Given:
                - Integration image.
@@ -658,15 +658,21 @@ class TestImagesUpload:
        """
         dummy_build_bucket = mocker.MagicMock()
         dummy_prod_bucket = mocker.MagicMock()
+        dummy_content_repo = mocker.MagicMock()
+        dummy_commit = mocker.MagicMock()
+        dummy_content_repo.commit.return_value = dummy_commit
+        dummy_file = mocker.MagicMock()
+        dummy_commit.diff.return_value = [dummy_file]
         blob_name = "content/packs/TestPack/IntegrationName_image.png"
-        dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
-        mocker.patch("Tests.Marketplace.marketplace_services.is_integration_image", return_value=True)
+        dummy_file.a_path = blob_name
+        mocker.patch("Tests.Marketplace.marketplace_services.Pack.is_integration_image", return_value=True)
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_build_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
-        task_status = dummy_pack.copy_integration_images(dummy_prod_bucket, dummy_build_bucket)
+        task_status = dummy_pack.copy_integration_images(dummy_prod_bucket, dummy_build_bucket, 'fake_hash',
+                                                         'fake_hash', dummy_content_repo)
         assert task_status
 
-    def test_copy_and_upload_author_image(self, mocker, dummy_pack):
+    def test_copy_author_image(self, mocker, dummy_pack):
         """
            Given:
                - Author image.
@@ -677,10 +683,18 @@ class TestImagesUpload:
        """
         dummy_build_bucket = mocker.MagicMock()
         dummy_prod_bucket = mocker.MagicMock()
-        mocker.patch("Tests.Marketplace.marketplace_services.logging")
+        dummy_content_repo = mocker.MagicMock()
+        dummy_commit = mocker.MagicMock()
+        dummy_content_repo.commit.return_value = dummy_commit
+        dummy_file = mocker.MagicMock()
+        dummy_commit.diff.return_value = [dummy_file]
         blob_name = "content/packs/TestPack/Author_image.png"
+        dummy_file.a_path = blob_name
+        mocker.patch("Tests.Marketplace.marketplace_services.Pack.is_author_image", return_value=True)
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
-        task_status = dummy_pack.copy_author_image(dummy_prod_bucket, dummy_build_bucket)
+        task_status = dummy_pack.copy_author_image(dummy_prod_bucket, dummy_build_bucket, 'fake_hash',
+                                                   'fake_hash', dummy_content_repo)
         assert task_status
 
 
