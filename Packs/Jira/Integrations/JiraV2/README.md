@@ -195,16 +195,16 @@ Creates a new issue in Jira.
 | --- | --- | --- |
 | issueJson | The issue object (in JSON format). | Optional | 
 | summary | The summary of the issue. | Required | 
-| projectKey | The project key with which to associate the issue. | Required | 
+| projectKey | The project key with which to associate the issue. | Optional | 
 | issueTypeName |  Select an issue type by name, for example: "Problem".  | Optional | 
-| issueTypeId | Select an issue type by its numeric ID. | Required | 
+| issueTypeId | Select an issue type by its numeric ID. | Optional | 
 | projectName | The project name with which to associate the issue. | Optional | 
 | description | A description of the issue. | Optional | 
 | labels | A CSV list of labels.  | Optional | 
 | priority | The priority name, for example: "High" or "Medium". | Optional | 
 | dueDate | The due date for the issue (in the format: 2018-03-11). | Optional | 
 | assignee | The name of the assignee. | Optional | 
-| reporter | The ID of the reporter. | Optional | 
+| reporter | The account ID of the reporter. | Optional | 
 | parentIssueKey | The parent issue key (if you create a sub-task). | Optional | 
 | parentIssueId | The parent issue ID (if you create a sub-task). | Optional | 
 

@@ -10,6 +10,7 @@ import re
 import json
 import requests
 import socket
+import traceback
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -506,7 +507,7 @@ def get_data_from_coverage_sub_category(sub_category_name, sub_category_data):
 def parse_coverage_sub_categories(coverage_data):
     new_coverage = {}
     for sub_category_name, sub_category_data in coverage_data.items():
-        if sub_category_name in SAMPLE_ANALYSIS_COVERAGE_KEYS:
+        if sub_category_name in SAMPLE_ANALYSIS_COVERAGE_KEYS and isinstance(sub_category_data, dict):
             new_sub_category_data = get_data_from_coverage_sub_category(sub_category_name, sub_category_data)
             new_sub_category_name = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get(  # type: ignore
                 'display_name')  # type: ignore
@@ -1479,7 +1480,7 @@ def search_file_command(file):
     command_results = []
 
     for sha256 in file_list:
-        raw_res = search_indicator('sha256', sha256.lower())
+        raw_res = search_indicator('filehash', sha256.lower())
         if not raw_res.get('indicator'):
             raise ValueError('Invalid response for indicator')
 
@@ -1653,7 +1654,7 @@ def main():
             return_results(search_file_command(**args))
 
     except Exception as e:
-        return_error(f'Unexpected error: {e}')
+        return_error(f'Unexpected error: {e}.\ntraceback: {traceback.format_exc()}')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
