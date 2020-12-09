@@ -3063,7 +3063,7 @@ tasks:
       id: 2a7a25ed-9c22-4f7d-8015-7aec8c2647a6
       iscommand: false
       name: Generate Report for Attribution
-      script: 00e01110-5902-4fad-8c07-c4b6474fdece
+      script: ExpansePrintSuggestions
       type: regular
       version: -1
     taskid: 2a7a25ed-9c22-4f7d-8015-7aec8c2647a6
