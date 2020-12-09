@@ -21,7 +21,7 @@ def refresh_issue_assets_command(args: Dict[str, Any]) -> CommandResults:
         elif asset_type == 'IpRange':
             new_asset = demisto.executeCommand('expanse-get-iprange', {"id": asset_key})
         elif asset_type == 'Certificate':
-            new_asset = demisto.executeCommand('expanse-get-certificate', {"pem_md5_hash": asset_key})
+            new_asset = demisto.executeCommand('expanse-get-certificate', {"hash": asset_key})
         else:
             # ???
             continue
@@ -32,6 +32,10 @@ def refresh_issue_assets_command(args: Dict[str, Any]) -> CommandResults:
             new_asset = new_asset[0]
 
         contents = new_asset.get('Contents')
+        if isinstance(contents, list):
+            if len(contents) == 0:
+                continue
+            contents = contents[0]
 
         if (annotations := contents.get('annotations', None)) and isinstance(annotations, dict):
             if (tags := annotations.get('tags', None)) and isinstance(tags, list) and len(tags) > 0:
