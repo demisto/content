@@ -309,11 +309,6 @@ references:
       command: |
         demisto-sdk create-id-set -o ./Tests/id_set.json
 
-#        GCS_PATH=$(mktemp)
-#        ZIP_FOLDER=$(mktemp -d)
-#        echo $GCS_MARKET_KEY > $GCS_PATH
-#        python3 Tests/Marketplace/download_private_id_set.py -b 'marketplace-dist-private-test' -s $GCS_PATH
-#        rm $GCS_PATH
         gsutil -m cp -r gs://marketplace-dist-private-test/content/id_set.json $CIRCLE_ARTIFACTS/private_id_set.json
         demisto-sdk merge-id-sets -i1 $CIRCLE_ARTIFACTS/private_id_set.json -i2 ./Tests/id_set.json -o ./Tests/id_set.json
 
