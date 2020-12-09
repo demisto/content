@@ -6,12 +6,10 @@ import requests_mock
 
 class TestARIA:
     sdso = 'sdso_mock_server'
-    sdso_url = f'http://{sdso}:7443/Aria/SS/1.0.0/PBaaS/server'
+    sdso_url = f'http://{sdso}:7443/Aria/SS/1.0.0/PacketIntelligence/server'
     aria = ARIA(sdso_url)
 
-    label_sia_group = 'mock_sia_group'
-    label_sia_name = 'mock_sia_name'
-    label_sia_region = 'mock_sia_region'
+    rcs = "PIdevice@all"
 
     # write a ip generate function to skip the secret check
     @staticmethod
@@ -96,7 +94,6 @@ class TestARIA:
             m.register_uri(method='GET', url=trid_url, json=mock_response_trid)
             _, ec = call_func(self.aria, demisto_args)
         context_entry = list(ec.values())[0]
-        assert context_entry.get('Status').get('code') == 201
         assert context_entry.get('Status').get('command_state') == 'Success'
         for ep in context_entry.get('Endpoints'):
             assert ep.get('completion') is True
@@ -161,13 +158,15 @@ class TestARIA:
             'src_ip': TestARIA()._ip(1, 2, 3, 4),
             'target_ip': TestARIA()._ip(5, 6, 7, 8),
             'rule_name': 'block_conversation',
-            'src_port': '0-65535'
+            'src_port': '0-65535',
+            'rcs': self.rcs
         }
         self._mock_request('aria-block-conversation', demisto_args)
 
     def test_unblock_conversation_command(self):
         demisto_args = {
-            'rule_name': 'block_conversation'
+            'rule_name': 'block_conversation',
+            'rcs': self.rcs
         }
         self._mock_request('aria-unblock-conversation', demisto_args)
 
@@ -184,13 +183,15 @@ class TestARIA:
             'trigger_type': 'one-shot',
             'trigger_value': '1',
             'tti_index': '0',
-            'aio_index': '0'
+            'aio_index': '0',
+            'rcs': self.rcs
         }
         self._mock_request('aria-record-conversation', demisto_args)
 
     def test_stop_recording_conversation_command(self):
         demisto_args = {
-            'rule_name': 'record_conversation'
+            'rule_name': 'record_conversation',
+            'rcs': self.rcs
         }
         self._mock_request('aria-stop-recording-conversation', demisto_args)
 
@@ -204,26 +205,30 @@ class TestARIA:
             'trigger_type': 'one-shot',
             'trigger_value': '100',
             'tti_index': '0',
-            'aio_index': '0'
+            'aio_index': '0',
+            'rcs': self.rcs
         }
         self._mock_request('aria-alert-conversation', demisto_args)
 
     def test_mute_alert_conversation_command(self):
         demisto_args = {
-            'rule_name': 'alert_conversation'
+            'rule_name': 'alert_conversation',
+            'rcs': self.rcs
         }
         self._mock_request('aria-mute-alert-conversation', demisto_args)
 
     def test_block_dest_port_command(self):
         demisto_args = {
             'rule_name': 'block_dest_port',
-            'port_range': '1111-2222'
+            'port_range': '1111-2222',
+            'rcs': self.rcs
         }
         self._mock_request('aria-block-dest-port', demisto_args)
 
     def test_unblock_dest_port_command(self):
         demisto_args = {
             'rule_name': 'block_dest_port',
+            'rcs': self.rcs
         }
         self._mock_request('aria-unblock-dest-port', demisto_args)
 
@@ -237,16 +242,14 @@ class TestARIA:
             'trigger_value': '8191',
             'tti_index': '0',
             'aio_index': '0',
-            'label_sia_region': self.label_sia_region,
-            'label_sia_group': self.label_sia_group
+            'rcs': self.rcs
         }
         self._mock_request('aria-record-dest-port', demisto_args)
 
     def test_stop_recording_dest_port_command(self):
         demisto_args = {
             'rule_name': 'record_dest_port',
-            'label_sia_region': self.label_sia_region,
-            'label_sia_group': self.label_sia_group
+            'rcs': self.rcs
         }
         self._mock_request('aria-stop-recording-dest-port', demisto_args)
 
@@ -258,13 +261,15 @@ class TestARIA:
             'trigger_type': 're-trigger-timed-sec',
             'trigger_value': '100',
             'tti_index': '0',
-            'aio_index': '0'
+            'aio_index': '0',
+            'rcs': self.rcs
         }
         self._mock_request('aria-alert-dest-port', demisto_args)
 
     def test_mute_alert_dest_port_command(self):
         demisto_args = {
-            'rule_name': 'alert_dest_port'
+            'rule_name': 'alert_dest_port',
+            'rcs': self.rcs
         }
         self._mock_request('aria-mute-alert-dest-port', demisto_args)
 
@@ -272,14 +277,14 @@ class TestARIA:
         demisto_args = {
             'rule_name': 'block_src_port',
             'port_range': '1, 10-100',
-            'label_sia_name': self.label_sia_name,
-            'label_sia_group': self.label_sia_group
+            'rcs': self.rcs
         }
         self._mock_request('aria-block-src-port', demisto_args)
 
     def test_unblock_src_port_command(self):
         demisto_args = {
-            'rule_name': 'block_src_port'
+            'rule_name': 'block_src_port',
+            'rcs': self.rcs
         }
         self._mock_request('aria-unblock-src-port', demisto_args)
 
@@ -287,13 +292,15 @@ class TestARIA:
         demisto_args = {
             'rule_name': 'record_src_port',
             'port_range': '10, 20 - 50, 90, 65535',
-            'vlan_id': '345'
+            'vlan_id': '345',
+            'rcs': self.rcs
         }
         self._mock_request('aria-record-src-port', demisto_args)
 
     def test_stop_recording_src_port_command(self):
         demisto_args = {
-            'rule_name': 'record_src_port'
+            'rule_name': 'record_src_port',
+            'rcs': self.rcs
         }
         self._mock_request('aria-stop-recording-src-port', demisto_args)
 
@@ -305,13 +312,15 @@ class TestARIA:
             'trigger_type': 're-trigger-timed-ms',
             'trigger_value': '1000',
             'tti_index': '0',
-            'aio_index': '0'
+            'aio_index': '0',
+            'rcs': self.rcs
         }
         self._mock_request('aria-alert-src-port', demisto_args)
 
     def test_mute_alert_src_port_command(self):
         demisto_args = {
-            'rule_name': 'alert_src_port'
+            'rule_name': 'alert_src_port',
+            'rcs': self.rcs
         }
         self._mock_request('aria-mute-alert-src-port', demisto_args)
 
@@ -319,16 +328,14 @@ class TestARIA:
         demisto_args = {
             'rule_name': 'block_dest_subnet',
             'target_ip': f'{TestARIA()._ip(1, 2, 3, 4)}/32',
-            'label_sia_name': self.label_sia_name,
-            'label_sia_region': self.label_sia_region
+            'rcs': self.rcs
         }
         self._mock_request('aria-block-dest-subnet', demisto_args)
 
     def test_unblock_dest_subnet_command(self):
         demisto_args = {
             'rule_name': 'block_dest_subnet',
-            'label_sia_name': self.label_sia_name,
-            'label_sia_region': self.label_sia_region
+            'rcs': self.rcs
         }
         self._mock_request('aria-unblock-dest-subnet', demisto_args)
 
@@ -342,13 +349,15 @@ class TestARIA:
             'trigger_type': 're-trigger-count',
             'trigger_value': '1',
             'tti_index': '0',
-            'aio_index': '0'
+            'aio_index': '0',
+            'rcs': self.rcs
         }
         self._mock_request('aria-record-dest-subnet', demisto_args)
 
     def test_stop_recording_dest_subnet_command(self):
         demisto_args = {
-            'rule_name': 'record_dest_subnet'
+            'rule_name': 'record_dest_subnet',
+            'rcs': self.rcs
         }
         self._mock_request('aria-stop-recording-dest-subnet', demisto_args)
 
@@ -360,13 +369,15 @@ class TestARIA:
             'trigger_type': 're-trigger-timed-ms',
             'trigger_value': '100',
             'tti_index': '0',
-            'aio_index': '0'
+            'aio_index': '0',
+            'rcs': self.rcs
         }
         self._mock_request('aria-alert-dest-subnet', demisto_args)
 
     def test_mute_alert_dest_subnet_command(self):
         demisto_args = {
-            'rule_name': 'alert_dest_subnet'
+            'rule_name': 'alert_dest_subnet',
+            'rcs': self.rcs
         }
         self._mock_request('aria-mute-alert-dest-subnet', demisto_args)
 
@@ -374,16 +385,14 @@ class TestARIA:
         demisto_args = {
             'rule_name': 'block_src_subnet',
             'src_ip': f'{TestARIA()._ip(2, 3, 4, 5)}/32',
-            'label_sia_name': self.label_sia_name,
-            'label_sia_region': self.label_sia_region
+            'rcs': self.rcs
         }
         self._mock_request('aria-block-src-subnet', demisto_args)
 
     def test_unblock_src_subnet_command(self):
         demisto_args = {
             'rule_name': 'block_src_subnet',
-            'label_sia_name': self.label_sia_name,
-            'label_sia_region': self.label_sia_region
+            'rcs': self.rcs
         }
         self._mock_request('aria-unblock-src-subnet', demisto_args)
 
@@ -397,13 +406,15 @@ class TestARIA:
             'trigger_type': 'one-shot',
             'trigger_value': '3333',
             'tti_index': '0',
-            'aio_index': '0'
+            'aio_index': '0',
+            'rcs': self.rcs
         }
         self._mock_request('aria-record-src-subnet', demisto_args)
 
     def test_stop_recording_src_subnet_command(self):
         demisto_args = {
-            'rule_name': 'record_src_subnet'
+            'rule_name': 'record_src_subnet',
+            'rcs': self.rcs
         }
         self._mock_request('aria-stop-recording-src-subnet', demisto_args)
 
@@ -416,15 +427,13 @@ class TestARIA:
             'trigger_value': '1234',
             'tti_index': '0',
             'aio_index': '0',
-            'label_sia_name': self.label_sia_name,
-            'label_sia_region': self.label_sia_region
+            'rcs': self.rcs
         }
         self._mock_request('aria-alert-src-subnet', demisto_args)
 
     def test_mute_alert_src_subnet_command(self):
         demisto_args = {
             'rule_name': 'alert_src_subnet',
-            'label_sia_name': self.label_sia_name,
-            'label_sia_region': self.label_sia_region
+            'rcs': self.rcs
         }
         self._mock_request('aria-mute-alert-src-subnet', demisto_args)
