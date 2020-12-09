@@ -23,7 +23,7 @@ def test_upload_private_id_set(mocker):
     dummy_storage_bucket.name = GCPConfig.PRODUCTION_BUCKET
 
     def check_path(private_id_set_gcs_path):
-        assert private_id_set_gcs_path == 'content/private_id_set.json'
+        assert private_id_set_gcs_path == 'private_id_set.json'
         return Blob
 
     dummy_storage_bucket.blob = check_path
