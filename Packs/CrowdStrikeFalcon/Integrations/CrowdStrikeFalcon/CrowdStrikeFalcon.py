@@ -133,7 +133,7 @@ DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
 
 
 def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS, safe=False,
-                 get_token_flag=True, no_json=False, json=None):
+                 get_token_flag=True, no_json=False, json=None, status_code=None):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -162,7 +162,11 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         :param get_token_flag: If set to True will call get_token()
 
         :type no_json: ``bool``
-        :param no_json: If set to true will not parse the content and will return the raw response object for successful response
+        :param no_json: If set to true will not parse the content and will return the raw response object for successful
+        response
+
+        :type status_code: ``int``
+        :param: status_code: The request codes to accept as OK.
 
         :return: Returns the http request response json
         :rtype: ``dict``
@@ -185,8 +189,11 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
     except requests.exceptions.RequestException:
         return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
     try:
-        # 404 is valid response since we want to return no entries to the war room.
-        if res.status_code not in {200, 201, 202, 204, 404}:
+        valid_status_codes = {200, 201, 202, 204}
+        # Handling a case when we want to return an entry for 404 status code.
+        if status_code:
+            valid_status_codes.add(status_code)
+        if res.status_code not in valid_status_codes:
             res_json = res.json()
             reason = res.reason
             resources = res_json.get('resources', {})
@@ -2234,7 +2241,7 @@ def get_indicator_device_id():
         type=ioc_type,
         value=ioc_value
     )
-    raw_res = http_request('GET', '/indicators/queries/devices/v1', params=params)
+    raw_res = http_request('GET', '/indicators/queries/devices/v1', params=params, status_code=404)
     errors = raw_res.get('errors', [])
     for error in errors:
         if error.get('code') == 404:
