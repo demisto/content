@@ -966,14 +966,17 @@ def get_incident_extra_data_command(client, args):
     incident = raw_incident.get('incident')
     incident_id = incident.get('incident_id')
     raw_alerts = raw_incident.get('alerts').get('data')
-    alerts = clear_trailing_whitespace(raw_alerts)
+    context_alerts = clear_trailing_whitespace(raw_alerts)
+    for alert in context_alerts:
+        alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
     file_artifacts = raw_incident.get('file_artifacts').get('data')
     network_artifacts = raw_incident.get('network_artifacts').get('data')
 
     readable_output = [tableToMarkdown('Incident {}'.format(incident_id), incident)]
 
-    if len(alerts) > 0:
-        readable_output.append(tableToMarkdown('Alerts', alerts))
+    if len(context_alerts) > 0:
+        readable_output.append(tableToMarkdown('Alerts', context_alerts,
+                                               headers=[key for key in context_alerts[0] if key != 'host_ip']))
     else:
         readable_output.append(tableToMarkdown('Alerts', []))
 
@@ -988,7 +991,7 @@ def get_incident_extra_data_command(client, args):
         readable_output.append(tableToMarkdown('File Artifacts', []))
 
     incident.update({
-        'alerts': alerts,
+        'alerts': context_alerts,
         'file_artifacts': file_artifacts,
         'network_artifacts': network_artifacts
     })

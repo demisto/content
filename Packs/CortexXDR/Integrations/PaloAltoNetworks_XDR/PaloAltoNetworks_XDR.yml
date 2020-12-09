@@ -333,9 +333,9 @@ script:
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.description
       description: Textual description of the alert.
       type: String
-    - contextPath: PaloAltoNetworksXDR.Incident.alerts.host_ip
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.host_ip_list
       description: Host IP involved in the alert.
-      type: String
+      type: Unknown
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.host_name
       description: Host name involved in the alert.
       type: String
