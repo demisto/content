@@ -6,7 +6,7 @@ By automating time-intensive, manual processes and operational workflows and del
 
     • WootCloud using its HyperContext algorithms classify, correlate and surface event and threats.
     • Adds deep device fingerprinting to each event, based on network/packet details as well as traffic from Bluetooth and BLE devices.
-    • WootCloud runs algorithms to correlate anomalies and events with detailed information
+    • WootCloud runs algorithms to correlate anomalies and events with detailed information.
     • Creates highly curated super anomalies with relevant accurate information.
 
     This event information can be ingested or fetched on demand and be used in building more powerful playbooks for further actions and responses. 
