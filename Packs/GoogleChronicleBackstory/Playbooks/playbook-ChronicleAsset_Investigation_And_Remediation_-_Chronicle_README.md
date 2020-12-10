@@ -5,7 +5,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * List Device Events - Chronicle
-* ChronicleAsset Hostname And IP Address Enrichment And Investigation - Chronicle
+* ChronicleAsset Hostname And IP Address Investigation And Remediation - Chronicle
 
 ### Integrations
 This playbook does not use any integrations.
@@ -37,4 +37,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![ChronicleAsset Enrichment And Investigation - Chronicle](../doc_files/ChronicleAsset_Enrichment_And_Investigation_-_Chronicle.png)
+![ChronicleAsset Investigation And Remediation - Chronicle](../doc_files/ChronicleAsset_Investigation_And_Remediation_-_Chronicle.png)

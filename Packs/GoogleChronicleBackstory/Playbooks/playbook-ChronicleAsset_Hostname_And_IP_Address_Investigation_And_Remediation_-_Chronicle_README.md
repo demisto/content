@@ -43,4 +43,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![ChronicleAsset Hostname And IP Address Enrichment And Investigation - Chronicle](../doc_files/ChronicleAsset_Hostname_And_IP_Address_Enrichment_And_Investigation_-_Chronicle.png)
+![ChronicleAsset Hostname And IP Address Enrichment And Investigation - Chronicle](../doc_files/ChronicleAsset_Hostname_And_IP_Address_Investigation_And_Remediation_-_Chronicle.png)

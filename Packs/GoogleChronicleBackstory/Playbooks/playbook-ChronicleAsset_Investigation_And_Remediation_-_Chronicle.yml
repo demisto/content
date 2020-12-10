@@ -1,6 +1,6 @@
-id: ChronicleAsset Enrichment And Investigation - Chronicle
+id: ChronicleAsset Investigation And Remediation - Chronicle
 version: -1
-name: ChronicleAsset Enrichment And Investigation - Chronicle
+name: ChronicleAsset Investigation And Remediation - Chronicle
 description: This playbook receives indicators from its parent playbook, performs
   enrichment and investigation for each one of them, provides an opportunity to isolate
   and block the Hostname or IP Address associated with the current indicator, and
@@ -574,11 +574,11 @@ tasks:
     task:
       id: 262f9648-0781-4b0a-8770-77cd91413168
       version: -1
-      name: ChronicleAsset Hostname And IP Address Enrichment And Investigation -
+      name: ChronicleAsset Hostname And IP Address Investigation And Remediation -
         Chronicle
       description: |-
         This playbook receives indicators from its parent playbook, performs enrichment and investigation for each one of them, provides an opportunity to isolate and block the Hostname or IP Address associated with the current indicator, and gives out a list of isolated and blocked entities.
-      playbookName: ChronicleAsset Hostname And IP Address Enrichment And Investigation
+      playbookName: ChronicleAsset Hostname And IP Address Investigation And Remediation
         - Chronicle
       type: playbook
       iscommand: false
