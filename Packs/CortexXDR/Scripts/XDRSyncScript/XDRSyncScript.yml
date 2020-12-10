@@ -33,7 +33,7 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: xdrstatus
+  defaultValue: xdrstatusv2
   description: The status field name in Demisto.
   isArray: false
   name: status
