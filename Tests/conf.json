@@ -3212,7 +3212,7 @@
         },
         {
             "integrations": "Cryptocurrency",
-            "playbookID": "Cryptocurrency-test"
+            "playbookID": "Cryptocurrency-Test"
         }
     ],
     "skipped_tests": {
