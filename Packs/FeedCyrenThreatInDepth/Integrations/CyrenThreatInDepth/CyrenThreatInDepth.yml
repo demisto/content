@@ -86,15 +86,15 @@ configuration:
   type: 8
 - defaultvalue: https://api-feeds.cyren.com/v1/feed
   display: API URL
-  name: api_url
+  name: url
   required: false
   type: 0
 - display: API Token
-  name: apiToken
+  name: apikey
   type: 12
   required: true
 - display: Feed Name
-  name: feedName
+  name: feed_name
   defaultvalue: ip_reputation
   type: 15
   required: true
@@ -104,7 +104,7 @@ configuration:
   - malware_urls
   - malware_files
 - display: Maximum number of indicators to be fetched each time, cannot be higher than 100000
-  name: maxIndicators
+  name: max_indicators
   defaultvalue: "100000"
   type: 0
   required: false
@@ -117,14 +117,7 @@ script:
       defaultValue: "50"
       description: The maximum number of results to return.
       isArray: false
-      name: maxIndicators
-      required: false
-      secret: false
-    - default: true
-      defaultValue: "ip_reputation"
-      description: The feed name
-      isArray: false
-      name: feedName
+      name: max_indicators
       required: false
       secret: false
     deprecated: false
@@ -138,5 +131,3 @@ script:
   longRunningPort: false
   runonce: false
   subtype: python3
-tests:
-- No tests (auto formatted)

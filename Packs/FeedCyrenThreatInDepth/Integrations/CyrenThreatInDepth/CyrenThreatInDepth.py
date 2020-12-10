@@ -77,7 +77,7 @@ class FeedEntryBase(object):
                     score=self.get_score(),
                     fields=fields)
 
-    def get_generic_score(self) -> int:
+    def get_score(self) -> int:
         action = self.payload.get("action")
         if action in [FeedAction.ADD, FeedAction.UPDATE]:
             if FeedCategory.CONFIRMED_CLEAN in self.categories:
@@ -98,9 +98,6 @@ class FeedEntryBase(object):
 
         return offset
 
-    def get_score(self) -> int:
-        raise NotImplementedError
-
     def get_type(self) -> str:
         raise NotImplementedError
 
@@ -116,9 +113,6 @@ class UrlFeedEntry(FeedEntryBase):
         value = self.payload.get("url", "")
         value = value.rstrip("\n").rstrip("/")
         return value
-
-    def get_score(self) -> int:
-        return self.get_generic_score()
 
 
 class IpReputationFeedEntry(FeedEntryBase):
@@ -152,9 +146,6 @@ class MalwareFileFeedEntry(FeedEntryBase):
     def get_value(self) -> str:
         return self.payload.get("identifier")
 
-    def get_score(self) -> int:
-        return self.get_generic_score()
-
 
 FEED_TO_ENTRY_CLASS: Dict[str, Callable] = {
     FeedName.IP_REPUTATION: IpReputationFeedEntry,
@@ -167,13 +158,19 @@ FEED_TO_ENTRY_CLASS: Dict[str, Callable] = {
 class Client(BaseClient):
     PARAMS = {"format": "jsonl"}
 
-    def _do_request(self, path: str, feed_name: str, offset: int = -1, count: int = 0) -> requests.Response:
+    def __init__(self, feed_name: str, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.feed_name = feed_name
+
+    def _do_request(self, path: str, offset: int = -1, count: int = 0) -> requests.Response:
         params = self.PARAMS.copy()
-        params["feedId"] = feed_name
+        params["feedId"] = self.feed_name
         if offset > -1:
             params["offset"] = str(offset)
         if count > 0:
             params["count"] = str(count)
+
+        demisto.info(f"using path {path}, params {params} for request")
 
         try:
             response = self._http_request(method="GET", url_suffix=path,
@@ -188,9 +185,9 @@ class Client(BaseClient):
 
         return response
 
-    def fetch_entries(self, feed_name: str, offset: int, count: int) -> List[Dict]:
+    def fetch_entries(self, offset: int, count: int) -> List[Dict]:
         result = []
-        response = self._do_request(path=FeedPath.DATA, feed_name=feed_name, offset=offset, count=count)
+        response = self._do_request(path=FeedPath.DATA, offset=offset, count=count)
 
         for json_line in response.content.splitlines():
             try:
@@ -201,8 +198,8 @@ class Client(BaseClient):
 
         return result
 
-    def get_offsets(self, feed_name: str) -> Dict[str, int]:
-        response = self._do_request(path=FeedPath.INFO, feed_name=feed_name)
+    def get_offsets(self) -> Dict[str, int]:
+        response = self._do_request(path=FeedPath.INFO)
         try:
             return json.loads(response.content)
         except Exception as e:
@@ -210,26 +207,29 @@ class Client(BaseClient):
             raise
 
 
-def test_module_command(client: Client, feed_name: str) -> str:
-    feed_name = demisto.params().get("feedName")
-    fetch_indicators_command(client, feed_name, 0, 10, False)
+def test_module_command(client: Client) -> str:
+    try:
+        entries = client.fetch_entries(0, 10)
+        if not any(entries):
+            return "Test failed because no indicators could be fetched!"
+    except Exception as e:
+        return f"Test failed because of: {str(e)}!"
+
     return "ok"
 
 
 def get_indicators_command(client: Client, args: Dict) -> Tuple[str, Dict, List]:
-    max_indicators = int(args.get("maxIndicators", 50))
-    feed_name = args.get("feedName", FeedName.IP_REPUTATION)
+    max_indicators = int(args.get("max_indicators", 50))
 
-    integration_context = demisto.getIntegrationContext()
-    offset = integration_context.get("offset")
     count = max_indicators
-    if not offset:
-        end_offset = client.get_offsets(feed_name).get("endOffset")
-        if end_offset:
-            offset = end_offset - max_indicators + 1
+    end_offset = client.get_offsets().get("endOffset")
+    if end_offset:
+        offset = end_offset - max_indicators + 1
+    else:
+        offset = 0
 
-    entries = client.fetch_entries(feed_name, offset, count)
-    indicators, _ = feed_entries_to_indicator(entries, feed_name)
+    entries = client.fetch_entries(offset, count)
+    indicators, _ = feed_entries_to_indicator(entries, client.feed_name)
 
     human_readable = tableToMarkdown("Indicators from Cyren Threat InDepth:", indicators,
                                      headers=["value", "type", "rawJSON", "score"])
@@ -247,21 +247,22 @@ def feed_entries_to_indicator(entries: List[Dict], feed_name: str) -> Tuple[List
     return indicators, max_offset
 
 
-def fetch_indicators_command(client: Client, feed_name: str, initial_count: int,
-                             max_indicators: int, update_context: bool) -> List[Dict]:
+def fetch_indicators_command(client: Client, initial_count: int, max_indicators: int, update_context: bool) -> List[Dict]:
     integration_context = demisto.getIntegrationContext()
     offset = integration_context.get("offset")
     count = max_indicators
     if not offset:
-        offset = client.get_offsets(feed_name).get("endOffset")
+        offset = client.get_offsets().get("endOffset")
         if initial_count > 0:
             offset = offset - initial_count + 1
             count = max_indicators + initial_count
 
     count = min(MAX_API_COUNT, count)
 
-    entries = client.fetch_entries(feed_name, offset, count)
-    indicators, max_offset = feed_entries_to_indicator(entries, feed_name)
+    entries = client.fetch_entries(offset, count)
+    demisto.info(f"pulled {len(entries)} for {client.feed_name}")
+    indicators, max_offset = feed_entries_to_indicator(entries, client.feed_name)
+    demisto.info(f"about to ingest {len(indicators)} for {client.feed_name}")
 
     if update_context:
         integration_context["offset"] = max_offset
@@ -271,20 +272,23 @@ def fetch_indicators_command(client: Client, feed_name: str, initial_count: int,
 
 
 def main():
-    base_url = demisto.params().get("apiUrl", "https://api-feeds.cyren.com/v1/feed")
-    api_token = demisto.params().get("apiToken")
-    feed_name = demisto.params().get("feedName")
-    initial_count = int(demisto.params().get("initialIndicatorCount", 0))
-    max_indicators = int(demisto.params().get("maxIndicators", MAX_API_COUNT))
+    params = demisto.params()
+    base_url = params.get("url", "https://api-feeds.cyren.com/v1/feed")
+    api_token = params.get("apikey")
+    feed_name = params.get("feed_name")
+    max_indicators = int(params.get("max_indicators", MAX_API_COUNT))
     if max_indicators > MAX_API_COUNT:
-        demisto.info(f"using a maximum value for maxIndicators of {MAX_API_COUNT}!")
+        demisto.info(f"using a maximum value for max_indicators of {MAX_API_COUNT}!")
         max_indicators = MAX_API_COUNT
-    proxy = demisto.params().get('proxy', False)
-    verify_certificate = not demisto.params().get('insecure', False)
+    proxy = params.get("proxy", False)
+    verify_certificate = not params.get("insecure", False)
 
     headers = dict(Authorization=f"Bearer {api_token}")
 
-    client = Client(base_url=base_url,
+    demisto.info(f"using feed {feed_name}, max {max_indicators}")
+
+    client = Client(feed_name=feed_name,
+                    base_url=base_url,
                     verify=verify_certificate,
                     headers=headers,
                     proxy=proxy)
@@ -296,14 +300,14 @@ def main():
     }
     try:
         if command == "fetch-indicators":
-            indicators = fetch_indicators_command(client=client, feed_name=feed_name,
-                                                  initial_count=initial_count,
+            indicators = fetch_indicators_command(client=client,
+                                                  initial_count=0,
                                                   max_indicators=max_indicators,
                                                   update_context=True)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         elif command == "test-module":
-            return_outputs(test_module_command(client, feed_name))
+            return_outputs(test_module_command(client))
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())
             return_outputs(readable_output, outputs, raw_response)

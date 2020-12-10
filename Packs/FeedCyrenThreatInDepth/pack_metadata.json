@@ -7,13 +7,43 @@
     "url": "https://www.cyren.com/products/threat-indepth",
     "email": "christian.meilke@cyren.com",
     "created": "2020-12-08T09:48:38Z",
+    "dependencies": {},
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "cyren"
+        "Malware",
+        "Spam",
+        "Threat Intelligence",
+        "Email",
+        "Forensics"
     ],
-    "useCases": [],
-    "keywords": [],
-    "githubUser": []
+    "useCases": [
+        "Phishing",
+        "Threat Intelligence Management",
+        "Malware",
+        "Hunting",
+        "Incident Response"
+    ],
+    "keywords": [
+        "cyren",
+        "threat",
+        "indepth",
+        "global view",
+        "feed",
+        "feeds",
+        "ip reputation",
+        "malware url",
+        "phishing url",
+        "malware hash",
+        "malware detection",
+        "virus detection",
+        "botnet",
+        "risk analysis",
+        "contextual threat intelligence",
+        "threat intel"
+    ],
+    "githubUser": [
+        "meilke"
+    ]
 }

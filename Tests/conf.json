@@ -3162,6 +3162,10 @@
             "integrations": "Public DNS Feed",
             "playbookID": "Public_DNS_Feed_Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "CyrenThreatInDepth",
+            "playbookID": "CyrenThreatInDepth-Test"
         }
     ],
     "skipped_tests": {
