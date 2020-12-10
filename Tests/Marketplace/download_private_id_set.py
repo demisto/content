@@ -23,6 +23,7 @@ def download_private_id_set_from_gcp(public_storage_bucket):
     if not os.path.exists(ARTIFACTS_PATH):
         os.mkdir(ARTIFACTS_PATH)
     index_blob.download_to_filename(f'{ARTIFACTS_PATH}/{PRIVATE_ID_SET_FILE}')
+    index_blob.download_to_filename(f'{ARTIFACTS_PATH}/unified_id_sets.json')
 
     if os.path.exists(f'{ARTIFACTS_PATH}/{PRIVATE_ID_SET_FILE}'):
         return f'{ARTIFACTS_PATH}/{PRIVATE_ID_SET_FILE}'
