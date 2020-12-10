@@ -1,5 +1,5 @@
 {
-	"id": "Rapid7 InsightIDR - Classifier",
+	"id": "Rapid7 InsightIDR",
 	"name": "Rapid7 InsightIDR - Classifier",
 	"type": "classification",
 	"description": "Classifies Rapid7 InsightIDR incidents",
