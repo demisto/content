@@ -364,6 +364,7 @@ def modify_results_dict(results_data: Dict[str, Any]):
             results_data['size'] = results_info[0].get('size')
 
 
+
 @logger
 def download_command(client: Client, arguments: Dict[str, Any]):
     """

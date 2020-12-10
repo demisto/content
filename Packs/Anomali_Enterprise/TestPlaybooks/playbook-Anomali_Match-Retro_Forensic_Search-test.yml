@@ -1,8 +1,8 @@
-id: Anomali Enterprise Forensic Search - Test
+id: Anomali Match Forensic Search - Test
 version: -1
-name: Anomali Enterprise Forensic Search - Test
+name: Anomali Match Forensic Search - Test
 fromversion: 5.0.0
-description: test playbbok for "Anomali Enterprise Forensic Search"
+description: test playbbok for "Anomali Match Forensic Search"
 starttaskid: "0"
 tasks:
   "0":
