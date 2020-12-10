@@ -109,8 +109,10 @@ class AzureWAFClient:
 
 
 def test_connection(client: AzureWAFClient, params: Dict):
+    if params.get('self_deployed', False) and not params.get('auth_code'):
+        return_error('You must enter an authorization code in a self-deployed configuration.')
     client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
-    return '✅ Success!'
+    return '✅ Great Success!'
 
 
 @logger
@@ -356,7 +358,8 @@ def main() -> None:
         if command == 'test-module':
             raise ValueError("Please run `!azure-waf-auth-start` and `!azure-waf-auth-complete` to log in."
                              " For more details press the (?) button.")
-
+        if command == 'azure-waf-test':
+            return_results(test_connection(client, params))
         else:
             return_results(demisto_commands[command](client, **args))
 
