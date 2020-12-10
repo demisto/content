@@ -1,0 +1,218 @@
+category: Endpoint
+commonfields:
+  id: Kaspersky Security Center
+  version: -1
+configuration:
+- display: Server URL (e.g., https://kaspersky.domain.com:13299)
+  name: url
+  required: true
+  type: 0
+- display: Credentials
+  name: credentials
+  required: false
+  type: 9
+- defaultvalue: "false"
+  display: Internal user (i.e. Created in Security Center and not a windows user)
+  name: internal
+  required: false
+  type: 8
+- defaultvalue: "11"
+  display: API Version
+  name: api_version
+  options:
+  - "11"
+  required: false
+  type: 15
+- defaultvalue: "true"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: "60"
+  display: Global wait time (how long to wait for aSync jobs to complete)
+  name: waitTime
+  required: false
+  type: 0
+description: Integration for Kaspersky Security Center (v11 upwards)
+display: Kaspersky Security Center
+name: Kaspersky Security Center
+script:
+  commands:
+  - arguments: []
+    description: Returns a list of hosts and some basic information about them
+    name: ksc-get-hosts
+    outputs:
+    - contextPath: Kaspersky.SecurityCenter.Hosts
+      description: All hosts
+  - arguments:
+    - description: The unique hostname GUID to retrieve the details of
+      name: hostname
+      required: true
+    description: Returns details of a host
+    name: ksc-get-host-details
+    outputs:
+    - contextPath: Kaspersky.SecurityCenter.Hosts
+      description: Host  details
+  - arguments:
+    - name: filter
+      required: true
+    description: Performs a generic host search using the input filter (See Kaspersky
+      documentaiton for filter syntax)
+    name: ksc-search-hosts
+    outputs:
+    - contextPath: Kaspersky.SecurityCenter.Hosts
+      description: Host information
+  - arguments: []
+    description: Retrieves all administration groups
+    name: ksc-get-groups
+    outputs:
+    - contextPath: Kaspersky.SecurityCenter.Groups
+      description: Groups information
+  - arguments:
+    - name: filter
+      required: true
+    description: Performs a generic group search using the input filter (See Kaspersky
+      documentaiton for filter syntax)
+    name: ksc-search-groups
+    outputs:
+    - contextPath: Kaspersky.SecurityCenter.Groups
+      description: Groups information
+  - arguments:
+    - description: The group name to search for
+      name: groupName
+      required: true
+    description: Retrieves the group details using a group name
+    name: ksc-get-group
+    outputs:
+    - contextPath: Kaspersky.SecurityCenter.Groups
+      description: Group information
+  - arguments:
+    - description: The name of the group to add
+      name: groupName
+      required: true
+    - description: Parent ID under which to create the group (optional)
+      name: parentId
+      required: true
+    description: Adds an administration group (or returns the ID and name of an existing
+      group)
+    name: ksc-add-group
+    outputs:
+    - contextPath: Kaspersky.SecurityCenter.Groups.id
+      description: The ID of the group created (or that already exists)
+      type: number
+    - contextPath: Kaspersky.SecurityCenter.Groups.name
+      description: The name of the group created (or that already exists)
+      type: string
+  - arguments:
+    - description: Group ID to delete
+      name: groupId
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "1"
+      description: 1 = Delete group only if it is empty, 2 = delete group with subgroups,
+        policies and tasks 3 = delete group with subgroups, hosts, policies and tasks
+      name: flags
+      predefined:
+      - "1"
+      - "2"
+      - "3"
+      required: true
+    description: Deletes an administrative group
+    execution: true
+    name: ksc-delete-group
+    outputs:
+    - contextPath: Kaspersky.SecurityCenter.Action.GUID
+      description: Id of asynchronous operation
+    - contextPath: Kaspersky.SecurityCenter.Action.Status
+      description: Status
+  - arguments: []
+    description: Returns limited attributes for all software applications
+    name: ksc-get-inventory-software
+    outputs:
+    - contextPath: Kaspersky.SecurityCenter.Inventory.Software
+      description: Software titles returned
+  - arguments: []
+    description: Returns limited attributes for all software application updates
+    name: ksc-get-inventory-patches
+    outputs:
+    - contextPath: Kaspersky.SecurityCenter.Inventory.Patches
+      description: Patches returned
+  - arguments:
+    - description: Host ID to retreive software of
+      name: hostId
+      required: true
+    description: Retrieves all software for a host
+    name: ksc-get-host-software
+    outputs:
+    - contextPath: Kaspersky.SecurityCenter.Hosts.Software
+      description: Software returned
+  - arguments:
+    - name: hostId
+      required: true
+    description: Retrieves all patches for a host
+    name: ksc-get-host-patches
+    outputs:
+    - contextPath: Kaspersky.SecurityCenter.Hosts.Patches
+      description: Returned patches
+  - arguments:
+    - description: Policy ID
+      name: policyId
+      required: true
+    description: Retrieves data for specified policy
+    name: ksc-get-policy
+  - arguments:
+    - description: Category ID
+      name: categoryId
+      required: true
+    description: Get cateogry by ID
+    name: ksc-get-category-by-id
+    outputs:
+    - contextPath: Kaspersky.SecurityCenter.Categories
+      description: Returned categories
+  - arguments:
+    - description: Category name
+      name: name
+      required: true
+    description: Get cateogry by name
+    name: ksc-get-category-by-name
+    outputs:
+    - contextPath: Kaspersky.SecurityCenter.Categories
+      description: Returned categories
+  - arguments: []
+    description: Retrieves all categories
+    name: ksc-get-categories
+    outputs:
+    - contextPath: Kaspersky.SecurityCenter.Categories
+      description: Returned categories
+  - arguments:
+    - description: Category ID to add the hash to
+      name: categoryId
+      required: true
+    - description: List of hashes (MD5 or SHA256) to add to the category
+      name: hash
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "True"
+      description: If True, the hash is included, if False the hash is Excluded
+      name: inclusion
+      predefined:
+      - "True"
+      - "False"
+      required: true
+    description: Adds a hash to a category
+    execution: true
+    name: ksc-add-hash-to-category
+    outputs:
+    - contextPath: Kaspersky.SecurityCenter.ASyncActions
+      description: Async details
+      type: boolean
+    - contextPath: Kaspersky.SecurityCenter.ASyncActions.Status
+  dockerimage: demisto/python3:3.8.6.13358
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+  dockerimage45: demisto/python3:3.7.3.286
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
