@@ -56,7 +56,7 @@ def option_handler():
 def main():
     options = option_handler()
     service_account = options.service_account
-    storage_client = init_storage_client(service_account.decode("utf-8"))
+    storage_client = init_storage_client(service_account)
     public_bucket_name = options.public_bucket_name
     public_storage_bucket = storage_client.bucket(public_bucket_name)
     private_id_set = download_private_id_set_from_gcp(public_storage_bucket)
