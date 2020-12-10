@@ -91,7 +91,7 @@
             }
         ]
     },
-    "query": "sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\" and type:ExpanseCertificate and expansevalidnotafter:\u003c=\"now\" and expanseservicestatus:HAS_ACTIVE_SERVICE ",
+    "query": "sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\" and type:Certificate and validitynotafter:\u003c=\"now\" and expanseservicestatus:HAS_ACTIVE_SERVICE ",
     "size": 0,
     "version": -1,
     "widgetType": "pie",
