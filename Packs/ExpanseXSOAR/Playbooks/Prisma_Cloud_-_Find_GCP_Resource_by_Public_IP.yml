@@ -1,0 +1,368 @@
+description: Find a GCP resource by Public IP using Prisma Cloud inventory
+id: Prisma Cloud - Find GCP Resource by Public IP
+inputs:
+- description: Public IP Address to look up
+  key: PublicIPAddress
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Prisma Cloud - Find GCP Resource by Public IP
+outputs:
+- contextPath: PrismaCloud.Attribution
+  description: Prisma Cloud attributed asset information.
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 11a6059b-98b4-4e88-8556-dc5ad8fe15c9
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 11a6059b-98b4-4e88-8556-dc5ad8fe15c9
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": -500
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a9c9419e-675d-43e7-86bb-11afeee4c335
+      iscommand: false
+      name: Check Results
+      type: title
+      version: -1
+      description: ''
+    taskid: a9c9419e-675d-43e7-86bb-11afeee4c335
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1160
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.PublicIPAddress
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'networkInterfaces[*].accessConfigs[*].natIP equals '
+              suffix: {}
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: 'config where cloud.type = ''gcp'' AND cloud.service = ''Google
+                    Compute Engine'' AND json.rule = ( '
+              suffix:
+                value:
+                  simple: ' )'
+            operator: concat
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-date-unit: {}
+      time-range-date-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Search GCE instances in Prisma Cloud
+      id: aebc2c2c-ac27-4e1a-8b5a-2312897352bf
+      iscommand: true
+      name: Search in GCE
+      script: '|||redlock-search-config'
+      type: regular
+      version: -1
+    taskid: aebc2c2c-ac27-4e1a-8b5a-2312897352bf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 240
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Asset
+                root: Redlock
+          operator: isNotEmpty
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether results are found.
+      id: 063315a1-7ff6-4348-8190-dde21ed2cb49
+      iscommand: false
+      name: Are Results Found?
+      type: condition
+      version: -1
+    taskid: 063315a1-7ff6-4348-8190-dde21ed2cb49
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1350
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assets:
+        complex:
+          accessor: Asset
+          root: Redlock
+      fields: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prisma Cloud Attribution
+      id: bd23ab14-2196-41a6-814c-09abf2d12059
+      iscommand: false
+      name: Transform Results
+      script: PrismaCloudAttribution
+      type: regular
+      version: -1
+    taskid: bd23ab14-2196-41a6-814c-09abf2d12059
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 1580
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: df95edc6-611a-42fd-8f79-1000d380731e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: df95edc6-611a-42fd-8f79-1000d380731e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1810
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ef4ca6a3-3d66-487d-82ce-34cbd5625ba6
+      iscommand: false
+      name: Search in Prisma Cloud
+      type: title
+      version: -1
+      description: ''
+    taskid: ef4ca6a3-3d66-487d-82ce-34cbd5625ba6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 60
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: RedLock
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether Prisma Cloud integration is enabled.
+      id: 3ad73e8c-0573-4a18-8d81-2ef8874c8d67
+      iscommand: false
+      name: Is Prisma Cloud enabled?
+      type: condition
+      version: -1
+    taskid: 3ad73e8c-0573-4a18-8d81-2ef8874c8d67
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": -150
+        }
+      }
+  "16":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.PublicIPAddress
+          operator: isNotEmpty
+      label: "yes"
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if there are any IP in the input.
+      id: 0b03fb88-8a09-4d21-806b-1d9818ad82fb
+      iscommand: false
+      name: Are there IPs in input?
+      type: condition
+      version: -1
+    taskid: 0b03fb88-8a09-4d21-806b-1d9818ad82fb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": -330
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2375,
+        "width": 2030,
+        "x": 170,
+        "y": -500
+      }
+    }
+  }
+tests:
+- ExpanseV2 Test
+- Feed Expanse Test
+fromversion: 6.0.0
