@@ -312,8 +312,8 @@ references:
         KF=$(mktemp)
         echo "$GCS_MARKET_KEY" > "$KF"
         gcloud auth activate-service-account --key-file="$KF" > auth.out 2>&1
-        gsutil -m cp -r gs://marketplace-dist-private-test/content/id_set.json $CIRCLE_ARTIFACTS/private_id_set.json
-        gsutil -m cp -r gs://marketplace-dist-private-test/content/id_set.json $CIRCLE_ARTIFACTS/unified_id_sets.json
+        gsutil -m cp -r gs://marketplace-dist-private-test/content/id_set_private_test.json $CIRCLE_ARTIFACTS/private_id_set.json
+        gsutil -m cp -r gs://marketplace-dist-private-test/content/id_set_private_test.json $CIRCLE_ARTIFACTS/unified_id_sets.json
         rm $KF
 
         demisto-sdk merge-id-sets -i1 $CIRCLE_ARTIFACTS/private_id_set.json -i2 ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/unified_id_sets.json
