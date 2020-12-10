@@ -719,11 +719,12 @@ def create_user():
     demisto.results(demisto_entry)
 
 
-def create_user_iam(default_base_dn, args, mapper_out):
+def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
     """Creates an AD user by User Profile.
     :param default_base_dn: The location in the DIT where the search will start
     :param args: Demisto args.
     :param mapper_out: Mapping User Profiles to AD users.
+    :param disabled_users_group_cn: The disabled group cn, the user will be removed from this group when enabled
     :return: The user that was created
     """
     assert conn is not None
@@ -737,10 +738,10 @@ def create_user_iam(default_base_dn, args, mapper_out):
         sam_account_name = ad_user.get("samaccountname")
         if not sam_account_name:
             raise DemistoException("User must have SAMAccountName")
+
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
         if user_exists:
-            iam_user_profile.set_result(success=True, action=IAMActions.CREATE_USER,
-                                        skip=True, skip_reason="User already exists")
+            iam_user_profile = update_user_iam(default_base_dn, args, False, mapper_out, disabled_users_group_cn)
 
         else:
             user_dn = generate_dn_and_remove_from_user_profile(ad_user)
@@ -772,17 +773,20 @@ def create_user_iam(default_base_dn, args, mapper_out):
         return iam_user_profile
 
 
-def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out):
+def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, disabled_users_group_cn):
     """Update an AD user by User Profile.
     :param default_base_dn: The location in the DIT where the search will start
     :param args: Demisto args.
     :param create_if_not_exists: Created the user if it does not exists.
     :param mapper_out: Mapping User Profiles to AD users.
+    :param disabled_users_group_cn: The disabled group cn, the user will be removed from this group when enabled
     :return: Updated User
     """
     assert conn is not None
     try:
         user_profile = args.get("user-profile")
+        allow_enable = args.get('allow-enable') == 'true'
+
         user_profile_delta = args.get('user-profile-delta')
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
 
@@ -802,6 +806,9 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out):
         elif user_exists:
 
             dn = user_dn(sam_account_name, default_base_dn)
+
+            if allow_enable:
+                enable_user_iam(default_base_dn, dn, disabled_users_group_cn)
 
             # fields that can't be modified
             # notice that we are changing the ou and that effects the dn and cn
@@ -1092,68 +1099,21 @@ def disable_user(default_base_dn):
     demisto.results(demisto_entry)
 
 
-def enable_user_iam(default_base_dn, disabled_users_group_cn, args, create_if_not_exists, mapper_out):
+def enable_user_iam(default_base_dn, dn, disabled_users_group_cn):
     """Enables an AD user by User Profile.
     :param default_base_dn: The location in the DIT where the search will start
+    :param dn: The users unique dn
     :param disabled_users_group_cn: The disabled group cn, the user will be removed from this group when enabled
-    :param args: Demisto args.
-    :param create_if_not_exists: Created the user if it does not exists.
-    :param mapper_out: Mapping User Profiles to AD users.
-    :return: The enabled user
     """
-    try:
-        user_profile = args.get("user-profile")
-        user_profile_delta = args.get('user-profile-delta')
-        iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
-
-        ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
-
-        # check it user exists and if it doesn't, create it
-        sam_account_name = ad_user.get("samaccountname")
-        if not sam_account_name:
-            raise DemistoException("User must have SAMAccountName")
-
-        user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
-
-        if not user_exists and create_if_not_exists:
-            return create_user_iam(default_base_dn, iam_user_profile, mapper_out)
-
-        dn = user_dn(sam_account_name, default_base_dn)
-
-        # modify user to enable account
-        modification = {
-            'userAccountControl': [('MODIFY_REPLACE', NORMAL_ACCOUNT)]
-        }
-
-        # Enable account and update with attributes if any
-        command_failed = False
-        modify_object(dn, modification)
-        if disabled_users_group_cn:
-            grp_dn = group_dn(disabled_users_group_cn, default_base_dn)
-            success = microsoft.removeMembersFromGroups.ad_remove_members_from_groups(conn, [dn], [grp_dn], True)
-            if not success:
-                command_failed = True
-                e = 'Failed to add user to {} group'.format(disabled_users_group_cn)
-                iam_user_profile.set_result(success=False,
-                                            error_message=e,
-                                            action=IAMActions.ENABLE_USER,
-                                            )
-        if not command_failed:
-            iam_user_profile.set_result(success=True,
-                                        email=ad_user.get('email'),
-                                        username=ad_user.get('name'),
-                                        action=IAMActions.ENABLE_USER,
-                                        details=ad_user,
-                                        active=True)
-
-        return iam_user_profile
-
-    except Exception as e:
-        iam_user_profile.set_result(success=False,
-                                    error_message=str(e),
-                                    action=IAMActions.ENABLE_USER,
-                                    )
-        return iam_user_profile
+    modification = {
+        'userAccountControl': [('MODIFY_REPLACE', NORMAL_ACCOUNT)]
+    }
+    modify_object(dn, modification)
+    if disabled_users_group_cn:
+        grp_dn = group_dn(disabled_users_group_cn, default_base_dn)
+        success = microsoft.removeMembersFromGroups.ad_remove_members_from_groups(conn, [dn], [grp_dn], True)
+        if not success:
+            raise Exception('Failed to add user to {} group'.format(disabled_users_group_cn))
 
 
 def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out):
@@ -1519,15 +1479,12 @@ def main():
             return return_results(user_profile)
 
         if demisto.command() == 'iam-create-user':
-            user_profile = create_user_iam(DEFAULT_BASE_DN, args, mapper_out)
+            user_profile = create_user_iam(DEFAULT_BASE_DN, args, mapper_out, disabled_users_group_cn)
             return return_results(user_profile)
 
         if demisto.command() == 'iam-update-user':
-            user_profile = update_user_iam(DEFAULT_BASE_DN, args, create_if_not_exists, mapper_out)
-            return return_results(user_profile)
-
-        if demisto.command() == 'iam-enable-user':
-            user_profile = enable_user_iam(DEFAULT_BASE_DN, disabled_users_group_cn, args, create_if_not_exists, mapper_out)
+            user_profile = update_user_iam(DEFAULT_BASE_DN, args, create_if_not_exists, mapper_out,
+                                           disabled_users_group_cn)
             return return_results(user_profile)
 
         if demisto.command() == 'iam-disable-user':
