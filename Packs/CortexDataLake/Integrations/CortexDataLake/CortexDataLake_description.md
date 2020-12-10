@@ -38,4 +38,10 @@ When the intgeration reaches the limit of allowed calls, the following error wil
 
 ```We have found out that your recent attempts to authenticate against the CDL server have failed. Therefore we have limited the number of calls that the CDL integration performs.```
 
+The integration will re-attempt authentication if the command was called under the following cases:
+
+1. First hour - once every minute.
+2. First 48 hours - once in 10 minutes.
+3. After that every 60 minutes.
+
 If you wish to try authenticating again, run the 'cdl-reset-authentication-timeout' command and retry.

@@ -1,6 +1,7 @@
 """ IMPORTS """
 from CommonServerPython import *
 import os
+import re
 import requests
 import json
 from pancloud import QueryService, Credentials, exceptions
@@ -32,6 +33,7 @@ FETCH_TABLE_HR_NAME = {
     "firewall.threat": "Cortex Firewall Threat",
     "firewall.file_data": "Cortex Firewall File Data"
 }
+BAD_REQUEST_REGEX = r'^Error in API call \[400\].*'
 
 
 class Client(BaseClient):
@@ -98,41 +100,55 @@ class Client(BaseClient):
         return access_token, api_url, instance_id, refresh_token, expires_in
 
     def _get_access_token_with_backoff_strategy(self) -> dict:
+        """ Implements a backoff strategy for retrieving an access token.
+        Raises an exception if the call is within one of the time windows, otherwise fetches the access token
+
+        Returns: The oproxy response or raising a DemistoException
+
+        """
+        self._backoff_strategy(demisto.getIntegrationContext())
+        return self._get_access_token()
+
+    @staticmethod
+    def _backoff_strategy(integration_context: dict):
         """ Implements a backoff strategy for retrieving an access token. Logic as follows:
         - First 60 minutes check for access token once every 1 minute max.
         - Next 47 hours check for access token once every 10 minute max.
         - After 48 hours check for access token once every 60 minutes max.
-        Successful fetch of access token resets the counters.
 
-        Returns: The oproxy response or raising a DemistoException
+        Args:
+            integration_context: The integration context
 
         """
         err_msg = 'We have found out that your recent attempts to authenticate against the CDL server have failed. ' \
                   'Therefore we have limited the number of calls that the CDL integration performs. ' \
                   'If you wish to try authenticating again, please run the `cdl-reset-authentication-timeout` ' \
-                  'command and retry.'
-        integration_context = demisto.getIntegrationContext()
+                  'command and retry. If you choose not to reset the authentication timeout, the next attempt can be ' \
+                  'done in {} {}.'
         first_failure_time = integration_context.get(FIRST_FAILURE_TIME_CONST)
+        demisto.debug(f'CDL - First failure time: {first_failure_time}')
         last_failure_time = integration_context.get(LAST_FAILURE_TIME_CONST)
+        demisto.debug(f'CDL - First failure time: {last_failure_time}')
 
         if first_failure_time and last_failure_time:
-            first_failure_datetime = datetime.fromtimestamp(first_failure_time)
-            last_failure_datetime = datetime.fromtimestamp(last_failure_time)
-            now_datetime = datetime.now()
+            first_failure_datetime = datetime.fromisoformat(first_failure_time)
+            last_failure_datetime = datetime.fromisoformat(last_failure_time)
+            now_datetime = datetime.utcnow()
             time_from_first_failure = now_datetime - first_failure_datetime
             time_from_last_failure = now_datetime - last_failure_datetime
 
             if time_from_first_failure < timedelta(hours=1):
-                if time_from_last_failure < timedelta(minutes=1):
-                    raise DemistoException(err_msg)
+                window = timedelta(minutes=1)
+                if time_from_last_failure < window:
+                    raise DemistoException(err_msg.format(window - time_from_last_failure, 'seconds'))
             elif time_from_first_failure < timedelta(hours=48):
-                if time_from_last_failure < timedelta(minutes=10):
-                    raise DemistoException(err_msg)
+                window = timedelta(minutes=10)
+                if time_from_last_failure < window:
+                    raise DemistoException(err_msg.format(window - time_from_last_failure, 'minutes'))
             else:
-                if time_from_last_failure < timedelta(minutes=60):
-                    raise DemistoException(err_msg)
-
-        return self._get_access_token()
+                window = timedelta(minutes=60)
+                if time_from_last_failure < window:
+                    raise DemistoException(err_msg.format(window - time_from_last_failure, 'minutes'))
 
     def _get_access_token(self) -> dict:
         """ Performs an http request to oproxy-cdl access token endpoint
@@ -141,6 +157,7 @@ class Client(BaseClient):
         Returns: The oproxy response or raising a DemistoException
 
         """
+        demisto.debug('CDL - Fetching access token')
         try:
             oproxy_response = self._http_request('POST',
                                                  '/cdl-token',
@@ -150,37 +167,32 @@ class Client(BaseClient):
                                                  backoff_factor=10,
                                                  status_list_to_retry=[400])
         except DemistoException as e:
-            if self._is_bad_request_error(e):
-                # if the error's status code is 400, update the failure time counters
-                integration_context = demisto.getIntegrationContext()
-                current_time = datetime.now().timestamp()
-                times_dict = {LAST_FAILURE_TIME_CONST: current_time}
-                if not integration_context.get(FIRST_FAILURE_TIME_CONST):
-                    # first failure
-                    times_dict[FIRST_FAILURE_TIME_CONST] = current_time
-                integration_context.update(times_dict)
-                demisto.setIntegrationContext(integration_context)
+            if re.match(BAD_REQUEST_REGEX, str(e)):
+                demisto.setIntegrationContext(self._cache_failure_times(demisto.getIntegrationContext()))
             raise e
 
         self.reset_failure_times()
         return oproxy_response
 
     @staticmethod
-    def _is_bad_request_error(demisto_exception: DemistoException):
-        """ Checks if a given error's status code is 400.
-        The first line will be of the following format: 'Error in API call [$STATUS_CODE] - $REASON'
+    def _cache_failure_times(integration_context: dict) -> dict:
+        """ Updates the failure times in case of an error with 400 status code.
 
         Args:
-            demisto_exception: the DemistoException that was raised
+            integration_context: The integration context
 
-        Returns: True if the error's status code is 400, False otherwise.
+        Returns:
+            The updated integration context
 
         """
-        err_lines = str(demisto_exception).splitlines()
-        first_line = err_lines[0] if err_lines else ''
-        if '400' in first_line:
-            return True
-        return False
+        demisto.debug('The request to retrieve the access token has failed with 400 status code.')
+        current_time = datetime.utcnow().isoformat()
+        times_dict = {LAST_FAILURE_TIME_CONST: current_time}
+        if not integration_context.get(FIRST_FAILURE_TIME_CONST):
+            # first failure
+            times_dict[FIRST_FAILURE_TIME_CONST] = current_time
+        integration_context.update(times_dict)
+        return integration_context
 
     @staticmethod
     def reset_failure_times():
@@ -189,9 +201,9 @@ class Client(BaseClient):
         """
         integration_context = demisto.getIntegrationContext()
 
-        for const in (FIRST_FAILURE_TIME_CONST, LAST_FAILURE_TIME_CONST):
-            if const in integration_context:
-                del integration_context[const]
+        for failure_time_key in (FIRST_FAILURE_TIME_CONST, LAST_FAILURE_TIME_CONST):
+            if failure_time_key in integration_context:
+                del integration_context[failure_time_key]
 
         demisto.setIntegrationContext(integration_context)
 
