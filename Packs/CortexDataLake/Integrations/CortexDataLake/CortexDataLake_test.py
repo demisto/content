@@ -180,30 +180,18 @@ class TestBackoffStrategy:
 
     """
     @pytest.mark.parametrize('integration_context, exception', [
-        ({
-            FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=30)).isoformat(),
-            LAST_FAILURE_TIME_CONST: datetime.utcnow().isoformat()
-         }, True),
-        ({
-            FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(hours=3)).isoformat(),
-            LAST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=3)).isoformat()
-         }, True),
-        ({
-            FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(hours=48)).isoformat(),
-            LAST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=30)).isoformat()
-         }, True),
-        ({
-            FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=30)).isoformat(),
-            LAST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=1)).isoformat()
-         }, False),
-        ({
-             FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(hours=3)).isoformat(),
-             LAST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=10)).isoformat()
-         }, False),
-        ({
-             FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(hours=48)).isoformat(),
-             LAST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=60)).isoformat()
-         }, False),
+        ({FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=30)).isoformat(),
+          LAST_FAILURE_TIME_CONST: datetime.utcnow().isoformat()}, True),
+        ({FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(hours=3)).isoformat(),
+          LAST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=3)).isoformat()}, True),
+        ({FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(hours=48)).isoformat(),
+          LAST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=30)).isoformat()}, True),
+        ({FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=30)).isoformat(),
+          LAST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=1)).isoformat()}, False),
+        ({FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(hours=3)).isoformat(),
+          LAST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=10)).isoformat()}, False),
+        ({FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(hours=48)).isoformat(),
+          LAST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=60)).isoformat()}, False),
         ({}, False)
     ])
     def test_backoff_strategy(self, integration_context, exception):

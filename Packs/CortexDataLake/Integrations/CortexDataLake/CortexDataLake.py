@@ -169,6 +169,7 @@ class Client(BaseClient):
                                                  status_list_to_retry=[400])
         except DemistoException as e:
             if re.match(BAD_REQUEST_REGEX, str(e)):
+                demisto.error('The request to retrieve the access token has failed with 400 status code.')
                 demisto.setIntegrationContext(self._cache_failure_times(demisto.getIntegrationContext()))
             raise e
 
@@ -186,7 +187,6 @@ class Client(BaseClient):
             The updated integration context
 
         """
-        demisto.error('The request to retrieve the access token has failed with 400 status code.')
         current_time = datetime.utcnow().isoformat()
         times_dict = {LAST_FAILURE_TIME_CONST: current_time}
         if not integration_context.get(FIRST_FAILURE_TIME_CONST):
