@@ -1280,7 +1280,6 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
         logging.debug('Collected the following tests:\n{0}\n'.format(tests_string))
 
     else:
-        # No need to print all content packs and all tests to info in nightly flow
         if tests_string:
             logging.success('Collected the following tests:\n{0}\n'.format(tests_string))
         else:
