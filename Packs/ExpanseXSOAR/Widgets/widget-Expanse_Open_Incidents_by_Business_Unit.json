@@ -1,5 +1,5 @@
 {
-    "dataType": "indicators",
+    "dataType": "incidents",
     "dateRange": {
         "fromDate": "0001-01-01T00:00:00Z",
         "fromDateLicense": "0001-01-01T00:00:00Z",
@@ -13,9 +13,11 @@
         },
         "toDate": "0001-01-01T00:00:00Z"
     },
-    "id": "378b17f0-c1d3-46f8-8909-6d02278aef25",
+    "fromVersion": "6.0.0",
+    "id": "expanse-open-incidents-by-business-unit",
     "isPredefined": true,
-    "name": "Active Public IP with Bad Reputation",
+    "modified": "2020-10-12T08:35:52.966200451Z",
+    "name": "Expanse Open Incidents by Business Unit",
     "params": {
         "groupBy": [
             "expansebusinessunits"
@@ -23,76 +25,69 @@
         "tableColumns": [
             {
                 "isDefault": true,
-                "key": "indicator_type",
-                "position": 1,
-                "width": 120
+                "key": "id",
+                "position": 0,
+                "width": 110
             },
             {
                 "isDefault": true,
-                "key": "value",
+                "key": "name",
                 "position": 2,
                 "width": 300
             },
             {
                 "isDefault": true,
-                "key": "score",
+                "key": "type",
+                "position": 3,
+                "width": 200
+            },
+            {
+                "isDefault": true,
+                "key": "severity",
                 "position": 4,
-                "width": 120
+                "width": 80
             },
             {
                 "isDefault": true,
-                "key": "firstSeen",
+                "key": "status",
                 "position": 5,
-                "width": 275
+                "width": 80
             },
             {
                 "isDefault": true,
-                "key": "lastSeen",
+                "key": "owner",
                 "position": 6,
-                "width": 275
+                "width": 160
             },
             {
                 "isDefault": true,
-                "key": "timestamp",
+                "key": "roles",
+                "position": 7,
+                "width": 160
+            },
+            {
+                "isDefault": true,
+                "key": "playbookId",
                 "position": 8,
-                "width": 190
-            },
-            {
-                "isDefault": true,
-                "key": "relatedIncCount",
-                "position": 9,
                 "width": 150
             },
             {
                 "isDefault": true,
-                "key": "sourceBrands",
-                "position": 12,
-                "width": 175
+                "key": "occurred",
+                "position": 9,
+                "width": 200
             },
             {
                 "isDefault": true,
-                "key": "sourceInstances",
-                "position": 13,
-                "width": 175
-            },
-            {
-                "isDefault": true,
-                "key": "expirationStatus",
-                "position": 14,
-                "width": 175
-            },
-            {
-                "isDefault": true,
-                "key": "expiration",
-                "position": 15,
-                "width": 190
+                "key": "dueDate",
+                "position": 10,
+                "width": 200
             }
         ]
     },
-    "query": "sourceBrands:FeedExpanse and type:IP and expanselastobserved:\u003e=\"7 day ago\" and (reputation:Bad or reputation:Suspicious)",
+    "query": "-category:job and -status:archived and -status:closed and type:\"Expanse Issue\"",
     "size": 0,
     "version": -1,
     "widgetType": "pie",
-    "fromVersion": "6.0.0",
     "description": ""
 }

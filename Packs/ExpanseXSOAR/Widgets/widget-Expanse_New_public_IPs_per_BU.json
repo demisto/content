@@ -8,16 +8,19 @@
             "byFrom": "days",
             "byTo": "",
             "field": "",
-            "fromValue": 7,
+            "fromValue": null,
             "toValue": null
         },
         "toDate": "0001-01-01T00:00:00Z"
     },
-    "id": "24bfa23b-a130-4253-8f7e-6ea1ce0f798e",
+    "fromVersion": "6.0.0",
+    "id": "expanse-new-public-ips-per-bu",
     "isPredefined": true,
-    "name": "Active Domains by BU with Active Service",
+    "modified": "2020-10-16T10:47:22.944613956Z",
+    "name": "Expanse New public IPs per BU",
     "params": {
         "groupBy": [
+            "firstSeen(d)",
             "expansebusinessunits"
         ],
         "tableColumns": [
@@ -89,10 +92,9 @@
             }
         ]
     },
-    "query": "sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\" and (type:Domain or type:DomainGlob) and expanseservicestatus:HAS_ACTIVE_SERVICE",
+    "query": "type:IP and sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\"",
     "size": 0,
     "version": -1,
-    "widgetType": "pie",
-    "fromVersion": "6.0.0",
+    "widgetType": "line",
     "description": ""
 }

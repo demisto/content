@@ -1,8 +1,9 @@
 import demistomock as demisto  # noqa: F401  # pylint: disable=unused-wildcard-import
 from CommonServerPython import *  # noqa: F401  # pylint: disable=unused-wildcard-import
 
-
-from typing import List, Dict, Tuple
+import json
+import traceback
+from typing import List, Dict, Tuple, Optional, Any
 from functools import reduce
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
@@ -21076,7 +21077,7 @@ def extract_geolocation(from_: Optional[str], to: Optional[str]) -> List[Tuple[i
 
 
 def generate_map_command(args: Dict[str, Any]) -> str:
-    md: List[str] = ["### Map of Open Issues On Prem"]
+    md: List[str] = ["### Map of Open Incidents On Prem"]
 
     geolocations = extract_geolocation(args.get('from'), args.get('to'))
 
