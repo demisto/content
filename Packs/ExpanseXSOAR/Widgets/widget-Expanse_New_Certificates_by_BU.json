@@ -13,12 +13,14 @@
         },
         "toDate": "0001-01-01T00:00:00Z"
     },
-    "id": "b5de8a0d-c64b-4a44-8ecf-43c1771160e7",
+    "fromVersion": "6.0.0",
+    "id": "expanse-new-certificates-by-bu",
     "isPredefined": true,
-    "name": "New Domains by BU with Active Service",
+    "modified": "2020-10-16T10:48:57.442411526Z",
+    "name": "Expanse New Certificates by BU",
     "params": {
         "groupBy": [
-            "firstSeen(d)",
+            "expansefirstobserved(d)",
             "expansebusinessunits"
         ],
         "tableColumns": [
@@ -90,10 +92,9 @@
             }
         ]
     },
-    "query": "sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\" and (type:Domain or type:DomainGlob) and expanseservicestatus:HAS_ACTIVE_SERVICE",
+    "query": "sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\" and type:ExpanseCertificate",
     "size": 0,
     "version": -1,
     "widgetType": "line",
-    "fromVersion": "6.0.0",
     "description": ""
 }

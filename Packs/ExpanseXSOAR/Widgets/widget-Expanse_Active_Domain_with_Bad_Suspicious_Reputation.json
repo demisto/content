@@ -13,12 +13,13 @@
         },
         "toDate": "0001-01-01T00:00:00Z"
     },
-    "id": "5b4aed4f-bc2f-4535-8f2d-62ee45bdfe71",
+    "fromVersion": "6.0.0",
+    "id": "expanse-active-domain-with-bad-suspicious-reputation",
     "isPredefined": true,
-    "name": "Active Domains by BU",
+    "modified": "2020-10-16T10:51:37.008097046Z",
+    "name": "Expanse Active Domain with Bad/Suspicious Reputation",
     "params": {
         "groupBy": [
-            "calculatedTime(d)",
             "expansebusinessunits"
         ],
         "tableColumns": [
@@ -90,10 +91,9 @@
             }
         ]
     },
-    "query": "sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\" and (type:Domain or type:DomainGlob)",
+    "query": "sourceBrands:FeedExpanse and (type:Domain or type:DomainGlob) and expanselastobserved:\u003e=\"7 day ago\" and (reputation:Bad or reputation:Suspicious)",
     "size": 0,
     "version": -1,
-    "widgetType": "line",
-    "fromVersion": "6.0.0",
+    "widgetType": "pie",
     "description": ""
 }
