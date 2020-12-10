@@ -43,8 +43,8 @@ configuration:
   type: 0
   required: false
 - display: Maximum number of events per fetch.
-  name: fetch_incidents_limit
-  defaultvalue: "200"
+  name: max_fetch
+  defaultvalue: "50"
   type: 0
   required: false
 - display: Fetch incidents
@@ -58,8 +58,8 @@ configuration:
   type: 13
   required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: first_fetch_time
-  defaultvalue: 1 day
+  name: first_fetch
+  defaultvalue: 7 days
   type: 0
   required: false
 script:
@@ -428,7 +428,7 @@ script:
             return 'ok';
         case 'fetch-incidents':
             return fetchIncidents(params.fetch_incidents_type, params.fetch_incidents_query,
-                params.fetch_incidents_limit, params.first_fetch_time);
+                params.max_fetch, params.first_fetch);
         case 'satp-appliances':
             return getAppliances();
         case 'satp-command':
