@@ -49,7 +49,7 @@ DBOT_MAPPING = {
     'source': 'Vendor',
 }
 
-INDICATOR_MAPPING = {
+DEFAULT_INDICATOR_MAPPING = {
     'asn': 'ASN',
     'value': 'Address',
     'country': 'Country',
@@ -275,11 +275,11 @@ def get_url_context(indicator, threshold):
 def get_threat_generic_context(indicator, indicator_mapping=None):
     """
         Receives indicator and builds new dictionary from values that were defined in
-        INDICATOR_MAPPING keys and adds the Severity key with indicator severity value.
+        DEFAULT_INDICATOR_MAPPING keys and adds the Severity key with indicator severity value.
     """
     # True when the indicator isn't a file (file indicator has a modified indicator_mapping).
     if not indicator_mapping:
-        indicator_mapping = INDICATOR_MAPPING
+        indicator_mapping = DEFAULT_INDICATOR_MAPPING
     threat_ip_context = {indicator_mapping[k]: v for (k, v) in indicator.items() if
                          k in indicator_mapping.keys()}
     try:
@@ -396,6 +396,17 @@ def build_model_data(model, name, is_public, tlp, tags, intelligence, descriptio
     return data
 
 
+def get_file_mapping():
+    """
+    Returns the file indicator mapping after changing it's type field to subtype.
+    """
+    file_indicator_mapping = DEFAULT_INDICATOR_MAPPING.copy()
+    # The real type of the hash is in subtype field.
+    file_indicator_mapping.pop('type', '')
+    file_indicator_mapping['subtype'] = 'Type'
+    return file_indicator_mapping
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -501,11 +512,7 @@ def get_file_reputation(file, threshold=None, status="active,inactive"):
     dbot_context = get_dbot_context(indicator, threshold, file_dbot_mapping)
     file_type = get_file_type(indicator)
     file_context = get_file_context(indicator, threshold)
-
-    file_indicator_mapping = INDICATOR_MAPPING.copy()
-    # The real type of the hash is in subtype field.
-    file_indicator_mapping.pop('type', '')
-    file_indicator_mapping['subtype'] = 'Type'
+    file_indicator_mapping = get_file_mapping()
 
     threat_file_context = get_threat_generic_context(indicator, file_indicator_mapping)
     threat_file_context[file_type] = threat_file_context.pop('Address')
