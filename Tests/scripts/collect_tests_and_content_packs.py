@@ -1297,8 +1297,10 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
         with open("./Tests/content_packs_to_install.txt", "w") as content_packs_to_install:
             content_packs_to_install.write(packs_to_install_string)
 
-    if not is_nightly:
-        # No need to print all content packs and all tests in nightly
+    if is_nightly:
+        logging.debug('Collected the following tests:\n{0}\n'.format(tests_string))
+
+    else:
         if tests_string:
             logging.success('Collected the following tests:\n{0}\n'.format(tests_string))
         else:
