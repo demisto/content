@@ -1,5 +1,5 @@
 import ssl
-from datetime import timezone
+from datetime import timezone, timedelta
 from typing import Any, Dict, Tuple, List, Optional
 
 from dateparser import parse
@@ -9,6 +9,35 @@ from imapclient import IMAPClient
 
 import demistomock as demisto
 from CommonServerPython import *
+
+
+TIMEZONE_OFFSET_TO_HOURS = {
+    'UTC-12:00': -12,
+    'UTC-11:00': -11,
+    'UTC-10:00': -10,
+    'UTC-09:00': -9,
+    'UTC-08:00': -8,
+    'UTC-07:00': -7,
+    'UTC-06:00': -6,
+    'UTC-05:00': -5,
+    'UTC-04:00': -4,
+    'UTC-03:00': -3,
+    'UTC-02:00': -2,
+    'UTC-01:00': -1,
+    'UTC±00:00': 0,
+    'UTC+01:00': 1,
+    'UTC+02:00': 2,
+    'UTC+03:00': 3,
+    'UTC+04:00': 4,
+    'UTC+05:00': 5,
+    'UTC+06:00': 6,
+    'UTC+07:00': 7,
+    'UTC+08:00': 8,
+    'UTC+09:00': 9,
+    'UTC+10:00': 10,
+    'UTC+11:00': 11,
+    'UTC+12:00': 12,
+}
 
 
 class Email(object):
@@ -160,7 +189,8 @@ def fetch_incidents(client: IMAPClient,
                     permitted_from_domains: str,
                     delete_processed: bool,
                     limit: int,
-                    save_file: bool
+                    save_file: bool,
+                    utc_offset: str = 'UTC±00:00'
                     ) -> Tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
@@ -183,6 +213,7 @@ def fetch_incidents(client: IMAPClient,
         delete_processed: Whether to delete processed mails
         limit: The maximum number of incidents to fetch each time
         save_file: Whether to save the .eml file of the incident's mail
+        utc_offset: The offset in hours from UTC
 
     Returns:
         next_run: This will be last_run in the next fetch-incidents
@@ -206,6 +237,7 @@ def fetch_incidents(client: IMAPClient,
         permitted_from_domains=permitted_from_domains,
         save_file=save_file,
         uid_to_fetch_from=uid_to_fetch_from,
+        utc_offset=utc_offset
     )
     incidents = []
     for mail in mails_fetched:
@@ -229,6 +261,7 @@ def fetch_mails(client: IMAPClient,
                 limit: int = 200,
                 save_file: bool = False,
                 message_id: int = None,
+                utc_offset: str = 'UTC±00:00',
                 uid_to_fetch_from: int = 1) -> Tuple[list, list, int]:
     """
     This function will fetch the mails from the IMAP server.
@@ -244,6 +277,7 @@ def fetch_mails(client: IMAPClient,
         save_file: Whether to save the .eml file of the incident's mail
         message_id: A unique message ID with which a specific mail can be fetched
         uid_to_fetch_from: The email message UID to start the fetch from as offset
+        utc_offset: The offset in hours from UTC
 
     Returns:
         mails_fetched: A list of Email objects
@@ -261,20 +295,22 @@ def fetch_mails(client: IMAPClient,
     mails_fetched = []
     messages_fetched = []
     demisto.debug(f'Messages to fetch: {messages_uids}')
+    timezone_offset_delta = timedelta(hours=TIMEZONE_OFFSET_TO_HOURS[utc_offset])
+    timezone_info_object = timezone(timezone_offset_delta)
     for mail_id, message_data in client.fetch(messages_uids, 'RFC822').items():
         message_bytes = message_data.get(b'RFC822')
         if not message_bytes:
             continue
         # The search query filters emails by day, not by exact date
         email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
-        if not first_fetch_time or email_message_object.date > first_fetch_time:
+        if email_message_object.date.astimezone(timezone_info_object) > \
+                first_fetch_time.astimezone(timezone_info_object):
             mails_fetched.append(email_message_object)
             messages_fetched.append(email_message_object.id)
         else:
             demisto.debug(
                 f'Skipping {mail_id}. Email date: {email_message_object.date}, criterion SINCE time: {first_fetch_time}'
             )
-
     last_message_in_current_batch = uid_to_fetch_from
     if messages_uids:
         last_message_in_current_batch = messages_uids[-1]
@@ -397,6 +433,7 @@ def main():
     limit = min(int(demisto.params().get('limit', '50')), 200)
     save_file = params.get('save_file', False)
     first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
+    utc_offset = demisto.params().get('utc_offset', 'UTC±00:00') or 'UTC±00:00'
     ssl_context = ssl.create_default_context()
 
     args = demisto.args()
@@ -429,7 +466,7 @@ def main():
                                                       permitted_from_addresses=permitted_from_addresses,
                                                       permitted_from_domains=permitted_from_domains,
                                                       delete_processed=delete_processed, limit=limit,
-                                                      save_file=save_file)
+                                                      save_file=save_file, utc_offset=utc_offset)
 
                 demisto.setLastRun(next_run)
                 demisto.incidents(incidents)
