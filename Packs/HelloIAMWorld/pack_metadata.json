@@ -1,6 +1,6 @@
 {
-    "name": "IAM Template",
-    "description": "IAM Template",
+    "name": "Hello IAM World",
+    "description": "An Identity and Accress Management integration template.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

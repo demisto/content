@@ -1,6 +1,6 @@
 category: Identity and Access Management
 commonfields:
-  id: IAM Template
+  id: Hello IAM World
   version: -1
 configuration:
 - display: Base URL
@@ -49,9 +49,9 @@ configuration:
   name: mapper_out
   required: true
   type: 0
-description: IAM Template.
-display: IAM Template
-name: IAM Template
+description: An Identity and Accress Management integration template.
+display: Hello IAM World
+name: Hello IAM World
 script:
   commands:
   - arguments:
