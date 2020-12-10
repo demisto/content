@@ -146,18 +146,12 @@ tasks:
         simple: device
       integration_name:
         simple: servicenow
-      integrationName:
-        simple: servicenow
       message:
         simple: Servicenow integration is disabled
       playbook_name:
         simple: Bulk Export Devices to ServiceNow - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Bulk Export Devices to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: disabled
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -264,18 +258,12 @@ tasks:
         simple: device
       integration_name:
         simple: servicenow
-      integrationName:
-        simple: servicenow
       message:
         simple: 'Error: Failed to do a bulk device sync to ServiceNow'
       playbook_name:
         simple: Bulk Export Devices to ServiceNow - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Bulk Export Devices to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false

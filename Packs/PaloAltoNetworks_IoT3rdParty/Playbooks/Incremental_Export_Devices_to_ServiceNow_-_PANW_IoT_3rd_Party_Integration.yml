@@ -81,15 +81,10 @@ tasks:
     scriptarguments:
       asset_type:
         simple: device
-      assetType:
-        simple: Device
       increment_time:
-        simple: "15"
-      incrementTime:
         simple: "15"
       offset: {}
       page_length: {}
-      pageLength: {}
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -127,18 +122,12 @@ tasks:
         simple: device
       integration_name:
         simple: servicenow
-      integrationName:
-        simple: servicenow
       message:
         simple: ServiceNow Integration is disabled
       playbook_name:
         simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: disabled
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -245,18 +234,12 @@ tasks:
         simple: device
       integration_name:
         simple: servicenow
-      integrationName:
-        simple: servicenow
       message:
         simple: Incremental device list doesn't exist
       playbook_name:
         simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -363,18 +346,12 @@ tasks:
         simple: device
       integration_name:
         simple: servicenow
-      integrationName:
-        simple: servicenow
       message:
         simple: Failed to generate device table query for ServiceNow
       playbook_name:
         simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -524,25 +501,10 @@ tasks:
         simple: ${PanwIot3rdParty.Devices}
       asset_type:
         simple: device
-      assetList:
-        simple: ${PanwIot3rdParty.Devices}
-      assetType:
-        simple: Device
       incident: {}
-      metadata:
-        complex:
-          accessor: Record
-          root: ServiceNow
-      metadata1: {}
       output_format:
         simple: ServiceNow
-      outputFormat:
-        simple: ServiceNow
       servicenow_map:
-        complex:
-          accessor: Record
-          root: ServiceNow
-      servicenowMap:
         complex:
           accessor: Record
           root: ServiceNow
@@ -620,18 +582,12 @@ tasks:
         simple: device
       integration_name:
         simple: servicenow
-      integrationName:
-        simple: servicenow
       message:
         simple: Failed to generate upsert device list for ServiceNow
       playbook_name:
         simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -747,19 +703,13 @@ tasks:
         simple: device
       integration_name:
         simple: servicenow
-      integrationName:
-        simple: servicenow
       message:
         simple: Success to update ${PanwIot3rdParty.DeviceServiceNow.update_count}
           devices to servicenow.
       playbook_name:
         simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: success
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -913,18 +863,12 @@ tasks:
         simple: device
       integration_name:
         simple: servicenow
-      integrationName:
-        simple: servicenow
       message:
         simple: ServiceNow failed to update devices
       playbook_name:
         simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -1038,19 +982,13 @@ tasks:
         simple: device
       integration_name:
         simple: servicenow
-      integrationName:
-        simple: servicenow
       message:
         simple: Success to insert ${PanwIot3rdParty.DeviceServiceNow.insert_count}
           devices to ServiceNow.
       playbook_name:
         simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: success
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -1189,18 +1127,12 @@ tasks:
         simple: device
       integration_name:
         simple: servicenow
-      integrationName:
-        simple: servicenow
       message:
         simple: ServiceNow failed to insert devices
       playbook_name:
         simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -1307,18 +1239,12 @@ tasks:
         simple: device
       integration_name:
         simple: servicenow
-      integrationName:
-        simple: servicenow
       message:
         simple: Failed to query servicenow table to get existing device list
       playbook_name:
         simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false

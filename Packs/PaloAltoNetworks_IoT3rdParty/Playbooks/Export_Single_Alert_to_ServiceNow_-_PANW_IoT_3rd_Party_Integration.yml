@@ -90,17 +90,6 @@ tasks:
             operator: getField
       asset_type:
         simple: alert
-      assetID:
-        complex:
-          root: incident
-          transformers:
-          - args:
-              field:
-                value:
-                  simple: correlation_id
-            operator: getField
-      assetType:
-        simple: Alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -138,18 +127,12 @@ tasks:
         simple: alert
       integration_name:
         simple: servicenow
-      integrationName:
-        simple: servicenow
       message:
         simple: ServiceNow instance is not enabled
       playbook_name:
         simple: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: disabled
-      type:
-        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -267,18 +250,9 @@ tasks:
         simple: ${PanwIot3rdParty.SingleAsset}
       asset_type:
         simple: alert
-      assetList:
-        simple: ${PanwIot3rdParty.SingleAsset}
-      assetType:
-        simple: Alert
       incident:
         simple: ${incident}
-      metadata: {}
-      metadata1:
-        simple: ${incident}
       output_format:
-        simple: ServiceNow
-      outputFormat:
         simple: ServiceNow
       servicenow_map: {}
       using:
@@ -318,18 +292,12 @@ tasks:
         simple: alert
       integration_name:
         simple: servicenow
-      integrationName:
-        simple: servicenow
       message:
         simple: Failed to get alert instance zb_ticket id ${incident.correlation_id}
       playbook_name:
         simple: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -437,18 +405,12 @@ tasks:
         simple: alert
       integration_name:
         simple: servicenow
-      integrationName:
-        simple: servicenow
       message:
         simple: Failed to convert alert to servicenow format
       playbook_name:
         simple: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -558,19 +520,13 @@ tasks:
         simple: alert
       integration_name:
         simple: servicenow
-      integrationName:
-        simple: servicenow
       message:
         simple: Success to send alert instance zb_ticket id ${incident.correlation_id}
           to ServiceNow
       playbook_name:
         simple: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: success
-      type:
-        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -678,18 +634,12 @@ tasks:
         simple: alert
       integration_name:
         simple: servicenow
-      integrationName:
-        simple: servicenow
       message:
         simple: Failed to create record in servicenow table
       playbook_name:
         simple: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
