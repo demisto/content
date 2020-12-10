@@ -4,9 +4,9 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: cf22fd73-29f1-4245-8e16-533704926d20
-  display: The app ID
+  display: Azure Web Application Firewall
   hidden: false
-  name: app_id
+  name: Azure Web Application Firewall
   required: true
   type: 0
 - display: Subscription ID
@@ -479,7 +479,7 @@ script:
     description: Tests connectivity to Azure Web Application Firewall.
     execution: false
     name: azure-waf-test
-  dockerimage: demisto/crypto:1.0.0.13944
+  dockerimage: demisto/crypto:1.0.0.14297
   feed: false
   isfetch: false
   longRunning: false
