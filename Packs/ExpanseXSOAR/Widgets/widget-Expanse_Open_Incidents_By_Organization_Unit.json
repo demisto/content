@@ -13,12 +13,14 @@
         },
         "toDate": "0001-01-01T00:00:00Z"
     },
-    "id": "2f69430d-f91c-4d03-8790-f46a008515f9",
+    "fromVersion": "6.0.0",
+    "id": "expanse-open-incidents-by-organization-unit",
     "isPredefined": true,
-    "name": "Open Issues by BU",
+    "modified": "2020-10-12T08:35:52.966200451Z",
+    "name": "Expanse Open Incidents By Organization Unit",
     "params": {
         "groupBy": [
-            "expansebusinessunits"
+            "expanseassetorganizationunit"
         ],
         "tableColumns": [
             {
@@ -83,10 +85,9 @@
             }
         ]
     },
-    "query": "type:\"Expanse Issue\"",
+    "query": "-category:job and -status:archived and -status:closed and type:\"Expanse Issue\"  -expanseassetorganizationunit:\"\"",
     "size": 0,
     "version": -1,
     "widgetType": "pie",
-    "fromVersion": "6.0.0",
     "description": ""
 }

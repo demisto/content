@@ -13,12 +13,13 @@
         },
         "toDate": "0001-01-01T00:00:00Z"
     },
-    "id": "5c386e50-eddd-4217-8108-56ca46612149",
+    "fromVersion": "6.0.0",
+    "id": "expanse-active-expired-certificates-by-bu",
     "isPredefined": true,
-    "name": "New public IPs per BU",
+    "modified": "2020-10-16T10:42:04.447466558Z",
+    "name": "Expanse Active Expired Certificates by BU",
     "params": {
         "groupBy": [
-            "firstSeen(d)",
             "expansebusinessunits"
         ],
         "tableColumns": [
@@ -90,10 +91,9 @@
             }
         ]
     },
-    "query": "type:IP and sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\"",
+    "query": "sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\" and type:ExpanseCertificate and expansevalidnotafter:\u003c=\"now\" and expanseservicestatus:HAS_ACTIVE_SERVICE ",
     "size": 0,
     "version": -1,
-    "widgetType": "line",
-    "fromVersion": "6.0.0",
+    "widgetType": "pie",
     "description": ""
 }

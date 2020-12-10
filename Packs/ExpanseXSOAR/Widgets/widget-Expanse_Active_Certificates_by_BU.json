@@ -13,9 +13,11 @@
         },
         "toDate": "0001-01-01T00:00:00Z"
     },
-    "id": "4ffb2607-b432-40a8-83b7-20c3fb9b9fea",
+    "fromVersion": "6.0.0",
+    "id": "expanse-active-certificates-by-bu",
     "isPredefined": true,
-    "name": "Active Domain with Bad/Suspicious Reputation",
+    "modified": "2020-10-16T10:42:04.447466558Z",
+    "name": "Expanse Active Certificates by BU",
     "params": {
         "groupBy": [
             "expansebusinessunits"
@@ -89,10 +91,9 @@
             }
         ]
     },
-    "query": "sourceBrands:FeedExpanse and (type:Domain or type:DomainGlob) and expanselastobserved:\u003e=\"7 day ago\" and (reputation:Bad or reputation:Suspicious)",
+    "query": "sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\" and type:ExpanseCertificate",
     "size": 0,
     "version": -1,
     "widgetType": "pie",
-    "fromVersion": "6.0.0",
     "description": ""
 }

@@ -1,42 +1,67 @@
 {
+    "id": "Expanse Incidents",
+    "version": -1,
     "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 30,
+        "field": ""
+    },
     "fromDateLicense": "0001-01-01T00:00:00Z",
-    "id": "Expanse Issues",
+    "name": "Expanse Incidents",
     "layout": [
         {
-            "forceRange": false,
-            "h": 3,
-            "i": "696ba6e0-185d-11eb-82d7-0fc7d4cde9f3",
             "id": "696ba6e0-185d-11eb-82d7-0fc7d4cde9f3",
-            "w": 6,
+            "forceRange": false,
+            "x": 6,
+            "y": 5,
+            "i": "696ba6e0-185d-11eb-82d7-0fc7d4cde9f3",
+            "w": 3,
+            "h": 4,
             "widget": {
-                "category": "",
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
                 "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Incidents On Non Standard Ports",
+                "prevName": "",
                 "dataType": "incidents",
+                "widgetType": "column",
+                "query": "type:\"Expanse Issue\" and -expanseport:=443 and -expanseport:=80",
+                "sort": null,
+                "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
                     "period": {
                         "by": "",
-                        "byFrom": "days",
                         "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
                     },
-                    "toDate": "0001-01-01T00:00:00Z"
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
                 },
-                "fromServerVersion": "",
-                "id": "",
-                "isPredefined": false,
-                "itemVersion": "",
-                "modified": "0001-01-01T00:00:00Z",
-                "name": "Issues Over Time By Issue Type",
-                "packID": "",
                 "params": {
                     "groupBy": [
-                        "occurred(d)",
-                        "expanseissuetype"
+                        "expanseissuetype",
+                        "expanseport"
                     ],
                     "tableColumns": [
                         {
@@ -101,57 +126,57 @@
                         }
                     ]
                 },
-                "prevName": "",
-                "propagationLabels": [
-                    "all"
-                ],
-                "query": "type:\"Expanse Issue\"",
-                "shouldCommit": false,
                 "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 0,
-                "widgetType": "line"
-            },
-            "x": 6,
-            "y": 5
+                "category": ""
+            }
         },
         {
-            "forceRange": false,
-            "h": 2,
-            "i": "9bef0490-185d-11eb-82d7-0fc7d4cde9f3",
             "id": "9bef0490-185d-11eb-82d7-0fc7d4cde9f3",
+            "forceRange": false,
+            "x": 0,
+            "y": 1,
+            "i": "9bef0490-185d-11eb-82d7-0fc7d4cde9f3",
             "w": 3,
+            "h": 2,
             "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
                 "id": "",
-                "isPredefined": false,
-                "itemVersion": "1.0.4",
+                "version": 0,
                 "modified": "2020-10-12T08:35:52.966200451Z",
-                "name": "Open Issues By Severity",
+                "sortValues": null,
                 "packID": "CommonWidgets",
+                "itemVersion": "1.0.4",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
                 "packPropagationLabels": [
                     "all"
                 ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Open Incidents By Severity",
+                "prevName": "Active Incidents - Pie chart",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "-category:job and -status:archived and -status:closed and type:\"Expanse Issue\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
                 "params": {
                     "groupBy": [
                         "severity"
@@ -219,57 +244,57 @@
                         }
                     ]
                 },
-                "prevName": "Active Incidents - Pie chart",
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "e144a6d0-185d-11eb-82d7-0fc7d4cde9f3",
+            "forceRange": false,
+            "x": 3,
+            "y": 6,
+            "i": "e144a6d0-185d-11eb-82d7-0fc7d4cde9f3",
+            "w": 3,
+            "h": 3,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2020-10-12T08:35:52.966200451Z",
+                "sortValues": null,
+                "packID": "CommonWidgets",
+                "itemVersion": "1.0.4",
+                "fromServerVersion": "",
+                "toServerVersion": "",
                 "propagationLabels": [
 
                 ],
-                "query": "-category:job and -status:archived and -status:closed and type:\"Expanse Issue\"",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 0,
-                "widgetType": "pie"
-            },
-            "x": 0,
-            "y": 1
-        },
-        {
-            "forceRange": false,
-            "h": 3,
-            "i": "e144a6d0-185d-11eb-82d7-0fc7d4cde9f3",
-            "id": "e144a6d0-185d-11eb-82d7-0fc7d4cde9f3",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "",
-                "isPredefined": false,
-                "itemVersion": "1.0.4",
-                "modified": "2020-10-12T08:35:52.966200451Z",
-                "name": "Open Issues by Business Unit",
-                "packID": "CommonWidgets",
                 "packPropagationLabels": [
                     "all"
                 ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Open Incidents by Business Unit",
+                "prevName": "Active Incidents - Pie chart",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "-category:job and -status:archived and -status:closed and type:\"Expanse Issue\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
                 "params": {
                     "groupBy": [
                         "expansebusinessunits"
@@ -337,57 +362,57 @@
                         }
                     ]
                 },
-                "prevName": "Active Incidents - Pie chart",
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "28565b80-185f-11eb-8e40-fb6a4d3d1563",
+            "forceRange": false,
+            "x": 6,
+            "y": 1,
+            "i": "28565b80-185f-11eb-8e40-fb6a4d3d1563",
+            "w": 3,
+            "h": 4,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2020-10-12T08:35:52.966200451Z",
+                "sortValues": null,
+                "packID": "CommonWidgets",
+                "itemVersion": "1.0.4",
+                "fromServerVersion": "",
+                "toServerVersion": "",
                 "propagationLabels": [
 
                 ],
-                "query": "-category:job and -status:archived and -status:closed and type:\"Expanse Issue\"",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 0,
-                "widgetType": "pie"
-            },
-            "x": 3,
-            "y": 5
-        },
-        {
-            "forceRange": false,
-            "h": 4,
-            "i": "28565b80-185f-11eb-8e40-fb6a4d3d1563",
-            "id": "28565b80-185f-11eb-8e40-fb6a4d3d1563",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "",
-                "isPredefined": false,
-                "itemVersion": "1.0.4",
-                "modified": "2020-10-12T08:35:52.966200451Z",
-                "name": "Open Issues By Type",
-                "packID": "CommonWidgets",
                 "packPropagationLabels": [
                     "all"
                 ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Open Incidents By Type",
+                "prevName": "Active Incidents - Pie chart",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "-category:job and -status:archived and -status:closed and type:\"Expanse Issue\" -expanseissuetype:\"\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
                 "params": {
                     "groupBy": [
                         "expanseissuetype"
@@ -455,57 +480,57 @@
                         }
                     ]
                 },
-                "prevName": "Active Incidents - Pie chart",
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "4eb1b180-185f-11eb-8e40-fb6a4d3d1563",
+            "forceRange": false,
+            "x": 3,
+            "y": 2,
+            "i": "4eb1b180-185f-11eb-8e40-fb6a4d3d1563",
+            "w": 3,
+            "h": 4,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2020-10-12T08:35:52.966200451Z",
+                "sortValues": null,
+                "packID": "CommonWidgets",
+                "itemVersion": "1.0.4",
+                "fromServerVersion": "",
+                "toServerVersion": "",
                 "propagationLabels": [
 
                 ],
-                "query": "-category:job and -status:archived and -status:closed and type:\"Expanse Issue\" -expanseissuetype:\"\"",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 0,
-                "widgetType": "pie"
-            },
-            "x": 6,
-            "y": 1
-        },
-        {
-            "forceRange": false,
-            "h": 3,
-            "i": "4eb1b180-185f-11eb-8e40-fb6a4d3d1563",
-            "id": "4eb1b180-185f-11eb-8e40-fb6a4d3d1563",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "",
-                "isPredefined": false,
-                "itemVersion": "1.0.4",
-                "modified": "2020-10-12T08:35:52.966200451Z",
-                "name": "Open Issues By Organization Unit",
-                "packID": "CommonWidgets",
                 "packPropagationLabels": [
                     "all"
                 ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Open Incidents By Organization Unit",
+                "prevName": "Active Incidents - Pie chart",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "-category:job and -status:archived and -status:closed and type:\"Expanse Issue\"  -expanseassetorganizationunit:\"\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
                 "params": {
                     "groupBy": [
                         "expanseassetorganizationunit"
@@ -573,57 +598,57 @@
                         }
                     ]
                 },
-                "prevName": "Active Incidents - Pie chart",
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "390e60b0-1861-11eb-8e40-fb6a4d3d1563",
+            "forceRange": false,
+            "x": 3,
+            "y": 1,
+            "i": "390e60b0-1861-11eb-8e40-fb6a4d3d1563",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2020-10-12T08:35:52.967206076Z",
+                "sortValues": null,
+                "packID": "CommonWidgets",
+                "itemVersion": "1.0.4",
+                "fromServerVersion": "",
+                "toServerVersion": "",
                 "propagationLabels": [
 
                 ],
-                "query": "-category:job and -status:archived and -status:closed and type:\"Expanse Issue\"  -expanseassetorganizationunit:\"\"",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 0,
-                "widgetType": "pie"
-            },
-            "x": 3,
-            "y": 2
-        },
-        {
-            "forceRange": false,
-            "h": 1,
-            "i": "390e60b0-1861-11eb-8e40-fb6a4d3d1563",
-            "id": "390e60b0-1861-11eb-8e40-fb6a4d3d1563",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "",
-                "isPredefined": false,
-                "itemVersion": "1.0.4",
-                "modified": "2020-10-12T08:35:52.967206076Z",
-                "name": "Open Issues With Attribution",
-                "packID": "CommonWidgets",
                 "packPropagationLabels": [
                     "all"
                 ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Open Incidents With Attribution",
+                "prevName": "Unassigned Incidents",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "type:\"Expanse Issue\" and -expanseassetorganizationunit:\"\" and -status:Closed",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
                 "params": {
                     "colors": {
                         "isEnabled": true,
@@ -703,57 +728,57 @@
                         }
                     ]
                 },
-                "prevName": "Unassigned Incidents",
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "760b2bb0-1861-11eb-8e40-fb6a4d3d1563",
+            "forceRange": false,
+            "x": 3,
+            "y": 0,
+            "i": "760b2bb0-1861-11eb-8e40-fb6a4d3d1563",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2020-10-12T08:35:52.967206076Z",
+                "sortValues": null,
+                "packID": "CommonWidgets",
+                "itemVersion": "1.0.4",
+                "fromServerVersion": "",
+                "toServerVersion": "",
                 "propagationLabels": [
 
                 ],
-                "query": "type:\"Expanse Issue\" and -expanseassetorganizationunit:\"\" and -status:Closed",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 0,
-                "widgetType": "number"
-            },
-            "x": 3,
-            "y": 1
-        },
-        {
-            "forceRange": false,
-            "h": 1,
-            "i": "760b2bb0-1861-11eb-8e40-fb6a4d3d1563",
-            "id": "760b2bb0-1861-11eb-8e40-fb6a4d3d1563",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "",
-                "isPredefined": false,
-                "itemVersion": "1.0.4",
-                "modified": "2020-10-12T08:35:52.967206076Z",
-                "name": "Open Issues Pending Attribution",
-                "packID": "CommonWidgets",
                 "packPropagationLabels": [
                     "all"
                 ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Open Incidents Pending Attribution",
+                "prevName": "Unassigned Incidents",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-category:job and expanseassetorganizationunit:\"\" and type:\"Expanse Issue\" and -status:Closed",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
                 "params": {
                     "colors": {
                         "isEnabled": true,
@@ -830,57 +855,57 @@
                         }
                     ]
                 },
-                "prevName": "Unassigned Incidents",
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "a1c32ff0-1861-11eb-8e40-fb6a4d3d1563",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "a1c32ff0-1861-11eb-8e40-fb6a4d3d1563",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2020-10-12T08:35:52.967206076Z",
+                "sortValues": null,
+                "packID": "CommonWidgets",
+                "itemVersion": "1.0.4",
+                "fromServerVersion": "",
+                "toServerVersion": "",
                 "propagationLabels": [
 
                 ],
-                "query": "-category:job and expanseassetorganizationunit:\"\" and type:\"Expanse Issue\" and -status:Closed",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 0,
-                "widgetType": "number"
-            },
-            "x": 3,
-            "y": 0
-        },
-        {
-            "forceRange": false,
-            "h": 1,
-            "i": "a1c32ff0-1861-11eb-8e40-fb6a4d3d1563",
-            "id": "a1c32ff0-1861-11eb-8e40-fb6a4d3d1563",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "fromServerVersion": "",
-                "id": "",
-                "isPredefined": false,
-                "itemVersion": "1.0.4",
-                "modified": "2020-10-12T08:35:52.967206076Z",
-                "name": "Open Issues With High / Critical Severity",
-                "packID": "CommonWidgets",
                 "packPropagationLabels": [
                     "all"
                 ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Open Incidents With High / Critical Severity",
+                "prevName": "Unassigned Incidents",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-category:job and -status:archived and -status:closed and type:\"Expanse Issue\" and severity:\u003e=High",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
                 "params": {
                     "colors": {
                         "isEnabled": true,
@@ -954,55 +979,325 @@
                         }
                     ]
                 },
-                "prevName": "Unassigned Incidents",
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "c71783f0-1866-11eb-8e40-fb6a4d3d1563",
+            "forceRange": false,
+            "x": 0,
+            "y": 3,
+            "i": "c71783f0-1866-11eb-8e40-fb6a4d3d1563",
+            "w": 3,
+            "h": 6,
+            "widget": {
+                "id": "ac728d3c-5ab0-4968-8f4e-ad29b09ca10d",
+                "version": 1,
+                "modified": "2020-10-27T15:11:56.412525799Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Open Incidents",
+                "prevName": "Open Incidents",
+                "dataType": "incidents",
+                "widgetType": "table",
+                "query": "type:\"Expanse Issue\" and (severity:High or severity:Critical or severity:Medium) -status:Closed",
+                "sort": [
+                    {
+                        "field": "severity",
+                        "fieldType": "",
+                        "asc": false
+                    }
+                ],
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "id",
+                            "width": 110
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "name",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "severity",
+                            "width": 80
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Expanse Issue Type",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "status",
+                            "width": 80
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "eb0ec9b0-1ac0-11eb-924f-17c107fd1114",
+            "forceRange": false,
+            "x": 6,
+            "y": 0,
+            "i": "eb0ec9b0-1ac0-11eb-924f-17c107fd1114",
+            "w": 3,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2020-10-12T08:35:52.967206076Z",
+                "sortValues": null,
+                "packID": "CommonWidgets",
+                "itemVersion": "1.0.4",
+                "fromServerVersion": "",
+                "toServerVersion": "",
                 "propagationLabels": [
 
                 ],
-                "query": "-category:job and -status:archived and -status:closed and type:\"Expanse Issue\" and severity:\u003e=High",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
+                "packPropagationLabels": [
+                    "all"
+                ],
                 "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 0,
-                "widgetType": "number"
-            },
-            "x": 0,
-            "y": 0
-        },
-        {
-            "forceRange": false,
-            "h": 5,
-            "i": "c71783f0-1866-11eb-8e40-fb6a4d3d1563",
-            "id": "c71783f0-1866-11eb-8e40-fb6a4d3d1563",
-            "w": 3,
-            "widget": {
-                "category": "",
                 "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Confirmed Shadow IT Assets",
+                "prevName": "Unassigned Incidents",
                 "dataType": "incidents",
+                "widgetType": "number",
+                "query": "type:\"Expanse Issue\" and expanseshadowit:T",
+                "sort": null,
+                "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
                     "period": {
                         "by": "",
-                        "byFrom": "days",
                         "byTo": "",
-                        "field": "",
+                        "byFrom": "days",
+                        "toValue": null,
                         "fromValue": 7,
-                        "toValue": null
+                        "field": ""
                     },
-                    "toDate": "0001-01-01T00:00:00Z"
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
                 },
-                "fromServerVersion": "",
-                "id": "ac728d3c-5ab0-4968-8f4e-ad29b09ca10d",
-                "isPredefined": false,
-                "itemVersion": "",
-                "modified": "2020-10-27T15:11:56.412525799Z",
-                "name": "Open Issues",
-                "packID": "",
                 "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": -1
+                            },
+                            "#FF1B15": {
+                                "value": 0
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "20d50570-3ac2-11eb-9ab9-551d3ae995d5",
+            "forceRange": false,
+            "x": 9,
+            "y": 0,
+            "i": "20d50570-3ac2-11eb-9ab9-551d3ae995d5",
+            "w": 3,
+            "h": 3,
+            "widget": {
+                "id": "bf9db8f8-21e8-4700-8482-76073fcbffeb",
+                "version": 1,
+                "modified": "2020-11-07T13:03:32.139642617Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Map",
+                "prevName": "Map",
+                "dataType": "scripts",
+                "widgetType": "text",
+                "query": "ExpanseGenerateIssueMap",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "tableColumns": [
+
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "362d58a0-3ac2-11eb-9ab9-551d3ae995d5",
+            "forceRange": false,
+            "x": 9,
+            "y": 3,
+            "i": "362d58a0-3ac2-11eb-9ab9-551d3ae995d5",
+            "w": 3,
+            "h": 2,
+            "widget": {
+                "id": "ac728d3c-5ab0-4968-8f4e-ad29b09ca10d",
+                "version": 1,
+                "modified": "2020-10-27T15:11:56.412525799Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Open Incidents on GCP By Region",
+                "prevName": "Open Issues",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "-status:archived and -status:closed and type:\"Expanse Issue\" and expanseprovider:\"Google\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "expanseregion"
+                    ],
                     "tableColumns": [
                         {
                             "displayed": true,
@@ -1029,270 +1324,167 @@
                         }
                     ]
                 },
-                "prevName": "Open Issues",
-                "propagationLabels": [
-                    "all"
-                ],
-                "query": "type:\"Expanse Issue\" and (severity:High or severity:Critical or severity:Medium) -status:Closed",
-                "shouldCommit": false,
                 "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
+                "category": ""
+            }
+        },
+        {
+            "id": "3d5773e0-3ac2-11eb-9ab9-551d3ae995d5",
+            "forceRange": false,
+            "x": 9,
+            "y": 5,
+            "i": "3d5773e0-3ac2-11eb-9ab9-551d3ae995d5",
+            "w": 3,
+            "h": 2,
+            "widget": {
+                "id": "ac728d3c-5ab0-4968-8f4e-ad29b09ca10d",
                 "version": 1,
-                "widgetType": "table"
-            },
-            "x": 0,
-            "y": 3
-        },
-        {
-            "forceRange": false,
-            "h": 1,
-            "i": "eb0ec9b0-1ac0-11eb-924f-17c107fd1114",
-            "id": "eb0ec9b0-1ac0-11eb-924f-17c107fd1114",
-            "w": 3,
-            "widget": {
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
+                "modified": "2020-10-27T15:11:56.412525799Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
                 "fromServerVersion": "",
-                "id": "",
-                "isPredefined": false,
-                "itemVersion": "1.0.4",
-                "modified": "2020-10-12T08:35:52.967206076Z",
-                "name": "Confirmed Shadow IT Assets",
-                "packID": "CommonWidgets",
-                "packPropagationLabels": [
+                "toServerVersion": "",
+                "propagationLabels": [
                     "all"
                 ],
-                "params": {
-                    "tableColumns": [
-                        {
-                            "isDefault": true,
-                            "key": "id",
-                            "position": 0,
-                            "width": 110
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "name",
-                            "position": 2,
-                            "width": 300
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "type",
-                            "position": 3,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "severity",
-                            "position": 4,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "status",
-                            "position": 5,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "owner",
-                            "position": 6,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "roles",
-                            "position": 7,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "playbookId",
-                            "position": 8,
-                            "width": 150
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "occurred",
-                            "position": 9,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "dueDate",
-                            "position": 10,
-                            "width": 200
-                        }
-                    ]
-                },
-                "prevName": "Unassigned Incidents",
-                "propagationLabels": [
-
-                ],
-                "query": "type:\"Expanse Issue\" and expanseshadowit:T",
-                "shouldCommit": false,
-                "size": 0,
-                "sort": null,
-                "sortValues": null,
-                "toServerVersion": "",
                 "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 0,
-                "widgetType": "number"
-            },
-            "x": 6,
-            "y": 0
-        },
-        {
-            "forceRange": false,
-            "h": 5,
-            "i": "d00c00f0-1ac1-11eb-924f-17c107fd1114",
-            "id": "d00c00f0-1ac1-11eb-924f-17c107fd1114",
-            "w": 3,
-            "widget": {
-                "category": "",
                 "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Open Incidents on Azure By Region",
+                "prevName": "Open Issues",
                 "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "-status:archived and -status:closed and type:\"Expanse Issue\" and expanseprovider:\"Microsoft Azure\"",
+                "sort": null,
+                "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
                     "period": {
                         "by": "",
-                        "byFrom": "days",
                         "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
                     },
-                    "toDate": "0001-01-01T00:00:00Z"
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
                 },
-                "fromServerVersion": "",
-                "id": "",
-                "isPredefined": false,
-                "itemVersion": "1.0.4",
-                "modified": "2020-10-12T08:35:52.965187412Z",
-                "name": "Open Issues On Non Standard Ports",
-                "packID": "CommonWidgets",
-                "packPropagationLabels": [
-                    "all"
-                ],
                 "params": {
                     "groupBy": [
-                        "expansebusinessunits",
-                        "expanseport"
+                        "expanseregion"
                     ],
                     "tableColumns": [
                         {
+                            "displayed": true,
                             "isDefault": true,
                             "key": "id",
-                            "position": 0,
                             "width": 110
                         },
                         {
+                            "displayed": true,
                             "isDefault": true,
                             "key": "name",
-                            "position": 2,
                             "width": 300
                         },
                         {
-                            "isDefault": true,
-                            "key": "type",
-                            "position": 3,
-                            "width": 200
-                        },
-                        {
+                            "displayed": true,
                             "isDefault": true,
                             "key": "severity",
-                            "position": 4,
                             "width": 80
                         },
                         {
-                            "isDefault": true,
-                            "key": "status",
-                            "position": 5,
-                            "width": 80
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "owner",
-                            "position": 6,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "roles",
-                            "position": 7,
-                            "width": 160
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "playbookId",
-                            "position": 8,
-                            "width": 150
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "occurred",
-                            "position": 9,
-                            "width": 200
-                        },
-                        {
-                            "isDefault": true,
-                            "key": "dueDate",
-                            "position": 10,
+                            "displayed": true,
+                            "key": "Expanse Category",
                             "width": 200
                         }
                     ]
                 },
-                "prevName": "Top Active Playbooks",
-                "propagationLabels": [
-
-                ],
-                "query": "-status:Closed -category:job type:\"Expanse Issue\" -expanseport:=80 -expanseport:=443",
-                "shouldCommit": false,
-                "size": 5,
-                "sort": null,
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "226f8620-3ac3-11eb-9ab9-551d3ae995d5",
+            "forceRange": false,
+            "x": 9,
+            "y": 7,
+            "i": "226f8620-3ac3-11eb-9ab9-551d3ae995d5",
+            "w": 3,
+            "h": 2,
+            "widget": {
+                "id": "ac728d3c-5ab0-4968-8f4e-ad29b09ca10d",
+                "version": 1,
+                "modified": "2020-10-27T15:11:56.412525799Z",
                 "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
                 "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
                 "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 0,
-                "widgetType": "column"
-            },
-            "x": 9,
-            "y": 0
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Open Incidents on AWS By Region",
+                "prevName": "Open Issues",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "-status:archived and -status:closed and type:\"Expanse Issue\" and expanseprovider:\"Amazon web services\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "expanseregion"
+                    ],
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "id",
+                            "width": 110
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "name",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "severity",
+                            "width": 80
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Expanse Category",
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
         }
     ],
-    "name": "Expanse Issues",
-    "period": {
-        "by": "",
-        "byFrom": "days",
-        "byTo": "",
-        "field": "",
-        "fromValue": 7,
-        "toValue": null
-    },
-    "toDate": "0001-01-01T00:00:00Z",
-    "version": -1,
     "fromVersion": "6.0.0",
     "description": "",
     "isPredefined": true

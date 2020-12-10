@@ -8,14 +8,16 @@
             "byFrom": "days",
             "byTo": "",
             "field": "",
-            "fromValue": 7,
+            "fromValue": 30,
             "toValue": null
         },
         "toDate": "0001-01-01T00:00:00Z"
     },
-    "id": "ac728d3c-5ab0-4968-8f4e-ad29b09ca10d",
+    "fromVersion": "6.0.0",
+    "id": "expanse-open-incidents",
     "isPredefined": true,
-    "name": "Open Issues",
+    "modified": "2020-10-27T15:11:56.412525799Z",
+    "name": "Expanse Open Incidents",
     "params": {
         "tableColumns": [
             {
@@ -38,15 +40,27 @@
             },
             {
                 "displayed": true,
-                "key": "Expanse Category",
+                "key": "Expanse Issue Type",
                 "width": 200
+            },
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "status",
+                "width": 80
             }
         ]
     },
     "query": "type:\"Expanse Issue\" and (severity:High or severity:Critical or severity:Medium) -status:Closed",
     "size": 0,
+    "sort": [
+        {
+            "asc": false,
+            "field": "severity",
+            "fieldType": ""
+        }
+    ],
     "version": -1,
     "widgetType": "table",
-    "fromVersion": "6.0.0",
     "description": ""
 }
