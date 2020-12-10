@@ -126,14 +126,15 @@ class Client(BaseClient):
                   'command and retry. If you choose not to reset the authentication timeout, the next attempt can be ' \
                   'done in {} {}.'
         first_failure_time = integration_context.get(FIRST_FAILURE_TIME_CONST)
-        demisto.debug(f'CDL - First failure time: {first_failure_time}')
         last_failure_time = integration_context.get(LAST_FAILURE_TIME_CONST)
-        demisto.debug(f'CDL - First failure time: {last_failure_time}')
+        now_datetime = datetime.utcnow()
+        demisto.debug(f'CDL - First failure time: {first_failure_time}')
+        demisto.debug(f'CDL - Last failure time: {last_failure_time}')
+        demisto.debug(f'CDL - Current time: {last_failure_time}')
 
         if first_failure_time and last_failure_time:
             first_failure_datetime = datetime.fromisoformat(first_failure_time)
             last_failure_datetime = datetime.fromisoformat(last_failure_time)
-            now_datetime = datetime.utcnow()
             time_from_first_failure = now_datetime - first_failure_datetime
             time_from_last_failure = now_datetime - last_failure_datetime
 
@@ -185,7 +186,7 @@ class Client(BaseClient):
             The updated integration context
 
         """
-        demisto.debug('The request to retrieve the access token has failed with 400 status code.')
+        demisto.error('The request to retrieve the access token has failed with 400 status code.')
         current_time = datetime.utcnow().isoformat()
         times_dict = {LAST_FAILURE_TIME_CONST: current_time}
         if not integration_context.get(FIRST_FAILURE_TIME_CONST):
