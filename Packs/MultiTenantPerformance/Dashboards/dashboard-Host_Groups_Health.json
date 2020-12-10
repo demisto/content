@@ -1,7 +1,7 @@
 {
     "id": "Host Groups - Health",
     "version": -1,
-    "fromVersion": "6.1.0-beta",
+    "fromVersion": "6.1.0",
     "description": "",
     "period": {
         "by": "",
@@ -31,7 +31,7 @@
                 "sortValues": null,
                 "packID": "MultiTenantPerformance",
                 "itemVersion": "1.0.0",
-                "fromServerVersion": "6.1.0-beta",
+                "fromServerVersion": "6.1.0",
                 "toServerVersion": "",
                 "propagationLabels": [
 
@@ -90,7 +90,7 @@
                 "sortValues": null,
                 "packID": "MultiTenantPerformance",
                 "itemVersion": "1.0.0",
-                "fromServerVersion": "6.1.0-beta",
+                "fromServerVersion": "6.1.0",
                 "toServerVersion": "",
                 "propagationLabels": [
 
@@ -150,7 +150,7 @@
                 "sortValues": null,
                 "packID": "MultiTenantPerformance",
                 "itemVersion": "1.0.0",
-                "fromServerVersion": "6.1.0-beta",
+                "fromServerVersion": "6.1.0",
                 "toServerVersion": "",
                 "propagationLabels": [
 
@@ -209,7 +209,7 @@
                 "sortValues": null,
                 "packID": "MultiTenantPerformance",
                 "itemVersion": "1.0.0",
-                "fromServerVersion": "6.1.0-beta",
+                "fromServerVersion": "6.1.0",
                 "toServerVersion": "",
                 "propagationLabels": [
 
@@ -269,7 +269,7 @@
                 "sortValues": null,
                 "packID": "MultiTenantPerformance",
                 "itemVersion": "1.0.0",
-                "fromServerVersion": "6.1.0-beta",
+                "fromServerVersion": "6.1.0",
                 "toServerVersion": "",
                 "propagationLabels": [
 
@@ -328,7 +328,7 @@
                 "sortValues": null,
                 "packID": "MultiTenantPerformance",
                 "itemVersion": "1.0.0",
-                "fromServerVersion": "6.1.0-beta",
+                "fromServerVersion": "6.1.0",
                 "toServerVersion": "",
                 "propagationLabels": [
 
@@ -388,7 +388,7 @@
                 "sortValues": null,
                 "packID": "MultiTenantPerformance",
                 "itemVersion": "1.0.0",
-                "fromServerVersion": "6.1.0-beta",
+                "fromServerVersion": "6.1.0",
                 "toServerVersion": "",
                 "propagationLabels": [
 
@@ -447,7 +447,7 @@
                 "sortValues": null,
                 "packID": "MultiTenantPerformance",
                 "itemVersion": "1.0.0",
-                "fromServerVersion": "6.1.0-beta",
+                "fromServerVersion": "6.1.0",
                 "toServerVersion": "",
                 "propagationLabels": [
 

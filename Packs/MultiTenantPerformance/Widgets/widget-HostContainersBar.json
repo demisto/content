@@ -1,7 +1,7 @@
 {
  "id": "host-container-bar",
  "version": -1,
- "fromVersion": "6.1.0-beta",
+ "fromVersion": "6.1.0",
  "name": "Docker containers count per host",
  "description": "Docker containers count per host",
  "dataType": "system",

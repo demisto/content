@@ -1,7 +1,7 @@
 {
  "id": "host-disk-line",
  "version": -1,
- "fromVersion": "6.1.0-beta",
+ "fromVersion": "6.1.0",
  "name": "Disk Usage % per host (last 24h)",
  "description": "Disk usage percentage per host in the previous 24 hours",
  "dataType": "system",

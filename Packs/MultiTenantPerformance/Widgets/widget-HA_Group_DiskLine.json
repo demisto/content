@@ -1,7 +1,7 @@
 {
  "id": "ha-group-disk-line",
  "version": -1,
- "fromVersion": "6.1.0-beta",
+ "fromVersion": "6.1.0",
  "name": "Average Hosts Group Disk Usage % per group (last 24h)",
  "description": "Average hosts group Disk usage percentage per group in the previous 24 hours",
  "dataType": "system",
