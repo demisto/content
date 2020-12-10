@@ -31,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![ChronicleAssets Investigation And Remediation - Chronicle](../doc_files/ChronicleAssets_Investigation_And_Remediation_-_Chronicle.png)
+![ChronicleAssets Investigation And Remediation - Chronicle](https://raw.githubusercontent.com/demisto/content/94f5c6cd2d456d700e20cc18c233cad547c04d63/Packs/GoogleChronicleBackstory/doc_files/ChronicleAssets_Investigation_And_Remediation_-_Chronicle.png)
