@@ -1853,7 +1853,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         failed_packs_dict = {
             BucketUploadFlow.FAILED_PACKS: {
                 pack.name: {
-                    BucketUploadFlow.STATUS: PackStatus[pack.status].name,
+                    BucketUploadFlow.STATUS: pack.status,
                     BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
                     else "False"
                 } for pack in failed_packs
@@ -1866,7 +1866,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         successful_packs_dict = {
             BucketUploadFlow.SUCCESSFUL_PACKS: {
                 pack.name: {
-                    BucketUploadFlow.STATUS: PackStatus[pack.status].name,
+                    BucketUploadFlow.STATUS: pack.status,
                     BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
                     else "False"
                 } for pack in successful_packs
@@ -2072,27 +2072,6 @@ def get_higher_server_version(current_string_version, compared_content_item, pac
         logging.exception(f"{pack_name} failed in version comparison of content item {content_item_name}.")
     finally:
         return higher_version_result
-
-
-def load_json(file_path: str) -> dict:
-    """ Reads and loads json file.
-
-    Args:
-        file_path (str): full path to json file.
-
-    Returns:
-        dict: loaded json file.
-
-    """
-    try:
-        if file_path and os.path.isfile(file_path):
-            with open(file_path, 'r') as json_file:
-                result = json.load(json_file)
-        else:
-            result = {}
-        return result
-    except json.decoder.JSONDecodeError:
-        return {}
 
 
 def get_content_git_client(content_repo_path: str):
