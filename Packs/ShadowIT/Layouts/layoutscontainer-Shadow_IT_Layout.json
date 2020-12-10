@@ -800,8 +800,8 @@
         ]
     },
     "group": "incident",
-    "id": "4a9a1fea-73da-4dec-8b75-597fb0daea5e",
-    "name": "Shadow IT Layout",
+    "id": "shadowit",
+    "name": "Shadow IT Incident",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

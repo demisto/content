@@ -1,33 +1,33 @@
 description: Handle Shadow IT incident
-id: 75fcbbba-95f8-4caa-89f9-2deb5eebf5b0
+id: Handle Shadow IT Incident
 inputs:
 - description: Enable Automated Prisma Cloud Onboarding
   key: AutomatedPrismaCloudOnboarding
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "false"
 - description: Link to CloudFormation Template for AWS MONITOR mode
   key: AWSCFTLinkMonitor
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: https://redlock-public.s3.amazonaws.com/cft/rl-read-only.template
 - description: Link to CloudFormation Template for AWS MONITOR and PROTECT mode
   key: AWSCFTLinkMonitorAndProtect
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: https://redlock-public.s3.amazonaws.com/cft/rl-read-only.template
 - description: Notify user's manager
   key: Notify Manager
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "Yes"
 - description: Tags to add to indicators to identify potential Shadow IT assets
   key: ShadowITIndicatorTags
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: ShadowIT
@@ -52,6 +52,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: acb37e7c-8d8d-4b3f-88d6-cc36d16b7e4f
     timertriggers: []
     type: start
@@ -206,7 +207,7 @@ tasks:
     id: "1"
     ignoreworker: false
     message:
-      bcc: null
+      bcc:
       body:
         simple: |-
           Dear ${incident.shadowitaccountownername},
@@ -263,6 +264,7 @@ tasks:
       name: Collect Service details from Asset owner
       type: collection
       version: -1
+      description: Collect details about a service from the owner of the asset.
     taskid: cce6ef77-3c17-4220-81df-08316490a535
     timertriggers: []
     type: collection
@@ -302,6 +304,7 @@ tasks:
       name: Is owner known?
       type: condition
       version: -1
+      description: Check whether the owner of the asset is known.
     taskid: 75635a7b-bcbf-443c-82ad-e131b79306c4
     timertriggers: []
     type: condition
@@ -385,6 +388,7 @@ tasks:
       name: Automated onboarding enabled?
       type: condition
       version: -1
+      description: Check whether Automated Prisma Cloud Onboarding is enabled.
     taskid: 8eeebf53-339c-4ec9-897b-210e55e86c2e
     timertriggers: []
     type: condition
@@ -458,6 +462,7 @@ tasks:
       name: Cloud Type
       type: condition
       version: -1
+      description: Select appropriate branch depending on Cloud Provider
     taskid: 487c56b7-cb3b-43a9-8e94-300f6de69f67
     timertriggers: []
     type: condition
@@ -513,6 +518,7 @@ tasks:
       name: Prisma Cloud Onboarding
       type: title
       version: -1
+      description: ''
     taskid: abbd91ae-2e29-4c3d-8d90-ecd8ff5bc802
     timertriggers: []
     type: title
@@ -541,6 +547,7 @@ tasks:
       name: Done Collecting Information
       type: title
       version: -1
+      description: ''
     taskid: 425488d6-e94f-4ccf-8f1e-44651f6753da
     timertriggers: []
     type: title
@@ -568,6 +575,7 @@ tasks:
       name: Collect information
       type: title
       version: -1
+      description: ''
     taskid: 123a8841-6a67-46bc-8fb1-eca4fb423859
     timertriggers: []
     type: title
@@ -595,6 +603,7 @@ tasks:
       name: Done Prisma Cloud Onboarding
       type: title
       version: -1
+      description: ''
     taskid: 2bd6cdee-468e-43b0-8428-a3792a5ff451
     timertriggers: []
     type: title
@@ -619,6 +628,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: c7a242a8-935c-4347-80b1-aebe351d0cde
     timertriggers: []
     type: title
@@ -745,6 +755,7 @@ tasks:
       name: AWS Automated Onboarding
       type: title
       version: -1
+      description: ''
     taskid: 408206d7-603e-4708-8efb-de020edd4ce5
     timertriggers: []
     type: title
@@ -772,6 +783,7 @@ tasks:
       name: Done AWS Automated Onboarding
       type: title
       version: -1
+      description: ''
     taskid: 89219ff8-85a9-4440-82f6-604adc86e9e7
     timertriggers: []
     type: title
@@ -855,12 +867,13 @@ tasks:
       description:
         simple: AWS Account details from End User
     form:
-      description: "To onboard your AWS account in Prisma Cloud, is run a CloudFormation
-        template that will create the proper permissions. \n\nProvide here the AWS
-        Account ID and RRN.\n\n\nThe process is as follows:\n1. Create Stack in your
-        AWS master account (see the Stack link below)\n1. Select I acknowledge that
-        AWS CloudFormation might create IAM resources with custom names and click Create
-        Stack\n1. When status is CREATE_COMPLETE, copy Role ARN from Outputs Tab"
+      description: "To onboard your AWS account in Prisma Cloud, is run a CloudFormation\
+        \ template that will create the proper permissions. \n\nProvide here the AWS\
+        \ Account ID and RRN.\n\n\nThe process is as follows:\n1. Create Stack in\
+        \ your AWS master account (see the Stack link below)\n1. Select I acknowledge\
+        \ that AWS CloudFormation might create IAM resources with custom names and\
+        \ click Create Stack\n1. When status is CREATE_COMPLETE, copy Role ARN from\
+        \ Outputs Tab"
       expired: false
       questions:
       - defaultrows: []
@@ -908,7 +921,7 @@ tasks:
     id: "19"
     ignoreworker: false
     message:
-      bcc: null
+      bcc:
       body:
         simple: |-
           Dear ${incident.shadowitaccountownername},
@@ -949,6 +962,7 @@ tasks:
       name: Collect Cloud Account ID RRN from User for AWS Onboarding
       type: collection
       version: -1
+      description: Collect information for AWS account onboarding.
     taskid: b009797d-ccda-44d5-8fc5-296f07fe7210
     timertriggers: []
     type: collection
@@ -975,7 +989,7 @@ tasks:
       id: 4eda6fda-f614-4981-8684-0036c20351f8
       iscommand: false
       name: Generate Random UUID
-      script: fe7fa053-f70c-4328-84ec-0bc9d4dcd4e4
+      script: GenerateRandomUUID
       type: regular
       version: -1
     taskid: 4eda6fda-f614-4981-8684-0036c20351f8
@@ -1066,10 +1080,10 @@ tasks:
     id: "21"
     ignoreworker: false
     message:
-      bcc: null
+      bcc:
       body:
         simple: Please provide onboarding information for this AWS account
-      cc: null
+      cc:
       format: ""
       methods:
       - email
@@ -1095,6 +1109,7 @@ tasks:
       name: Ask Information to Analyst
       type: collection
       version: -1
+      description: Ask the Analyst to select the Prisma Cloud Account Group and monitor type.
     taskid: a9d6e53f-fdda-4553-8d9a-fa6389c08e23
     timertriggers: []
     type: collection
@@ -1134,6 +1149,7 @@ tasks:
       name: Use Provided Entry ID?
       type: condition
       version: -1
+      description: Are we using the provided Entry ID for onboarding?
     taskid: 241c2497-53c2-4512-8d5f-6d558a1b6a07
     timertriggers: []
     type: condition
@@ -1293,6 +1309,7 @@ tasks:
       name: Check Protection type
       type: condition
       version: -1
+      description: Check the protection type (MONITOR or MONITOR AND PROTECT)
     taskid: 5bdeb974-ddfb-4dc2-8712-bdda3cecf472
     timertriggers: []
     type: condition
@@ -1426,6 +1443,7 @@ tasks:
       name: CloudFormation Link Generated
       type: title
       version: -1
+      description: ''
     taskid: f6de9af4-2f35-4650-89e4-b0c65fc1bd04
     timertriggers: []
     type: title
@@ -1576,10 +1594,10 @@ tasks:
     id: "32"
     ignoreworker: false
     message:
-      bcc: null
+      bcc:
       body:
         simple: Please choose an asset owner from the list or select add new.
-      cc: null
+      cc:
       format: ""
       methods: []
       subject:
@@ -1604,6 +1622,7 @@ tasks:
       name: Choose Asset Owner
       type: collection
       version: -1
+      description: Ask the Analyst to select the owner of the asset.
     taskid: 7212a524-a998-4dc0-8929-6fadb6b3f42a
     timertriggers: []
     type: collection
@@ -1646,6 +1665,7 @@ tasks:
       name: Add new owner?
       type: condition
       version: -1
+      description: Shall we add a new owner for this asset?
     taskid: 2ecd2ee8-a545-440a-856b-683d822714d0
     timertriggers: []
     type: condition
@@ -1695,10 +1715,10 @@ tasks:
     id: "34"
     ignoreworker: false
     message:
-      bcc: null
+      bcc:
       body:
         simple: Please Insert asset owner name and email
-      cc: null
+      cc:
       format: ""
       methods: []
       subject:
@@ -1723,6 +1743,7 @@ tasks:
       name: Insert owner name and email
       type: collection
       version: -1
+      description: Ask the user to provide asset owner's name and email.
     taskid: 326d308c-cb5f-476d-8a9a-df063de9388e
     timertriggers: []
     type: collection
@@ -1840,29 +1861,6 @@ tasks:
       eventaction: {}
       eventid: {}
       eventtype: {}
-      expanseactivitystatus: {}
-      expanseasset: {}
-      expanseassetorganizationunit: {}
-      expanseassetowner: {}
-      expanseassignee: {}
-      expansebusinessunits: {}
-      expansecategory: {}
-      expansecertificate: {}
-      expansecreated: {}
-      expansedomain: {}
-      expanseinitialevidence: {}
-      expanseip: {}
-      expanseissueid: {}
-      expanseissuetype: {}
-      expanselatestevidence: {}
-      expansemodified: {}
-      expanseport: {}
-      expansepriority: {}
-      expanseprogressstatus: {}
-      expanseprotocol: {}
-      expanseprovider: {}
-      expanseshadowit: {}
-      expansetags: {}
       externaladdresses: {}
       filehash: {}
       filename: {}
@@ -2169,29 +2167,6 @@ tasks:
       eventaction: {}
       eventid: {}
       eventtype: {}
-      expanseactivitystatus: {}
-      expanseasset: {}
-      expanseassetorganizationunit: {}
-      expanseassetowner: {}
-      expanseassignee: {}
-      expansebusinessunits: {}
-      expansecategory: {}
-      expansecertificate: {}
-      expansecreated: {}
-      expansedomain: {}
-      expanseinitialevidence: {}
-      expanseip: {}
-      expanseissueid: {}
-      expanseissuetype: {}
-      expanselatestevidence: {}
-      expansemodified: {}
-      expanseport: {}
-      expansepriority: {}
-      expanseprogressstatus: {}
-      expanseprotocol: {}
-      expanseprovider: {}
-      expanseshadowit: {}
-      expansetags: {}
       externaladdresses: {}
       filehash: {}
       filename: {}
@@ -2516,34 +2491,6 @@ tasks:
       eventaction: {}
       eventid: {}
       eventtype: {}
-      expanseactivitystatus: {}
-      expanseasset: {}
-      expanseassetorganizationunit: {}
-      expanseassetowner: {}
-      expanseassignee: {}
-      expansebusinessunits: {}
-      expansecategory: {}
-      expansecertificate: {}
-      expansecreated: {}
-      expansedomain: {}
-      expansegeolocation: {}
-      expanseinitialevidence: {}
-      expanseip: {}
-      expanseissueid: {}
-      expanseissuetype: {}
-      expanselatestevidence: {}
-      expanselatestevidencegeolocation: {}
-      expansemlfeatures: {}
-      expansemodified: {}
-      expanseport: {}
-      expansepriority: {}
-      expanseprogressstatus: {}
-      expanseprotocol: {}
-      expanseprovider: {}
-      expanseregion: {}
-      expanseservice: {}
-      expanseshadowit: {}
-      expansetags: {}
       externaladdresses: {}
       filehash: {}
       filename: {}
@@ -2829,6 +2776,7 @@ tasks:
       name: Does the service contain sensitive information?
       type: condition
       version: -1
+      description: Check whether the user confirmed that the service might contain sensitive data.
     taskid: a96794c6-9070-4496-8679-7cbb37a86381
     timertriggers: []
     type: condition
@@ -2946,29 +2894,6 @@ tasks:
       eventaction: {}
       eventid: {}
       eventtype: {}
-      expanseactivitystatus: {}
-      expanseasset: {}
-      expanseassetorganizationunit: {}
-      expanseassetowner: {}
-      expanseassignee: {}
-      expansebusinessunits: {}
-      expansecategory: {}
-      expansecertificate: {}
-      expansecreated: {}
-      expansedomain: {}
-      expanseinitialevidence: {}
-      expanseip: {}
-      expanseissueid: {}
-      expanseissuetype: {}
-      expanselatestevidence: {}
-      expansemodified: {}
-      expanseport: {}
-      expansepriority: {}
-      expanseprogressstatus: {}
-      expanseprotocol: {}
-      expanseprovider: {}
-      expanseshadowit: {}
-      expansetags: {}
       externaladdresses: {}
       filehash: {}
       filename: {}
@@ -3199,6 +3124,7 @@ tasks:
       name: Did the user confirm they own the asset?
       type: condition
       version: -1
+      description: Check whether the user confirmed to own this asset.
     taskid: cb28bd35-3b02-4204-8b8f-066e04fdced1
     timertriggers: []
     type: condition
@@ -3226,6 +3152,7 @@ tasks:
       name: Find owner and collect information manually
       type: regular
       version: -1
+      description: The analyst must manually investigate this incidentand, find the owner and collect the service information.
     taskid: fcba29dc-f737-49dc-8388-f6e34afdf126
     timertriggers: []
     type: regular
@@ -3253,6 +3180,7 @@ tasks:
       name: Notify Manager
       type: title
       version: -1
+      description: ''
     taskid: 9b1d356d-400a-46fb-89a6-01b9220e6b3e
     timertriggers: []
     type: title
@@ -3292,6 +3220,7 @@ tasks:
       playbookId: Active Directory - Get User Manager Details
       type: playbook
       version: -1
+      description: ''
     taskid: 6ab155a2-9e30-4851-8e67-757f67640173
     timertriggers: []
     type: playbook
@@ -3332,6 +3261,7 @@ tasks:
       name: Shall we notify user's manager?
       type: condition
       version: -1
+      description: Check whether to notify the user's manger.
     taskid: eacd60ba-6324-4f40-80b5-7a57304f6834
     timertriggers: []
     type: condition
@@ -3359,6 +3289,7 @@ tasks:
       name: Done Notify Manager
       type: title
       version: -1
+      description: ''
     taskid: 3d34348f-1ad9-4b06-8518-d61b5b0e2df0
     timertriggers: []
     type: title
@@ -3397,6 +3328,7 @@ tasks:
       name: Did we find the user's manager?
       type: condition
       version: -1
+      description: Check whether to notify the user's manager.
     taskid: ac6fbc8e-c76f-49ec-8de8-b8793ec2fcf3
     timertriggers: []
     type: condition
@@ -3526,6 +3458,7 @@ tasks:
       name: Is there an IP?
       type: condition
       version: -1
+      description: Check whether an IP address is part of the incident.
     taskid: 96e494d6-9f5e-4527-8f61-3d776e37794e
     timertriggers: []
     type: condition
@@ -3608,6 +3541,7 @@ tasks:
       name: Is there a FQDN?
       type: condition
       version: -1
+      description: Check whether an FQDN was provided with this incident.
     taskid: 1f02f00f-922b-47f6-80a7-1bd3b738fda9
     timertriggers: []
     type: condition
@@ -3688,6 +3622,7 @@ tasks:
       name: Are there Shadow IT Indicators?
       type: condition
       version: -1
+      description: Check whether there are indicators labelled Shadow IT.
     taskid: e2010a4c-27c3-4c44-8c48-650ea7d05bf3
     timertriggers: []
     type: condition
@@ -3756,6 +3691,7 @@ tasks:
       name: Done Tagging Shadow IT Indicators
       type: title
       version: -1
+      description: ''
     taskid: 3723ac77-ab8d-4a05-8f6a-6994c1a977fb
     timertriggers: []
     type: title
@@ -3783,6 +3719,7 @@ tasks:
       name: Identify Owner
       type: title
       version: -1
+      description: ''
     taskid: 4506c79e-9e5a-44d2-8e43-46719741b0ae
     timertriggers: []
     type: title
@@ -3810,6 +3747,7 @@ tasks:
       name: Done Identifying Owner
       type: title
       version: -1
+      description: ''
     taskid: a801736c-67cc-47ca-838e-8ee813793728
     timertriggers: []
     type: title
@@ -3841,6 +3779,7 @@ tasks:
       name: Restrict outgoing traffic to this service?
       type: condition
       version: -1
+      description: Ask the analyst whether to restrict access to this service.
     taskid: 6e332cd2-ab05-498e-8276-862ad3401dc3
     timertriggers: []
     type: condition
@@ -3870,6 +3809,7 @@ tasks:
       name: Onboard this account on Prisma Cloud?
       type: condition
       version: -1
+      description: Ask the analyst whether to onboard this account on Prisma Cloud.
     taskid: 6d0a0a98-eebc-408d-8b16-105f27ad8c11
     timertriggers: []
     type: condition
@@ -3987,34 +3927,6 @@ tasks:
       eventaction: {}
       eventid: {}
       eventtype: {}
-      expanseactivitystatus: {}
-      expanseasset: {}
-      expanseassetorganizationunit: {}
-      expanseassetowner: {}
-      expanseassignee: {}
-      expansebusinessunits: {}
-      expansecategory: {}
-      expansecertificate: {}
-      expansecreated: {}
-      expansedomain: {}
-      expansegeolocation: {}
-      expanseinitialevidence: {}
-      expanseip: {}
-      expanseissueid: {}
-      expanseissuetype: {}
-      expanselatestevidence: {}
-      expanselatestevidencegeolocation: {}
-      expansemlfeatures: {}
-      expansemodified: {}
-      expanseport: {}
-      expansepriority: {}
-      expanseprogressstatus: {}
-      expanseprotocol: {}
-      expanseprovider: {}
-      expanseregion: {}
-      expanseservice: {}
-      expanseshadowit: {}
-      expansetags: {}
       externaladdresses: {}
       filehash: {}
       filename: {}
@@ -4270,3 +4182,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
