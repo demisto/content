@@ -7,12 +7,11 @@ import glob
 import logging
 from typing import Any, Tuple, Union
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
-    GCPConfig, CONTENT_ROOT_PATH, \
-    get_packs_statistics_dataframe
+    GCPConfig, CONTENT_ROOT_PATH, get_packs_statistics_dataframe, load_json, get_content_git_client, \
+    get_recent_commits_data
 from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index,\
     update_index_folder, clean_non_existing_packs, upload_index_to_storage, upload_core_packs_config,\
-    upload_id_set, load_json, get_content_git_client, check_if_index_is_updated, print_packs_summary,\
-    get_packs_summary, get_recent_commits_data
+    upload_id_set, check_if_index_is_updated, print_packs_summary, get_packs_summary
 from demisto_sdk.commands.common.tools import str2bool
 
 from Tests.scripts.utils.log_util import install_logging
@@ -172,7 +171,8 @@ def should_upload_core_packs(storage_bucket_name: str) -> bool:
 
 
 def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bucket: Any, index_folder_path: str,
-                                       packs_dependencies_mapping: dict, private_storage_bucket: bool = None,
+                                       packs_dependencies_mapping: dict, private_bucket_name: str,
+                                       private_storage_bucket: bool = None,
                                        content_repo: bool = None, current_commit_hash: str = '',
                                        remote_previous_commit_hash: str = '', packs_statistic_df: Any = None)\
         -> Any:
@@ -284,7 +284,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
                                or pack_was_modified, pack_artifacts_path=packs_artifacts_dir,
                                private_content=True)
     if full_pack_path is not None:
-        bucket_path = 'https://console.cloud.google.com/storage/browser/marketplace-ci-build-private/'
+        bucket_path = f'https://console.cloud.google.com/storage/browser/{private_bucket_name}/'
         bucket_url = bucket_path + full_pack_path
     else:
         bucket_url = 'Pack was not uploaded.'
@@ -423,8 +423,7 @@ def main():
         content_repo = get_content_git_client(CONTENT_ROOT_PATH)
         current_commit_hash, remote_previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
                                                                                    is_bucket_upload_flow=False,
-                                                                                   is_private_build=True,
-                                                                                   force_previous_commit="")
+                                                                                   is_private_build=True)
     else:
         current_commit_hash, remote_previous_commit_hash = "", ""
         content_repo = None
@@ -463,7 +462,7 @@ def main():
     # starting iteration over packs
     for pack in packs_list:
         create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, index_folder_path,
-                                           packs_dependencies_mapping,
+                                           packs_dependencies_mapping, private_bucket_name,
                                            private_storage_bucket=private_storage_bucket, content_repo=content_repo,
                                            current_commit_hash=current_commit_hash,
                                            remote_previous_commit_hash=remote_previous_commit_hash,

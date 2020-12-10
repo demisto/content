@@ -4,6 +4,8 @@ import stat
 import subprocess
 import fnmatch
 import re
+import git
+import sys
 import shutil
 import yaml
 import google.auth
@@ -19,7 +21,7 @@ from distutils.version import LooseVersion
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
-from typing import Tuple
+from typing import Tuple, Any
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
@@ -42,7 +44,6 @@ class GCPConfig(object):
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
     PRODUCTION_BUCKET = "marketplace-dist"
-    TESTING_BUCKET = "marketplace-dist-dev"
     CI_BUILD_BUCKET = "marketplace-ci-build"
     PRODUCTION_PRIVATE_BUCKET = "marketplace-dist-private"
     CI_PRIVATE_BUCKET = "marketplace-ci-build-private"
@@ -865,21 +866,16 @@ class Pack(object):
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")
             return task_status, True, None
 
-    def copy_and_upload_to_storage(self, production_bucket, build_bucket, override_pack, latest_version,
-                                   successful_packs_dict):
+    def copy_and_upload_to_storage(self, production_bucket, build_bucket, latest_version, successful_packs_dict):
         """ Manages the copy of pack zip artifact from the build bucket to the production bucket.
         The zip pack will be copied to following path: /content/packs/pack_name/pack_latest_version if
         the pack exists in the successful_packs_dict from Prepare content step in Create Instances job.
-        In case that zip pack artifact already exist at the constructed path above (the path in the production bucket),
-        the copy will be skipped.
-        If flag override_pack is set to True, pack will forced to copy.
 
         Args:
             production_bucket (google.cloud.storage.bucket.Bucket): google cloud production bucket.
             build_bucket (google.cloud.storage.bucket.Bucket): google cloud build bucket.
-            override_pack (bool): whether to override existing pack.
             latest_version (str): the pack's latest version.
-            successful_packs_dict (dict): the list of all packs were uploaded in prepare content step
+            successful_packs_dict (dict): the dict of all packs were uploaded in prepare content step
 
         Returns:
             bool: Status - whether the operation succeeded.
@@ -896,37 +892,34 @@ class Pack(object):
                           f"path {build_version_pack_path}.")
             return False, False
 
-        prod_version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
-        existing_prod_version_files = [f.name for f in production_bucket.list_blobs(prefix=prod_version_pack_path)]
-        # We check that the pack version was bumped by comparing the pack version in build bucket and production bucket
-        successful_packs_list = [*successful_packs_dict]
-        pack_not_uploaded_in_prepare_content = self._pack_name not in successful_packs_list
-        if (existing_prod_version_files or pack_not_uploaded_in_prepare_content) and not override_pack:
-            logging.warning(f"The following packs already exist at storage: {', '.join(existing_prod_version_files)}")
+        pack_not_uploaded_in_prepare_content = self._pack_name not in successful_packs_dict
+        if pack_not_uploaded_in_prepare_content:
+            logging.warning("The following packs already exist at storage.")
             logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
             return True, True
 
         # We upload the pack zip object taken from the build bucket into the production bucket
+        prod_version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
         prod_pack_zip_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
         build_pack_zip_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
-        build_file_blob = build_bucket.blob(build_pack_zip_path)
+        build_pack_zip_blob = build_bucket.blob(build_pack_zip_path)
         copied_blob = build_bucket.copy_blob(
-            blob=build_file_blob, destination_bucket=production_bucket, new_name=prod_pack_zip_path
+            blob=build_pack_zip_blob, destination_bucket=production_bucket, new_name=prod_pack_zip_path
         )
         copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
         self.public_storage_path = copied_blob.public_url
         task_status = copied_blob.exists()
 
-        pack_uploaded_in_prepare_content = not pack_not_uploaded_in_prepare_content
-        if pack_uploaded_in_prepare_content:
-            agg_str = successful_packs_dict[self._pack_name].get('aggregated')
-            if agg_str:
-                self._aggregated = True
-                self._aggregation_str = agg_str
-
         if not task_status:
             logging.error(f"Failed in uploading {self._pack_name} pack to production gcs.")
         else:
+            # Determine if pack versions were aggregated during upload
+            pack_uploaded_in_prepare_content = not pack_not_uploaded_in_prepare_content
+            if pack_uploaded_in_prepare_content:
+                agg_str = successful_packs_dict[self._pack_name].get('aggregated')
+                if agg_str:
+                    self._aggregated = True
+                    self._aggregation_str = agg_str
             logging.success(f"Uploaded {self._pack_name} pack to {prod_pack_zip_path} path.")
 
         return task_status, False
@@ -1948,3 +1941,125 @@ def get_higher_server_version(current_string_version, compared_content_item, pac
         logging.exception(f"{pack_name} failed in version comparison of content item {content_item_name}.")
     finally:
         return higher_version_result
+
+
+def load_json(file_path: str) -> dict:
+    """ Reads and loads json file.
+
+    Args:
+        file_path (str): full path to json file.
+
+    Returns:
+        dict: loaded json file.
+
+    """
+    try:
+        if file_path and os.path.isfile(file_path):
+            with open(file_path, 'r') as json_file:
+                result = json.load(json_file)
+        else:
+            result = {}
+        return result
+    except json.decoder.JSONDecodeError:
+        return {}
+
+
+def get_content_git_client(content_repo_path: str):
+    """ Initializes content repo client.
+
+    Args:
+        content_repo_path (str): content repo full path
+
+    Returns:
+        git.repo.base.Repo: content repo object.
+
+    """
+    return git.Repo(content_repo_path)
+
+
+def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket_upload_flow: bool,
+                            is_private_build: bool = False, circle_branch: str = "master"):
+    """ Returns recent commits hashes (of head and remote master)
+
+    Args:
+        content_repo (git.repo.base.Repo): content repo object.
+        index_folder_path (str): the path to the local index folder
+        is_bucket_upload_flow (bool): indicates whether its a run of bucket upload flow or regular build
+        is_private_build (bool): indicates whether its a run of private build or not
+        circle_branch (str): CircleCi branch of current build
+
+    Returns:
+        str: last commit hash of head.
+        str: previous commit depending on the flow the script is running
+    """
+    return content_repo.head.commit.hexsha, get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow,
+                                                                is_private_build, circle_branch)
+
+
+def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, is_private_build, circle_branch):
+    """ If running in bucket upload workflow we want to get the commit in the index which is the index
+    We've last uploaded to production bucket. Otherwise, we are in a commit workflow and the diff should be from the
+    head of origin/master
+
+    Args:
+        content_repo (git.repo.base.Repo): content repo object.
+        index_folder_path (str): the path to the local index folder
+        is_bucket_upload_flow (bool): indicates whether its a run of bucket upload flow or regular build
+        is_private_build (bool): indicates whether its a run of private build or not
+        circle_branch (str): CircleCi branch of current build
+
+    Returns:
+        str: previous commit depending on the flow the script is running
+
+    """
+    if is_bucket_upload_flow:
+        return get_last_upload_commit_hash(content_repo, index_folder_path)
+    elif is_private_build:
+        previous_master_head_commit = content_repo.commit('origin/master~1').hexsha
+        logging.info(f"Using origin/master HEAD~1 commit hash {previous_master_head_commit} to diff with.")
+        return previous_master_head_commit
+    else:
+        if circle_branch == 'master':
+            head_str = "HEAD~1"
+            # if circle branch is master than current commit is origin/master HEAD, so we need to diff with HEAD~1
+            previous_master_head_commit = content_repo.commit('origin/master~1').hexsha
+        else:
+            head_str = "HEAD"
+            # else we are on a regular branch and the diff should be done with origin/master HEAD
+            previous_master_head_commit = content_repo.commit('origin/master').hexsha
+        logging.info(f"Using origin/master {head_str} commit hash {previous_master_head_commit} to diff with.")
+        return previous_master_head_commit
+
+
+def get_last_upload_commit_hash(content_repo, index_folder_path):
+    """
+    Returns the last origin/master commit hash that was uploaded to the bucket
+    Args:
+        content_repo (git.repo.base.Repo): content repo object.
+        index_folder_path: The path to the index folder
+
+    Returns:
+        The commit hash
+    """
+
+    inner_index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
+    if not os.path.exists(inner_index_json_path):
+        logging.critical(f"{GCPConfig.INDEX_NAME}.json not found in {GCPConfig.INDEX_NAME} folder")
+        sys.exit(1)
+    else:
+        inner_index_json_file = load_json(inner_index_json_path)
+        if 'commit' in inner_index_json_file:
+            last_upload_commit_hash = inner_index_json_file['commit']
+            logging.info(f"Retrieved the last commit that was uploaded to production: {last_upload_commit_hash}")
+        else:
+            logging.critical(f"No commit field in {GCPConfig.INDEX_NAME}.json, content: {str(inner_index_json_file)}")
+            sys.exit(1)
+
+    try:
+        last_upload_commit = content_repo.commit(last_upload_commit_hash).hexsha
+        logging.info(f"Using commit hash {last_upload_commit} from index.json to diff with.")
+        return last_upload_commit
+    except Exception as e:
+        logging.critical(f'Commit {last_upload_commit_hash} in {GCPConfig.INDEX_NAME}.json does not exist in content '
+                         f'repo. Additional info:\n {e}')
+        sys.exit(1)

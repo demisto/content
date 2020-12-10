@@ -16,19 +16,22 @@ configuration:
   name: key
   required: true
   type: 4
-- display: Device group - Panorama instances only (write shared for Shared location)
+- additionalinfo: Located in the Panorama UI. Go to Panorama, Device Groups and select the desired Device Group
+  display: Device group - Panorama instances only (write shared for Shared location)
   name: device_group
   required: false
   type: 0
-- display: Vsys - Firewall instances only
+- additionalinfo: Located in the Firewall URL; by default of PAN-OS it is vsys1
+  display: Vsys - Firewall instances only
   name: vsys
   required: false
   type: 0
-- display: Template - Panorama instances only.
+- display: Template - Panorama instances only
   name: template
   required: false
   type: 0
-- display: Use URL Filtering for auto enrichment
+- additionalinfo: If selected, when running the !url command, the command will execute using pan-os with PAN_DB (with applied filters). The URL filtering categories determine DBot score (malicious, suspicious, benign).
+  display: Use URL Filtering for auto enrichment
   name: use_url_filtering
   required: false
   type: 8
@@ -2001,6 +2004,12 @@ script:
       name: category
       required: false
       secret: false
+    - default: false
+      description: A profile setting group.
+      isArray: false
+      name: profile_setting
+      required: false
+      secret: false
     deprecated: false
     description: Creates a policy rule.
     execution: true
@@ -2047,6 +2056,9 @@ script:
       type: string
     - contextPath: Panorama.SecurityRules.Tags
       description: Rule tags.
+      type: String
+    - contextPath: Panorama.SecurityRules.ProfileSetting
+      description: Profile setting group.
       type: String
   - arguments:
     - default: false
@@ -2149,6 +2161,9 @@ script:
     - contextPath: Panorama.SecurityRule.Tags
       description: Rule tags.
       type: String
+    - contextPath: Panorama.SecurityRules.ProfileSetting
+      description: Profile setting group.
+      type: String
   - arguments:
     - default: false
       description: Name of the rule to move.
@@ -2215,7 +2230,7 @@ script:
       default: false
       description: Parameter in the security rule to change. Can be 'source', 'destination',
         'application', 'action', 'category', 'description', 'disabled', 'target',
-        'log-forwarding' or 'tag'.
+        'log-forwarding', 'tag' or 'group_profile'.
       isArray: false
       name: element_to_change
       predefined:
@@ -2229,6 +2244,7 @@ script:
       - target
       - log-forwarding
       - tag
+      - profile-setting
       required: true
       secret: false
     - default: false
@@ -3195,6 +3211,9 @@ script:
       type: String
     - contextPath: Panorama.Monitor.Logs.BytesSent
       description: Log bytes sent.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.Vsys
+      description: Vsys on the firewall that generated the log.
       type: String
   - arguments:
     - default: false
@@ -4381,7 +4400,7 @@ script:
     description: Creates a WildFire analysis best practice profile.
     execution: false
     name: panorama-create-wildfire-best-practice-profile
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: false
   longRunning: false

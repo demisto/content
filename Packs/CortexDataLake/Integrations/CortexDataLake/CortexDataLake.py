@@ -787,6 +787,7 @@ def query_logs_command(args: dict, client: Client) -> Tuple[str, Dict[str, List[
     """
     query = args.get('query', '')
     limit = args.get('limit', '')
+    transform_results = argToBoolean(args.get('transform_results', 'true'))
 
     if 'limit' not in query.lower():
         query += f' LIMIT {limit}'
@@ -794,10 +795,10 @@ def query_logs_command(args: dict, client: Client) -> Tuple[str, Dict[str, List[
     records, raw_results = client.query_loggings(query)
 
     table_name = get_table_name(query)
-    transformed_results = [common_context_transformer(record) for record in records]
-    human_readable = tableToMarkdown('Logs ' + table_name + ' table', transformed_results, removeNull=True)
+    output_results = records if not transform_results else [common_context_transformer(record) for record in records]
+    human_readable = tableToMarkdown('Logs ' + table_name + ' table', output_results, removeNull=True)
     ec = {
-        'CDL.Logging': transformed_results
+        'CDL.Logging': output_results
     }
     return human_readable, ec, raw_results
 
