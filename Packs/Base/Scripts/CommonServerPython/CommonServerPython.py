@@ -6252,9 +6252,9 @@ class IAMCommand:
                  create_if_not_exists, mapper_in, mapper_out):
         """ The IAMCommand c'tor
 
-        :param is_create_enabled: (bool) Whether or not the iam-create-user command is enabled in the instance
-        :param is_disable_enabled: (bool) Whether or not the iam-disable-user command is enabled in the instance
-        :param is_update_enabled: (bool) Whether or not the iam-update-user command is enabled in the instance
+        :param is_create_enabled: (bool) Whether or not the `iam-create-user` command is enabled in the instance
+        :param is_disable_enabled: (bool) Whether or not the `iam-disable-user` command is enabled in the instance
+        :param is_update_enabled: (bool) Whether or not the `iam-update-user` command is enabled in the instance
         :param create_if_not_exists: (bool) Whether or not to create a user if does not exist in the application
         :param mapper_in: (str) Incoming mapper from the application to Cortex XSOAR
         :param mapper_out: (str) Outgoing mapper from the Cortex XSOAR to the application
@@ -6267,6 +6267,11 @@ class IAMCommand:
         self.mapper_out = mapper_out
 
     def get_mapping_fields(self, client):
+        """ Creates and returns a GetMappingFieldsResponse object of the user schema in the application
+
+        :param client: (Client) The integration Client object that implements a get_app_fields() method
+        :return: (GetMappingFieldsResponse) An object that represents the user schema
+        """
         app_fields = client.get_app_fields()
         incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
 
@@ -6276,6 +6281,13 @@ class IAMCommand:
         return GetMappingFieldsResponse([incident_type_scheme])
 
     def get_user(self, client, args):
+        """ Searches a user in the application and updates the user profile object with the data.
+            If not found, the error details will be resulted instead.
+
+        :param client: (Client) The integration Client object that implements a get_user() method
+        :param args: (dict) The `iam-get-user` command arguments
+        :return: (IAMUserProfile) The user profile object.
+        """
         user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
         try:
             email = user_profile.get_attribute('email')
@@ -6304,6 +6316,14 @@ class IAMCommand:
         return user_profile
 
     def disable_user(self, client, args):
+        """ Disables a user in the application and updates the user profile object with the updated data.
+            If not found, the command will be skipped.
+
+        :param client: (Client) The integration Client object that implements get_user() and disable_user() methods
+        :param args: (dict) The `iam-disable-user` command arguments
+        :return: (IAMUserProfile) The user profile object.
+        """
+
         user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
         if not self.is_disable_enabled:
             user_profile.set_result(action=IAMActions.DISABLE_USER,
@@ -6337,6 +6357,15 @@ class IAMCommand:
         return user_profile
 
     def create_user(self, client, args):
+        """ Creates a user in the application and updates the user profile object with the data.
+            If a user in the app already holds the email in the given user profile, updates
+            its data with the given data.
+
+        :param client: (Client) A Client object that implements get_user(), create_user() and update_user() methods
+        :param args: (dict) The `iam-create-user` command arguments
+        :return: (IAMUserProfile) The user profile object.
+        """
+
         user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
 
         if not self.is_create_enabled:
@@ -6370,6 +6399,15 @@ class IAMCommand:
         return user_profile
 
     def update_user(self, client, args):
+        """ Creates a user in the application and updates the user profile object with the data.
+            If the user is disabled and `allow-enable` argument is `true`, also enables the user.
+            If the user does not exist in the app and the `create-if-not-exist` parameter is checked, creates the user.
+
+        :param client: (Client) A Client object that implements get_user(), create_user() and update_user() methods
+        :param args: (dict) The `iam-update-user` command arguments
+        :return: (IAMUserProfile) The user profile object.
+        """
+
         user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
         allow_enable = args.get('allow-enable') == 'true'
         if not self.is_update_enabled:

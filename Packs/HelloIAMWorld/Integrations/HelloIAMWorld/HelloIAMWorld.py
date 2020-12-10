@@ -139,8 +139,9 @@ class Client(BaseClient):
             4. error_code    (``Union[str, int]``)  HTTP error code                         Optional (by default, None)
             5. error_message (``str``)              The error description                   Optional (by default, None)
 
-            Note: This is the place to determine how to handle specific edge cases from the API,
-                  e.g., when a DISABLE action was made on a user which is already disabled or does not exist.
+            Note: This is the place to determine how to handle specific edge cases from the API, e.g.,
+            when a DISABLE action was made on a user which is already disabled and therefore we can't
+            perform another DISABLE action.
 
         :type user_profile: ``Dict[str, Any]``
         :param user_profile: The user profile object
