@@ -922,7 +922,7 @@ tasks:
           After investigating the email you sent, we determined that the email is malicious. We appreciate your continued attention to suspicious emails.
 
           Sincerely,
-          Demisto's Security Team
+          Your security team
       cc: {}
       htmlBody: {}
       replyTo: {}
@@ -968,7 +968,12 @@ tasks:
       attachIDs: {}
       attachNames: {}
       bcc: {}
-      body: {}
+      body:
+        simple: |-
+          After investigating the email you sent, we determined that the email is benign. We appreciate your continued attention to suspicious emails.
+
+          Sincerely,
+          Your security team
       cc: {}
       htmlBody: {}
       replyTo: {}
