@@ -1,8 +1,7 @@
-id: playbook-SophosCentral_Test
-version: 34
+id: Sophos Central Test
+version: -1
 fromversion: 5.0.0
-vcShouldKeepItemLegacyProdMachine: false
-name: playbook-SophosCentral_Test
+name: Sophos Central Test
 starttaskid: "0"
 tasks:
   "0":

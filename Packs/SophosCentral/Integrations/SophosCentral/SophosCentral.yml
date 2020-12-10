@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: sophos_central
+  id: Sophos Central
   version: -1
 configuration:
 - additionalinfo: The Sophos account secret should be in the password field.
@@ -85,10 +85,9 @@ configuration:
   name: incidentType
   required: false
   type: 13
-
 description: The unified console for managing Sophos products
 display: Sophos Central
-name: sophos_central
+name: Sophos Central
 script:
   commands:
   - arguments:

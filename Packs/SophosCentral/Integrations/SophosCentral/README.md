@@ -394,34 +394,13 @@ List all endpoints for a tenant.
                 "hostname": "Thunderbox",
                 "id": "6e9567ea-bb50-40c5-9f12-42eb308e4c9b",
                 "ipv4Addresses": [
-                    "172.16.16.1",
-                    "172.17.211.97",
-                    "172.17.242.1",
-                    "192.168.100.1",
-                    "192.168.15.1",
-                    "192.168.56.1",
-                    "192.168.91.44"
+                    "1.1.1.1"
                 ],
                 "ipv6Addresses": [
-                    "fe80::219a:456:bea8:d5fd",
-                    "fe80::31fc:21:8208:a1a2",
-                    "fe80::48c8:9e5c:1e9:d3d2",
-                    "fe80::7d92:c72b:6623:f9be",
-                    "fe80::8167:d417:af35:afe7",
-                    "fe80::c9de:c132:5a1f:3717",
-                    "fe80::e8a1:35da:b383:cfd1"
+                    "fe80::9905:5b42:6605:5e93"
                 ],
                 "macAddresses": [
-                    "00:15:5D:73:3C:BD",
-                    "00:15:5D:F6:63:2F",
-                    "00:50:56:C0:00:01",
-                    "00:50:56:C0:00:08",
-                    "04:33:C2:64:46:E6",
-                    "04:33:C2:64:46:E7",
-                    "06:33:C2:64:46:E6",
-                    "0A:00:27:00:00:0C",
-                    "0A:00:27:00:00:11",
-                    "34:48:ED:5D:72:E5"
+                    "00:00:00:B0:00:BA"
                 ],
                 "online": null,
                 "osBuild": 18363,
@@ -443,13 +422,13 @@ List all endpoints for a tenant.
                 "hostname": "WIN-CEAESQ7V08E",
                 "id": "a24b74a2-68e3-4fa5-8119-95744e0ab421",
                 "ipv4Addresses": [
-                    "192.168.66.10"
+                    "1.1.1.1"
                 ],
                 "ipv6Addresses": [
                     "fe80::9905:5b42:6605:5e93"
                 ],
                 "macAddresses": [
-                    "00:50:56:B0:5C:BA"
+                    "00:00:00:B0:00:BA"
                 ],
                 "online": null,
                 "osBuild": 17763,
@@ -469,8 +448,8 @@ List all endpoints for a tenant.
 >### Listed Endpoints:
 >|id|hostname|ipv4Addresses|ipv6Addresses|macAddresses|type|tamperProtectionEnabled|
 >|---|---|---|---|---|---|---|
->| 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | Thunderbox | 172.16.16.1,<br/>172.17.211.97,<br/>172.17.242.1,<br/>192.168.100.1,<br/>192.168.15.1,<br/>192.168.56.1,<br/>192.168.91.44 | fe80::219a:456:bea8:d5fd,<br/>fe80::31fc:21:8208:a1a2,<br/>fe80::48c8:9e5c:1e9:d3d2,<br/>fe80::7d92:c72b:6623:f9be,<br/>fe80::8167:d417:af35:afe7,<br/>fe80::c9de:c132:5a1f:3717,<br/>fe80::e8a1:35da:b383:cfd1 | 00:15:5D:73:3C:BD,<br/>00:15:5D:F6:63:2F,<br/>00:50:56:C0:00:01,<br/>00:50:56:C0:00:08,<br/>04:33:C2:64:46:E6,<br/>04:33:C2:64:46:E7,<br/>06:33:C2:64:46:E6,<br/>0A:00:27:00:00:0C,<br/>0A:00:27:00:00:11,<br/>34:48:ED:5D:72:E5 | computer | false |
->| a24b74a2-68e3-4fa5-8119-95744e0ab421 | WIN-CEAESQ7V08E | 192.168.66.10 | fe80::9905:5b42:6605:5e93 | 00:50:56:B0:5C:BA | server | false |
+>| 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | Thunderbox | 1.1.1.1 | fe80::9905:5b42:6605:5e93 | 00:00:00:B0:00:BA | computer | false |
+>| a24b74a2-68e3-4fa5-8119-95744e0ab421 | WIN-CEAESQ7V08E | 1.1.1.1 | fe80::9905:5b42:6605:5e93 | 00:00:00:B0:00:BA | server | false |
 >Results on this page: 2.Maximum number of results allowed in a page: 500
 
 ### sophos-central-endpoint-scan
