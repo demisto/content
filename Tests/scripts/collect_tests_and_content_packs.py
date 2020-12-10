@@ -1071,10 +1071,6 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     if modified_files_with_relevant_tests:
         tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
                                                                                   conf, id_set)
-    # for pack in modified_metadata_list:
-    #     pack_tests = get_tests_for_pack(tools.pack_name_to_path(pack))
-    #     packs_to_install.add(pack)
-    #     tests = tests.union(pack_tests)
 
     # Adding a unique test for a json file.
     if is_reputations_json:

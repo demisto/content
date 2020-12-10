@@ -1,0 +1,318 @@
+id: Cryptocurrency-Test
+version: 4
+vcShouldKeepItemLegacyProdMachine: false
+name: Cryptocurrency-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 98c608d4-e862-4c2e-8081-8acaa43aeca0
+    type: start
+    task:
+      id: 98c608d4-e862-4c2e-8081-8acaa43aeca0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 33b0fbde-5885-4042-85ae-f4110f1e3b84
+    type: regular
+    task:
+      id: 33b0fbde-5885-4042-85ae-f4110f1e3b84
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 2c12489b-82c2-453e-8be1-b4990a7a6122
+    type: regular
+    task:
+      id: 2c12489b-82c2-453e-8be1-b4990a7a6122
+      version: -1
+      name: crypto
+      description: Return Cryptocurrency reputation.
+      script: '|||crypto'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      address_type: {}
+      crypto:
+        simple: bitcoin-1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 118e3cbd-3546-4f2d-8feb-1629aabcfb1f
+    type: condition
+    task:
+      id: 118e3cbd-3546-4f2d-8feb-1629aabcfb1f
+      version: -1
+      name: Verify Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: bitcoin-1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Cryptocurrency.Address
+            iscontext: true
+          right:
+            value:
+              simple: bitcoin-1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 52d89e0c-8fdc-47b7-87a0-beabe97b02ef
+    type: regular
+    task:
+      id: 52d89e0c-8fdc-47b7-87a0-beabe97b02ef
+      version: -1
+      name: crypto - with bitcoin type
+      description: Return Cryptocurrency reputation.
+      script: '|||crypto'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      address_type:
+        simple: bitcoin
+      crypto:
+        simple: 1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 35f3ec41-5fd9-414f-8603-3012e0a67b20
+    type: condition
+    task:
+      id: 35f3ec41-5fd9-414f-8603-3012e0a67b20
+      version: -1
+      name: Verify Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: bitcoin-1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Cryptocurrency.Address
+            iscontext: true
+          right:
+            value:
+              simple: bitcoin-1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 36a31857-5272-442c-828c-0b8672f7df3a
+    type: regular
+    task:
+      id: 36a31857-5272-442c-828c-0b8672f7df3a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 78b2218d-912a-4502-8b6b-6df6656ce18e
+    type: title
+    task:
+      id: 78b2218d-912a-4502-8b6b-6df6656ce18e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1245,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
