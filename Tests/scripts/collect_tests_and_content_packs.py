@@ -1052,7 +1052,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
                                                id_set=deepcopy(ID_SET)):
     """Create a test list that should run"""
     (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
-     modified_metadata_list, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
+     modified_packs, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
 
     all_modified_files_paths = set(
         modified_files_with_relevant_tests + modified_tests_list + changed_common + sample_tests
@@ -1060,7 +1060,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths,
                                                                           id_set,
-                                                                          modified_metadata_list=modified_metadata_list,
+                                                                          modified_packs=modified_packs,
                                                                           )
 
     # Check if only README file in file string, if so, no need to create the servers.
@@ -1074,10 +1074,6 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     if modified_files_with_relevant_tests:
         tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
                                                                                   conf, id_set)
-    for pack in modified_metadata_list:
-        pack_tests = get_tests_for_pack(tools.pack_name_to_path(pack))
-        packs_to_install.add(pack)
-        tests = tests.union(pack_tests)
 
     # Adding a unique test for a json file.
     if is_reputations_json:
@@ -1144,24 +1140,26 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
 
 def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
                                                id_set: dict,
-                                               modified_metadata_list: set = None) -> Tuple[str, str]:
+                                               modified_packs: set = None) -> Tuple[str, str]:
     """Computes the lowest from version of the modified files, the highest from version and the highest to version of
     the modified files.
     In case that max_from_version is higher than max to version - to version will be the the highest default.
+
     Args:
         all_modified_files_paths: All modified files
-        id_set: the content of the id.set_json
+        id_set: The content of the id.set_json
+        modified_packs: A set of modified pack names
 
     Returns:
         (string, string). The boundaries of the lowest from version (defaults to 0.0.0)
          and highest to version (defaults to 99.99.99)
     """
-    modified_metadata_list = modified_metadata_list if modified_metadata_list else set([])
+    modified_packs = modified_packs if modified_packs else set([])
     max_to_version = LooseVersion('0.0.0')
     min_from_version = LooseVersion('99.99.99')
     max_from_version = LooseVersion('0.0.0')
 
-    for metadata in modified_metadata_list:
+    for metadata in modified_packs:
         pack_metadata_path = os.path.join(tools.pack_name_to_path(metadata), PACKS_PACK_META_FILE_NAME)
         pack_metadata = get_pack_metadata(pack_metadata_path)
         from_version = pack_metadata.get('serverMinVersion')
