@@ -5,7 +5,7 @@ from JSONFeedApiModule import *  # noqa: E402
 
 def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
     """
-    Implement the http_request with api that works with pagination and filtering. Uses GLOBAL_INTEGRATION_CONTEXT to
+    Implement the http_request with API that works with pagination and filtering. Uses the integration context to
     save last fetch time to each indicator type
     Args:
         client: Client manage all http requests
@@ -30,7 +30,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
 
     if not limit:
         limit = 10000
-        integration_context[current_indicator_type + '_fetch_time'] = str(params['end_date'])
+        integration_context[f'{current_indicator_type}_fetch_time'] = str(params['end_date'])
         set_integration_context(integration_context)
 
     more_indicators = True
@@ -48,7 +48,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
             **kwargs
         )
 
-        demisto.debug(f"initiating API call with url: {r.url}")
+        demisto.debug(f"Initiating API call to iDefense with url: {r.url} and page number: {page_number}")
         try:
             r.raise_for_status()
             data = r.json()
@@ -66,7 +66,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
         except ConnectionError as exception:
             # Get originating Exception in Exception chain
             error_class = str(exception.__class__)
-            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+            err_type = f"""<{error_class[error_class.find("'") + 1: error_class.rfind("'")]}>"""
             err_msg = 'Verify that the server URL parameter' \
                       ' is correct and that you have access to the server from your host.' \
                       '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
