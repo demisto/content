@@ -86,18 +86,12 @@ tasks:
         simple: device
       integration_name:
         simple: ise
-      integrationName:
-        simple: ise
       message:
         simple: Cisco ISE instance is not enabled
       playbook_name:
         simple: Send disabled status to PANW IoT cloud
-      playbookName:
-        simple: Bulk Export to Cisco ISE - PANW IoT 3rd Party Integration
       status:
         simple: disabled
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -205,18 +199,12 @@ tasks:
         simple: device
       integration_name:
         simple: ise
-      integrationName:
-        simple: ise
       message:
         simple: ${PaloAltoIoTIntegrationBase.NodeErrorStatus}
       playbook_name:
-        simple: Send disabled status to PANW IoT cloud
-      playbookName:
         simple: Bulk Export to Cisco ISE - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false

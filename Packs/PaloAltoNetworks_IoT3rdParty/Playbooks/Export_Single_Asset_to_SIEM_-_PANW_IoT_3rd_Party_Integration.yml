@@ -1,14 +1,13 @@
 description: Playbook to handle incident triggered from PANW Iot (Zingbox) UI to send
   Alert to SIEM.
-id: fe7d2a4f-8c8e-4a7e-8af4-b2a33a29975c
+id: Export Single Asset to SIEM - PANW IoT 3rd Party Integration
 inputs: []
 name: Export Single Asset to SIEM - PANW IoT 3rd Party Integration
 outputs:
 - contextPath: incident
   description: This playbook is invoked via the incident type "PANW IoT 3rd Party
-    SIEM Integration - Alert"
+    SIEM Integration - Alert/Vulnerability"
   type: unknown
-sourceplaybookid: Export Single Alert to SIEM - PANW IoT 3rd Party Integration
 starttaskid: "0"
 tasks:
   "0":
@@ -27,6 +26,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: a3d34ac4-3d8f-4c62-8aeb-420481d7d13e
     timertriggers: []
     type: start
@@ -89,18 +89,12 @@ tasks:
         simple: ${incident.asset_type}
       integration_name:
         simple: siem
-      integrationName:
-        simple: siem
       message:
         simple: Syslog Sender (SIEM) instance is not enabled
       playbook_name:
         simple: Export Single Asset to SIEM - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Export Single Alert to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: disabled
-      type:
-        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -138,10 +132,6 @@ tasks:
         simple: ${incident.zb_ticketid}
       asset_type:
         simple: ${incident.asset_type}
-      assetID:
-        simple: ${incident.zb_ticketid}
-      assetType:
-        simple: Alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -252,18 +242,12 @@ tasks:
         simple: ${incident.asset_type}
       integration_name:
         simple: siem
-      integrationName:
-        simple: siem
       message:
         simple: Failed to get Alert (${incident.zb_ticketid}) from IoT cloud.
       playbook_name:
         simple: Export Single Asset to SIEM - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Export Single Alert to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -301,14 +285,8 @@ tasks:
         simple: ${PanwIot3rdParty.SingleAsset}
       asset_type:
         simple: ${incident.asset_type}
-      assetList:
-        simple: ${PanwIot3rdParty.SingleAsset}
-      assetType:
-        simple: Alert
       incident: {}
       output_format:
-        simple: SIEM
-      outputFormat:
         simple: SIEM
       servicenow_map: {}
       using:
@@ -349,18 +327,12 @@ tasks:
         simple: ${incident.asset_type}
       integration_name:
         simple: siem
-      integrationName:
-        simple: siem
       message:
         simple: No Alert found with given ID  (${incident.zb_ticketid}).
       playbook_name:
         simple: Export Single Asset to SIEM - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Export Single Alert to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -473,18 +445,12 @@ tasks:
         simple: ${incident.asset_type}
       integration_name:
         simple: siem
-      integrationName:
-        simple: siem
       message:
         simple: Alert ID  (${incident.zb_ticketid}) not valid for CEF conversion.
       playbook_name:
         simple: Export Single Asset to SIEM - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Export Single Alert to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -522,18 +488,12 @@ tasks:
         simple: ${incident.asset_type}
       integration_name:
         simple: siem
-      integrationName:
-        simple: siem
       message:
         simple: Successfully sent Alert (${incident.zb_ticketid}) to SIEM
       playbook_name:
         simple: Export Single Asset to SIEM - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Export Single Alert to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: success
-      type:
-        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -604,3 +564,6 @@ view: |-
       }
     }
   }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -19,7 +19,7 @@ args:
 comment: This automation retrieves all specified assets from the PANW IoT cloud and
   send them to the SIEM server.
 commonfields:
-  id: f8b9de95-9ac9-4e6d-89d7-b3bf92e9e14c
+  id: SendAllPANWIoTAssetsToSIEM
   version: -1
 dependson:
   must:
@@ -30,7 +30,6 @@ dependson:
 dockerimage: demisto/python3:3.8.6.13358
 enabled: true
 name: SendAllPANWIoTAssetsToSIEM
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -41,3 +40,6 @@ tags:
 - siem
 timeout: 362.88ms
 type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

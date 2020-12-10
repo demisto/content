@@ -83,15 +83,15 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      integrationName:
+      integration_name:
         simple: ise
       message:
         simple: Cisco ISE instance is not configured
-      playbookName:
+      playbook_name:
         simple: Incremental Export to Cisco ISE - PANW IoT 3rd Party Integration ISE
       status:
         simple: disabled
-      type:
+      asset_type:
         simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
@@ -199,18 +199,12 @@ tasks:
         simple: device
       integration_name:
         simple: ise
-      integrationName:
-        simple: ise
       message:
         simple: ${PaloAltoIoTIntegrationBase.NodeErrorStatus}
       playbook_name:
         simple: Incremental Export to Cisco ISE - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export to Cisco ISE - PANW IoT 3rd Party Integration ISE
       status:
         simple: error
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -246,15 +240,10 @@ tasks:
     scriptarguments:
       asset_type:
         simple: device
-      assetType:
-        simple: Device
       increment_time:
-        simple: "15"
-      incrementTime:
         simple: "15"
       offset: {}
       page_length: {}
-      pageLength: {}
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -328,18 +317,12 @@ tasks:
         simple: device
       integration_name:
         simple: ise
-      integrationName:
-        simple: ise
       message:
         simple: Failed to get device inventory from PANW IoT Cloud
       playbook_name:
         simple: Incremental Export to Cisco ISE - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export to Cisco ISE - PANW IoT 3rd Party Integration ISE
       status:
         simple: error
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -377,16 +360,8 @@ tasks:
         simple: ${PanwIot3rdParty.Devices}
       asset_type:
         simple: device
-      assetList:
-        simple: ${PanwIot3rdParty.Devices}
-      assetType:
-        simple: Device
       incident: {}
-      metadata: {}
-      metadata1: {}
       output_format:
-        simple: CiscoISECustomAttributes
-      outputFormat:
         simple: CiscoISECustomAttributes
       servicenow_map: {}
       using:
@@ -427,18 +402,12 @@ tasks:
         simple: device
       integration_name:
         simple: ise
-      integrationName:
-        simple: ise
       message:
         simple: Failed to convert device inventory to Cisco ISE custom attributes
       playbook_name:
         simple: Incremental Export to Cisco ISE - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export to Cisco ISE - PANW IoT 3rd Party Integration ISE
       status:
         simple: error
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -621,18 +590,12 @@ tasks:
         simple: device
       integration_name:
         simple: ise
-      integrationName:
-        simple: ise
       message:
         simple: Failed to export PANW IoT devices to Cisco ISE
       playbook_name:
         simple: Incremental Export to Cisco ISE - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export to Cisco ISE - PANW IoT 3rd Party Integration ISE
       status:
         simple: error
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -670,18 +633,12 @@ tasks:
         simple: device
       integration_name:
         simple: ise
-      integrationName:
-        simple: ise
       message:
         simple: ${PaloAltoIoTIntegrationBase.Status}
       playbook_name:
         simple: Incremental Export to Cisco ISE - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export to Cisco ISE - PANW IoT 3rd Party Integration ISE
       status:
         simple: success
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -753,18 +710,12 @@ tasks:
         simple: device
       integration_name:
         simple: ise
-      integrationName:
-        simple: ise
       message:
         simple: No new devices available for exporting to ISE
       playbook_name:
         simple: Incremental Export to Cisco ISE - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export to Cisco ISE - PANW IoT 3rd Party Integration ISE
       status:
         simple: success
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false

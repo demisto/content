@@ -88,18 +88,12 @@ tasks:
         simple: device
       integration_name:
         simple: siem
-      integrationName:
-        simple: siem
       message:
         simple: Syslog Sender (SIEM) instance is not enabled
       playbook_name:
         simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: disabled
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -135,15 +129,10 @@ tasks:
     scriptarguments:
       asset_type:
         simple: device
-      assetType:
-        simple: Device
       increment_time:
-        simple: "15"
-      incrementTime:
         simple: "15"
       offset: {}
       page_length: {}
-      pageLength: {}
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -179,15 +168,10 @@ tasks:
     scriptarguments:
       asset_type:
         simple: alert
-      assetType:
-        simple: Alert
       increment_time:
         simple: "1500"
-      incrementTime:
-        simple: "15"
       offset: {}
       page_length: {}
-      pageLength: {}
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -223,15 +207,10 @@ tasks:
     scriptarguments:
       asset_type:
         simple: vulnerability
-      assetType:
-        simple: Vulnerability
       increment_time:
         simple: "1500"
-      incrementTime:
-        simple: "15"
       offset: {}
       page_length: {}
-      pageLength: {}
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -380,18 +359,12 @@ tasks:
         simple: device
       integration_name:
         simple: siem
-      integrationName:
-        simple: siem
       message:
         simple: Failed to get device list from IoT cloud.
       playbook_name:
         simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -429,18 +402,12 @@ tasks:
         simple: alert
       integration_name:
         simple: siem
-      integrationName:
-        simple: siem
       message:
         simple: Failed to get alert list from IoT cloud.
       playbook_name:
         simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -478,13 +445,9 @@ tasks:
         simple: vulnerability
       integration_name:
         simple: siem
-      integrationName:
-        simple: siem
       message:
         simple: Failed to get vulnerability list from IoT cloud.
       playbook_name:
-        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
-      playbookName:
         simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: error
@@ -635,18 +598,12 @@ tasks:
         simple: device
       integration_name:
         simple: siem
-      integrationName:
-        simple: siem
       message:
         simple: No new devices available for sending to SIEM
       playbook_name:
         simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: success
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -684,18 +641,12 @@ tasks:
         simple: alert
       integration_name:
         simple: siem
-      integrationName:
-        simple: siem
       message:
         simple: No new alerts available for sending to SIEM
       playbook_name:
         simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: success
-      type:
-        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -733,18 +684,12 @@ tasks:
         simple: vulnerability
       integration_name:
         simple: siem
-      integrationName:
-        simple: siem
       message:
         simple: No new vulnerabilities available for sending to SIEM
       playbook_name:
         simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: success
-      type:
-        simple: vulnerability
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -782,14 +727,8 @@ tasks:
         simple: ${PanwIot3rdParty.Devices}
       asset_type:
         simple: device
-      assetList:
-        simple: ${PanwIot3rdParty.Devices}
-      assetType:
-        simple: Device
       incident: {}
       output_format:
-        simple: SIEM
-      outputFormat:
         simple: SIEM
       servicenow_map: {}
       using:
@@ -830,14 +769,8 @@ tasks:
         simple: ${PanwIot3rdParty.Alerts}
       asset_type:
         simple: alert
-      assetList:
-        simple: ${PanwIot3rdParty.Alerts}
-      assetType:
-        simple: Alert
       incident: {}
       output_format:
-        simple: SIEM
-      outputFormat:
         simple: SIEM
       servicenow_map: {}
       using:
@@ -878,14 +811,8 @@ tasks:
         simple: ${PanwIot3rdParty.Vulnerabilities}
       asset_type:
         simple: vulnerability
-      assetList:
-        simple: ${PanwIot3rdParty.Vulnerabilities}
-      assetType:
-        simple: Vulnerability
       incident: {}
       output_format:
-        simple: SIEM
-      outputFormat:
         simple: SIEM
       servicenow_map: {}
       using:
@@ -1037,18 +964,12 @@ tasks:
         simple: device
       integration_name:
         simple: siem
-      integrationName:
-        simple: siem
       message:
         simple: Failed to convert devices to CEF format
       playbook_name:
         simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -1086,18 +1007,12 @@ tasks:
         simple: alert
       integration_name:
         simple: siem
-      integrationName:
-        simple: siem
       message:
         simple: Failed to convert alerts to CEF format
       playbook_name:
         simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -1135,18 +1050,12 @@ tasks:
         simple: vulnerability
       integration_name:
         simple: siem
-      integrationName:
-        simple: siem
       message:
         simple: Failed to convert vulnerabilities to CEF format
       playbook_name:
         simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
-      playbookName:
-        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: vulnerability
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
