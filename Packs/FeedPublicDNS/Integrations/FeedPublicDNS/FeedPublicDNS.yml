@@ -81,5 +81,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- Public_DNS_Feed_Test
 fromversion: 5.0.0

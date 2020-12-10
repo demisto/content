@@ -3,16 +3,16 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
-from typing import Dict, List, Tuple, Any, Callable, Optional
+from typing import Dict, List, Tuple, Any, Callable
 from netaddr import IPAddress
 import urllib3
 
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-INTEGRATION_NAME = 'Public DNS Feed'
 
 ''' CONSTANTS '''
+INTEGRATION_NAME = 'Public DNS Feed'
 
 
 class Client:
@@ -47,13 +47,11 @@ class Client:
         except requests.exceptions.HTTPError as err:
             demisto.debug(str(err))
             raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n')
-        except ValueError as err:
-            demisto.debug(str(err))
-            raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
+
         return indicators
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def test_module(client: Client) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Builds the iterator to check that the feed is accessible.
     Args:
         client: Client object.
@@ -64,11 +62,10 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     return 'ok', {}, {}
 
 
-def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1) -> List[Dict]:
+def fetch_indicators(client: Client, limit: int = -1) -> List[Dict]:
     """Retrieves indicators from the feed
     Args:
         client: Client object with request
-        indicator_type_lower: indicator type
         limit: limit the results
     Returns:
         Indicators.
@@ -80,14 +77,15 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
         iterator = iterator[:limit]
 
     for item in iterator:
-        ip = IPAddress(item)
         type_ = 'Ip'
+
+        ip = IPAddress(item)
         if ip.version == 6:
             type_ = 'IPv6'
 
         indicators.append({
             'value': item,
-            'score': 0, # Good
+            'score': 0,  # Good
             'type': type_,
             'rawJSON': {'value': item, 'type': type_}
         })
@@ -95,7 +93,7 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
     return indicators
 
 
-def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def get_indicators_command(client: Client) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
         client: Client object with request
@@ -103,14 +101,13 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
     Returns:
         Outputs.
     """
-    indicator_type = str(args.get('indicator_type'))
-    indicator_type_lower = indicator_type.lower()
+
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-    indicators = fetch_indicators(client, indicator_type_lower, limit)
-    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} Feed:', indicators,
+    indicators = fetch_indicators(client, limit)
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME}:', indicators,
                                      headers=['value', 'type'], removeNull=True)
 
-    return human_readable, {}, {'raw_response': indicators}
+    return human_readable, {'Indicator': indicators}, {'raw_response': indicators}
 
 
 def fetch_indicators_command(client: Client) -> List[Dict]:
@@ -120,7 +117,7 @@ def fetch_indicators_command(client: Client) -> List[Dict]:
     Returns:
         Indicators.
     """
-    indicators = fetch_indicators(client, 'both')
+    indicators = fetch_indicators(client)
     return indicators
 
 
@@ -138,7 +135,7 @@ def main():
             'public-dns-get-indicators': get_indicators_command
         }
         if command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
+            return_outputs(*commands[command](client))
 
         elif command == 'fetch-indicators':
             indicators = fetch_indicators_command(client)
