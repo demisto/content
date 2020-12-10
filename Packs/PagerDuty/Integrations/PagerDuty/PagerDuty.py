@@ -6,6 +6,9 @@ import json
 import requests
 from datetime import datetime, timedelta
 
+reload(sys)
+sys.setdefaultencoding('utf8')  # pylint: disable=no-member
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
