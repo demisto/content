@@ -1159,8 +1159,8 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
     min_from_version = LooseVersion('99.99.99')
     max_from_version = LooseVersion('0.0.0')
 
-    for metadata in modified_packs:
-        pack_metadata_path = os.path.join(tools.pack_name_to_path(metadata), PACKS_PACK_META_FILE_NAME)
+    for pack_name in modified_packs:
+        pack_metadata_path = os.path.join(tools.pack_name_to_path(pack_name), PACKS_PACK_META_FILE_NAME)
         pack_metadata = get_pack_metadata(pack_metadata_path)
         from_version = pack_metadata.get('serverMinVersion')
         to_version = pack_metadata.get('serverMaxVersion')
