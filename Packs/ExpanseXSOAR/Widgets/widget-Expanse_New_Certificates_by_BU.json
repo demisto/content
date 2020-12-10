@@ -92,7 +92,7 @@
             }
         ]
     },
-    "query": "sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\" and type:ExpanseCertificate",
+    "query": "sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\" and type:Certificate",
     "size": 0,
     "version": -1,
     "widgetType": "line",

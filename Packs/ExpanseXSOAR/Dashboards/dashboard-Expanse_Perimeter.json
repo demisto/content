@@ -959,7 +959,7 @@
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\" and type:ExpanseCertificate and expanseservicestatus:HAS_ACTIVE_SERVICE",
+                "query": "sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\" and type:Certificate and expanseservicestatus:HAS_ACTIVE_SERVICE",
                 "shouldCommit": false,
                 "size": 0,
                 "sort": null,
@@ -1080,7 +1080,7 @@
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\" and type:ExpanseCertificate",
+                "query": "sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\" and type:Certificate",
                 "shouldCommit": false,
                 "size": 0,
                 "sort": null,
@@ -1202,7 +1202,7 @@
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\" and type:ExpanseCertificate",
+                "query": "sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\" and type:Certificate",
                 "shouldCommit": false,
                 "size": 0,
                 "sort": null,
@@ -1323,7 +1323,7 @@
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\" and type:ExpanseCertificate and expansevalidnotafter:\u003c=\"now\" and expanseservicestatus:HAS_ACTIVE_SERVICE ",
+                "query": "sourceBrands:FeedExpanse and expanselastobserved:\u003e=\"7 day ago\" and type:Certificate and validitynotafter:\u003c=\"now\" and expanseservicestatus:HAS_ACTIVE_SERVICE ",
                 "shouldCommit": false,
                 "size": 0,
                 "sort": null,
