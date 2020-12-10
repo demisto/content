@@ -303,8 +303,8 @@ def fetch_mails(client: IMAPClient,
             continue
         # The search query filters emails by day, not by exact date
         email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
-        if first_fetch_time and email_message_object.date.astimezone(timezone_info_object) > \
-                first_fetch_time.astimezone(timezone_info_object):  # type: ignore[union-attr]
+        if not first_fetch_time or (first_fetch_time and email_message_object.date.astimezone(timezone_info_object) > \
+                first_fetch_time.astimezone(timezone_info_object)):  # type: ignore[union-attr]
             mails_fetched.append(email_message_object)
             messages_fetched.append(email_message_object.id)
         else:
