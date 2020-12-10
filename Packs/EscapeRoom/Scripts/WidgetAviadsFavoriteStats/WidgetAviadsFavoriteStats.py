@@ -2,11 +2,11 @@
 
 """
 
+import random
+import traceback
+
 import demistomock as demisto
 from CommonServerPython import *
-
-import traceback
-import random
 
 CONTENT_USERS = [
     "glicht", "anara123", "jochman", "Arsenikr", "yardensade", "aviadl", "yuvalbenshalom", "DeanArbel", "Bargenish",
@@ -18,7 +18,7 @@ CONTENT_USERS = [
 ]
 NASICH = 'idovandijk'
 
-''' COMMAND FUNCTION '''
+# COMMAND FUNCTION #
 
 
 def create_bar_widget() -> BarColumnPieWidget:
@@ -36,19 +36,19 @@ def create_bar_widget() -> BarColumnPieWidget:
     return widget
 
 
-''' MAIN FUNCTION '''
+# MAIN FUNCTION #
 
 
 def main():
     try:
         widget = create_bar_widget()
         return_results(widget)
-    except Exception as exc:
+    except Exception as exc:  # pylint: disable=W0703
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute WidgetAviadsFavoriteStats. Error: {str(exc)}')
 
 
-''' ENTRY POINT '''
+# ENTRY POINT #
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

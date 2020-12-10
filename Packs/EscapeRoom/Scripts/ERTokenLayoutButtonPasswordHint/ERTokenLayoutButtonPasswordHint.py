@@ -1,8 +1,8 @@
+import traceback
+from typing import Any, Dict
+
 import demistomock as demisto
 from CommonServerPython import *
-
-from typing import Dict, Any
-import traceback
 
 # update the hint field with the following value:
 # ╔═══════════════════════════════════════╗
@@ -18,7 +18,7 @@ import traceback
 # ╚═══════════════════════════════════════╝
 
 
-''' COMMAND FUNCTION '''
+# COMMAND FUNCTION #
 
 
 def set_indicator_hint(indicator_id):
@@ -42,18 +42,18 @@ def hint_command(args: Dict[str, Any]) -> CommandResults:
     return CommandResults(readable_output=' ')
 
 
-''' MAIN FUNCTION '''
+# MAIN FUNCTION #
 
 
 def main():
     try:
         return_results(hint_command(demisto.args()))
-    except Exception as exc:
+    except Exception as exc:  # pylint: disable=W0703
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute ERTokenLayoutButtonPasswordHint. Error: {str(exc)}')
 
 
-''' ENTRY POINT '''
+# ENTRY POINT #
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

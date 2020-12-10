@@ -1,7 +1,7 @@
+import traceback
+
 import demistomock as demisto
 from CommonServerPython import *
-
-import traceback
 
 
 def set_indicator_hint(indicator_id):
@@ -16,7 +16,7 @@ def set_indicator_hint(indicator_id):
         demisto.error(f'oylo!\n{res}\n\n')
 
 
-''' MAIN FUNCTION '''
+# MAIN FUNCTION #
 
 
 def main():
@@ -27,12 +27,12 @@ def main():
         return_results(
             CommandResults(readable_output='![](https://media.giphy.com/media/5vR6pNsjhoKwo/giphy.gif)')
         )
-    except Exception as exc:
+    except Exception as exc:  # pylint: disable=W0703
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute ERTokenLayoutGif. Error: {str(exc)}')
 
 
-''' ENTRY POINT '''
+# ENTRY POINT #
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

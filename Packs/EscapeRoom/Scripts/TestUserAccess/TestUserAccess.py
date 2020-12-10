@@ -1,12 +1,8 @@
-import base64
-import json
-import pickle
-
 import demisto_client.demisto_api
 from demisto_client.demisto_api.rest import ApiException
 
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 VICTORY_MESSAGE = '''# Congratulations
 ![](https://media.giphy.com/media/l2Je19AZkPF7r6gXm/giphy.gif)
@@ -27,11 +23,11 @@ def main(args):
     try:
         client = demisto_client.configure(base_url=server, username=user_name,
                                           password=password, verify_ssl=False)
-        response = client.generic_request(path='/health', method='GET')
+        client.generic_request(path='/health', method='GET')
 
         results = CommandResults(readable_output=VICTORY_MESSAGE, outputs={'MrBurns.Present': 'hello'})
         return_results(results)
-    except ApiException as exc:
+    except ApiException as exc:  # pylint: disable=W0703
         return_error(exc.body)
 
 

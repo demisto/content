@@ -1,11 +1,10 @@
-import demistomock as demisto
-from CommonServerPython import *
-
-from typing import Dict, Any
 import traceback
+from typing import Any, Dict
 
+import demistomock as demisto
+from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
-''' COMMAND FUNCTION '''
+# COMMAND FUNCTION #
 
 
 def validate_token(token):
@@ -26,18 +25,18 @@ def reputation_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-''' MAIN FUNCTION '''
+# MAIN FUNCTION #
 
 
 def main():
     try:
         return_results(reputation_command(demisto.args()))
-    except Exception as exc:
+    except Exception as exc:  # pylint: disable=W0703
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute ERTokenReputation. Error: {str(exc)}')
 
 
-''' ENTRY POINT '''
+# ENTRY POINT #
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
