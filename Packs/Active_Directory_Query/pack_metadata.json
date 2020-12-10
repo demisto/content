@@ -16,33 +16,29 @@
         "Active Directory"
     ],
     "dependencies": {
-        "Ransomware": {
-            "mandatory": false,
-            "display_name": "false"
-        },
-        "EWS": {
-            "mandatory": false,
-            "display_name": "EWS"
-        },
-        "GmailSingleUser": {
-            "mandatory": false,
-            "display_name": "Gmail Single User (Beta)"
-        },
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
         },
         "CommonTypes": {
             "mandatory": true,
             "display_name": "Common Types"
         },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
+        "GmailSingleUser": {
+            "mandatory": false,
+            "display_name": "Gmail Single User (Beta)"
         },
         "Gmail": {
             "mandatory": false,
             "display_name": "Gmail"
+        },
+        "EWS": {
+            "mandatory": false,
+            "display_name": "EWS"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
         },
         "MicrosoftGraphListener": {
             "mandatory": false,
@@ -52,9 +48,9 @@
             "mandatory": false,
             "display_name": "Microsoft Graph Mail"
         },
-        "MailSenderNew": {
+        "EWSMailSender": {
             "mandatory": false,
-            "display_name": "Mail Sender (New)"
+            "display_name": "EWS Mail Sender"
         }
     }
 }
