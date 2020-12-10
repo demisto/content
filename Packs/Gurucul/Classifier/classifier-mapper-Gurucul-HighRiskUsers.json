@@ -1,7 +1,4 @@
 {
-	"brands": [
-		"Gurucul-GRA"
-	],
 	"defaultIncidentType": "GraHighRiskUser",
 	"description": "",
 	"feed": false,

@@ -1,7 +1,4 @@
 {
-	"brands": [
-		"Gurucul-GRA"
-	],
 	"defaultIncidentType": "GraCase",
 	"description": "",
 	"feed": false,
