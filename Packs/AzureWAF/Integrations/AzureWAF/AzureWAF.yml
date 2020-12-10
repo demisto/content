@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: azure_waf
+  id: Azure Web Application Firewall
   version: -1
 configuration:
 - defaultvalue: cf22fd73-29f1-4245-8e16-533704926d20
@@ -29,8 +29,8 @@ configuration:
   type: 8
 description: The Azure WAF (Web Application Firewall) integration provides centralized
   protection of your web applications from common exploits and vulnerabilities.
-display: Azure WAF
-name: azure_waf
+display: Azure Web Application Firewall
+name: Azure Web Application Firewall
 script:
   commands:
   - arguments:
@@ -488,8 +488,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-tests:
-- No tests
 defaultmapperin: azureWAF-mapper
 defaultclassifier: AzureWAF
 fromversion: 5.0.0

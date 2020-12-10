@@ -12,7 +12,7 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "AzureWAF",
+            "integrations": "Azure Web Application Firewall",
             "playbookID": "Azure WAF - Test",
             "fromversion": "5.0.0"
         },
