@@ -1231,7 +1231,7 @@ def test_get_from_version_and_to_version_bounderies_modified_metadata():
 
     """
     all_modified_files_paths = set([])
-    metadata_list = {'Pack1'}
+    pack_list = {'Pack1'}
 
     with tempfile.TemporaryDirectory() as temp_dir:
         with test_tools.ChangeCWD(temp_dir):
@@ -1242,7 +1242,7 @@ def test_get_from_version_and_to_version_bounderies_modified_metadata():
             from_version, to_version = get_from_version_and_to_version_bounderies(
                 all_modified_files_paths,
                 {},
-                modified_metadata_list=metadata_list,
+                modified_packs=pack_list,
             )
 
     assert '6.1.0' in from_version
