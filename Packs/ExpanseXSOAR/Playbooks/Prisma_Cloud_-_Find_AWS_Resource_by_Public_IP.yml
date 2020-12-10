@@ -1,17 +1,12 @@
-description: Find a Public Cloud resource by Public IP using Prisma Cloud inventory
-id: Prisma Cloud - Find Public Cloud Resource by Public IP
+description: Find an AWS resource by Public IP using Prisma Cloud inventory
+id: Prisma Cloud - Find AWS Resource by Public IP
 inputs:
 - description: Public IP Address to look up
   key: PublicIPAddress
   playbookInputQuery:
   required: true
   value: {}
-- description: Public Cloud Provider (AWS, Azure, GCP)
-  key: CloudProvider
-  playbookInputQuery:
-  required: false
-  value: {}
-name: Prisma Cloud - Find Public Cloud Resource by Public IP
+name: Prisma Cloud - Find AWS Resource by Public IP
 outputs:
 - contextPath: PrismaCloud.Attribution
   description: Prisma Cloud attributed asset information.
@@ -45,186 +40,224 @@ tasks:
           "y": -500
         }
       }
-  "2":
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.PublicIPAddress
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'publicIpAddress equals '
+              suffix: {}
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: 'config where cloud.type = ''aws'' AND cloud.service = ''Amazon
+                    EC2'' AND json.rule = ( '
+              suffix:
+                value:
+                  simple: ' )'
+            operator: concat
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-date-unit: {}
+      time-range-date-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Search EC2 instances in Prisma Cloud
+      id: 005fffaa-277c-41b4-8f9e-9714462bc023
+      iscommand: true
+      name: Search in EC2 Instances
+      script: '|||redlock-search-config'
+      type: regular
+      version: -1
+    taskid: 005fffaa-277c-41b4-8f9e-9714462bc023
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 280
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a9c9419e-675d-43e7-86bb-11afeee4c335
+      iscommand: false
+      name: Check Results
+      type: title
+      version: -1
+      description: ''
+    taskid: a9c9419e-675d-43e7-86bb-11afeee4c335
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 870
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.PublicIPAddress
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'availabilityZones[*].loadBalancerAddresses[*].ipAddress
+                    equals '
+              suffix: {}
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: 'config where cloud.type = ''aws'' AND cloud.service = ''Amazon
+                    Elastic Load Balancing'' AND json.rule = ( '
+              suffix:
+                value:
+                  simple: ' )'
+            operator: concat
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-date-unit: {}
+      time-range-date-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Search EC2 Elastic Load Balancers in Prisma Cloud
+      id: c29ce175-b79f-4708-83ad-ca1b28b556c9
+      iscommand: true
+      name: Search in EC2 NLB
+      script: '|||redlock-search-config'
+      type: regular
+      version: -1
+    taskid: c29ce175-b79f-4708-83ad-ca1b28b556c9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 270
+        }
+      }
+  "11":
     conditions:
     - condition:
       - - left:
             iscontext: true
             value:
               complex:
-                root: inputs.CloudProvider
-          operator: inList
-          right:
-            value:
-              simple: AWS,Amazon Web Services,Amazon
-      label: AWS
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                root: inputs.CloudProvider
-          operator: inList
-          right:
-            value:
-              simple: Azure,Microsoft Azure
-      label: Azure
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                root: inputs.CloudProvider
-          operator: inList
-          right:
-            value:
-              simple: GCP,Google Cloud Platform,Google
-      label: GCP
-    id: "2"
+                accessor: Asset
+                root: Redlock
+          operator: isNotEmpty
+      label: "yes"
+    id: "11"
     ignoreworker: false
     nexttasks:
       '#default#':
-      - "6"
-      AWS:
-      - "3"
-      Azure:
-      - "4"
-      GCP:
-      - "5"
+      - "13"
+      "yes":
+      - "12"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Branch based on Cloud Provider
-      id: 36c45c3d-8411-44f2-8a0f-be0278149fac
+      description: Check whether results are found.
+      id: 063315a1-7ff6-4348-8190-dde21ed2cb49
       iscommand: false
-      name: What Cloud Provider?
+      name: Are Results Found?
       type: condition
       version: -1
-    taskid: 36c45c3d-8411-44f2-8a0f-be0278149fac
+    taskid: 063315a1-7ff6-4348-8190-dde21ed2cb49
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 195
+          "x": 450,
+          "y": 1020
         }
       }
-  "3":
-    id: "3"
+  "12":
+    id: "12"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "17"
+      - "13"
     note: false
     quietmode: 0
+    scriptarguments:
+      assets:
+        complex:
+          accessor: Asset
+          root: Redlock
+      fields: {}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: 094f8f47-c412-427a-8876-de34a8502f17
+      description: Prisma Cloud Attribution
+      id: bd23ab14-2196-41a6-814c-09abf2d12059
       iscommand: false
-      name: Search in AWS
-      type: title
+      name: Transform Results
+      script: PrismaCloudAttribution
+      type: regular
       version: -1
-      description: ''
-    taskid: 094f8f47-c412-427a-8876-de34a8502f17
+    taskid: bd23ab14-2196-41a6-814c-09abf2d12059
     timertriggers: []
-    type: title
+    type: regular
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 515
-        }
-      }
-  "4":
-    id: "4"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "18"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 3645d6a4-7536-4b2c-8930-b8ec73715486
-      iscommand: false
-      name: Search in Azure
-      type: title
-      version: -1
-      description: ''
-    taskid: 3645d6a4-7536-4b2c-8930-b8ec73715486
-    timertriggers: []
-    type: title
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 515
-        }
-      }
-  "5":
-    id: "5"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "19"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 9929d66a-c0f3-42f8-8673-5656477003b3
-      iscommand: false
-      name: Search in GCP
-      type: title
-      version: -1
-      description: ''
-    taskid: 9929d66a-c0f3-42f8-8673-5656477003b3
-    timertriggers: []
-    type: title
-    view: |-
-      {
-        "position": {
-          "x": 920,
-          "y": 515
-        }
-      }
-  "6":
-    id: "6"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "5"
-      - "4"
-      - "3"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 2f99368a-621c-4cf0-8348-c2b00831ab19
-      iscommand: false
-      name: Search All Cloud Providers
-      type: title
-      version: -1
-      description: ''
-    taskid: 2f99368a-621c-4cf0-8348-c2b00831ab19
-    timertriggers: []
-    type: title
-    view: |-
-      {
-        "position": {
-          "x": 1110,
-          "y": 360
+          "x": 140,
+          "y": 1330
         }
       }
   "13":
@@ -248,8 +281,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 1130
+          "x": 480,
+          "y": 1530
         }
       }
   "14":
@@ -257,7 +290,8 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
+      - "1"
+      - "9"
     note: false
     quietmode: 0
     separatecontext: false
@@ -332,7 +366,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1490,
+          "x": 1250,
           "y": -150
         }
       }
@@ -372,141 +406,23 @@ tasks:
       {
         "position": {
           "x": 1820,
-          "y": -330
-        }
-      }
-  "17":
-    id: "17"
-    ignoreworker: false
-    loop:
-      exitCondition: ""
-      iscommand: false
-      max: 100
-      wait: 1
-    nexttasks:
-      '#none#':
-      - "13"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      PublicIPAddress:
-        complex:
-          root: inputs.PublicIPAddress
-    separatecontext: true
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 8f9cf812-88f6-4734-80f6-dc11e512e90e
-      iscommand: false
-      name: 62653212-5de8-49d9-84b6-43c03d67d248
-      playbookId: Prisma Cloud - Find AWS Resource by Public IP
-      type: playbook
-      version: -1
-      description: ''
-    taskid: 8f9cf812-88f6-4734-80f6-dc11e512e90e
-    timertriggers: []
-    type: playbook
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 680
-        }
-      }
-  "18":
-    id: "18"
-    ignoreworker: false
-    loop:
-      exitCondition: ""
-      iscommand: false
-      max: 100
-      wait: 1
-    nexttasks:
-      '#none#':
-      - "13"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      PublicIPAddress:
-        complex:
-          root: inputs.PublicIPAddress
-    separatecontext: true
-    skipunavailable: false
-    task:
-      brand: ""
-      id: cc686add-7c9d-4b56-84ea-29fe5be3aa3b
-      iscommand: false
-      name: edef1868-86ae-4d57-809b-a38d88497469
-      playbookId: Prisma Cloud - Find Azure Resource by Public IP
-      type: playbook
-      version: -1
-      description: ''
-    taskid: cc686add-7c9d-4b56-84ea-29fe5be3aa3b
-    timertriggers: []
-    type: playbook
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 680
-        }
-      }
-  "19":
-    id: "19"
-    ignoreworker: false
-    loop:
-      exitCondition: ""
-      iscommand: false
-      max: 100
-      wait: 1
-    nexttasks:
-      '#none#':
-      - "13"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      CloudProvider: {}
-      PublicIPAddress:
-        complex:
-          root: inputs.PublicIPAddress
-    separatecontext: true
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 552b4700-c2c7-46b9-8bbf-c86292814ed8
-      iscommand: false
-      name: ac3fa7ed-4caf-42e5-868a-c7685d41c46c
-      playbookId: Prisma Cloud - Find GCP Resource by Public IP
-      type: playbook
-      version: -1
-      description: ''
-    taskid: 552b4700-c2c7-46b9-8bbf-c86292814ed8
-    timertriggers: []
-    type: playbook
-    view: |-
-      {
-        "position": {
-          "x": 920,
-          "y": 680
+          "y": -360
         }
       }
 version: -1
 view: |-
   {
-    "linkLabelsPosition": {
-      "2_3_AWS": 0.26,
-      "2_4_Azure": 0.51,
-      "2_5_GCP": 0.25
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1695,
-        "width": 2150,
-        "x": 50,
+        "height": 2095,
+        "width": 2060,
+        "x": 140,
         "y": -500
       }
     }
   }
-fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- ExpanseV2 Test
+- Feed Expanse Test
+fromversion: 6.0.0

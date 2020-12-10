@@ -1,0 +1,376 @@
+description: |-
+  Find a Public Cloud resource of the following types:
+  - Compute Instance
+  - Load Balancer
+
+  on: AWS, Azure, GCP
+
+  using Prisma Cloud inventory
+id: Prisma Cloud - Find Azure Resource by Public IP
+inputs:
+- description: Public IP Address to look up
+  key: PublicIPAddress
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Prisma Cloud - Find Azure Resource by Public IP
+outputs:
+- contextPath: PrismaCloud.Attribution
+  description: Prisma Cloud attributed asset information.
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 11a6059b-98b4-4e88-8556-dc5ad8fe15c9
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 11a6059b-98b4-4e88-8556-dc5ad8fe15c9
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": -500
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a9c9419e-675d-43e7-86bb-11afeee4c335
+      iscommand: false
+      name: Check Results
+      type: title
+      version: -1
+      description: ''
+    taskid: a9c9419e-675d-43e7-86bb-11afeee4c335
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1160
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.PublicIPAddress
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: '[''properties.networkProfile''].networkInterfaces[*].publicIpAddress
+                    equals '
+              suffix: {}
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: 'config where cloud.type = ''azure'' AND cloud.service =
+                    ''Azure Compute'' AND json.rule = ( '
+              suffix:
+                value:
+                  simple: ' )'
+            operator: concat
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-date-unit: {}
+      time-range-date-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Search Azure VM instances in Prisma Cloud
+      id: 38831c47-e66b-4d9d-8595-253367887bf1
+      iscommand: true
+      name: Search in Azure Compute
+      script: '|||redlock-search-config'
+      type: regular
+      version: -1
+    taskid: 38831c47-e66b-4d9d-8595-253367887bf1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 260
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Asset
+                root: Redlock
+          operator: isNotEmpty
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether results are found.
+      id: 063315a1-7ff6-4348-8190-dde21ed2cb49
+      iscommand: false
+      name: Are Results Found?
+      type: condition
+      version: -1
+    taskid: 063315a1-7ff6-4348-8190-dde21ed2cb49
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1350
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assets:
+        complex:
+          accessor: Asset
+          root: Redlock
+      fields: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prisma Cloud Attribution
+      id: bd23ab14-2196-41a6-814c-09abf2d12059
+      iscommand: false
+      name: Transform Results
+      script: PrismaCloudAttribution
+      type: regular
+      version: -1
+    taskid: bd23ab14-2196-41a6-814c-09abf2d12059
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 1580
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: df95edc6-611a-42fd-8f79-1000d380731e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: df95edc6-611a-42fd-8f79-1000d380731e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ef4ca6a3-3d66-487d-82ce-34cbd5625ba6
+      iscommand: false
+      name: Search in Prisma Cloud
+      type: title
+      version: -1
+      description: ''
+    taskid: ef4ca6a3-3d66-487d-82ce-34cbd5625ba6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 60
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: RedLock
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether Prisma Cloud integration is enabled.
+      id: d784bc5b-b0d2-4814-8eab-afed97795535
+      iscommand: false
+      name: Is Prisma Cloud enabled?
+      type: condition
+      version: -1
+    taskid: d784bc5b-b0d2-4814-8eab-afed97795535
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": -150
+        }
+      }
+  "16":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.PublicIPAddress
+          operator: isNotEmpty
+      label: "yes"
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if there are any IP in the input.
+      id: ad055b2c-7e6d-44c7-829f-70d6128b56eb
+      iscommand: false
+      name: Are there IPs in input?
+      type: condition
+      version: -1
+    taskid: ad055b2c-7e6d-44c7-829f-70d6128b56eb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": -330
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2335,
+        "width": 2030,
+        "x": 170,
+        "y": -500
+      }
+    }
+  }
+tests:
+- ExpanseV2 Test
+- Feed Expanse Test
+fromversion: 6.0.0

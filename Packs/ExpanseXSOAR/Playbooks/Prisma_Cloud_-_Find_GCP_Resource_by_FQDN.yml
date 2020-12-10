@@ -1,0 +1,700 @@
+description: Find GCP resources using Prisma Cloud inventory
+id: Prisma Cloud - Find GCP Resource by FQDN
+inputs:
+- description: FQDN to look up
+  key: FQDN
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: GCP domains (comma separated)
+  key: GCPDomains
+  playbookInputQuery:
+  required: false
+  value:
+    simple: .google.com
+name: Prisma Cloud - Find GCP Resource by FQDN
+outputs:
+- contextPath: PrismaCloud.Attribution
+  description: Prisma Cloud attributed asset information.
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 17ed1fd8-f4fb-423c-87cb-2aea369f2e65
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 17ed1fd8-f4fb-423c-87cb-2aea369f2e65
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": -1210
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b80dc412-f8b1-47db-8e3f-0ea44103fbd0
+      iscommand: false
+      name: Check Results
+      type: title
+      version: -1
+      description: ''
+    taskid: b80dc412-f8b1-47db-8e3f-0ea44103fbd0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1690
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: NONGCPSplitFQDN
+      stringify: {}
+      value:
+        complex:
+          root: NONGCPFQDN
+          transformers:
+          - args:
+              groups:
+                value:
+                  simple: 0,1
+              keys:
+                value:
+                  simple: hostname,domain
+              regex:
+                value:
+                  simple: ([A-z0-9\-]*)\.(.*)
+            operator: RegexGroups
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      id: 1f15ef3d-4216-4d07-82fe-7238c0a245bf
+      iscommand: false
+      name: Split Hostname from Domain
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 1f15ef3d-4216-4d07-82fe-7238c0a245bf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -780,
+          "y": 860
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Asset
+                root: Redlock
+          operator: isNotEmpty
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether results are found.
+      id: dc263bf9-1c94-45e5-8eda-b917da3c2a93
+      iscommand: false
+      name: Are results found?
+      type: condition
+      version: -1
+    taskid: dc263bf9-1c94-45e5-8eda-b917da3c2a93
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1810
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assets:
+        complex:
+          accessor: Asset
+          root: Redlock
+      fields: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prisma Cloud Attribution
+      id: 3e7d876f-a4fc-4dc3-856f-2e65585b829b
+      iscommand: false
+      name: Transform Results
+      script: PrismaCloudAttribution
+      type: regular
+      version: -1
+    taskid: 3e7d876f-a4fc-4dc3-856f-2e65585b829b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 2070
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f50d6c50-8316-45f7-832e-89d92b1131ed
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: f50d6c50-8316-45f7-832e-89d92b1131ed
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2320
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: RedLock
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether Prisma Cloud integration is enabled.
+      id: edd33713-3740-4316-8160-18a3fefb8877
+      iscommand: false
+      name: Is Prisma Cloud enabled?
+      type: condition
+      version: -1
+    taskid: edd33713-3740-4316-8160-18a3fefb8877
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": -865
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e5a04804-bd9f-4736-86eb-f3db81e41798
+      iscommand: false
+      name: Prepare for Search
+      type: title
+      version: -1
+      description: ''
+    taskid: e5a04804-bd9f-4736-86eb-f3db81e41798
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": -500
+        }
+      }
+  "20":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.FQDN
+          operator: isNotEmpty
+      label: "yes"
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if there are any FQDNs in the input.
+      id: e4dfe7ec-3710-4533-8242-1382d7b104b5
+      iscommand: false
+      name: Are there FQDNs in input?
+      type: condition
+      version: -1
+    taskid: e4dfe7ec-3710-4533-8242-1382d7b104b5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": -1080
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: GCPFQDN
+      stringify: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.FQDN
+              operator: StringContainsArray
+              right:
+                iscontext: true
+                value:
+                  simple: ProviderDomains
+          root: inputs.FQDN
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      id: a43cd574-8162-4235-85e8-f59eeb5a4ae9
+      iscommand: false
+      name: Extract GCP FQDNs
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: a43cd574-8162-4235-85e8-f59eeb5a4ae9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": -130
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: NONGCPFQDN
+      stringify: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.FQDN
+              operator: notInList
+              right:
+                value:
+                  simple: GCPFQDN
+          root: inputs.FQDN
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      id: 6c438a24-8376-4c0d-8f8c-0dc0332b1fed
+      iscommand: false
+      name: Extract NON GCP FQDNs
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 6c438a24-8376-4c0d-8f8c-0dc0332b1fed
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 70
+        }
+      }
+  "24":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: GCPFQDN
+          operator: isNotEmpty
+      label: "yes"
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether AWS FQDNs are present in the inputs.
+      id: 33ed462f-dc59-4c5f-86da-84785bbf25c4
+      iscommand: false
+      name: Are there GCP FQDNs?
+      type: condition
+      version: -1
+    taskid: 33ed462f-dc59-4c5f-86da-84785bbf25c4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 490
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+      - "26"
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 416f0310-e461-419e-819c-fb77b2603dda
+      iscommand: false
+      name: Search in Prisma Cloud Inventory
+      type: title
+      version: -1
+      description: ''
+    taskid: 416f0310-e461-419e-819c-fb77b2603dda
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 330
+        }
+      }
+  "26":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: GCPFQDN
+          operator: isNotEmpty
+      label: "yes"
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether non AWS FQDNs are present in the inputs.
+      id: 39326b08-1178-4f73-8828-8c317ac1817e
+      iscommand: false
+      name: Are there NON GCP FQDNs?
+      type: condition
+      version: -1
+    taskid: 39326b08-1178-4f73-8828-8c317ac1817e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -780,
+          "y": 510
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8375b697-df04-4476-8a8a-dbe723ee4ae1
+      iscommand: false
+      name: Search NON GCP FQDNs
+      type: title
+      version: -1
+      description: ''
+    taskid: 8375b697-df04-4476-8a8a-dbe723ee4ae1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -780,
+          "y": 690
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 48140731-804c-4092-858c-886396f6a83a
+      iscommand: false
+      name: Search GCP FQDNs
+      type: title
+      version: -1
+      description: ''
+    taskid: 48140731-804c-4092-858c-886396f6a83a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 680
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: da630d55-2d1c-4877-8786-f5321ed9cc92
+      iscommand: false
+      name: Search Everything
+      type: title
+      version: -1
+      description: ''
+    taskid: da630d55-2d1c-4877-8786-f5321ed9cc92
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 690
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ProviderDomains
+      stringify: {}
+      value:
+        complex:
+          root: inputs.GCPDomains
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: ','
+            operator: splitAndTrim
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      id: d4e74db5-9e79-4d29-8503-3f061ce681b5
+      iscommand: false
+      name: Split GCP Domains
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: d4e74db5-9e79-4d29-8503-3f061ce681b5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": -310
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3595,
+        "width": 2990,
+        "x": -780,
+        "y": -1210
+      }
+    }
+  }
+tests:
+- ExpanseV2 Test
+- Feed Expanse Test
+fromversion: 6.0.0
