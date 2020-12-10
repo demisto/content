@@ -96,7 +96,7 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: xdrmedseverityalertcount
+  defaultValue: xdrmediumseverityalertcount
   description: The med_severity_alert_count field name in Demisto.
   isArray: false
   name: med_severity_alert_count
