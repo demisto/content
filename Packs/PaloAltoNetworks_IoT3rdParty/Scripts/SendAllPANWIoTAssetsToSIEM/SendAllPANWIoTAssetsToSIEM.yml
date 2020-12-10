@@ -1,0 +1,43 @@
+args:
+- auto: PREDEFINED
+  description: Type of asset.
+  name: asset_type
+  predefined:
+  - device
+  - alert
+  - vulnerability
+  required: true
+- defaultValue: PANW IoT 3rd Party SIEM Integration Instance
+  description: Name of the configured syslog sender instance
+  name: syslog_sender_instance
+  required: true
+- default: true
+  defaultValue: PANW IoT 3rd Party Integration Instance
+  description: Name of the configured PANW Iot 3rd Party instance.
+  name: panw_iot_3rd_party_instance
+  required: true
+comment: This automation retrieves all specified assets from the PANW IoT cloud and
+  send them to the SIEM server.
+commonfields:
+  id: f8b9de95-9ac9-4e6d-89d7-b3bf92e9e14c
+  version: -1
+dependson:
+  must:
+  - Palo Alto Networks IoT 3rd Party|||panw-iot-3rd-party-get-asset-list
+  - Palo Alto Networks IoT 3rd Party|||panw-iot-3rd-party-report-status-to-panw
+  - Palo Alto Networks IoT 3rd Party|||panw-iot-3rd-party-convert-assets-to-external-format
+  - Syslog Sender|||syslog-send
+dockerimage: demisto/python3:3.8.6.13358
+enabled: true
+name: SendAllPANWIoTAssetsToSIEM
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- PANW IoT 3rd Party Integration
+- siem
+timeout: 362.88ms
+type: python

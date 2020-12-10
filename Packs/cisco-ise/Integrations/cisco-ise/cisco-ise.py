@@ -676,7 +676,7 @@ def get_endpoint_id_by_name(mac_address=None):
 
 def get_endpoint_id_by_name_command():
 
-    mac_address = demisto.args().get('macAddress')
+    mac_address = demisto.args().get('mac_address')
 
     if not is_mac_address(mac_address):
         return_error('Given MAC address is invalid')
@@ -715,7 +715,8 @@ def get_all_nodes_command():
     try:
         instance_ip = socket.gethostbyname(instance_ip)
     except Exception as e:
-        LOG("Failed to get ip address of configured Cisco ISE instance, %s" % (e))
+        err_msg = ('Failed to get ip address of configured Cisco ISE instance - {e}')
+        raise Exception(err_msg)
 
     data = []
     api_endpoint = '/ers/config/node'

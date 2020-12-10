@@ -18,12 +18,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 19bc2352-d86e-4c74-8ad5-d64c9b97a900
+      id: 8e9250c5-18aa-4c28-88d5-cbb378d65162
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 19bc2352-d86e-4c74-8ad5-d64c9b97a900
+    taskid: 8e9250c5-18aa-4c28-88d5-cbb378d65162
     timertriggers: []
     type: start
     view: |-
@@ -49,19 +49,21 @@ tasks:
     scriptarguments:
       brandname:
         simple: Syslog Sender
+      using:
+        simple: PANW IoT 3rd Party SIEM Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Returns 'yes' if integration brand is available. Otherwise returns
         'no'
-      id: 0540fb12-7121-46f9-8e41-10c5cf429dd5
+      id: e9fb706d-fe34-4650-834e-aa51c84f7bc6
       iscommand: false
-      name: IsIntegrationAvailable
+      name: Is Syslog Sender(SIEM) Enabled?
       script: IsIntegrationAvailable
       type: condition
       version: -1
-    taskid: 0540fb12-7121-46f9-8e41-10c5cf429dd5
+    taskid: e9fb706d-fe34-4650-834e-aa51c84f7bc6
     timertriggers: []
     type: condition
     view: |-
@@ -81,10 +83,16 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
+      asset_type:
+        simple: device
+      integration_name:
+        simple: siem
       integrationName:
         simple: siem
       message:
         simple: Syslog Sender (SIEM) instance is not enabled
+      playbook_name:
+        simple: Bulk Export to SIEM - PANW IoT 3rd Party Integration
       playbookName:
         simple: Bulk Export to SIEM - PANW IoT 3rd Party Integration
       status:
@@ -98,20 +106,20 @@ tasks:
     task:
       brand: ""
       description: Sends a status message back to PANW IOT cloud.
-      id: 2756fb73-770f-4f33-8949-47ccd50b94d9
+      id: df039480-798c-4bb9-83bc-c525a2737ed4
       iscommand: true
-      name: panw-iot-3rd-party-report-status-to-panw
+      name: Send disabled status to PANW IoT cloud
       script: '|||panw-iot-3rd-party-report-status-to-panw'
       type: regular
       version: -1
-    taskid: 2756fb73-770f-4f33-8949-47ccd50b94d9
+    taskid: df039480-798c-4bb9-83bc-c525a2737ed4
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 250
+          "x": 230,
+          "y": 270
         }
       }
   "3":
@@ -123,19 +131,26 @@ tasks:
       - "6"
     note: false
     quietmode: 0
+    scriptarguments:
+      asset_type:
+        simple: device
+      panw_iot_3rd_party_instance:
+        simple: PANW IoT 3rd Party Integration Instance
+      syslog_sender_instance:
+        simple: PANW IoT 3rd Party SIEM Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Gets all available alerts from the IoT cloud and sends it to the
-        SIEM server.
-      id: 942631c7-ed9c-4c01-8a97-2eae87593d92
+      description: This automation retrieves all specified assets from the PANW IoT
+        cloud and sends them to the SIEM server.
+      id: 5a9fde2f-1a69-429b-88ea-35c2f3bde5e6
       iscommand: false
-      name: SendAllPANWIoTAlertsToSIEM
-      script: SendAllPANWIoTAlertsToSIEM
+      name: Send all PANW IoT devices to SIEM
+      script: f8b9de95-9ac9-4e6d-89d7-b3bf92e9e14c
       type: regular
       version: -1
-    taskid: 942631c7-ed9c-4c01-8a97-2eae87593d92
+    taskid: 5a9fde2f-1a69-429b-88ea-35c2f3bde5e6
     timertriggers: []
     type: regular
     view: |-
@@ -154,19 +169,26 @@ tasks:
       - "6"
     note: false
     quietmode: 0
+    scriptarguments:
+      asset_type:
+        simple: alert
+      panw_iot_3rd_party_instance:
+        simple: PANW IoT 3rd Party Integration Instance
+      syslog_sender_instance:
+        simple: PANW IoT 3rd Party SIEM Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Gets all available devices from the IoT cloud and sends it to the
-        SIEM server
-      id: d886f89d-c9cf-442e-8afa-fb3c9e6550b8
+      description: This automation retrieves all specified assets from the PANW IoT
+        cloud and sends them to the SIEM server.
+      id: f357b43a-b665-49d8-83bd-c7f2870857af
       iscommand: false
-      name: SendAllPANWIoTDevicesToSIEM
-      script: SendAllPANWIoTDevicesToSIEM
+      name: Send all PANW IoT alerts to SIEM
+      script: f8b9de95-9ac9-4e6d-89d7-b3bf92e9e14c
       type: regular
       version: -1
-    taskid: d886f89d-c9cf-442e-8afa-fb3c9e6550b8
+    taskid: f357b43a-b665-49d8-83bd-c7f2870857af
     timertriggers: []
     type: regular
     view: |-
@@ -185,19 +207,26 @@ tasks:
       - "6"
     note: false
     quietmode: 0
+    scriptarguments:
+      asset_type:
+        simple: vulnerability
+      panw_iot_3rd_party_instance:
+        simple: PANW IoT 3rd Party Integration Instance
+      syslog_sender_instance:
+        simple: PANW IoT 3rd Party SIEM Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Gets all available vulnerabilities from the IoT cloud and sends
-        it to the SIEM server.
-      id: 93cd8102-ac4b-45e1-8c46-e9de592f7f60
+      description: This automation retrieves all specified assets from the PANW IoT
+        cloud and sends them to the SIEM server.
+      id: b012d21a-0e41-421b-8046-9e53c7fa7a25
       iscommand: false
-      name: SendAllPANWIoTVulnerabilitiesToSIEM
-      script: SendAllPANWIoTVulnerabilitiesToSIEM
+      name: Send all PANW IoT vulnerabilities to SIEM
+      script: f8b9de95-9ac9-4e6d-89d7-b3bf92e9e14c
       type: regular
       version: -1
-    taskid: 93cd8102-ac4b-45e1-8c46-e9de592f7f60
+    taskid: b012d21a-0e41-421b-8046-9e53c7fa7a25
     timertriggers: []
     type: regular
     view: |-
@@ -225,13 +254,13 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: 822e49f8-293b-4475-854e-8322b27792fc
+      id: 810a508f-b736-4657-84fb-f1d04149fca3
       iscommand: true
       name: closeInvestigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 822e49f8-293b-4475-854e-8322b27792fc
+    taskid: 810a508f-b736-4657-84fb-f1d04149fca3
     timertriggers: []
     type: regular
     view: |-
@@ -248,8 +277,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1025,
-        "width": 1220,
-        "x": 220,
+        "width": 1210,
+        "x": 230,
         "y": -80
       }
     }

@@ -339,12 +339,12 @@ script:
     outputs:
     - contextPath: CiscoISE.NodesData
       description: Details of all deployment ISE nodes.
-      type: string
+      type: unknown
   - arguments:
     - default: false
       description: 'MAC address of the endpoint (format: 11:22:33:44:55:66).'
       isArray: false
-      name: macAddress
+      name: mac_address
       required: true
       secret: false
     deprecated: false
