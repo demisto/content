@@ -1840,10 +1840,7 @@ class Pack(object):
             bool: True if the file is an author image or False otherwise
 
         """
-        return all([
-            file_path.startswith(os.path.join(PACKS_FOLDER, self._pack_name)),
-            os.path.basename(file_path) == Pack.AUTHOR_IMAGE_NAME
-        ])
+        return file_path == os.path.join(PACKS_FOLDER, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
 
 
 # HELPER FUNCTIONS

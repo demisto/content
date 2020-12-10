@@ -140,11 +140,11 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
     logging.success(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.")
 
 
-def download_and_extract_index(build_bucket: Bucket, extract_destination_path: str):
-    """Downloads and extracts production and build indexes zip from cloud storage.
+def download_and_extract_index(storage_bucket: Bucket, extract_destination_path: str):
+    """Downloads and extracts indexe zip from cloud storage.
 
     Args:
-        build_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where build index.zip is stored.
+        storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where build index.zip is stored.
         extract_destination_path (str): the full path of extract folder.
     Returns:
         str: extracted build index folder full path.
@@ -154,36 +154,39 @@ def download_and_extract_index(build_bucket: Bucket, extract_destination_path: s
         str: downloaded build index generation.
 
     """
-    build_index_storage_path = os.path.join(GCPConfig.BUILD_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
-    download_build_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
+    if storage_bucket.name == GCPConfig.CI_BUILD_BUCKET:
+        index_storage_path = os.path.join(GCPConfig.BUILD_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+    else:
+        index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+    download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
 
-    build_index_blob = build_bucket.blob(build_index_storage_path)
-    build_index_folder_path = os.path.join(extract_destination_path, GCPConfig.INDEX_NAME)
+    index_blob = storage_bucket.blob(index_storage_path)
+    index_folder_path = os.path.join(extract_destination_path, GCPConfig.INDEX_NAME)
 
     if not os.path.exists(extract_destination_path):
         os.mkdir(extract_destination_path)
 
-    if not build_index_blob.exists():
-        logging.error(f"No build index was found in path: {build_index_storage_path}")
+    if not index_blob.exists():
+        logging.error(f"No build index was found in path: {index_storage_path}")
         sys.exit(1)
 
-    build_index_blob.reload()
-    build_index_generation = build_index_blob.generation
-    build_index_blob.download_to_filename(download_build_index_path, if_generation_match=build_index_generation)
+    index_blob.reload()
+    index_generation = index_blob.generation
+    index_blob.download_to_filename(download_index_path, if_generation_match=index_generation)
 
-    if os.path.exists(download_build_index_path):
-        with ZipFile(download_build_index_path, 'r') as index_zip:
+    if os.path.exists(download_index_path):
+        with ZipFile(download_index_path, 'r') as index_zip:
             index_zip.extractall(extract_destination_path)
 
-        if not os.path.exists(build_index_folder_path):
+        if not os.path.exists(index_folder_path):
             logging.error(f"Failed creating build {GCPConfig.INDEX_NAME} folder with extracted data.")
             sys.exit(1)
 
-        os.remove(download_build_index_path)
+        os.remove(download_index_path)
         logging.success(f"Finished downloading and extracting build {GCPConfig.INDEX_NAME} file to "
                         f"{extract_destination_path}")
 
-        return build_index_folder_path, build_index_blob, build_index_generation
+        return index_folder_path, index_blob, index_generation
     else:
         logging.error(f"Failed to download build {GCPConfig.INDEX_NAME}.zip file from cloud storage.")
         sys.exit(1)
