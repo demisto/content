@@ -1222,7 +1222,7 @@ def test_is_documentation_only(files_string, expected_result):
 def test_get_from_version_and_to_version_bounderies_modified_metadata():
     """
     Given:
-        - metadata file with serverMinVersion 6.0.
+        - metadata file with serverMinVersion 6.1.0.
     When:
         - running get_from_version_and_to_version_bounderies
     Then:
