@@ -1013,7 +1013,7 @@ def manage_tests(tests_settings):
             for test_batch, (_, ami_instance_ip) in zip(test_allocation, instances_ips):
                 string_tests = '\n'.join(test_batch)
                 logging_manager.debug(
-                    f'The tests collected to run with https://{ami_instance_ip} are: {string_tests}')
+                    f'The tests collected for server https://{ami_instance_ip} are: {string_tests}')
 
             for ami_instance_name, ami_instance_ip in instances_ips:
                 if ami_instance_name == tests_settings.serverVersion:  # Only run tests for given AMI Role
