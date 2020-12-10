@@ -244,7 +244,7 @@ script:
     - default: false
       defaultValue: 'False'
       description: Return data only if the incident was changed since the last time
-        it was mirrored in to XSOAR.  This flag should be used only from inside an
+        it was mirrored in to XSOAR.  This flag should be used only from within a
         XDR incident.
       isArray: false
       name: return_only_updated_incident
