@@ -242,4 +242,4 @@ def test_generate_map_command(mocker):
 
     assert eg_mock.call_args[0][0] == "fake-from"
     assert eg_mock.call_args[0][1] == "fake-to"
-    assert result.startswith('### Map of Open Issues On Prem')
+    assert result.startswith('### Map of Open Incidents On Prem')
