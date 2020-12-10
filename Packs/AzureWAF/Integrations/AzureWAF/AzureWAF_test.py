@@ -99,7 +99,7 @@ UPSERT_COMMAND_DATA = [
 
 
 @pytest.mark.parametrize('demisto_args,expected_results', UPSERT_COMMAND_DATA)
-def test_policy_upsert_body(mocker, demisto_args, expected_results):
+def test_policy_upsert_request_body_happy(mocker, demisto_args, expected_results):
     """
     Given:
         - a policy to update or a new policy
@@ -153,13 +153,13 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
 
 
 @pytest.mark.parametrize('demisto_args,expected_error_msg', UPSERT_COMMAND_DATA_BAD_CASES)
-def test_policy_upsert_fails(mocker, demisto_args, expected_error_msg):
+def test_policy_upsert_request_body_fails(mocker, demisto_args, expected_error_msg):
     """
     Given:
         - a policy to update or a new policy
 
     When:
-        - updating or creating policy's data
+        - updating or creating policy's data without policy_name, location or managed_rules.
 
     Then:
         - failing when missing required data

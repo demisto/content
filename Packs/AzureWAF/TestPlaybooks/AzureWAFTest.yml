@@ -1,6 +1,5 @@
 id: Azure WAF - Test
-version: 11
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Azure WAF - Test
 starttaskid: "0"
 tasks:

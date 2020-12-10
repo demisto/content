@@ -2,11 +2,9 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import json
-import urllib3
-import traceback
-from typing import Any, Dict, List, Union
+from typing import Any, Union
 from MicrosoftApiModule import *
+import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -35,17 +33,17 @@ class AzureWAFClient:
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/'
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
-        client_args = client_args = {
+        client_args = {
             'self_deployed': True,  # We always set the self_deployed key as True because when not using a self
-                                    # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
-                                    # flow and most of the same arguments should be set, as we're !not! using OProxy.
+            # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
+            # flow and most of the same arguments should be set, as we're !not! using OProxy.
             'auth_id': app_id,
             'token_retrieval_url': 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            'grant_type': DEVICE_CODE,  # disable-secrets-detection
+            'grant_type': DEVICE_CODE,
             'base_url': base_url,
             'verify': verify,
             'proxy': proxy,
-            'resource': 'https://management.core.windows.net',   # disable-secrets-detection
+            'resource': 'https://management.core.windows.net',  # disable-secrets-detection
             'scope': 'https://management.azure.com/user_impersonation offline_access user.read',
             'ok_codes': (200, 201, 202, 204)
         }
@@ -60,7 +58,7 @@ class AzureWAFClient:
         if not full_url:
             params['api-version'] = API_VERSION
 
-        return self.ms_client.http_request(method=method,  # disable-secrets-detection
+        return self.ms_client.http_request(method=method,
                                            url_suffix=url_suffix,
                                            full_url=full_url,
                                            json_data=data,
@@ -90,7 +88,6 @@ class AzureWAFClient:
         )
 
     def update_policy_upsert(self, policy_name: str, resource_group_name: str, data: Dict) -> Dict:
-
         return self.http_request(
             method='PUT',
             url_suffix=f'/resourceGroups/{resource_group_name}/providers/'
@@ -99,7 +96,6 @@ class AzureWAFClient:
         )
 
     def delete_policy(self, policy_name: str, resource_group_name: str):
-
         return self.http_request(
             method='DELETE',
             return_empty_response=True,
@@ -134,6 +130,12 @@ def complete_auth(client: AzureWAFClient):
 
 
 def policy_get_command(client: AzureWAFClient, **args) -> CommandResults:
+    """
+    Gets resource group name (or taking instance's default one) and policy name(optional).
+    If a policy name provided, Retrieve the policy by name and resource group.
+    Otherwise, retrieves all policies within the resource group.
+    """
+
     policy_name: str = args.get('policy_name', '')
     resource_group_name: str = args.get('resource_group_name', client.resource_group_name)
     verbose = True if args.get("verbose", "false") == "true" else False
@@ -150,32 +152,48 @@ def policy_get_command(client: AzureWAFClient, **args) -> CommandResults:
         else:
             policy = client.get_policy_list_by_resource_group_name(resource_group_name).get('value', [])
             policies.extend(policy)
+
+        # only showing number of policies until reaching the limit provided.
+        policies_num = len(policies)
     except Exception:
         raise
-    res = CommandResults(readable_output=policies_to_markdown(policies, verbose, limit), outputs=policies,
+    res = CommandResults(readable_output=policies_to_markdown(policies, verbose, limit),
+                         outputs=policies[:min(limit, policies_num)],
                          outputs_key_field='id', outputs_prefix='AzureWAF.Policy',
                          raw_response=policies)
     return res
 
 
 def policy_get_list_by_subscription_command(client: AzureWAFClient, **args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve all policies within the subscription id.
+    """
     policies: List[Dict] = []
     verbose = True if args.get("verbose", "false") == "true" else False
     limit = str(args.get("limit"))
     if not limit.isdigit():
         raise Exception("please provide a numeric limit")
     limit = int(limit)
+
     try:
         policies.extend(client.get_policy_list_by_subscription_id().get("value", []))
+
+        # only showing number of policies until reaching the limit provided.
+        policies_num = len(policies)
     except DemistoException:
         raise
     res = CommandResults(readable_output=policies_to_markdown(policies, verbose, limit),
-                         outputs=policies, outputs_key_field='id', outputs_prefix='AzureWAF.Policy',
-                         raw_response=policies)
+                         outputs=policies[:min(limit, policies_num)], outputs_key_field='id',
+                         outputs_prefix='AzureWAF.Policy', raw_response=policies)
     return res
 
 
 def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> CommandResults:
+    """
+    Gets a policy name, resource group (or taking instance's default), location and rules.
+    Updates the policy if exists, otherwise creates a new policy.
+    """
+
     def parse_nested_keys_to_dict(base_dict: Dict, keys: List, value: Union[str, Dict]) -> None:
         """ A recursive function to make a list of type [x,y,z] and value a to a dictionary of type {x:{y:{z:a}}}"""
         if len(keys) == 1:
@@ -196,6 +214,8 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
                         'please provide policy_name, location and managed_rules. ')
 
     body: Dict[str, Any] = {}
+
+    # creating the body for the request, using pre-defined fields.
     for param in UPSERT_PARAMS:
         val = str(args.get(param, ''))
         try:
@@ -205,6 +225,7 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
         if val:
             key_hierarchy = UPSERT_PARAMS[param].split('.')
             parse_nested_keys_to_dict(base_dict=body, keys=key_hierarchy, value=val)
+
     updated_policy = [client.update_policy_upsert(policy_name, resource_group_name, data=body)]
     res = CommandResults(readable_output=policies_to_markdown(updated_policy, verbose),
                          outputs=updated_policy,
@@ -214,16 +235,23 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
 
 
 def policy_delete_command(client: AzureWAFClient, **args: Dict[str, str]):
+    """
+    Gets a policy name and resource group (or taking instance's default)
+    and delete the policy from the resource group.
+    """
     policy_name = str(args.get('policy_name', ''))
     resource_group_name = str(args.get('resource_group_name', client.resource_group_name))
     policy_id = f'/subscriptions/{client.subscription_id}/resourceGroups/{resource_group_name}/' \
                 f'providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/{policy_name}'
     status = client.delete_policy(policy_name, resource_group_name)
-    md = f"Response got {status.status_code} status code."
+    md = ""
     context = None
+
     if status.status_code in [200, 202]:
         md = f"Policy {policy_name} was deleted successfully."
         old_context = demisto.dt(demisto.context(), f'AzureWAF.Policy(val.id === "{policy_id}")')
+
+        # updating the context with deleted policy.
         if old_context:
             if isinstance(old_context, list):
                 old_context = old_context[0]
@@ -231,6 +259,7 @@ def policy_delete_command(client: AzureWAFClient, **args: Dict[str, str]):
             context = {
                 'AzureWAF.Policy(val.id === obj.id)': old_context
             }
+
     if status.status_code == 204:
         md = f"Policy {policy_name} was not found."
 
@@ -239,6 +268,10 @@ def policy_delete_command(client: AzureWAFClient, **args: Dict[str, str]):
 
 
 def policies_to_markdown(policies: List[Dict], verbose: bool = False, limit: int = 10) -> str:
+    """
+    Gets a list of json representing policies and create a markdown of relevant data in it.
+    """
+
     def policy_to_full_markdown(policy_data: Dict):
         """
         Creates a full markdown with all data field of the policy.
@@ -295,20 +328,16 @@ def policies_to_markdown(policies: List[Dict], verbose: bool = False, limit: int
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
-    demisto_commands = {'azure-waf-policy-get': policy_get_command,
-                        'azure-waf-policy-list-all-in-subscription': policy_get_list_by_subscription_command,
-                        'azure-waf-policy-upsert': policy_upsert_command,
-                        'azure-waf-policy-delete': policy_delete_command,
-                        'azure-waf-auth-start': start_auth,
-                        'azure-waf-auth-complete': complete_auth,
-                        'azure-waf-test': test_connection,
-
-                        }
+    """main function, parses params and runs command functions"""
+    demisto_commands = {
+        'azure-waf-policy-get': policy_get_command,
+        'azure-waf-policy-list-all-in-subscription': policy_get_list_by_subscription_command,
+        'azure-waf-policy-upsert': policy_upsert_command,
+        'azure-waf-policy-delete': policy_delete_command,
+        'azure-waf-auth-start': start_auth,
+        'azure-waf-auth-complete': complete_auth,
+        'azure-waf-test': test_connection,
+    }
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
@@ -327,9 +356,7 @@ def main() -> None:
         if command == 'test-module':
             raise ValueError("Please run `!azure-waf-auth-start` and `!azure-waf-auth-complete` to log in."
                              " For more details press the (?) button.")
-        if command == 'azure-waf-test':
-            # return_results(test_connection(client, **params))
-            pass
+
         else:
             return_results(demisto_commands[command](client, **args))
 

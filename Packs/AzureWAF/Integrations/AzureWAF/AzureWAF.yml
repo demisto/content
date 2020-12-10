@@ -1,4 +1,4 @@
-category: Utilities
+category: Network Security
 commonfields:
   id: Azure Web Application Firewall
   version: -1
@@ -6,7 +6,7 @@ configuration:
 - defaultvalue: cf22fd73-29f1-4245-8e16-533704926d20
   display: Azure Web Application Firewall
   hidden: false
-  name: Azure Web Application Firewall
+  name: app_id
   required: true
   type: 0
 - display: Subscription ID
@@ -36,7 +36,7 @@ script:
   - arguments:
     - default: false
       description: A name of a policy. Use to retrieve protection policy with specified
-        name within a resource group.  Iif policy_name not provided, will retrieve
+        name within a resource group.  If policy_name not provided, will retrieve
         all.
       isArray: false
       name: policy_name
@@ -62,8 +62,7 @@ script:
       secret: false
     - default: false
       defaultValue: '10'
-      description: Number of policies to be shown. (This will only affect visualised
-        data, not context).
+      description: Number of policies to be fetched.
       isArray: false
       name: limit
       required: false
@@ -488,6 +487,4 @@ script:
   script: '-'
   subtype: python3
   type: python
-defaultmapperin: azureWAF-mapper
-defaultclassifier: AzureWAF
 fromversion: 5.0.0
