@@ -1,33 +1,27 @@
+id: Active Directory Investigation
+version: -1
+name: Active Directory Investigation
 description: |-
   Active Directory Investigation playbook provides tools and guidance to investigate changes and manipulation in Active Directory containers, ACLs, Schema, and objects.
   This playbook uses a 3rd party tool provided by Microsoft to scan the Active Directory access list, trees, and objects.
   Additional investigative information is provided for manual investigation.
-id: Active Directory Investigation
-inputs: []
-name: Active Directory Investigation
-outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: 1e402223-77fd-4729-898d-51d541d65526
+    type: start
+    task:
+      id: 1e402223-77fd-4729-898d-51d541d65526
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 1e402223-77fd-4729-898d-51d541d65526
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: 1e402223-77fd-4729-898d-51d541d65526
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -35,18 +29,19 @@ tasks:
           "y": -110
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "2"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: ea482bb2-97ea-417d-815b-3d4cff43e48a
+    type: regular
     task:
-      brand: ""
+      id: ea482bb2-97ea-417d-815b-3d4cff43e48a
+      version: -1
+      name: Active Directory AdminSDHolder
       description: "AdminSDHolder - \n\n1. AdminSDHolder is a container that exists\
         \ in every Active Directory domain for a particular purpose. \nThe Access\
         \ Control List (ACL) of the AdminSDHolder object is used as a template to\
@@ -71,14 +66,13 @@ tasks:
         \n\n5. Review Permissions for the AdminSDHolder container. You can do so by\
         \ right-clicking it, properties,  security, advanced, and review permissions\
         \ entries for unwanted users/groups.\n"
-      id: ea482bb2-97ea-417d-815b-3d4cff43e48a
-      iscommand: false
-      name: Active Directory AdminSDHolder
       type: regular
-      version: -1
-    taskid: ea482bb2-97ea-417d-815b-3d4cff43e48a
-    timertriggers: []
-    type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -86,18 +80,19 @@ tasks:
           "y": 20
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "3"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: 63dc8892-db0a-46d4-8dc6-1517a4033576
+    type: regular
     task:
-      brand: ""
+      id: 63dc8892-db0a-46d4-8dc6-1517a4033576
+      version: -1
+      name: Active Directory ACL Scanner
       description: "This step's goal is to quickly determine the affected accounts\
         \ that the attacker was able to compromise. \nAttackers will aim for a high\
         \ privileged domain account that will enable them to spread and deliver a\
@@ -115,14 +110,13 @@ tasks:
         \ Active Directory forensics with ACL Scanner:\nhttps://docs.microsoft.com/en-us/archive/blogs/pfesweplat/forensics-active-directory-acl-investigation\n\
         \nMicrosoft article about AD ACL scanner tool:\nhttps://docs.microsoft.com/en-us/archive/blogs/pfesweplat/take-control-over-ad-permissions-and-the-ad-acl-scanner-tool\n\
         \nAD ACL Scanner Github project:\nhttps://github.com/canix1/ADACLScanner\n"
-      id: 63dc8892-db0a-46d4-8dc6-1517a4033576
-      iscommand: false
-      name: Active Directory ACL Scanner
       type: regular
-      version: -1
-    taskid: 63dc8892-db0a-46d4-8dc6-1517a4033576
-    timertriggers: []
-    type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -130,61 +124,27 @@ tasks:
           "y": 220
         }
       }
-  "3":
-    form:
-      description: ""
-      expired: false
-      questions:
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "0"
-        label: ""
-        labelarg:
-          simple: "List the compromised users. \nCan be in CSV Format."
-        options: []
-        optionsarg: []
-        placeholder: ""
-        readonly: false
-        required: false
-        tooltip: ""
-        type: shortText
-      sender: ""
-      title: List compromised users
-      totalanswers: 0
-    id: "3"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    message:
-      bcc:
-      body:
-        simple: List compromised users
-      cc:
-      format: ""
-      methods: []
-      subject:
-      timings:
-        completeafterreplies: 1
-        retriescount: 2
-        retriesinterval: 360
-      to:
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 5dbb4398-13fb-4ccd-89af-a0e21515ea39
+    type: collection
+    task:
+      id: 5dbb4398-13fb-4ccd-89af-a0e21515ea39
+      version: -1
+      name: Review ACL Scanner report
+      description: "Review and Document ADL Scanner results in the incident.\n "
+      type: collection
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: "Review and Document ADL Scanner results in the incident.\n "
-      id: 5dbb4398-13fb-4ccd-89af-a0e21515ea39
-      iscommand: false
-      name: Review ACL Scanner report
-      type: collection
-      version: -1
-    taskid: 5dbb4398-13fb-4ccd-89af-a0e21515ea39
-    timertriggers: []
-    type: collection
     view: |-
       {
         "position": {
@@ -192,39 +152,73 @@ tasks:
           "y": 400
         }
       }
-  "4":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: "0"
-                root: List compromised users.Answers
-          operator: isNotEmpty
-      label: "yes"
-    id: "4"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: List compromised users
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "List the compromised users. \nCan be in CSV Format."
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: List compromised users
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 6183f496-bd4a-46e8-898f-2f2cdfcd901b
+    type: condition
+    task:
+      id: 6183f496-bd4a-46e8-898f-2f2cdfcd901b
+      version: -1
+      name: Did a compromised account detected?
+      description: ''''''
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "6"
       "yes":
       - "10"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: ''
-      id: 75fb198a-a1c0-4aec-82d5-ba490633a3c7
-      iscommand: false
-      name: Did a compromised account detected?
-      type: condition
-      version: -1
-    taskid: 75fb198a-a1c0-4aec-82d5-ba490633a3c7
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: List compromised users.Answers
+                accessor: "0"
+            iscontext: true
     view: |-
       {
         "position": {
@@ -232,18 +226,19 @@ tasks:
           "y": 580
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "7"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: c6fbeaa0-7dc1-4fc0-82dd-03ca65a1a096
+    type: regular
     task:
-      brand: ""
+      id: c6fbeaa0-7dc1-4fc0-82dd-03ca65a1a096
+      version: -1
+      name: Active Directory event log
       description: "Baseline domain controller events to log in to examine: \n(If\
         \ ACL Scanner returned positive results, search for more events around the\
         \ time and date of the results)\n\n4794 DSRM account password change attempt\
@@ -256,14 +251,13 @@ tasks:
         \ group membership changes\n4737/641 Security-enabled global group changed\
         \ -Monitor admin/sensitive group membership changes\n4755/659 Security-enabled\
         \ universal group changed - Monitor admin & sensitive group membership"
-      id: d53edd91-8322-4777-8584-45626a1c1681
-      iscommand: false
-      name: Active Directory event log
       type: regular
-      version: -1
-    taskid: d53edd91-8322-4777-8584-45626a1c1681
-    timertriggers: []
-    type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -271,27 +265,27 @@ tasks:
           "y": 1170
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    ignoreworker: false
+    taskid: 7b689888-a6bf-4e18-8a52-9ee621221e31
+    type: regular
+    task:
+      id: 7b689888-a6bf-4e18-8a52-9ee621221e31
+      version: -1
+      name: Remediate according to Event log findings.
+      description: ''''''
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: ''
-      id: c6bfd504-a4b5-4359-8574-8be3eacd17e1
-      iscommand: false
-      name: Remediate according to Event log findings.
-      type: regular
-      version: -1
-    taskid: c6bfd504-a4b5-4359-8574-8be3eacd17e1
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -299,24 +293,24 @@ tasks:
           "y": 1330
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: 385f5cda-bfd6-4a47-8ff3-b3feb3b0d68c
+    type: title
     task:
-      brand: ""
       id: 385f5cda-bfd6-4a47-8ff3-b3feb3b0d68c
-      iscommand: false
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ""
       description: ''
-    taskid: 385f5cda-bfd6-4a47-8ff3-b3feb3b0d68c
-    timertriggers: []
-    type: title
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -324,34 +318,34 @@ tasks:
           "y": 1490
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    ignoreworker: false
+    taskid: 6a4bdd2c-2da3-4e74-8a16-c19246c2ac38
+    type: regular
+    task:
+      id: 6a4bdd2c-2da3-4e74-8a16-c19246c2ac38
+      version: -1
+      name: Disable compromised account in Active Directory
+      description: Disables an Active Directory user account.
+      script: '|||ad-disable-account'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
-    note: false
-    quietmode: 0
     scriptarguments:
       base-dn: {}
       username:
         complex:
-          accessor: users
           root: incident
+          accessor: usernames
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Disables an Active Directory user account.
-      id: 99a12b85-ffca-4a11-8c6f-229811ac2a22
-      iscommand: true
-      name: Disable compromised account in Active Directory
-      script: '|||ad-disable-account'
-      type: regular
-      version: -1
-    taskid: 99a12b85-ffca-4a11-8c6f-229811ac2a22
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -359,19 +353,34 @@ tasks:
           "y": 990
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    ignoreworker: false
+    taskid: cbc24d77-b993-4c15-8b14-8f9ba64d90b9
+    type: regular
+    task:
+      id: cbc24d77-b993-4c15-8b14-8f9ba64d90b9
+      version: -1
+      name: 'Set Compromised users '
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "9"
-    note: false
-    quietmode: 0
     scriptarguments:
       accountid: {}
       accountname: {}
       addLabels: {}
       agentid: {}
+      alertid: {}
+      alertname: {}
       app: {}
       appendMultiSelect: {}
       assetid: {}
@@ -387,11 +396,16 @@ tasks:
       blockedaction: {}
       bugtraq: {}
       caller: {}
+      categorycount: {}
       city: {}
       closeNotes: {}
       closeReason: {}
+      closetime: {}
+      closingreason: {}
+      closinguser: {}
       cloudservice: {}
       commandline: {}
+      compliancenotes: {}
       costcenter: {}
       costcentercode: {}
       country: {}
@@ -400,6 +414,10 @@ tasks:
       customFields: {}
       cve: {}
       cvss: {}
+      cvssavailabilityrequirement: {}
+      cvsscollateraldamagepotential: {}
+      cvssconfidentialityrequirement: {}
+      cvssintegrityrequirement: {}
       dbotMirrorDirection: {}
       dbotMirrorId: {}
       dbotMirrorInstance: {}
@@ -411,8 +429,12 @@ tasks:
       department: {}
       dest: {}
       desthostname: {}
+      destinationgeolocation: {}
       destinationhostname: {}
       destinationip: {}
+      destinationips: {}
+      destinationipv6: {}
+      destinationmacaddress: {}
       destinationnetwork: {}
       destinationport: {}
       destntdomain: {}
@@ -432,7 +454,10 @@ tasks:
       devicelocalip: {}
       devicemodel: {}
       devicename: {}
+      devicetime: {}
       displayname: {}
+      dnsname: {}
+      dstports: {}
       duration: {}
       email: {}
       emailauthenticitycheck: {}
@@ -464,7 +489,10 @@ tasks:
       employeemanageremail: {}
       escalation: {}
       eventaction: {}
+      eventdescriptions: {}
       eventid: {}
+      eventnames: {}
+      events: {}
       eventtype: {}
       externaladdresses: {}
       filehash: {}
@@ -473,10 +501,12 @@ tasks:
       filesize: {}
       firstname: {}
       firstseen: {}
+      followup: {}
       givenname: {}
       helloworldid: {}
       helloworldstatus: {}
       helloworldtype: {}
+      highlevelcategories: {}
       hostname: {}
       hosts: {}
       id: {}
@@ -493,10 +523,15 @@ tasks:
       lastmodifiedon: {}
       lastname: {}
       lastseen: {}
+      lastupdatetime: {}
       leadership: {}
+      listofrulesevent: {}
       location: {}
       locationregion: {}
       logsource: {}
+      logsourcename: {}
+      logsourcetype: {}
+      lowlevelcategoriesevents: {}
       macaddress: {}
       maliciousbehavior: {}
       malwarefamily: {}
@@ -507,6 +542,7 @@ tasks:
       mobiledevicemodel: {}
       mobilephone: {}
       name: {}
+      numberoflogsources: {}
       occurred: {}
       os: {}
       osversion: {}
@@ -526,7 +562,15 @@ tasks:
       policyremediable: {}
       policyseverity: {}
       policytype: {}
+      postnatdestinationip: {}
+      postnatdestinationport: {}
+      postnatsourceip: {}
+      postnatsourceport: {}
+      prenatdestinationport: {}
+      prenatsourceip: {}
+      prenatsourceport: {}
       protocol: {}
+      protocolevent: {}
       protocols: {}
       quarantined: {}
       ransomwareapproximatenumberofencryptedendpoints: {}
@@ -536,10 +580,12 @@ tasks:
       ransomwareemail: {}
       ransomwareencryptedfileowner: {}
       ransomwarenote: {}
+      ransomwareonionaddress: {}
       ransomwareonionurl: {}
       ransomwarerecoverytool: {}
       ransomwarestrain: {}
       rating: {}
+      rawevent: {}
       region: {}
       regionid: {}
       replacePlaybook: {}
@@ -558,8 +604,12 @@ tasks:
       skutier: {}
       sla: {}
       slaField: {}
+      sourcegeolocation: {}
       sourcehostname: {}
       sourceip: {}
+      sourceips: {}
+      sourceipv6: {}
+      sourcemacaddress: {}
       sourcenetwork: {}
       sourceport: {}
       sourceusername: {}
@@ -567,13 +617,18 @@ tasks:
       srchostname: {}
       srcntdomain: {}
       srcos: {}
+      srcports: {}
       srcuser: {}
+      starttime: {}
       state: {}
       streetaddress: {}
       subcategory: {}
       subtype: {}
       surname: {}
       systems: {}
+      technicalowner: {}
+      technicalownercontact: {}
+      technicaluser: {}
       tenantname: {}
       terminatedaction: {}
       threatactor: {}
@@ -581,6 +636,7 @@ tasks:
       ticketnumber: {}
       ticketopeneddate: {}
       title: {}
+      trafficdirection: {}
       triggeredsecurityprofile: {}
       type: {}
       uniqueports: {}
@@ -588,29 +644,36 @@ tasks:
       user: {}
       useraccountcontrol: {}
       username: {}
-      users:
+      usernames:
         complex:
-          accessor: "0"
           root: List compromised users.Answers
+          accessor: "0"
+      users: {}
       vendorid: {}
       vendorproduct: {}
       vulnerabilitycategory: {}
       workphone: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrstatusv2: {}
+      xdrurl: {}
+      xdrusercount: {}
       zipcode: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: f0e2dcb1-88f6-440e-892c-9c70c931c6b3
-      iscommand: true
-      name: 'Set Compromised users '
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: f0e2dcb1-88f6-440e-892c-9c70c931c6b3
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -618,7 +681,11 @@ tasks:
           "y": 830
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -633,6 +700,8 @@ view: |-
       }
     }
   }
+inputs: []
+outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
