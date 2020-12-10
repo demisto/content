@@ -6250,6 +6250,15 @@ class IAMUserProfile:
 class IAMCommand:
     def __init__(self, is_create_enabled, is_disable_enabled, is_update_enabled,
                  create_if_not_exists, mapper_in, mapper_out):
+        """ The IAMCommand c'tor
+
+        :param is_create_enabled: (bool) Whether or not the iam-create-user command is enabled in the instance
+        :param is_disable_enabled: (bool) Whether or not the iam-disable-user command is enabled in the instance
+        :param is_update_enabled: (bool) Whether or not the iam-update-user command is enabled in the instance
+        :param create_if_not_exists: (bool) Whether or not to create a user if does not exist in the application
+        :param mapper_in: (str) Incoming mapper from the application to Cortex XSOAR
+        :param mapper_out: (str) Outgoing mapper from the Cortex XSOAR to the application
+        """
         self.is_create_enabled = is_create_enabled
         self.is_disable_enabled = is_disable_enabled
         self.is_update_enabled = is_update_enabled
