@@ -187,7 +187,7 @@ def create_or_update_ep(mac, attr_map):
             send_status_to_panw_iot_cloud("error", msg)
             time.sleep(10 * 60)
             # Try again to get a new active instance
-            new_active_instance, err_msg = get_active_ise_instance()
+            new_active_instance, err_msg = get_active_ise_instance_or_error_msg()
             if new_active_instance is None:
                 raise Exception(err_msg)
             else:
@@ -219,13 +219,12 @@ def get_all_panw_iot_devices_and_send_to_cisco_ise():
             attr_map = entry['zb_attributes']
             create_or_update_ep(mac, attr_map)
             count += 1
-            # time.sleep(1)
 
         if size == page_size:
             offset += page_size
             msg = f'Successfully exported {count} devices to Cisco ISE'
             send_status_to_panw_iot_cloud("success", msg,)
-            # time.sleep(5)
+            time.sleep(5)
         else:
             break
     return(f'Successfully exported total {count} devices to Cisco ISE')
