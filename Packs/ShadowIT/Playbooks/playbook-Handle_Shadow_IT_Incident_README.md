@@ -34,4 +34,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Handle Shadow IT Incident](https://github.com/demisto/content/blob/5bc55ad72806e9b442b10f1cc75c41aee13760d9/Packs/ShadowIT/doc_files/Handle_Shadow_IT_Incident.png)
+![Handle Shadow IT Incident](https://github.com/demisto/content/raw/5bc55ad72806e9b442b10f1cc75c41aee13760d9/Packs/ShadowIT/doc_files/Handle_Shadow_IT_Incident.png)
