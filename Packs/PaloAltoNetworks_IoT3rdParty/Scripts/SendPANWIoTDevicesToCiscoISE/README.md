@@ -28,6 +28,7 @@ This script uses the following commands and scripts.
 | --- | --- |
 | device_maps | List of device maps from PANW IoT cloud. |
 | active_ise_instance | Name of the Active Cisco ISE instance. |
+| panw_iot_3rd_party_instance | Name of the configured PANW Iot 3rd Party instance. |
 
 ## Outputs
 ---

@@ -1,3 +1,4 @@
+from CommonServerPython import *
 import urllib3
 
 # Disable insecure warnings
@@ -249,7 +250,9 @@ def get_asset_list():
         if one_call or size < int(page_length):
             break
         else:
-            params['offset'] = str(int(params['offset']) + int(page_length))
+            new_offset = int(offset) + int(page_length)
+            params['offset'] = str(new_offset)
+            offset = new_offset
 
     op_data = {
         "Asset Type": asset_type

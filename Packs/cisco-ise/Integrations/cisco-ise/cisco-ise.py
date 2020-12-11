@@ -715,7 +715,7 @@ def get_all_nodes_command():
     try:
         instance_ip = socket.gethostbyname(instance_ip)
     except Exception as e:
-        err_msg = ('Failed to get ip address of configured Cisco ISE instance - {e}')
+        err_msg = (f'Failed to get ip address of configured Cisco ISE instance - {e}')
         raise Exception(err_msg)
 
     data = []

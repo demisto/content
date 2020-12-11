@@ -26,24 +26,6 @@ def send_status_to_panw_iot_cloud(status, msg):
         raise Exception(err_msg)
 
 
-def get_active_ise_instance_or_error_msg():
-    """
-    Get the active configured Cisco ISE instance, if not found then return the error message.
-    """
-    response = demisto.executeCommand("GetCiscoISEActiveInstance", {})
-    err_msg = None
-    active_instance = None
-
-    data = response[0].get('EntryContext', {})
-
-    if 'PaloAltoIoTIntegrationBase.ActiveNodeInstance' in data:
-        active_instance = data.get('PaloAltoIoTIntegrationBase.ActiveNodeInstance')
-    elif 'PaloAltoIoTIntegrationBase.NodeErrorStatus' in data:
-        err_msg = data.get('PaloAltoIoTIntegrationBase.NodeErrorStatus')
-
-    return active_instance, err_msg
-
-
 def extract_ise_api_error(err_msg):
     """
     Extract any connection error or error code if possible,
@@ -138,23 +120,6 @@ def create_or_update_ep(mac, attr_map):
         elif err_msg == '405':
             get_ep_id_cmd = "cisco-ise-get-endpoint-id"
 
-        # The primary went down (connection Error) or 401 if a fail over occurred (this primary/active
-        # is not a secondary/standby device).We should attempt to get the new Primary/Active
-        # instance is possible.
-        elif err_msg == "Connection Error" or err_msg == "401":
-            # Failover can take up to 10 minutes, its ok to just wait even if its a standalone ISE noe.
-            msg = "ISE instance is down. Trying again in 10 minutes. Error = %s" % err_msg
-            demisto.info("PANW_IOT_3RD_PARTY_BASE %s" % msg)
-            send_status_to_panw_iot_cloud("error", msg)
-            time.sleep(10 * 60)
-            # Try again to get a new active instance
-            new_active_instance, err_msg = get_active_ise_instance_or_error_msg()
-            if new_active_instance is None:
-                raise Exception(err_msg)
-            else:
-                CISCO_ISE_ACTIVE_INSTANCE = new_active_instance
-                msg = "Found new active ISE instance %s" % CISCO_ISE_ACTIVE_INSTANCE
-                send_status_to_panw_iot_cloud("success", msg)
         else:
             raise Exception(resp[0].get("Contents"))
     else:
