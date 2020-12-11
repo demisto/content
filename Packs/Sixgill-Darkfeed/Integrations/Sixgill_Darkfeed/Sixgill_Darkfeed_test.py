@@ -375,10 +375,9 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                        {'value': 'a925164d6c0c479967b3d9870267a03adf65e8145', 'type': 'File',
                         'rawJSON': {'created': '2020-01-09T07:31:16.834Z',
                                     'description': 'Shell access to this domain is being sold on dark web markets',
-                                    'id': 'indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d', 'kill_chain_phases':
-                                        [{
-                                            'kill_chain_name': 'lockheed-martin-cyber-kill-chain',
-                                            'phase_name': 'weaponization'}],
+                                    'id': 'indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d', 'kill_chain_phases': [{
+                                        'kill_chain_name': 'lockheed-martin-cyber-kill-chain',
+                                        'phase_name': 'weaponization'}],
                                     'labels': ['malware hash'], 'lang': 'en',
                                     'modified': '2020-01-09T07:31:16.834Z',
                                     'object_marking_refs': ['marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4',
@@ -850,7 +849,6 @@ def test_fetch_indicators_command(mocker):
                                demisto, 1000)
 
     output = fetch_indicators_command(client)
-    print(output)
 
     bundle_index = 0
     submitted_indicators = 0
@@ -894,7 +892,7 @@ def test_ip_reputation_command(mocker):
                                  "client_secret",
                                  "some_channel")
 
-    output = ip_reputation_command(client, {"ip": "<IP>", "skip": 0})
+    output = ip_reputation_command(client, {"ip": "<some ip>", "skip": 0})
 
     assert output[0].outputs == enrich_bundle.get('ip')['items']
 
@@ -910,7 +908,7 @@ def test_domain_reputation_command(mocker):
                                  "client_secret",
                                  "some_channel")
 
-    output = domain_reputation_command(client, {"domain": "DOMAIN_NAME", "skip": 0})
+    output = domain_reputation_command(client, {"domain": "<some domain>", "skip": 0})
 
     assert output[0].outputs == enrich_bundle.get('domain')['items']
 
@@ -926,7 +924,7 @@ def test_url_reputation_command(mocker):
                                  "client_secret",
                                  "some_channel")
 
-    output = url_reputation_command(client, {"url": "<URL>", "skip": 0})
+    output = url_reputation_command(client, {"url": "<some_url>", "skip": 0})
 
     assert output[0].outputs == enrich_bundle.get('url')['items']
 
@@ -943,7 +941,7 @@ def test_file_reputation_command(mocker):
                                  "some_channel")
 
     output = file_reputation_command(client,
-                                     {"file": "<HASH>",
+                                     {"file": "<some hash>",
                                       "skip": 0})
 
     assert output[0].outputs == enrich_bundle.get('hash')['items']
@@ -960,7 +958,7 @@ def test_actor_reputation_command(mocker):
                                  "client_secret",
                                  "some_channel")
 
-    output = actor_reputation_command(client, {"actor": "<SIXGILL_ACTOR>", "skip": 0})
+    output = actor_reputation_command(client, {"actor": "<some actor>", "skip": 0})
 
     assert output[0].outputs == enrich_bundle.get('actor')['items']
 
