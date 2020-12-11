@@ -30,12 +30,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 11a6059b-98b4-4e88-8556-dc5ad8fe15c9
+      id: e255876c-694a-4fe3-8d20-7027d1aa84d8
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 11a6059b-98b4-4e88-8556-dc5ad8fe15c9
+    taskid: e255876c-694a-4fe3-8d20-7027d1aa84d8
     timertriggers: []
     type: start
     view: |-
@@ -98,19 +98,19 @@ tasks:
     task:
       brand: ""
       description: Branch based on Cloud Provider
-      id: 36c45c3d-8411-44f2-8a0f-be0278149fac
+      id: 8d0bf4cb-7f92-41ee-8440-e9a2ca9f734d
       iscommand: false
       name: What Cloud Provider?
       type: condition
       version: -1
-    taskid: 36c45c3d-8411-44f2-8a0f-be0278149fac
+    taskid: 8d0bf4cb-7f92-41ee-8440-e9a2ca9f734d
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 195
+          "y": 175
         }
       }
   "3":
@@ -125,13 +125,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 094f8f47-c412-427a-8876-de34a8502f17
+      id: b2406311-fbc5-4a6c-87a8-1237d2d7ade3
       iscommand: false
       name: Search in AWS
       type: title
       version: -1
       description: ''
-    taskid: 094f8f47-c412-427a-8876-de34a8502f17
+    taskid: b2406311-fbc5-4a6c-87a8-1237d2d7ade3
     timertriggers: []
     type: title
     view: |-
@@ -153,13 +153,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 3645d6a4-7536-4b2c-8930-b8ec73715486
+      id: 93e7d0a1-d058-44e1-8d44-104a20080ec6
       iscommand: false
       name: Search in Azure
       type: title
       version: -1
       description: ''
-    taskid: 3645d6a4-7536-4b2c-8930-b8ec73715486
+    taskid: 93e7d0a1-d058-44e1-8d44-104a20080ec6
     timertriggers: []
     type: title
     view: |-
@@ -181,13 +181,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9929d66a-c0f3-42f8-8673-5656477003b3
+      id: a5142fb0-f1e8-4a7e-8569-b134d7880b5e
       iscommand: false
       name: Search in GCP
       type: title
       version: -1
       description: ''
-    taskid: 9929d66a-c0f3-42f8-8673-5656477003b3
+    taskid: a5142fb0-f1e8-4a7e-8569-b134d7880b5e
     timertriggers: []
     type: title
     view: |-
@@ -211,13 +211,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 2f99368a-621c-4cf0-8348-c2b00831ab19
+      id: 7fd37369-2c6d-4068-8b90-a7185b5b5ccb
       iscommand: false
       name: Search All Cloud Providers
       type: title
       version: -1
       description: ''
-    taskid: 2f99368a-621c-4cf0-8348-c2b00831ab19
+    taskid: 7fd37369-2c6d-4068-8b90-a7185b5b5ccb
     timertriggers: []
     type: title
     view: |-
@@ -236,13 +236,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: df95edc6-611a-42fd-8f79-1000d380731e
+      id: dc007dd3-e03a-44a9-81f4-cebc10c29ffd
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: df95edc6-611a-42fd-8f79-1000d380731e
+    taskid: dc007dd3-e03a-44a9-81f4-cebc10c29ffd
     timertriggers: []
     type: title
     view: |-
@@ -264,13 +264,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ef4ca6a3-3d66-487d-82ce-34cbd5625ba6
+      id: 18e43508-7690-4b1c-83a6-cd5bf246bcdc
       iscommand: false
       name: Search in Prisma Cloud
       type: title
       version: -1
       description: ''
-    taskid: ef4ca6a3-3d66-487d-82ce-34cbd5625ba6
+    taskid: 18e43508-7690-4b1c-83a6-cd5bf246bcdc
     timertriggers: []
     type: title
     view: |-
@@ -321,12 +321,12 @@ tasks:
     task:
       brand: ""
       description: Check whether Prisma Cloud integration is enabled.
-      id: d784bc5b-b0d2-4814-8eab-afed97795535
+      id: 1c3027d3-5aa4-4c4f-8b91-f5bea67d95da
       iscommand: false
       name: Is Prisma Cloud enabled?
       type: condition
       version: -1
-    taskid: d784bc5b-b0d2-4814-8eab-afed97795535
+    taskid: 1c3027d3-5aa4-4c4f-8b91-f5bea67d95da
     timertriggers: []
     type: condition
     view: |-
@@ -360,12 +360,12 @@ tasks:
     task:
       brand: ""
       description: Check if there are any IP in the input.
-      id: ad055b2c-7e6d-44c7-829f-70d6128b56eb
+      id: f802e4dd-1810-4310-8443-598d96914c77
       iscommand: false
       name: Are there IPs in input?
       type: condition
       version: -1
-    taskid: ad055b2c-7e6d-44c7-829f-70d6128b56eb
+    taskid: f802e4dd-1810-4310-8443-598d96914c77
     timertriggers: []
     type: condition
     view: |-
@@ -396,14 +396,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8f9cf812-88f6-4734-80f6-dc11e512e90e
+      description: Find an AWS resource by Public IP using Prisma Cloud inventory
+      id: 53ed49f3-afa1-4292-8dd6-e682bc802cd9
       iscommand: false
-      name: 62653212-5de8-49d9-84b6-43c03d67d248
+      name: Prisma Cloud - Find AWS Resource by Public IP
       playbookId: Prisma Cloud - Find AWS Resource by Public IP
       type: playbook
       version: -1
-      description: ''
-    taskid: 8f9cf812-88f6-4734-80f6-dc11e512e90e
+    taskid: 53ed49f3-afa1-4292-8dd6-e682bc802cd9
     timertriggers: []
     type: playbook
     view: |-
@@ -434,14 +434,21 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: cc686add-7c9d-4b56-84ea-29fe5be3aa3b
+      description: |-
+        Find a Public Cloud resource of the following types:
+        - Compute Instance
+        - Load Balancer
+
+        on: AWS, Azure, GCP
+
+        using Prisma Cloud inventory
+      id: 63100a88-7603-4ba5-8bbc-6220b8add91a
       iscommand: false
-      name: edef1868-86ae-4d57-809b-a38d88497469
+      name: Prisma Cloud - Find Azure Resource by Public IP
       playbookId: Prisma Cloud - Find Azure Resource by Public IP
       type: playbook
       version: -1
-      description: ''
-    taskid: cc686add-7c9d-4b56-84ea-29fe5be3aa3b
+    taskid: 63100a88-7603-4ba5-8bbc-6220b8add91a
     timertriggers: []
     type: playbook
     view: |-
@@ -465,7 +472,6 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      CloudProvider: {}
       PublicIPAddress:
         complex:
           root: inputs.PublicIPAddress
@@ -473,14 +479,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 552b4700-c2c7-46b9-8bbf-c86292814ed8
+      description: Find a GCP resource by Public IP using Prisma Cloud inventory
+      id: 041845c9-3fb4-4c7e-8819-ae5408b41d8e
       iscommand: false
-      name: ac3fa7ed-4caf-42e5-868a-c7685d41c46c
+      name: Prisma Cloud - Find GCP Resource by Public IP
       playbookId: Prisma Cloud - Find GCP Resource by Public IP
       type: playbook
       version: -1
-      description: ''
-    taskid: 552b4700-c2c7-46b9-8bbf-c86292814ed8
+    taskid: 041845c9-3fb4-4c7e-8819-ae5408b41d8e
     timertriggers: []
     type: playbook
     view: |-
