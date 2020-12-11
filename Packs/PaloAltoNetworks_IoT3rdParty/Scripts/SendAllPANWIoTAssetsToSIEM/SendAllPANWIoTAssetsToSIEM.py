@@ -96,16 +96,11 @@ def get_all_panw_iot_assets_and_send_to_siem(asset_type):
         asset_list = get_assets_from_panw_iot_cloud(offset, page_size, asset_type)
         size = len(asset_list)
         cef_list = convert_asset_to_cef_format(asset_list, asset_type)
-        send_asset_syslog(f'DAWAR here - size - {size}')
         for cef in cef_list:
-            send_asset_syslog("DAWAR---" + str(count) + " " + cef)
+            send_asset_syslog(cef)
             count += 1
         if size >= page_size:
             offset += page_size
-            msg = f'Successfully sent {count} {asset_type_map[asset_type]} to SIEM'
-            send_asset_syslog(f'DAWAR here - {msg}, sleeping for 5 seconds')
-            send_asset_syslog(f'DAWAR here - offset - {offset}, count - {count}, pageSize - {page_size}')
-            time.sleep(5)
         else:
             break
     return(f'Successfully sent total {count} {asset_type_map[asset_type]} to SIEM')

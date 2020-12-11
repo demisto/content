@@ -147,7 +147,7 @@ tasks:
       integration_name:
         simple: servicenow
       message:
-        simple: Servicenow integration is disabled
+        simple: Servicenow integration is not enabled
       playbook_name:
         simple: Bulk Export Devices to ServiceNow - PANW IoT 3rd Party Integration
       status:

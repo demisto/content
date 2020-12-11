@@ -30,9 +30,9 @@ PANW IoT 3rd Party Report Status to PANW command - Sends a status message back t
 | --- | --- | --- |
 | status | Message to be sent to PANW IoT Cloud | Required |
 | message | Message to be sent to PANW IoT Cloud | Required |
-| integrationName | Name of PANW IoT 3rd Party Integration | Required |
-| playbookName | Name of the playbook | Required |
-| type | Type of asset associated with the status report | Required |
+| integration_name | Name of PANW IoT 3rd Party Integration | Required |
+| playbook_name | Name of the playbook | Required |
+| asset_type | Type of asset associated with the status report | Required |
 
 
 #### Context Output
@@ -40,7 +40,7 @@ PANW IoT 3rd Party Report Status to PANW command - Sends a status message back t
 There is no context output for this command.
 
 #### Command Example
-```!panw-iot-3rd-party-report-status-to-panw status=success message="successfully updated 100 devices" integrationName=ise playbookName="Increment Export to Cisco ISE - PANW IoT 3rd Party Integration" type=device```
+```!panw-iot-3rd-party-report-status-to-panw status=success message="successfully updated 100 devices" integration_name=ise playbook_name="Increment Export to Cisco ISE - PANW IoT 3rd Party Integration" asset_type=device```
 
 #### Human Readable Output
 ### Reporting Status:
@@ -67,8 +67,8 @@ PANW IoT 3rd Party get single Asset - For a given a asset ID (alert-id, vulnerab
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| assetType | Type of Asset | Required |
-| assetID | Asset ID. MacAddress for device, zb_ticketid for alert and vulnerability | Required |
+| asset_type | Type of Asset | Required |
+| asset_id | Asset ID. MacAddress for device, zb_ticketid for alert and vulnerability | Required |
 
 
 #### Context Output
@@ -79,7 +79,7 @@ PANW IoT 3rd Party get single Asset - For a given a asset ID (alert-id, vulnerab
 
 
 #### Command Example
-```!panw-iot-3rd-party-get-single-asset assetType="Device" assetID="00:e0:4c:68:09:16"```
+```!panw-iot-3rd-party-get-single-asset asset_type="Device" asset_id="00:e0:4c:68:09:16"```
 
 #### Human Readable Output
 ### Successfully pulled Device (00:e0:4c:68:09:16) from PANW IoT Cloud
@@ -97,10 +97,10 @@ PANW IoT 3rd Party get asset list - Returns a list of assets for the specified a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| assetType | Type of Asset | Required |
-| incrementTime | Increment time in minutes. Example: Increment Time = 15 mins will return input type assets modified or discovered within the last 15 minutes. A Null value will return full inventory (1000 MAX) | Optional |
+| asset_type | Type of Asset | Required |
+| increment_time | Increment time in minutes. Example: Increment Time = 15 mins will return input type assets modified or discovered within the last 15 minutes. A Null value will return full inventory (1000 MAX) | Optional |
 | offset | Offset for paging: Null value will accumulate all results by default | Optional |
-| pageLength | Page size for paging: Null value will accumulate all results by default | Optional |
+| page_length | Page size for paging: Null value will accumulate all results by default | Optional |
 
 
 #### Context Output
@@ -113,7 +113,7 @@ PANW IoT 3rd Party get asset list - Returns a list of assets for the specified a
 
 
 #### Command Example
-```!panw-iot-3rd-party-get-asset-list assetType="Device" incrementTime="2"```
+```!panw-iot-3rd-party-get-asset-list asset_type="device" increment_time="2"```
 
 #### Human Readable Output
 ### Asset import summary:
@@ -136,11 +136,11 @@ PANW IoT 3rd Party convert assets to external foramt - For a given asset (alert,
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| assetType | Input asset type | Required |
-| outputFormat | Desired output format | Required |
-| assetList | List of input assets | Required |
-| metadata | Example: ServiceNow ID and deviceid mapping | Optional |
-| metadata1 | Example: incident triggered by PANW IoT cloud API | Optional |
+| asset_type | Input asset type | Required |
+| output_format | Desired output format | Required |
+| asset_list | List of input assets | Required |
+| servicenow_map | ServiceNow ID and deviceid mapping | Optional |
+| incident | incident triggered by PANW IoT cloud API | Optional |
 
 
 #### Context Output
@@ -157,7 +157,7 @@ PANW IoT 3rd Party convert assets to external foramt - For a given asset (alert,
 
 
 #### Command Example
-```!panw-iot-3rd-party-convert-assets-to-external-format assetType=Device outputFormat=siem assetList=[a list of 221 device maps]```
+```!panw-iot-3rd-party-convert-assets-to-external-format asset_type=device output_format=siem asset_list=[a list of 221 device maps]```
 
 #### Human Readable Output
 ### Converted 221 Device to SIEM

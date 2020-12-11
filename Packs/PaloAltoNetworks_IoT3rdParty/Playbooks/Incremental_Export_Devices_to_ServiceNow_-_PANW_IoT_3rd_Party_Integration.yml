@@ -123,7 +123,7 @@ tasks:
       integration_name:
         simple: servicenow
       message:
-        simple: ServiceNow Integration is disabled
+        simple: ServiceNow Integration is not enabled
       playbook_name:
         simple: Incremental Export Devices to ServiceNow - PANW IoT 3rd Party Integration
       status:
