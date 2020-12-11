@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Generic Polling Test",
+            "timeout": 250
+        },
+        {
             "integrations": "FeedExpanse",
             "playbookID": "Feed Expanse Test",
             "fromversion": "6.0.0"
@@ -11,7 +15,7 @@
             "integrations": "ExpanseV2",
             "playbookID": "ExpanseV2 Test",
             "fromversion": "6.0.0"
-        },        
+        },
         {
             "integrations": "GSuiteAdmin",
             "playbookID": "GSuiteAdmin-Test",
@@ -51,17 +55,6 @@
             "integrations": "CrowdStrike Falcon Intel v2",
             "playbookID": "CrowdStrike Falcon Intel v2 - Test",
             "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "SecurityAndCompliance",
-            "playbookID": "O365-SecurityAndCompliance-Test",
-            "fromversion": "5.5.0",
-            "timeout": 700
-        },
-        {
-            "integrations": "SecurityIntelligenceServicesFeed",
-            "playbookID": "SecurityIntelligenceServicesFeed - Test",
-            "fromversion": "5.5.0"
         },
         {
             "integrations": "Majestic Million",
@@ -173,6 +166,7 @@
             "fromversion": "5.0.0",
             "timeout": 2000
         },
+
         {
             "integrations": "Cisco Firepower",
             "playbookID": "Cisco Firepower - Test",
@@ -3159,11 +3153,6 @@
         {
             "integrations": "Cryptocurrency",
             "playbookID": "Cryptocurrency-Test"
-        },
-        {
-            "integrations": "Public DNS Feed",
-            "playbookID": "Public_DNS_Feed_Test",
-            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -3343,7 +3332,6 @@
         "AWS - Athena - Beta": "Issue 19834",
         "SNDBOX": "Issue 28826",
         "Workday": "License expired Issue: 29595",
-        "FireEyeFeed": "License expired Issue: 31838",
 
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
@@ -3381,11 +3369,6 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
-        "CloudConvert": "has a command that uploads a file (!cloudconvert-upload)",
-        "EWS v2": "Fetches bytes data (!ews-get-items-from-folder)",
-        "jira-v2": "has a command that uploads a file ( !jira-issue-upload-file)",
-        "Rundeck": "has a command that uploads a file (!rundeck-adhoc-script-run)",
-        "ServiceDeskPlus": "Playbook uses a random string and verifying the response contain it",
         "Feodo Tracker IP Blocklist Feed": "test-module downloads a file",
         "McAfee Advanced Threat Defense": "has a command that uploads file (!atd-file-upload)",
         "Symantec Messaging Gateway": "Test playbook uses a random string",
