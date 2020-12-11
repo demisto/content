@@ -1,0 +1,2976 @@
+description: Handle Shadow IT incident
+id: Handle Shadow IT Incident
+inputs:
+- description: Notify user's manager
+  key: Notify Manager
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "Yes"
+- description: Tags to add to indicators to identify potential Shadow IT assets
+  key: ShadowITIndicatorTags
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ShadowIT
+name: Handle Shadow IT Incident
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "59"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 25ddec31-dc2a-491d-8cb4-2894b63c9e4e
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 25ddec31-dc2a-491d-8cb4-2894b63c9e4e
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -2600
+        }
+      }
+  "1":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Shadow IT Asset Questionnaire
+    form:
+      description: |-
+        ## Please urgently fill the form below.
+
+
+        Best regards,
+        **Your Company Infosec Team**
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Do you own this asset? ${incident.shadowitip}:${incident.shadowitport}
+            (${incident.shadowitfqdn})
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Please confirm you are the current owner of this asset
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Is this a service sanctioned by InfoSec?
+        options: []
+        optionsarg:
+        - {}
+        - simple: "No"
+        - simple: "Yes"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Please confirm this service is allowed by InfoSec
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: Is this service being billed to Corporate?
+        options: []
+        optionsarg:
+        - {}
+        - simple: "No"
+        - simple: "Yes"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Please confirm this service is being billed directly to corporate
+          via existing procurement process.
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "3"
+        label: ""
+        labelarg:
+          simple: Does this service host sensitive corporate information?
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Please confirm whether this service hosts sensitive company information.
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "4"
+        label: ""
+        labelarg:
+          simple: What is the purpose of this service?
+        options: []
+        optionsarg:
+        - simple: Marketing
+        - simple: Business Development
+        - simple: Engineering
+        - simple: Sales
+        - simple: Other (please specify in the next question)
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Confirm the purpose of this service
+        type: multiSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "5"
+        label: ""
+        labelarg:
+          simple: If other, please state the purpose of this service.
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: Please state the purpose of this service
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "6"
+        label: ""
+        labelarg:
+          simple: What Provider is this service Hosted on?
+        options: []
+        optionsarg:
+        - simple: Google Cloud Platform
+        - simple: Amazon Web Services
+        - simple: Microsoft Azure
+        - simple: Alibaba Cloud
+        - simple: Oracle Cloud
+        - simple: IBM Cloud
+        - simple: Corporate Network (On Prem)
+        - simple: Other/Unknown
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Please specify the Service Provider
+        type: singleSelect
+      sender: ""
+      title: Shadow IT Information Collection
+      totalanswers: 0
+    id: "1"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: |-
+          Dear ${incident.shadowitaccountownername},
+
+          we have identified an asset that might be associated to you.
+
+          IP Address: ${incident.shadowitip}
+          Port: ${incident.shadowitport}
+          FQDN (if present): ${incident.shadowitfqdn}
+
+          Please urgently fill the form linked to this email.
+
+
+          Best regards,
+          Your Company Infosec Team
+      cc:
+        complex:
+          accessor: shadowitoucontactemail
+          root: incident
+      format: ""
+      methods:
+      - email
+      subject:
+        complex:
+          accessor: shadowitip
+          root: incident
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'Shadow IT Detected - please provide details for asset '
+              suffix:
+                iscontext: true
+            operator: concat
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        complex:
+          accessor: shadowitaccountowneremail
+          root: incident
+    nexttasks:
+      '#none#':
+      - "41"
+    note: true
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Collect details about a service from the owner of the asset.
+      id: 3df22b33-90c4-4fc7-82c5-e5cb63f3d919
+      iscommand: false
+      name: Collect Service details from Asset owner
+      type: collection
+      version: -1
+    taskid: 3df22b33-90c4-4fc7-82c5-e5cb63f3d919
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -710
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: shadowitaccountowneremail
+                root: incident
+          operator: isNotEmpty
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "57"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the owner of the asset is known.
+      id: ebc2cbb4-2762-42df-82b8-58f8c49db8c5
+      iscommand: false
+      name: Is owner known?
+      type: condition
+      version: -1
+    taskid: ebc2cbb4-2762-42df-82b8-58f8c49db8c5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -2310
+        }
+      }
+  "3":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Potential Asset Owners
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      columns: {}
+      data:
+        complex:
+          accessor: shadowitusersuggestions
+          root: incident
+      title:
+        simple: Potential Asset Owners
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Convert an array to a nice table display. Usually, from the context.
+      id: 010c7111-911b-4acb-8247-90ee6bc95415
+      iscommand: false
+      name: Print Potential Asset Owners
+      script: ToTable
+      type: regular
+      version: -1
+    taskid: 010c7111-911b-4acb-8247-90ee6bc95415
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": -1950
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: shadowitcloudaccounttype
+                root: incident
+          operator: inList
+          right:
+            value:
+              simple: aws,amazon,amazon web services
+      label: AWS
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: shadowitcloudaccounttype
+                root: incident
+          operator: inList
+          right:
+            value:
+              simple: gcp,google,google cloud platform
+      label: GCP
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: shadowitcloudaccounttype
+                root: incident
+          operator: inList
+          right:
+            value:
+              simple: microsoft,azure,microsoft azure,msft
+      label: AZURE
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "12"
+      AWS:
+      - "63"
+      AZURE:
+      - "13"
+      GCP:
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Select appropriate branch depending on Cloud Provider
+      id: 845dcecd-82fe-420f-8401-b7d068575a7d
+      iscommand: false
+      name: Cloud Type
+      type: condition
+      version: -1
+    taskid: 845dcecd-82fe-420f-8401-b7d068575a7d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1790
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manually onboard the account in Prisma Cloud
+      id: 1210cb57-98bf-4058-8bad-2b26ad593f3a
+      iscommand: false
+      name: Manually handling of Shadow IT incident
+      type: regular
+      version: -1
+    taskid: 1210cb57-98bf-4058-8bad-2b26ad593f3a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 2170
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "43"
+      - "60"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 90a606ef-40e8-4641-81c1-a6abe489ed0c
+      iscommand: false
+      name: Done Collecting Information
+      type: title
+      version: -1
+      description: ''
+    taskid: 90a606ef-40e8-4641-81c1-a6abe489ed0c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 930
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9608e89c-f9bc-4422-8c4e-36c255f32dd0
+      iscommand: false
+      name: Collect information
+      type: title
+      version: -1
+      description: ''
+    taskid: 9608e89c-f9bc-4422-8c4e-36c255f32dd0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -880
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 99ff7eea-a10c-47c9-86f4-72d962f819fa
+      iscommand: false
+      name: Done Prisma Cloud Onboarding
+      type: title
+      version: -1
+      description: ''
+    taskid: 99ff7eea-a10c-47c9-86f4-72d962f819fa
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3040
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 83390c60-e2a5-4c44-87f4-18a18c38461c
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 83390c60-e2a5-4c44-87f4-18a18c38461c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3350
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Onboard Cloud Account on Prisma Cloud.
+      id: 3345b1f8-de3d-4f63-87e6-8bbd8fed61eb
+      iscommand: false
+      name: Onboard Cloud Account on Prisma Cloud
+      type: regular
+      version: -1
+    taskid: 3345b1f8-de3d-4f63-87e6-8bbd8fed61eb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 675,
+          "y": 2170
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Onboard Azure Cloud Account on Prisma Cloud
+      id: bebf8ec3-4d26-4227-8472-db88280ef1cd
+      iscommand: false
+      name: Onboard Azure Cloud Account on Prisma Cloud
+      type: regular
+      version: -1
+    taskid: bebf8ec3-4d26-4227-8472-db88280ef1cd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2170
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Onboard GCP Cloud Account on Prisma Cloud.
+      id: baf955b1-af78-45c6-8a6e-b521b17d7246
+      iscommand: false
+      name: Onboard GCP Cloud Account on Prisma Cloud
+      type: regular
+      version: -1
+    taskid: baf955b1-af78-45c6-8a6e-b521b17d7246
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 2170
+        }
+      }
+  "32":
+    form:
+      description: Choose asset owner from the list or select add new.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Choose asset owner
+        options: []
+        optionsarg:
+        - complex:
+            accessor: shadowitusersuggestions
+            root: incident
+            transformers:
+            - args:
+                field:
+                  value:
+                    simple: name
+              operator: getField
+        - simple: ➕ Add New
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: Choose asset owner from the list or select add new.
+        type: singleSelect
+      sender: ""
+      title: 'Shadow IT: Choose asset owner'
+      totalanswers: 0
+    id: "32"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: Please choose an asset owner from the list or select add new.
+      cc:
+      format: ""
+      methods: []
+      subject:
+        simple: 'Shadow IT: Choose asset owner'
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: Analyst
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Ask the Analyst to select the owner of the asset.
+      id: 922293ed-0fc9-472f-876f-282be60d895f
+      iscommand: false
+      name: Choose Asset Owner
+      type: collection
+      version: -1
+    taskid: 922293ed-0fc9-472f-876f-282be60d895f
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": -1790
+        }
+      }
+  "33":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: "0"
+                root: 'Shadow IT: Choose asset owner.Answers'
+          operator: containsString
+          right:
+            value:
+              simple: Add New
+      label: ADD-NEW
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "36"
+      ADD-NEW:
+      - "34"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Shall we add a new owner for this asset?
+      id: b26b9f77-42f4-4e0b-8508-cea45ea9560b
+      iscommand: false
+      name: Add new owner?
+      type: condition
+      version: -1
+    taskid: b26b9f77-42f4-4e0b-8508-cea45ea9560b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": -1630
+        }
+      }
+  "34":
+    form:
+      description: Please Insert asset owner name and email.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Asset owner name
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Please insert asset owner name.
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Asset owner email
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Please insert asset owner n email.
+        type: shortText
+      sender: ""
+      title: 'Shadow IT: Insert asset owner name and email'
+      totalanswers: 0
+    id: "34"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: Please Insert asset owner name and email
+      cc:
+      format: ""
+      methods: []
+      subject:
+        simple: 'Shadow IT: Insert asset owner name and email'
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: Analyst
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Ask the user to provide asset owner's name and email.
+      id: 36ddb800-803a-427e-8234-15e5d20516ce
+      iscommand: false
+      name: Insert owner name and email
+      type: collection
+      version: -1
+    taskid: 36ddb800-803a-427e-8234-15e5d20516ce
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": -1440
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "58"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      addLabels: {}
+      agentid: {}
+      app: {}
+      appendMultiSelect: {}
+      assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      caller: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      cloudservice: {}
+      commandline: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      department: {}
+      dest: {}
+      desthostname: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicehash: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      displayname: {}
+      duration: {}
+      email: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      escalation: {}
+      eventaction: {}
+      eventid: {}
+      eventtype: {}
+      externaladdresses: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstname: {}
+      firstseen: {}
+      givenname: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      id: {}
+      incomingmirrorerror: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      leadership: {}
+      location: {}
+      locationregion: {}
+      logsource: {}
+      macaddress: {}
+      maliciousbehavior: {}
+      malwarefamily: {}
+      malwarename: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      name: {}
+      occurred: {}
+      os: {}
+      osversion: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      parentprocessid: {}
+      personalemail: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      protocol: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      samaccountname: {}
+      severity: {}
+      sha256: {}
+      shadowitaccountowneremail:
+        complex:
+          accessor: "1"
+          root: 'Shadow IT: Insert asset owner name and email.Answers'
+      shadowitaccountownername:
+        complex:
+          accessor: "0"
+          root: 'Shadow IT: Insert asset owner name and email.Answers'
+      shadowitbilledtocorp: {}
+      shadowitcertificate: {}
+      shadowitcloudaccountid: {}
+      shadowitcloudaccounttype: {}
+      shadowitfqdn: {}
+      shadowitip: {}
+      shadowitorganizationalunit: {}
+      shadowitoucontactemail: {}
+      shadowitoucontactname: {}
+      shadowitport: {}
+      shadowitprovider: {}
+      shadowitrisk: {}
+      shadowitsactionedservice: {}
+      shadowitsource: {}
+      shadowusersuggestions: {}
+      signature: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      state: {}
+      streetaddress: {}
+      subcategory: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      surname: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      title: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      workphone: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrstatusv2: {}
+      xdrurl: {}
+      xdrusercount: {}
+      zipcode: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: c49deae0-b5fc-4b74-8c8b-d3eb8df406f0
+      iscommand: true
+      name: Set asset owner name and email in incident
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: c49deae0-b5fc-4b74-8c8b-d3eb8df406f0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": -1250
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "58"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      addLabels: {}
+      agentid: {}
+      app: {}
+      appendMultiSelect: {}
+      assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      caller: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      cloudservice: {}
+      commandline: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      department: {}
+      dest: {}
+      desthostname: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicehash: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      displayname: {}
+      duration: {}
+      email: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      escalation: {}
+      eventaction: {}
+      eventid: {}
+      eventtype: {}
+      externaladdresses: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstname: {}
+      firstseen: {}
+      givenname: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      id: {}
+      incomingmirrorerror: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      leadership: {}
+      location: {}
+      locationregion: {}
+      logsource: {}
+      macaddress: {}
+      maliciousbehavior: {}
+      malwarefamily: {}
+      malwarename: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      name: {}
+      occurred: {}
+      os: {}
+      osversion: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      parentprocessid: {}
+      personalemail: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      protocol: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      samaccountname: {}
+      severity: {}
+      sha256: {}
+      shadowitaccountowneremail:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.shadowitusersuggestions.name
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: 'Shadow IT: Choose asset owner.Answers.0'
+          root: incident.shadowitusersuggestions
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: email
+            operator: getField
+      shadowitaccountownername:
+        complex:
+          accessor: "0"
+          root: 'Shadow IT: Choose asset owner.Answers'
+      shadowitbilledtocorp: {}
+      shadowitcertificate: {}
+      shadowitcloudaccountid: {}
+      shadowitcloudaccounttype: {}
+      shadowitfqdn: {}
+      shadowitip: {}
+      shadowitorganizationalunit: {}
+      shadowitoucontactemail: {}
+      shadowitoucontactname: {}
+      shadowitport: {}
+      shadowitprovider: {}
+      shadowitrisk: {}
+      shadowitsactionedservice: {}
+      shadowitsensitivedata: {}
+      shadowitservicepurpose: {}
+      shadowitsource: {}
+      shadowitusersuggestions: {}
+      shadowusersuggestions: {}
+      signature: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      state: {}
+      streetaddress: {}
+      subcategory: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      surname: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      title: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      workphone: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrstatusv2: {}
+      xdrurl: {}
+      xdrusercount: {}
+      zipcode: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 1d2d55f4-b69e-49e7-84ee-fcb54696c2ee
+      iscommand: true
+      name: Set asset owner name and email in incident
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 1d2d55f4-b69e-49e7-84ee-fcb54696c2ee
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -1250
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      addLabels: {}
+      agentid: {}
+      app: {}
+      appendMultiSelect: {}
+      assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      caller: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      cloudservice: {}
+      commandline: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      department: {}
+      dest: {}
+      desthostname: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicehash: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      displayname: {}
+      duration: {}
+      email: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      escalation: {}
+      eventaction: {}
+      eventid: {}
+      eventtype: {}
+      externaladdresses: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstname: {}
+      firstseen: {}
+      givenname: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      id: {}
+      incomingmirrorerror: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      leadership: {}
+      location: {}
+      locationregion: {}
+      logsource: {}
+      macaddress: {}
+      maliciousbehavior: {}
+      malwarefamily: {}
+      malwarename: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      name: {}
+      occurred: {}
+      os: {}
+      osversion: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      parentprocessid: {}
+      personalemail: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      protocol: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      samaccountname: {}
+      severity: {}
+      sha256: {}
+      shadowitaccountowneremail: {}
+      shadowitaccountownername: {}
+      shadowitbilledtocorp:
+        complex:
+          accessor: "2"
+          root: Shadow IT Information Collection.Answers
+          transformers:
+          - args:
+              else:
+                value:
+                  simple: "false"
+              equals:
+                value:
+                  simple: "Yes"
+              then:
+                value:
+                  simple: "true"
+            operator: If-Then-Else
+      shadowitcertificate: {}
+      shadowitcloudaccountid: {}
+      shadowitcloudaccounttype:
+        complex:
+          accessor: "6"
+          root: Shadow IT Information Collection.Answers
+      shadowitfqdn: {}
+      shadowitip: {}
+      shadowitorganizationalunit: {}
+      shadowitoucontactemail: {}
+      shadowitoucontactname: {}
+      shadowitport: {}
+      shadowitprovider:
+        complex:
+          accessor: "6"
+          root: Shadow IT Information Collection.Answers
+      shadowitregion: {}
+      shadowitrisk: {}
+      shadowitsactionedservice:
+        complex:
+          accessor: "1"
+          root: Shadow IT Information Collection.Answers
+          transformers:
+          - args:
+              else:
+                value:
+                  simple: "false"
+              equals:
+                value:
+                  simple: "Yes"
+              then:
+                value:
+                  simple: "true"
+            operator: If-Then-Else
+      shadowitsensitivedata:
+        complex:
+          accessor: "3"
+          root: Shadow IT Information Collection.Answers
+          transformers:
+          - args:
+              else:
+                value:
+                  simple: "false"
+              equals:
+                value:
+                  simple: "Yes"
+              then:
+                value:
+                  simple: "true"
+            operator: If-Then-Else
+      shadowitservice: {}
+      shadowitservicepurpose:
+        complex:
+          accessor: "4"
+          root: Shadow IT Information Collection.Answers
+      shadowitsource: {}
+      shadowitusersuggestions: {}
+      shadowusersuggestions: {}
+      signature: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      state: {}
+      streetaddress: {}
+      subcategory: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      surname: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      title: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      workphone: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrstatusv2: {}
+      xdrurl: {}
+      xdrusercount: {}
+      zipcode: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 7ab518cf-0b2d-41f1-8cb4-2b0303dcee26
+      iscommand: true
+      name: Set Incident Information based on responses
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 7ab518cf-0b2d-41f1-8cb4-2b0303dcee26
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -305
+        }
+      }
+  "39":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: "3"
+                root: Shadow IT Information Collection.Answers
+          operator: isEqualString
+          right:
+            value:
+              simple: "yes"
+      label: "yes"
+    id: "39"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "40"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the user confirmed that the service might contain
+        sensitive data.
+      id: 22557254-613a-430e-8e05-20783d30001c
+      iscommand: false
+      name: Does the service contain sensitive information?
+      type: condition
+      version: -1
+    taskid: 22557254-613a-430e-8e05-20783d30001c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -80
+        }
+      }
+  "40":
+    id: "40"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      addLabels: {}
+      agentid: {}
+      app: {}
+      appendMultiSelect: {}
+      assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      caller: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      cloudservice: {}
+      commandline: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      department: {}
+      dest: {}
+      desthostname: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicehash: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      displayname: {}
+      duration: {}
+      email: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      escalation: {}
+      eventaction: {}
+      eventid: {}
+      eventtype: {}
+      externaladdresses: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstname: {}
+      firstseen: {}
+      givenname: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      id: {}
+      incomingmirrorerror: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      leadership: {}
+      location: {}
+      locationregion: {}
+      logsource: {}
+      macaddress: {}
+      maliciousbehavior: {}
+      malwarefamily: {}
+      malwarename: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      name: {}
+      occurred: {}
+      os: {}
+      osversion: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      parentprocessid: {}
+      personalemail: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      protocol: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      samaccountname: {}
+      severity:
+        simple: "4"
+      sha256: {}
+      shadowitaccountowneremail: {}
+      shadowitaccountownername: {}
+      shadowitbilledtocorp: {}
+      shadowitcertificate: {}
+      shadowitcloudaccountid: {}
+      shadowitcloudaccounttype: {}
+      shadowitfqdn: {}
+      shadowitip: {}
+      shadowitorganizationalunit: {}
+      shadowitoucontactemail: {}
+      shadowitoucontactname: {}
+      shadowitport: {}
+      shadowitprovider: {}
+      shadowitrisk:
+        simple: Critical
+      shadowitsactionedservice: {}
+      shadowitsensitivedata: {}
+      shadowitservicepurpose: {}
+      shadowitsource: {}
+      shadowitusersuggestions: {}
+      signature: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      state: {}
+      streetaddress: {}
+      subcategory: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      surname: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      title: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      workphone: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrstatusv2: {}
+      xdrurl: {}
+      xdrusercount: {}
+      zipcode: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 05fbd5b0-99dd-4d15-8ae4-16af151a97a7
+      iscommand: true
+      name: Set Shadow IT Risk and Severity to Critical
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 05fbd5b0-99dd-4d15-8ae4-16af151a97a7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 170
+        }
+      }
+  "41":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: "0"
+                root: Shadow IT Information Collection.Answers
+          operator: isEqualString
+          right:
+            value:
+              simple: "yes"
+      label: "yes"
+    id: "41"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "37"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the user confirmed to own this asset.
+      id: 6370c20e-bd2f-44fc-86f7-9c74250e5e23
+      iscommand: false
+      name: Did the user confirm they own the asset?
+      type: condition
+      version: -1
+    taskid: 6370c20e-bd2f-44fc-86f7-9c74250e5e23
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -565
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: The analyst must manually investigate this incidentand, find the
+        owner and collect the service information.
+      id: 9f36f67c-9007-442c-8e03-43d000bbcefc
+      iscommand: false
+      name: Find owner and collect information manually
+      type: regular
+      version: -1
+    taskid: 9f36f67c-9007-442c-8e03-43d000bbcefc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": -360
+        }
+      }
+  "43":
+    id: "43"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ee50472b-621c-471d-86ed-b44be795bf1c
+      iscommand: false
+      name: Notify Manager
+      type: title
+      version: -1
+      description: ''
+    taskid: ee50472b-621c-471d-86ed-b44be795bf1c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1660,
+          "y": 1175
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "47"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      UserEmail:
+        complex:
+          accessor: shadowitaccountowneremail
+          root: incident
+      Username: {}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0d6620ad-18a3-4310-8113-8edec611f5de
+      iscommand: false
+      name: Active Directory - Get User Manager Details
+      playbookId: Active Directory - Get User Manager Details
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 0d6620ad-18a3-4310-8113-8edec611f5de
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1660,
+          "y": 1695
+        }
+      }
+  "45":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Notify Manager
+          operator: isEqualString
+          right:
+            value:
+              simple: "yes"
+      label: "yes"
+    id: "45"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "44"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether to notify the user's manger.
+      id: 2b9de9f6-c609-477d-8a26-d7b870794a81
+      iscommand: false
+      name: Shall we notify user's manager?
+      type: condition
+      version: -1
+    taskid: 2b9de9f6-c609-477d-8a26-d7b870794a81
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1660,
+          "y": 1470
+        }
+      }
+  "46":
+    id: "46"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4408a1b8-9a14-43a2-8ba7-b83cdbbcf8a9
+      iscommand: false
+      name: Done Notify Manager
+      type: title
+      version: -1
+      description: ''
+    taskid: 4408a1b8-9a14-43a2-8ba7-b83cdbbcf8a9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1660,
+          "y": 2760
+        }
+      }
+  "47":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: UserManagerEmail
+          operator: isNotEmpty
+      label: "yes"
+    id: "47"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "48"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether to notify the user's manager.
+      id: 2e9f1fbd-5877-4b03-8f84-4fdeb34e5d03
+      iscommand: false
+      name: Did we find the user's manager?
+      type: condition
+      version: -1
+    taskid: 2e9f1fbd-5877-4b03-8f84-4fdeb34e5d03
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1660,
+          "y": 1910
+        }
+      }
+  "48":
+    id: "48"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "46"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody:
+        simple: |-
+          Dear ${UserManagerDisplayName},
+
+          we detected a Shadow IT service for User ${incident.shadowitaccountownername} who, according to the Company's directory, directly reports to you.
+
+          The service is: ${shadowitip}:${shadowitport} (${shadowitfqdn}), please work with your team and us to resolve this issue.
+
+          Best regards,
+
+          InfoSec team
+      raw_message: {}
+      replyTo: {}
+      subject:
+        complex:
+          accessor: shadowitaccountownername
+          root: incident
+      templateParams: {}
+      to:
+        complex:
+          root: UserManagerEmail
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Send an email
+      id: 44416486-a536-4bfc-8906-aeebded69275
+      iscommand: true
+      name: Notify User's manager
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 44416486-a536-4bfc-8906-aeebded69275
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1660,
+          "y": 2170
+        }
+      }
+  "49":
+    id: "49"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "50"
+      - "52"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: commands.local.cmd.find.indicators
+      id: 5425853d-088a-4d3a-87cb-e42a1cc09054
+      iscommand: false
+      name: Tag Shadow IT Indicators
+      type: title
+      version: -1
+    taskid: 5425853d-088a-4d3a-87cb-e42a1cc09054
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -1630,
+          "y": 800
+        }
+      }
+  "50":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: shadowitip
+                root: incident
+          operator: isNotEmpty
+      label: "yes"
+    id: "50"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "54"
+      "yes":
+      - "51"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether an IP address is part of the incident.
+      id: 03b3f9ca-54b9-4c07-8f8e-9be59d1d8812
+      iscommand: false
+      name: Is there an IP?
+      type: condition
+      version: -1
+    taskid: 03b3f9ca-54b9-4c07-8f8e-9be59d1d8812
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -2120,
+          "y": 1030
+        }
+      }
+  "51":
+    id: "51"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "54"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: ShadowITIndicator=
+      fromdate: {}
+      ignore-outputs:
+        simple: "true"
+      page: {}
+      query: {}
+      size: {}
+      todate: {}
+      value:
+        complex:
+          accessor: shadowitip
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.find.indicators
+      id: 8cd469b0-0997-42f1-8c59-842e783e6c9a
+      iscommand: true
+      name: Find IP Indicator
+      script: Builtin|||findIndicators
+      type: regular
+      version: -1
+    taskid: 8cd469b0-0997-42f1-8c59-842e783e6c9a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -2120,
+          "y": 1240
+        }
+      }
+  "52":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: shadowitfqdn
+                root: incident
+          operator: isNotEmpty
+      label: "yes"
+    id: "52"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "54"
+      "yes":
+      - "53"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether an FQDN was provided with this incident.
+      id: 7661e8fc-4d3a-4a4e-89bb-9ffe75668a9b
+      iscommand: false
+      name: Is there a FQDN?
+      type: condition
+      version: -1
+    taskid: 7661e8fc-4d3a-4a4e-89bb-9ffe75668a9b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -1230,
+          "y": 1050
+        }
+      }
+  "53":
+    id: "53"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "54"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: ShadowITIndicator=
+      fromdate: {}
+      ignore-outputs:
+        simple: "true"
+      page: {}
+      query: {}
+      size: {}
+      todate: {}
+      value:
+        complex:
+          accessor: shadowitfqdn
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.find.indicators
+      id: a791694d-9ac5-49d5-8559-3459b4eb88d3
+      iscommand: true
+      name: Find FQDN Indicator
+      script: Builtin|||findIndicators
+      type: regular
+      version: -1
+    taskid: a791694d-9ac5-49d5-8559-3459b4eb88d3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1230,
+          "y": 1260
+        }
+      }
+  "54":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ShadowITIndicator
+          operator: isNotEmpty
+      label: "yes"
+    id: "54"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "55"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether there are indicators labelled Shadow IT.
+      id: 8ac61bca-2d93-4281-85a7-209f3fdcef1f
+      iscommand: false
+      name: Are there Shadow IT Indicators?
+      type: condition
+      version: -1
+    taskid: 8ac61bca-2d93-4281-85a7-209f3fdcef1f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -1700,
+          "y": 1480
+        }
+      }
+  "55":
+    id: "55"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "56"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        complex:
+          root: inputs.ShadowITIndicatorTags
+      indicatorsValues:
+        complex:
+          accessor: value
+          root: ShadowITIndicator
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      id: 1e1d5fc9-72aa-4513-8046-e1133a28a024
+      iscommand: true
+      name: Tag Shadow IT Indicators
+      script: Builtin|||appendIndicatorField
+      type: regular
+      version: -1
+    taskid: 1e1d5fc9-72aa-4513-8046-e1133a28a024
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -2020,
+          "y": 1910
+        }
+      }
+  "56":
+    id: "56"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9ae75d7c-2500-498f-8a6b-41f5139b7b62
+      iscommand: false
+      name: Done Tagging Shadow IT Indicators
+      type: title
+      version: -1
+      description: ''
+    taskid: 9ae75d7c-2500-498f-8a6b-41f5139b7b62
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -1700,
+          "y": 2490
+        }
+      }
+  "57":
+    id: "57"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8daa5d1d-3cb2-4cac-8a86-83a2d960ff73
+      iscommand: false
+      name: Identify Owner
+      type: title
+      version: -1
+      description: ''
+    taskid: 8daa5d1d-3cb2-4cac-8a86-83a2d960ff73
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": -2090
+        }
+      }
+  "58":
+    id: "58"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f46b96dc-b938-4197-8b15-9aeb6b34ca40
+      iscommand: false
+      name: Done Identifying Owner
+      type: title
+      version: -1
+      description: ''
+    taskid: f46b96dc-b938-4197-8b15-9aeb6b34ca40
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -1070
+        }
+      }
+  "59":
+    defaultassigneecomplex:
+      simple: Analyst
+    id: "59"
+    ignoreworker: false
+    nexttasks:
+      ✅ Yes:
+      - "49"
+      ❌ No:
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Ask the analyst whether to restrict access to this service.
+      id: 4659f414-41c4-4082-87f9-7fc385d5ee53
+      iscommand: false
+      name: Restrict outgoing traffic to this service?
+      type: condition
+      version: -1
+    taskid: 4659f414-41c4-4082-87f9-7fc385d5ee53
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -550,
+          "y": -2240
+        }
+      }
+  "60":
+    id: "60"
+    ignoreworker: false
+    nexttasks:
+      ✅ Yes:
+      - "64"
+      ❌ No:
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Ask the analyst whether to onboard this account on Prisma Cloud.
+      id: 436ef11e-5549-47fa-83e8-471e48bc5cf8
+      iscommand: false
+      name: Onboard this account on Prisma Cloud?
+      type: condition
+      version: -1
+    taskid: 436ef11e-5549-47fa-83e8-471e48bc5cf8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1290
+        }
+      }
+  "63":
+    id: "63"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Onboard AWS Cloud Account on Prisma Cloud.
+      id: e2b73dda-00f7-449d-8b3b-5304cb9a6d6b
+      iscommand: false
+      name: Onboard AWS Cloud Account on Prisma Cloud
+      type: regular
+      version: -1
+    taskid: e2b73dda-00f7-449d-8b3b-5304cb9a6d6b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 2170
+        }
+      }
+  "64":
+    id: "64"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cfd4feeb-689a-49fa-8a28-804e6405e940
+      iscommand: false
+      name: Prisma Cloud Onboarding
+      type: title
+      version: -1
+      description: ''
+    taskid: cfd4feeb-689a-49fa-8a28-804e6405e940
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1660
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "50_54_#default#": 0.34,
+      "59_49_✅ Yes": 0.1,
+      "59_9_❌ No": 0.21,
+      "60_6_❌ No": 0.49
+    },
+    "paper": {
+      "dimensions": {
+        "height": 6015,
+        "width": 4160,
+        "x": -2120,
+        "y": -2600
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
