@@ -53,6 +53,7 @@ configuration:
     required: false
     type: 15
   - defaultvalue: indicatorType
+    display: ""
     name: feedExpirationPolicy
     options:
       - never
@@ -62,6 +63,7 @@ configuration:
     required: false
     type: 17
   - defaultvalue: '20160'
+    display: ''
     name: feedExpirationInterval
     required: false
     type: 1
@@ -87,6 +89,7 @@ configuration:
     required: false
     type: 8
   - defaultvalue: 'true'
+    display: Incremental Feed
     hidden: true
     name: feedIncremental
     required: false
@@ -394,6 +397,9 @@ script:
         - contextPath: SixgillDarkfeed.URL.labels
           description: Indicative labels of IOC
           type: Unknown
+        - contextPath: URL.Data
+          description: URL name.
+          type: string
         - contextPath: SixgillDarkfeed.URL.external_reference
           description: Link to IOC on Virustotal and abstraction of number of detections;
             Mitre ATT&CK tatics and techniques
@@ -489,6 +495,18 @@ script:
           description: Link to IOC on Virustotal and abstraction of number of detections;
             Mitre ATT&CK tatics and techniques
           type: Unknown
+        - contextPath: File.SHA256
+          description: SHA256 hash of the file.
+          type: string
+        - contextPath: File.SHA512
+          description: SHA512 hash of the file.
+          type: string
+        - contextPath: File.SHA1
+          description: SHA1 hash of the file.
+          type: string
+        - contextPath: File.MD5
+          description: MD5 hash of the file.
+          type: string
     - arguments:
         - default: true
           description: List of actor's
@@ -671,7 +689,7 @@ script:
           description: Link to IOC on Virustotal and abstraction of number of detections;
             Mitre ATT&CK tatics and techniques
           type: Unknown
-  dockerimage: demisto/sixgill:1.0.0.10664
+  dockerimage: demisto/sixgill:1.0.0.12410
   feed: true
   isfetch: false
   longRunning: false
