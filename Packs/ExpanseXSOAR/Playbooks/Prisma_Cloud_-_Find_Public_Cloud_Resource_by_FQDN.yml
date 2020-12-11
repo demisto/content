@@ -38,12 +38,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 17ed1fd8-f4fb-423c-87cb-2aea369f2e65
+      id: 233469d4-00ac-4da3-89bc-bc6fbb5000c0
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 17ed1fd8-f4fb-423c-87cb-2aea369f2e65
+    taskid: 233469d4-00ac-4da3-89bc-bc6fbb5000c0
     timertriggers: []
     type: start
     view: |-
@@ -106,12 +106,12 @@ tasks:
     task:
       brand: ""
       description: Branch based on Cloud Provider
-      id: 453eb7c7-7e1f-4280-82e7-8669799d9f14
+      id: cf810e4e-3be0-49df-81f2-2c2555b5f06b
       iscommand: false
       name: What Cloud Provider?
       type: condition
       version: -1
-    taskid: 453eb7c7-7e1f-4280-82e7-8669799d9f14
+    taskid: cf810e4e-3be0-49df-81f2-2c2555b5f06b
     timertriggers: []
     type: condition
     view: |-
@@ -133,13 +133,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: cff0ecbd-350d-4532-8540-1fa1e732233a
+      id: 98184b95-282e-419f-8eb6-6525125140e8
       iscommand: false
       name: Search in AWS
       type: title
       version: -1
       description: ''
-    taskid: cff0ecbd-350d-4532-8540-1fa1e732233a
+    taskid: 98184b95-282e-419f-8eb6-6525125140e8
     timertriggers: []
     type: title
     view: |-
@@ -161,13 +161,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 6a7b171f-8b2b-40d5-8585-0143daf1753f
+      id: bf4933c9-f314-48f7-8e75-1b163e55ce3b
       iscommand: false
       name: Search in Azure
       type: title
       version: -1
       description: ''
-    taskid: 6a7b171f-8b2b-40d5-8585-0143daf1753f
+    taskid: bf4933c9-f314-48f7-8e75-1b163e55ce3b
     timertriggers: []
     type: title
     view: |-
@@ -189,13 +189,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 550c149e-3d32-4487-8d95-fa77efc31381
+      id: e61bb662-18e6-42d8-86a3-4b24573f0df2
       iscommand: false
       name: Search in GCP
       type: title
       version: -1
       description: ''
-    taskid: 550c149e-3d32-4487-8d95-fa77efc31381
+    taskid: e61bb662-18e6-42d8-86a3-4b24573f0df2
     timertriggers: []
     type: title
     view: |-
@@ -219,13 +219,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 07bcffbb-6920-45c8-8666-2392c2c3d761
+      id: 52ba0293-1d05-48a0-8b47-859e96eb5298
       iscommand: false
       name: Search All Cloud Providers
       type: title
       version: -1
       description: ''
-    taskid: 07bcffbb-6920-45c8-8666-2392c2c3d761
+    taskid: 52ba0293-1d05-48a0-8b47-859e96eb5298
     timertriggers: []
     type: title
     view: |-
@@ -244,13 +244,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f50d6c50-8316-45f7-832e-89d92b1131ed
+      id: 764cacac-5fd0-4b0f-8d3c-d325ff6bc323
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: f50d6c50-8316-45f7-832e-89d92b1131ed
+    taskid: 764cacac-5fd0-4b0f-8d3c-d325ff6bc323
     timertriggers: []
     type: title
     view: |-
@@ -301,12 +301,12 @@ tasks:
     task:
       brand: ""
       description: Check whether Prisma Cloud integration is enabled.
-      id: edd33713-3740-4316-8160-18a3fefb8877
+      id: 5037e75b-1b6d-464a-8c17-9faafac909aa
       iscommand: false
       name: Is Prisma Cloud enabled?
       type: condition
       version: -1
-    taskid: edd33713-3740-4316-8160-18a3fefb8877
+    taskid: 5037e75b-1b6d-464a-8c17-9faafac909aa
     timertriggers: []
     type: condition
     view: |-
@@ -328,13 +328,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 890f9eb2-7677-4592-8d41-35d1fb35f9fc
+      id: 061c6be4-68dd-40dd-8628-5e193ccd92d7
       iscommand: false
       name: Search Prisma Cloud Inventory
       type: title
       version: -1
       description: ''
-    taskid: 890f9eb2-7677-4592-8d41-35d1fb35f9fc
+    taskid: 061c6be4-68dd-40dd-8628-5e193ccd92d7
     timertriggers: []
     type: title
     view: |-
@@ -356,13 +356,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 5edbec51-4ffa-45df-8d40-ca23b7336191
+      id: 06e89eb9-f232-40cf-8d18-02a639b8d7ed
       iscommand: false
       name: Extract CNAMEs for domain(s)
       type: title
       version: -1
       description: ''
-    taskid: 5edbec51-4ffa-45df-8d40-ca23b7336191
+    taskid: 06e89eb9-f232-40cf-8d18-02a639b8d7ed
     timertriggers: []
     type: title
     view: |-
@@ -393,13 +393,13 @@ tasks:
     task:
       brand: ""
       description: Returns DNS details for a domain
-      id: 4f5bb066-ca47-45d0-814c-00e078cfd235
+      id: c8698828-22df-4ea8-8b77-f00c9c488511
       iscommand: false
       name: Get Domain DNS Details
       script: GetDomainDNSDetails
       type: regular
       version: -1
-    taskid: 4f5bb066-ca47-45d0-814c-00e078cfd235
+    taskid: c8698828-22df-4ea8-8b77-f00c9c488511
     timertriggers: []
     type: regular
     view: |-
@@ -433,6 +433,12 @@ tasks:
                 value:
                   simple: DomainDNSDetails.CNAME
             operator: append
+          - args:
+              regex:
+                value:
+                  simple: \.$
+              replaceWith: {}
+            operator: replaceMatch
           - operator: uniq
     separatecontext: false
     skipunavailable: false
@@ -440,13 +446,13 @@ tasks:
       brand: ""
       description: Set a value in context under the key you entered. If no value is
         entered, the script doesn't do anything.
-      id: 6486c5a7-d18a-4720-8b06-24aac0248f81
+      id: a3ad6ced-1383-405b-83d6-650df4aeff52
       iscommand: false
       name: Join list of inputs with CNAMEs
       script: SetAndHandleEmpty
       type: regular
       version: -1
-    taskid: 6486c5a7-d18a-4720-8b06-24aac0248f81
+    taskid: a3ad6ced-1383-405b-83d6-650df4aeff52
     timertriggers: []
     type: regular
     view: |-
@@ -480,12 +486,12 @@ tasks:
     task:
       brand: ""
       description: Check if there are any FQDNs in the input.
-      id: e4dfe7ec-3710-4533-8242-1382d7b104b5
+      id: 4e7f38c1-dada-4da6-8155-94ccc8c44249
       iscommand: false
       name: Are there FQDNs in input?
       type: condition
       version: -1
-    taskid: e4dfe7ec-3710-4533-8242-1382d7b104b5
+    taskid: 4e7f38c1-dada-4da6-8155-94ccc8c44249
     timertriggers: []
     type: condition
     view: |-
@@ -519,13 +525,13 @@ tasks:
     task:
       brand: ""
       description: Find an AWS resource using Prisma Cloud inventory
-      id: 747e8e49-2d1a-4e3f-8009-57e7d2765e2a
+      id: 838decb7-a3bd-4af5-83dd-3250df3938f8
       iscommand: false
-      name: b5800218-5702-4367-8ca4-7b6eddef6300
+      name: Prisma Cloud - Find AWS Resource by FQDN
       playbookId: Prisma Cloud - Find AWS Resource by FQDN
       type: playbook
       version: -1
-    taskid: 747e8e49-2d1a-4e3f-8009-57e7d2765e2a
+    taskid: 838decb7-a3bd-4af5-83dd-3250df3938f8
     timertriggers: []
     type: playbook
     view: |-
@@ -550,7 +556,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       AzureDomains:
-        simple: .microsoft.com,.azure.net
+        simple: .azure.com,.azurewebsites.net,.windows.net,.azmk8s.io
       FQDN:
         complex:
           root: FQDN
@@ -558,14 +564,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Find an Azure resource using Prisma Cloud inventory
-      id: b52f65d1-e3ee-4229-8494-b2f16e70244f
+      description: Find Azure resources using Prisma Cloud inventory
+      id: 91f7be39-0c10-4605-8f67-8028cdf526fe
       iscommand: false
-      name: e1c2a2f9-2480-4f6a-890c-f5cd7f728485
+      name: Prisma Cloud - Find Azure Resource by FQDN
       playbookId: Prisma Cloud - Find Azure Resource by FQDN
       type: playbook
       version: -1
-    taskid: b52f65d1-e3ee-4229-8494-b2f16e70244f
+    taskid: 91f7be39-0c10-4605-8f67-8028cdf526fe
     timertriggers: []
     type: playbook
     view: |-
@@ -598,14 +604,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 5f17646a-f2a3-46c1-8c76-37d2af776518
+      description: Find GCP resources using Prisma Cloud inventory
+      id: 403e6f56-f3b0-4430-8d30-6a242557971e
       iscommand: false
-      name: 35390dd5-073d-4572-894c-ca41bbb7f643
+      name: Prisma Cloud - Find GCP Resource by FQDN
       playbookId: Prisma Cloud - Find GCP Resource by FQDN
       type: playbook
       version: -1
-      description: Find a GCP resource using Prisma Cloud inventory
-    taskid: 5f17646a-f2a3-46c1-8c76-37d2af776518
+    taskid: 403e6f56-f3b0-4430-8d30-6a242557971e
     timertriggers: []
     type: playbook
     view: |-

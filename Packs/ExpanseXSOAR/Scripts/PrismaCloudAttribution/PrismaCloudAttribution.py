@@ -9,8 +9,9 @@ from CommonServerUserPython import *  # noqa
 from typing import Dict, List, Any, Iterable, Union
 import traceback
 
-IPADDRESS_KEYS = ['publicIpAddress', 'natIP', 'publicIp']
-FQDN_KEYS = ['publicDnsName', 'dnsname', 'domainName', 'name']
+IPADDRESS_KEYS = ['publicIpAddress', 'natIP', 'publicIp', 'inboundIpAddress', 'ipAddress', 'IPAddress']
+FQDN_KEYS = ['publicDnsName', 'dnsname', 'domainName', 'name', 'dnsName', 'hostName', 'properties.hostName', 'fqdn',
+             'enabledHostNames', 'web']
 
 ''' STANDALONE FUNCTION '''
 
