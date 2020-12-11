@@ -568,14 +568,11 @@ def format_raw_incident(raw_incident, external_tenant_id, internal_tenant_id):
 
     # aggregate accounts
     accounts = []
-    accounts.append(raw_incident.get('avAccounts'))
-    accounts.append(raw_incident.get('wpAccounts'))
-    accounts.append(raw_incident.get('authDataAccounts'))
-    accounts.append(raw_incident.get('edrAccounts'))
-    # flatten list
-    # https://stackoverflow.com/questions/952914/how-to-make-a-flat-list-out-of-list-of-lists
-    flatten = lambda t: [item for sublist in t for item in sublist]
-    accounts = flatten(accounts)
+    accounts.extend(raw_incident.get('avAccounts'))
+    accounts.extend(raw_incident.get('wpAccounts'))
+    accounts.extend(raw_incident.get('authDataAccounts'))
+    accounts.extend(raw_incident.get('edrAccounts'))
+
     # if there are unknown accounts, only keep one, and make the name 'unknown'
     unknown = False
     for account in accounts:
