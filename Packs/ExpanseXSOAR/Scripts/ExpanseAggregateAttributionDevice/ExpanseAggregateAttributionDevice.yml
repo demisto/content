@@ -48,8 +48,7 @@ outputs:
   type: number
 script: '-'
 system: false
-tags:
-- expanse
+tags: []
 timeout: '0'
 type: python
 subtype: python3
