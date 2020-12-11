@@ -15,7 +15,7 @@
             "integrations": "ExpanseV2",
             "playbookID": "ExpanseV2 Test",
             "fromversion": "6.0.0"
-        },
+        },   
         {
             "integrations": "GSuiteAdmin",
             "playbookID": "GSuiteAdmin-Test",
