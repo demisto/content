@@ -1,11 +1,5 @@
 description: |-
-  Find a Public Cloud resource of the following types:
-  - Compute Instance
-  - Load Balancer
-
-  on: AWS, Azure, GCP
-
-  using Prisma Cloud inventory
+  Find Azure resources using Prisma Cloud inventory
 id: Prisma Cloud - Find Azure Resource by Public IP
 inputs:
 - description: Public IP Address to look up
