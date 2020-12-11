@@ -22,12 +22,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 3f291f16-6419-451b-8e2e-39f2c9841a5c
+      id: 97c59653-813b-420c-8ef1-81123c38d5bd
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 3f291f16-6419-451b-8e2e-39f2c9841a5c
+    taskid: 97c59653-813b-420c-8ef1-81123c38d5bd
     timertriggers: []
     type: start
     view: |-
@@ -59,13 +59,13 @@ tasks:
       brand: ""
       description: Returns 'yes' if integration brand is available. Otherwise returns
         'no'
-      id: a41ae67e-51f1-4f69-8851-221475e5f327
+      id: 966561a7-320b-423a-8a50-64e26585f1c3
       iscommand: false
-      name: IsIntegrationAvailable
+      name: Is Cisco ISE enabled?
       script: IsIntegrationAvailable
       type: condition
       version: -1
-    taskid: a41ae67e-51f1-4f69-8851-221475e5f327
+    taskid: 966561a7-320b-423a-8a50-64e26585f1c3
     timertriggers: []
     type: condition
     view: |-
@@ -84,22 +84,19 @@ tasks:
       - "4"
     note: false
     quietmode: 0
-    scriptarguments:
-      using:
-        simple: PANW IoT 3rd Party ISE Integration Active Instance,PANW IoT 3rd Party
-          ISE Integration Standby Instance
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: This Script gets - TODO
-      id: bc22b86c-4127-47a6-80f4-858486c8d4d8
+      description: This scripts determines which configured Cisco ISE instance is
+        in active/primary state and returns the name of this instance.
+      id: 2e50c91a-77be-4bec-8265-a35b5ed8a587
       iscommand: false
-      name: GetCiscoISEActiveInstance
-      script: 85188905-f908-4b6a-8ada-e350f8a29874
+      name: Get active Cisco ISE instance
+      script: GetCiscoISEActiveInstance
       type: regular
       version: -1
-    taskid: bc22b86c-4127-47a6-80f4-858486c8d4d8
+    taskid: 2e50c91a-77be-4bec-8265-a35b5ed8a587
     timertriggers: []
     type: regular
     view: |-
@@ -119,17 +116,16 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      integrationName:
+      asset_type:
+        simple: device
+      integration_name:
         simple: ise
       message:
         simple: Cisco ISE instance is not enabled
-      playbookName:
+      playbook_name:
         simple: Quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
-          ISE
       status:
         simple: disabled
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -137,13 +133,13 @@ tasks:
     task:
       brand: ""
       description: Sends a status message back to PANW IOT cloud.
-      id: 25a14def-aca3-4b07-8259-68b859e7eb9c
+      id: 9412ebaf-a1c9-4c8c-8889-ca7511901348
       iscommand: true
-      name: panw-iot-3rd-party-report-status-to-panw
+      name: Send disabled status to PANW IoT cloud
       script: '|||panw-iot-3rd-party-report-status-to-panw'
       type: regular
       version: -1
-    taskid: 25a14def-aca3-4b07-8259-68b859e7eb9c
+    taskid: 9412ebaf-a1c9-4c8c-8889-ca7511901348
     timertriggers: []
     type: regular
     view: |-
@@ -159,28 +155,27 @@ tasks:
     ignoreworker: false
     nexttasks:
       "no":
-      - "6"
-      "yes":
       - "5"
+      "yes":
+      - "6"
     note: false
     quietmode: 0
     scriptarguments:
-      entryId:
-        simple: ${lastCompletedTaskEntries}
+      value:
+        simple: ${PaloAltoIoTIntegrationBase.ActiveNodeInstance}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
-      id: b447e70a-e25d-4630-835d-b3bdecc8b75c
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: dec16e0d-3a3d-4957-8ee2-52d723196b41
       iscommand: false
-      name: isError
-      script: isError
+      name: Is active instance available?
+      script: Exists
       type: condition
       version: -1
-    taskid: b447e70a-e25d-4630-835d-b3bdecc8b75c
+    taskid: dec16e0d-3a3d-4957-8ee2-52d723196b41
     timertriggers: []
     type: condition
     view: |-
@@ -200,17 +195,16 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      integrationName:
+      asset_type:
+        simple: device
+      integration_name:
         simple: ise
       message:
         simple: ${PaloAltoIoTIntegrationBase.NodeErrorStatus}
-      playbookName:
+      playbook_name:
         simple: Quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
-          ISE
       status:
         simple: error
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -218,13 +212,13 @@ tasks:
     task:
       brand: ""
       description: Sends a status message back to PANW IOT cloud.
-      id: 2f86c93a-139d-4932-8c10-ce8c2baccea7
+      id: 54d1ea3a-a888-4a78-8590-73edf2aaede5
       iscommand: true
-      name: panw-iot-3rd-party-report-status-to-panw
+      name: Send error status to PANW IoT cloud
       script: '|||panw-iot-3rd-party-report-status-to-panw'
       type: regular
       version: -1
-    taskid: 2f86c93a-139d-4932-8c10-ce8c2baccea7
+    taskid: 54d1ea3a-a888-4a78-8590-73edf2aaede5
     timertriggers: []
     type: regular
     view: |-
@@ -253,13 +247,13 @@ tasks:
     task:
       brand: ""
       description: Returns an endpoint ID, by its MAC address.
-      id: 5a193cc6-9784-45d3-8d21-c98f1c2e5ebd
+      id: 26cd5fe0-0fcc-407f-87c6-a9a93fabffcd
       iscommand: true
-      name: cisco-ise-get-endpoint-id
+      name: Get endpoint ID from Cisco ISE
       script: '|||cisco-ise-get-endpoint-id'
       type: regular
       version: -1
-    taskid: 5a193cc6-9784-45d3-8d21-c98f1c2e5ebd
+    taskid: 26cd5fe0-0fcc-407f-87c6-a9a93fabffcd
     timertriggers: []
     type: regular
     view: |-
@@ -290,13 +284,13 @@ tasks:
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
         to check the previous task entries. If array is provided, will return yes
         if one of the entries returned an error.
-      id: 512daeea-5458-4fcb-8291-ff4a94c30f3f
+      id: e8bc01b6-c54c-4b84-8531-7bdca9e10102
       iscommand: false
-      name: isError
+      name: Was there an error getting the ID?
       script: isError
       type: condition
       version: -1
-    taskid: 512daeea-5458-4fcb-8291-ff4a94c30f3f
+    taskid: e8bc01b6-c54c-4b84-8531-7bdca9e10102
     timertriggers: []
     type: condition
     view: |-
@@ -316,17 +310,16 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      integrationName:
+      asset_type:
+        simple: device
+      integration_name:
         simple: ise
       message:
         simple: Failed to retrieve ${incident.macAddress} from Cisco ISE
-      playbookName:
+      playbook_name:
         simple: Quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
-          ISE
       status:
         simple: error
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -334,13 +327,13 @@ tasks:
     task:
       brand: ""
       description: Sends a status message back to PANW IOT cloud.
-      id: ff1ef95a-214e-4b9c-89f5-3b1fc22a0bf7
+      id: 4245bc18-f98a-4006-87b5-5217c023aff0
       iscommand: true
-      name: panw-iot-3rd-party-report-status-to-panw
+      name: Send error status to PANW IoT cloud
       script: '|||panw-iot-3rd-party-report-status-to-panw'
       type: regular
       version: -1
-    taskid: ff1ef95a-214e-4b9c-89f5-3b1fc22a0bf7
+    taskid: 4245bc18-f98a-4006-87b5-5217c023aff0
     timertriggers: []
     type: regular
     view: |-
@@ -375,13 +368,13 @@ tasks:
     task:
       brand: ""
       description: Updates the custom attributes of an endpoint.
-      id: bec2af44-52b9-4da4-8656-8d129730f1d5
+      id: 256125a9-ce58-4bab-8283-59ec4bfb4e5b
       iscommand: true
-      name: cisco-ise-update-endpoint-custom-attribute
+      name: Create AlertType and AlertSeverity Custom Attributes for endpoint
       script: '|||cisco-ise-update-endpoint-custom-attribute'
       type: regular
       version: -1
-    taskid: bec2af44-52b9-4da4-8656-8d129730f1d5
+    taskid: 256125a9-ce58-4bab-8283-59ec4bfb4e5b
     timertriggers: []
     type: regular
     view: |-
@@ -412,13 +405,13 @@ tasks:
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
         to check the previous task entries. If array is provided, will return yes
         if one of the entries returned an error.
-      id: 85e04b45-4ee4-4366-8322-cf9513dcad69
+      id: ed1de104-899f-439d-850a-6fc691b682c8
       iscommand: false
-      name: isError
+      name: Was there an error updating custom attributes?
       script: isError
       type: condition
       version: -1
-    taskid: 85e04b45-4ee4-4366-8322-cf9513dcad69
+    taskid: ed1de104-899f-439d-850a-6fc691b682c8
     timertriggers: []
     type: condition
     view: |-
@@ -438,17 +431,16 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      integrationName:
+      asset_type:
+        simple: device
+      integration_name:
         simple: ise
       message:
         simple: Failed to Quarantine Endpoint ${Endpoint.MACAddress} on ISE
-      playbookName:
+      playbook_name:
         simple: Quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
-          ISE
       status:
         simple: error
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -456,13 +448,13 @@ tasks:
     task:
       brand: ""
       description: Sends a status message back to PANW IOT cloud.
-      id: 943a8133-24e1-4243-8428-a1db9faa83c5
+      id: d0cb7121-6a05-4585-869c-cadf50e11e09
       iscommand: true
-      name: panw-iot-3rd-party-report-status-to-panw
+      name: Send error status to PANW IoT cloud
       script: '|||panw-iot-3rd-party-report-status-to-panw'
       type: regular
       version: -1
-    taskid: 943a8133-24e1-4243-8428-a1db9faa83c5
+    taskid: d0cb7121-6a05-4585-869c-cadf50e11e09
     timertriggers: []
     type: regular
     view: |-
@@ -482,17 +474,16 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      integrationName:
+      asset_type:
+        simple: device
+      integration_name:
         simple: ise
       message:
         simple: Quarantine Successful for Endpoint ${Endpoint.MACAddress}
-      playbookName:
+      playbook_name:
         simple: Quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
-          ISE
       status:
         simple: success
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -500,13 +491,13 @@ tasks:
     task:
       brand: ""
       description: Sends a status message back to PANW IOT cloud.
-      id: 1d93fdaf-fbc5-460d-80c8-2f1c1ae9681e
+      id: 273b5426-9f51-4356-8975-1ff5a772a161
       iscommand: true
-      name: panw-iot-3rd-party-report-status-to-panw
+      name: Send success status to PANW IoT cloud
       script: '|||panw-iot-3rd-party-report-status-to-panw'
       type: regular
       version: -1
-    taskid: 1d93fdaf-fbc5-460d-80c8-2f1c1ae9681e
+    taskid: 273b5426-9f51-4356-8975-1ff5a772a161
     timertriggers: []
     type: regular
     view: |-
@@ -534,13 +525,13 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: 96add5d1-ab69-4252-8b6a-b2456ddddec1
+      id: db3e784e-b17d-4a95-8b5a-7f9d1b087df4
       iscommand: true
       name: closeInvestigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 96add5d1-ab69-4252-8b6a-b2456ddddec1
+    taskid: db3e784e-b17d-4a95-8b5a-7f9d1b087df4
     timertriggers: []
     type: regular
     view: |-
@@ -553,7 +544,10 @@ tasks:
 version: -1
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "4_5_no": 0.74,
+      "4_6_yes": 0.76
+    },
     "paper": {
       "dimensions": {
         "height": 1765,

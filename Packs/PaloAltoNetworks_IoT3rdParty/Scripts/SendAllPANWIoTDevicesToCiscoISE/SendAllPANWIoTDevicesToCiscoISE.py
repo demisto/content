@@ -1,38 +1,35 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-cisco_ise_field_map = {
-    "ip": ["ZingboxIpAddress", "PanwIoTIpAddress"],
-    "ip address": ["ZingboxIP", "PanwIoTIP"],
-    "ip_address": ["ZingboxIP", "PanwIoTIP"],
-    "profile": ["ZingboxProfile", "PanwIoTProfile"],
-    "category": ["ZingboxCategory", "PanwIoTCategory"],
-    "risk_score": ["ZingboxRiskScore", "PanwIoTRiskScore"],
-    "risk score": ["ZingboxRiskScore", "PanwIoTRiskScore"],
-    "confidence": ["ZingboxConfidence", "PanwIoTConfidence"],
-    "confidence score": ["ZingboxConfidence", "PanwIoTConfidence"],
-    "confidence_score": ["ZingboxConfidence", "PanwIoTConfidence"],
-    "tag": ["ZingboxTag", "PanwIoTTag"],
-    "asset_tag": ["ZingboxTag", "PanwIoTTag"],
-    "Tags": ["ZingboxTag", "PanwIoTTag"],
-    "hostname": ["ZingboxHostname", "PanwIoTHostname"],
-    "osCombined": ["ZingboxOS", "PanwIoTOS"],
-    "model": ["ZingboxModel", "PanwIoTModel"],
-    "vendor": ["ZingboxVendor", "PanwIoTVendor"],
-    "Serial Number": ["ZingboxSerial", "PanwIoTSerial"],
-    "Serial_Number": ["ZingboxSerial", "PanwIoTSerial"],
-    "endpoint protection": ["ZingboxEPP", "PanwIoTEPP"],
-    "endpoint_protection": ["ZingboxEPP", "PanwIoTEPP"],
-    "AET": ["ZingboxAET", "PanwIoTAET"],
-    "External Network": ["ZingboxInternetAccess", "PanwIoTInternetAccess"],
-    # "last activity": "ZingboxLastActivity"
-}
-'''
-Get the error message or active cisco ise instance
-'''
+
+PANW_IOT_INSTANCE = demisto.args().get('panw_iot_3rd_party_instance')
+CISCO_ISE_ACTIVE_INSTANCE = demisto.args().get("active_ise_instance")
 
 
-def get_active_ise_instance():
-    # get active Cisco ISE instance
+def send_status_to_panw_iot_cloud(status, msg):
+    """
+    Reports status details back to PANW IoT Cloud.
+    param status: Status (error, disabled, success) to be send to PANW IoT cloud.
+    param msg: Debug message to be send to PANW IoT cloud.
+    """
+    resp = demisto.executeCommand("panw-iot-3rd-party-report-status-to-panw", {
+        "status": status,
+        "message": msg,
+        "integration_name": "ise",
+        "playbook_name": "PANW IoT 3rd Party Cisco ISE Integration - Bulk Export to Cisco ISE",
+        "asset_type": 'device',
+        "timestamp": int(round(time.time() * 1000)),
+        "using": PANW_IOT_INSTANCE
+    })
+
+    if isError(resp[0]):
+        err_msg = f'Error, failed to send status to PANW IoT Cloud - {resp[0].get("Contents")}'
+        raise Exception(err_msg)
+
+
+def get_active_ise_instance_or_error_msg():
+    """
+    Get the active configured Cisco ISE instance, if not found then return the error message.
+    """
     response = demisto.executeCommand("GetCiscoISEActiveInstance", {})
     err_msg = None
     active_instance = None
@@ -47,15 +44,11 @@ def get_active_ise_instance():
     return active_instance, err_msg
 
 
-'''
-Extract any connection error or error code if possible,
-Otherwise just return the original error
-'''
-# Connection error = Connection Error. Verify that the Server URL and port are correct, and that the port is open.
-# API call error =  Error in API call to Cisco ISE Integration [{response.status_code}] - {response.reason}, {message}
-
-
 def extract_ise_api_error(err_msg):
+    """
+    Extract any connection error or error code if possible,
+    Otherwise just return the original error
+    """
     err_msg = err_msg.split('-')[0]
     if err_msg.startswith("Error in API call to Cisco"):
         start = err_msg.find('[') + 1
@@ -67,151 +60,187 @@ def extract_ise_api_error(err_msg):
         return err_msg
 
 
-'''
-returns a status and message back to cloud
-'''
-
-
-def send_status_to_panw_iot_cloud(status=None, msg=None):
-    demisto.executeCommand("panw-iot-3rd-party-report-status-to-panw", {
-        "status": status,
-        "message": msg,
-        "integrationName": "ise",
-        "playbookName": "PANW IoT 3rd Party Cisco ISE Integration - Bulk Export to Cisco ISE",
-        "type": "device",
-        "timestamp": int(round(time.time() * 1000)),
-        "using": "PANW IoT 3rd Party Integration Instance"
-    })
-
-
-GET_EP_ID_CMD = "cisco-ise-get-endpoint-id-by-name"
-active_instance = demisto.args().get("active_ise_instance")
-count = 0
-offset = 0
-PAGE_SIZE = 1000
-
-while True:
-    # get all devices from the IoT cloud
+def get_devices_from_panw_iot_cloud(offset, page_size):
+    """
+    Gets assets from PANW IoT cloud.
+    param offset: Offset number for the asset list.
+    param page_size: Page size of the response being requested.
+    """
     resp = demisto.executeCommand("panw-iot-3rd-party-get-asset-list", {
-        "assetType": "Device",
-        "incrementTime": None,
+        "asset_type": 'device',
+        "increment_type": None,
         "offset": offset,
-        "pageLength": PAGE_SIZE,
-        "using": "PANW IoT 3rd Party Integration Instance"
+        "pageLength": page_size,
+        "using": PANW_IOT_INSTANCE
 
     })
     if isError(resp[0]):
-        err_msg = "Error, could not get devices from Iot Cloud %s" % resp[0].get('Contents')
-        send_status_to_panw_iot_cloud("error", err_msg)
-        demisto.info("PANW_IOT_3RD_PARTY_BASE %s" % err_msg)
-        return_error(err_msg)
-        break
-    size = 0
-    try:
-        device_list = resp[0]['Contents']
-        size = len(device_list)
-        for device_map in device_list:
-            if 'mac_address' in device_map:
-                mac = device_map['mac_address']
-                if mac is None or mac == "":
-                    continue
-                attr_map = {}
-                for field in device_map:
-                    if device_map[field] is None or device_map[field] == "":
-                        continue
-                    if field in cisco_ise_field_map:
-                        attr_map[cisco_ise_field_map[field][0]] = device_map[field]
-                        attr_map[cisco_ise_field_map[field][1]] = device_map[field]
-                # check if the endpoint already exists by the endpoint ID:
-                resp = demisto.executeCommand(GET_EP_ID_CMD, {
-                    "macAddress": mac,
-                    "using": active_instance
-                })
-                if isError(resp[0]):
-                    err_msg = extract_ise_api_error(resp[0]['Contents'])
-                    # if this api call is not allowed (Method Not Allowed), we need to move to the older filter based API
-                    if err_msg == '405':
-                        GET_EP_ID_CMD = "cisco-ise-get-endpoint-id"
-                        demisto.info("PANW_IOT_3RD_PARTY_BASE endpoint name API not available, switch to filter based "
-                                     "get-endpoint-id API")
-                    # If we get 404 Not Found or empty results are returned, we need to create a new Endpoint
-                    elif err_msg == "404" or err_msg == "list index out of range":
-                        ret = demisto.executeCommand("cisco-ise-create-endpoint", {
-                            "mac_address": mac,
-                            "attributes_map": attr_map,
-                            "using": active_instance
-                        })
-                        if isError(ret[0]):
-                            return_results("Failed to create new Endpoint %s" % mac)  # log to the war room
-                            demisto.info("PANW_IOT_3RD_PARTY_BASE Failed to create new Endpoint %s, reason %s" %
-                                         (mac, ret[0]['Contents']))
-                        else:
-                            # demisto.info("PANW_IOT_3RD_PARTY_BASE New Endpoint created %s" % mac)
-                            count += 1
-                    # The primary went down (connection Error) or 401 if a fail over occurred. We need to get the new Primary
-                    elif err_msg == "Connection Error" or err_msg == "401":
-                        # Failover can take up to 10 minutes, its ok to just wait even if its a standalone ISE noe.
-                        msg = "ISE instance is down. Trying again in 10 minutes. Error = %s" % err_msg
-                        demisto.info("PANW_IOT_3RD_PARTY_BASE %s" % msg)
-                        send_status_to_panw_iot_cloud("error", msg)
-                        time.sleep(10 * 60)
-                        # Try again to get a new active instance
-                        new_active_instance, err_msg = get_active_ise_instance()
-                        if new_active_instance is None:
-                            send_status_to_panw_iot_cloud("error", err_msg)
-                            demisto.info("PANW_IOT_3RD_PARTY_BASE failed to get any active ISE instance, sending "
-                                         "report back to panw cloud. Error = %s", err_msg)
-                            return_error(err_msg)
-                        else:
-                            active_instance = new_active_instance
-                            msg = "Found active ISE instance %s" % active_instance
-                            send_status_to_panw_iot_cloud("success", msg)
-                            demisto.info("PANW_IOT_3RD_PARTY_BASE %s" % msg)
+        err_msg = f'Error, could not get assets from PANW IoT Cloud - {resp[0].get("Contents")}'
+        raise Exception(err_msg)
 
-                else:
-                    try:
-                        ID = resp[0]['EntryContext']['Endpoint(val.ID === obj.ID)']['ID']
-                        attribute_names = ""
-                        attribute_values = ""
-                        for key in attr_map:
-                            attribute_names += key + ","
-                            attribute_values += str(attr_map[key]) + ","
-                        attribute_names = attribute_names[:-1]
-                        attribute_values = attribute_values[:-1]
+    return resp[0]['Contents']
 
-                        res = demisto.executeCommand("cisco-ise-update-endpoint-custom-attribute", {
-                            "id": ID,
-                            "macAddress": mac,
-                            "attributeName": attribute_names,
-                            "attributeValue": attribute_values,
-                            "using": active_instance
-                        })
-                        if isError(res[0]):
-                            # this can happen if any of the custom attributes already exist on ISE
-                            demisto.info("PANW_IOT_3RD_PARTY_BASE Failed to update Custom Attributes for Endpoint %s, "
-                                         "reason %s" % (mac, res[0]['Contents']))
-                        else:
-                            # demisto.info("PANW_IOT_3RD_PARTY_BASE Updated existing Endpoint %s" % mac)
-                            count += 1
-                    except Exception as ex:
-                        demisto.info(ex)
-                        continue
 
-                time.sleep(1)
-    except Exception as ex:
-        demisto.info("PANW_IOT_3RD_PARTY_BASE Failed to parse device map %s" % str(ex))
-        return_error("Failed to parse device map %s" % str(ex))
+def convert_device_list_to_cisco_ise_custom_attributes(device_list):
+    """
+    Converts a list of PANW IoT devices to Cisco ISE custom attributes maps.
+    param device_list: The list of PANW IoT devices to be converted.
+    """
+    resp = demisto.executeCommand("panw-iot-3rd-party-convert-assets-to-external-format", {
+        "asset_type": 'device',
+        "output_format": "CiscoISECustomAttributes",
+        "asset_list": device_list,
+        "using": PANW_IOT_INSTANCE
+    })
+    if isError(resp[0]):
+        err_msg = f'Error, failed to convert PANW IoT devices to CiscoISECustomAttributes- {resp[0].get("Contents")}'
+        raise Exception(err_msg)
 
-    if size == PAGE_SIZE:
-        offset += PAGE_SIZE
-        msg = "Successfully sent %d Devices to ISE" % count
-        send_status_to_panw_iot_cloud("success", msg)
-        demisto.info("PANW_IOT_3RD_PARTY_BASE %s" % msg)
-        time.sleep(5)
+    return resp[0]['Contents']
+
+
+def update_existing_endpoint(mac, attr_map, ep_id, active_instance):
+    """
+    Update an existing endpoint with the given custom attributes.
+    Param mac: mac address of the endpoint that needs to be updated.
+    Param attr_map: a map containing various ise custom attributes.
+    Param ep_id: ID for endpoint that needs to be updated.
+    Param active_instance: The primary/active ISE instance.
+    """
+    attribute_names = ""
+    attribute_values = ""
+    for key in attr_map:
+        attribute_names += key + ","
+        attribute_values += str(attr_map[key]) + ","
+    attribute_names = attribute_names[:-1]
+    attribute_values = attribute_values[:-1]
+
+    resp = demisto.executeCommand("cisco-ise-update-endpoint-custom-attribute", {
+        "id": ep_id,
+        "macAddress": mac,
+        "attributeName": attribute_names,
+        "attributeValue": attribute_values,
+        "using": active_instance
+    })
+    if isError(resp[0]):
+        err_msg = f'Error, failed to update custom attributes for endpoint {id} - {resp[0].get("Contents")}'
+        raise Exception(err_msg)
+
+
+def create_new_ep(mac, attr_map, active_instance):
+    """
+    Create a new endpoint with the given params
+    Param mac: mac address of the endpoint that needs to be created.
+    Param attr_map: a map containing various ise custom attributes.
+    Param active_instance: The primary/active ISE instance.
+    """
+    resp = demisto.executeCommand("cisco-ise-create-endpoint", {
+        "mac_address": mac,
+        "attributes_map": attr_map,
+        "using": active_instance
+    })
+    if isError(resp[0]):
+        err_msg = f'Failed to create new Endpoint {mac} - {resp[0].get("Contents")}'
+        raise Exception(err_msg)
+
+
+def create_or_update_ep(mac, attr_map):
+    """
+    Check if an enpoint exists in ISE, if not create one with the custom attributes
+    otherwise update it. If at any point the connection goes down or we get a 401 -
+    unautherized access we will attempt to get the new active instance.
+    Params mac: Mac adress of the endpoint.
+    attr_map: Custom attributes for the endpoint.
+    """
+
+    global CISCO_ISE_ACTIVE_INSTANCE
+    get_ep_id_cmd = "cisco-ise-get-endpoint-id-by-name"
+    cmd_mac_syntax_map = {
+        "cisco-ise-get-endpoint-id-by-name": "mac_address",
+        "cisco-ise-get-endpoint-id": "macAddress"
+    }
+
+    # Check if this mac address (endpoint) is present in ISE by attempting to get its ID
+    resp = demisto.executeCommand(get_ep_id_cmd, {
+        cmd_mac_syntax_map[get_ep_id_cmd]: mac,
+        "using": CISCO_ISE_ACTIVE_INSTANCE
+    })
+
+    if isError(resp[0]):
+        err_msg = extract_ise_api_error(resp[0].get("Contents"))
+
+        # 404 Not Found or empty results, we need to create a new EP
+        if err_msg == "404" or err_msg == "list index out of range":
+            create_new_ep(mac, attr_map, CISCO_ISE_ACTIVE_INSTANCE)
+
+        # 405 - Method not allowed means we need to switch to an old filter based API
+        elif err_msg == '405':
+            get_ep_id_cmd = "cisco-ise-get-endpoint-id"
+
+        # The primary went down (connection Error) or 401 if a fail over occurred (this primary/active
+        # is not a secondary/standby device).We should attempt to get the new Primary/Active
+        # instance is possible.
+        elif err_msg == "Connection Error" or err_msg == "401":
+            # Failover can take up to 10 minutes, its ok to just wait even if its a standalone ISE noe.
+            msg = "ISE instance is down. Trying again in 10 minutes. Error = %s" % err_msg
+            demisto.info("PANW_IOT_3RD_PARTY_BASE %s" % msg)
+            send_status_to_panw_iot_cloud("error", msg)
+            time.sleep(10 * 60)
+            # Try again to get a new active instance
+            new_active_instance, err_msg = get_active_ise_instance()
+            if new_active_instance is None:
+                raise Exception(err_msg)
+            else:
+                CISCO_ISE_ACTIVE_INSTANCE = new_active_instance
+                msg = "Found new active ISE instance %s" % CISCO_ISE_ACTIVE_INSTANCE
+                send_status_to_panw_iot_cloud("success", msg)
+        else:
+            raise Exception(resp[0].get("Contents"))
     else:
-        break
+        ep_id = resp[0]['EntryContext']['Endpoint(val.ID === obj.ID)']['ID']
+        update_existing_endpoint(mac, attr_map, ep_id, CISCO_ISE_ACTIVE_INSTANCE)
 
-msg = "Successfully sent total %d Devices to ISE" % count
-send_status_to_panw_iot_cloud("success", msg)
-demisto.info("PANW_IOT_3RD_PARTY_BASE %s" % msg)
-return_results(msg)
+
+def get_all_panw_iot_devices_and_send_to_cisco_ise():
+    """
+    Retrieves all devices from PANW IoT Cloud, 1000 devices at a time and sends it
+    to the primary/active cisco ise.
+    """
+    count = 0
+    offset = 0
+    page_size = 1000
+
+    while True:
+        device_list = get_devices_from_panw_iot_cloud(offset, page_size)
+        size = len(device_list)
+        custom_attributes_list = convert_device_list_to_cisco_ise_custom_attributes(device_list)
+        for entry in custom_attributes_list:
+            mac = entry['mac']
+            attr_map = entry['zb_attributes']
+            create_or_update_ep(mac, attr_map)
+            count += 1
+            # time.sleep(1)
+
+        if size == page_size:
+            offset += page_size
+            msg = f'Successfully exported {count} devices to Cisco ISE'
+            send_status_to_panw_iot_cloud("success", msg,)
+            # time.sleep(5)
+        else:
+            break
+    return(f'Successfully exported total {count} devices to Cisco ISE')
+
+
+def main():
+    try:
+        status_msg = get_all_panw_iot_devices_and_send_to_cisco_ise()
+    except Exception as ex:
+        send_status_to_panw_iot_cloud("error", str(ex))
+        return_error(str(ex))
+
+    send_status_to_panw_iot_cloud("success", status_msg)
+    return_results(status_msg)
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

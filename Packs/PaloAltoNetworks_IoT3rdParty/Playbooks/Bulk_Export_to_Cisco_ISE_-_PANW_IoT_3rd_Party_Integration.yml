@@ -18,12 +18,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 370c0965-1323-4468-8516-60d251554af6
+      id: 2fab7564-1ede-4038-8b3e-5d88a54cf25d
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 370c0965-1323-4468-8516-60d251554af6
+    taskid: 2fab7564-1ede-4038-8b3e-5d88a54cf25d
     timertriggers: []
     type: start
     view: |-
@@ -56,13 +56,13 @@ tasks:
       brand: ""
       description: Returns 'yes' if integration brand is available. Otherwise returns
         'no'
-      id: ca56aee2-1007-4861-8200-8c16a7913f57
+      id: f9aed24d-bfa9-4847-86d8-7373e90f2cbe
       iscommand: false
-      name: IsIntegrationAvailable
+      name: Is Cisco ISE enabled?
       script: IsIntegrationAvailable
       type: condition
       version: -1
-    taskid: ca56aee2-1007-4861-8200-8c16a7913f57
+    taskid: f9aed24d-bfa9-4847-86d8-7373e90f2cbe
     timertriggers: []
     type: condition
     view: |-
@@ -82,16 +82,16 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      integrationName:
+      asset_type:
+        simple: device
+      integration_name:
         simple: ise
       message:
-        simple: Cisco ISE instance not configured
-      playbookName:
-        simple: Bulk Export to Cisco ISE - PANW IoT 3rd Party Integration
+        simple: Cisco ISE instance is not enabled
+      playbook_name:
+        simple: Send disabled status to PANW IoT cloud
       status:
         simple: disabled
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -99,13 +99,13 @@ tasks:
     task:
       brand: ""
       description: Sends a status message back to PANW IOT cloud.
-      id: 01868f83-f2f5-4f2e-8d20-fd167bd27635
+      id: ed3bd752-36ff-4d45-8331-6b3b0791d5e0
       iscommand: true
-      name: panw-iot-3rd-party-report-status-to-panw
+      name: Send disabled status to PANW IoT cloud
       script: '|||panw-iot-3rd-party-report-status-to-panw'
       type: regular
       version: -1
-    taskid: 01868f83-f2f5-4f2e-8d20-fd167bd27635
+    taskid: ed3bd752-36ff-4d45-8331-6b3b0791d5e0
     timertriggers: []
     type: regular
     view: |-
@@ -133,13 +133,13 @@ tasks:
     task:
       brand: ""
       description: This Script gets - TODO
-      id: 2a965644-a684-47ca-8d0d-0253b2ba498b
+      id: 2e8b1edc-2ba7-48a1-855a-71b356a04bcb
       iscommand: false
-      name: GetCiscoISEActiveInstance
+      name: Get active Cisco ISE instance
       script: GetCiscoISEActiveInstance
       type: regular
       version: -1
-    taskid: 2a965644-a684-47ca-8d0d-0253b2ba498b
+    taskid: 2e8b1edc-2ba7-48a1-855a-71b356a04bcb
     timertriggers: []
     type: regular
     view: |-
@@ -155,28 +155,27 @@ tasks:
     ignoreworker: false
     nexttasks:
       "no":
-      - "6"
-      "yes":
       - "5"
+      "yes":
+      - "6"
     note: false
     quietmode: 0
     scriptarguments:
-      entryId:
-        simple: ${lastCompletedTaskEntries}
+      value:
+        simple: ${PaloAltoIoTIntegrationBase.ActiveNodeInstance}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
-      id: e21462a2-7a8d-43d7-8e44-cbbb8a0627bb
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 7afe242d-577d-4e3a-8186-c5ff77752ac3
       iscommand: false
-      name: isError
-      script: isError
+      name: Is active instance available?
+      script: Exists
       type: condition
       version: -1
-    taskid: e21462a2-7a8d-43d7-8e44-cbbb8a0627bb
+    taskid: 7afe242d-577d-4e3a-8186-c5ff77752ac3
     timertriggers: []
     type: condition
     view: |-
@@ -196,16 +195,16 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      integrationName:
+      asset_type:
+        simple: device
+      integration_name:
         simple: ise
       message:
         simple: ${PaloAltoIoTIntegrationBase.NodeErrorStatus}
-      playbookName:
+      playbook_name:
         simple: Bulk Export to Cisco ISE - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: device
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -213,13 +212,13 @@ tasks:
     task:
       brand: ""
       description: Sends a status message back to PANW IOT cloud.
-      id: cb0d6707-d99a-4e4b-83f2-ad55cb2bcd1e
+      id: 929fa689-c125-403d-85b8-9aa27e0c4de3
       iscommand: true
-      name: panw-iot-3rd-party-report-status-to-panw
+      name: Send error status to PANW IoT cloud
       script: '|||panw-iot-3rd-party-report-status-to-panw'
       type: regular
       version: -1
-    taskid: cb0d6707-d99a-4e4b-83f2-ad55cb2bcd1e
+    taskid: 929fa689-c125-403d-85b8-9aa27e0c4de3
     timertriggers: []
     type: regular
     view: |-
@@ -240,26 +239,28 @@ tasks:
     scriptarguments:
       active_ise_instance:
         simple: ${PaloAltoIoTIntegrationBase.ActiveNodeInstance}
+      panw_iot_3rd_party_instance:
+        simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: This script gets all available devices from the IoT cloud and updates/creates
         new endpoint with custom attributes on Cisco ISE.
-      id: 6d11f667-8312-4967-8d56-bf262901ecda
+      id: d97cb086-ed0e-4dcc-87df-854c740d3164
       iscommand: false
-      name: SendAllPANWIoTDevicesToCiscoISE
+      name: Export all PANW IoT device inventory to Cisco ISE
       script: SendAllPANWIoTDevicesToCiscoISE
       type: regular
       version: -1
-    taskid: 6d11f667-8312-4967-8d56-bf262901ecda
+    taskid: d97cb086-ed0e-4dcc-87df-854c740d3164
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 790,
-          "y": 780
+          "y": 770
         }
       }
   "7":
@@ -280,13 +281,13 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: 93175057-7805-469c-8399-4e11afdd1c7c
+      id: 62127765-5c60-424d-8c6a-9ea7efb46814
       iscommand: true
       name: closeInvestigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 93175057-7805-469c-8399-4e11afdd1c7c
+    taskid: 62127765-5c60-424d-8c6a-9ea7efb46814
     timertriggers: []
     type: regular
     view: |-

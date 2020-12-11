@@ -18,12 +18,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 45a4ab5b-a09e-401d-8e6b-7a079f9f28e3
+      id: 679015d5-7d89-4036-8685-1b9f5cbdcc45
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 45a4ab5b-a09e-401d-8e6b-7a079f9f28e3
+    taskid: 679015d5-7d89-4036-8685-1b9f5cbdcc45
     timertriggers: []
     type: start
     view: |-
@@ -53,13 +53,13 @@ tasks:
       brand: ""
       description: Returns 'yes' if integration brand is available. Otherwise returns
         'no'
-      id: e5141f5e-f5fc-4ab6-89f7-3758ee54ad8a
+      id: a2bc5618-1f8e-4180-8217-2e3c88fc43ae
       iscommand: false
-      name: Is ServiceNow available
+      name: Is ServiceNow enabled?
       script: IsIntegrationAvailable
       type: condition
       version: -1
-    taskid: e5141f5e-f5fc-4ab6-89f7-3758ee54ad8a
+    taskid: a2bc5618-1f8e-4180-8217-2e3c88fc43ae
     timertriggers: []
     type: condition
     view: |-
@@ -79,7 +79,7 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      assetID:
+      asset_id:
         complex:
           root: incident
           transformers:
@@ -88,8 +88,8 @@ tasks:
                 value:
                   simple: correlation_id
             operator: getField
-      assetType:
-        simple: Alert
+      asset_type:
+        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -98,13 +98,13 @@ tasks:
       brand: Palo Alto Networks IoT 3rd Party
       description: For a given a asset ID (alert-id, vulnerability-id or mac-address)
         returns the asset details.
-      id: 80fb8a12-7a20-4b08-8061-d8c64521eb45
+      id: 4189234a-d7bd-4953-87a6-13e589904f40
       iscommand: true
-      name: get single alert instance
+      name: Get single alert instance
       script: Palo Alto Networks IoT 3rd Party|||panw-iot-3rd-party-get-single-asset
       type: regular
       version: -1
-    taskid: 80fb8a12-7a20-4b08-8061-d8c64521eb45
+    taskid: 4189234a-d7bd-4953-87a6-13e589904f40
     timertriggers: []
     type: regular
     view: |-
@@ -123,16 +123,16 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      integrationName:
+      asset_type:
+        simple: alert
+      integration_name:
         simple: servicenow
       message:
         simple: ServiceNow instance is not enabled
-      playbookName:
+      playbook_name:
         simple: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: disabled
-      type:
-        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -140,13 +140,13 @@ tasks:
     task:
       brand: Palo Alto Networks IoT 3rd Party
       description: Sends a status message back to PANW IOT cloud.
-      id: 92c5c696-a6dd-4d4e-8956-5d9a6e01f42b
+      id: 6881997d-8930-4a4d-8c91-12d6674ff8a9
       iscommand: true
-      name: send disabled status back to panw iot
+      name: Send disabled status back to PANW IoT cloud
       script: Palo Alto Networks IoT 3rd Party|||panw-iot-3rd-party-report-status-to-panw
       type: regular
       version: -1
-    taskid: 92c5c696-a6dd-4d4e-8956-5d9a6e01f42b
+    taskid: 6881997d-8930-4a4d-8c91-12d6674ff8a9
     timertriggers: []
     type: regular
     view: |-
@@ -174,13 +174,13 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: 2a6874fc-5337-4e4f-853a-8685ecb885cd
+      id: 93756937-5f48-49ee-8d7d-f280a3a1a081
       iscommand: true
       name: closeInvestigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 2a6874fc-5337-4e4f-853a-8685ecb885cd
+    taskid: 93756937-5f48-49ee-8d7d-f280a3a1a081
     timertriggers: []
     type: regular
     view: |-
@@ -210,13 +210,13 @@ tasks:
       brand: ""
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
-      id: d127755d-195c-47d1-8975-0176ea192f31
+      id: 804ed7f3-93b2-4077-8f86-cdbbaf7cc7c4
       iscommand: false
-      name: Does alert instance exist
+      name: Does alert instance exist?
       script: Exists
       type: condition
       version: -1
-    taskid: d127755d-195c-47d1-8975-0176ea192f31
+    taskid: 804ed7f3-93b2-4077-8f86-cdbbaf7cc7c4
     timertriggers: []
     type: condition
     view: |-
@@ -246,17 +246,15 @@ tasks:
                 value:
                   simple: "0"
             operator: atIndex
-      assetList:
+      asset_list:
         simple: ${PanwIot3rdParty.SingleAsset}
-      assetType:
-        simple: Alert
+      asset_type:
+        simple: alert
       incident:
         simple: ${incident}
-      metadata: {}
-      metadata1:
-        simple: ${incident}
-      outputFormat:
+      output_format:
         simple: ServiceNow
+      servicenow_map: {}
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -265,13 +263,13 @@ tasks:
       brand: Palo Alto Networks IoT 3rd Party
       description: For a given asset (alert, device, vuln) converts it to 3rd party
         format.
-      id: 8430282e-0f80-406e-8d51-6f3b6a56a1a8
+      id: 7af08954-6164-4349-8061-c4192a00e31b
       iscommand: true
-      name: convert alert to ServiceNow format
+      name: Convert alert to ServiceNow format
       script: Palo Alto Networks IoT 3rd Party|||panw-iot-3rd-party-convert-assets-to-external-format
       type: regular
       version: -1
-    taskid: 8430282e-0f80-406e-8d51-6f3b6a56a1a8
+    taskid: 7af08954-6164-4349-8061-c4192a00e31b
     timertriggers: []
     type: regular
     view: |-
@@ -290,16 +288,16 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      integrationName:
+      asset_type:
+        simple: alert
+      integration_name:
         simple: servicenow
       message:
         simple: Failed to get alert instance zb_ticket id ${incident.correlation_id}
-      playbookName:
+      playbook_name:
         simple: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -307,13 +305,13 @@ tasks:
     task:
       brand: Palo Alto Networks IoT 3rd Party
       description: Sends a status message back to PANW IOT cloud.
-      id: 77cde86b-41cb-489d-8d48-493c452ac501
+      id: 5868038e-a0f7-40f0-8d3c-d34dde3a6c6c
       iscommand: true
-      name: send error status back to panw iot
+      name: Send error status back to PANW IoT cloud
       script: Palo Alto Networks IoT 3rd Party|||panw-iot-3rd-party-report-status-to-panw
       type: regular
       version: -1
-    taskid: 77cde86b-41cb-489d-8d48-493c452ac501
+    taskid: 5868038e-a0f7-40f0-8d3c-d34dde3a6c6c
     timertriggers: []
     type: regular
     view: |-
@@ -341,13 +339,13 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: 72beae67-4104-4242-8db7-27b99ea30c85
+      id: ae2b9a00-1137-4539-8659-063e8ac79a5c
       iscommand: true
       name: closeInvestigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 72beae67-4104-4242-8db7-27b99ea30c85
+    taskid: ae2b9a00-1137-4539-8659-063e8ac79a5c
     timertriggers: []
     type: regular
     view: |-
@@ -378,13 +376,13 @@ tasks:
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
         to check the previous task entries. If array is provided, will return yes
         if one of the entries returned an error.
-      id: 22c1bb77-8b4d-48c3-8c72-80d180fd68e4
+      id: 880952f2-bf21-4c5e-8599-24536ccbd585
       iscommand: false
-      name: isError
+      name: Was there an error when converting alert to Servicenow format?
       script: isError
       type: condition
       version: -1
-    taskid: 22c1bb77-8b4d-48c3-8c72-80d180fd68e4
+    taskid: 880952f2-bf21-4c5e-8599-24536ccbd585
     timertriggers: []
     type: condition
     view: |-
@@ -403,16 +401,16 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      integrationName:
+      asset_type:
+        simple: alert
+      integration_name:
         simple: servicenow
       message:
         simple: Failed to convert alert to servicenow format
-      playbookName:
+      playbook_name:
         simple: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -420,13 +418,13 @@ tasks:
     task:
       brand: Palo Alto Networks IoT 3rd Party
       description: Sends a status message back to PANW IOT cloud.
-      id: aafb5499-9785-4d88-8f77-bf72c9354616
+      id: 720b4f33-ac95-4dfc-8273-398b8748adc5
       iscommand: true
-      name: send error status back to panw iot
+      name: Send error status back to PANW IoT cloud
       script: Palo Alto Networks IoT 3rd Party|||panw-iot-3rd-party-report-status-to-panw
       type: regular
       version: -1
-    taskid: aafb5499-9785-4d88-8f77-bf72c9354616
+    taskid: 720b4f33-ac95-4dfc-8273-398b8748adc5
     timertriggers: []
     type: regular
     view: |-
@@ -454,13 +452,13 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: 21b63140-ba40-43ce-869f-03c6eeacf056
+      id: 53e77fa9-2248-416a-801e-f4fcc5801078
       iscommand: true
       name: closeInvestigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 21b63140-ba40-43ce-869f-03c6eeacf056
+    taskid: 53e77fa9-2248-416a-801e-f4fcc5801078
     timertriggers: []
     type: regular
     view: |-
@@ -493,13 +491,13 @@ tasks:
     task:
       brand: ServiceNow v2
       description: Creates a new record in the specified ServiceNow table.
-      id: 3eb4fb10-7199-4d99-8082-71a1d0b9bc1c
+      id: b76e0a5b-dde3-4657-82b1-b08d14bb1912
       iscommand: true
-      name: servicenow-create-record
+      name: Create Servicenow record
       script: ServiceNow v2|||servicenow-create-record
       type: regular
       version: -1
-    taskid: 3eb4fb10-7199-4d99-8082-71a1d0b9bc1c
+    taskid: b76e0a5b-dde3-4657-82b1-b08d14bb1912
     timertriggers: []
     type: regular
     view: |-
@@ -518,17 +516,17 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      integrationName:
+      asset_type:
+        simple: alert
+      integration_name:
         simple: servicenow
       message:
         simple: Success to send alert instance zb_ticket id ${incident.correlation_id}
           to ServiceNow
-      playbookName:
+      playbook_name:
         simple: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: success
-      type:
-        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -536,13 +534,13 @@ tasks:
     task:
       brand: Palo Alto Networks IoT 3rd Party
       description: Sends a status message back to PANW IOT cloud.
-      id: 1754161d-dcb9-4240-8b97-9bc7008fb008
+      id: df9f03e6-4165-41ca-80f5-6c578d31a268
       iscommand: true
-      name: send success status back to panw iot
+      name: Send success status back to PANW IoT cloud
       script: Palo Alto Networks IoT 3rd Party|||panw-iot-3rd-party-report-status-to-panw
       type: regular
       version: -1
-    taskid: 1754161d-dcb9-4240-8b97-9bc7008fb008
+    taskid: df9f03e6-4165-41ca-80f5-6c578d31a268
     timertriggers: []
     type: regular
     view: |-
@@ -570,13 +568,13 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: f5932f37-25bb-4ddc-8bc0-78460a90ae9a
+      id: 0feae20e-dee7-498b-85d1-47bea84683bc
       iscommand: true
       name: closeInvestigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: f5932f37-25bb-4ddc-8bc0-78460a90ae9a
+    taskid: 0feae20e-dee7-498b-85d1-47bea84683bc
     timertriggers: []
     type: regular
     view: |-
@@ -607,13 +605,13 @@ tasks:
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
         to check the previous task entries. If array is provided, will return yes
         if one of the entries returned an error.
-      id: 57cf6efe-fa45-4b9f-8a03-6bccbef21bf8
+      id: 7259e2ad-773f-4e94-8943-27f1114ed8f5
       iscommand: false
-      name: isError
+      name: Was there an error when creating Servicenow record?
       script: isError
       type: condition
       version: -1
-    taskid: 57cf6efe-fa45-4b9f-8a03-6bccbef21bf8
+    taskid: 7259e2ad-773f-4e94-8943-27f1114ed8f5
     timertriggers: []
     type: condition
     view: |-
@@ -632,16 +630,16 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      integrationName:
+      asset_type:
+        simple: alert
+      integration_name:
         simple: servicenow
       message:
         simple: Failed to create record in servicenow table
-      playbookName:
+      playbook_name:
         simple: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
       status:
         simple: error
-      type:
-        simple: alert
       using:
         simple: PANW IoT 3rd Party Integration Instance
     separatecontext: false
@@ -649,13 +647,13 @@ tasks:
     task:
       brand: Palo Alto Networks IoT 3rd Party
       description: Sends a status message back to PANW IOT cloud.
-      id: 3dcf5eb7-de33-4a12-8561-f4d4156af62b
+      id: 747a2477-9dbf-40f9-8f19-123a8f58d57d
       iscommand: true
-      name: send error status back to panw iot
+      name: Send error status back to PANW IoT cloud
       script: Palo Alto Networks IoT 3rd Party|||panw-iot-3rd-party-report-status-to-panw
       type: regular
       version: -1
-    taskid: 3dcf5eb7-de33-4a12-8561-f4d4156af62b
+    taskid: 747a2477-9dbf-40f9-8f19-123a8f58d57d
     timertriggers: []
     type: regular
     view: |-
@@ -683,13 +681,13 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: b7824a6c-9174-4ff6-8259-67fb67a91ae3
+      id: 93e9b5c5-1abb-4828-845f-2e76efcfed17
       iscommand: true
       name: closeInvestigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: b7824a6c-9174-4ff6-8259-67fb67a91ae3
+    taskid: 93e9b5c5-1abb-4828-845f-2e76efcfed17
     timertriggers: []
     type: regular
     view: |-
@@ -712,7 +710,6 @@ view: |-
       }
     }
   }
-
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

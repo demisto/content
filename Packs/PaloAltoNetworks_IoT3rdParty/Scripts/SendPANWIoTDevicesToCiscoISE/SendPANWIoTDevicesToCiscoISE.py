@@ -1,21 +1,54 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-GET_EP_ID_CMD = "cisco-ise-get-endpoint-id-by-name"
-ise_instance = demisto.args().get("active_ise_instance")
-attr_lists = demisto.args().get("device_maps")
-return_results("Processing %d devices" % len(attr_lists))
-count = 0
 
-'''
-Extract any connection error or error code if possible,
-Otherwise just return the original error
-'''
-# Connection error = Connection Error. Verify that the Server URL and port are correct, and that the port is open.
-# API call error =  Error in API call to Cisco ISE Integration [{response.status_code}] - {response.reason}, {message}
+PANW_IOT_INSTANCE = demisto.args().get('panw_iot_3rd_party_instance')
+CISCO_ISE_ACTIVE_INSTANCE = demisto.args().get("active_ise_instance")
+
+
+def send_status_to_panw_iot_cloud(status, msg):
+    """
+    Reports status details back to PANW IoT Cloud.
+    param status: Status (error, disabled, success) to be send to PANW IoT cloud.
+    param msg: Debug message to be send to PANW IoT cloud.
+    """
+    resp = demisto.executeCommand("panw-iot-3rd-party-report-status-to-panw", {
+        "status": status,
+        "message": msg,
+        "integration_name": "ise",
+        "playbook_name": "PANW IoT 3rd Party Cisco ISE Integration - Bulk Export to Cisco ISE",
+        "asset_type": 'device',
+        "timestamp": int(round(time.time() * 1000)),
+        "using": PANW_IOT_INSTANCE
+    })
+
+    if isError(resp[0]):
+        err_msg = f'Error, failed to send status to PANW IoT Cloud - {resp[0].get("Contents")}'
+        raise Exception(err_msg)
+
+
+def get_active_ise_instance_or_error_msg():
+    """
+    Get the active configured Cisco ISE instance, if not found then return the error message.
+    """
+    response = demisto.executeCommand("GetCiscoISEActiveInstance", {})
+    err_msg = None
+    active_instance = None
+
+    data = response[0].get('EntryContext', {})
+
+    if 'PaloAltoIoTIntegrationBase.ActiveNodeInstance' in data:
+        active_instance = data.get('PaloAltoIoTIntegrationBase.ActiveNodeInstance')
+    elif 'PaloAltoIoTIntegrationBase.NodeErrorStatus' in data:
+        err_msg = data.get('PaloAltoIoTIntegrationBase.NodeErrorStatus')
+
+    return active_instance, err_msg
 
 
 def extract_ise_api_error(err_msg):
-    # return_results("getting message = %s" % err_msg)
+    """
+    Extract any connection error or error code if possible,
+    Otherwise just return the original error
+    """
     err_msg = err_msg.split('-')[0]
     if err_msg.startswith("Error in API call to Cisco"):
         start = err_msg.find('[') + 1
@@ -27,66 +60,143 @@ def extract_ise_api_error(err_msg):
         return err_msg
 
 
-for attr_list in attr_lists:
-    mac = attr_list['mac']
-    if mac is None or mac == "":
-        continue
-    attr_map = attr_list['zb_attributes']
-    # check if the endpoint already exists by getting the endpoint ID.
-    resp = demisto.executeCommand(GET_EP_ID_CMD, {
+def update_existing_endpoint(mac, attr_map, ep_id, active_instance):
+    """
+    Update an existing endpoint with the given custom attributes.
+    Param mac: mac address of the endpoint that needs to be updated.
+    Param attr_map: a map containing various ise custom attributes.
+    Param ep_id: ID for endpoint that needs to be updated.
+    Param active_instance: The primary/active ISE instance.
+    """
+    attribute_names = ""
+    attribute_values = ""
+    for key in attr_map:
+        attribute_names += key + ","
+        attribute_values += str(attr_map[key]) + ","
+    attribute_names = attribute_names[:-1]
+    attribute_values = attribute_values[:-1]
+
+    resp = demisto.executeCommand("cisco-ise-update-endpoint-custom-attribute", {
+        "id": ep_id,
         "macAddress": mac,
-        "using": ise_instance
+        "attributeName": attribute_names,
+        "attributeValue": attribute_values,
+        "using": active_instance
     })
     if isError(resp[0]):
-        # Hacky way to do this.. if we get a 404, that means the endpoint does not exist in ISE.
-        # if we get a 405 we need to switch back to the filer based API
-        err_msg = extract_ise_api_error(resp[0].get('Contents'))
-        if err_msg == '405':
-            GET_EP_ID_CMD = "cisco-ise-get-endpoint-id"
-            demisto.info("PANW_IOT_3RD_PARTY_BASE name API not available, switch to filter based get-endpoint-id API")
-        elif err_msg == "404" or err_msg == "list index out of range":
-            # Create a new Endpoint here
-            ret = demisto.executeCommand("cisco-ise-create-endpoint", {
-                "mac_address": mac,
-                "attributes_map": attr_map,
-                "using": ise_instance
-            })
-            if isError(ret[0]):
-                return_results("Failed to create new Endpoint %s" % mac)  # log to the war room
-                demisto.info("PANW_IOT_3RD_PARTY_BASE Failed to create new Endpoint %s" % mac)
-            else:
-                count += 1
-    else:
-        try:
-            ID = resp[0]['EntryContext']['Endpoint(val.ID === obj.ID)']['ID']
-            attribute_names = ""
-            attribute_values = ""
-            for key in attr_map:
-                attribute_names += key + ","
-                attribute_values += str(attr_map[key]) + ","
-            attribute_names = attribute_names[:-1]
-            attribute_values = attribute_values[:-1]
-            res = demisto.executeCommand("cisco-ise-update-endpoint-custom-attribute", {
-                "id": ID,
-                "macAddress": mac,
-                "attributeName": attribute_names,
-                "attributeValue": attribute_values,
-                "using": ise_instance
-            })
-            if isError(resp[0]):
-                # The API will also return an error if any of custom attributes already exist.
-                demisto.info("PANW_IOT_3RD_PARTY_BASE Failed to update Custom Attributes for Endpoint %s" % mac)
-            else:
-                count += 1
-        except Exception as ex:
-            demisto.info(ex)
-            continue
+        err_msg = f'Error, failed to update custom attributes for endpoint {id} - {resp[0].get("Contents")}'
+        raise Exception(err_msg)
 
-readable_status = "Successfully sent %d devices to ISE" % count
-demisto.info("PANW_IOT_3RD_PARTY_BASE" + readable_status)
-results = CommandResults(
-    readable_output=readable_status,
-    outputs_prefix="PaloAltoIoTIntegrationBase.Status",
-    outputs=readable_status
-)
-return_results(results)
+
+def create_new_ep(mac, attr_map, active_instance):
+    """
+    Create a new endpoint with the given params
+    Param mac: mac address of the endpoint that needs to be created.
+    Param attr_map: a map containing various ise custom attributes.
+    Param active_instance: The primary/active ISE instance.
+    """
+    resp = demisto.executeCommand("cisco-ise-create-endpoint", {
+        "mac_address": mac,
+        "attributes_map": attr_map,
+        "using": active_instance
+    })
+    if isError(resp[0]):
+        err_msg = f'Failed to create new Endpoint {mac} - {resp[0].get("Contents")}'
+        raise Exception(err_msg)
+
+
+def create_or_update_ep(mac, attr_map):
+    """
+    Check if an enpoint exists in ISE, if not create one with the custom attributes
+    otherwise update it. If at any point the connection goes down or we get a 401 -
+    unautherized access we will attempt to get the new active instance.
+    Params mac: Mac adress of the endpoint.
+    attr_map: Custom attributes for the endpoint.
+    """
+
+    global CISCO_ISE_ACTIVE_INSTANCE
+    get_ep_id_cmd = "cisco-ise-get-endpoint-id-by-name"
+    cmd_mac_syntax_map = {
+        "cisco-ise-get-endpoint-id-by-name": "mac_address",
+        "cisco-ise-get-endpoint-id": "macAddress"
+    }
+
+    # Check if this mac address (endpoint) is present in ISE by attempting to get its ID
+    resp = demisto.executeCommand(get_ep_id_cmd, {
+        cmd_mac_syntax_map[get_ep_id_cmd]: mac,
+        "using": CISCO_ISE_ACTIVE_INSTANCE
+    })
+
+    if isError(resp[0]):
+        err_msg = extract_ise_api_error(resp[0].get("Contents"))
+
+        # 404 Not Found or empty results, we need to create a new EP
+        if err_msg == "404" or err_msg == "list index out of range":
+            create_new_ep(mac, attr_map, CISCO_ISE_ACTIVE_INSTANCE)
+
+        # 405 - Method not allowed means we need to switch to an old filter based API
+        elif err_msg == '405':
+            get_ep_id_cmd = "cisco-ise-get-endpoint-id"
+
+        # The primary went down (connection Error) or 401 if a fail over occurred (this primary/active
+        # is not a secondary/standby device).We should attempt to get the new Primary/Active
+        # instance is possible.
+        elif err_msg == "Connection Error" or err_msg == "401":
+            # Failover can take up to 10 minutes, its ok to just wait even if its a standalone ISE noe.
+            msg = "ISE instance is down. Trying again in 10 minutes. Error = %s" % err_msg
+            demisto.info("PANW_IOT_3RD_PARTY_BASE %s" % msg)
+            send_status_to_panw_iot_cloud("error", msg)
+            time.sleep(10 * 60)
+            # Try again to get a new active instance
+            new_active_instance, err_msg = get_active_ise_instance()
+            if new_active_instance is None:
+                raise Exception(err_msg)
+            else:
+                CISCO_ISE_ACTIVE_INSTANCE = new_active_instance
+                msg = "Found new active ISE instance %s" % CISCO_ISE_ACTIVE_INSTANCE
+                send_status_to_panw_iot_cloud("success", msg)
+        else:
+            raise Exception(resp[0].get("Contents"))
+    else:
+        ep_id = resp[0]['EntryContext']['Endpoint(val.ID === obj.ID)']['ID']
+        update_existing_endpoint(mac, attr_map, ep_id, CISCO_ISE_ACTIVE_INSTANCE)
+
+
+def send_panw_iot_devices_to_send_to_cisco_ise(device_list):
+    """
+    For given device lists consisting of custom attributes, create or update
+    endpoints in Cisco ISE.
+    Param device_list: a list of devices and their custom attributes.
+    """
+    count = 0
+    for device in device_list:
+        mac = device['mac']
+        attr_map = device['zb_attributes']
+        create_or_update_ep(mac, attr_map)
+        count += 1
+        # time.sleep(1)
+
+    return f'Successfully exported {count} devices to Cisco ISE'
+
+
+def main():
+    device_list = demisto.args().get('device_maps')
+    status_msg = None
+    try:
+        status_msg = send_panw_iot_devices_to_send_to_cisco_ise(device_list)
+    except Exception as ex:
+        send_status_to_panw_iot_cloud("error", str(ex))
+        return_error(str(ex))
+
+    send_status_to_panw_iot_cloud("success", status_msg)
+    return_results(
+        CommandResults(
+            readable_output=status_msg,
+            outputs_prefix="PaloAltoIoTIntegrationBase.Status",
+            outputs=status_msg
+        )
+    )
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

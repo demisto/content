@@ -1,11 +1,4 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-import requests
-import json
 import urllib3
-import traceback
-from datetime import datetime
-from datetime import timedelta
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -19,25 +12,25 @@ CUSTOMER_ID = demisto.params().get("Customer ID")
 BASE_URL = demisto.params().get("url")
 DEFAULT_PAGE_SIZE = 1000
 
-api_type_map = {
-    "Device": {
+API_TYPE_MAP = {
+    "device": {
         "list_url": "pub/v4.0/device/list",
         "single_asset_url": "pub/v4.0/device",
         "context_path": "PanwIot3rdParty.Devices",
     },
-    "Alert": {
+    "alert": {
         "list_url": "pub/v4.0/alert/list",
         "single_asset_url": "pub/v4.0/alert",
         "context_path": "PanwIot3rdParty.Alerts",
     },
-    "Vulnerability": {
+    "vulnerability": {
         "list_url": "pub/v4.0/vulnerability/list",
         "single_asset_url": "pub/v4.0/vulnerability",
         "context_path": "PanwIot3rdParty.Vulnerabilities",
     }
 }
 
-cisco_ise_field_map = {
+CISCO_ISE_FIELD_MAP = {
     "ip": ["ZingboxIpAddress", "PanwIoTIpAddress"],
     "ip address": ["ZingboxIP", "PanwIoTIP"],
     "ip_address": ["ZingboxIP", "PanwIoTIP"],
@@ -63,9 +56,9 @@ cisco_ise_field_map = {
     "External Network": ["ZingboxInternetAccess", "PanwIoTInternetAccess"],
     # "last activity": "ZingboxLastActivity"
 }
-int_fields = ["risk_score", "risk score", "confidence", "confidence score", "confidence_score"]
+INT_FIELDS = ["risk_score", "risk score", "confidence", "confidence score", "confidence_score"]
 
-device_fields_map = [
+DEVICE_FIELDS_MAP = [
     ("ip_address", "dvc="),
     ("mac_address", "dvcmac="),
     ("hostname", "dvchost="),
@@ -114,7 +107,7 @@ device_fields_map = [
     ("Tags", "cs43Label=Tags cs43="),
     ("os_combined", "cs44Label=os_combined cs44=")]
 
-vulnerabilities_fields_map = [
+VULNERABILITY_FIELDS_MAP = [
     ("ip", "dvc="),
     ("deviceid", "dvcmac="),
     ("name", "dvchost="),
@@ -174,20 +167,20 @@ def http_request(method, url, api_params={}, data=None):
         LOG(f'running {method} request with url={url}')
         response = requests.request(method, url, headers=DEFAULT_HEADERS, params=params, data=data)
     except requests.exceptions.ConnectionError as e:
-        err_msg = "Failed to connect to PANW IoT Cloud. Verify assess_key, key_id and url are correct. %s" % e
-        return_error(err_msg)
+        err_msg = f'Failed to connect to PANW IoT Cloud. Verify assess_key, key_id and url are correct. {e}'
+        raise requests.exceptions.ConnectionError(err_msg)
 
     if response.status_code not in {200, 201, 202, 204}:
         err_msg = f'Error in API call to PANW IoT Cloud  [{response.status_code}] - {response.reason}'
-        return_error(err_msg)
+        raise Exception(err_msg)
 
     if response.status_code in (201, 204):  # 201-Created OR 204-No Content
         return
     try:
         response = response.json()
     except ValueError:
-        err_msg = "Failed to parse ouput for API call %s" % url
-        return_error(err_msg)
+        err_msg = f'Failed to parse ouput for API call {url}'
+        raise ValueError(err_msg)
 
     return response
 
@@ -196,13 +189,15 @@ def get_asset_list():
     """
     Returns a list of assets for the specifed asset type.
     """
-    asset_type = demisto.args().get('assetType')
-    increment_time = demisto.args().get('incrementTime')
-    page_length = demisto.args().get('pageLength')
+    asset_type = demisto.args().get('asset_type')
+    increment_time = demisto.args().get('increment_time')
+    page_length = demisto.args().get('page_length')
     offset = demisto.args().get('offset')
 
-    url = BASE_URL + api_type_map[asset_type]['list_url']
+    url = BASE_URL + API_TYPE_MAP[asset_type]['list_url']
     one_call = False
+    devices_with_macs = 0
+    devices_without_macs = 0
 
     # if either page_length or offset is set, we dont need to accumulate results
     if page_length or offset:
@@ -217,7 +212,7 @@ def get_asset_list():
     if offset is None:
         offset = '0'
     if increment_time is not None:
-        if asset_type == "Device":
+        if asset_type == "device":
             poll_time = int(round(time.time() * 1000)) - int(increment_time) * 60 * 1000
         else:
             stime = datetime.now() - timedelta(minutes=int(increment_time))
@@ -227,33 +222,46 @@ def get_asset_list():
         'pagelength': str(page_length),
         'stime': stime
     }
-    if asset_type == "Device":
+    if asset_type == "device":
         params['detail'] = 'true'
         params['last_poll_time'] = str(poll_time)
-    elif asset_type == "Vulnerability":
+    elif asset_type == "vulnerability":
         params['groupby'] = 'device'
 
     # gather all the results, break if the return size is less than requested page size
     while True:
         response = http_request('GET', url, params)
         size = 0
-        if asset_type == "Device":
-            asset_list.extend(response.get('devices'))
+        if asset_type == "device":
+            device_list = response.get('devices')
+            for device in device_list:
+                if "deviceid" in device:
+                    deviceid = device['deviceid']
+                    if is_mac_address(deviceid):
+                        devices_with_macs += 1
+                    else:
+                        devices_without_macs += 1
+            asset_list.extend(device_list)
             size = response.get('total')
         else:
             asset_list.extend(response.get('items'))
             size = len(response.get('items'))
-        if one_call or size < page_length:
+        if one_call or size < int(page_length):
             break
         else:
-            offset += page_length
+            params['offset'] = str(int(params['offset']) + int(page_length))
+
     op_data = {
-        "asset type": asset_type,
-        "assets pulled": len(asset_list)
+        "Asset Type": asset_type
     }
+    if asset_type == "device":
+        op_data['Devices with mac address'] = devices_with_macs
+        op_data['Devices without mac address'] = devices_without_macs
+    op_data['Total assets pulled'] = len(asset_list)
+
     return CommandResults(
         readable_output=tableToMarkdown("Asset import summary:", op_data, removeNull=True),
-        outputs_prefix=api_type_map[asset_type]['context_path'],
+        outputs_prefix=API_TYPE_MAP[asset_type]['context_path'],
         outputs=asset_list
     )
 
@@ -264,33 +272,33 @@ def get_single_asset():
     returns the asset details.
     """
 
-    asset_type = demisto.args().get('assetType')
-    asset_id = demisto.args().get('assetID')
+    asset_type = demisto.args().get('asset_type')
+    asset_id = demisto.args().get('asset_id')
 
     if asset_type is None:
-        return_error("Invalid Asset Type ")
+        raise TypeError("Invalid Asset Type")
     if asset_id is None:
-        return_error("Invalid Asset ID")
+        raise TypeError("Invalid Asset ID")
 
     params = {}
-    if asset_type == 'Device':
+    if asset_type == 'device':
         params['detail'] = 'true'
         params['deviceid'] = str(asset_id)
-    elif asset_type == 'Alert':
+    elif asset_type == 'alert':
         params['zb_ticketid'] = str(asset_id)
-    elif asset_type == 'Vulnerability':
+    elif asset_type == 'vulnerability':
         params['groupby'] = 'device'
         params['zb_ticketid'] = str(asset_id)
     else:
-        return_error("Invalid asset type")
+        raise TypeError("Invalid Asset Type")
 
-    url = BASE_URL + api_type_map[asset_type]['single_asset_url']
+    url = BASE_URL + API_TYPE_MAP[asset_type]['single_asset_url']
 
     data = http_request('GET', url, params)
 
-    if asset_type == 'Alert' or asset_type == 'Vulnerability':
+    if asset_type == 'alert' or asset_type == 'vulnerability':
         data = data.get('items')
-    msg = "Successfully pulled %s (%s) from PANW IoT Cloud" % (asset_type, asset_id)
+    msg = f'Successfully pulled {asset_type} ({asset_id}) from PANW IoT Cloud'
 
     return CommandResults(
         readable_output=msg,
@@ -305,9 +313,9 @@ def report_status_to_iot_cloud():
     """
     status = demisto.args().get('status')
     message = demisto.args().get('message')
-    integration_name = demisto.args().get('integrationName')
-    playbook_name = demisto.args().get('playbookName')
-    asset_type = demisto.args().get('type')
+    integration_name = demisto.args().get('integration_name')
+    playbook_name = demisto.args().get('playbook_name')
+    asset_type = demisto.args().get('asset_type')
 
     curr_time = int(round(time.time() * 1000))
 
@@ -347,7 +355,7 @@ def convert_vulnerability_list_to_cef(vulnerability_list=None):
             else:
                 line += "1|"  # default severity
 
-        for t in vulnerabilities_fields_map:
+        for t in VULNERABILITY_FIELDS_MAP:
             input_field = t[0]
             output_field = t[1]
             # print input_field, output_field
@@ -377,23 +385,23 @@ def convert_alert_list_to_cef(alert_list=None):
             if "severityNumber" in alert:
                 line += str(alert["severityNumber"]) + "|"
             if "deviceid" in alert:
-                line += "dvcmac=%s " % alert["deviceid"]
+                line += f'dvcmac={alert["deviceid"]} '
             if "fromip" in msg:
-                line += "src=%s " % msg["fromip"]
+                line += f'src={msg["fromip"]} '
             if "toip" in msg:
-                line += "dst=%s " % msg["toip"]
+                line += f'dst={msg["toip"]} '
             if "hostname" in msg:
-                line += "shost=%s " % msg["hostname"]
+                line += f'shost={msg["hostname"]} '
             if "toURL" in msg:
-                line += "dhost=%s " % msg["toURL"]
+                line += f'dhost={msg["toURL"]} '
             if "id" in msg:
-                line += "fileId=%s " % msg["id"]
+                line += f'fileId={msg["id"]} '
                 line += "fileType=alert "
 
             if "date" in alert:
-                line += "rt=%s " % str(msg["id"])
+                line += f'rt={str(alert["date"])} '
             if "generationTimestamp" in msg:
-                line += "deviceCustomDate1=%s " % str(msg["generationTimestamp"])
+                line += f'deviceCustomDate1={str(msg["generationTimestamp"])} '
 
             description = None
             values = []
@@ -402,8 +410,8 @@ def convert_alert_list_to_cef(alert_list=None):
             if "values" in msg:
                 values = msg["values"]
 
-            line += "cs1Label=Description cs1=%s " % description
-            line += "cs2Label=Values cs2=%s " % str(values)
+            line += f'cs1Label=Description cs1={description} '
+            line += f'cs2Label=Values cs2={str(values)} '
             data.append(line)
 
     return data
@@ -417,7 +425,7 @@ def convert_device_list_to_cef(device_list=None):
     for device_map in device_list:
         if 'mac_address' in device_map:
             line = "INFO:siem-syslog:CEF:0|PaloAltoNetworks|PANWIOT|1.0|asset|Asset Identification|1|"
-            for t in device_fields_map:
+            for t in DEVICE_FIELDS_MAP:
                 input_field = t[0]
                 output_field = t[1]
                 # print input_field, output_field
@@ -446,17 +454,17 @@ def convert_device_list_to_ise_attributes(device_list=None):
             for field in device_map:
                 if device_map[field] is None or device_map[field] == "":
                     continue
-                if field in cisco_ise_field_map:
-                    if field in int_fields:
+                if field in CISCO_ISE_FIELD_MAP:
+                    if field in INT_FIELDS:
                         try:
                             int_val = int(device_map[field])
                         except Exception:
                             continue
-                        zb_attributes[cisco_ise_field_map[field][0]] = int_val
-                        zb_attributes[cisco_ise_field_map[field][1]] = int_val
+                        zb_attributes[CISCO_ISE_FIELD_MAP[field][0]] = int_val
+                        zb_attributes[CISCO_ISE_FIELD_MAP[field][1]] = int_val
                     else:
-                        zb_attributes[cisco_ise_field_map[field][0]] = device_map[field]
-                        zb_attributes[cisco_ise_field_map[field][1]] = device_map[field]
+                        zb_attributes[CISCO_ISE_FIELD_MAP[field][0]] = device_map[field]
+                        zb_attributes[CISCO_ISE_FIELD_MAP[field][1]] = device_map[field]
             attribute_list['zb_attributes'] = zb_attributes
             data.append(attribute_list)
 
@@ -467,9 +475,9 @@ def convert_alert_to_servicenow(args):
     """
     Converts a PANW IoT alert to ServiceNow table formatted.
     """
-    incident = args.get('metadata1')
-    assetList = args.get('assetList')
-    alert = assetList[0]
+    incident = args.get('incident')
+    asset_list = args.get('asset_list')
+    alert = asset_list[0]
     comments_and_work_notes = str(incident['comments_and_work_notes'])
     url = str(incident['url'])
     urgency = str(incident['urgency'])
@@ -498,17 +506,24 @@ def convert_alert_to_servicenow(args):
     for rec in recommendations:
         recommendation_text += '*' + rec + '\n'
 
-    description = 'Summary\n' + alert_description + '\n\nCategory: ' + category + " Profile: " + profile\
-        + '\n\nImpact\n' + impact + '\n\nRecommendations\n' + recommendation_text + '\nURL\n' + url
+    new_line = '\n'
+    description = (
+        f'Summary{new_line}{alert_description}{new_line}{new_line}Category: {category} Profile: {profile}'
+        f'{new_line}{new_line}Impact{new_line}{impact}{new_line}{new_line}Recommendations{new_line}'
+        f'recommendation_text{new_line}URL{new_line}{url}'
+    )
 
-    data = 'urgency=' + urgency + ';location=' + location + ';short_description=' + short_description\
-        + ';comments_and_work_notes=' + comments_and_work_notes + ';description=' + description\
-        + ';correlation_id=' + zb_ticketid + ';impact=3;company=Palo Alto Networks;opened_by=svc_panw_iot;'
+    data = (
+        f'urgency={urgency};location={location};short_description={short_description};'
+        f'comments_and_work_notes={comments_and_work_notes};description={description};'
+        f'correlation_id={zb_ticketid};impact=3;company=Palo Alto Networks;opened_by=svc_panw_iot;'
+    )
+
     return data
 
 
 def convert_vulnerability_to_servicenow(args):
-    incident = args.get('metadata1')
+    incident = args.get('incident')
     comments_and_work_notes = str(incident['comments_and_work_notes'])
     url = str(incident['url'])
     urgency = str(incident['urgency'])
@@ -516,8 +531,8 @@ def convert_vulnerability_to_servicenow(args):
     # user_email = incident['user_email']
     zb_ticketid = incident['correlation_id']
 
-    assetList = args.get('assetList')
-    vuln = assetList[0]
+    asset_list = args.get('asset_list')
+    vuln = asset_list[0]
     vuln.setdefault('msg', {}).setdefault('impact', 'Sorry, no impact available to display so far!')
     vuln.setdefault('msg', {}).setdefault('recommendation', {}).setdefault(
         'content', ['Sorry, no recommendation available to display so far!'])
@@ -537,12 +552,18 @@ def convert_vulnerability_to_servicenow(args):
     for rec in recommendations:
         recommendation_text += '*' + rec + '\n'
 
-    description = 'Summary\n' + alert_description + '\n\nCategory: ' + category + " Profile: " + profile\
-        + '\n\nImpact\n' + impact + '\n\nRecommendations\n' + recommendation_text + '\nURL\n' + url
+    new_line = '\n'
+    description = (
+        f'Summary{new_line}{alert_description}{new_line}{new_line}Category: {category} Profile: {profile}'
+        f'{new_line}{new_line}Impact{new_line}{impact}{new_line}{new_line}Recommendations{new_line}'
+        f'recommendation_text{new_line}URL{new_line}{url}'
+    )
 
-    data = 'urgency=' + urgency + ';location=' + location + ';short_description=' + short_description\
-        + ';comments_and_work_notes=' + comments_and_work_notes + ';description=' + description\
-        + ';correlation_id=' + zb_ticketid + ';impact=3;company=Palo Alto Networks;opened_by=svc_panw_iot;'
+    data = (
+        f'urgency={urgency};location={location};short_description={short_description};'
+        f'comments_and_work_notes={comments_and_work_notes};description={description};'
+        f'correlation_id={zb_ticketid};impact=3;company=Palo Alto Networks;opened_by=svc_panw_iot;'
+    )
     return data
 
 
@@ -596,10 +617,10 @@ def convert_device_to_servicenow_format(device):
 
 def get_servicenow_upsert_devices(args):
     sn_id_deviceids = {}
-    # metadata should be list of ServiceNow table ID and deviceid mapping
-    if "metadata" in args:
-        sn_id_deviceids = args.get("metadata")
-    device_list = args.get("assetList")
+    # servicenow_map should be list of ServiceNow table ID and deviceid mapping
+    if "servicenow_map" in args:
+        sn_id_deviceids = args.get("servicenow_map")
+    device_list = args.get("asset_list")
     ids_map = {}
     if sn_id_deviceids:
         for i in range(len(sn_id_deviceids)):
@@ -640,65 +661,68 @@ def convert_asset_to_external_format():
     to specified 3rd party format.
     """
 
-    prefixMap = {
-        "Device": {
+    prefix_map = {
+        "device": {
             "SIEM": "PanwIot3rdParty.DeviceCEFSyslogs",
             "CiscoISECustomAttributes": "PanwIot3rdParty.CiscoISEAttributes",
             "ServiceNow": "PanwIot3rdParty.DeviceServiceNow"
         },
-        "Alert": {
+        "alert": {
             "SIEM": "PanwIot3rdParty.AlertCEFSyslogs",
             "ServiceNow": "PanwIot3rdParty.AlertServiceNow"
         },
-        "Vulnerability": {
+        "vulnerability": {
             "SIEM": "PanwIot3rdParty.VulnerabilityCEFSyslogs",
             "ServiceNow": "PanwIot3rdParty.VulnerabilityServiceNow"
         }
     }
 
-    asset_type = demisto.args().get('assetType')
-    output_format = demisto.args().get('outputFormat')
-    asset_list = demisto.args().get('assetList')
+    asset_type = demisto.args().get('asset_type')
+    output_format = demisto.args().get('output_format')
+    asset_list = demisto.args().get('asset_list')
     data = []
     readable_res = ''
 
     if output_format == "ServiceNow":
         if asset_list:
-            if asset_type == "Device":
+            if asset_type == "device":
                 data = get_servicenow_upsert_devices(demisto.args())
-                readable_res = "Converted Device list to %d upsert %s list" % (len(data), output_format)
-            elif asset_type == 'Alert':
+                readable_res = f'Converted Device list to {len(data)} upsert {output_format} list'
+            elif asset_type == 'alert':
                 data = convert_alert_to_servicenow(demisto.args())
-                readable_res = "Converted an Alert has zb_ticketid %s to %s" % (
-                    demisto.args().get('metadata1')['correlation_id'], output_format)
-            elif asset_type == 'Vulnerability':
+                correlation_id = demisto.args().get('incident')['correlation_id']
+                readable_res = f'Converted Alert {correlation_id} to {output_format}'
+            elif asset_type == 'vulnerability':
                 data = convert_vulnerability_to_servicenow(demisto.args())
-                readable_res = "Converted an Vulnerability has zb_ticketid %s to %s" % (
-                    demisto.args().get('metadata1')['correlation_id'], output_format)
+                correlation_id = demisto.args().get('incident')['correlation_id']
+                readable_res = f'Converted Vulnerability {correlation_id} to {output_format}'
         else:
-            return_error("Output format ServiceNow not supported for %s" % asset_type)
+            err_msg = f'Output format ServiceNow not supported for {asset_type}'
+            raise TypeError(err_msg)
 
     elif output_format == "SIEM":
         if asset_list:
-            if asset_type == "Device":
+            if asset_type == "device":
                 data = convert_device_list_to_cef(asset_list)
-            elif asset_type == 'Alert':
+            elif asset_type == 'alert':
                 data = convert_alert_list_to_cef(asset_list)
-            elif asset_type == "Vulnerability":
+            elif asset_type == "vulnerability":
                 data = convert_vulnerability_list_to_cef(asset_list)
             else:
-                return_error("Output format SIEM not supported for %s" % asset_type)
-            readable_res = "Converted %d %s to %s" % (len(data), asset_type, output_format)
+                err_msg = f'Output format SIEM not supported for {asset_type}'
+                raise TypeError(err_msg)
+            readable_res = f'Converted {len(data)} {asset_type} to {output_format}'
 
     elif output_format == 'CiscoISECustomAttributes':
         if asset_list:
-            if asset_type == 'Device':
+            if asset_type == 'device':
                 data = convert_device_list_to_ise_attributes(asset_list)
         else:
-            return_error("Output format CiscoISECustomAttributes not supported for %s" % asset_type)
-        readable_res = "Converted %d %s to %s" % (len(data), asset_type, output_format)
+            err_msg = f'Output format SIEM not supported for {asset_type}'
+            raise TypeError(err_msg)
+        readable_res = f'Converted {len(data)} {asset_type} to {output_format}'
 
-    prefix = prefixMap[asset_type][output_format]
+    prefix = prefix_map[asset_type][output_format]
 
     return CommandResults(
         readable_output=readable_res,
@@ -707,7 +731,7 @@ def convert_asset_to_external_format():
     )
 
 
-def connection_test_command(return_bool: bool = False):
+def connection_test_command() -> str:
     """
     Try to get a single device from the Cloud to test connectivity.
     """
@@ -716,11 +740,10 @@ def connection_test_command(return_bool: bool = False):
         'pagelength': '1',
         'detail': 'false',
     }
-    url = BASE_URL + api_type_map['Device']['list_url']
+    url = f"{BASE_URL}{API_TYPE_MAP['device']['list_url']}"
     http_request('GET', url, params)
 
-    if return_bool:
-        return True
+    return 'ok'
 
 
 def main() -> None:
@@ -731,10 +754,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
-            if connection_test_command(True):
-                demisto.results('ok')
-            else:
-                demisto.results('test failed')
+            return_results(connection_test_command())
         elif demisto.command() == 'panw-iot-3rd-party-get-asset-list':
             results = get_asset_list()
             return_results(results)
