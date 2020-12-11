@@ -25,12 +25,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 11a6059b-98b4-4e88-8556-dc5ad8fe15c9
+      id: 40ae166d-0493-41d3-81e3-04b87913975e
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 11a6059b-98b4-4e88-8556-dc5ad8fe15c9
+    taskid: 40ae166d-0493-41d3-81e3-04b87913975e
     timertriggers: []
     type: start
     view: |-
@@ -52,20 +52,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: a9c9419e-675d-43e7-86bb-11afeee4c335
+      id: 0cb94f5d-6592-46b9-8944-d690e893d4f0
       iscommand: false
       name: Check Results
       type: title
       version: -1
       description: ''
-    taskid: a9c9419e-675d-43e7-86bb-11afeee4c335
+    taskid: 0cb94f5d-6592-46b9-8944-d690e893d4f0
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1160
+          "x": 50,
+          "y": 1100
         }
       }
   "8":
@@ -110,13 +110,13 @@ tasks:
     task:
       brand: ""
       description: Search GCE instances in Prisma Cloud
-      id: aebc2c2c-ac27-4e1a-8b5a-2312897352bf
+      id: c6789137-6f7f-4ba1-868f-560dae840a57
       iscommand: true
       name: Search in GCE
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: aebc2c2c-ac27-4e1a-8b5a-2312897352bf
+    taskid: c6789137-6f7f-4ba1-868f-560dae840a57
     timertriggers: []
     type: regular
     view: |-
@@ -151,12 +151,12 @@ tasks:
     task:
       brand: ""
       description: Check whether results are found.
-      id: 063315a1-7ff6-4348-8190-dde21ed2cb49
+      id: 4aa5d0c6-5377-44d3-8c4c-21a8fb48c98c
       iscommand: false
       name: Are Results Found?
       type: condition
       version: -1
-    taskid: 063315a1-7ff6-4348-8190-dde21ed2cb49
+    taskid: 4aa5d0c6-5377-44d3-8c4c-21a8fb48c98c
     timertriggers: []
     type: condition
     view: |-
@@ -185,13 +185,13 @@ tasks:
     task:
       brand: ""
       description: Prisma Cloud Attribution
-      id: bd23ab14-2196-41a6-814c-09abf2d12059
+      id: c03a4b71-274f-4deb-8181-94b4f9a24fbc
       iscommand: false
       name: Transform Results
       script: PrismaCloudAttribution
       type: regular
       version: -1
-    taskid: bd23ab14-2196-41a6-814c-09abf2d12059
+    taskid: c03a4b71-274f-4deb-8181-94b4f9a24fbc
     timertriggers: []
     type: regular
     view: |-
@@ -210,13 +210,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: df95edc6-611a-42fd-8f79-1000d380731e
+      id: bba7b4a9-db1c-4c8f-8027-5e866a59a9e0
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: df95edc6-611a-42fd-8f79-1000d380731e
+    taskid: bba7b4a9-db1c-4c8f-8027-5e866a59a9e0
     timertriggers: []
     type: title
     view: |-
@@ -232,25 +232,27 @@ tasks:
     nexttasks:
       '#none#':
       - "8"
+      - "17"
+      - "18"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: ef4ca6a3-3d66-487d-82ce-34cbd5625ba6
+      id: 4e860905-c7fb-4773-88d2-d5e9ad1fb69f
       iscommand: false
       name: Search in Prisma Cloud
       type: title
       version: -1
       description: ''
-    taskid: ef4ca6a3-3d66-487d-82ce-34cbd5625ba6
+    taskid: 4e860905-c7fb-4773-88d2-d5e9ad1fb69f
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 60
         }
       }
@@ -295,12 +297,12 @@ tasks:
     task:
       brand: ""
       description: Check whether Prisma Cloud integration is enabled.
-      id: 3ad73e8c-0573-4a18-8d81-2ef8874c8d67
+      id: ac7c817e-0ce6-4ce7-84da-0d024490e54c
       iscommand: false
       name: Is Prisma Cloud enabled?
       type: condition
       version: -1
-    taskid: 3ad73e8c-0573-4a18-8d81-2ef8874c8d67
+    taskid: ac7c817e-0ce6-4ce7-84da-0d024490e54c
     timertriggers: []
     type: condition
     view: |-
@@ -334,12 +336,12 @@ tasks:
     task:
       brand: ""
       description: Check if there are any IP in the input.
-      id: 0b03fb88-8a09-4d21-806b-1d9818ad82fb
+      id: ab1813c3-3d15-49f5-8260-d0382f60da8a
       iscommand: false
       name: Are there IPs in input?
       type: condition
       version: -1
-    taskid: 0b03fb88-8a09-4d21-806b-1d9818ad82fb
+    taskid: ab1813c3-3d15-49f5-8260-d0382f60da8a
     timertriggers: []
     type: condition
     view: |-
@@ -349,6 +351,126 @@ tasks:
           "y": -330
         }
       }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.PublicIPAddress
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'globalForwardingRules[*].IPAddress equals '
+              suffix: {}
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: 'config where cloud.type = ''gcp'' AND cloud.service = ''Google
+                    Cloud Load Balancing'' AND json.rule = ( '
+              suffix:
+                value:
+                  simple: ' )'
+            operator: concat
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-date-unit: {}
+      time-range-date-value: {}
+      time-range-unit: {}
+      time-range-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Search GCE instances in Prisma Cloud
+      id: 564a9147-51f1-45ed-8b0b-3bc3d55a1319
+      iscommand: true
+      name: Search in Google Cloud Load Balancing
+      script: '|||redlock-search-config'
+      type: regular
+      version: -1
+    taskid: 564a9147-51f1-45ed-8b0b-3bc3d55a1319
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 240
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.PublicIPAddress
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'endpoint equals '
+              suffix: {}
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: 'config where cloud.type = ''gcp'' AND cloud.service = ''Google
+                    Kubernetes Engine'' AND json.rule = ( '
+              suffix:
+                value:
+                  simple: ' )'
+            operator: concat
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-date-unit: {}
+      time-range-date-value: {}
+      time-range-unit: {}
+      time-range-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Search GCE instances in Prisma Cloud
+      id: 1b2983de-58e1-48cb-833c-438102a79237
+      iscommand: true
+      name: Search in GKE
+      script: '|||redlock-search-config'
+      type: regular
+      version: -1
+    taskid: 1b2983de-58e1-48cb-833c-438102a79237
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -380,
+          "y": 240
+        }
+      }
 version: -1
 view: |-
   {
@@ -356,13 +478,13 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2375,
-        "width": 2030,
-        "x": 170,
+        "width": 2580,
+        "x": -380,
         "y": -500
       }
     }
   }
+fromversion: 6.0.0
 tests:
 - ExpanseV2 Test
 - Feed Expanse Test
-fromversion: 6.0.0
