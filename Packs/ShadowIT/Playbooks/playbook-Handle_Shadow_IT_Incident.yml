@@ -1,4 +1,7 @@
-description: Handle Shadow IT incident
+description: |-
+  This Playbook is used to handle a Shadow IT incident. A Shadow IT incident occurs when a resource attributed to the organization that is not sanctioned by IT nor protected by the InfoSec team is found.
+
+  This playbook handles the incident by helping the analyst to find the owner of the resource based on existing evidence. The playbook also marks the service indicators (IP or FQDN) with a Shadow IT tag. The possible owner and their manager are notified and onboarding of the asset on Prisma Cloud is triggered through a manual process.
 id: Handle Shadow IT Incident
 inputs:
 - description: Notify user's manager

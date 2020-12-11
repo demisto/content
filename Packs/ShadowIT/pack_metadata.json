@@ -7,8 +7,22 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-11-18T14:55:33Z",
-    "categories": [],
-    "tags": [],
-    "useCases": [],
-    "keywords": []
+    "categories": [
+        "IT Services",
+        "Case Management"
+    ],
+    "tags": [
+        "Security",
+        "Shadow IT",
+        "Compliance"
+    ],
+    "useCases": [
+        "Shadow IT",
+        "Compliance"
+    ],
+    "keywords": [
+        "Shadow IT",
+        "Prisma Cloud",
+        "Public Cloud"
+    ]
 }
