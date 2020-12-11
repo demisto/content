@@ -1,12 +1,5 @@
 description: |-
-  Find a Public Cloud resource of the following types:
-  - CDN
-  - Domain Hosted Zone
-  - Other
-
-  on: AWS, Azure, GCP
-
-  using Prisma Cloud inventory
+  Find a Public Cloud resource by FQDN using Prisma Cloud inventory
 id: Prisma Cloud - Find Public Cloud Resource by FQDN
 inputs:
 - description: FQDN to look up
