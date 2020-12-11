@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Generic Polling Test",
+            "timeout": 250
+        },
+        {
             "integrations": "FeedExpanse",
             "playbookID": "Feed Expanse Test",
             "fromversion": "6.0.0"
@@ -11,7 +15,7 @@
             "integrations": "ExpanseV2",
             "playbookID": "ExpanseV2 Test",
             "fromversion": "6.0.0"
-        },        
+        },
         {
             "integrations": "GSuiteAdmin",
             "playbookID": "GSuiteAdmin-Test",
