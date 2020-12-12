@@ -55,7 +55,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: This is the Hello World integration for getting started.
+description: Fetches IP Addresses from Public DNS feed.
 display: Public DNS Feed
 name: Public DNS Feed
 script:
@@ -69,6 +69,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Gets indicators from the feed.
     execution: false
     name: public-dns-get-indicators
   dockerimage: demisto/netutils:1.0.0.5165
@@ -82,4 +83,4 @@ script:
   type: python
 tests:
 - Public_DNS_Feed_Test
-fromversion: 5.0.0
+fromversion: 5.5.0

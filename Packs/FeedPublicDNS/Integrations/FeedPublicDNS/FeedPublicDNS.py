@@ -97,7 +97,6 @@ def get_indicators_command(client: Client) -> Tuple[str, Dict[Any, Any], Dict[An
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
         client: Client object with request
-        args: demisto.args()
     Returns:
         Outputs.
     """
