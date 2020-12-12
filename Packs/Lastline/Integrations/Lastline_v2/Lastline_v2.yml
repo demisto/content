@@ -22,7 +22,7 @@ configuration:
   name: credentials
   required: false
   type: 9
-  additionalinfo: Note that whe when credentials are filled with data, the integration use account-based authentication.
+  additionalinfo: Note that when credentials are filled with data, the integration use account-based authentication.
 - display: Use system proxy settings
   name: proxy
   required: false
