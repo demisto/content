@@ -1,0 +1,51 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Cryptocurrency
+  version: -1
+configuration: []
+description: Cryptocurrency will help classify Cryptocurrency indicators as suspicious when ingested.
+display: Cryptocurrency
+name: Cryptocurrency
+script:
+  commands:
+  - name: crypto
+    arguments:
+    - name: crypto
+      default: true
+      description: List of cryptocurrency addresses.
+      isArray: true
+    - name: address_type
+      description: The cryptocurrency address type, if known. e.g. 'bitcoin'
+      auto: PREDEFINED
+      predefined:
+      - bitcoin
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: Cryptocurrency.Address
+      description: The cryptocurrency address.
+      type: string
+    - contextPath: Cryptocurrency.AddressType
+      description: The cryptocurrency type. e.g. 'bitcoin'.
+      type: string
+    description: Return Cryptocurrency reputation.
+  dockerimage: demisto/python3:3.8.6.13358
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- Cryptocurrency-Test
