@@ -1,0 +1,19 @@
+{
+    "name": "Windows Remote Management",
+    "description": "Uses the Python pywinrm library and commands to execute either a process or using Powershell scripts.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-07-31T13:18:00Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "winrm",
+        "powershell"
+    ]
+}
