@@ -17,7 +17,7 @@ configuration:
   name: api_token
   required: false
   type: 4
-  additionalinfo: Note that whe when credentials are filled with data, the integration use account-based authentication.
+  additionalinfo: Note that when credentials are filled with data, the integration use account-based authentication.
 - display: Email address
   name: credentials
   required: false
