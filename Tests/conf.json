@@ -3352,6 +3352,9 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "jira-v2": "has a command that uploads a file ( !jira-issue-upload-file)",
+        "Rundeck": "has a command that uploads a file (!rundeck-adhoc-script-run)",
+        "ServiceDeskPlus": "Playbook uses a random string and verifying the response contain it",
         "Feodo Tracker IP Blocklist Feed": "test-module downloads a file",
         "McAfee Advanced Threat Defense": "has a command that uploads file (!atd-file-upload)",
         "Symantec Messaging Gateway": "Test playbook uses a random string",
