@@ -169,7 +169,6 @@ def verify_packs_inside(inner_packs: list, outer_packs: list, inner_packs_name: 
                                     f" \n{pformat(missing_packs)}")
 
 
-
 def verify_server_paid_packs_by_index(server_paid_packs: list, index_data_packs: list) -> bool:
     """Compare two pack dictionaries and assert id's and prices are identical.
 
