@@ -1,8 +1,8 @@
 ## Overview
 ---
 
-Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
-This integration was integrated and tested with version xx of Cortex XDR - IR
+Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
+This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR.
 ## Playbooks
 ---
 #### Cortex XDR Incident Handling
@@ -31,7 +31,7 @@ SOC analyst, the XDR incident is closed automatically.
 
 ## Automation
 ---
-To sync incidents between Demisto and Cortex XDR, you should use the **XDRSyncScript** script, which you can find in the automation page.
+To sync incidents between Cortex XSOAR and Cortex XDR, you should use the **XDRSyncScript** script, which you can find in the automation page.
 
 ## Configuration
 ---
@@ -39,7 +39,7 @@ You need to collect several pieces of information in order to configure the inte
 
 #### Generate an API Key and API Key ID
 1. In your Cortex XDR platform, go to **Settings**.
-2. Click the **+New Key** button in the top right corner
+2. Click the **+New Key** button in the top right corner.
 3. Generate a key of type **Advanced**.
 4. Copy and paste the key.
 5. From the ID column, copy the Key ID.
@@ -93,7 +93,7 @@ manual_description:null
 xdr_url:https://1111.paloaltonetworks.com/incident-view/31
 ```
 
-* Note: By checking the `Fetch incident alerts and artifacts` integration configuration parameter - fetched incidents will include additional data.
+* Note: By checking the **Fetch incident alerts and artifacts** integration configuration parameter, fetched incidents will include additional data.
 
 ## XDR Incident Mirroring
 **Note this feature is available from Cortex XSOAR version 6.0.0**
@@ -102,16 +102,16 @@ You can enable incident mirroring between Cortex XSOAR incidents and Cortex XDR 
 To setup the mirroring follow these instructions:
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Cortex XDR - IR and select your integration instance.
-3. Enable `Fetches incidents`.
-4. In the `Incident Mirroring Direction` integration parameter, select in which direction should incidents be mirrored:
+3. Enable **Fetches incidents**.
+4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
   * Incoming - Any changes in XDR incidents will be reflected in XSOAR incidents.
   * Outgoing - Any changes in XSOAR incidents will be reflected in XDR incidents.
   * Both - Changes in XSOAR and XDR incidents will be reflected in both directions.
   * None - Choose this to turn off incident mirroring.
-5. Optional: Check the `Sync Incident Owners` integration parameter to sync the incident owners in both XDR and XSOAR.
-  * Note: This feature will only work if the same users are registered both in Cortex XSOAR and Cortex XDR.
+5. Optional: Check the *Sync Incident Owners* integration parameter to sync the incident owners in both XDR and XSOAR.
+  * Note: This feature will only work if the same users are registered in both Cortex XSOAR and Cortex XDR.
 6. Newly fetched incidents will be mirrored in the chosen direction.
-  * Note: this will not effect existing incidents.
+  * Note: This will not effect existing incidents.
 
 ### XDR Mirroring Notes, limitations and Troubleshooting
 
@@ -125,7 +125,7 @@ To setup the mirroring follow these instructions:
   (e.g `Cortex XDR Incident Sync` or `Cortex XDR incident handling v2`), as it impairs the mirroring functionality.
 
 * When migrating an existing instance to the mirroring feature, or in case the mirroring does not work as expected, make sure that:
-   * The default playbook of the `Cortex XDR Incident` incident type is not `Cortex XDR Incident Sync`, change it to a 
+   * The default playbook of the *Cortex XDR Incident* incident type is not *Cortex XDR Incident Sync*, change it to a 
      different playbook that does not use `XDRSyncScript`.
    * The XDR integration instance incoming mapper is set to `Cortex XDR - Incoming Mapper` and the outgoing mapper is set to `Cortex XDR - Outgoing Mapper`.
 
@@ -149,10 +149,19 @@ After you successfully execute a command, a DBot message appears in the War Room
 12. xdr-get-create-distribution-status
 13. xdr-get-audit-management-logs
 14. xdr-get-audit-agent-reports
+15. xdr-get-policy
+16. xdr-get-endpoint-device-control-violations
+17. xdr-retrieve-files
+18. xdr-retrieve-file-details
+19. xdr-get-scripts
+20. xdr-get-script-metadata
+21. xdr-get-script-code
+22. xdr-action-status-get
+23. xdr-delete-endpoints
+
 ### 1. xdr-get-incidents
 ---
-Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
-      If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
+Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created. If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported. This command requires at least one query argument.
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
@@ -770,7 +779,7 @@ maximum of 60 alerts.
 | local_port | Integer value for the source port. | Required | 
 | remote_ip | String value of the destination IP<br/>address. | Required | 
 | remote_port | Integer value for the destination<br/>port. | Required | 
-| event_timestampt | Integer value representing the epoch of the time the alert occurred in milliseconds or String value of date format 2019-10-23T10:00:00. If not set then the event time will be defined as now. | Optional | 
+| event_timestamp | Integer value representing the epoch of the time the alert occurred in milliseconds or String value of date format 2019-10-23T10:00:00. If not set then the event time will be defined as now. | Optional | 
 | severity | String value of alert severity:<br/>Informational, Low, Medium, High, or Unknown | Optional | 
 | alert_name | String defining the alert name | Required | 
 | alert_description | String defining the alert description | Optional | 
@@ -781,7 +790,7 @@ maximum of 60 alerts.
 There is no context output for this command.
 
 ##### Command Example
-```!xdr-insert-parsed-alert product="SandBlast" vendor="Checkpoint" local_ip="196.168.0.1" local_port="600" remote_ip="5.5.5.5" remote_port="500" event_timestampt="2020-01-01T00:00:00" severity="High" alert_name="some alert" alert_description="this is test alert"```
+```!xdr-insert-parsed-alert product="SandBlast" vendor="Checkpoint" local_ip="196.168.0.1" local_port="600" remote_ip="5.5.5.5" remote_port="500" event_timestamp="2020-01-01T00:00:00" severity="High" alert_name="some alert" alert_description="this is test alert"```
 
 ##### Human Readable Output
 Alert inserted successfully
@@ -1387,3 +1396,678 @@ Gets agent event reports. You can filter by multiple fields, which will be conca
 
 ## Troubleshooting
  - In case you encounter ReadTimeoutError, we recommend increasing the HTTP request timeout by setting it in the **HTTP Timeout** integration parameter.
+### 15. xdr-get-policy
+***
+Gets the policy name for a specific endpoint.
+
+
+#### Base Command
+
+`xdr-get-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_id | The endpoint ID. Can be retrieved by running the ***xdr-get-endpoints*** command. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.policyName | string | Name of the policy allocated with the endpoint. | 
+| PaloAltoNetworksXDR.policyName.policy_name | unknown | Name of the policy allocated with the endpoint. | 
+| PaloAltoNetworksXDR.policyName.endpoint_id | unknown | Endpoint ID. | 
+
+
+#### Command Example
+```!xdr-get-policy endpoint_id="f8a2f58846b542579c12090652e79f3d"```
+
+#### Context Example
+```
+{
+    "PaloAltoNetworksXDR": {
+        "policyName": {
+            "endpoint_id": "f8a2f58846b542579c12090652e79f3d",
+            "policy_name": "Windows Default"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+The policy name of endpoint f8a2f58846b542579c12090652e79f3d is Windows default.
+
+
+### 16. xdr-get-endpoint-device-control-violations
+***
+Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
+
+
+#### Base Command
+
+`xdr-get-endpoint-device-control-violations`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | Comma-separated list of endpoint IDs. | Optional | 
+| type | ype of violation. Possible values are: "cd-rom", "disk drive", "floppy disk", "portable device" | Optional | 
+| timestamp_gte | Timestamp of the violation. Violations that are greater than or equal to this timestamp will be returned. Values could be in either ISO date format, relative time or epoch timestamp. For example:  "2019-10-21T23:45:00" (ISO date format), "3 days ago" (relative time) 1579039377301 (epoch time). | Optional | 
+| timestamp_lte | Timestamp of the violation. Violations that are less than or equal to this timestamp will be returned. Values could be in either ISO date format, relative time or epoch timestamp. For example:  "2019-10-21T23:45:00" (ISO date format), "3 days ago" (relative time) 1579039377301 (epoch time). | Optional | 
+| ip_list | Comma-separated list of IP addresses | Optional | 
+| vendor | Name of vendor. | Optional | 
+| vendor_id | Vendor ID. | Optional | 
+| product | Name of the product. | Optional | 
+| product_id | Product ID. | Optional | 
+| serial | Serial number. | Optional | 
+| hostname | Hostname. | Optional | 
+| violation_id_list | Comma-separated list of violation IDs. | Optional | 
+| username | Username. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.EndpointViolations | unknown | Endpoint violations command results. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations | unknown | A list of violations. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.os_type | string | Type of the operating system. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.hostname | string | Hostname of the violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.username | string | Username of the violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.ip | string | IP address of the violation.  | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.timestamp | number | Timestamp of the violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.violation_id | number | Violation ID. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.type | string | Type of violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.vendor_id | string | Vendor ID of the violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.vendor | string | Name of the vendor of the violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.product_id | string | Product ID of the violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.product | string | Name of the product of the violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.serial | string | Serial number of the violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.endpoint_id | string | Endpoint ID of the violation. | 
+
+
+#### Command Example
+```!xdr-get-endpoint-device-control-violations violation_id_list=100,90,80```
+
+#### Context Example
+```
+{
+    "PaloAltoNetworksXDR": {
+        "EndpointViolations": [
+            {
+                "date": "2020-04-13T21:39:24",
+                "endpoint_id": "eca20ea25d4e4cfdad3a317997322693",
+                "hostname": "win-2020-04-14---12-39",
+                "ip": "1.1.1.1",
+                "os_type": "AGENT_OS_WINDOWS",
+                "product": "Cruzer Blade",
+                "product_id": "0x5567",
+                "serial": "4C530010060624106156",
+                "timestamp": 1586813964000,
+                "type": "Disk Drive",
+                "username": "st3.local\\assaflevi",
+                "vendor": "SanDisk Corp.",
+                "vendor_id": "0x0781",
+                "violation_id": 100
+            },
+            {
+                "date": "2020-04-13T21:39:13",
+                "endpoint_id": "e4b83018ae2c411899d847930e68d398",
+                "hostname": "win-2020-04-14---12-39",
+                "ip": "1.1.1.1",
+                "os_type": "AGENT_OS_WINDOWS",
+                "product": "Cruzer Blade",
+                "product_id": "0x5567",
+                "serial": "4C530010060624106156",
+                "timestamp": 1586813953000,
+                "type": "Disk Drive",
+                "username": "st3.local\\assaflevi",
+                "vendor": "SanDisk Corp.",
+                "vendor_id": "0x0781",
+                "violation_id": 90
+            },
+            {
+                "date": "2020-04-13T21:39:02",
+                "endpoint_id": "bef78d0ddbcc4ae488190bab0dcb31cd",
+                "hostname": "win-2020-04-14---12-39",
+                "ip": "1.1.1.1",
+                "os_type": "AGENT_OS_WINDOWS",
+                "product": "Cruzer Blade",
+                "product_id": "0x5567",
+                "serial": "4C530010060624106156",
+                "timestamp": 1586813942000,
+                "type": "Disk Drive",
+                "username": "st3.local\\assaflevi",
+                "vendor": "SanDisk Corp.",
+                "vendor_id": "0x0781",
+                "violation_id": 80
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Endpoint Device Control Violation
+>|Date|Hostname|Username|Ip|Type|Violation Id|Vendor|Product|Serial|
+>|---|---|---|---|---|---|---|---|---|
+>| 2020-04-13T21:39:24 | win-2020-04-14---12-39 | st3.local\assaflevi | 1.1.1.1 | Disk Drive | 100 | SanDisk Corp. | Cruzer Blade | 4C530010060624106156 |
+>| 2020-04-13T21:39:13 | win-2020-04-14---12-39 | st3.local\assaflevi | 1.1.1.1 | Disk Drive | 90 | SanDisk Corp. | Cruzer Blade | 4C530010060624106156 |
+>| 2020-04-13T21:39:02 | win-2020-04-14---12-39 | st3.local\assaflevi | 1.1.1.1 | Disk Drive | 80 | SanDisk Corp. | Cruzer Blade | 4C530010060624106156 |
+
+
+### 17. xdr-retrieve-files
+***
+Retrieve files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the ***xdr-action-status-get*** command with returned action_id, to check the action status.
+
+
+#### Base Command
+
+`xdr-retrieve-files`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | Comma-separated list of endpoint IDs. | Required | 
+| windows_file_paths | A comma-separated list of file paths on the Windows platform.  | Optional | 
+| linux_file_paths | A comma-separated list of file paths on the Linux platform.  | Optional | 
+| mac_file_paths | A comma-separated list of file paths on the Mac platform.  | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.retrievedFiles.actionId | unknown | ID of the action to retrieve files from selected endpoints. | 
+
+
+#### Command Example
+```!xdr-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 windows_file_paths="C:\Users\demisto\Desktop\demisto.txt"```
+
+#### Context Example
+```
+{
+    "PaloAltoNetworksXDR": {
+        "retrievedFiles": {
+            "actionId": 2056
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Retrieve files
+>|Action Id|
+>|---|
+>| 2056 |
+
+
+### 18. xdr-retrieve-file-details
+***
+View the file retrieved by the ***xdr-retrieve-files*** command according to the action ID. Before running this command, you can use the ***xdr-action-status-get*** command to check if this action completed successfully.
+
+
+#### Base Command
+
+`xdr-retrieve-file-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action_id | Action ID retrieved from the ***xdr-retrieve-files command***. | Required | 
+| attach_files | Choose whether you want to attach retrieved files in the  War Room. Default is "true". | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File | unknown | The file details command results. | 
+| File.Name | String | The full file name \(including the file extension\). | 
+| File.EntryID | String | The ID for locating the file in the War Room. | 
+| File.Size | Number | The size of the file in bytes. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
+| File.Extension | String | The file extension. For example: 'xls'. | 
+| File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
+
+
+#### Command Example
+```!xdr-retrieve-file-details action_id=1763```
+
+#### Context Example
+```
+{
+    "File": {
+        "EntryID": "3212@e99f97d1-7225-4c75-896c-3c960febbe8c",
+        "Extension": "zip",
+        "Info": "application/zip",
+        "MD5": "fcbcda832825a1bd75dfb6fcd4edf39e",
+        "Name": "aeec6a2cc92e46fab3b6f621722e9916_1.zip",
+        "SHA1": "cdf0d37daa1bc951703b9c4ea7a592455074318d",
+        "SHA256": "25005641c0609d8416815f22653acb20125bd6a692fd9c987004667465a9f93a",
+        "SHA512": "1089185b2e5e573e1563f3f9b2c8cdb2a78461555cbd90d12a65bb6aa180733c3ae768c22d4a6cbf70eb9992fd43fb565a2eb14f892e3c1b1fe345cd7e2ea7ef",
+        "SSDeep": "384:rnhvs3/gOdk9MCPCTMpCirGyXEnLdyXdWeesfnvg:u3o3NC0Mvd5eesfn4",
+        "Size": 16004,
+        "Type": "HTML document text, UTF-8 Unicode text, with very long lines, with CRLF line terminators"
+    }
+}
+```
+
+#### Human Readable Output
+
+>Action id : 1763 
+>Retrieved 1 files from 1 endpoints.
+### 19. xdr-get-scripts
+***
+Gets a list of scripts available in the scripts library.
+
+
+#### Base Command
+
+`xdr-get-scripts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| script_name | A comma-separated list of the script names. | Optional | 
+| description | A comma-separated list of the script descriptions. | Optional | 
+| created_by | A comma-separated list of the users who created the script. | Optional | 
+| limit | Maximum number of scripts returned to the War Room. Default limit is 50. | Optional | 
+| offset | (Int) Offset in the data set. Default offset is 0. | Optional | 
+| windows_supported | Whether the script can be executed on a Windows operating system. | Optional | 
+| linux_supported | Whether the script can be executed on a Linux operating system. | Optional | 
+| macos_supported | Whether the script can be executed on a Mac operating system. | Optional | 
+| is_high_risk | Whether the script has a high-risk outcome. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.Scripts | unknown | Get scripts command results. | 
+| PaloAltoNetworksXDR.Scripts.script_id | unknown | Script ID. | 
+| PaloAltoNetworksXDR.Scripts.name | string | Name of the script. | 
+| PaloAltoNetworksXDR.Scripts.description | string | Description of the script. | 
+| PaloAltoNetworksXDR.Scripts.modification_date | unknown | Timestamp of when the script was last modified. | 
+| PaloAltoNetworksXDR.Scripts.created_by | string | Name of the user who created the script. | 
+| PaloAltoNetworksXDR.Scripts.windows_supported | boolean | Whether the script can be executed on a Windows operating system. | 
+| PaloAltoNetworksXDR.Scripts.linux_supported | boolean | Whether the script can be executed on a Linux operating system. | 
+| PaloAltoNetworksXDR.Scripts.macos_supported | boolean | Whether the script can be executed on Mac operating system. | 
+| PaloAltoNetworksXDR.Scripts.is_high_risk | boolean | Whether the script has a high-risk outcome. | 
+| PaloAltoNetworksXDR.Scripts.script_uid | string | GUID, global ID of the script, used to identify the script when executing. | 
+
+
+#### Command Example
+```!xdr-get-scripts created_by="Palo Alto Networks" is_high_risk=true```
+
+#### Context Example
+```
+{
+    "PaloAltoNetworksXDR": {
+        "Scripts": [
+            {
+                "created_by": "Palo Alto Networks",
+                "description": "Delete a file by path",
+                "is_high_risk": true,
+                "linux_supported": true,
+                "macos_supported": true,
+                "modification_date": "2020-04-21T11:01:31",
+                "modification_date_timestamp": 1587466891981,
+                "name": "delete_file",
+                "script_id": 1,
+                "script_uid": "548023b6e4a01ec51a495ba6e5d2a15d",
+                "windows_supported": true
+            },
+            {
+                "created_by": "Palo Alto Networks",
+                "description": "Execute list of shell commands",
+                "is_high_risk": true,
+                "linux_supported": true,
+                "macos_supported": true,
+                "modification_date": "2020-04-21T11:01:32",
+                "modification_date_timestamp": 1587466892157,
+                "name": "execute_commands",
+                "script_id": 2,
+                "script_uid": "a6f7683c8e217d85bd3c398f0d3fb6bf",
+                "windows_supported": true
+            },
+            {
+                "created_by": "Palo Alto Networks",
+                "description": "Kill all processes with a CPU usage higher than specified",
+                "is_high_risk": true,
+                "linux_supported": true,
+                "macos_supported": true,
+                "modification_date": "2020-04-21T11:01:32",
+                "modification_date_timestamp": 1587466892247,
+                "name": "process_kill_cpu",
+                "script_id": 6,
+                "script_uid": "3d928a24f61cd3c1116544900c424098",
+                "windows_supported": true
+            },
+            {
+                "created_by": "Palo Alto Networks",
+                "description": "Kill all processes with a RAM usage higher than specified",
+                "is_high_risk": true,
+                "linux_supported": true,
+                "macos_supported": true,
+                "modification_date": "2020-04-21T11:01:32",
+                "modification_date_timestamp": 1587466892260,
+                "name": "process_kill_mem",
+                "script_id": 7,
+                "script_uid": "87d4547df6d4882a3c006ec58c3b8bf4",
+                "windows_supported": true
+            },
+            {
+                "created_by": "Palo Alto Networks",
+                "description": "Kill processes by name",
+                "is_high_risk": true,
+                "linux_supported": true,
+                "macos_supported": true,
+                "modification_date": "2020-04-21T11:01:32",
+                "modification_date_timestamp": 1587466892269,
+                "name": "process_kill_name",
+                "script_id": 8,
+                "script_uid": "fd0a544a99a9421222b4f57a11839481",
+                "windows_supported": true
+            },
+            {
+                "created_by": "Palo Alto Networks",
+                "description": "Delete registry value or delete registry key with all its values",
+                "is_high_risk": true,
+                "linux_supported": false,
+                "macos_supported": false,
+                "modification_date": "2020-04-21T11:01:32",
+                "modification_date_timestamp": 1587466892277,
+                "name": "registry_delete",
+                "script_id": 9,
+                "script_uid": "ad36488a20cdbdd1604ec4bec9da5c41",
+                "windows_supported": true
+            },
+            {
+                "created_by": "Palo Alto Networks",
+                "description": "Get registry value data and its type",
+                "is_high_risk": true,
+                "linux_supported": false,
+                "macos_supported": false,
+                "modification_date": "2020-04-21T11:01:32",
+                "modification_date_timestamp": 1587466892337,
+                "name": "registry_get",
+                "script_id": 10,
+                "script_uid": "699fa2e98ab1eb5677489dce54125769",
+                "windows_supported": true
+            },
+            {
+                "created_by": "Palo Alto Networks",
+                "description": "Set registry value",
+                "is_high_risk": true,
+                "linux_supported": false,
+                "macos_supported": false,
+                "modification_date": "2020-09-06T09:41:47",
+                "modification_date_timestamp": 1599385307669,
+                "name": "registry_set",
+                "script_id": 11,
+                "script_uid": "896392a13b2ef0ae75b3f2396125037d",
+                "windows_supported": true
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Scripts
+>|Name|Description|Script Uid|Modification Date|Created By|Windows Supported|Linux Supported|Macos Supported|Is High Risk|
+>|---|---|---|---|---|---|---|---|---|
+>| delete_file | Delete a file by path | 548023b6e4a01ec51a495ba6e5d2a15d | 2020-04-21T11:01:31 | Palo Alto Networks | true | true | true | true |
+>| execute_commands | Execute list of shell commands | a6f7683c8e217d85bd3c398f0d3fb6bf | 2020-04-21T11:01:32 | Palo Alto Networks | true | true | true | true |
+>| process_kill_cpu | Kill all processes with a CPU usage higher than specified | 3d928a24f61cd3c1116544900c424098 | 2020-04-21T11:01:32 | Palo Alto Networks | true | true | true | true |
+>| process_kill_mem | Kill all processes with a RAM usage higher than specified | 87d4547df6d4882a3c006ec58c3b8bf4 | 2020-04-21T11:01:32 | Palo Alto Networks | true | true | true | true |
+>| process_kill_name | Kill processes by name | fd0a544a99a9421222b4f57a11839481 | 2020-04-21T11:01:32 | Palo Alto Networks | true | true | true | true |
+>| registry_delete | Delete registry value or delete registry key with all its values | ad36488a20cdbdd1604ec4bec9da5c41 | 2020-04-21T11:01:32 | Palo Alto Networks | true | false | false | true |
+>| registry_get | Get registry value data and its type | 699fa2e98ab1eb5677489dce54125769 | 2020-04-21T11:01:32 | Palo Alto Networks | true | false | false | true |
+>| registry_set | Set registry value | 896392a13b2ef0ae75b3f2396125037d | 2020-09-06T09:41:47 | Palo Alto Networks | true | false | false | true |
+
+
+
+### 20. xdr-get-script-metadata
+***
+Gets the full definition of a specific script in the scripts library.
+
+
+#### Base Command
+
+`xdr-get-script-metadata`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| script_uid | Unique identifier of the script, returned by the ***xdr-get-scripts*** command. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.scriptMetadata | unknown | The full definition of a specific script in the scripts library. | 
+| PaloAltoNetworksXDR.scriptMetadata.script_id | unknown | Script ID. | 
+| PaloAltoNetworksXDR.scriptMetadata.name | unknown | Script name. | 
+| PaloAltoNetworksXDR.scriptMetadata.description | unknown | Script description. | 
+| PaloAltoNetworksXDR.scriptMetadata.modification_date | unknown | Timestamp of when the script was last modified. | 
+| PaloAltoNetworksXDR.scriptMetadata.created_by | unknown | Name of the user who created the script. | 
+| PaloAltoNetworksXDR.scriptMetadata.is_high_risk | unknown | Whether the script has a high-risk outcome. | 
+| PaloAltoNetworksXDR.scriptMetadata.windows_supported | unknown | Whether the script can be executed on a Windows operating system. | 
+| PaloAltoNetworksXDR.scriptMetadata.linux_supported | unknown | Whether the script can be executed on a Linux operating system. | 
+| PaloAltoNetworksXDR.scriptMetadata.macos_supported | unknown | Whether the script can be executed on a Mac operating system. | 
+| PaloAltoNetworksXDR.scriptMetadata.entry_point | unknown | Name of the entry point selected for the script. An empty string indicates the script defined as just run. | 
+| PaloAltoNetworksXDR.scriptMetadata.script_input | unknown | Name and type for the specified entry point. | 
+| PaloAltoNetworksXDR.scriptMetadata.script_output_type | unknown | Type of the output. | 
+| PaloAltoNetworksXDR.scriptMetadata.script_output_dictionary_definitions | unknown | If the script_output_type is a dictionary, an array with a friendly name, name, and type for each output. | 
+
+
+#### Command Example
+```!xdr-get-script-metadata script_uid=43973479d389f2ac7e99b6db88eaee40```
+
+#### Context Example
+```
+{
+    "PaloAltoNetworksXDR": {
+        "scriptMetadata": {
+            "created_by": "Palo Alto Networks",
+            "description": "List all directories under path",
+            "entry_point": "run",
+            "is_high_risk": false,
+            "linux_supported": true,
+            "macos_supported": true,
+            "modification_date": 1587466892181,
+            "name": "list_directories",
+            "script_id": 4,
+            "script_input": [
+                {
+                    "name": "path",
+                    "type": "string"
+                },
+                {
+                    "name": "number_of_levels",
+                    "type": "number"
+                }
+            ],
+            "script_output_dictionary_definitions": null,
+            "script_output_type": "string_list",
+            "script_uid": "43973479d389f2ac7e99b6db88eaee40",
+            "windows_supported": true
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Script Metadata
+>|script_id|name|description|modification_date|created_by|is_high_risk|windows_supported|linux_supported|macos_supported|script_uid|entry_point|script_input|script_output_type|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 4 | list_directories | List all directories under path | 1587466892181 | Palo Alto Networks | false | true | true | true | 43973479d389f2ac7e99b6db88eaee40 | run | {'name': 'path', 'type': 'string'},<br/>{'name': 'number_of_levels', 'type': 'number'} | string_list |
+
+
+### 21. xdr-get-script-code
+***
+Get the code of a specific script in the script library.
+
+
+#### Base Command
+
+`xdr-get-script-code`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| script_uid | Unique identifier of the script, returned by the ***xdr-get-scripts*** command. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.scriptCode | unknown | The script code command results. | 
+| PaloAltoNetworksXDR.scriptCode.code | unknown | The code of a specific script in the script library. | 
+| PaloAltoNetworksXDR.scriptCode.script_uid | unknown |Unique identifier of the script. | 
+
+
+#### Command Example
+```!xdr-get-script-code script_uid=548023b6e4a01ec51a495ba6e5d2a15d```
+
+#### Context Example
+```
+{
+    "PaloAltoNetworksXDR": {
+        "scriptCode": {
+            "code": "import os
+import sys
+import traceback
+
+
+def run(file_path):
+    path = os.path.expanduser(file_path)
+    path = os.path.expandvars(path)
+    if os.path.isabs(path):
+        try:
+            os.remove(path)
+        except IOError:
+            sys.stderr.write(f\"File not accessible: {path}\")
+            return False
+        except Exception as e:
+            sys.stderr.write(f\"Exception occured: {traceback.format_exc()}\")
+            return False
+    return True
+",
+            "script_uid": "548023b6e4a01ec51a495ba6e5d2a15d"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Script code is :
+> import os
+>import sys
+>import traceback
+>
+>
+>def run(file_path):
+>    path = os.path.expanduser(file_path)
+>    path = os.path.expandvars(path)
+>    if os.path.isabs(path):
+>        try:
+>            os.remove(path)
+>        except IOError:
+>            sys.stderr.write(f"File not accessible: {path}")
+>            return False
+>        except Exception as e:
+>            sys.stderr.write(f"Exception occured: {traceback.format_exc()}")
+>            return False
+>    return True
+
+
+### 22. xdr-action-status-get
+***
+Retrieves the status of the requested actions according to the action ID.
+
+
+#### Base Command
+
+`xdr-action-status-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action_id | The action ID of the selected request. After performing an action, you will receive an action ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.getActionStatus | unknown | Status of the action ID. You will receive a table of endpoint IDs and their status. | 
+| PaloAltoNetworksXDR.getActionStatus.endpoint_id | unknown | Endpoint ID. | 
+| PaloAltoNetworksXDR.getActionStatus.status | unknown | Status of specific endpoint ID. | 
+| PaloAltoNetworksXDR.getActionStatus.action_id | unknown | The specified action ID. | 
+
+
+#### Command Example
+```!xdr-action-status-get action_id="1819"```
+
+#### Context Example
+```
+{
+    "PaloAltoNetworksXDR": {
+        "getActionStatus": {
+            "action_id": 1819,
+            "endpoint_id": "aeec6a2cc92e46fab3b6f621722e9916",
+            "status": "COMPLETED_SUCCESSFULLY"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Get Action Status
+>|endpoint_id|status|
+>|---|---|
+>| aeec6a2cc92e46fab3b6f621722e9916 | COMPLETED_SUCCESSFULLY |
+
+
+### 24. xdr-delete-endpoints
+***
+Delete selected endpoints in the Cortex XDR app. You can delete up to 1000 endpoints.
+
+
+#### Base Command
+
+`xdr-delete-endpoints`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | Comma-separated list of endpoint IDs. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!xdr-delete-endpoints endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916```
+
+
+#### Human Readable Output
+
+>Endpoints aeec6a2cc92e46fab3b6f621722e9916 successfully deleted

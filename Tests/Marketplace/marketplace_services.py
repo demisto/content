@@ -21,14 +21,29 @@ from distutils.version import LooseVersion
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
-from typing import Tuple, Any
+from typing import Tuple, Any, Union
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
 IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported']  # files to ignore inside Packs folder
 IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
-PACKS_RESULTS_FILE = "packs_results.json"
+
+
+class BucketUploadFlow(object):
+    """ Bucket Upload Flow constants
+
+    """
+    PACKS_RESULTS_FILE = "packs_results.json"
+    PREPARE_CONTENT_FOR_TESTING = "prepare_content_for_testing"
+    UPLOAD_PACKS_TO_MARKETPLACE_STORAGE = "upload_packs_to_marketplace_storage"
+    SUCCESSFUL_PACKS = "successful_packs"
+    FAILED_PACKS = "failed_packs"
+    STATUS = "status"
+    AGGREGATED = "aggregated"
+    BUCKET_UPLOAD_BUILD_TITLE = "Upload Packs To Marketplace Storage"
+    BUCKET_UPLOAD_TYPE = "bucket_upload_flow"
+    UPLOAD_JOB_NAME = "Upload Packs To Marketplace"
 
 
 class GCPConfig(object):
@@ -903,12 +918,18 @@ class Pack(object):
         prod_pack_zip_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
         build_pack_zip_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
         build_pack_zip_blob = build_bucket.blob(build_pack_zip_path)
-        copied_blob = build_bucket.copy_blob(
-            blob=build_pack_zip_blob, destination_bucket=production_bucket, new_name=prod_pack_zip_path
-        )
-        copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
-        self.public_storage_path = copied_blob.public_url
-        task_status = copied_blob.exists()
+
+        try:
+            copied_blob = build_bucket.copy_blob(
+                blob=build_pack_zip_blob, destination_bucket=production_bucket, new_name=prod_pack_zip_path
+            )
+            copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
+            self.public_storage_path = copied_blob.public_url
+            task_status = copied_blob.exists()
+        except Exception as e:
+            pack_suffix = os.path.join(self._pack_name, latest_version, f'{self._pack_name}.zip')
+            logging.exception(f"Failed copying {pack_suffix}. Additional Info: {str(e)}")
+            return False, False
 
         if not task_status:
             logging.error(f"Failed in uploading {self._pack_name} pack to production gcs.")
@@ -982,8 +1003,8 @@ class Pack(object):
         if len(pack_versions_dict) > 1:
             # In case that there is more than 1 new release notes file, wrap all release notes together for one
             # changelog entry
-            aggregation_str = f"{[lv.vstring for lv in found_versions if lv > changelog_latest_rn_version]} => " \
-                              f"{latest_release_notes}"
+            aggregation_str = f"[{', '.join(lv.vstring for lv in found_versions if lv > changelog_latest_rn_version)}]"\
+                              f" => {latest_release_notes}"
             logging.info(f"Aggregating ReleaseNotes versions: {aggregation_str}")
             release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
             self._aggregated = True
@@ -1136,8 +1157,7 @@ class Pack(object):
                 return task_status
         else:
             task_status = False
-            logging.error(
-                f"{self._pack_name} index changelog file is missing in build bucket path: {build_changelog_index_path}")
+            logging.error(f"{self._pack_name} index changelog file is missing in build bucket path: {build_changelog_index_path}")
 
         return task_status and self.is_changelog_exists()
 
@@ -1846,6 +1866,105 @@ class Pack(object):
 # HELPER FUNCTIONS
 
 
+def get_successful_and_failed_packs(packs_results_file_path: str, stage: str) -> Tuple[dict, dict]:
+    """ Loads the packs_results.json file to get the successful and failed packs dicts
+
+    Args:
+        packs_results_file_path (str): The path to the file
+        stage (str): can be BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING or
+        BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
+
+    Returns:
+        dict: The successful packs dict
+        dict: The failed packs dict
+
+    """
+    if os.path.exists(packs_results_file_path):
+        packs_results_file = load_json(packs_results_file_path)
+        successful_packs_dict = packs_results_file.get(stage, {}).get(BucketUploadFlow.SUCCESSFUL_PACKS, {})
+        failed_packs_dict = packs_results_file.get(stage, {}).get(BucketUploadFlow.FAILED_PACKS, {})
+        return successful_packs_dict, failed_packs_dict
+    return {}, {}
+
+
+def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: str, stage: str, successful_packs: list,
+                                                      failed_packs: list):
+    """ Write the successful and failed packs to the correct section in the packs_results.json file
+
+    Args:
+        packs_results_file_path (str): The path to the pack_results.json file
+        stage (str): can be BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING or
+        BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
+        successful_packs (list): The list of all successful packs
+        failed_packs (list): The list of all failed packs
+
+    """
+    packs_results = load_json(packs_results_file_path)
+    packs_results[stage] = dict()
+
+    if failed_packs:
+        failed_packs_dict = {
+            BucketUploadFlow.FAILED_PACKS: {
+                pack.name: {
+                    BucketUploadFlow.STATUS: pack.status,
+                    BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
+                    else "False"
+                } for pack in failed_packs
+            }
+        }
+        packs_results[stage].update(failed_packs_dict)
+        logging.debug(f"Failed packs {failed_packs_dict}")
+
+    if successful_packs:
+        successful_packs_dict = {
+            BucketUploadFlow.SUCCESSFUL_PACKS: {
+                pack.name: {
+                    BucketUploadFlow.STATUS: pack.status,
+                    BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
+                    else "False"
+                } for pack in successful_packs
+            }
+        }
+        packs_results[stage].update(successful_packs_dict)
+        logging.debug(f"Successful packs {successful_packs_dict}")
+
+    if packs_results:
+        json_write(packs_results_file_path, packs_results)
+
+
+def load_json(file_path: str) -> dict:
+    """ Reads and loads json file.
+
+    Args:
+        file_path (str): full path to json file.
+
+    Returns:
+        dict: loaded json file.
+
+    """
+    try:
+        if file_path and os.path.exists(file_path):
+            with open(file_path, 'r') as json_file:
+                result = json.load(json_file)
+        else:
+            result = {}
+        return result
+    except json.decoder.JSONDecodeError:
+        return {}
+
+
+def json_write(file_path: str, data: Union[list, dict]):
+    """ Writes given data to a json file
+
+    Args:
+        file_path: The file path
+        data: The data to write
+
+    """
+    with open(file_path, "w") as f:
+        f.write(json.dumps(data, indent=4))
+
+
 def init_storage_client(service_account=None):
     """Initialize google cloud storage client.
 
@@ -1993,27 +2112,6 @@ def get_higher_server_version(current_string_version, compared_content_item, pac
         logging.exception(f"{pack_name} failed in version comparison of content item {content_item_name}.")
     finally:
         return higher_version_result
-
-
-def load_json(file_path: str) -> dict:
-    """ Reads and loads json file.
-
-    Args:
-        file_path (str): full path to json file.
-
-    Returns:
-        dict: loaded json file.
-
-    """
-    try:
-        if file_path and os.path.isfile(file_path):
-            with open(file_path, 'r') as json_file:
-                result = json.load(json_file)
-        else:
-            result = {}
-        return result
-    except json.decoder.JSONDecodeError:
-        return {}
 
 
 def get_content_git_client(content_repo_path: str):
