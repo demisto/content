@@ -325,13 +325,28 @@ def create_update_incident_from_ticket(issue: dict) -> dict:
     Returns:
         dict: Labels to update in incident.
     """
-    labels = create_incident_from_ticket(issue)['labels']
-    update_labels = {}
+    fetch_obj = {
+        'issue': json.dumps(issue),
+        'id': str(issue.get('id')),
+        'fields': {
+            'assignee': {'emailAddress': str(demisto.get(issue, 'fields.assignee.emailAddress'))},
+            'priority': {'name': str(demisto.get(issue, 'fields.priority.name'))},
+            'status': {'name': str(demisto.get(issue, 'fields.status.name'))},
+            'project': {'name': str(demisto.get(issue, 'fields.project.name'))},
+            'reporter': {'displayName': str(demisto.get(issue, 'fields.reporter.displayName')),
+                        'emailAddress': str(issue['fields']['reporter'].get('emailAddress', ''))},
+            'summary': str(demisto.get(issue, 'fields.summary')),
+            'description': str(demisto.get(issue, 'fields.description')),
+            # 'attachment':  demisto.get(issue, 'fields.attachment'),
+            'duedate': str(demisto.get(issue, 'fields.duedate')),  #TODO need to test
+            'labels': str(demisto.get(issue, 'fields.labels')),
+            'updated': str(demisto.get(issue, 'fields.updated')),  #TODO need to test
+            'created': str(demisto.get(issue, 'fields.created')),  #TODO need to test
+            'lastViewed': str(demisto.get(issue, 'fields.lastViewed')),  #TODO need to test
+        }
+    }
 
-    for label in labels:
-        update_labels[label['type']] = label['value']
-
-    return update_labels
+    return fetch_obj
 
 
 def get_project_id(project_key='', project_name=''):
@@ -660,7 +675,7 @@ def fetch_incidents(query, id_offset, fetch_by_created=None, **_):
     if not id_offset:
         id_offset = 0
 
-    incidents, max_results = [], 50
+    incidents, max_results = [], 1
     if id_offset:
         query = f'{query} AND id >= {id_offset}'
     if fetch_by_created:
@@ -710,9 +725,10 @@ def get_remote_data_command(id: str, lastUpdate: str) -> GetRemoteDataResponse:
         incident_update = create_update_incident_from_ticket(
             issue_raw_response)  # Getting labels to be updated in incident
 
-        demisto.debug(f"\nUpdate incident:\n\tIncident name: Jira issue {issue_raw_response.get('id')}\n\t"
+        demisto.info(f"\nUpdate incident:\n\tIncident name: Jira issue {issue_raw_response.get('id')}\n\t"
                       f"Reason: Issue modified in remote.\n\tIncident Last update time: {incident_modified_date}"
                       f"\n\tRemote last updated time: {jira_modified_date}\n")
+        demisto.info(f'@@@@@@@@@@: \n{incident_update}\n')
 
     return GetRemoteDataResponse(incident_update, [])
 
