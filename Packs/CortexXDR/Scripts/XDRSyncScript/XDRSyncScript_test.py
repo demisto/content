@@ -58,6 +58,62 @@ INCIDENT_IN_DEMISTO = {
     "sourceBrand": "Palo Alto Networks Cortext XDR IR",
 }
 
+OLD_INCIDENT_IN_DEMISTO = {
+    "sourceInstance": "Palo Alto Networks Cortext XDR IR_instance_1",
+    "occurred": "2019-05-30T14:32:22.398+03:00",
+    "closeReason": "",
+    "modified": "2019-06-02T11:15:09.323251+03:00",
+    "CustomFields": {
+        "xdrincidentid": "697567",
+        "xdrurl": "http://example.com/incident-view/697567",
+        "xdrdescription": "WildFire Malware detected on host HostNameFFM8VIP9",
+        "xdralertcount": 1,
+        "xdrstatus": "new",
+        "xdrassignedusermail": "",
+        "xdrassigneduserprettyname": "",
+        "xdralerts": [
+            {
+                "category": "WildFirePostDetection",
+                "action_pretty": "Detected (Reported)",
+                "description": "Suspicious executable detected",
+                "severity": "high",
+                "host_ip": "8.8.8.8",
+                "source": "Traps",
+                "alert_id": "50820",
+                "host_name": "HostNameFFM8VIP9",
+                "detection_timestamp": 1559215835437,
+                "action": "REPORTED",
+                "user_name": "N/A",
+                "name": "WildFire Malware"
+            }
+        ],
+        "xdrfileartifacts": [
+            {
+                "file_signature_status": "SIGNATURE_UNAVAILABLE",
+                "is_process": None,
+                "file_name": "LCTGSK7IML.docx",
+                "file_wildfire_verdict": "UNKNOWN",
+                "alert_count": 1,
+                "is_malicious": None,
+                "is_manual": None,
+                "file_signature_vendor_name": None,
+                "type": "HASH",
+                "file_sha256": "384654fa409c7a500a4a843d33a005c9d670d4845d3a9e096efc8b00ad05a621"
+            }
+        ],
+        "xdrnetworkartifacts": []
+    },
+    "labels": [{
+        "type": "modification_time",
+        "value": 1559463309323,
+        }
+    ],
+    "severity": 1,
+    "name": "#697567 - WildFire Malware detected on host HostNameFFM8VIP9",
+    "created": "2019-06-02T11:13:54.674006+03:00",
+    "sourceBrand": "Palo Alto Networks Cortext XDR IR",
+}
+
 INCIDENT_FROM_XDR = {
     "host_count": 1,
     "manual_severity": None,
@@ -872,3 +928,129 @@ def test_create_incident_from_saved_data_with_extra_data():
     created_incident = xdr_script.create_incident_from_saved_data(incident_from_context, fields_mapping, True)
 
     assert created_incident == EXPECTED_INCIDENT_EXTRA_DATA
+
+
+def test_create_incident_from_saved_data_without_extra_data_old_incident():
+    """
+    Given
+    - an old incident in demisto (which means that 'xdrmodificationtime' is not mapped  but present in 'labels')
+    - fields_mapping:
+        {
+        "alert_count": "xdralertcount",
+        "assigned_user_mail": "xdrassigneduseremail",
+        "assigned_user_pretty_name": "xdrassigneduserprettyname",
+        "description": "xdrdescription",
+        "high_severity_alert_count": "xdrhighseverityalertcount",
+        "host_count": "xdrhostcount",
+        "incident_id": "10",
+        "low_severity_alert_count": "xdrlowseverityalertcount",
+        "manual_severity": "xdrmanualseverity",
+        "med_severity_alert_count": "xdrmediumseverityalertcount",
+        "modification_time": "xdrmodificationtime",
+        "notes": "xdrnotes",
+        "resolve_comment": "xdrresolvecomment",
+        "severity": "severity",
+        "status": "xdrstatus",
+        "user_count": "xdrusercount",
+        "xdr_url": "xdrurl"
+    }
+    - include_extra_data = False
+
+    When
+    - creating an incident object from the context incident
+
+    Then
+    - ensure date fields are parsed correctly
+    - ensure all relevant fields are present
+
+    """
+    fields_mapping = {
+        "alert_count": "xdralertcount",
+        "assigned_user_mail": "xdrassigneduseremail",
+        "assigned_user_pretty_name": "xdrassigneduserprettyname",
+        "description": "xdrdescription",
+        "high_severity_alert_count": "xdrhighseverityalertcount",
+        "host_count": "xdrhostcount",
+        "incident_id": "10",
+        "low_severity_alert_count": "xdrlowseverityalertcount",
+        "manual_severity": "xdrmanualseverity",
+        "med_severity_alert_count": "xdrmediumseverityalertcount",
+        "modification_time": "xdrmodificationtime",
+        "notes": "xdrnotes",
+        "resolve_comment": "xdrresolvecomment",
+        "severity": "severity",
+        "status": "xdrstatus",
+        "user_count": "xdrusercount",
+        "xdr_url": "xdrurl"
+    }
+
+    incident_from_context = copy.deepcopy(OLD_INCIDENT_IN_DEMISTO)
+
+    created_incident = xdr_script.create_incident_from_saved_data(incident_from_context, fields_mapping)
+
+    assert created_incident == EXPECTED_INCIDENT
+
+
+def test_create_incident_from_saved_data_old_incident_no_modification_time():
+    """
+    Given
+    - an old incident in demisto (which means that 'xdrmodificationtime' is not mapped and not in 'labels')
+    - fields_mapping:
+        {
+        "alert_count": "xdralertcount",
+        "assigned_user_mail": "xdrassigneduseremail",
+        "assigned_user_pretty_name": "xdrassigneduserprettyname",
+        "description": "xdrdescription",
+        "high_severity_alert_count": "xdrhighseverityalertcount",
+        "host_count": "xdrhostcount",
+        "incident_id": "10",
+        "low_severity_alert_count": "xdrlowseverityalertcount",
+        "manual_severity": "xdrmanualseverity",
+        "med_severity_alert_count": "xdrmediumseverityalertcount",
+        "modification_time": "xdrmodificationtime",
+        "notes": "xdrnotes",
+        "resolve_comment": "xdrresolvecomment",
+        "severity": "severity",
+        "status": "xdrstatus",
+        "user_count": "xdrusercount",
+        "xdr_url": "xdrurl"
+    }
+    - include_extra_data = False
+
+    When
+    - creating an incident object from the context incident
+
+    Then
+    - ensure date fields are parsed correctly
+    - ensure all relevant fields are present
+
+    """
+    fields_mapping = {
+        "alert_count": "xdralertcount",
+        "assigned_user_mail": "xdrassigneduseremail",
+        "assigned_user_pretty_name": "xdrassigneduserprettyname",
+        "description": "xdrdescription",
+        "high_severity_alert_count": "xdrhighseverityalertcount",
+        "host_count": "xdrhostcount",
+        "incident_id": "10",
+        "low_severity_alert_count": "xdrlowseverityalertcount",
+        "manual_severity": "xdrmanualseverity",
+        "med_severity_alert_count": "xdrmediumseverityalertcount",
+        "modification_time": "xdrmodificationtime",
+        "notes": "xdrnotes",
+        "resolve_comment": "xdrresolvecomment",
+        "severity": "severity",
+        "status": "xdrstatus",
+        "user_count": "xdrusercount",
+        "xdr_url": "xdrurl"
+    }
+
+    EXPECTED_INCIDENT['modification_time'] = 0
+
+    incident_from_context = copy.deepcopy(OLD_INCIDENT_IN_DEMISTO)
+    incident_from_context["labels"] = []
+
+    created_incident = xdr_script.create_incident_from_saved_data(incident_from_context, fields_mapping)
+
+    assert created_incident['modification_time'] == 0
+    assert created_incident == EXPECTED_INCIDENT
