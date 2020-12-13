@@ -6,3 +6,4 @@
 !cdl-query-threat-logs action="allow" fields="vendor_name,log_source,rule_matched,dest_location,log_time" time_range="10 days" limit="1"
 !cdl-query-url-logs action="alert" ip="1.1.1.1" limit="1"
 !cdl-query-file-data source_ip="10.10.10.101" time_range="6 months" limit="1"
+!cdl-reset-authentication-timeout
