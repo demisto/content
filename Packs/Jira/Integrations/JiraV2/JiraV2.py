@@ -538,7 +538,7 @@ def get_comments_command(issue_id):
         human_readable = tableToMarkdown("Comments", comments)
         contents = body
         outputs = {'Ticket(val.Id == obj.Id)': {'Id': issue_id, "Comment": comments}}
-        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
+        return human_readable, outputs, contents
 
     else:
         demisto.results('No comments were found in the ticket')
@@ -695,7 +695,42 @@ def fetch_incidents(query, id_offset, fetch_by_created=None, **_):
     return incidents
 
 
-def get_remote_data_command(id: str, lastUpdate: str) -> GetRemoteDataResponse:
+def get_new_attachments(attachments, incident_modified_date):
+    file_results = []
+    # list of all attachments
+    if attachments:
+        for attachment in attachments:
+            attachment_modified_date: datetime = parse(
+                str(dict_safe_get(attachment, ['created'], "", str))
+            ).replace(tzinfo=pytz.UTC)
+            if incident_modified_date <= attachment_modified_date:
+                attachment_url = f"secure{attachment['content'].split('/secure')[-1]}"
+                filename = attachment_url.split("/")[-1]
+                attachments_zip = jira_req(method='GET', resource_url=attachment_url).content
+                file_results.append(fileResult(filename=filename, data=attachments_zip))
+    return file_results
+
+
+def get_incident_entries(issue, incident_modified_date):
+    entries = {'comments': [], 'attachments': []}
+    _, _, raw_comments_content = get_comments_command(issue['id'])
+    comments = raw_comments_content['comments']
+    for comment in comments:
+        comment_modified_date: datetime = parse(
+            str(dict_safe_get(comment, ['updated'], "", str))
+        ).replace(tzinfo=pytz.UTC)
+        if incident_modified_date <= comment_modified_date:
+            entries['comments'].append(comment)
+    attachments = demisto.get(issue, 'fields.attachment')
+    if attachments:
+        file_results = get_new_attachments(attachments, incident_modified_date)
+        if file_results:
+            entries['attachments'] = file_results
+    return entries
+
+
+
+def get_remote_data_command(args) -> GetRemoteDataResponse:
     """ Mirror-in data to incident from Jira into demisto 'jira issue' incident.
 
     Notes:
@@ -709,16 +744,17 @@ def get_remote_data_command(id: str, lastUpdate: str) -> GetRemoteDataResponse:
         GetRemoteDataResponse: Structured incident response.
     """
     incident_update = {}
-
+    parsed_entries = []
+    parsed_args = GetRemoteDataArgs(args)
     # Get raw response on issue ID
-    _, _, issue_raw_response = get_issue(issue_id=id)
+    _, _, issue_raw_response = get_issue(issue_id=parsed_args.remote_incident_id)
 
     # Timestamp - Issue last modified in jira server side
     jira_modified_date: datetime = parse(
         str(dict_safe_get(issue_raw_response, ['fields', 'updated'], "", str))
     ).replace(tzinfo=pytz.UTC)
     # Timestamp - Issue last sync in demisto server side
-    incident_modified_date: datetime = parse(lastUpdate).replace(tzinfo=pytz.UTC)
+    incident_modified_date: datetime = parse(parsed_args.last_update).replace(tzinfo=pytz.UTC)
 
     # Update incident only if issue modified in Jira server-side after the last sync
     if jira_modified_date > incident_modified_date:
@@ -730,7 +766,28 @@ def get_remote_data_command(id: str, lastUpdate: str) -> GetRemoteDataResponse:
                       f"\n\tRemote last updated time: {jira_modified_date}\n")
         demisto.info(f'@@@@@@@@@@: \n{incident_update}\n')
 
-    return GetRemoteDataResponse(incident_update, [])
+        entries = get_incident_entries(issue_raw_response, incident_modified_date)
+        for comment in entries['comments']:
+            parsed_entries.append({
+                'Type': EntryType.NOTE,
+                'Contents': comment.get('body', ''),
+                'ContentsFormat': EntryFormat.TEXT,
+                'Tags': ['comment'],  # the list of tags to add to the entry
+                'Note': True
+            })
+
+        for attachment in entries['attachments']:
+            parsed_entries.append({
+                'Type': EntryType.FILE,
+                'Contents': attachment,
+                'ContentsFormat': EntryFormat.TEXT,
+                'Tags': ['attachment'],  # the list of tags to add to the entry
+                'Note': False  # boolean, True for Note, False otherwise
+            })
+
+    if parsed_entries:
+        demisto.info(f'&&&&&&&&&&&&&&&: \n{parsed_entries}\n')
+    return GetRemoteDataResponse(incident_update, parsed_entries)
 
 
 def main():
@@ -763,7 +820,7 @@ def main():
             return_outputs(human_readable, outputs, raw_response)
 
         elif demisto.command() == 'jira-get-comments':
-            get_comments_command(**snakify(demisto.args()))
+            return_results(get_comments_command(**snakify(demisto.args())))
 
         elif demisto.command() == 'jira-issue-add-comment':
             add_comment_command(**snakify(demisto.args()))
@@ -781,7 +838,7 @@ def main():
             get_id_offset()
 
         elif demisto.command() == 'get-remote-data':
-            return_results(get_remote_data_command(**demisto.args()))
+            return_results(get_remote_data_command(demisto.args()))
 
         else:
             raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
