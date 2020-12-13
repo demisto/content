@@ -12,7 +12,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- additionalinfo: Check this box if you would like to use OAuth 2.0 authentication.
+- additionalinfo: Check this box to use OAuth 2.0 authentication.
     See (?) for more information.
   display: Use OAuth Login
   hidden: false
@@ -27,7 +27,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The ServiceNow CMDB is a service‑centric foundation that proactively
+description: ServiceNow CMDB is a service‑centric foundation that proactively
   analyzes service‑impacting changes, identifies issues, and eliminates outages.
 display: ServiceNow CMDB
 name: ServiceNow CMDB
@@ -42,7 +42,7 @@ script:
       secret: false
     - default: false
       description: An encoded query string used to filter the results. For more information
-        about querying in ServiceNow, see https://docs.servicenow.com/bundle/paris-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+        about querying in ServiceNow, see https://docs.servicenow.com/bundle/paris-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html.
       isArray: false
       name: query
       required: false
@@ -56,7 +56,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: 'A number of records to exclude from the query (default: 0).'
+      description: 'The number of records to exclude from the query (default: 0).'
       isArray: false
       name: offset
       required: false
@@ -70,7 +70,7 @@ script:
       description: The name of CMDB table that was queried.
       type: String
     - contextPath: ServiceNowCMDB.Records
-      description: A list with all the records that were found in the CMDB table.
+      description: A list of all the records that were found in the CMDB table.
       type: Unknown
   - arguments:
     - default: false
@@ -86,8 +86,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The fields to return for the queried record. Multiple fields can
-        be passed, comma seperated.
+      description: A comma-separated list of the fields to return for the queried record. 
       isArray: false
       name: fields
       required: false
@@ -101,7 +100,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: 'A number of records to exclude from the relations query (default:
+      description: 'The number of records to exclude from the relations query (default:
         0).'
       isArray: false
       name: relation_offset
@@ -123,10 +122,10 @@ script:
         record.
       type: Unknown
     - contextPath: ServiceNowCMDB.Record.OutboundRelations
-      description: A list with all the outbound relations of the queried record.
+      description: A list of all the outbound relations of the queried record.
       type: Unknown
     - contextPath: ServiceNowCMDB.Record.InboundRelations
-      description: A list with all the inbound relations of the queried record.
+      description: A list of all the inbound relations of the queried record.
       type: Unknown
   - arguments:
     - default: false
@@ -137,37 +136,34 @@ script:
       secret: false
     - default: true
       defaultValue: ServiceNow
-      description: The discovery source value. You can see all avaialable values from
-        sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci.
+      description: 'The discovery source value. You can see all available values from the
+        sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci. (default: "ServiceNow").'
       isArray: false
       name: source
       required: false
       secret: false
     - default: false
-      description: 'The attributes that should be added to the created record. Input
-        format: attribute=value pairs. Multiple attributes can be passed, separated
-        with a comma, e.g.: "name=test, ram=1024"'
+      description: 'A comma-separated list of attributes that should be added to the created record. Input
+        format: attribute=value pairs, e.g., "name=test, ram=1024".'
       isArray: false
       name: attributes
       required: true
       secret: false
     - default: false
-      description: A list of dictionaries. Each dictionary represents an inbound relation
-        that should be added to the created record.
+      description: A comma-separated list of dictionaries. Each dictionary represents an inbound relation that should be added to the created record.
       isArray: true
       name: inbound_relations
       required: false
       secret: false
     - default: false
-      description: A list of dictionaries. Each dictionary represents an outbound
+      description: A comma-separated list of dictionaries. Each dictionary represents an outbound
         relation that should be added to the created record.
       isArray: true
       name: outbound_relations
       required: false
       secret: false
     - default: false
-      description: The fields to return for the created record. Multiple fields can
-        be passed, comma seperated.
+      description: A comma-separated list of fields to return for the created record. 
       isArray: false
       name: fields
       required: false
@@ -181,7 +177,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: 'A number of records to exclude from the relations query (default:
+      description: 'The number of records to exclude from the relations query (default:
         0).'
       isArray: false
       name: relation_offset
@@ -203,14 +199,14 @@ script:
         record.
       type: Unknown
     - contextPath: ServiceNowCMDB.Record.OutboundRelations
-      description: A list with all the outbound relations of the created record.
+      description: A list of all the outbound relations of the created record.
       type: Unknown
     - contextPath: ServiceNowCMDB.Record.InboundRelations
-      description: A list with all the inbound relations of the created record.
+      description: A list of all the inbound relations of the created record.
       type: Unknown
   - arguments:
     - default: false
-      description: The class name of the record that shoule be updated.
+      description: The class name of the record that should be updated.
       isArray: false
       name: class
       required: true
@@ -223,23 +219,19 @@ script:
       secret: false
     - default: true
       defaultValue: ServiceNow
-      description: The discovery source value. You can see all avaialable values from
-        sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci.
+      description: 'The discovery source value. You can see all available values from sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci. (default: "ServiceNow").'
       isArray: false
       name: source
       required: false
       secret: false
     - default: false
-      description: 'The attributes that should be updated in the record. Input format:
-        attribute=value pairs. Multiple attributes can be passed, separated with a
-        comma, e.g.: "name=test,ram=1024"'
+      description: 'A comma-separated list of the attributes that should be updated in the record. Input format: attribute=value pairs, e.g., "name=test,ram=1024".'
       isArray: false
       name: attributes
       required: true
       secret: false
     - default: false
-      description: The fields to return for the updated record. Multiple fields can
-        be passed, comma seperated.
+      description: A comma-separated list of the fields to return for the updated record. 
       isArray: false
       name: fields
       required: false
@@ -253,7 +245,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: 'A number of records to exclude from the relations query (default:
+      description: 'The number of records to exclude from the relations query (default:
         0).'
       isArray: false
       name: relation_offset
@@ -275,10 +267,10 @@ script:
         record.
       type: Unknown
     - contextPath: ServiceNowCMDB.Record.OutboundRelations
-      description: A list with all the outbound relations of the updated record.
+      description: A list of all the outbound relations of the updated record.
       type: Unknown
     - contextPath: ServiceNowCMDB.Record.InboundRelations
-      description: A list with all the inbound relations of the updated record.
+      description: A list of all the inbound relations of the updated record.
       type: Unknown
   - arguments:
     - default: false
@@ -295,29 +287,27 @@ script:
       secret: false
     - default: true
       defaultValue: ServiceNow
-      description: The discovery source value. You can see all avaialable values from
-        sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci.
+      description: 'The discovery source value. You can see all available values from
+        sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci. (default: "ServiceNow").'
       isArray: false
       name: source
       required: false
       secret: false
     - default: false
-      description: A list of dictionaries. Each dictionary represents an inbound relation
-        that should be added to the created record.
+      description: A comma-separated list of dictionaries. Each dictionary represents an inbound relation that should be added to the created record.
       isArray: true
       name: inbound_relations
       required: false
       secret: false
     - default: false
-      description: A list of dictionaries. Each dictionary represents an outbound
+      description: A comma-separated list of dictionaries. Each dictionary represents an outbound
         relation that should be added to the created record.
       isArray: true
       name: outbound_relations
       required: false
       secret: false
     - default: false
-      description: The fields to return for the record. Multiple fields can be passed,
-        comma seperated.
+      description: A comma-separated list of the fields to return for the record. 
       isArray: false
       name: fields
       required: false
@@ -331,7 +321,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: 'A number of records to exclude from the relations query (default:
+      description: 'The number of records to exclude from the relations query (default:
         0).'
       isArray: false
       name: relation_offset
@@ -353,10 +343,10 @@ script:
         record.
       type: Unknown
     - contextPath: ServiceNowCMDB.Record.OutboundRelations
-      description: A list with all the outbound relations of the record.
+      description: A list of all the outbound relations of the record.
       type: Unknown
     - contextPath: ServiceNowCMDB.Record.InboundRelations
-      description: A list with all the inbound relations of the record.
+      description: A list of all the inbound relations of the record.
       type: Unknown
   - arguments:
     - default: false
@@ -378,8 +368,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The fields to return for the record. Multiple fields can be passed,
-        comma seperated.
+      description: A comma-separated list of the fields to return for the record. 
       isArray: false
       name: fields
       required: false
@@ -393,7 +382,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: 'A number of records to exclude from the relations query (default:
+      description: 'The number of records to exclude from the relations query (default:
         0).'
       isArray: false
       name: relation_offset
@@ -415,10 +404,10 @@ script:
         record.
       type: Unknown
     - contextPath: ServiceNowCMDB.Record.OutboundRelations
-      description: A list with all the outbound relations of the record.
+      description: A list of all the outbound relations of the record.
       type: Unknown
     - contextPath: ServiceNowCMDB.Record.InboundRelations
-      description: A list with all the inbound relations of the record.
+      description: A list of all the inbound relations of the record.
       type: Unknown
   - arguments:
     - default: false
