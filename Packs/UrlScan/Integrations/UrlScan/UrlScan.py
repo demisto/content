@@ -41,6 +41,8 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
+    LOG('requesting https request with method: {}, url: {}, data: {}'.format(method, BASE_URL + url_suffix, json))
+    LOG.print_log()
     r = requests.request(
         method,
         BASE_URL + url_suffix,
@@ -66,7 +68,7 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
 
         response_json = r.json()
         error_description = response_json.get('description')
-        should_continue_on_blacklisted_urls = demisto.args().get('continue_on_blacklisted_urls')
+        should_continue_on_blacklisted_urls = argToBoolean(demisto.args().get('continue_on_blacklisted_urls'))
         if should_continue_on_blacklisted_urls and error_description == BLACKLISTED_URL_ERROR_MESSAGE:
             response_json['url_is_blacklisted'] = True
             requested_url = JSON.loads(json)['url']
@@ -91,15 +93,11 @@ def get_result_page():
 
 
 def polling(uuid):
-    if demisto.args().get('timeout') is None:
-        TIMEOUT = 60
-    else:
-        TIMEOUT = demisto.args().get('timeout')
-
+    TIMEOUT = int(demisto.args().get('timeout', 60))
     uri = BASE_URL + 'result/{}'.format(uuid)
 
     ready = poll(
-        lambda: requests.get(uri, verify=USE_SSL).status_code == 200,
+        lambda: requests.get(uri, headers={'API-Key': APIKEY}, verify=USE_SSL).status_code == 200,
         step=5,
         ignore_exceptions=(requests.exceptions.ConnectionError),
         timeout=int(TIMEOUT)
@@ -120,32 +118,39 @@ def is_truthy(val):
     return bool(val)
 
 
-def poll(target, step, args=(), kwargs=None, timeout=None,
+def poll(target, step, args=(), kwargs=None, timeout=60,
          check_success=is_truthy, step_function=step_constant,
          ignore_exceptions=(), collect_values=None, **k):
 
     kwargs = kwargs or dict()
     values = collect_values or Queue()
 
-    max_time = time.time() + timeout if timeout else None
+    max_time = time.time() + timeout
     tries = 0
-
-    last_item = None
+    # According to the doc - The most efficient approach would be to wait at least 10 seconds before starting to poll
+    time.sleep(10)
     while True:
-
+        LOG('Number of Polling attempts: {}'.format(tries))
+        LOG.print_log()
         try:
             val = target(*args, **kwargs)
             last_item = val
         except ignore_exceptions as e:
             last_item = e
+            LOG('Polling request failed with exception {}'.format(str(e)))
+            LOG.print_log()
         else:
             if check_success(val):
                 return val
-
+        LOG('Polling request returned False')
+        LOG.print_log()
         values.put(last_item)
         tries += 1
         if max_time is not None and time.time() >= max_time:
             demisto.results('The operation timed out. Please try again with a longer timeout period.')
+            LOG('The operation timed out.')
+            LOG.print_log()
+            return False
         time.sleep(step)  # pylint: disable=sleep-exists
         step = step_function(step)
 
@@ -171,21 +176,17 @@ def urlscan_submit_url():
 
 
 def format_results(uuid):
-    # Scan Lists sometimes returns empty
-    scan_lists = None
-    while scan_lists is None:
-        try:
-            response = urlscan_submit_request(uuid)
-            scan_data = response['data']
-            scan_lists = response['lists']
-            scan_tasks = response['task']
-            scan_page = response['page']
-            scan_stats = response['stats']
-            scan_meta = response['meta']
-            url_query = scan_tasks['url']
-            scan_verdicts = response.get('verdicts')
-        except Exception:
-            pass
+    response = urlscan_submit_request(uuid)
+    LOG('urlscan_submit_request response: {}'.format(response))
+    LOG.print_log()
+    scan_data = response.get('data', {})
+    scan_lists = response.get('lists', {})
+    scan_tasks = response.get('task', {})
+    scan_page = response.get('page', {})
+    scan_stats = response.get('stats', {})
+    scan_meta = response.get('meta', {})
+    url_query = scan_tasks.get('url', {})
+    scan_verdicts = response.get('verdicts', {})
 
     ec = makehash()
     dbot_score = makehash()
@@ -549,28 +550,28 @@ def format_http_transaction_list():
 
 
 """COMMAND FUNCTIONS"""
-try:
-    handle_proxy()
-    if demisto.command() == 'test-module':
-        search_type = 'ip'
-        query = '8.8.8.8'
-        urlscan_search(search_type, query)
-        demisto.results('ok')
-    if demisto.command() in {'urlscan-submit', 'url'}:
-        urlscan_submit_command()
-    if demisto.command() == 'urlscan-search':
-        urlscan_search_command()
-    if demisto.command() == 'urlscan-submit-url-command':
-        demisto.results(urlscan_submit_url().get('uuid'))
-    if demisto.command() == 'urlscan-get-http-transaction-list':
-        format_http_transaction_list()
-    if demisto.command() == 'urlscan-get-result-page':
-        demisto.results(get_result_page())
-    if demisto.command() == 'urlscan-poll-uri':
-        poll_uri()
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    try:
+        handle_proxy()
+        if demisto.command() == 'test-module':
+            search_type = 'ip'
+            query = '8.8.8.8'
+            urlscan_search(search_type, query)
+            demisto.results('ok')
+        if demisto.command() in {'urlscan-submit', 'url'}:
+            urlscan_submit_command()
+        if demisto.command() == 'urlscan-search':
+            urlscan_search_command()
+        if demisto.command() == 'urlscan-submit-url-command':
+            demisto.results(urlscan_submit_url().get('uuid'))
+        if demisto.command() == 'urlscan-get-http-transaction-list':
+            format_http_transaction_list()
+        if demisto.command() == 'urlscan-get-result-page':
+            demisto.results(get_result_page())
+        if demisto.command() == 'urlscan-poll-uri':
+            poll_uri()
 
-
-except Exception as e:
-    LOG(e)
-    LOG.print_log(False)
-    return_error(e.message)
+    except Exception as e:
+        LOG(e)
+        LOG.print_log(False)
+        return_error(e.message)
