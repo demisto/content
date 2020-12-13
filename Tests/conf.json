@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Tripwire",
+            "playbookID": "TestplaybookTripwire",
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "Generic Polling Test",
             "timeout": 250
         },
