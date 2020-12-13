@@ -77,13 +77,35 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-description: This is the Hello World integration for getting started.
+description: This is integration for Bitcoin Abuse API. contains 2 commands, bitcoin-report-address and fetch-indicators
 display: BitcoinAbuse
 name: BitcoinAbuse
 script:
   commands:
   - arguments: []
     name: fetch-indicators
+  - arguments:
+    - description: address of the abuser
+      name: address
+      required: true
+    - name: abuser
+      required: true
+    - description: description of the abusement
+      name: description
+    - auto: PREDEFINED
+      description: type of abusement done
+      name: abuse_type
+      predefined:
+      - ransomware
+      - darknetmarketbitcointumbler
+      - blackmailscam
+      - sextortion
+      - other
+      required: true
+    - description: description of abuse type, required when type is other
+      name: abuse_type_other
+    description: Reports an abuser to Bitcoin Abuse API
+    name: bitcoin-report-address
   dockerimage: demisto/python3:3.8.6.13358
   feed: true
   isFetchSamples: true
@@ -92,5 +114,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
-defaultclassifier: HelloWorld
-defaultmapperin: HelloWorld-mapper
+defaultclassifier: BitcoinAbuse
+defaultmapperin: BitcoinAbuse-mapper
