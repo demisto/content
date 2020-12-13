@@ -11,6 +11,7 @@ import argparse
 import logging
 import ast
 import sys
+import os
 
 from Tests.scripts.validate_index import log_message_if_statement, get_index_json_data
 from Tests.configure_and_test_integration_instances import Build, Server
@@ -81,14 +82,13 @@ def get_paid_packs_page(client: demisto_client,
         logging.error(f"Error trying to communicate with demisto server: {exception}")
         return None, 0
 
+    logging.debug(f"Got response data {pformat(response_data)}")
+    response = ast.literal_eval(response_data)
     if status_code == 200:
-        logging.debug(f"Got response data {pformat(response_data)}")
-        response = ast.literal_eval(response_data)
         logging.info("Got premium packs from server.")
         return response["packs"], response["total"]
 
-    result_object = ast.literal_eval(response_data)
-    message = result_object.get('message', '')
+    message = response.get('message', '')
     logging.error(f"Failed to retrieve premium packs - with status code {status_code}\n{message}\n")
     return None, 0
 
@@ -149,6 +149,31 @@ def verify_pack_in_list(pack: dict, pack_list: list, pack_list_name: str = "pack
     return False
 
 
+def verify_packs_inside(inner_packs: list, outer_packs: list, inner_packs_name: str, outer_packs_name: str) -> bool:
+    """Verify inner_packs are all inside outer_packs.
+
+    Args:
+        inner_packs: List of packs to verify.
+        outer_packs: List of packs to verify from.
+        inner_packs_name: Name of inner packs for better logging.
+        outer_packs_name: Name of outer packs for better logging.
+
+    Returns: True if all inner_packs are inside, false otherwise.
+
+    """
+    missing_packs = []
+    for inner_pack in inner_packs:
+        pack_inside = verify_pack_in_list(inner_pack, outer_packs, outer_packs_name)
+        if not pack_inside:
+            missing_packs.append({"id": inner_pack["id"], "price": inner_pack["price"]})
+
+    return log_message_if_statement(statement=(len(missing_packs) == 0),
+                                    error_message=f"The following {inner_packs_name} were"
+                                    f" not found exactly the same as in the {outer_packs_name}:"
+                                    f" \n{pformat(missing_packs)}")
+
+
+
 def verify_server_paid_packs_by_index(server_paid_packs: list, index_data_packs: list) -> bool:
     """Compare two pack dictionaries and assert id's and prices are identical.
 
@@ -163,28 +188,16 @@ def verify_server_paid_packs_by_index(server_paid_packs: list, index_data_packs:
     """
 
     logging.info("Verifying all premium server packs are in the index.json")
-    missing_server_packs = []
-    for server_pack in server_paid_packs:
-        server_pack_in_index = verify_pack_in_list(server_pack, index_data_packs, "index packs")
-        if not server_pack_in_index:
-            missing_server_packs.append({"id": server_pack["id"], "price": server_pack["price"]})
-
-    all_server_packs_in_index = log_message_if_statement(statement=(len(missing_server_packs) == 0),
-                                                         error_message=f"The following premium server packs were"
-                                                                       f" not found exactly the same as in the index"
-                                                                       f" packs:\n{pformat(missing_server_packs)}")
+    all_server_packs_in_index = verify_packs_inside(inner_packs=server_paid_packs,
+                                                    outer_packs=index_data_packs,
+                                                    inner_packs_name="premium server packs",
+                                                    outer_packs_name="index packs")
 
     logging.info("Verifying all premium index packs are in the server")
-    missing_index_packs = []
-    for index_pack in index_data_packs:
-        index_pack_in_server = verify_pack_in_list(index_pack, server_paid_packs, "premium server packs")
-        if not index_pack_in_server:
-            missing_index_packs.append({"id": index_pack["id"], "price": index_pack["price"]})
-
-    all_index_packs_in_server = log_message_if_statement(statement=(len(missing_index_packs) == 0),
-                                                         error_message=f"The following index packs were"
-                                                                       f" not found exactly the same as in the server"
-                                                                       f" packs:\n{pformat(missing_index_packs)}")
+    all_index_packs_in_server = verify_packs_inside(inner_packs=index_data_packs,
+                                                    outer_packs=server_paid_packs,
+                                                    inner_packs_name="index packs",
+                                                    outer_packs_name="premium server packs")
 
     return all([all_index_packs_in_server, all_server_packs_in_index])
 
@@ -220,16 +233,20 @@ def main():
 
     # Verify premium packs in the server
     paid_packs = get_premium_packs(client=server.client)
-    if paid_packs is not None:
+    if paid_packs:
         logging.info(f"Verifying premium packs in {server.host}")
         paid_packs_are_identical = verify_server_paid_packs_by_index(paid_packs, index_data["packs"])
         log_message_if_statement(statement=paid_packs_are_identical,
                                  error_message=f"Test failed on host: {server.host}.",
                                  success_message=f"All premium packs in host: {server.host} are valid")
         if not paid_packs_are_identical:
+            if os.path.exists(options.service_account):
+                os.remove(options.service_account)
             sys.exit(1)
     else:
         logging.critical(f"Missing all premium packs in host: {server.host}")
+        if os.path.exists(options.service_account):
+            os.remove(options.service_account)
         sys.exit(1)
 
 
