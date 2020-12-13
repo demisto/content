@@ -29,7 +29,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
     params['page_size'] = 200
 
     if not limit:
-        limit = 60000
+        limit = 10000
         integration_context[f'{current_indicator_type}_fetch_time'] = str(params['end_date'])
         set_integration_context(integration_context)
 
