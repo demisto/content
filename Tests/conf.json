@@ -7,6 +7,11 @@
             "timeout": 250
         },
         {
+            "integrations": "Darktrace",
+            "playbookID": "Darktrace Test Playbook",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "GSuiteAdmin",
             "playbookID": "GSuiteAdmin-Test",
             "fromversion": "5.0.0"
