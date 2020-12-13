@@ -102,7 +102,7 @@ script:
       - sextortion
       - other
       required: true
-    - description: description of abuse type, required when type is other
+    - description: description of abuse type, required when abuse type is other
       name: abuse_type_other
     description: Reports an abuser to Bitcoin Abuse API
     name: bitcoin-report-address
