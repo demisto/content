@@ -1845,11 +1845,11 @@ def get_compliance_search(search_name, show_only_recipients):
         return get_cs_error(stderr)
 
     # Get search status
-    stdout = stdout[len(PASSWORD):]
     try:
+        stdout = stdout[len(PASSWORD):]
         stdout = stdout.split('\n', 1)  # type: ignore
-    except Exception:
-        demisto.debug(f'Search status: {stdout}')
+    except Exception as e:
+        demisto.debug(f'Search status: {stdout} - {str(e)}')
         return "The compliance search didn't return any results."
     results = [get_cs_status(search_name, stdout[0])]
 
