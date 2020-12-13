@@ -26,7 +26,8 @@ Returns DNS details for a domain
 | --- | --- | --- |
 | DomainDNSDetails.A | Domain A records. | String |
 | DomainDNSDetails.AAAA | Domain AAAA records. | String |
-| DomainDNSDetails.NS | Domain CNAME records. | String |
+| DomainDNSDetails.CNAME | Domain CNAME records. | String |
+| DomainDNSDetails.NS | Domain NS records. | String |
 | DomainDNSDetails.domain | Domain name used in the query. | String |
 | DomainDNSDetails.server | Name server that returned the result. | String |
 
@@ -44,6 +45,9 @@ Returns DNS details for a domain
         "AAAA": [
             "2001:2001:200:1:200:2001:2001:2001"
         ],
+        "CNAME": [
+            "test.example.com"
+        ],
         "NS": [
             "a.iana-servers.net.",
             "b.iana-servers.net."
@@ -59,5 +63,5 @@ Returns DNS details for a domain
 >###  Domain DNS Details for example.com
 >|domain|server|CNAME|NS|A|AAAA|
 >|---|---|---|---|---|---|
->| example.com | system |  | a.iana-servers.net.,<br/>b.iana-servers.net. | 10.11.12.13 | 2001:2001:200:1:200:2001:2001:2001 |
+>| example.com | system | test.example.com | a.iana-servers.net.,<br/>b.iana-servers.net. | 10.11.12.13 | 2001:2001:200:1:200:2001:2001:2001 |
 
