@@ -1849,6 +1849,7 @@ def get_compliance_search(search_name, show_only_recipients):
     try:
         stdout = stdout.split('\n', 1)  # type: ignore
     except Exception:
+        demisto.debug(f'Search status: {stdout}')
         return "The compliance search didn't return any results."
     results = [get_cs_status(search_name, stdout[0])]
 
