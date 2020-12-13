@@ -507,8 +507,9 @@ def create_incident_id(incident):
 
 
 def opt_in_log(message):
-    if demisto.params().get('extensive_logs', False):
-        demisto.info(message)
+    # if demisto.params().get('extensive_logs', False):
+    #     demisto.info(message)
+    demisto.info(message)
 
 
 def fetch_incidents(service):
@@ -564,10 +565,11 @@ def fetch_incidents(service):
         if incident_id not in last_run_fetched_ids:
             incidents.append(inc)
 
-    # debug_message = '\n\n total number of incidents found: from {}\n to {}\n with the ' \
-    #                 'query: {} is: {}.\n incidents found: {} \n\n'.format(last_run, now, searchquery_oneshot,
-    #                                                                       len(incidents), incidents)
-    # demisto.debug(debug_message)
+    debug_message = '\n\n total number of incidents found: from {}\n to {}\n with the ' \
+                    'query: {} is: {}.\n\n incidents found: {} \n\n'.format(last_run, now, searchquery_oneshot,
+                                                                          len(incidents), incidents)
+    demisto.debug(debug_message)
+    opt_in_log(debug_message)
     latest_incident_fetched_time = None if len(incidents) == 0 else get_latest_incident_time(incidents)
 
     fetches_with_same_start_time_count = demisto.getLastRun().get('fetch_start_update_count', 0) + 1
