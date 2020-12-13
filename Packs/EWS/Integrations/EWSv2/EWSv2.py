@@ -1846,7 +1846,10 @@ def get_compliance_search(search_name, show_only_recipients):
 
     # Get search status
     stdout = stdout[len(PASSWORD):]
-    stdout = stdout.split('\n', 1)  # type: ignore
+    try:
+        stdout = stdout.split('\n', 1)  # type: ignore
+    except Exception:
+        return "The compliance search didn't return any results."
     results = [get_cs_status(search_name, stdout[0])]
 
     # Parse search results from script output if the search has completed. Output to warroom as table.
