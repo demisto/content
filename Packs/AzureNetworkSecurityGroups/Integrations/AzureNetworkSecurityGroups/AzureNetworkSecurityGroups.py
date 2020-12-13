@@ -175,11 +175,11 @@ def delete_rule_command(client: AzureNSGClient, security_group_name: str, securi
 
     rule_deleted = client.delete_rule(security_group_name, security_rule_name)
     if rule_deleted.status_code == 204:
-        raise ValueError(f"Rule {security_rule_name} not found.")
+        return f"Rule {security_rule_name} not found."
     if rule_deleted.status_code == 202:
         return f"Rule {security_rule_name} deleted."
     else:
-        return f"Rule {security_rule_name} was not deleted. Got back the following reulst:\n{rule_deleted.content}"
+        return f"Rule {security_rule_name} was not deleted. Got back the following result:\n{rule_deleted.content}"
 
 
 @logger
@@ -312,7 +312,6 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
     try:
         client = AzureNSGClient(
-            # TODO: After demo maybe can remove self-deployed values
             app_id=params.get('app_id', ''),
             subscription_id=params.get('subscription_id', ''),
             resource_group_name=params.get('resource_group_name', ''),

@@ -27,8 +27,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Azure network security groups are used to filter network traffic to and
-  from Azure resources in an Azure virtual network
+description: Azure Network Security Groups are used to filter network traffic to and
+  from Azure resources in an Azure virtual network.
 display: Azure Network Security Groups
 name: Azure Network Security Groups
 script:
