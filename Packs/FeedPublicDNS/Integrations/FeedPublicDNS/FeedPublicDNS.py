@@ -134,7 +134,7 @@ def main():
 
     try:
         client = Client(url, tags, tlp_color, use_ssl)
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+        commands: Dict = {
             'test-module': test_module,
             'public-dns-get-indicators': get_indicators_command
         }
