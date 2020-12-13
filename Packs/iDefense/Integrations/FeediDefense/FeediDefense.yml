@@ -88,7 +88,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: Which indicator types to fetch
-  defaultvalue: IP, Domain, URL
+  defaultvalue: IP,Domain,URL
   display: Indicator Type
   name: indicator_type
   options:
