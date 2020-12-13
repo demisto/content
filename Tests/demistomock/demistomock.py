@@ -1040,3 +1040,7 @@ def mapObject(obj, mapper, mapper_type):
 
 def getModules():
     return {}
+
+
+def get_incidents():
+    return {}
