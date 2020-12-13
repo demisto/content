@@ -513,6 +513,8 @@ def opt_in_log(message):
 
 
 def fetch_incidents(service):
+    demisto.debug('\n\nEntering fetch incidents\n\n')
+    opt_in_log('\n\n Entering fetch\n\n')
     last_run = demisto.getLastRun() and demisto.getLastRun()['time']
     search_offset = demisto.getLastRun().get('offset', 0)
 
