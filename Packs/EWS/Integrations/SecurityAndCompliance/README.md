@@ -1,43 +1,45 @@
-This integration allows you to manage and interact with Microsoft security and compliance content search.
+This integration enables you to manage and interact with Microsoft security and compliance content search. You can manage the security of all your organization's emails, SharePoint sites, OneDrives, etc., by searching for text strings or queries based on attributes of a malicious email. However, you can only perform actions (preview and delete) on emails.
 This integration was integrated and tested with [Security & Compliance Center](https://docs.microsoft.com/en-us/powershell/module/exchange/?view=exchange-ps#policy-and-compliance-content-search). 
 
 ## Use Cases
 
-* Create / Modify / Get / List / Remove / Triger  search in Security & Compliance Center - Content search service.
-* Create / Get / List / Remove search actions in Security & Compliance Center - Content search service. Supported actions Purge (Delete) / Preview.
+* Create / Modify / Get / List / Remove / Trigger  a search in the Security & Compliance Center - Content search service.
+* Create / Get / List / Remove search actions in the Security & Compliance Center - Content search service. Supported actions for emails only are Purge (Delete) and Preview.
 
 ## Playbooks
 
-* O365 - Security And Compliance - Search
-* O365 - Security And Compliance - Search Action - Delete
-* O365 - Security And Compliance - Search Action - Preview
-* O365 - Security And Compliance - Search And Delete
+* O365 - Security And Compliance - Search And Delete: Creates and starts a compliance search in the Security and Compliance Center to identify emails with similar attributes of a malicious email. If configured, will preview or delete the emails that were located. This playbook uses the following playbooks as sub-playbooks in its workflow.
+* O365 - Security And Compliance - Search: Creates and starts a compliance search in the Security and Compliance Center to identify emails with attributes similar to a malicious email.
+* O365 - Security And Compliance - Search Action - Delete: Deletes emails located by the **O365 SecurityAndCompliance Search** sub-playbook.
+* O365 - Security And Compliance - Search Action - Preview: Provides a preview of the results of emails located by the **O365 SecurityAndCompliance Search** sub-playbook.
+
 
 
 ## Permissions in the Security & Compliance Center
 
->  To access the Security & Compliance Center, users need to be a global administrator or a member of one or more Security & Compliance Center role groups.
+To access the Security & Compliance Center, you need to be a global administrator or a member of one or more Security & Compliance Center role groups.
 
-Login into the [Security & Compliance Center](https://ps.compliance.protection.outlook.com):
+1. Login into the [Security & Compliance Center](https://ps.compliance.protection.outlook.com):
 
-1. Side menu -> Permissions:
+1. From the side menu, click **Permissions**.
 
    ![side-menu](../../doc_imgs/security-and-compliance-side-menu.png)
 
-2. Choose existing role `Compliance Administrator`:
+2. Search for and select the **Compliance Administrator** role.
 
    ![image-20201129135216851](../../doc_imgs/security-and-compliance-roles.png)
 
-3. Edit `Compliance Administrator` role:
+3. Click **Edit role group**. 
 
    ![roles-edit-1](../../doc_imgs/security-and-compliance-edit-1.png)
 
-4. Add the user you intend to be used in the integration:
+4. Click **Choose Members** and click **Edit**. Add the user you intend to be used in the integration:
 
    ![roles-edit-2](../../doc_imgs/security-and-compliance-edit-2.png)
-
+5. Click **Add**.
    ![roles-edit-3](../../doc_imgs/security-and-compliance-edit-3.png)
-
+6. Choose which members to add from the displayed list and click **Add**.
+7. Click **Done**.
    
 
 ## Configure SecurityAndCompliance on Cortex XSOAR
@@ -60,17 +62,17 @@ Login into the [Security & Compliance Center](https://ps.compliance.protection.o
 
          2. Open playground -  War-room:
 
-            1. Run command ```!o365-sc-auth-start``` and follow the instructions, Expected out put:
+            1. Run the ***!o365-sc-auth-start*** command and follow the instructions. Expected output is:
 
 
             >## Security And Compliance - Authorize instructions
             >
             >1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **XXXXXXX** to authenticate.
-            >2. Run the following command **!o365-sc-auth-complete** in the War Room.
+            >2. Run the command ***!o365-sc-auth-complete*** command in the War Room.
 
             
 
-            2. Test - OAuth2.0 authorization, Run command  ```!o365-sc-auth-test```. 
+            2. Test - OAuth2.0 authorization, Run the ***!o365-sc-auth-test*** command. 
 
    2. Basic authentication (Not recommended):
 
@@ -87,7 +89,7 @@ Login into the [Security & Compliance Center](https://ps.compliance.protection.o
    
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### o365-sc-auth-start
@@ -113,7 +115,7 @@ There is no context output for this command.
 
 >## Security And Compliance - Authorize instructions
 >1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **XXXXXXX** to authenticate.
->2. Run the following command **!o365-sc-auth-complete** in the War Room.
+>2. Run the ***!o365-sc-auth-complete*** command in the War Room.
 
 
 ### o365-sc-auth-complete
@@ -681,7 +683,7 @@ There is no context output for this command.
 
 ### o365-sc-new-search-action
 ***
-After you create a content search using the o365-sc-new-search command and run it using the o365-sc-start-search command, you assign a search action to the search using the o365-sc-new-search-action command.
+After you create a content search using the ***o365-sc-new-search*** command and run it using the ***o365-sc-start-search*** command, you assign a search action to the search using the ***o365-sc-new-search-action*** command.
 
 
 #### Base Command
@@ -1105,9 +1107,9 @@ Gets compliance search action from the Security & Compliance Center.
 
 ## Known Limitations
 
-* Security and compliance integrations doesn't support `Security and compliance` on-premise .
-* Each security and compliance command create PSSession (Powershell session) - security and compliance powershell limit the number of concurrent sessions to 3, Its affects the behavior of muiltiple playbooks running concurrently, Therefor its recommend to retry task on fail when using the integration commands in playbooks.
-* Proxy isn't supported due to Microsoft [limitation](https://github.com/PowerShell/PowerShell/issues/9721).
+* Security and compliance integrations do not support Security and compliance on-premise .
+* Each security and compliance command creates a PSSession (PowerShell session). The security and compliance PowerShell limits the number of concurrent sessions to 3. Since this affects the behavior of multiple playbooks running concurrently it we recommend that you retry failed tasks when using the integration commands in playbooks.
+* Proxies are not supported due to a Microsoft [limitation](https://github.com/PowerShell/PowerShell/issues/9721).
 
-###  
+
 
