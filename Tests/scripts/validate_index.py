@@ -6,23 +6,19 @@ Validate commit hash is in master's history.
 """
 import argparse
 import logging
-import json
 import sys
-import git
 import os
 
-from Tests.Marketplace.mandatory_premium_packs import MANDATORY_PREMIUM_PACKS
-from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig, CONTENT_ROOT_PATH
+from Tests.Marketplace.marketplace_services import init_storage_client, load_json, GCPConfig, CONTENT_ROOT_PATH
 from Tests.Marketplace.upload_packs import download_and_extract_index, get_content_git_client
 from Tests.scripts.utils.log_util import install_logging
 from pprint import pformat
 
-INDEX_FILE_PATH = 'index.json'
-DEFAULT_PAGE_SIZE = 50
+MANDATORY_PREMIUM_PACKS_PATH = "Tests/Marketplace/mandatory_premium_packs.json"
 
 
 def options_handler():
-    parser = argparse.ArgumentParser(description='Utility for instantiating integration instances')
+    parser = argparse.ArgumentParser(description='Run validation on the index.json file.')
     parser.add_argument('-e', '--extract_path',
                         help=f'Full path of folder to extract the {GCPConfig.INDEX_NAME}.zip to',
                         required=True)
@@ -70,7 +66,7 @@ def check_index_data(index_data: dict) -> bool:
     if not packs_list_exists:
         return False
 
-    mandatory_pack_ids = MANDATORY_PREMIUM_PACKS.copy()
+    mandatory_pack_ids = load_json(MANDATORY_PREMIUM_PACKS_PATH).get("packs", [])
 
     packs_are_valid = True
     for pack in index_data["packs"]:
@@ -96,17 +92,12 @@ def verify_pack(pack: dict) -> bool:
 
     Returns: True if pack is valid, False otherwise.
     """
-    id_exists = log_message_if_statement(statement=(pack.get("id", "") != ""),
+    id_exists = log_message_if_statement(statement=(pack.get("id", "") not in ("", None)),
                                          error_message="There is a missing pack id.")
     price_is_valid = log_message_if_statement(statement=(pack.get("price", -1) >= 0),
                                               error_message=f"The price on the pack {pack['id']} is invalid.",
                                               success_message=f"The price on the pack {pack['id']} is valid.")
     return all([id_exists, price_is_valid])
-
-
-def get_hexsha(commit: git.repo.base.Commit) -> str:
-    """Return hash of the git commit object"""
-    return commit.hexsha
 
 
 def check_commit_in_master_history(index_commit_hash: str) -> bool:
@@ -118,7 +109,7 @@ def check_commit_in_master_history(index_commit_hash: str) -> bool:
     Returns: True if commit hash is in master history, False otherwise.
     """
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
-    master_commits = list(map(get_hexsha, list(content_repo.iter_commits("master"))))
+    master_commits = list(map(lambda commit: commit.hexsha, list(content_repo.iter_commits("origin/master"))))
 
     return log_message_if_statement(statement=(index_commit_hash in master_commits),
                                     error_message=f"Commit hash {index_commit_hash} is not in master history",
@@ -139,13 +130,11 @@ def get_index_json_data(service_account: str, production_bucket_name: str, extra
     logging.info('Downloading and extracting index.zip from the cloud')
     storage_client = init_storage_client(service_account)
     production_bucket = storage_client.bucket(production_bucket_name)
-    index_folder_path, build_index_blob, build_index_generation = \
-        download_and_extract_index(production_bucket, extract_path)
+    index_folder_path, _, _ = download_and_extract_index(production_bucket, extract_path)
 
     logging.info("Retrieving the index file")
     index_file_path = os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")
-    with open(index_file_path, 'r') as index_file:
-        index_data = json.load(index_file)
+    index_data = load_json(index_file_path)
 
     return index_data, index_file_path
 

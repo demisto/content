@@ -1,8 +1,5 @@
 """Validate premium packs.
 
-Check index.json file inside the index.zip archive in the cloud.
-Validate no missing ids are found and that all packs have a positive price.
-Validate commit hash is in master's history.
 Check the server configured on master.
 Validate the pack id's in the index file are present on the server and the prices match.
 """
@@ -15,9 +12,8 @@ import os
 
 from Tests.scripts.validate_index import log_message_if_statement, get_index_json_data
 from Tests.configure_and_test_integration_instances import Build, Server
-from Tests.Marketplace.marketplace_services import GCPConfig
+from Tests.Marketplace.marketplace_services import load_json, GCPConfig
 from Tests.scripts.utils.log_util import install_logging
-from Tests.test_content import get_json_file
 from pprint import pformat
 
 DEFAULT_PAGE_SIZE = 50
@@ -211,7 +207,7 @@ def extract_credentials_from_secret(secret_path: str) -> (str, str):
     Returns: (username, password) found in the secret file.
     """
     logging.info("Retrieving the credentials for Cortex XSOAR server")
-    secret_conf_file = get_json_file(path=secret_path)
+    secret_conf_file = load_json(file_path=secret_path)
     username: str = secret_conf_file.get("username")
     password: str = secret_conf_file.get("userPassword")
     return username, password
