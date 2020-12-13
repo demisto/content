@@ -82,8 +82,8 @@ class AzureNSGClient:
             return self.http_request('GET', f'/{security_group}/securityRules/{rule_name}')
         except Exception as e:
             if '404' in str(e):
-                raise ValueError(f'Rule {rule_name} was not found')
-            raise e
+                raise ValueError(f'Rule {rule_name} was not found.')
+            raise
 
 
 '''HELPER FUNCTIONS'''
