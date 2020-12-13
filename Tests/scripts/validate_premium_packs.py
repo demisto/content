@@ -21,9 +21,10 @@ DEFAULT_PAGE_SIZE = 50
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Test for validating premium packs on servers.')
-    parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
-                                          '"Demisto 6.0", "Demisto Marketplace". The server url is determined by the'
-                                          ' AMI environment.', default='Demisto Marketplace')
+    parser.add_argument('--ami_env', '-a',
+                        help='The AMI environment for the current run. Options are '
+                             '"Demisto 6.0", "Demisto Marketplace". The server url is determined by the'
+                             ' AMI environment.', default='Demisto Marketplace')
     parser.add_argument('-e', '--extract_path',
                         help=f'Full path of folder to extract the {GCPConfig.INDEX_NAME}.zip to',
                         required=True)
