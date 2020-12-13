@@ -16,17 +16,20 @@ INTEGRATION_NAME = 'Public DNS Feed'
 
 
 class Client:
-    def __init__(self, feed_url: str, insecure: bool = False):
-        self.feed_url: str = feed_url
+    def __init__(self, feed_url: str, tags: Optional[list] = None,
+                 tlp_color: Optional[str] = None, insecure: bool = False):
+        self._feed_url: str = feed_url
         self._verify: bool = insecure
         self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
+        self.Tags = [] if tags is None else tags
+        self.Tlp_color = tlp_color
 
     def build_iterator(self) -> List:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
         """
-        feed_url = self.feed_url
+        feed_url = self._feed_url
         try:
             response = requests.get(
                 url=feed_url,
@@ -85,9 +88,9 @@ def fetch_indicators(client: Client, limit: int = -1) -> List[Dict]:
 
         indicators.append({
             'value': item,
-            'score': 0,  # Good
             'type': type_,
-            'rawJSON': {'value': item, 'type': type_}
+            'rawJSON': {'value': item, 'type': type_},
+            'fields': {'tags': client.Tags, 'trafficlightprotocol': client.Tlp_color}
         })
 
     return indicators
@@ -123,12 +126,14 @@ def fetch_indicators_command(client: Client) -> List[Dict]:
 def main():
     params = demisto.params()
     url = params.get('url', 'https://public-dns.info/nameservers-all.txt')
+    tags = argToList(params.get('feedTags'))
+    tlp_color = params.get('tlp_color')
     use_ssl = not params.get('insecure', False)
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
     try:
-        client = Client(url, use_ssl)
+        client = Client(url, tags, tlp_color, use_ssl)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
             'test-module': test_module,
             'public-dns-get-indicators': get_indicators_command

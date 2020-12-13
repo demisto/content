@@ -9,10 +9,14 @@ Fetches IP Addresses from Public DNS feed.
     | --- | --- | --- |
     | url | Public DNS feed URL | True |
     | feed | Fetch indicators | False |
+    | feedReputation | Indicator Reputation | False |
     | feedReliability | Source Reliability | True |
     | feedExpirationPolicy |  | False |
     | feedFetchInterval | Feed Fetch Interval | False |
+    | feedExpirationInterval |  | False |
+    | feedTags | Tags | False |
     | feedBypassExclusionList | Bypass exclusion list | False |
+    | tlp_color | Traffic Light Protocol Color | False |
     | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
 
