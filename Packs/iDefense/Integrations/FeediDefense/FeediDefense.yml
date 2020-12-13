@@ -88,13 +88,14 @@ configuration:
   required: false
   type: 0
 - additionalinfo: Which indicator types to fetch
+  defaultvalue: IP, Domain, URL
   display: Indicator Type
   name: indicator_type
   options:
   - IP
   - Domain
   - URL
-  required: false
+  required: true
   type: 16
 - additionalinfo: Severity of the indicator. From which value to fetch indicators.
   defaultvalue: '1'

@@ -29,7 +29,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
     params['page_size'] = 200
 
     if not limit:
-        limit = 10000
+        limit = 60000
         integration_context[f'{current_indicator_type}_fetch_time'] = str(params['end_date'])
         set_integration_context(integration_context)
 
@@ -38,6 +38,8 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
 
     while more_indicators:
         params['page'] = page_number
+        demisto.debug(f"Initiating API call to iDefense with url: {feed.get('url', client.url)} ,with parameters: "
+                      f"{params} and page number: {page_number} ")
         r = requests.get(
             url=feed.get('url', client.url),
             verify=client.verify,
@@ -48,7 +50,6 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
             **kwargs
         )
 
-        demisto.debug(f"Initiating API call to iDefense with url: {r.url} and page number: {page_number}")
         try:
             r.raise_for_status()
             data = r.json()
