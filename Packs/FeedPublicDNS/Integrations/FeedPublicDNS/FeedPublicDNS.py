@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
-from typing import Dict, List, Tuple, Any, Callable
+from typing import Dict, List, Tuple, Any
 from netaddr import IPAddress
 import urllib3
 
