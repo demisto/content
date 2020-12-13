@@ -737,7 +737,7 @@ def get_categories_command(display_url, custom_only=False):
     return entry
 
 
-def get_categories(custom_only):
+def get_categories(custom_only=False):
     cmd_url = '/urlCategories?customOnly=true' if custom_only else '/urlCategories'
 
     response = http_request('GET', cmd_url).json()
