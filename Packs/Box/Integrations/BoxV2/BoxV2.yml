@@ -1407,6 +1407,7 @@ script:
       defaultValue: name
       isArray: false
       name: sort
+      description: The field the results should be sorted by.
       predefined:
       - id
       - name
@@ -1653,7 +1654,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Attributes to include in the response. '
+      description: 'Attributes to include in the response.'
       isArray: false
       name: fields
       predefined:
@@ -1748,22 +1749,27 @@ script:
       name: entry_id
       required: true
       secret: false
+      description: 'The entry ID of the file to upload.'
     - default: false
       isArray: false
       name: as_user
       required: true
       secret: false
+      description: 'The id of the user who is performing the action.'
     - default: false
       isArray: false
       name: file_name
       required: false
       secret: false
+      description: 'The name of the file.'
     - default: false
       isArray: false
       name: folder_id
       required: true
       secret: false
+      description: 'The ID of the folder the file is being uploaded to. Default is 0/root.'
     deprecated: false
+    description: Uploads a file to the given folder.
     execution: false
     name: box-upload-file
     outputs:

@@ -247,7 +247,6 @@ class Client(BaseClient):
         :return: dict containing the results from the http request.
         """
         self._headers.update({'As-User': as_user})
-        print(query_object.prepare_params_object())
         return self._http_request(
             method='GET',
             url_suffix='/search/',
@@ -741,7 +740,7 @@ class Client(BaseClient):
     def create_update_user(self, as_user: str = None, login: str = None, name: str = None,
                            role: str = None,
                            language: str = None, is_sync_enabled: bool = False,
-                           job_title: str = None, phone: int = None, address: str = None,
+                           job_title: str = None, phone: str = None, address: str = None,
                            space_amount: int = None, tracking_codes: List[Dict] = None,
                            can_see_managed_users: bool = False, time_zone: str = None,
                            is_exempt_from_device_limits: bool = False,
@@ -749,7 +748,7 @@ class Client(BaseClient):
                            is_external_collab_restricted: bool = False,
                            is_platform_access_only: bool = False, status: str = None,
                            user_id: str = None,
-                           update_user: bool = False) -> dict:
+                           update_user: bool = False, is_update: bool = False) -> dict:
         """
         This function handles the creation and update of users for Box. The same request object is
         sent for both calls.
@@ -801,10 +800,11 @@ class Client(BaseClient):
             "is_exempt_from_device_limits": is_exempt_from_device_limits,
             "is_external_collab_restricted": is_external_collab_restricted,
             "is_exempt_from_login_verification": is_exempt_from_login_verification,
-            "is_platform_access_only": is_platform_access_only,
             "can_see_managed_users": can_see_managed_users,
             "tracking_codes": tracking_codes
         }
+        if is_update is False:
+            request_body.update({"is_platform_access_only": is_platform_access_only})
 
         return self._http_request(
             method=method,
@@ -995,7 +995,12 @@ def find_file_folder_by_share_link_command(client: Client, args: Dict[str, Any])
     share_link: str = args.get('shared_link')
     password: str = args.get('password', None)
     response: dict = client.find_file_folder_by_share_link(shared_link=share_link, password=password)
-    readable_output = tableToMarkdown(f'File/Folder Share Link for {share_link}', response)
+    readable_output = tableToMarkdown(
+        name=f'File/Folder Share Link for {share_link}',
+        t=response,
+        removeNull=True,
+        headerTransform=string_to_table_header
+    )
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Box.ShareLink',
@@ -1018,12 +1023,17 @@ def search_content_command(client: Client, args: Dict[str, Any]) -> CommandResul
     query_object = QueryHandler(args=args)
     as_user = args.get('as_user')
     response = client.search_content(as_user=as_user, query_object=query_object)
-    readable_output = tableToMarkdown(f'Search results', response)
+    readable_output = tableToMarkdown(
+        name='Search results',
+        t=response.get('entries'),
+        removeNull=True,
+        headerTransform=string_to_table_header
+    )
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Box.Query',
         outputs_key_field='id',
-        outputs=response
+        outputs=response.get('entries')
     )
 
 
@@ -1125,8 +1135,12 @@ def get_shared_link_by_folder_command(client: Client, args: Dict[str, Any]) -> C
     folder_id: str = args.get('folder_id')
     as_user: str = args.get('as_user')
     response: dict = client.get_shared_link_by_folder(folder_id=folder_id, as_user=as_user)
-    readable_output: str = tableToMarkdown(f'Shared link information for the folder {folder_id}',
-                                           response)
+    readable_output: str = tableToMarkdown(
+        name=f'Shared link information for the folder {folder_id}',
+        t=response,
+        removeNull=True,
+        headerTransform=string_to_table_header
+    )
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Box.FolderShareLink',
@@ -1182,8 +1196,11 @@ def remove_folder_share_link_command(client: Client, args: Dict[str, Any]) -> Co
     response: dict = client.crud_folder_share_link(folder_share_link=folder_share_link_obj,
                                                    as_user=as_user, is_delete=True)
     readable_output: str = tableToMarkdown(
-        f'Folder Share Link for {folder_share_link_obj.folder_id} was removed.',
-        response)
+        name=f'Folder Share Link for {folder_share_link_obj.folder_id} was removed.',
+        t=response,
+        removeNull=True,
+        headerTransform=string_to_table_header
+    )
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Box.ShareLink',
@@ -1337,12 +1354,17 @@ def list_users_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     user_type: str = args.get('user_type')
     response: dict = client.list_users(fields=fields, filter_term=filter_term, limit=limit,
                                        offset=offset, user_type=user_type)
-    readable_output: str = tableToMarkdown(f'The following users were found.', response)
+    readable_output: str = tableToMarkdown(
+        name=f'The following users were found.',
+        t=response.get('entries'),
+        removeNull=True,
+        headerTransform=string_to_table_header
+    )
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Box.Users',
         outputs_key_field='id',
-        outputs=response
+        outputs=response.get('entries')
     )
 
 
@@ -1389,12 +1411,17 @@ def trashed_items_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     if len(response.get('entries')) == 0:
         readable_output = "No trashed items were found."
     else:
-        readable_output = tableToMarkdown('Trashed items were found.', response)
+        readable_output = tableToMarkdown(
+            name='Trashed items were found.',
+            t=response.get('entries'),
+            removeNull=True,
+            headerTransform=string_to_table_header
+        )
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Box.Trash',
         outputs_key_field='id',
-        outputs=response
+        outputs=response.get('entries')
     )
 
 
@@ -1538,7 +1565,7 @@ def create_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     language: str = args.get('language')
     is_sync_enabled: bool = argToBoolean(args.get('is_sync_enabled'))
     job_title: str = args.get('job_title')
-    phone: int = arg_to_int(arg_name='name', arg=args.get('phone'), default=0000000000)
+    phone: str = args.get('phone')
     address: str = args.get('address')
     space_amount: int = arg_to_int(arg_name='space_amount', arg=args.get('space_amount'), default=-1)
     tracking_codes: List[Dict] = parse_key_value_arg(arg_str=args.get('tracking_codes'))
@@ -1596,18 +1623,17 @@ def update_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     name: Optional[Any] = args.get('name')
     role: Optional[Any] = args.get('role')
     language: Optional[Any] = args.get('language')
-    is_sync_enabled: Optional[Any] = argToBoolean(args.get('is_sync_enabled'))
+    is_sync_enabled: Optional[Any] = argToBoolean(args.get('is_sync_enabled', 'false'))
     job_title: Optional[Any] = args.get('job_title')
-    phone: Optional[Any] = arg_to_int(arg_name='name', arg=args.get('phone'), default=0000000000)
+    phone: Optional[Any] = args.get('phone')
     address: Optional[Any] = args.get('address')
     space_amount: Optional[Any] = arg_to_int(arg_name='space_amount', arg=args.get('space_amount'), default=-1)
     tracking_codes: List[Dict] = parse_key_value_arg(arg_str=args.get('tracking_codes'))
-    can_see_managed_users: Optional[Any] = argToBoolean(args.get('can_see_managed_users'))
+    can_see_managed_users: Optional[Any] = argToBoolean(args.get('can_see_managed_users', 'false'))
     time_zone: Optional[Any] = args.get('timezone')
-    is_exempt_from_device_limits: Optional[Any] = argToBoolean(args.get('is_exempt_from_device_limits'))
-    is_exempt_from_login_verification: Optional[Any] = argToBoolean(args.get('is_exempt_from_login_verification'))
-    is_external_collab_restricted: Optional[Any] = argToBoolean(args.get('is_external_collab_restricted'))
-    is_platform_access_only: Optional[Any] = argToBoolean(args.get('is_platform_access_only'))
+    is_exempt_from_device_limits: Optional[Any] = argToBoolean(args.get('is_exempt_from_device_limits', 'false'))
+    is_exempt_from_login_verification: Optional[Any] = argToBoolean(args.get('is_exempt_from_login_verification', 'false'))
+    is_external_collab_restricted: Optional[Any] = argToBoolean(args.get('is_external_collab_restricted', 'false'))
     status: Optional[Any] = args.get('status')
 
     response = client.create_update_user(as_user=as_user, login=login, name=name, role=role,
@@ -1619,8 +1645,7 @@ def update_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                                          is_exempt_from_device_limits=is_exempt_from_device_limits,
                                          is_exempt_from_login_verification=is_exempt_from_login_verification,
                                          is_external_collab_restricted=is_external_collab_restricted,
-                                         is_platform_access_only=is_platform_access_only,
-                                         status=status, user_id=user_id, update_user=True)
+                                         status=status, user_id=user_id, update_user=True, is_update=True)
     readable_output = tableToMarkdown(
         name=f'The user {response.get("login")} has been updated.',
         t=response,
@@ -1648,7 +1673,7 @@ def delete_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     as_user: Optional[Any] = args.get('as_user')
     user_id: Optional[Any] = args.get('user_id')
-    force: Optional[Any] = bool(strtobool(args.get('force')))
+    force: Optional[Any] = bool(strtobool(args.get('force', 'false')))
 
     response = client.delete_user(as_user=as_user, user_id=user_id, force=force)
 
@@ -1674,7 +1699,7 @@ def test_module(client: Client) -> str:
     :return:
     """
     response: Response = client.list_users(limit=1)
-    if response.status_code == 200:
+    if response:
         return 'ok'
     else:
         return 'An error occurred.'
