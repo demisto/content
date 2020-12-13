@@ -103,9 +103,10 @@ OLD_INCIDENT_IN_DEMISTO = {
         ],
         "xdrnetworkartifacts": []
     },
-    "labels": [{
-        "type": "modification_time",
-        "value": 1559463309323,
+    "labels": [
+        {
+            "type": "modification_time",
+            "value": 1559463309323,
         }
     ],
     "severity": 1,
