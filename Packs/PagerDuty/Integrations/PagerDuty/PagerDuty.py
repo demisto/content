@@ -6,6 +6,9 @@ import json
 import requests
 from datetime import datetime, timedelta
 
+reload(sys)
+sys.setdefaultencoding('utf8')  # pylint: disable=no-member
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -14,17 +17,14 @@ requests.packages.urllib3.disable_warnings()
 USE_SSL = not demisto.params().get('insecure', False)
 
 USE_PROXY = demisto.params().get('proxy', True)
-API_KEY = demisto.params()['APIKey']
-SERVICE_KEY = demisto.params()['ServiceKey']
-FETCH_INTERVAL = demisto.params()['FetchInterval']
+API_KEY = ''
+SERVICE_KEY = ''
+FETCH_INTERVAL = ''
 
 SERVER_URL = 'https://api.pagerduty.com/'
 CREATE_EVENT_URL = 'https://events.pagerduty.com/v2/enqueue'
 
-DEFAULT_HEADERS = {
-    'Authorization': 'Token token=' + API_KEY,
-    'Accept': 'application/vnd.pagerduty+json;version=2'
-}
+DEFAULT_HEADERS = {}  # type: Dict[str, str]
 
 '''HANDLE PROXY'''
 if not USE_PROXY:
@@ -126,7 +126,7 @@ def unicode_to_str_recur(obj):
     elif isinstance(obj, list):
         obj = map(unicode_to_str_recur, obj)
     elif isinstance(obj, unicode):
-        obj = obj.encode('utf-8')
+        obj = obj.encode('utf-8', 'ignore')
     return obj
 
 
@@ -715,36 +715,49 @@ def get_service_keys():
 
 ''' EXECUTION CODE '''
 
-LOG('command is %s' % (demisto.command(), ))
 
-try:
-    if demisto.command() == 'test-module':
-        test_module()
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
-    elif demisto.command() == 'PagerDuty-incidents':
-        demisto.results(get_incidents_command(**demisto.args()))
-    elif demisto.command() == 'PagerDuty-submit-event':
-        demisto.results(submit_event_command(**demisto.args()))
-    elif demisto.command() == 'PagerDuty-get-users-on-call':
-        demisto.results(get_on_call_users_command(**demisto.args()))
-    elif demisto.command() == 'PagerDuty-get-all-schedules':
-        demisto.results(get_all_schedules_command(**demisto.args()))
-    elif demisto.command() == 'PagerDuty-get-users-on-call-now':
-        demisto.results(get_on_call_now_users_command(**demisto.args()))
-    elif demisto.command() == 'PagerDuty-get-contact-methods':
-        demisto.results(get_users_contact_methods_command(**demisto.args()))
-    elif demisto.command() == 'PagerDuty-get-users-notification':
-        demisto.results(get_users_notification_command(**demisto.args()))
-    elif demisto.command() == 'PagerDuty-resolve-event':
-        demisto.results(resolve_event(**demisto.args()))
-    elif demisto.command() == 'PagerDuty-acknowledge-event':
-        demisto.results(acknowledge_event(**demisto.args()))
-    elif demisto.command() == 'PagerDuty-get-incident-data':
-        demisto.results(get_incident_data())
-    elif demisto.command() == 'PagerDuty-get-service-keys':
-        demisto.results(get_service_keys())
+def main():
+    LOG('command is %s' % (demisto.command(), ))
+
+    global API_KEY, SERVICE_KEY, FETCH_INTERVAL, DEFAULT_HEADERS
+    API_KEY = demisto.params()['APIKey']
+    SERVICE_KEY = demisto.params()['ServiceKey']
+    FETCH_INTERVAL = demisto.params()['FetchInterval']
+    DEFAULT_HEADERS = {
+        'Authorization': 'Token token=' + API_KEY,
+        'Accept': 'application/vnd.pagerduty+json;version=2'
+    }
+
+    try:
+        if demisto.command() == 'test-module':
+            test_module()
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+        elif demisto.command() == 'PagerDuty-incidents':
+            demisto.results(get_incidents_command(**demisto.args()))
+        elif demisto.command() == 'PagerDuty-submit-event':
+            demisto.results(submit_event_command(**demisto.args()))
+        elif demisto.command() == 'PagerDuty-get-users-on-call':
+            demisto.results(get_on_call_users_command(**demisto.args()))
+        elif demisto.command() == 'PagerDuty-get-all-schedules':
+            demisto.results(get_all_schedules_command(**demisto.args()))
+        elif demisto.command() == 'PagerDuty-get-users-on-call-now':
+            demisto.results(get_on_call_now_users_command(**demisto.args()))
+        elif demisto.command() == 'PagerDuty-get-contact-methods':
+            demisto.results(get_users_contact_methods_command(**demisto.args()))
+        elif demisto.command() == 'PagerDuty-get-users-notification':
+            demisto.results(get_users_notification_command(**demisto.args()))
+        elif demisto.command() == 'PagerDuty-resolve-event':
+            demisto.results(resolve_event(**demisto.args()))
+        elif demisto.command() == 'PagerDuty-acknowledge-event':
+            demisto.results(acknowledge_event(**demisto.args()))
+        elif demisto.command() == 'PagerDuty-get-incident-data':
+            demisto.results(get_incident_data())
+        elif demisto.command() == 'PagerDuty-get-service-keys':
+            demisto.results(get_service_keys())
+    except Exception as e:
+        return_error(e)
 
 
-except Exception as e:
-    return_error(e)
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    main()
