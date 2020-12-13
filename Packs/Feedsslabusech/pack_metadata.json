@@ -2,7 +2,7 @@
     "name": "abuse.ch SSL Blacklist Feed",
     "description": "The SSL IP Blacklist contains all hosts (IP addresses) that SSLBL has seen in the past 30 days and\n  identified as being associated with a malicious SSL certificate.",
     "support": "xsoar",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
