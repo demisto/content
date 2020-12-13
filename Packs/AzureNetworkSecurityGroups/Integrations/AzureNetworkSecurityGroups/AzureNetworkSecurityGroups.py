@@ -41,7 +41,7 @@ class AzureNSGClient:
             'proxy': proxy,
             'resource': 'https://management.core.windows.net',   # disable-secrets-detection
             'scope': 'https://management.azure.com/user_impersonation offline_access user.read',
-            'ok_codes': (200, 201, 202, 204)
+            'ok_codes': (200, 201, 202, 204),
         }
         self.ms_client = MicrosoftClient(**client_args)
 
