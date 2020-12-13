@@ -1,14 +1,12 @@
-comment: The minimum amount of integrations content release each quarter.
+comment: Print the Frozen hint.
 commonfields:
-  id: WidgetQuarterlyIntegrations
+  id: PrintFrozen
   version: -1
 enabled: false
-name: WidgetQuarterlyIntegrations
+name: PrintFrozen
 script: '-'
 system: false
 tags:
-- widget
-- dynamic-section
 timeout: '0'
 type: python
 subtype: python3
