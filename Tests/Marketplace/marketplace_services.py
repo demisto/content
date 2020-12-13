@@ -1683,7 +1683,10 @@ class Pack(object):
         if not task_status:
             logging.error(err_msg)
         else:
-            logging.success(f"Copied {num_copied_images} images for {self._pack_name} pack.")
+            if num_copied_images == 0:
+                logging.info(f"No added/modified integration images were detected in {self._pack_name} pack.")
+            else:
+                logging.success(f"Copied {num_copied_images} images for {self._pack_name} pack.")
 
         return task_status
 
