@@ -1,11 +1,7 @@
 from dataclasses import dataclass
 
 import demistomock as demisto  # noqa: F401
-from CSVFeedApiModule import *
 from CommonServerPython import *  # noqa: F401
-
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 SERVER_URL = 'https://www.bitcoinabuse.com/api/'
@@ -34,7 +30,12 @@ class _ReportAddressParams:
     description: str
 
 
-class BitcoinAbuseClient(BaseClient):
+@dataclass
+class _DownloadParams:
+    api_token: str
+
+
+class Client(BaseClient):
 
     def report_address(self, report_address_params: _ReportAddressParams) -> str:
         return self._http_request(
@@ -43,8 +44,16 @@ class BitcoinAbuseClient(BaseClient):
             params=vars(report_address_params)
         )
 
+    def download_csv(self, download_params: _DownloadParams, time_period: str) -> str:
+        url_suffix = FEED_ENDPOINT_PREFIX + time_period
+        return self._http_request(
+            method='GET',
+            url_suffix=url_suffix,
+            params=vars(download_params)
+        )
 
-def test_module(client: BitcoinAbuseClient) -> str:
+
+def test_module(client: Client) -> str:
     """
     Returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
     Args:
@@ -55,36 +64,15 @@ def test_module(client: BitcoinAbuseClient) -> str:
     """
 
 
-def fetch_indicators() -> None:
-    params = {k: v for k, v in demisto.params().items() if v is not None}
+def fetch_indicators(client: Client):
+    params = demisto.params()
+    time_period = params.get('fetchInterval')
+    if time_period is None:
+        raise DemistoException("TODO WRITE HERE")  # TODO TOM write here
+    download_params = _DownloadParams(API_KEY)
+    response = client.download_csv(download_params, time_period)
 
-    fetch_interval = params.get('fetchInterval')  # TODO TOM CHECK NAME And Validate?
-
-    feed_url_to_config = {
-        f'{SERVER_URL}{FEED_ENDPOINT_PREFIX}{fetch_interval}?api_token={API_KEY}': {
-            'fieldnames': ['id', 'address', 'abuse_type_id', 'abuse_type_other', 'abuser',
-                           'description', 'from_country', 'from_country_code', 'created_at'],
-            'indicator_type': 'Cryptocurrency Address',
-            'mapping': {
-                'address': 'value',
-                'from_country': 'Country Name',
-                'created_at': 'Creation Date',
-                'description': 'Bitcoin Abuse Description',
-                'abuse_type': 'todo '  # TODO TOM
-            }
-        }
-    }
-
-    params['url'] = f'{SERVER_URL}{FEED_ENDPOINT_PREFIX}{fetch_interval}?api_token={API_KEY}'
-    params['feed_url_to_config'] = feed_url_to_config
-    params['delimiter'] = ','
-
-    # Main execution of the CSV API Module.
-    # This function allows to add to or override this execution.
-    feed_main('Bitcoin Abuse Feed', params, 'bitcoin_abuse')
-
-
-def report_address_command(client: BitcoinAbuseClient) -> str:
+def report_address_command(client: Client) -> str:
     params = demisto.params()
 
     def is_valid_abuse_type(abuse_id, abuse_info):
@@ -122,7 +110,7 @@ def main() -> None:
 
     demisto.debug(f'Bitcoin Abuse: Command being called is {demisto.command()}')
 
-    client = BitcoinAbuseClient(
+    client = Client(
         base_url=SERVER_URL,
         verify=verify_certificate,
         proxy=proxy)
@@ -132,7 +120,7 @@ def main() -> None:
             return_results(test_module(client))
 
         elif command == 'fetch-indicators':
-            fetch_indicators()
+            return_results(fetch_indicators(client))
 
         elif command == 'bitcoin-report-address':
             return_results(report_address_command(client))
