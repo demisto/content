@@ -1,16 +1,15 @@
 id: ARIA Packet Intelligence - Test
 version: -1
-fromversion: 5.0.0
 name: ARIA Packet Intelligence - Test
 description: Use for testing the aria_packet_intelligence integration
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 51e1c33a-b00f-4d48-844e-b3be98d1a9f4
+    taskid: 885b8c7b-fa29-433b-898c-b7c1abf2c1a9
     type: start
     task:
-      id: 51e1c33a-b00f-4d48-844e-b3be98d1a9f4
+      id: 885b8c7b-fa29-433b-898c-b7c1abf2c1a9
       version: -1
       name: ""
       iscommand: false
@@ -29,12 +28,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 485c2587-c248-4b92-8acf-de628284ea8c
+    taskid: 77853ba6-3f2e-447c-879b-f42dcc8ab328
     type: title
     task:
-      id: 485c2587-c248-4b92-8acf-de628284ea8c
+      id: 77853ba6-3f2e-447c-879b-f42dcc8ab328
       version: -1
       name: Done
       type: title
@@ -51,12 +52,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 773e8cb2-dc14-49f7-8537-d26796144912
+    taskid: 7227522d-1bc8-4972-8d7a-e387685f96a0
     type: regular
     task:
-      id: 773e8cb2-dc14-49f7-8537-d26796144912
+      id: 7227522d-1bc8-4972-8d7a-e387685f96a0
       version: -1
       name: aria-record-conversation
       script: '|||aria-record-conversation'
@@ -108,12 +111,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: fd02b78a-1f15-4b21-83bc-f3f4abf66b7b
+    taskid: 19f88b8a-c7bc-4e98-8db0-3d7640a90fa2
     type: regular
     task:
-      id: fd02b78a-1f15-4b21-83bc-f3f4abf66b7b
+      id: 19f88b8a-c7bc-4e98-8db0-3d7640a90fa2
       version: -1
       name: aria-stop-recording-conversation
       script: '|||aria-stop-recording-conversation'
@@ -144,12 +149,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: 8397e605-f40d-46a8-838d-dda96c6908b9
+    taskid: 6cb8f3dc-0c94-4336-8152-f8076bbdee84
     type: regular
     task:
-      id: 8397e605-f40d-46a8-838d-dda96c6908b9
+      id: 6cb8f3dc-0c94-4336-8152-f8076bbdee84
       version: -1
       name: aria-record-dest-port
       script: '|||aria-record-dest-port'
@@ -196,12 +203,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: bfd37900-4bc4-47df-8635-668668468480
+    taskid: 28a33819-e1d2-4e0a-8e52-cc66965c751e
     type: regular
     task:
-      id: bfd37900-4bc4-47df-8635-668668468480
+      id: 28a33819-e1d2-4e0a-8e52-cc66965c751e
       version: -1
       name: aria-stop-recording-dest-port
       script: '|||aria-stop-recording-dest-port'
@@ -232,12 +241,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: a536339d-ac8a-4d8a-83a0-36f419e9cc1a
+    taskid: f3004cb2-bae6-4973-8343-84ad2d3ca1b1
     type: regular
     task:
-      id: a536339d-ac8a-4d8a-83a0-36f419e9cc1a
+      id: f3004cb2-bae6-4973-8343-84ad2d3ca1b1
       version: -1
       name: aria-alert-conversation
       script: '|||aria-alert-conversation'
@@ -258,6 +269,7 @@ tasks:
       label_sia_region:
         simple: ${inputs.label_sia_region}
       protocol: {}
+      rcs: {}
       rule_name:
         simple: alert_conversation
       src_ip:
@@ -286,12 +298,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "25":
     id: "25"
-    taskid: 48bf2aa8-99e8-4615-8e37-4d47c1808da7
+    taskid: 89a0b79d-9f97-4731-82df-f24e7e341b32
     type: regular
     task:
-      id: 48bf2aa8-99e8-4615-8e37-4d47c1808da7
+      id: 89a0b79d-9f97-4731-82df-f24e7e341b32
       version: -1
       name: aria-mute-alert-conversation
       script: '|||aria-mute-alert-conversation'
@@ -309,6 +323,7 @@ tasks:
         simple: ${inputs.label_sia_name}
       label_sia_region:
         simple: ${inputs.label_sia_region}
+      rcs: {}
       rule_name:
         simple: alert_conversation
     separatecontext: false
@@ -322,12 +337,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: 040d02a7-e767-4774-828a-fc876542087a
+    taskid: 532ddd38-c0b4-4bd8-8c9b-bc2edf14c179
     type: regular
     task:
-      id: 040d02a7-e767-4774-828a-fc876542087a
+      id: 532ddd38-c0b4-4bd8-8c9b-bc2edf14c179
       version: -1
       name: aria-alert-src-port
       script: '|||aria-alert-src-port'
@@ -349,6 +366,7 @@ tasks:
         simple: ${inputs.label_sia_region}
       port_range:
         simple: 10-100, 1000
+      rcs: {}
       rule_name:
         simple: alert_src_port
       transport_type:
@@ -370,12 +388,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "30":
     id: "30"
-    taskid: 3c25c009-4039-47d7-80b8-29cf024bc4e7
+    taskid: 104b8025-5782-495c-8ec0-2cff58b59ec0
     type: regular
     task:
-      id: 3c25c009-4039-47d7-80b8-29cf024bc4e7
+      id: 104b8025-5782-495c-8ec0-2cff58b59ec0
       version: -1
       name: aria-mute-alert-src-port
       script: '|||aria-mute-alert-src-port'
@@ -393,6 +413,7 @@ tasks:
         simple: ${inputs.label_sia_name}
       label_sia_region:
         simple: ${inputs.label_sia_region}
+      rcs: {}
       rule_name:
         simple: alert_src_port
     separatecontext: false
@@ -406,12 +427,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "33":
     id: "33"
-    taskid: 5ab96faa-8775-4842-81fb-24505765871c
+    taskid: 52d5e932-217a-4923-8f79-163fc3d4987e
     type: regular
     task:
-      id: 5ab96faa-8775-4842-81fb-24505765871c
+      id: 52d5e932-217a-4923-8f79-163fc3d4987e
       version: -1
       name: aria-alert-dest-port
       script: '|||aria-alert-dest-port'
@@ -454,12 +477,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "36":
     id: "36"
-    taskid: 9742ffee-685e-429a-8faa-1a3a187a56fd
+    taskid: 4a3dbf80-dbe4-4b23-8caf-59aa231a131e
     type: regular
     task:
-      id: 9742ffee-685e-429a-8faa-1a3a187a56fd
+      id: 4a3dbf80-dbe4-4b23-8caf-59aa231a131e
       version: -1
       name: aria-mute-alert-dest-port
       script: '|||aria-mute-alert-dest-port'
@@ -490,12 +515,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "37":
     id: "37"
-    taskid: a148fd5b-042c-4280-8de1-e83a4d79165d
+    taskid: e048c98a-5354-46ba-8d85-96451032607f
     type: regular
     task:
-      id: a148fd5b-042c-4280-8de1-e83a4d79165d
+      id: e048c98a-5354-46ba-8d85-96451032607f
       version: -1
       name: aria-block-conversation
       script: '|||aria-block-conversation'
@@ -536,12 +563,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "40":
     id: "40"
-    taskid: 8c87c6ac-0af6-471c-8b9b-4fa35a8782f2
+    taskid: f60d85cb-eb9e-4e2c-8575-1b14b1113594
     type: regular
     task:
-      id: 8c87c6ac-0af6-471c-8b9b-4fa35a8782f2
+      id: f60d85cb-eb9e-4e2c-8575-1b14b1113594
       version: -1
       name: aria-unblock-conversation
       script: '|||aria-unblock-conversation'
@@ -572,12 +601,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "43":
     id: "43"
-    taskid: cae49352-2a33-464a-8019-c7a806392585
+    taskid: 0909e350-0d8d-423a-88bd-33fdc03da019
     type: regular
     task:
-      id: cae49352-2a33-464a-8019-c7a806392585
+      id: 0909e350-0d8d-423a-88bd-33fdc03da019
       version: -1
       name: aria-block-src-port
       script: '|||aria-block-src-port'
@@ -610,12 +641,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "46":
     id: "46"
-    taskid: 807550f7-abbc-4317-885a-b9a74ba8c09f
+    taskid: cbd5e0d0-14c5-4017-8c87-f4dbf37ecc23
     type: regular
     task:
-      id: 807550f7-abbc-4317-885a-b9a74ba8c09f
+      id: cbd5e0d0-14c5-4017-8c87-f4dbf37ecc23
       version: -1
       name: aria-unblock-src-port
       script: '|||aria-unblock-src-port'
@@ -646,12 +679,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "47":
     id: "47"
-    taskid: 3b92784a-aa2a-4337-8f7a-4b4130ed2576
+    taskid: c0a84415-043d-4896-8523-d4df65423521
     type: regular
     task:
-      id: 3b92784a-aa2a-4337-8f7a-4b4130ed2576
+      id: c0a84415-043d-4896-8523-d4df65423521
       version: -1
       name: aria-block-dest-port
       script: '|||aria-block-dest-port'
@@ -684,12 +719,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "50":
     id: "50"
-    taskid: b0c347e0-5805-4c0a-859b-83b7c08aa115
+    taskid: 57dc211e-c15e-4967-8674-cad3e2d403d0
     type: regular
     task:
-      id: b0c347e0-5805-4c0a-859b-83b7c08aa115
+      id: 57dc211e-c15e-4967-8674-cad3e2d403d0
       version: -1
       name: aria-unblock-dest-port
       script: '|||aria-unblock-dest-port'
@@ -720,12 +757,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "53":
     id: "53"
-    taskid: e6a31aff-9753-434e-8d92-075171325daf
+    taskid: 7cf980f0-f5e8-4f75-816f-f3bdaab553ef
     type: regular
     task:
-      id: e6a31aff-9753-434e-8d92-075171325daf
+      id: 7cf980f0-f5e8-4f75-816f-f3bdaab553ef
       version: -1
       name: aria-block-dest-subnet
       script: '|||aria-block-dest-subnet'
@@ -758,12 +797,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "54":
     id: "54"
-    taskid: 42147fc0-f6ef-4129-81b3-26e8404080b9
+    taskid: 3f671daa-babc-4eed-86d2-d8002e0bf640
     type: regular
     task:
-      id: 42147fc0-f6ef-4129-81b3-26e8404080b9
+      id: 3f671daa-babc-4eed-86d2-d8002e0bf640
       version: -1
       name: aria-unblock-dest-subnet
       script: '|||aria-unblock-dest-subnet'
@@ -794,12 +835,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "55":
     id: "55"
-    taskid: 1342f382-b32c-43a0-82f8-14df711021ab
+    taskid: 12217ad2-9c16-4f2f-852e-f9882e2a6418
     type: regular
     task:
-      id: 1342f382-b32c-43a0-82f8-14df711021ab
+      id: 12217ad2-9c16-4f2f-852e-f9882e2a6418
       version: -1
       name: aria-block-src-subnet
       script: '|||aria-block-src-subnet'
@@ -832,12 +875,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "56":
     id: "56"
-    taskid: 7b5f6ff8-67c5-401e-82ad-80f7ee321c09
+    taskid: e4209958-09db-42a2-891c-de82b738865b
     type: regular
     task:
-      id: 7b5f6ff8-67c5-401e-82ad-80f7ee321c09
+      id: e4209958-09db-42a2-891c-de82b738865b
       version: -1
       name: aria-unblock-src-subnet
       script: '|||aria-unblock-src-subnet'
@@ -868,12 +913,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "58":
     id: "58"
-    taskid: ff4c2bc8-399d-4c6a-8ae2-0c978c732c58
+    taskid: ced5763b-501e-4bc6-8a73-2b2f783a6faa
     type: regular
     task:
-      id: ff4c2bc8-399d-4c6a-8ae2-0c978c732c58
+      id: ced5763b-501e-4bc6-8a73-2b2f783a6faa
       version: -1
       name: aria-record-dest-subnet
       script: '|||aria-record-dest-subnet'
@@ -919,12 +966,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "59":
     id: "59"
-    taskid: 22cbcaba-711f-4d32-8a7c-4defa70e6905
+    taskid: 403dd64a-8a4d-4db0-8775-3abdbc829de0
     type: regular
     task:
-      id: 22cbcaba-711f-4d32-8a7c-4defa70e6905
+      id: 403dd64a-8a4d-4db0-8775-3abdbc829de0
       version: -1
       name: aria-stop-recording-dest-subnet
       script: '|||aria-stop-recording-dest-subnet'
@@ -955,12 +1004,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "60":
     id: "60"
-    taskid: 43c2d7ec-be53-4eb1-8633-14cbfded9d3b
+    taskid: a837258a-47dc-469b-8b2e-6d9b723979d0
     type: regular
     task:
-      id: 43c2d7ec-be53-4eb1-8633-14cbfded9d3b
+      id: a837258a-47dc-469b-8b2e-6d9b723979d0
       version: -1
       name: aria-record-src-subnet
       script: '|||aria-record-src-subnet'
@@ -1001,12 +1052,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "61":
     id: "61"
-    taskid: dbeeff08-f130-4024-8b1f-3967bd0edac9
+    taskid: 3dc0673e-5547-4b40-8e4c-268e0a544d14
     type: regular
     task:
-      id: dbeeff08-f130-4024-8b1f-3967bd0edac9
+      id: 3dc0673e-5547-4b40-8e4c-268e0a544d14
       version: -1
       name: aria-stop-recording-src-subnet
       script: '|||aria-stop-recording-src-subnet'
@@ -1037,12 +1090,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "63":
     id: "63"
-    taskid: 77b72afd-4002-4eff-8092-182b125e2d8a
+    taskid: 17855319-fa03-4a7d-84a7-2097ff9fc61f
     type: regular
     task:
-      id: 77b72afd-4002-4eff-8092-182b125e2d8a
+      id: 17855319-fa03-4a7d-84a7-2097ff9fc61f
       version: -1
       name: aria-alert-dest-subnet
       script: '|||aria-alert-dest-subnet'
@@ -1085,12 +1140,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "64":
     id: "64"
-    taskid: 63054337-4c1b-4375-8e95-e7d70cbbdb37
+    taskid: 6838ede8-76a7-4239-8391-31a76efa6010
     type: regular
     task:
-      id: 63054337-4c1b-4375-8e95-e7d70cbbdb37
+      id: 6838ede8-76a7-4239-8391-31a76efa6010
       version: -1
       name: aria-mute-alert-dest-subnet
       script: '|||aria-mute-alert-dest-subnet'
@@ -1121,12 +1178,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "65":
     id: "65"
-    taskid: 98c1b480-b3a1-42cc-83bd-1bbbacd58373
+    taskid: c133f030-adc3-43b0-8881-fd3c03075fb8
     type: regular
     task:
-      id: 98c1b480-b3a1-42cc-83bd-1bbbacd58373
+      id: c133f030-adc3-43b0-8881-fd3c03075fb8
       version: -1
       name: aria-alert-src-subnet
       script: '|||aria-alert-src-subnet'
@@ -1169,12 +1228,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "66":
     id: "66"
-    taskid: 7e37e143-d64a-463f-8b6d-ee5d8471cbf7
+    taskid: c9c5804a-0987-4653-82bc-a141d4eeda97
     type: regular
     task:
-      id: 7e37e143-d64a-463f-8b6d-ee5d8471cbf7
+      id: c9c5804a-0987-4653-82bc-a141d4eeda97
       version: -1
       name: aria-mute-alert-src-subnet
       script: '|||aria-mute-alert-src-subnet'
@@ -1205,12 +1266,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "85":
     id: "85"
-    taskid: b1933670-9a6f-4cff-8afc-a01161041dfe
+    taskid: 9b000a52-3bb8-45a1-855b-c996a03d5b23
     type: regular
     task:
-      id: b1933670-9a6f-4cff-8afc-a01161041dfe
+      id: 9b000a52-3bb8-45a1-855b-c996a03d5b23
       version: -1
       name: aria-record-src-port
       script: '|||aria-record-src-port'
@@ -1257,12 +1320,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "87":
     id: "87"
-    taskid: 5d0ccec0-331a-41ff-805d-a68dd0dd61b2
+    taskid: a3c7311c-78cb-4fda-8e35-9fd080ee5551
     type: regular
     task:
-      id: 5d0ccec0-331a-41ff-805d-a68dd0dd61b2
+      id: a3c7311c-78cb-4fda-8e35-9fd080ee5551
       version: -1
       name: aria-stop-recording-src-port
       script: '|||aria-stop-recording-src-port'
@@ -1293,12 +1358,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "98":
     id: "98"
-    taskid: af9319e0-ff64-4e2d-83ef-4b8b2ec9ae06
+    taskid: 5ed06804-d0eb-4467-86e7-1145c9488456
     type: regular
     task:
-      id: af9319e0-ff64-4e2d-83ef-4b8b2ec9ae06
+      id: 5ed06804-d0eb-4467-86e7-1145c9488456
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1327,12 +1394,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "99":
     id: "99"
-    taskid: 71e3ccc0-6a76-46ab-82c6-fdad89d8fb52
+    taskid: 045b53e7-e98b-4817-8d6a-a0ef68c8e765
     type: regular
     task:
-      id: 71e3ccc0-6a76-46ab-82c6-fdad89d8fb52
+      id: 045b53e7-e98b-4817-8d6a-a0ef68c8e765
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1361,12 +1430,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "102":
     id: "102"
-    taskid: 6b29238a-eab0-4bef-8dd8-edef57d18743
+    taskid: a2da1ca6-908b-4334-8a77-4568065d412c
     type: regular
     task:
-      id: 6b29238a-eab0-4bef-8dd8-edef57d18743
+      id: a2da1ca6-908b-4334-8a77-4568065d412c
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1395,12 +1466,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "103":
     id: "103"
-    taskid: a93d62f5-299c-4d3f-8294-2ef86a970540
+    taskid: 0c5c6da8-8ba9-4360-886f-3a09616be68b
     type: regular
     task:
-      id: a93d62f5-299c-4d3f-8294-2ef86a970540
+      id: 0c5c6da8-8ba9-4360-886f-3a09616be68b
       version: -1
       name: Context Contains
       description: |-
@@ -1434,12 +1507,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "104":
     id: "104"
-    taskid: 8827b1f0-400e-4ac2-8ff8-d2273054a870
+    taskid: 305d6a9b-617f-4626-803c-56921d93d0e5
     type: regular
     task:
-      id: 8827b1f0-400e-4ac2-8ff8-d2273054a870
+      id: 305d6a9b-617f-4626-803c-56921d93d0e5
       version: -1
       name: Context Contains
       description: |-
@@ -1473,12 +1548,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "108":
     id: "108"
-    taskid: 79a87890-96ee-409b-8f62-f7e635e04d0c
+    taskid: f1d2554e-bff7-43d8-81ee-dd94d11f2fd7
     type: regular
     task:
-      id: 79a87890-96ee-409b-8f62-f7e635e04d0c
+      id: f1d2554e-bff7-43d8-81ee-dd94d11f2fd7
       version: -1
       name: Context Contains
       description: |-
@@ -1512,12 +1589,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "110":
     id: "110"
-    taskid: ba673708-1c6c-40ea-87fe-838f579eb3bb
+    taskid: 760b1dc3-e00e-48c4-8ff5-d83676571916
     type: regular
     task:
-      id: ba673708-1c6c-40ea-87fe-838f579eb3bb
+      id: 760b1dc3-e00e-48c4-8ff5-d83676571916
       version: -1
       name: Context Contains
       description: |-
@@ -1551,12 +1630,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "111":
     id: "111"
-    taskid: 985b462e-6843-467a-8876-076631eee8e0
+    taskid: abd6c779-b643-4778-8a58-023573453e7d
     type: regular
     task:
-      id: 985b462e-6843-467a-8876-076631eee8e0
+      id: abd6c779-b643-4778-8a58-023573453e7d
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1585,12 +1666,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "112":
     id: "112"
-    taskid: 6a63ac62-091e-4241-87e6-c18d66087744
+    taskid: 78019624-4a41-4f77-881c-996b50342197
     type: regular
     task:
-      id: 6a63ac62-091e-4241-87e6-c18d66087744
+      id: 78019624-4a41-4f77-881c-996b50342197
       version: -1
       name: Context Contains
       description: |-
@@ -1624,12 +1707,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "113":
     id: "113"
-    taskid: 531b9160-9b40-43e0-8b3b-af63c345d51b
+    taskid: 3039422b-a184-4e56-8594-847d65bc3c4a
     type: regular
     task:
-      id: 531b9160-9b40-43e0-8b3b-af63c345d51b
+      id: 3039422b-a184-4e56-8594-847d65bc3c4a
       version: -1
       name: Context Contains
       description: |-
@@ -1663,12 +1748,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "114":
     id: "114"
-    taskid: 4cf39d91-93c6-494d-8afc-93e6c21bd31f
+    taskid: 8176de82-ec93-4675-8341-8c8250fb50b1
     type: regular
     task:
-      id: 4cf39d91-93c6-494d-8afc-93e6c21bd31f
+      id: 8176de82-ec93-4675-8341-8c8250fb50b1
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1697,12 +1784,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "115":
     id: "115"
-    taskid: b87abe36-6f16-45fe-8e6c-914eedbd0711
+    taskid: 2c1287dd-dae7-41e4-80d4-4d7fefcf1532
     type: regular
     task:
-      id: b87abe36-6f16-45fe-8e6c-914eedbd0711
+      id: 2c1287dd-dae7-41e4-80d4-4d7fefcf1532
       version: -1
       name: Context Contains
       description: |-
@@ -1736,12 +1825,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "117":
     id: "117"
-    taskid: 8c17da50-03d9-4699-8136-e6fd64b72f31
+    taskid: ed0c7f54-199c-47b2-845e-28dfd6199eb2
     type: regular
     task:
-      id: 8c17da50-03d9-4699-8136-e6fd64b72f31
+      id: ed0c7f54-199c-47b2-845e-28dfd6199eb2
       version: -1
       name: Context Contains
       description: |-
@@ -1775,12 +1866,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "118":
     id: "118"
-    taskid: 91f04940-1fe2-42bc-840e-60d7d50d3cd4
+    taskid: 224683ad-66a3-4320-8068-b712df8ddfbb
     type: regular
     task:
-      id: 91f04940-1fe2-42bc-840e-60d7d50d3cd4
+      id: 224683ad-66a3-4320-8068-b712df8ddfbb
       version: -1
       name: Context Contains
       description: |-
@@ -1814,12 +1907,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "119":
     id: "119"
-    taskid: 7bbe8192-0a69-4098-84e7-fc5eac1e8cd2
+    taskid: 85dfc2a0-3002-4c01-8945-ca3f43a8eb35
     type: regular
     task:
-      id: 7bbe8192-0a69-4098-84e7-fc5eac1e8cd2
+      id: 85dfc2a0-3002-4c01-8945-ca3f43a8eb35
       version: -1
       name: Context Contains
       description: |-
@@ -1853,12 +1948,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "120":
     id: "120"
-    taskid: 0681125b-8ca2-4c73-80f8-9e9eeda85b11
+    taskid: a4c0a9ac-d7ea-4a06-8015-90f907cc78c3
     type: regular
     task:
-      id: 0681125b-8ca2-4c73-80f8-9e9eeda85b11
+      id: a4c0a9ac-d7ea-4a06-8015-90f907cc78c3
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1887,12 +1984,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "121":
     id: "121"
-    taskid: 068b9640-2622-449d-8ae4-bd3c04cb6c9f
+    taskid: d54b4e61-c65b-43e8-8b21-36ebff28f34a
     type: regular
     task:
-      id: 068b9640-2622-449d-8ae4-bd3c04cb6c9f
+      id: d54b4e61-c65b-43e8-8b21-36ebff28f34a
       version: -1
       name: Context Contains
       description: |-
@@ -1926,12 +2025,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "122":
     id: "122"
-    taskid: 27002215-5e02-4bf3-8d9a-f8d0136f5a79
+    taskid: cee132f3-b808-433e-85b0-1b8c6a3c3db8
     type: regular
     task:
-      id: 27002215-5e02-4bf3-8d9a-f8d0136f5a79
+      id: cee132f3-b808-433e-85b0-1b8c6a3c3db8
       version: -1
       name: Context Contains
       description: |-
@@ -1965,12 +2066,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "123":
     id: "123"
-    taskid: 33d75afc-cccb-43f5-80bc-6d64820bd1ce
+    taskid: 4a506b06-6614-40bb-8ef1-ff0d5bf3bad3
     type: regular
     task:
-      id: 33d75afc-cccb-43f5-80bc-6d64820bd1ce
+      id: 4a506b06-6614-40bb-8ef1-ff0d5bf3bad3
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1999,12 +2102,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "124":
     id: "124"
-    taskid: 19300a54-fb09-4f68-82be-07e5b09406bd
+    taskid: 575f2cc9-b650-40d4-8a7f-66718efab1ef
     type: regular
     task:
-      id: 19300a54-fb09-4f68-82be-07e5b09406bd
+      id: 575f2cc9-b650-40d4-8a7f-66718efab1ef
       version: -1
       name: Context Contains
       description: |-
@@ -2038,12 +2143,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "125":
     id: "125"
-    taskid: 62705542-1f75-438d-8abc-8dcc0df1d4fe
+    taskid: 016d221d-1dbe-41c6-8820-23ac07b3a4dd
     type: regular
     task:
-      id: 62705542-1f75-438d-8abc-8dcc0df1d4fe
+      id: 016d221d-1dbe-41c6-8820-23ac07b3a4dd
       version: -1
       name: Context Contains
       description: |-
@@ -2077,12 +2184,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "126":
     id: "126"
-    taskid: 75b7a42a-41fa-4d34-8494-7327157db7cd
+    taskid: 7fa617da-0f69-44d1-8cd7-bbb95c91ee54
     type: regular
     task:
-      id: 75b7a42a-41fa-4d34-8494-7327157db7cd
+      id: 7fa617da-0f69-44d1-8cd7-bbb95c91ee54
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2111,12 +2220,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "127":
     id: "127"
-    taskid: da1c1232-453e-46d4-8df6-4d315aea9e3f
+    taskid: 61bea9d2-130e-4d62-8d4c-bce55e012f51
     type: regular
     task:
-      id: da1c1232-453e-46d4-8df6-4d315aea9e3f
+      id: 61bea9d2-130e-4d62-8d4c-bce55e012f51
       version: -1
       name: Context Contains
       description: |-
@@ -2150,12 +2261,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "128":
     id: "128"
-    taskid: d05b3f99-769e-4cf8-8915-7bedff949060
+    taskid: 25c6ca87-19c1-45eb-81db-446e975e1e95
     type: regular
     task:
-      id: d05b3f99-769e-4cf8-8915-7bedff949060
+      id: 25c6ca87-19c1-45eb-81db-446e975e1e95
       version: -1
       name: Context Contains
       description: |-
@@ -2189,12 +2302,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "129":
     id: "129"
-    taskid: 4747c22b-a68c-4e62-82f1-219db33a1eab
+    taskid: 9814ed0d-17d0-4d37-8695-1ff943772b74
     type: regular
     task:
-      id: 4747c22b-a68c-4e62-82f1-219db33a1eab
+      id: 9814ed0d-17d0-4d37-8695-1ff943772b74
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2223,12 +2338,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "130":
     id: "130"
-    taskid: ff67ae9f-bf06-4191-8cac-2ab17d5a3b41
+    taskid: ac0c6db9-6851-466e-805b-116393350d4a
     type: regular
     task:
-      id: ff67ae9f-bf06-4191-8cac-2ab17d5a3b41
+      id: ac0c6db9-6851-466e-805b-116393350d4a
       version: -1
       name: Context Contains
       description: |-
@@ -2262,12 +2379,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "131":
     id: "131"
-    taskid: 3999e34a-2ebe-4a31-8c68-d4af77aed207
+    taskid: 6e5ca24a-6de5-41c0-8fc3-235d307e5bf8
     type: regular
     task:
-      id: 3999e34a-2ebe-4a31-8c68-d4af77aed207
+      id: 6e5ca24a-6de5-41c0-8fc3-235d307e5bf8
       version: -1
       name: Context Contains
       description: |-
@@ -2301,12 +2420,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "132":
     id: "132"
-    taskid: bad64d32-35f5-4d24-8ed4-ee15cc5569f7
+    taskid: a61619ac-abde-4f5b-81fe-95c8f1548e48
     type: regular
     task:
-      id: bad64d32-35f5-4d24-8ed4-ee15cc5569f7
+      id: a61619ac-abde-4f5b-81fe-95c8f1548e48
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2335,12 +2456,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "133":
     id: "133"
-    taskid: c4e6747f-96f5-476a-80fa-02fcfce79a85
+    taskid: d6337c30-7d28-4d0b-85ab-7914a756af92
     type: regular
     task:
-      id: c4e6747f-96f5-476a-80fa-02fcfce79a85
+      id: d6337c30-7d28-4d0b-85ab-7914a756af92
       version: -1
       name: Context Contains
       description: |-
@@ -2374,12 +2497,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "134":
     id: "134"
-    taskid: 93b7c8a8-2151-4a1a-8b6f-95bb4020eef0
+    taskid: a3f117bb-c6e2-4faa-86db-828d129be5f8
     type: regular
     task:
-      id: 93b7c8a8-2151-4a1a-8b6f-95bb4020eef0
+      id: a3f117bb-c6e2-4faa-86db-828d129be5f8
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2408,12 +2533,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "135":
     id: "135"
-    taskid: d30bacab-0cd5-49e7-807d-851ce35a6f9c
+    taskid: 4d75d239-c1d7-4521-86b4-3a757c9f5058
     type: regular
     task:
-      id: d30bacab-0cd5-49e7-807d-851ce35a6f9c
+      id: 4d75d239-c1d7-4521-86b4-3a757c9f5058
       version: -1
       name: Context Contains
       description: |-
@@ -2447,12 +2574,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "136":
     id: "136"
-    taskid: 3b7a7b4f-2532-4ad6-882e-951bc14783e0
+    taskid: f9490a67-6b1e-4c62-82e7-4ab3b0326910
     type: regular
     task:
-      id: 3b7a7b4f-2532-4ad6-882e-951bc14783e0
+      id: f9490a67-6b1e-4c62-82e7-4ab3b0326910
       version: -1
       name: Context Contains
       description: |-
@@ -2486,12 +2615,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "137":
     id: "137"
-    taskid: 08600956-e244-42de-8e90-bc5a266fd4fa
+    taskid: e8a68a48-cb40-45ed-875d-6eb79ff4452e
     type: regular
     task:
-      id: 08600956-e244-42de-8e90-bc5a266fd4fa
+      id: e8a68a48-cb40-45ed-875d-6eb79ff4452e
       version: -1
       name: Context Contains
       description: |-
@@ -2525,12 +2656,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "138":
     id: "138"
-    taskid: e777fd1c-63e0-4f59-81b5-e3264b06fd74
+    taskid: 4bd6c521-3cc6-48d6-81e3-c4037e454c2a
     type: regular
     task:
-      id: e777fd1c-63e0-4f59-81b5-e3264b06fd74
+      id: 4bd6c521-3cc6-48d6-81e3-c4037e454c2a
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2559,12 +2692,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "139":
     id: "139"
-    taskid: 6af1ad8c-6c5a-4a53-8fc0-48b7d5aaf94e
+    taskid: 1800ddcf-94ff-4295-8ebd-6b614b2125e5
     type: regular
     task:
-      id: 6af1ad8c-6c5a-4a53-8fc0-48b7d5aaf94e
+      id: 1800ddcf-94ff-4295-8ebd-6b614b2125e5
       version: -1
       name: Context Contains
       description: |-
@@ -2598,12 +2733,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "140":
     id: "140"
-    taskid: 78f4dd79-8d06-4484-86a8-e8317b1f6672
+    taskid: 587c3ebd-ab1f-488d-894a-3c07d98f3102
     type: regular
     task:
-      id: 78f4dd79-8d06-4484-86a8-e8317b1f6672
+      id: 587c3ebd-ab1f-488d-894a-3c07d98f3102
       version: -1
       name: Context Contains
       description: |-
@@ -2637,12 +2774,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "141":
     id: "141"
-    taskid: 9ac7f0d9-b660-42da-8b4e-902650784f87
+    taskid: fabc2ee4-b64c-463b-8791-c36a1763aef4
     type: regular
     task:
-      id: 9ac7f0d9-b660-42da-8b4e-902650784f87
+      id: fabc2ee4-b64c-463b-8791-c36a1763aef4
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2671,12 +2810,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "142":
     id: "142"
-    taskid: 9bba74bd-2739-47bb-8717-44a3098e848c
+    taskid: ece8a9df-d00e-4c58-81b0-193809ec0e05
     type: regular
     task:
-      id: 9bba74bd-2739-47bb-8717-44a3098e848c
+      id: ece8a9df-d00e-4c58-81b0-193809ec0e05
       version: -1
       name: Context Contains
       description: |-
@@ -2710,12 +2851,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "143":
     id: "143"
-    taskid: c45f3fac-453f-4c5c-8d04-b23e560aa2b1
+    taskid: 8bee3f77-84d3-464c-8d05-0a91f6761401
     type: regular
     task:
-      id: c45f3fac-453f-4c5c-8d04-b23e560aa2b1
+      id: 8bee3f77-84d3-464c-8d05-0a91f6761401
       version: -1
       name: Context Contains
       description: |-
@@ -2749,12 +2892,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "144":
     id: "144"
-    taskid: 7e170b90-4b67-440e-862b-508c4438d22d
+    taskid: 669d5689-3004-4cc0-8cf6-a42eb482c198
     type: regular
     task:
-      id: 7e170b90-4b67-440e-862b-508c4438d22d
+      id: 669d5689-3004-4cc0-8cf6-a42eb482c198
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2783,12 +2928,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "145":
     id: "145"
-    taskid: 4d313342-9637-4d3e-8a2e-c866e6e22811
+    taskid: a90ea2c8-c728-4f5e-8221-0329af7e58bf
     type: regular
     task:
-      id: 4d313342-9637-4d3e-8a2e-c866e6e22811
+      id: a90ea2c8-c728-4f5e-8221-0329af7e58bf
       version: -1
       name: Context Contains
       description: |-
@@ -2822,12 +2969,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "146":
     id: "146"
-    taskid: 9fd33ba0-75b6-4fd2-8920-5d6d48ac5112
+    taskid: 95a09bb3-3e65-4aa6-8442-8fea973ea69d
     type: regular
     task:
-      id: 9fd33ba0-75b6-4fd2-8920-5d6d48ac5112
+      id: 95a09bb3-3e65-4aa6-8442-8fea973ea69d
       version: -1
       name: Context Contains
       description: |-
@@ -2861,12 +3010,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "147":
     id: "147"
-    taskid: cce70e15-11e4-4f41-899b-99b99cf03044
+    taskid: d1ef62d6-938f-425a-8a0a-5c303202fb74
     type: regular
     task:
-      id: cce70e15-11e4-4f41-899b-99b99cf03044
+      id: d1ef62d6-938f-425a-8a0a-5c303202fb74
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2895,12 +3046,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "148":
     id: "148"
-    taskid: cd424b17-3d8b-40a7-8d01-9812deb283f4
+    taskid: f27b905c-1bf3-4e38-861d-f212837e9d81
     type: regular
     task:
-      id: cd424b17-3d8b-40a7-8d01-9812deb283f4
+      id: f27b905c-1bf3-4e38-861d-f212837e9d81
       version: -1
       name: Context Contains
       description: |-
@@ -2934,12 +3087,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "149":
     id: "149"
-    taskid: 1b98f66c-d8d6-4449-81e5-dad6970ad188
+    taskid: 378265da-770a-41e0-83f3-f13065ea2e34
     type: regular
     task:
-      id: 1b98f66c-d8d6-4449-81e5-dad6970ad188
+      id: 378265da-770a-41e0-83f3-f13065ea2e34
       version: -1
       name: Context Contains
       description: |-
@@ -2973,6 +3128,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -2986,16 +3143,10 @@ view: |-
     }
   }
 inputs:
-- key: label_sia_name
+- key: rcs
   value: {}
   required: false
-  description: SIA name label.
-- key: label_sia_region
-  value: {}
-  required: false
-  description: SIA region label.
-- key: label_sia_group
-  value: {}
-  required: false
-  description: SIA group label
+  description: Remediation Configuration String.
+  playbookInputQuery: null
 outputs: []
+fromversion: 5.0.0

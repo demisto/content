@@ -1,11 +1,7 @@
 import pytest
 import os
-import json
-import shutil
-from tempfile import mkdtemp
 
 from Tests.Marketplace.marketplace_services import GCPConfig
-from Tests.Marketplace.copy_and_upload_packs import PACKS_RESULTS_FILE
 
 
 # disable-secrets-detection-start
@@ -42,58 +38,6 @@ class TestGetPackNames:
         packs_full_path = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
         expected_pack_names = {p for p in os.listdir(packs_full_path) if p not in IGNORED_FILES}
         assert get_pack_names('all') == expected_pack_names
-
-
-class TestHelperFunctions:
-    def test_get_successful_and_failed_packs(self):
-        """
-           Given:
-               - File that doesn't exist
-               - Empty JSON file
-               - Valid JSON file
-           When:
-               - Loading the file of all failed packs from Prepare Content step in Create Instances job
-           Then:
-               - Verify that we get an empty dictionary
-               - Verify that we get an empty dictionary
-               - Verify that we get the expected dictionary
-       """
-        from Tests.Marketplace.copy_and_upload_packs import get_successful_and_failed_packs
-        tempdir = mkdtemp()
-        file = os.path.join(tempdir, PACKS_RESULTS_FILE)
-
-        # Case 1: assert file does not exist
-        successful, failed = get_successful_and_failed_packs(file)
-        assert successful == {}
-        assert failed == {}
-
-        # Case 2: assert empty file
-        with open(file, "w") as f:
-            f.write('')
-        successful, failed = get_successful_and_failed_packs(file)
-        assert successful == {}
-        assert failed == {}
-
-        # Case 3: assert valid file
-        with open(file, "w") as f:
-            f.write(json.dumps({
-                "failed_packs": {"TestPack2": {"status": "status2", "aggregated": False}},
-                "successful_packs": {"TestPack1": {"status": "status1", "aggregated": True}}
-            }))
-        successful, failed = get_successful_and_failed_packs(file)
-        assert successful == {"TestPack1": {"status": "status1", "aggregated": True}}
-        successful_list = [*successful]
-        ans = 'TestPack1' in successful_list
-        assert ans
-        assert failed == {"TestPack2": {"status": "status2", "aggregated": False}}
-        failed_list = [*failed]
-        ans = 'TestPack2' in failed_list
-        assert ans
-
-        try:
-            shutil.rmtree(tempdir)
-        except shutil.Error:
-            pass
 
 
 class TestRegex:
@@ -153,6 +97,8 @@ class TestRegex:
          "CommonReports/1.0.1/CommonReports.zip"),
         (f"{BUILD_BASE_PATH}/{BUILD_PATTERN}/Whois/1.1.6/Whois.zip",
          "Whois/1.1.6/Whois.zip"),
+        (f"{BUILD_BASE_PATH}/{BUILD_PATTERN}/Blockade.io/1.0.0/Blockade.io.zip",
+         "Blockade.io/1.0.0/Blockade.io.zip"),
         (f"{GCPConfig.GCS_PUBLIC_URL}/oproxy-dev.appspot.com/wow/content/packs/TIM-wow_a/99.98.99/TIM-wow_a.zip",
          "TIM-wow_a/99.98.99/TIM-wow_a.zip")
     ])
