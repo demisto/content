@@ -110,7 +110,6 @@ def create_fetch_configuration(indicators_type: list, filters: dict, params: dic
     indicators_configuration = {}
 
     for ind in indicators_type:
-        demisto.info(f"tal the index is {str(ind)} and indicators_type is {str(indicators_type)}")
         indicators_configuration[ind] = dict(common_conf)
         indicators_configuration[ind].update({'url': url_by_type[ind]})
         indicators_configuration[ind].update({'indicator_type': ind})
@@ -133,8 +132,10 @@ def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
 
     filters: Dict[str, Optional[Union[str, list]]] = build_feed_filters(params)
-    indicators_type: list = params.get('indicator_type', []) if len(params.get('indicator_type', [])) \
+    indicator_type_field = argToList(params.get('indicator_type', []))
+    indicators_type: list = indicator_type_field if len(indicator_type_field) \
         else ['IP', 'Domain', 'URL']
+
     params['feed_name_to_config'] = create_fetch_configuration(indicators_type, filters, params)
 
     params['headers'] = {"Content-Type": "application/json",
