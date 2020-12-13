@@ -840,16 +840,16 @@ def test_create_incident_from_saved_data_without_extra_data():
 
     """
     fields_mapping = {
-        # "alert_count": "xdralertcount",
-        # "assigned_user_mail": "xdrassigneduseremail",
-        # "assigned_user_pretty_name": "xdrassigneduserprettyname",
-        # "description": "xdrdescription",
-        # "high_severity_alert_count": "xdrhighseverityalertcount",
-        # "host_count": "xdrhostcount",
-        # "incident_id": "10",
-        # "low_severity_alert_count": "xdrlowseverityalertcount",
-        # "manual_severity": "xdrmanualseverity",
-        # "med_severity_alert_count": "xdrmediumseverityalertcount",
+        "alert_count": "xdralertcount",
+        "assigned_user_mail": "xdrassigneduseremail",
+        "assigned_user_pretty_name": "xdrassigneduserprettyname",
+        "description": "xdrdescription",
+        "high_severity_alert_count": "xdrhighseverityalertcount",
+        "host_count": "xdrhostcount",
+        "incident_id": "10",
+        "low_severity_alert_count": "xdrlowseverityalertcount",
+        "manual_severity": "xdrmanualseverity",
+        "med_severity_alert_count": "xdrmediumseverityalertcount",
         "modification_time": "xdrmodificationtime",
         "notes": "xdrnotes",
         "resolve_comment": "xdrresolvecomment",
@@ -934,7 +934,7 @@ def test_create_incident_from_saved_data_with_extra_data():
 def test_create_incident_from_saved_data_without_extra_data_old_incident():
     """
     Given
-    - an old incident in demisto (which means that 'xdrmodificationtime' is not mapped)
+    - an old incident in demisto (which means that 'xdrmodificationtime' is not mapped  but present in 'labels')
     - fields_mapping:
         {
         "alert_count": "xdralertcount",
@@ -989,4 +989,69 @@ def test_create_incident_from_saved_data_without_extra_data_old_incident():
 
     created_incident = xdr_script.create_incident_from_saved_data(incident_from_context, fields_mapping)
 
+    assert created_incident == EXPECTED_INCIDENT
+
+
+def test_create_incident_from_saved_data_old_incident_no_modification_time():
+    """
+    Given
+    - an old incident in demisto (which means that 'xdrmodificationtime' is not mapped and not in 'labels')
+    - fields_mapping:
+        {
+        "alert_count": "xdralertcount",
+        "assigned_user_mail": "xdrassigneduseremail",
+        "assigned_user_pretty_name": "xdrassigneduserprettyname",
+        "description": "xdrdescription",
+        "high_severity_alert_count": "xdrhighseverityalertcount",
+        "host_count": "xdrhostcount",
+        "incident_id": "10",
+        "low_severity_alert_count": "xdrlowseverityalertcount",
+        "manual_severity": "xdrmanualseverity",
+        "med_severity_alert_count": "xdrmediumseverityalertcount",
+        "modification_time": "xdrmodificationtime",
+        "notes": "xdrnotes",
+        "resolve_comment": "xdrresolvecomment",
+        "severity": "severity",
+        "status": "xdrstatus",
+        "user_count": "xdrusercount",
+        "xdr_url": "xdrurl"
+    }
+    - include_extra_data = False
+
+    When
+    - creating an incident object from the context incident
+
+    Then
+    - ensure date fields are parsed correctly
+    - ensure all relevant fields are present
+
+    """
+    fields_mapping = {
+        "alert_count": "xdralertcount",
+        "assigned_user_mail": "xdrassigneduseremail",
+        "assigned_user_pretty_name": "xdrassigneduserprettyname",
+        "description": "xdrdescription",
+        "high_severity_alert_count": "xdrhighseverityalertcount",
+        "host_count": "xdrhostcount",
+        "incident_id": "10",
+        "low_severity_alert_count": "xdrlowseverityalertcount",
+        "manual_severity": "xdrmanualseverity",
+        "med_severity_alert_count": "xdrmediumseverityalertcount",
+        "modification_time": "xdrmodificationtime",
+        "notes": "xdrnotes",
+        "resolve_comment": "xdrresolvecomment",
+        "severity": "severity",
+        "status": "xdrstatus",
+        "user_count": "xdrusercount",
+        "xdr_url": "xdrurl"
+    }
+
+    EXPECTED_INCIDENT['modification_time'] = 0
+
+    incident_from_context = copy.deepcopy(OLD_INCIDENT_IN_DEMISTO)
+    incident_from_context["labels"] = []
+
+    created_incident = xdr_script.create_incident_from_saved_data(incident_from_context, fields_mapping)
+
+    assert created_incident['modification_time'] == 0
     assert created_incident == EXPECTED_INCIDENT
