@@ -1,3 +1,4 @@
-Fetch indicators from a iDefense feed. Filters such as indicator severity, confidence, threat type and malware family can be added to this feed. You can select which indicator type to fetch, and by default this feed will fetch the three types- IP, Domain and URL. 
+Fetch indicators from a iDefense feed. You can apply filters to the feed to focus which indicators you want to ingest, for example, indicator severity, confidence, threat type and malware family. By default, the feed fetches three indicator types: IP, Domain and URL. 
 
-**API Key** - To get the iDefense API token, see the iDefense documentation at <https://intelgraph.idefense.com/#/docs/view#page-section-2-0> under the "Obtain API token" section.
+## Get Your API Key
+ This feed requires that you have an iDefense API key. To get your API key refer to the **Obtain API token** section in the [iDefense documentation](https://intelgraph.idefense.com/#/docs/view#page-section-2-0).
