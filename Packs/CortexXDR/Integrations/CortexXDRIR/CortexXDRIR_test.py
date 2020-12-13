@@ -1,5 +1,6 @@
 import json
 import pytest
+import copy
 import demistomock as demisto
 from freezegun import freeze_time
 
@@ -12,7 +13,7 @@ def load_test_data(json_path):
 
 
 def test_get_incident_list(requests_mock):
-    from PaloAltoNetworks_XDR import get_incidents_command, Client
+    from CortexXDRIR import get_incidents_command, Client
 
     get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
@@ -34,7 +35,7 @@ def test_get_incident_list(requests_mock):
 
 @freeze_time("1993-06-17 11:00:00 GMT")
 def test_fetch_incidents(requests_mock, mocker):
-    from PaloAltoNetworks_XDR import fetch_incidents, Client, sort_all_list_incident_fields
+    from CortexXDRIR import fetch_incidents, Client, sort_all_list_incident_fields
     import copy
 
     get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
@@ -90,7 +91,7 @@ def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
         - the first successful incident is being created
         - the second incident is saved for the next run
     """
-    from PaloAltoNetworks_XDR import fetch_incidents, Client, sort_all_list_incident_fields
+    from CortexXDRIR import fetch_incidents, Client, sort_all_list_incident_fields
     get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
     raw_incident = load_test_data('./test_data/get_incident_extra_data.json')
     modified_raw_incident = raw_incident['reply']['incident'].copy()
@@ -104,7 +105,7 @@ def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
 
-    mocker.patch('PaloAltoNetworks_XDR.get_incident_extra_data_command', side_effect=return_extra_data_result)
+    mocker.patch('CortexXDRIR.get_incident_extra_data_command', side_effect=return_extra_data_result)
 
     mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
 
@@ -128,7 +129,7 @@ def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
 
 
 def test_get_incident_extra_data(requests_mock):
-    from PaloAltoNetworks_XDR import get_incident_extra_data_command, Client
+    from CortexXDRIR import get_incident_extra_data_command, Client
 
     get_incident_extra_data_response = load_test_data('./test_data/get_incident_extra_data_host_id_array.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/',
@@ -160,7 +161,7 @@ def test_get_incident_extra_data(requests_mock):
 
 
 def test_update_incident(requests_mock):
-    from PaloAltoNetworks_XDR import update_incident_command, Client
+    from CortexXDRIR import update_incident_command, Client
 
     update_incident_response = load_test_data('./test_data/update_incident.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/update_incident/', json=update_incident_response)
@@ -179,7 +180,7 @@ def test_update_incident(requests_mock):
 
 
 def test_get_endpoints(requests_mock):
-    from PaloAltoNetworks_XDR import get_endpoints_command, Client
+    from CortexXDRIR import get_endpoints_command, Client
 
     get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
@@ -199,7 +200,7 @@ def test_get_endpoints(requests_mock):
 
 
 def test_get_all_endpoints_using_limit(requests_mock):
-    from PaloAltoNetworks_XDR import get_endpoints_command, Client
+    from CortexXDRIR import get_endpoints_command, Client
 
     get_endpoints_response = load_test_data('./test_data/get_all_endpoints.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoints/', json=get_endpoints_response)
@@ -220,7 +221,7 @@ def test_get_all_endpoints_using_limit(requests_mock):
 
 
 def test_insert_parsed_alert(requests_mock):
-    from PaloAltoNetworks_XDR import insert_parsed_alert_command, Client
+    from CortexXDRIR import insert_parsed_alert_command, Client
 
     insert_alerts_response = load_test_data('./test_data/create_alerts.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/insert_parsed_alerts/', json=insert_alerts_response)
@@ -247,7 +248,7 @@ def test_insert_parsed_alert(requests_mock):
 
 
 def test_isolate_endpoint(requests_mock):
-    from PaloAltoNetworks_XDR import isolate_endpoint_command, Client
+    from CortexXDRIR import isolate_endpoint_command, Client
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json={
         'reply': {
@@ -278,7 +279,7 @@ def test_isolate_endpoint(requests_mock):
 
 
 def test_isolate_endpoint_unconnected_machine(requests_mock, mocker):
-    from PaloAltoNetworks_XDR import isolate_endpoint_command, Client
+    from CortexXDRIR import isolate_endpoint_command, Client
     #    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json={
@@ -307,7 +308,7 @@ def test_isolate_endpoint_unconnected_machine(requests_mock, mocker):
 
 
 def test_unisolate_endpoint(requests_mock):
-    from PaloAltoNetworks_XDR import unisolate_endpoint_command, Client
+    from CortexXDRIR import unisolate_endpoint_command, Client
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json={
         'reply': {
@@ -338,7 +339,7 @@ def test_unisolate_endpoint(requests_mock):
 
 
 def test_unisolate_endpoint_pending_isolation(requests_mock):
-    from PaloAltoNetworks_XDR import unisolate_endpoint_command, Client
+    from CortexXDRIR import unisolate_endpoint_command, Client
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json={
         'reply': {
@@ -367,7 +368,7 @@ def test_unisolate_endpoint_pending_isolation(requests_mock):
 
 
 def test_get_distribution_url(requests_mock):
-    from PaloAltoNetworks_XDR import get_distribution_url_command, Client
+    from CortexXDRIR import get_distribution_url_command, Client
 
     get_distribution_url_response = load_test_data('./test_data/get_distribution_url.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/distributions/get_dist_url/', json=get_distribution_url_response)
@@ -394,7 +395,7 @@ def test_get_distribution_url(requests_mock):
 
 
 def test_get_audit_management_logs(requests_mock):
-    from PaloAltoNetworks_XDR import get_audit_management_logs_command, Client
+    from CortexXDRIR import get_audit_management_logs_command, Client
 
     get_audit_management_logs_response = load_test_data('./test_data/get_audit_management_logs.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/audits/management_logs/', json=get_audit_management_logs_response)
@@ -416,7 +417,7 @@ def test_get_audit_management_logs(requests_mock):
 
 
 def test_get_audit_agent_reports(requests_mock):
-    from PaloAltoNetworks_XDR import get_audit_agent_reports_command, Client
+    from CortexXDRIR import get_audit_agent_reports_command, Client
 
     get_audit_agent_reports_response = load_test_data('./test_data/get_audit_agent_report.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/audits/agents_reports/', json=get_audit_agent_reports_response)
@@ -437,7 +438,7 @@ def test_get_audit_agent_reports(requests_mock):
 
 
 def test_insert_cef_alerts(requests_mock):
-    from PaloAltoNetworks_XDR import insert_cef_alerts_command, Client
+    from CortexXDRIR import insert_cef_alerts_command, Client
 
     insert_cef_alerts_response = load_test_data('./test_data/insert_cef_alerts.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/insert_cef_alerts/', json=insert_cef_alerts_response)
@@ -471,7 +472,7 @@ def test_insert_cef_alerts(requests_mock):
 
 
 def test_get_distribution_status(requests_mock):
-    from PaloAltoNetworks_XDR import get_distribution_status_command, Client
+    from CortexXDRIR import get_distribution_status_command, Client
 
     get_distribution_status_response = load_test_data('./test_data/get_distribution_status.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/distributions/get_status/', json=get_distribution_status_response)
@@ -497,7 +498,7 @@ def test_get_distribution_status(requests_mock):
 
 
 def test_get_distribution_versions(requests_mock):
-    from PaloAltoNetworks_XDR import get_distribution_versions_command, Client
+    from CortexXDRIR import get_distribution_versions_command, Client
 
     get_distribution_versions_response = load_test_data('./test_data/get_distribution_versions.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/distributions/get_versions/', json=get_distribution_versions_response)
@@ -524,7 +525,7 @@ def test_get_distribution_versions(requests_mock):
 
 
 def test_create_distribution(requests_mock):
-    from PaloAltoNetworks_XDR import create_distribution_command, Client
+    from CortexXDRIR import create_distribution_command, Client
 
     create_distribution_response = load_test_data('./test_data/create_distribution.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/distributions/create/', json=create_distribution_response)
@@ -566,7 +567,7 @@ def test_blacklist_files_command_with_more_than_one_file(requests_mock):
         - returns markdown, context data and raw response.
     """
 
-    from PaloAltoNetworks_XDR import blacklist_files_command, Client
+    from CortexXDRIR import blacklist_files_command, Client
     test_data = load_test_data('test_data/blacklist_whitelist_files_success.json')
     expected_command_result = {'PaloAltoNetworksXDR.blackList.fileHash(val.fileHash == obj.fileHash)': test_data[
         'multi_command_args']['hash_list']}
@@ -591,7 +592,7 @@ def test_blacklist_files_command_with_single_file(requests_mock):
         - returns markdown, context data and raw response.
     """
 
-    from PaloAltoNetworks_XDR import blacklist_files_command, Client
+    from CortexXDRIR import blacklist_files_command, Client
     test_data = load_test_data('test_data/blacklist_whitelist_files_success.json')
     expected_command_result = {
         'PaloAltoNetworksXDR.blackList.fileHash(val.fileHash == obj.fileHash)':
@@ -617,7 +618,7 @@ def test_blacklist_files_command_with_no_comment_file(requests_mock):
         - returns markdown, context data and raw response.
     """
 
-    from PaloAltoNetworks_XDR import blacklist_files_command, Client
+    from CortexXDRIR import blacklist_files_command, Client
     test_data = load_test_data('test_data/blacklist_whitelist_files_success.json')
     expected_command_result = {
         'PaloAltoNetworksXDR.blackList.fileHash(val.fileHash == obj.fileHash)':
@@ -643,7 +644,7 @@ def test_whitelist_files_command_with_more_than_one_file(requests_mock):
         - returns markdown, context data and raw response.
     """
 
-    from PaloAltoNetworks_XDR import whitelist_files_command, Client
+    from CortexXDRIR import whitelist_files_command, Client
     test_data = load_test_data('test_data/blacklist_whitelist_files_success.json')
     expected_command_result = {'PaloAltoNetworksXDR.whiteList.fileHash(val.fileHash == obj.fileHash)': test_data[
         'multi_command_args']['hash_list']}
@@ -668,7 +669,7 @@ def test_whitelist_files_command_with_single_file(requests_mock):
         - returns markdown, context data and raw response.
     """
 
-    from PaloAltoNetworks_XDR import whitelist_files_command, Client
+    from CortexXDRIR import whitelist_files_command, Client
     test_data = load_test_data('test_data/blacklist_whitelist_files_success.json')
     expected_command_result = {
         'PaloAltoNetworksXDR.whiteList.fileHash(val.fileHash == obj.fileHash)':
@@ -694,7 +695,7 @@ def test_whitelist_files_command_with_no_comment_file(requests_mock):
         - returns markdown, context data and raw response.
     """
 
-    from PaloAltoNetworks_XDR import whitelist_files_command, Client
+    from CortexXDRIR import whitelist_files_command, Client
     test_data = load_test_data('test_data/blacklist_whitelist_files_success.json')
     expected_command_result = {
         'PaloAltoNetworksXDR.whiteList.fileHash(val.fileHash == obj.fileHash)': test_data['no_comment_command_args'][
@@ -719,7 +720,7 @@ def test_quarantine_files_command(requests_mock):
     Then
         - returns markdown, context data and raw response.
     """
-    from PaloAltoNetworks_XDR import quarantine_files_command, Client
+    from CortexXDRIR import quarantine_files_command, Client
     test_data = load_test_data('test_data/quarantine_files.json')
     quarantine_files_expected_tesult = {
         'PaloAltoNetworksXDR.quarantineFiles.actionIds(val.actionId === obj.actionId)': test_data['context_data']}
@@ -743,7 +744,7 @@ def test_get_quarantine_status_command(requests_mock):
     Then
         - returns markdown, context data and raw response.
     """
-    from PaloAltoNetworks_XDR import get_quarantine_status_command, Client
+    from CortexXDRIR import get_quarantine_status_command, Client
     test_data = load_test_data('test_data/get_quarantine_status.json')
     quarantine_files_expected_tesult = {
         'PaloAltoNetworksXDR.quarantineFiles.status(val.fileHash === obj.fileHash &&val.endpointId'
@@ -769,7 +770,7 @@ def test_restore_file_command(requests_mock):
     Then
         - returns markdown, context data and raw response.
     """
-    from PaloAltoNetworks_XDR import restore_file_command, Client
+    from CortexXDRIR import restore_file_command, Client
 
     restore_expected_tesult = {'PaloAltoNetworksXDR.restoredFiles.actionId(val.actionId == obj.actionId)': 123}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/restore/', json={"reply": {"action_id": 123}})
@@ -793,7 +794,7 @@ def test_endpoint_scan_command(requests_mock):
     Then
         - returns markdown, context data and raw response.
     """
-    from PaloAltoNetworks_XDR import endpoint_scan_command, Client
+    from CortexXDRIR import endpoint_scan_command, Client
     test_data = load_test_data('test_data/scan_endpoints.json')
     scan_expected_tesult = {'PaloAltoNetworksXDR.endpointScan.actionId(val.actionId == obj.actionId)': 123}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/scan/', json={"reply": {"action_id": 123}})
@@ -816,7 +817,7 @@ def test_endpoint_scan_command_scan_all_endpoints(requests_mock):
     Then
         - returns markdown, context data and raw response.
     """
-    from PaloAltoNetworks_XDR import endpoint_scan_command, Client
+    from CortexXDRIR import endpoint_scan_command, Client
     scan_expected_tesult = {'PaloAltoNetworksXDR.endpointScan.actionId(val.actionId == obj.actionId)': 123}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/scan/', json={"reply": {"action_id": 123}})
 
@@ -838,7 +839,7 @@ def test_sort_all_list_incident_fields():
     Then
         - the list fields (alerts for example) are sorted
     """
-    from PaloAltoNetworks_XDR import sort_all_list_incident_fields
+    from CortexXDRIR import sort_all_list_incident_fields
     raw_incident = load_test_data('test_data/raw_fetched_incident.json')
     sort_all_list_incident_fields(raw_incident)
     assert raw_incident.get('alerts')[0].get('alertid') == "42"
@@ -861,7 +862,7 @@ def test_get_mapping_fields_command():
     Then
         - the result fits the expected mapping.
     """
-    from PaloAltoNetworks_XDR import get_mapping_fields_command
+    from CortexXDRIR import get_mapping_fields_command
     expected_mapping = [{"Cortex XDR Incident": {
         "status": "Current status of the incident: \"new\",\"under_investigation\",\"resolved_threat_handled\","
                   "\"resolved_known_issue\",\"resolved_duplicate\",\"resolved_false_positive\",\"resolved_other\"",
@@ -887,8 +888,7 @@ def test_get_remote_data_command_should_update(requests_mock, mocker):
         - the mirrored_object in the GetRemoteDataResponse is the same as the modified raw incident
         - the entries in the GetRemoteDataResponse in empty
     """
-    from PaloAltoNetworks_XDR import get_remote_data_command, Client, sort_all_list_incident_fields
-    import copy
+    from CortexXDRIR import get_remote_data_command, Client, sort_all_list_incident_fields
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
@@ -934,7 +934,7 @@ def test_get_remote_data_command_with_rate_limit_exception(mocker):
         - an "API rate limit" error is thrown so that the server will stop the sync loop and will resume from the last
         incident.
     """
-    from PaloAltoNetworks_XDR import get_remote_data_command, Client
+    from CortexXDRIR import get_remote_data_command, Client
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
@@ -944,7 +944,7 @@ def test_get_remote_data_command_with_rate_limit_exception(mocker):
     }
 
     mocker.patch.object(demisto, 'results')
-    mocker.patch('PaloAltoNetworks_XDR.get_incident_extra_data_command', side_effect=Exception("Rate limit exceeded"))
+    mocker.patch('CortexXDRIR.get_incident_extra_data_command', side_effect=Exception("Rate limit exceeded"))
     with pytest.raises(SystemExit):
         _ = get_remote_data_command(client, args)
 
@@ -962,7 +962,8 @@ def test_get_remote_data_command_should_not_update(requests_mock, mocker):
     Then
         - returns an empty dict
     """
-    from PaloAltoNetworks_XDR import get_remote_data_command, Client, sort_all_list_incident_fields
+    from CortexXDRIR import get_remote_data_command, Client, sort_all_list_incident_fields
+    import copy
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
@@ -1000,8 +1001,8 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
         - the mirrored_object in the GetRemoteDataResponse is the same as the modified raw incident
         - the entries in the GetRemoteDataResponse holds the closing entry
     """
-    from PaloAltoNetworks_XDR import get_remote_data_command, Client, sort_all_list_incident_fields
     import copy
+    from CortexXDRIR import get_remote_data_command, Client, sort_all_list_incident_fields
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
@@ -1063,7 +1064,7 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
         owner of the assigned mail
         - the entries in the GetRemoteDataResponse in empty
     """
-    from PaloAltoNetworks_XDR import get_remote_data_command, Client, sort_all_list_incident_fields
+    from CortexXDRIR import get_remote_data_command, Client, sort_all_list_incident_fields
     import copy
     mocker.patch.object(demisto, 'params', return_value={"sync_owners": True})
     mocker.patch.object(demisto, 'findUser', return_value={"email": "moo@demisto.com", 'username': 'username'})
@@ -1112,7 +1113,7 @@ def test_get_update_args_unassgning_user():
     Then
         - update_args have assigned_user_mail and assigned_user_pretty_name set to None and unassign_user set to 'true'
     """
-    from PaloAltoNetworks_XDR import get_update_args
+    from CortexXDRIR import get_update_args
     delta = {'assigned_user_mail': 'None'}
     update_args = get_update_args(delta, 1)
     assert update_args.get('assigned_user_mail') is None
@@ -1130,7 +1131,7 @@ def test_get_update_args_close_incident():
     Then
         - update_args assigned_user_mail has the correct associated mail
     """
-    from PaloAltoNetworks_XDR import get_update_args
+    from CortexXDRIR import get_update_args
     delta = {'closeReason': 'Other', "closeNotes": "Not Relevant"}
     update_args = get_update_args(delta, 2)
     assert update_args.get('status') == 'resolved_other'
@@ -1148,7 +1149,7 @@ def test_get_update_args_owner_sync(mocker):
         - update_args status has the correct status (resolved_other)
         - the resolve_comment is the same as the closeNotes
     """
-    from PaloAltoNetworks_XDR import get_update_args
+    from CortexXDRIR import get_update_args
     mocker.patch.object(demisto, 'params', return_value={"sync_owners": True, "mirror_direction": "Incoming"})
     mocker.patch.object(demisto, 'findUser', return_value={"email": "moo@demisto.com", 'username': 'username'})
     delta = {'owner': 'username'}
@@ -1156,6 +1157,300 @@ def test_get_update_args_owner_sync(mocker):
     update_args = get_update_args(delta, 1)
 
     assert update_args.get('assigned_user_mail') == 'moo@demisto.com'
+
+
+def test_get_policy(requests_mock):
+    """
+        Given:
+            -endpoint_id
+
+        When:
+            -Retrieving the policy name of the requested actions according to the specific endpoint.
+
+        Then:
+            - Assert the returned markdown, context data and raw response are as expected.
+        """
+    from CortexXDRIR import get_policy_command, Client
+
+    expected_context = {
+        'endpoint_id': 'aeec6a2cc92e46fab3b6f621722e9916',
+        'policy_name': 'test'
+    }
+    run_script_expected_result = {'PaloAltoNetworksXDR.Policy(val.endpoint_id == obj.endpoint_id)': expected_context}
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_policy/', json={'reply': {
+        'policy_name': 'test'}})
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'endpoint_id': 'aeec6a2cc92e46fab3b6f621722e9916'
+    }
+
+    hr, context, raw_response = get_policy_command(client, args)
+    assert hr == 'The policy name of endpoint: aeec6a2cc92e46fab3b6f621722e9916 is: test.'
+    assert run_script_expected_result == context
+    assert raw_response == {'policy_name': 'test'}
+
+
+def test_get_endpoint_device_control_violations_command(requests_mock):
+    """
+        Given:
+            - violation_id_list='100'
+        When:
+            -Request for list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
+        Then:
+            - Assert the returned markdown, context data and raw response are as expected.
+        """
+    from CortexXDRIR import get_endpoint_device_control_violations_command, Client
+    from CommonServerPython import timestamp_to_datestring, tableToMarkdown, string_to_table_header
+
+    get_endpoint_violations_reply = load_test_data('./test_data/get_endpoint_violations.json')
+    violations = get_endpoint_violations_reply.get('reply').get('violations')
+    for violation in violations:
+        timestamp = violation.get('timestamp')
+        violation['date'] = timestamp_to_datestring(timestamp, '%Y-%m-%dT%H:%M:%S')
+    get_endpoint_violations_expected_result = {
+        'PaloAltoNetworksXDR.EndpointViolations(val.violation_id==obj.violation_id)':
+            violations
+    }
+    headers = ['date', 'hostname', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product',
+               'serial']
+    requests_mock.post(f'{XDR_URL}/public_api/v1/device_control/get_violations/', json=get_endpoint_violations_reply)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'violation_id_list': '100'
+    }
+
+    hr, context, raw_response = get_endpoint_device_control_violations_command(client, args)
+
+    assert hr == tableToMarkdown(name='Endpoint Device Control Violation', t=violations, headers=headers,
+                                 headerTransform=string_to_table_header, removeNull=True)
+    assert context == get_endpoint_violations_expected_result
+    assert raw_response == get_endpoint_violations_reply.get('reply')
+
+
+def test_retrieve_files_command(requests_mock):
+    """
+    Given:
+        - endpoint_ids
+        - windows_file_paths
+    When
+        - A user desires to retrieve a file.
+    Then
+        - Assert the returned markdown, context data and raw response are as expected.
+    """
+    from CortexXDRIR import retrieve_files_command, Client
+    from CommonServerPython import tableToMarkdown, string_to_table_header
+
+    retrieve_expected_result = {'PaloAltoNetworksXDR.RetrievedFiles(val.action_id == obj.action_id)': {'action_id': 1773}}
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/file_retrieval/', json={'reply': {'action_id': 1773}})
+    result = {'action_id': 1773}
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    hr, context, raw_response = retrieve_files_command(client, {'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
+                                                                'windows_file_paths': 'C:\\Users\\demisto\\Desktop\\demisto.txt'})
+
+    assert hr == tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header)
+    assert context == retrieve_expected_result
+    assert raw_response == {'action_id': 1773}
+
+
+def test_retrieve_file_details_command(requests_mock):
+    """
+    Given:
+        - action_id
+    When
+        - Requesting to view the file retrieved by the Retrieve File request according to the action ID.
+    Then
+        - Assert the returned markdown, file result are as expected.
+    """
+    from CortexXDRIR import retrieve_file_details_command, Client
+
+    data = load_test_data('./test_data/retrieve_file_details.json')
+    data1 = 'test_file'
+    retrieve_expected_hr = {
+        'Type': 1,
+        'ContentsFormat': 'json',
+        'Contents': [data.get('reply').get('data')],
+        'HumanReadable': '### Action id : 1788 \n Retrieved 1 files from 1 endpoints. \n '
+                         'To get the exact action status run the xdr-action-status-get command',
+        'ReadableContentsFormat': 'markdown',
+        'EntryContext': {}
+    }
+
+    requests_mock.post(f'{XDR_URL}/public_api/v1/actions/file_retrieval_details/', json=data)
+    requests_mock.post(f'{XDR_URL}', json=data1)
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'action_id': '1788'
+    }
+    results, file_result = retrieve_file_details_command(client, args)
+    assert results == retrieve_expected_hr
+    assert file_result[0]['File'] == 'endpoint_test_1.zip'
+
+
+def test_get_scripts_command(requests_mock):
+    """
+        Given:
+            - script_name
+        When:
+            - Requesting for a list of scripts available in the scripts library.
+        Then:
+            - Assert the returned markdown, context data and raw response are as expected.
+        """
+    from CortexXDRIR import get_scripts_command, Client
+    from CommonServerPython import timestamp_to_datestring, tableToMarkdown, string_to_table_header
+
+    get_scripts_response = load_test_data('./test_data/get_scripts.json')
+    scripts = copy.deepcopy(get_scripts_response.get('reply').get('scripts')[0::50])
+    for script in scripts:
+        timestamp = script.get('modification_date')
+        script['modification_date_timestamp'] = timestamp
+        script['modification_date'] = timestamp_to_datestring(timestamp, '%Y-%m-%dT%H:%M:%S')
+    headers: list = ['name', 'description', 'script_uid', 'modification_date', 'created_by',
+                     'windows_supported', 'linux_supported', 'macos_supported', 'is_high_risk']
+    get_scripts_expected_result = {
+        'PaloAltoNetworksXDR.Scripts(val.script_uid == obj.script_uid)': scripts
+    }
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_scripts/', json=get_scripts_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'script_name': 'process_get'
+    }
+
+    hr, context, raw_response = get_scripts_command(client, args)
+
+    assert hr == tableToMarkdown(name='Scripts', t=scripts, headers=headers, removeNull=True,
+                                 headerTransform=string_to_table_header)
+    assert context == get_scripts_expected_result
+    assert raw_response == get_scripts_response.get('reply')
+
+
+def test_get_script_metadata_command(requests_mock):
+    """
+        Given:
+            - A script_uid
+        When:
+            - Requesting for a given script metadata.
+        Then:
+            - Assert the returned markdown, context data and raw response are as expected.
+        """
+    from CortexXDRIR import get_script_metadata_command, Client
+    from CommonServerPython import timestamp_to_datestring, tableToMarkdown, string_to_table_header
+
+    get_script_metadata_response = load_test_data('./test_data/get_script_metadata.json')
+    get_scripts_expected_result = {
+        'PaloAltoNetworksXDR.ScriptMetadata(val.script_uid == obj.script_uid)': get_script_metadata_response.get('reply')
+    }
+    script_metadata = copy.deepcopy(get_script_metadata_response).get('reply')
+    timestamp = script_metadata.get('modification_date')
+    script_metadata['modification_date_timestamp'] = timestamp
+    script_metadata['modification_date'] = timestamp_to_datestring(timestamp, '%Y-%m-%dT%H:%M:%S')
+
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_metadata/', json=get_script_metadata_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'script_uid': '956e8989f67ebcb2c71c4635311e47e4'
+    }
+
+    hr, context, raw_response = get_script_metadata_command(client, args)
+
+    assert hr == tableToMarkdown(name='Script Metadata', t=script_metadata,
+                                 removeNull=True, headerTransform=string_to_table_header)
+    assert context == get_scripts_expected_result
+    assert raw_response == get_script_metadata_response.get('reply')
+
+
+def test_get_script_code_command(requests_mock):
+    """
+        Given:
+            - A script_uid.
+        When:
+            - Requesting the code of a specific script in the script library.
+        Then:
+            - Assert the returned markdown, context data and raw response are as expected.
+        """
+    from CortexXDRIR import get_script_code_command, Client
+
+    get_script_code_command_reply = load_test_data('./test_data/get_script_code.json')
+    context = {
+        'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d',
+        'code': get_script_code_command_reply.get('reply')
+    }
+    get_script_code_command_expected_result = {
+        'PaloAltoNetworksXDR.ScriptCode(val.script_uid == obj.script_uid)':
+            context}
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/get_script_code/',
+                       json=get_script_code_command_reply)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d'
+    }
+
+    hr, context, raw_response = get_script_code_command(client, args)
+
+    assert hr == f'### Script code: \n ``` {str(get_script_code_command_reply.get("reply"))} ```'
+    assert context == get_script_code_command_expected_result
+    assert raw_response == get_script_code_command_reply.get("reply")
+
+
+def test_action_status_get_command(requests_mock):
+    """
+        Given:
+            - An action_id
+        When:
+            - Retrieving the status of the requested actions according to the action ID.
+        Then:
+            - Assert the returned markdown, context data and raw response are as expected.
+        """
+    from CortexXDRIR import action_status_get_command, Client
+    from CommonServerPython import tableToMarkdown
+
+    action_status_get_command_command_reply = load_test_data('./test_data/action_status_get.json')
+
+    data = action_status_get_command_command_reply.get('reply').get('data')
+    result = []
+    for item in data:
+        result.append({
+            'action_id': 1810,
+            'endpoint_id': item,
+            'status': data.get(item)
+        })
+    action_status_get_command_expected_result = {
+        'PaloAltoNetworksXDR.GetActionStatus(val.action_id == obj.action_id)':
+            result}
+
+    requests_mock.post(f'{XDR_URL}/public_api/v1/actions/get_action_status/',
+                       json=action_status_get_command_command_reply)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'action_id': '1810'
+    }
+
+    hr, context, raw_response = action_status_get_command(client, args)
+    assert hr == tableToMarkdown(name='Get Action Status', t=result, removeNull=True)
+    assert context == action_status_get_command_expected_result
+    assert raw_response == result
 
 
 def test_sort_by_key__only_main_key():
@@ -1169,7 +1464,7 @@ def test_sort_by_key__only_main_key():
     Then
         - resulting list is sorted by main key only.
     """
-    from PaloAltoNetworks_XDR import sort_by_key
+    from CortexXDRIR import sort_by_key
     list_to_sort = [
         {
             "name": "element2",
@@ -1232,7 +1527,7 @@ def test_sort_by_key__main_key_and_fallback_key():
         - resulting list is sorted by main key on elements with the main key and
           then sorted by fallback key for elements who dont have it
     """
-    from PaloAltoNetworks_XDR import sort_by_key
+    from CortexXDRIR import sort_by_key
     list_to_sort = [
         {
             "name": "element2",
@@ -1292,7 +1587,7 @@ def test_sort_by_key__only_fallback_key():
     Then
         - resulting list is sorted by fallback key only.
     """
-    from PaloAltoNetworks_XDR import sort_by_key
+    from CortexXDRIR import sort_by_key
     list_to_sort = [
         {
             "name": "element2",
@@ -1347,7 +1642,7 @@ def test_sort_by_key__main_key_and_fallback_key_and_additional():
         - resulting list is sorted by main key for elements with main key,
           then by fallback key for those with fallback key and then the rest of the elements that dont have either key.
     """
-    from PaloAltoNetworks_XDR import sort_by_key
+    from CortexXDRIR import sort_by_key
     list_to_sort = [
         {
             "name": "element2",
@@ -1407,7 +1702,7 @@ def test_get_modified_remote_data_command(requests_mock):
     Then
         - the method is returning a list of incidents IDs that were modified
     """
-    from PaloAltoNetworks_XDR import get_modified_remote_data_command, Client
+    from CortexXDRIR import get_modified_remote_data_command, Client
 
     get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
