@@ -110,6 +110,7 @@ def create_fetch_configuration(indicators_type: list, filters: dict, params: dic
     indicators_configuration = {}
 
     for ind in indicators_type:
+        demisto.info(f"tal the index is {str(ind)} and indicators_type is {str(indicators_type)}")
         indicators_configuration[ind] = dict(common_conf)
         indicators_configuration[ind].update({'url': url_by_type[ind]})
         indicators_configuration[ind].update({'indicator_type': ind})
