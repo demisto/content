@@ -255,7 +255,7 @@ def create_incident_from_saved_data(demisto_incident, field_mapping, include_ext
                 if not modification_time_in_utc_format:
                     modification_time = [label.get('value') for label in demisto_incident.get('labels', []) if
                                          label.get('type', '') == 'modification_time']
-                    created_incident[field] = modification_time[0] * 1000 if modification_time else 0
+                    created_incident[field] = modification_time[0] if modification_time else 0
                 else:
                     date = dateparser.parse(modification_time_in_utc_format, settings={'TIMEZONE': 'UTC'})
                     if date is None:
