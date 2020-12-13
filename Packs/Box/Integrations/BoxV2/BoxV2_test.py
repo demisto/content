@@ -60,7 +60,7 @@ def test_find_file_folder_by_share_link(requests_mock, mocker):
         'Authorization') == "Bearer JWT_TOKEN"
     assert requests_mock.request_history[0].headers.get(
         'BoxApi') == "shared_link=https://app.box.com/s/testing&shared_link_password=some_pass"
-    assert response.outputs_prefix == 'Box.FileShareLink'
+    assert response.outputs_prefix == 'Box.ShareLink'
     assert response.outputs_key_field == 'shared_link'
     assert response.outputs == mock_response
 
@@ -141,8 +141,8 @@ def test_create_update_file_share_link(requests_mock, mocker):
 
     assert requests_mock.request_history[0].headers.get('Authorization') == "Bearer JWT_TOKEN"
     assert requests_mock.request_history[0].json().get('shared_link').get('password') == 'some_pass'
-    assert response.outputs_prefix == 'Box.FileShareLink'
-    assert response.outputs_key_field == 'shared_link'
+    assert response.outputs_prefix == 'Box.ShareLink'
+    assert response.outputs_key_field == 'id'
     assert response.outputs == mock_response
 
 
@@ -174,8 +174,8 @@ def test_remove_file_share_link_command(requests_mock, mocker):
 
     assert requests_mock.request_history[0].headers.get('Authorization') == "Bearer JWT_TOKEN"
     assert requests_mock.request_history[0].json().get('shared_link') is None
-    assert response.outputs_prefix == 'Box.FileShareLink'
-    assert response.outputs_key_field == 'shared_link'
+    assert response.outputs_prefix == 'Box.ShareLink'
+    assert response.outputs_key_field == 'id'
     assert response.outputs == mock_response
     assert response.readable_output == 'File Share Link for the file_id 742246263170 was removed.'
 
@@ -206,8 +206,8 @@ def test_get_shared_link_for_file_command(requests_mock, mocker):
 
     assert requests_mock.request_history[0].headers.get('Authorization') == "Bearer JWT_TOKEN"
     assert requests_mock.request_history[0].qs.get('fields') == ['shared_link']
-    assert response.outputs_prefix == 'Box.FileShareLink'
-    assert response.outputs_key_field == 'shared_link'
+    assert response.outputs_prefix == 'Box.ShareLink'
+    assert response.outputs_key_field == 'id'
     assert response.outputs == mock_response
 
 
@@ -241,8 +241,8 @@ def test_create_update_folder_share_link_command(requests_mock, mocker):
 
     assert requests_mock.request_history[0].headers.get('Authorization') == "Bearer JWT_TOKEN"
     assert requests_mock.request_history[0].json().get('shared_link').get('access') == 'open'
-    assert response.outputs_prefix == 'Box.FolderShareLink'
-    assert response.outputs_key_field == 'shared_link'
+    assert response.outputs_prefix == 'Box.ShareLink'
+    assert response.outputs_key_field == 'id'
     assert response.outputs == mock_response
 
 
@@ -272,8 +272,8 @@ def test_remove_folder_share_link_command(requests_mock, mocker):
 
     assert requests_mock.request_history[0].headers.get('Authorization') == "Bearer JWT_TOKEN"
     assert requests_mock.request_history[0].json().get('shared_link') is None
-    assert response.outputs_prefix == 'Box.FolderShareLink'
-    assert response.outputs_key_field == 'shared_link'
+    assert response.outputs_prefix == 'Box.ShareLink'
+    assert response.outputs_key_field == 'id'
     assert response.outputs == mock_response
 
 
@@ -434,7 +434,7 @@ def test_list_users_command(requests_mock, mocker):
     assert requests_mock.request_history[0].qs.get('filter_term') == ['test_user']
 
     assert response.outputs_prefix == 'Box.Users'
-    assert response.outputs_key_field == 'entries'
+    assert response.outputs_key_field == 'id'
     assert response.outputs == mock_response
 
 
@@ -529,7 +529,7 @@ def test_upload_file_command(requests_mock, mocker):
     assert len(requests_mock.request_history) == 7
 
     assert response.outputs_prefix == 'Box.File'
-    assert response.outputs_key_field == 'entries'
+    assert response.outputs_key_field == 'id'
     assert response.outputs == session_commit_response
 
 

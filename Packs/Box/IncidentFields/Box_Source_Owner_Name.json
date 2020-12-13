@@ -1,7 +1,6 @@
 {
   "id": "incident_boxsourceownername",
   "version": -1,
-  "modified": "2020-12-09T19:06:48.718065+02:00",
   "packID": "",
   "itemVersion": "",
   "fromVersion": "6.0.0",
@@ -22,7 +21,7 @@
   "useAsKpi": false,
   "locked": false,
   "system": false,
-  "content": false,
+  "content": true,
   "group": 0,
   "mergeStrategy": "",
   "hidden": false,
