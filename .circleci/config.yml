@@ -46,9 +46,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.11.1"
+      CONTENT_VERSION: "20.12.0"
       SERVER_VERSION: "6.0.0"
-      GIT_SHA1: "8068abfc3865fcfd9c6efd4002982ba1fd91885c" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "c49eabe52f748c4e2a3a5bdd1ab64ccf3c12a83b" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -557,26 +557,16 @@ jobs:
           command: |
             python3 ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
       - run:
-          name: Check if CircleCI's config file is up to date
+          name: Check if CircleCI's config file and requirements.txt files are up to date
           when: always
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping, Should not run on contributor's branch."
               exit 0
             fi
-            # Checks if there's any diff from master
-            if [[ `git diff origin/master -- .circleci/config.yml` ]]; then
-                # Checks if part of the branch's changes
-                if [[ -z `git diff origin/master..."$CIRCLE_BRANCH" --name-only | grep .circleci/config.yml` ]]; then
-                    echo ".circleci/config.yml has been changed. Merge from master"
-                    exit 1
-                else
-                    echo ".circleci/config.yml is part of the branch changes, proceeding"
-                    exit 0
-                fi
-            else
-                echo ".circleci/config.yml is up to date!"
-            fi
+            ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml
+            ./Tests/scripts/is_file_up_to_date.sh .dev-requirements-py2.txt
+            ./Tests/scripts/is_file_up_to_date.sh .dev-requirements-py3.txt
       - run:
           name: Verify Base Branch for Contribution
           when: always
