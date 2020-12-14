@@ -82,7 +82,6 @@ class AMIConnection:
     REMOTE_MACHINE_USER = 'ec2-user'
     REMOTE_HOME = f'/home/{REMOTE_MACHINE_USER}/'
     LOCAL_SCRIPTS_DIR = '/home/circleci/project/Tests/scripts/'
-    CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
 
     def __init__(self, public_ip):
         self.public_ip = public_ip
@@ -147,9 +146,6 @@ class AMIConnection:
 
         silence_output(self.check_call, ['chmod', '+x', remote_script_path], stdout='null')
         silence_output(self.check_call, [remote_script_path] + list(args), stdout='null')
-
-    def clone_mock_data(self):
-        self.run_script(self.CLONE_MOCKS_SCRIPT)
 
 
 class MITMProxy:
@@ -383,7 +379,7 @@ class MITMProxy:
             self.logging_module.debug('"problematic_keys.json" dictionary values were empty - '
                                       'no data to whitewash from the mock file.')
 
-    def start(self, playbook_or_integration_id, path=None, record=False):
+    def start(self, playbook_or_integration_id, path=None, record=False) -> None:
         """Start the proxy process and direct traffic through it.
 
         Args:

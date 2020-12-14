@@ -17,6 +17,7 @@ from distutils.version import LooseVersion
 import logging
 from typing import List
 
+from Tests.mock_server import MITMProxy, run_with_mock, RESULT
 from Tests.scripts.utils.log_util import install_logging
 
 from paramiko.client import SSHClient, AutoAddPolicy
@@ -141,6 +142,7 @@ class Build:
     #  END CHANGE ON LOCAL RUN  #
 
     def __init__(self, options):
+        self._proxy = None
         self.git_sha1 = options.git_sha1
         self.branch_name = options.branch
         self.ci_build_number = options.build_number
@@ -155,6 +157,7 @@ class Build:
         conf = get_json_file(options.conf)
         self.tests = conf['tests']
         self.skipped_integrations_conf = conf['skipped_integrations']
+        self.unmockable_integrations = conf['unmockable_integrations']
         id_set_path = options.id_set_path if options.id_set_path else ID_SET_PATH
         self.id_set = get_id_set(id_set_path)
         self.test_pack_path = options.test_pack_path if options.test_pack_path else None
@@ -162,6 +165,15 @@ class Build:
         self.content_root = options.content_root
         self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
         self.service_account = options.service_account
+
+    @property
+    def proxy(self):
+        if not self._proxy:
+            self._proxy = MITMProxy(self.servers[0].host.replace('https://', ''), logging_module=logging)
+            self._proxy.configure_proxy_in_demisto(proxy=self._proxy.ami.docker_ip + ':' + self._proxy.PROXY_PORT,
+                                                   username=self.username, password=self.password,
+                                                   server=self.servers[0].host)
+        return self._proxy
 
     @staticmethod
     def fetch_tests_list(tests_to_run_path: str):
@@ -1110,13 +1122,24 @@ def instance_testing(build: Build, all_module_instances, pre_update):
         logging.info(f'Start of Instance Testing ("Test" button) ({update_status}-update)')
     else:
         logging.info(f'No integrations to configure for the chosen tests. ({update_status}-update)')
-
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
         testing_client = build.servers[0].reconnect_client()
         # If there is a failure, __test_integration_instance will print it
-        success, _ = __test_integration_instance(testing_client, instance)
+        if integration_of_instance not in build.unmockable_integrations:
+            has_mock_file = build.proxy.has_mock_file(integration_of_instance)
+            success = False
+            if has_mock_file:
+                with run_with_mock(build.proxy, integration_of_instance) as result_holder:
+                    success, _ = __test_integration_instance(testing_client, instance)
+                    result_holder[RESULT] = success
+            if not success:
+                with run_with_mock(build.proxy, integration_of_instance, record=True) as result_holder:
+                    success, _ = __test_integration_instance(testing_client, instance)
+                    result_holder[RESULT] = success
+        else:
+            success, _ = __test_integration_instance(testing_client, instance)
         if not success:
             failed_tests.add((instance_name, integration_of_instance))
         else:
@@ -1332,6 +1355,7 @@ def main():
     build = Build(options_handler())
 
     configure_servers_and_restart(build)
+    disable_instances(build)
     installed_content_packs_successfully = install_packs_pre_update(build)
 
     new_integrations, modified_integrations = get_changed_integrations(build)
@@ -1345,7 +1369,6 @@ def main():
     successful_tests_post, failed_tests_post = test_integrations_post_update(build,
                                                                              new_module_instances,
                                                                              modified_module_instances)
-    disable_instances(build)
 
     success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
                                   new_integrations)

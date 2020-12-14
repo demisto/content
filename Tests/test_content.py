@@ -789,7 +789,6 @@ def execute_testing(tests_settings,
     proxy = None
     if is_ami:
         ami = AMIConnection(server_ip)
-        ami.clone_mock_data()
         proxy = MITMProxy(server_ip, logging_manager, build_number=build_number, branch_name=build_name)
 
     failed_playbooks = []

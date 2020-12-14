@@ -115,6 +115,8 @@ def main():
     build = Build(options_handler())
 
     configure_servers_and_restart(build)
+
+    disable_instances(build)
     #  Get a list of the test we need to run.
     tests_for_iteration = get_tests(build)
     #  Installing the packs.
@@ -131,7 +133,6 @@ def main():
     all_module_instances.extend(brand_new_integrations)
     successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances, pre_update=False)
     #  Done running tests so we are disabling the instances.
-    disable_instances(build)
     #  Gather tests to add to test pack
     test_playbooks_from_id_set = build.id_set.get('TestPlaybooks', [])
     tests_to_add_to_test_pack = find_needed_test_playbook_paths(test_playbooks=test_playbooks_from_id_set,
