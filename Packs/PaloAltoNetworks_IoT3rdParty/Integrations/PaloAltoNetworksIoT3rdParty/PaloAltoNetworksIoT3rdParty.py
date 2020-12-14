@@ -714,15 +714,15 @@ def convert_asset_to_external_format():
             else:
                 err_msg = f'Output format SIEM not supported for {asset_type}'
                 raise TypeError(err_msg)
-            readable_res = f'Converted {len(data)} {asset_type} to {output_format}'
+        readable_res = f'Converted {len(data)} {asset_type} to {output_format}'
 
     elif output_format == 'CiscoISECustomAttributes':
         if asset_list:
             if asset_type == 'device':
                 data = convert_device_list_to_ise_attributes(asset_list)
-        else:
-            err_msg = f'Output format SIEM not supported for {asset_type}'
-            raise TypeError(err_msg)
+            else:
+                err_msg = f'Output format CiscoISECustomAttributes not supported for {asset_type}'
+                raise TypeError(err_msg)
         readable_res = f'Converted {len(data)} {asset_type} to {output_format}'
 
     prefix = prefix_map[asset_type][output_format]
