@@ -1172,7 +1172,10 @@ def logger(func):
 
     def func_wrapper(*args, **kwargs):
         LOG('calling {}({})'.format(func.__name__, formatAllArgs(args, kwargs)))
-        return func(*args, **kwargs)
+        ret_val = func(*args, **kwargs)
+        if is_debug_mode():
+            demisto.debug('Return value: {}'.format(str(ret_val)))
+        return ret_val
 
     return func_wrapper
 
