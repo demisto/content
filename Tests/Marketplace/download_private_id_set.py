@@ -4,7 +4,7 @@ import argparse
 from Tests.Marketplace.marketplace_services import init_storage_client
 
 
-STORAGE_ID_SET_PATH = 'content/id_set.json'
+STORAGE_ID_SET_PATH = 'content/blablaprivate_id_set.json'
 ARTIFACTS_PATH = '/home/circleci/project/artifacts/'
 PRIVATE_ID_SET_FILE = 'private_id_set.json'
 
