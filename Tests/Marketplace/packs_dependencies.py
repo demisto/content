@@ -59,6 +59,8 @@ def calculate_single_pack_dependencies(pack: str, dependency_graph: object) -> T
             first_level_dependencies, all_level_dependencies = parse_for_pack_metadata(subgraph, pack)
     except Exception:
         logging.exception(f"Failed calculating {pack} pack dependencies")
+        raise
+
     return first_level_dependencies, all_level_dependencies, pack
 
 
