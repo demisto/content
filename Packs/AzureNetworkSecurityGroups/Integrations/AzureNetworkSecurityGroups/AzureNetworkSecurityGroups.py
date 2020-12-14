@@ -332,7 +332,7 @@ def main() -> None:
             raise ValueError("Please run `!azure-nsg-auth-start` and `!azure-nsg-auth-complete` to log in."
                              " For more details press the (?) button.")
 
-        if command == 'azure-nsg-test':
+        if command == 'azure-nsg-auth-test':
             return_results(test_connection(client, params))
         else:
             return_results(commands[command](client, **args))
