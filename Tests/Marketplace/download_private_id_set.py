@@ -29,7 +29,7 @@ EMPTY_ID_SET = {
 
 def is_private_id_set_file_exist(public_storage_bucket, storage_client):
     blob = public_storage_bucket.blob(STORAGE_ID_SET_PATH)
-    return blob.exsits(storage_client)
+    return blob.exists(storage_client)
 
 
 def download_private_id_set_from_gcp(public_storage_bucket, storage_client):
