@@ -535,6 +535,7 @@ def fetch_incidents(service):
         fetch_time_in_minutes = parse_time_to_minutes()
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
         last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+        demisto.debug('\n\n last run is None. Last run time is: {}\n\n'.format(last_run))
 
     earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
     latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
@@ -590,6 +591,7 @@ def fetch_incidents(service):
             {'time': next_run, 'offset': 0, 'found_incidents_ids': fetched_incidents_custom_ids,
              'fetch_start_update_count': 0})
     else:
+        opt_in_log('\n\n next run time with too many incidents:  {}\n\n \n\n'.format(last_run))
         demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT,
                             'fetch_start_update_count': 0, 'found_incidents_ids': fetched_incidents_custom_ids})
 
