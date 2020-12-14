@@ -40,9 +40,8 @@ def ProcessPoolHandler() -> ProcessPool:
     with ProcessPool(max_workers=3) as pool:
         try:
             yield pool
-        except Exception as e:
-            logging.exception(e)
-            logging.error("Gracefully release all resources due to Error...")
+        except Exception:
+            logging.exception("Gracefully release all resources due to Error...")
             raise
         finally:
             pool.close()
