@@ -30,7 +30,7 @@ class TestBox:
                                                'ENCRYPTED PRIVATE KEY-----", "passphrase": '
                                                '"1234"}}, '
                                                '"enterpriseID": "1234"}')}
-        testing_auth_header = {'Authorization': f'Bearer JWT_TOKEN'}
+        testing_auth_header = {'Authorization': 'Bearer JWT_TOKEN'}
         mocker.patch.object(Client, '_request_token', return_value=testing_auth_header)
 
         self.client = Client(
@@ -283,7 +283,7 @@ def test_create_update_folder_share_link_command(requests_mock, mocker):
     Then: Return the result where the outputs match the mocked response.
 
     """
-    from BoxV2 import Client, create_update_folder_share_link_command
+    from BoxV2 import create_update_folder_share_link_command
 
     mock_response = util_load_json('test_data/create_update_file_share_link.json')
     requests_mock.put(
@@ -613,8 +613,8 @@ def test_upload_file_command(requests_mock, mocker):
         json=session_request_response
     )
     requests_mock.put(
-         'https://upload.box.com/api/2.0/files/upload_sessions/test_session_id',
-         json=part_data
+        'https://upload.box.com/api/2.0/files/upload_sessions/test_session_id',
+        json=part_data
     )
     requests_mock.post(
         'https://upload.box.com/api/2.0/files/upload_sessions/test_session_id/commit',

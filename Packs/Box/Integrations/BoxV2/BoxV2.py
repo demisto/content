@@ -188,7 +188,7 @@ class Client(BaseClient):
                 backend=default_backend(),
             )
         except (TypeError, ValueError, exceptions.UnsupportedAlgorithm) as exception:
-            raise DemistoException(f"An error occurred while loading the private key.", exception)
+            raise DemistoException("An error occurred while loading the private key.", exception)
         return key
 
     def _create_jwt_assertion(self):
@@ -472,8 +472,8 @@ class Client(BaseClient):
             params=remove_empty_elements(query_params)
         )
 
-    def _create_upload_session(self, file_name: str, file_size: int, folder_id: str,
-                               as_user: str) -> dict:
+    def _create_upload_session(self, file_name: Optional[str], file_size: int, folder_id: Optional[str],
+                               as_user: Optional[str]) -> dict:
         """
         Each file upload where the file is greater than the maximum_chunk_size of 50MBs requires a
         session to be created. This session returns the endpoints and determined chunk size required
@@ -514,7 +514,7 @@ class Client(BaseClient):
                 break
             yield data
 
-    def chunk_upload(self, file_name: Optional[str], file_size: int, file_path: Optional[str],
+    def chunk_upload(self, file_name: Optional[str], file_size: int, file_path: str,
                      folder_id: Optional[str], as_user: Optional[str]):
         """
         Handles the uploading of the file parts to the session endpoint. Box requires a SHA1 digest
@@ -535,8 +535,8 @@ class Client(BaseClient):
         """
         upload_session_data = self._create_upload_session(file_name=file_name, file_size=file_size,
                                                           folder_id=folder_id, as_user=as_user)
-        session_id: Optional[Any] = upload_session_data.get('id')
-        part_size: Optional[Any] = upload_session_data.get('part_size')
+        session_id: str = upload_session_data.get('id')  # type:ignore
+        part_size: int = upload_session_data.get('part_size')  # type:ignore
         upload_url_suffix = f'/files/upload_sessions/{session_id}'
         parts = []
         index = 0
@@ -563,7 +563,7 @@ class Client(BaseClient):
                 index = offset
         return parts, upload_url_suffix
 
-    def commit_file(self, file_path: str, as_user: str, parts: List[Dict],
+    def commit_file(self, file_path: str, as_user: Optional[str], parts: List[Dict],
                     upload_url_suffix: str) -> dict:
         """
         Once a file has been uploaded, the file must be committed. This request requires the SHA1
@@ -595,8 +595,8 @@ class Client(BaseClient):
                 headers=final_headers
             )
 
-    def upload_file(self, entry_id: str, file_name: str = None, folder_id: str = None,
-                    as_user: str = None) -> dict:
+    def upload_file(self, entry_id: str, file_name: Optional[str] = None, folder_id: Optional[str] = None,
+                    as_user: Optional[str] = None) -> dict:
         """
         Main function used to handle the `box-upload-file` command. Box enforces size limitations
         which determines which endpoint is used to upload a file. for files under 50MB, the generic
@@ -718,7 +718,7 @@ class Client(BaseClient):
         if created_after:
             request_params.update({'created_after': created_after})
         if limit:
-            request_params.update({'limit': limit})
+            request_params.update({'limit': limit})  # type:ignore
         return self._http_request(
             method='GET',
             url_suffix=url_suffix,
@@ -863,7 +863,7 @@ def arg_to_int(arg: Any, arg_name: str, default: int = None) -> int:
     """
 
     if arg is None:
-        return default
+        return default  # type:ignore
     if isinstance(arg, str):
         if arg.isdigit():
             return int(arg)
@@ -953,7 +953,7 @@ def handle_default_user(args: dict, params: dict) -> None:
         args.update({'as_user': params.get('default_user')})
 
 
-def parse_key_value_arg(arg_str):
+def parse_key_value_arg(arg_str: Optional[Any]):
     """
     In some cases it is necessary to pass an argument with a specific name. The common usecase is
     for Tags. This function allows a user to create their own key value pairs.
@@ -995,7 +995,7 @@ def find_file_folder_by_share_link_command(client: Client, args: Dict[str, Any])
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
-    share_link: str = args.get('shared_link')
+    share_link: str = args.get('shared_link')  # type:ignore
     password: str = args.get('password', None)
     response: dict = client.find_file_folder_by_share_link(shared_link=share_link, password=password)
     readable_output = tableToMarkdown(
@@ -1024,7 +1024,7 @@ def search_content_command(client: Client, args: Dict[str, Any]) -> CommandResul
     return_results function in main()
     """
     query_object = QueryHandler(args=args)
-    as_user = args.get('as_user')
+    as_user: str = args.get('as_user')  # type:ignore
     response = client.search_content(as_user=as_user, query_object=query_object)
     readable_output = tableToMarkdown(
         name='Search results',
@@ -1053,7 +1053,7 @@ def create_update_file_share_link_command(client: Client, args: Dict[str, Any]) 
     return_results function in main()
     """
     file_share_link_obj: FileShareLink = FileShareLink(args)
-    as_user: str = args.get('as_user')
+    as_user: str = args.get('as_user')  # type:ignore
     response: dict = client.crud_file_share_link(file_share_link=file_share_link_obj, as_user=as_user)
     readable_output = tableToMarkdown(
         name=f'File Share Link was created/updated for file_id: {file_share_link_obj.file_id}',
@@ -1082,9 +1082,9 @@ def remove_file_share_link_command(client: Client, args: Dict[str, Any]) -> Comm
     return_results function in main()
     """
     file_share_link_obj: FileShareLink = FileShareLink(args)
-    as_user: str = args.get('as_user')
+    as_user: str = args.get('as_user')  # type:ignore
     response: dict = client.crud_file_share_link(file_share_link=file_share_link_obj, as_user=as_user,
-                                           is_delete=True)
+                                                 is_delete=True)
 
     return CommandResults(
         readable_output=f'File Share Link for the file_id {file_share_link_obj.file_id} was '
@@ -1105,13 +1105,13 @@ def get_shared_link_for_file_command(client: Client, args: Dict[str, Any]) -> Co
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
-    file_id: str = args.get('file_id')
-    as_user: str = args.get('as_user')
+    file_id: str = args.get('file_id')  # type:ignore
+    as_user: str = args.get('as_user')  # type:ignore
     response: dict = client.get_shared_link_by_file(file_id=file_id, as_user=as_user)
     if response.get('shared_link') is None:
         readable_output: str = f"There currently is no shared link assigned to the file {file_id}."
     else:
-        readable_output: str = tableToMarkdown(
+        readable_output: str = tableToMarkdown(  # type:ignore
             name=f'Shared link information for the file {file_id}',
             t=response.get('shared_link'),
             removeNull=True,
@@ -1135,8 +1135,8 @@ def get_shared_link_by_folder_command(client: Client, args: Dict[str, Any]) -> C
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
-    folder_id: str = args.get('folder_id')
-    as_user: str = args.get('as_user')
+    folder_id: str = args.get('folder_id')  # type:ignore
+    as_user: str = args.get('as_user')  # type:ignore
     response: dict = client.get_shared_link_by_folder(folder_id=folder_id, as_user=as_user)
     readable_output: str = tableToMarkdown(
         name=f'Shared link information for the folder {folder_id}',
@@ -1165,7 +1165,7 @@ def create_update_folder_share_link_command(client: Client, args: Dict[str, Any]
     return_results function in main()
     """
     folder_share_link_obj: FolderShareLink = FolderShareLink(args)
-    as_user: str = args.get('as_user')
+    as_user: str = args.get('as_user')  # type:ignore
     response: dict = client.crud_folder_share_link(folder_share_link=folder_share_link_obj,
                                                    as_user=as_user)
     readable_output: str = tableToMarkdown(
@@ -1195,7 +1195,7 @@ def remove_folder_share_link_command(client: Client, args: Dict[str, Any]) -> Co
     return_results function in main()
     """
     folder_share_link_obj: FolderShareLink = FolderShareLink(args)
-    as_user: str = args.get('as_user')
+    as_user: str = args.get('as_user')  # type:ignore
     response: dict = client.crud_folder_share_link(folder_share_link=folder_share_link_obj,
                                                    as_user=as_user, is_delete=True)
     readable_output: str = tableToMarkdown(
@@ -1222,10 +1222,10 @@ def get_folder_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
-    folder_id: str = args.get('folder_id')
-    as_user: str = args.get('as_user')
+    folder_id: str = args.get('folder_id')  # type:ignore
+    as_user: str = args.get('as_user')  # type:ignore
     response: dict = client.get_folder(folder_id=folder_id, as_user=as_user)
-    folder_item_collection: dict = response.get('item_collection')
+    folder_item_collection: dict = response.get('item_collection')  # type:ignore
     folders_output: str = tableToMarkdown(
         name=f"File contents for the folder {folder_id}",
         t=folder_item_collection.get('entries'),
@@ -1259,14 +1259,14 @@ def list_folder_items_command(client: Client, args: Dict[str, Any]) -> CommandRe
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
-    folder_id: str = args.get('folder_id')
-    as_user: str = args.get('as_user')
+    folder_id: str = args.get('folder_id')  # type:ignore
+    as_user: str = args.get('as_user')  # type:ignore
     limit: int = arg_to_int(arg_name='limit', arg=args.get('limit'), default=100)
     offset: int = arg_to_int(arg_name='offset', arg=args.get('offset'), default=0)
-    sort: str = args.get('sort')
+    sort: str = args.get('sort')  # type:ignore
     response: dict = client.list_folder_items(folder_id=folder_id, as_user=as_user, limit=limit,
                                               offset=offset, sort=sort)
-    folder_item_collection: dict = response.get('item_collection')
+    folder_item_collection: dict = response.get('item_collection')  # type:ignore
     folders_output: str = tableToMarkdown(
         name=f"File contents for the folder {folder_id}",
         t=folder_item_collection.get('entries'),
@@ -1301,9 +1301,9 @@ def folder_create_command(client: Client, args: Dict[str, Any]) -> CommandResult
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
-    name: str = args.get('name')
-    parent_id: str = args.get('parent_id')
-    as_user: str = args.get('as_user')
+    name: str = args.get('name')  # type:ignore
+    parent_id: str = args.get('parent_id')  # type:ignore
+    as_user: str = args.get('as_user')  # type:ignore
     response: dict = client.folder_create(name=name, parent_id=parent_id, as_user=as_user)
     readable_output: str = f'Folder named {name}, was successfully created.'
     return CommandResults(
@@ -1326,13 +1326,13 @@ def file_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
-    file_id: str = args.get('file_id')
-    as_user: str = args.get('as_user')
+    file_id: str = args.get('file_id')  # type:ignore
+    as_user: str = args.get('as_user')  # type:ignore
     response: Response = client.file_delete(file_id=file_id, as_user=as_user)
     if response.status_code == 204:
         readable_output: str = f'The file {file_id} was successfully deleted.'
     else:
-        readable_output: str = f'The file {file_id} was not deleted successfully.'
+        readable_output: str = f'The file {file_id} was not deleted successfully.'  # type:ignore
         raise DemistoException(readable_output)
     return CommandResults(
         readable_output=readable_output
@@ -1350,15 +1350,15 @@ def list_users_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
-    fields: str = args.get('fields')
-    filter_term: str = args.get('filter_term')
+    fields: str = args.get('fields')  # type:ignore
+    filter_term: str = args.get('filter_term')  # type:ignore
     limit: int = arg_to_int(arg_name='limit', arg=args.get('limit'), default=100)
     offset: int = arg_to_int(arg_name='offset', arg=args.get('offset'), default=0)
-    user_type: str = args.get('user_type')
+    user_type: str = args.get('user_type')  # type:ignore
     response: dict = client.list_users(fields=fields, filter_term=filter_term, limit=limit,
                                        offset=offset, user_type=user_type)
     readable_output: str = tableToMarkdown(
-        name=f'The following users were found.',
+        name='The following users were found.',
         t=response.get('entries'),
         removeNull=True,
         headerTransform=string_to_table_header
@@ -1382,10 +1382,10 @@ def upload_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
-    entry_id: str = args.get('entry_id')
-    file_name: str = args.get('file_name')
-    folder_id: str = args.get('folder_id')
-    as_user: str = args.get('as_user')
+    entry_id: str = args.get('entry_id')  # type:ignore
+    file_name: str = args.get('file_name')  # type:ignore
+    folder_id: str = args.get('folder_id')  # type:ignore
+    as_user: str = args.get('as_user')  # type:ignore
     response: dict = client.upload_file(entry_id=entry_id, file_name=file_name, folder_id=folder_id,
                                         as_user=as_user)
     readable_output = "File was successfully uploaded"
@@ -1409,9 +1409,9 @@ def trashed_items_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     """
     limit: int = arg_to_int(arg_name='limit', arg=args.get('limit'), default=100)
     offset: int = arg_to_int(arg_name='offset', arg=args.get('offset'), default=0)
-    as_user: str = args.get('as_user')
+    as_user: str = args.get('as_user')  # type:ignore
     response: dict = client.trashed_items_list(limit=limit, offset=offset, as_user=as_user)
-    if len(response.get('entries')) == 0:
+    if len(response.get('entries')) == 0:  # type:ignore
         readable_output = "No trashed items were found."
     else:
         readable_output = tableToMarkdown(
@@ -1438,9 +1438,9 @@ def trashed_item_restore_command(client: Client, args: Dict[str, Any]) -> Comman
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
-    item_id: str = args.get('item_id')
-    type: str = args.get('type')
-    as_user: str = args.get('as_user')
+    item_id: str = args.get('item_id')  # type:ignore
+    type: str = args.get('type')  # type:ignore
+    as_user: str = args.get('as_user')  # type:ignore
     response: dict = client.trashed_item_restore(item_id=item_id, type=type, as_user=as_user)
     readable_output = f'Item with the ID {item_id} was restored.'
     return CommandResults(
@@ -1462,9 +1462,9 @@ def trashed_item_delete_permanently_command(client: Client, args: Dict[str, Any]
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
-    item_id: str = args.get('item_id')
-    type: str = args.get('type')
-    as_user: str = args.get('as_user')
+    item_id: str = args.get('item_id')  # type:ignore
+    type: str = args.get('type')  # type:ignore
+    as_user: str = args.get('as_user')  # type:ignore
     response: Response = client.trashed_item_permanently_delete(item_id=item_id, type=type, as_user=as_user)
     if response.status_code == 204:
         readable_output = f'Item with the ID {item_id} was deleted permanently.'
@@ -1484,10 +1484,10 @@ def list_user_events_command(client: Client, args: Dict[str, Any]) -> CommandRes
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
-    as_user: str = args.get('as_user')
-    stream_type: str = args.get('stream_type')
+    as_user: str = args.get('as_user')  # type:ignore
+    stream_type: str = args.get('stream_type')  # type:ignore
     response: dict = client.list_events(as_user=as_user, stream_type=stream_type)
-    if len(response.get('entries')) == 0:
+    if len(response.get('entries')) == 0:  # type:ignore
         readable_output = f'No events were found for the user {as_user}.'
     else:
         readable_output = tableToMarkdown(f'Events found for the user {as_user}.', response)
@@ -1508,9 +1508,9 @@ def list_enterprise_events_command(client: Client, args: Dict[str, Any]) -> Comm
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
-    as_user: str = args.get('as_user')
+    as_user: str = args.get('as_user')  # type:ignore
     response: dict = client.list_events(as_user=as_user, stream_type='admin_logs')
-    if len(response.get('entries')) == 0:
+    if len(response.get('entries')) == 0:  # type:ignore
         readable_output = 'No enterprise events were found.'
     else:
         readable_output = tableToMarkdown('Enterprise Events found.', response)
@@ -1533,7 +1533,7 @@ def get_current_user_command(client: Client, args: Dict[str, Any]) -> CommandRes
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
-    as_user: str = args.get('as_user')
+    as_user: str = args.get('as_user')  # type:ignore
     response: dict = client.get_current_user(as_user=as_user)
 
     readable_output = tableToMarkdown(
@@ -1561,24 +1561,24 @@ def create_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
-    as_user: str = args.get('as_user')
-    login: str = args.get('login')
-    name: str = args.get('name')
-    role: str = args.get('role')
-    language: str = args.get('language')
+    as_user: str = args.get('as_user')  # type:ignore
+    login: str = args.get('login')  # type:ignore
+    name: str = args.get('name')  # type:ignore
+    role: str = args.get('role')  # type:ignore
+    language: str = args.get('language')  # type:ignore
     is_sync_enabled: bool = argToBoolean(args.get('is_sync_enabled'))
-    job_title: str = args.get('job_title')
-    phone: str = args.get('phone')
-    address: str = args.get('address')
+    job_title: str = args.get('job_title')  # type:ignore
+    phone: str = args.get('phone')  # type:ignore
+    address: str = args.get('address')  # type:ignore
     space_amount: int = arg_to_int(arg_name='space_amount', arg=args.get('space_amount'), default=-1)
     tracking_codes: List[Dict] = parse_key_value_arg(arg_str=args.get('tracking_codes'))
     can_see_managed_users: bool = argToBoolean(args.get('can_see_managed_users'))
-    time_zone: str = args.get('timezone')
+    time_zone: str = args.get('timezone')  # type:ignore
     is_exempt_from_device_limits: bool = argToBoolean(args.get('is_exempt_from_device_limits'))
     is_exempt_from_login_verification: bool = argToBoolean(args.get('is_exempt_from_login_verification'))
     is_external_collab_restricted: bool = argToBoolean(args.get('is_external_collab_restricted'))
     is_platform_access_only: bool = argToBoolean(args.get('is_platform_access_only'))
-    status: str = args.get('status')
+    status: str = args.get('status')  # type:ignore
 
     if is_platform_access_only is False and login is None:
         raise DemistoException("Box requires the Login argument when the argument"
@@ -1620,23 +1620,27 @@ def update_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
-    as_user: Optional[Any] = args.get('as_user')
-    user_id: Optional[Any] = args.get('user_id')
-    login: Optional[Any] = args.get('login')
-    name: Optional[Any] = args.get('name')
-    role: Optional[Any] = args.get('role')
-    language: Optional[Any] = args.get('language')
-    is_sync_enabled: Optional[Any] = argToBoolean(args.get('is_sync_enabled', 'false'))
-    job_title: Optional[Any] = args.get('job_title')
-    phone: Optional[Any] = args.get('phone')
-    address: Optional[Any] = args.get('address')
-    space_amount: Optional[Any] = arg_to_int(arg_name='space_amount', arg=args.get('space_amount'), default=-1)
-    tracking_codes: List[Dict] = parse_key_value_arg(arg_str=args.get('tracking_codes'))
-    can_see_managed_users: Optional[Any] = argToBoolean(args.get('can_see_managed_users', 'false'))
+    as_user: str = args.get('as_user')  # type:ignore
+    user_id: str = args.get('user_id')  # type:ignore
+    login: str = args.get('login')  # type:ignore
+    name: str = args.get('name')  # type:ignore
+    role: str = args.get('role')  # type:ignore
+    language: str = args.get('language')  # type:ignore
+    is_sync_enabled: bool = argToBoolean(args.get('is_sync_enabled', 'false'))  # type:ignore
+    job_title: str = args.get('job_title')  # type:ignore
+    phone: str = args.get('phone')  # type:ignore
+    address: str = args.get('address')  # type:ignore
+    space_amount: int = arg_to_int(arg_name='space_amount', arg=args.get('space_amount'), default=-1)
+    tracking_codes: Optional[Any] = parse_key_value_arg(arg_str=args.get('tracking_codes'))
+    can_see_managed_users: bool = argToBoolean(
+        args.get('can_see_managed_users', 'false'))  # type:ignore
     time_zone: Optional[Any] = args.get('timezone')
-    is_exempt_from_device_limits: Optional[Any] = argToBoolean(args.get('is_exempt_from_device_limits', 'false'))
-    is_exempt_from_login_verification: Optional[Any] = argToBoolean(args.get('is_exempt_from_login_verification', 'false'))
-    is_external_collab_restricted: Optional[Any] = argToBoolean(args.get('is_external_collab_restricted', 'false'))
+    is_exempt_from_device_limits: bool = argToBoolean(
+        args.get('is_exempt_from_device_limits', 'false'))  # type:ignore
+    is_exempt_from_login_verification: bool = argToBoolean(
+        args.get('is_exempt_from_login_verification', 'false'))  # type:ignore
+    is_external_collab_restricted: bool = argToBoolean(
+        args.get('is_external_collab_restricted', 'false'))  # type:ignore
     status: Optional[Any] = args.get('status')
 
     response = client.create_update_user(as_user=as_user, login=login, name=name, role=role,
@@ -1674,16 +1678,16 @@ def delete_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
-    as_user: Optional[Any] = args.get('as_user')
-    user_id: Optional[Any] = args.get('user_id')
-    force: Optional[Any] = bool(strtobool(args.get('force', 'false')))
+    as_user: str = args.get('as_user')  # type:ignore
+    user_id: str = args.get('user_id')  # type:ignore
+    force: bool = bool(strtobool(args.get('force', 'false')))
 
     response = client.delete_user(as_user=as_user, user_id=user_id, force=force)
 
     if response.status_code == 204:
         readable_output: str = f'The user {user_id} was successfully deleted.'
     else:
-        readable_output: str = f'The user {user_id} was not deleted successfully.'
+        readable_output: str = f'The user {user_id} was not deleted successfully.'  # type: ignore
         raise DemistoException(readable_output)
     return CommandResults(
         readable_output=readable_output
