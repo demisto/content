@@ -53,7 +53,6 @@ from argus_api.api.reputation.v1.observation import (
     fetch_observations_for_i_p,
 )
 
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -320,6 +319,7 @@ def add_comment_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def advanced_case_search_command(args: Dict[str, Any]) -> CommandResults:
+    # noinspection PyTypeChecker
     result = advanced_case_search(
         startTimestamp=args.get("start_timestamp", None),
         endTimestamp=args.get("end_timestamp", None),
@@ -747,6 +747,7 @@ def get_events_for_case_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def find_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
+    # noinspection PyTypeChecker
     result = find_aggregated_events(
         skipFutureEvents=args.get("skip_future_events", None),
         exclude=args.get("exclude", None),
@@ -864,6 +865,7 @@ def get_pcap_command(args: Dict[str, Any]) -> Any:
 
 
 def find_nids_events_command(args: Dict[str, Any]) -> CommandResults:
+    # noinspection PyTypeChecker
     result = find_n_i_d_s_events(
         skipFutureEvents=args.get("skip_future_events", None),
         exclude=args.get("exclude", None),
@@ -933,6 +935,7 @@ def search_records_command(args: Dict[str, Any]) -> CommandResults:
     query = args.get("query", None)
     if not query:
         raise ValueError("query not specified")
+    # noinspection PyTypeChecker
     result = search_records(
         query=query,
         aggregateResult=args.get("aggregate_result", None),

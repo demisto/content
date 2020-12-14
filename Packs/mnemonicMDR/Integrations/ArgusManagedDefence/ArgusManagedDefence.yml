@@ -25,10 +25,10 @@ configuration:
   display: Minimum severity of alerts to fetch
   name: min_severity
   options:
-  - Low
-  - Medium
-  - High
-  - Critical
+  - low
+  - medium
+  - high
+  - critical
   required: true
   type: 15
 - defaultvalue: 3 days
