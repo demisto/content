@@ -6,20 +6,20 @@ commonfields:
   version: -1
 args:
 - name: input
-  description: input list
+  description: Input list.
   isArray: true
 - name: current
   required: false
-  description: current aggregation state
+  description: Current aggregation state.
   isArray: true
 - name: source_ip_fields
-  description: comma separated list of fields to treat as source IPs
+  description: Comma separated list of fields to treat as source IPs.
   defaultValue: src,src_ip
 - name: internal_ip_networks
-  description: comma separated list of IPv4 Networks to be considered internal (default to RFC private networks)
+  description: Comma separated list of IPv4 Networks to be considered internal (default to RFC private networks).
   defaultValue: ""
 - name: sightings_fields
-  description: comma separated list of field names to be considered sighting counts
+  description: Comma separated list of field names to be considered sighting counts.
   defaultValue: count
 outputs:
 - contextPath: Expanse.AttributionIP.ip

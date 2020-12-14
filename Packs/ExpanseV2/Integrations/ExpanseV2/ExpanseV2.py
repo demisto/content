@@ -53,6 +53,12 @@ EXPANSE_RESOLVEDSTATUS_TO_XSOAR = {
     'AcceptableRisk': 'Other'
 }
 
+EXPANSE_ISSUE_READABLE_HEADER_LIST = [
+    'id', 'headline', 'issueType', 'category', 'ip', 'portProtocol', 'portNumber', 'domain', 'certificate', 'priority',
+    'progressStatus', 'activityStatus', 'providers', 'assigneeUsername', 'businessUnits', 'created', 'modified',
+    'annotations', 'assets', 'helpText'
+]
+
 MIRROR_DIRECTION = {
     'None': None,
     'Incoming': 'In',
@@ -970,8 +976,15 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if len(issues) < 1:
         return CommandResults(readable_output='No Issues Found')
 
+    readable_output = tableToMarkdown(
+        name='Expanse Issues',
+        t=issues,
+        headers=EXPANSE_ISSUE_READABLE_HEADER_LIST,
+        headerTransform=pascalToSpace
+    )
+
     return CommandResults(
-        outputs_prefix="Expanse.Issue", outputs_key_field="id", outputs=issues
+        readable_output=readable_output, outputs_prefix="Expanse.Issue", outputs_key_field="id", outputs=issues
     )
 
 
@@ -983,8 +996,15 @@ def get_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     issue = client.get_issue_by_id(issue_id=issue_id)
 
+    readable_output = tableToMarkdown(
+        name='Expanse Issues',
+        t=issue,
+        headers=EXPANSE_ISSUE_READABLE_HEADER_LIST,
+        headerTransform=pascalToSpace
+    )
+
     return CommandResults(
-        outputs_prefix="Expanse.Issue", outputs_key_field="id", outputs=issue
+        readable_output=readable_output, outputs_prefix="Expanse.Issue", outputs_key_field="id", outputs=issue
     )
 
 

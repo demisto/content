@@ -17,12 +17,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 02598d6d-e864-49c0-8205-53145c467cfe
+      id: e491d578-04b1-4743-8ac4-c94e65a8a253
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 02598d6d-e864-49c0-8205-53145c467cfe
+    taskid: e491d578-04b1-4743-8ac4-c94e65a8a253
     timertriggers: []
     type: start
     view: |-
@@ -47,13 +47,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 7998de32-c4bb-45d5-85ba-394dcbc08968
+      id: 1f21ca22-2c0a-440d-81de-1c61b8b9e77c
       iscommand: true
       name: DeleteContext
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 7998de32-c4bb-45d5-85ba-394dcbc08968
+    taskid: 1f21ca22-2c0a-440d-81de-1c61b8b9e77c
     timertriggers: []
     type: regular
     view: |-
@@ -96,13 +96,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f26ab593-0a7f-44b7-8ac4-435eeae092a4
+      id: fe54a85b-9f0b-44dd-8995-e7fe874105c3
       iscommand: true
       name: expanse-get-issues
       script: '|||expanse-get-issues'
       type: regular
       version: -1
-    taskid: f26ab593-0a7f-44b7-8ac4-435eeae092a4
+    taskid: fe54a85b-9f0b-44dd-8995-e7fe874105c3
     timertriggers: []
     type: regular
     view: |-
@@ -252,12 +252,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 20559d6b-d213-4cf1-8391-c466f9eb9dc1
+      id: 6bd0dc06-1b9d-4ccd-8ef3-0e752b3de368
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 20559d6b-d213-4cf1-8391-c466f9eb9dc1
+    taskid: 6bd0dc06-1b9d-4ccd-8ef3-0e752b3de368
     timertriggers: []
     type: condition
     view: |-
@@ -291,13 +291,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 2fcd75e4-1db7-4a91-82d4-9ac1cd48c36f
+      id: cef48207-ceeb-4d43-818e-2b981703a919
       iscommand: true
       name: expanse-get-issue-updates
       script: '|||expanse-get-issue-updates'
       type: regular
       version: -1
-    taskid: 2fcd75e4-1db7-4a91-82d4-9ac1cd48c36f
+    taskid: cef48207-ceeb-4d43-818e-2b981703a919
     timertriggers: []
     type: regular
     view: |-
@@ -363,12 +363,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ce177929-4e27-4cb6-8f35-4feacb2fa0a9
+      id: 29b3d1ef-701d-4b62-8c4a-1c9a38931b31
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: ce177929-4e27-4cb6-8f35-4feacb2fa0a9
+    taskid: 29b3d1ef-701d-4b62-8c4a-1c9a38931b31
     timertriggers: []
     type: condition
     view: |-
@@ -398,13 +398,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 39a65953-7bc3-4aba-8514-4a2db497b08c
+      id: d13427ab-2cce-4b29-8033-1198966079b4
       iscommand: true
       name: expanse-get-issue-comments
       script: '|||expanse-get-issue-comments'
       type: regular
       version: -1
-    taskid: 39a65953-7bc3-4aba-8514-4a2db497b08c
+    taskid: d13427ab-2cce-4b29-8033-1198966079b4
     timertriggers: []
     type: regular
     view: |-
@@ -462,12 +462,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 280883bb-94fe-43d8-8c14-8583759c0ec8
+      id: 3c8382c8-ed8f-40ca-8aa8-341d6c8d57ef
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 280883bb-94fe-43d8-8c14-8583759c0ec8
+    taskid: 3c8382c8-ed8f-40ca-8aa8-341d6c8d57ef
     timertriggers: []
     type: condition
     view: |-
@@ -497,13 +497,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f4380f89-4db3-4368-8ca2-1a3602abea16
+      id: 433b8656-2cbc-421f-87ae-0531c7cbebc5
       iscommand: true
       name: expanse-update-issue (Add Comment)
       script: '|||expanse-update-issue'
       type: regular
       version: -1
-    taskid: f4380f89-4db3-4368-8ca2-1a3602abea16
+    taskid: 433b8656-2cbc-421f-87ae-0531c7cbebc5
     timertriggers: []
     type: regular
     view: |-
@@ -563,12 +563,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 2f8532fd-5a70-4f31-83a4-fa451186ddfc
+      id: 6981a23d-0e29-444e-8ad9-208b3fde3fa8
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 2f8532fd-5a70-4f31-83a4-fa451186ddfc
+    taskid: 6981a23d-0e29-444e-8ad9-208b3fde3fa8
     timertriggers: []
     type: condition
     view: |-
@@ -594,13 +594,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ff6f5478-06f3-4e55-840c-2dcf7f92bf5b
+      id: 02ee7964-cfe7-4a04-8c6e-41e5cb8b0089
       iscommand: true
       name: expanse-get-issue
       script: '|||expanse-get-issue'
       type: regular
       version: -1
-    taskid: ff6f5478-06f3-4e55-840c-2dcf7f92bf5b
+    taskid: 02ee7964-cfe7-4a04-8c6e-41e5cb8b0089
     timertriggers: []
     type: regular
     view: |-
@@ -758,12 +758,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: b637165d-e4c4-40ec-8b33-5140e4468e8d
+      id: b43e3900-8cf0-4f2b-8957-1754b23950a5
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: b637165d-e4c4-40ec-8b33-5140e4468e8d
+    taskid: b43e3900-8cf0-4f2b-8957-1754b23950a5
     timertriggers: []
     type: condition
     view: |-
@@ -788,13 +788,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 500f76fe-0546-439f-866b-da481f7f546a
+      id: c13962d0-7526-4829-8118-01fbd63ac732
       iscommand: true
       name: expanse-list-businessunits
       script: '|||expanse-list-businessunits'
       type: regular
       version: -1
-    taskid: 500f76fe-0546-439f-866b-da481f7f546a
+    taskid: c13962d0-7526-4829-8118-01fbd63ac732
     timertriggers: []
     type: regular
     view: |-
@@ -829,12 +829,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 6041ea1e-170d-49b2-809b-6328ab42e411
+      id: f0f632e0-db36-4454-89bb-be5bd6f77f1d
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 6041ea1e-170d-49b2-809b-6328ab42e411
+    taskid: f0f632e0-db36-4454-89bb-be5bd6f77f1d
     timertriggers: []
     type: condition
     view: |-
@@ -859,13 +859,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: a129e7ed-2bae-4550-88c5-f567ca28227f
+      id: 8239ed43-0dbe-4370-87fc-ddc66d9d1d23
       iscommand: true
       name: expanse-list-providers
       script: '|||expanse-list-providers'
       type: regular
       version: -1
-    taskid: a129e7ed-2bae-4550-88c5-f567ca28227f
+    taskid: 8239ed43-0dbe-4370-87fc-ddc66d9d1d23
     timertriggers: []
     type: regular
     view: |-
@@ -900,12 +900,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8dc8bd40-f44b-4231-8a8b-e37c10422e06
+      id: 455e410c-7175-4d8f-8561-7945183b21c7
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 8dc8bd40-f44b-4231-8a8b-e37c10422e06
+    taskid: 455e410c-7175-4d8f-8561-7945183b21c7
     timertriggers: []
     type: condition
     view: |-
@@ -930,13 +930,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: d481f5a1-75b5-434a-8079-7065b3d1cc54
+      id: 02dbdf81-07b5-4e4b-8ae9-1044fb6a7119
       iscommand: true
       name: expanse-list-tags
       script: '|||expanse-list-tags'
       type: regular
       version: -1
-    taskid: d481f5a1-75b5-434a-8079-7065b3d1cc54
+    taskid: 02dbdf81-07b5-4e4b-8ae9-1044fb6a7119
     timertriggers: []
     type: regular
     view: |-
@@ -994,12 +994,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 1fdc3213-b898-4be3-8fca-01639e1ecf80
+      id: 035c1dae-dfea-4380-8f5a-bac197d2229d
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 1fdc3213-b898-4be3-8fca-01639e1ecf80
+    taskid: 035c1dae-dfea-4380-8f5a-bac197d2229d
     timertriggers: []
     type: condition
     view: |-
@@ -1041,13 +1041,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 815cf731-079b-4f17-838c-d61adb2bc9a1
+      id: 18064046-c2f2-41f9-85ed-ac7c0e3629b4
       iscommand: true
       name: expanse-assign-tags-to-asset
       script: '|||expanse-assign-tags-to-asset'
       type: regular
       version: -1
-    taskid: 815cf731-079b-4f17-838c-d61adb2bc9a1
+    taskid: 18064046-c2f2-41f9-85ed-ac7c0e3629b4
     timertriggers: []
     type: regular
     view: |-
@@ -1089,13 +1089,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 539ecf53-bdd1-4cf1-8054-2cc1960e2da6
+      id: 296ea607-b5f1-4a5c-8606-5ea874fa9f0f
       iscommand: true
       name: expanse-unassign-tags-from-asset
       script: '|||expanse-unassign-tags-from-asset'
       type: regular
       version: -1
-    taskid: 539ecf53-bdd1-4cf1-8054-2cc1960e2da6
+    taskid: 296ea607-b5f1-4a5c-8606-5ea874fa9f0f
     timertriggers: []
     type: regular
     view: |-
@@ -1124,13 +1124,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 63a19a6e-c40f-484b-8de8-786dd04f66ac
+      id: a7ca335c-c856-460b-8323-34020701dcc3
       iscommand: true
       name: expanse-assign-tags-to-iprange
       script: '|||expanse-assign-tags-to-iprange'
       type: regular
       version: -1
-    taskid: 63a19a6e-c40f-484b-8de8-786dd04f66ac
+    taskid: a7ca335c-c856-460b-8323-34020701dcc3
     timertriggers: []
     type: regular
     view: |-
@@ -1159,13 +1159,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 90541f91-1f02-443c-8945-b399a72f7e4f
+      id: f439c6b9-6982-45ee-8c88-73458a9c294a
       iscommand: true
       name: expanse-unassign-tags-from-iprange
       script: '|||expanse-unassign-tags-from-iprange'
       type: regular
       version: -1
-    taskid: 90541f91-1f02-443c-8945-b399a72f7e4f
+    taskid: f439c6b9-6982-45ee-8c88-73458a9c294a
     timertriggers: []
     type: regular
     view: |-
@@ -1194,13 +1194,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 4368a660-0195-4b56-8432-aad69e0b5690
+      id: 3f65b65b-37e7-4426-8d26-27bd7b6c610c
       iscommand: true
       name: expanse-assign-tags-to-certificate
       script: '|||expanse-assign-tags-to-certificate'
       type: regular
       version: -1
-    taskid: 4368a660-0195-4b56-8432-aad69e0b5690
+    taskid: 3f65b65b-37e7-4426-8d26-27bd7b6c610c
     timertriggers: []
     type: regular
     view: |-
@@ -1229,13 +1229,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ae6ffcad-5a27-440b-8abb-9009254ea770
+      id: 226a8b06-e029-4345-887d-278a02bb6b42
       iscommand: true
       name: expanse-unassign-tags-from-certificate
       script: '|||expanse-unassign-tags-from-certificate'
       type: regular
       version: -1
-    taskid: ae6ffcad-5a27-440b-8abb-9009254ea770
+    taskid: 226a8b06-e029-4345-887d-278a02bb6b42
     timertriggers: []
     type: regular
     view: |-
@@ -1264,13 +1264,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 6ae4f50e-0345-48d5-878e-0518fe6e5455
+      id: 36c83a80-0070-4383-8899-a0f8bed96fd2
       iscommand: true
       name: expanse-assign-tags-to-domain
       script: '|||expanse-assign-tags-to-domain'
       type: regular
       version: -1
-    taskid: 6ae4f50e-0345-48d5-878e-0518fe6e5455
+    taskid: 36c83a80-0070-4383-8899-a0f8bed96fd2
     timertriggers: []
     type: regular
     view: |-
@@ -1285,7 +1285,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "40"
+      - "48"
     note: false
     quietmode: 0
     scriptarguments:
@@ -1299,13 +1299,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: aca6f03c-7c1c-4346-8755-1f4541234a1f
+      id: ac874582-8b87-4ba5-897a-f0ee26e0e1b4
       iscommand: true
       name: expanse-unassign-tags-from-domain
       script: '|||expanse-unassign-tags-from-domain'
       type: regular
       version: -1
-    taskid: aca6f03c-7c1c-4346-8755-1f4541234a1f
+    taskid: ac874582-8b87-4ba5-897a-f0ee26e0e1b4
     timertriggers: []
     type: regular
     view: |-
@@ -1332,13 +1332,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 3e25fa7f-d322-4322-8954-67442f61f2b6
+      id: 6297a5d0-9a53-48b2-8f49-1d0416fea934
       iscommand: true
       name: expanse-create-tag
       script: '|||expanse-create-tag'
       type: regular
       version: -1
-    taskid: 3e25fa7f-d322-4322-8954-67442f61f2b6
+    taskid: 6297a5d0-9a53-48b2-8f49-1d0416fea934
     timertriggers: []
     type: regular
     view: |-
@@ -1370,13 +1370,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 2ffd72ff-2177-4c99-836d-a8105b071ec3
+      id: e33bee41-4ff7-4a7e-84b3-a77bcffcbada
       iscommand: true
       name: expanse-get-iprange
       script: '|||expanse-get-iprange'
       type: regular
       version: -1
-    taskid: 2ffd72ff-2177-4c99-836d-a8105b071ec3
+    taskid: e33bee41-4ff7-4a7e-84b3-a77bcffcbada
     timertriggers: []
     type: regular
     view: |-
@@ -1485,12 +1485,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: be32de33-d985-478f-83e1-0236095cb4ec
+      id: 44015640-5a65-4d24-8cf5-82b2a5346118
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: be32de33-d985-478f-83e1-0236095cb4ec
+    taskid: 44015640-5a65-4d24-8cf5-82b2a5346118
     timertriggers: []
     type: condition
     view: |-
@@ -1527,13 +1527,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f866f5f1-6ada-4e62-8066-5021a3e362f0
+      id: e8c371c3-9699-4693-8447-01dbeba68ac7
       iscommand: true
       name: expanse-get-domain
       script: '|||expanse-get-domain'
       type: regular
       version: -1
-    taskid: f866f5f1-6ada-4e62-8066-5021a3e362f0
+    taskid: e8c371c3-9699-4693-8447-01dbeba68ac7
     timertriggers: []
     type: regular
     view: |-
@@ -1712,12 +1712,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 6672665e-af8e-4c1b-8018-81dd2c0d58ed
+      id: a6cdc1f4-b57a-4de9-8d47-e78a77472b24
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 6672665e-af8e-4c1b-8018-81dd2c0d58ed
+    taskid: a6cdc1f4-b57a-4de9-8d47-e78a77472b24
     timertriggers: []
     type: condition
     view: |-
@@ -1725,123 +1725,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 8245
-        }
-      }
-  "32":
-    id: "32"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "33"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      common_name: {}
-      domains_limit: {}
-      ip:
-        complex:
-          accessor: Address
-          root: IP
-      limit:
-        simple: "1"
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: ffdfcb6e-b998-4e17-8b7e-f8d463fe6b8d
-      iscommand: true
-      name: expanse-get-associated-domains
-      script: '|||expanse-get-associated-domains'
-      type: regular
-      version: -1
-    taskid: ffdfcb6e-b998-4e17-8b7e-f8d463fe6b8d
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 10345
-        }
-      }
-  "33":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.AssociatedDomain.name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.AssociatedDomain.IP
-          operator: isEqualString
-          right:
-            iscontext: true
-            value:
-              complex:
-                accessor: Address
-                root: IP
-      - - left:
-            iscontext: true
-            value:
-              simple: Domain.Name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: DBotScore.Indicator
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: DBotScore.Type
-          operator: inList
-          right:
-            value:
-              simple: domain,domainglob
-      - - left:
-            iscontext: true
-            value:
-              simple: DBotScore.Vendor
-          operator: isEqualString
-          right:
-            value:
-              simple: ExpanseV2
-      - - left:
-            iscontext: true
-            value:
-              simple: DBotScore.Score
-          operator: isEqualNumber
-          right:
-            value:
-              simple: "0"
-      label: "yes"
-    id: "33"
-    ignoreworker: false
-    nexttasks:
-      "yes":
-      - "38"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 09958eac-81d5-467b-8f9c-ec41bc386ff2
-      iscommand: false
-      name: Verify Outputs
-      type: condition
-      version: -1
-    taskid: 09958eac-81d5-467b-8f9c-ec41bc386ff2
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 10520
         }
       }
   "34":
@@ -1871,13 +1754,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 66700dd6-45b8-4891-8363-7edfa5a9553f
+      id: 127e9502-37fd-4cf8-8633-2e36506c9659
       iscommand: true
       name: expanse-get-certificate
       script: '|||expanse-get-certificate'
       type: regular
       version: -1
-    taskid: 66700dd6-45b8-4891-8363-7edfa5a9553f
+    taskid: 127e9502-37fd-4cf8-8633-2e36506c9659
     timertriggers: []
     type: regular
     view: |-
@@ -2141,12 +2024,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: c724ffe3-efa2-496a-8df9-dbf8dd87ba85
+      id: 2b422cc7-c256-4e8f-8483-f30f7b760592
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: c724ffe3-efa2-496a-8df9-dbf8dd87ba85
+    taskid: 2b422cc7-c256-4e8f-8483-f30f7b760592
     timertriggers: []
     type: condition
     view: |-
@@ -2174,13 +2057,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 7036f118-2c3c-41cd-88f3-76e810a0be4a
+      id: 49509d5e-1b0b-4c6a-8f23-70854c333326
       iscommand: true
       name: certificate
       script: '|||certificate'
       type: regular
       version: -1
-    taskid: 7036f118-2c3c-41cd-88f3-76e810a0be4a
+    taskid: 49509d5e-1b0b-4c6a-8f23-70854c333326
     timertriggers: []
     type: regular
     view: |-
@@ -2467,12 +2350,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 3388012e-1bfe-4593-83b4-39c831518546
+      id: 4bef1a09-1ad7-4f9e-84d7-b8a724dc1677
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 3388012e-1bfe-4593-83b4-39c831518546
+    taskid: 4bef1a09-1ad7-4f9e-84d7-b8a724dc1677
     timertriggers: []
     type: condition
     view: |-
@@ -2480,285 +2363,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 7720
-        }
-      }
-  "38":
-    id: "38"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "39"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      created_after: {}
-      created_before: {}
-      internal_ip_range: {}
-      limit:
-        simple: "5"
-      risk_rule: {}
-      tag_names: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: ad3e27b8-7cde-4e45-887f-4e0541743e29
-      iscommand: true
-      name: expanse-get-risky-flows
-      script: '|||expanse-get-risky-flows'
-      type: regular
-      version: -1
-    taskid: ad3e27b8-7cde-4e45-887f-4e0541743e29
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 10695
-        }
-      }
-  "39":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.acked
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.businessUnit.id
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.businessUnit.name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.created
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.externalAddress
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.externalCountryCode
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.externalCountryCodes
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.externalPort
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.flowDirection
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.id
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.internalAddress
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.internalCountryCode
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.internalCountryCodes
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.internalPort
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.internalTags.ipRange
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.observationTimestamp
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.protocol
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.riskRule.additionalDataFields
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.riskRule.description
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.riskRule.id
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.riskRule.name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.tenantBusinessUnitId
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.internalDomains
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskyFlow.internalExposureTypes
-          operator: isNotEmpty
-      label: "yes"
-    id: "39"
-    ignoreworker: false
-    nexttasks:
-      "yes":
-      - "48"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 0370c727-b8b9-4f20-809f-20d2a0a529da
-      iscommand: false
-      name: Verify Outputs
-      type: condition
-      version: -1
-    taskid: 0370c727-b8b9-4f20-809f-20d2a0a529da
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 10870
-        }
-      }
-  "40":
-    id: "40"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "41"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 653b76c0-332f-48ec-8145-b1ac0f87159c
-      iscommand: true
-      name: expanse-list-risk-rules
-      script: '|||expanse-list-risk-rules'
-      type: regular
-      version: -1
-    taskid: 653b76c0-332f-48ec-8145-b1ac0f87159c
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 9645
-        }
-      }
-  "41":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskRule.abbreviatedName
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskRule.businessUnits.id
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskRule.dataFields
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskRule.description
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskRule.direction
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskRule.id
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.RiskRule.name
-          operator: isNotEmpty
-      label: "yes"
-    id: "41"
-    ignoreworker: false
-    nexttasks:
-      "yes":
-      - "44"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 25291c25-d1c8-4f38-85e4-6b9cd6311160
-      iscommand: false
-      name: Verify Outputs
-      type: condition
-      version: -1
-    taskid: 25291c25-d1c8-4f38-85e4-6b9cd6311160
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 9820
         }
       }
   "42":
@@ -2777,13 +2381,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ab5a8122-1dd0-417a-88e9-04ffd0ab8165
+      id: 3b1c5766-8c44-49e8-8860-53091bef6ab6
       iscommand: true
       name: domain
       script: '|||domain'
       type: regular
       version: -1
-    taskid: ab5a8122-1dd0-417a-88e9-04ffd0ab8165
+    taskid: 3b1c5766-8c44-49e8-8860-53091bef6ab6
     timertriggers: []
     type: regular
     view: |-
@@ -2982,12 +2586,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 0240190e-3ab4-4072-8712-34c70ac6b506
+      id: eaf21d60-9a1b-4a7b-87fd-71e850bf1c1f
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 0240190e-3ab4-4072-8712-34c70ac6b506
+    taskid: eaf21d60-9a1b-4a7b-87fd-71e850bf1c1f
     timertriggers: []
     type: condition
     view: |-
@@ -2995,167 +2599,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 9295
-        }
-      }
-  "44":
-    id: "44"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "45"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      ip:
-        complex:
-          root: ExpanseIssueIP
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 2b25cee3-6f18-4488-8478-797aa579090d
-      iscommand: true
-      name: ip
-      script: '|||ip'
-      type: regular
-      version: -1
-    taskid: 2b25cee3-6f18-4488-8478-797aa579090d
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 9995
-        }
-      }
-  "45":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.IP.assetKey
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.IP.assetType
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.IP.businessUnits.id
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.IP.businessUnits.name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.IP.businessUnits.tenantId
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.IP.ip
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.IP.lastObserved
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.IP.provider.id
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.IP.provider.name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.IP.tenant.id
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.IP.tenant.name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.IP.tenant.tenantId
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: Expanse.IP.type
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: IP.Address
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: DBotScore.Indicator
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: DBotScore.Type
-          operator: isEqualString
-          right:
-            value:
-              simple: ip
-      - - left:
-            iscontext: true
-            value:
-              simple: DBotScore.Vendor
-          operator: isEqualString
-          right:
-            value:
-              simple: ExpanseV2
-      - - left:
-            iscontext: true
-            value:
-              simple: DBotScore.Score
-          operator: isEqualNumber
-          right:
-            value:
-              simple: "0"
-      label: "yes"
-    id: "45"
-    ignoreworker: false
-    nexttasks:
-      "yes":
-      - "32"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 2d9c9e5a-9fd8-4a9e-897b-f1ece5fa0c40
-      iscommand: false
-      name: Verify Outputs
-      type: condition
-      version: -1
-    taskid: 2d9c9e5a-9fd8-4a9e-897b-f1ece5fa0c40
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 10170
         }
       }
   "46":
@@ -3176,13 +2619,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 4d210273-c967-47f0-8461-1fce2f4addd8
+      id: 5dd690cd-1e61-4958-8699-a0fe6100d938
       iscommand: true
       name: cidr
       script: '|||cidr'
       type: regular
       version: -1
-    taskid: 4d210273-c967-47f0-8461-1fce2f4addd8
+    taskid: 5dd690cd-1e61-4958-8699-a0fe6100d938
     timertriggers: []
     type: regular
     view: |-
@@ -3311,12 +2754,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f1e5889d-b2d4-4dfe-8344-c1f6d7ebb74a
+      id: 36ac637a-39cb-4bad-86e2-7694df87fd37
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: f1e5889d-b2d4-4dfe-8344-c1f6d7ebb74a
+    taskid: 36ac637a-39cb-4bad-86e2-7694df87fd37
     timertriggers: []
     type: condition
     view: |-
@@ -3335,20 +2778,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: b42809cd-a431-4376-8a4f-a6834c89c5cd
+      id: aa15b2a0-e038-4088-8cd8-eab5b2876e99
       iscommand: false
       name: Test Done
       type: title
       version: -1
       description: ''
-    taskid: b42809cd-a431-4376-8a4f-a6834c89c5cd
+    taskid: aa15b2a0-e038-4088-8cd8-eab5b2876e99
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 11045
+          "y": 9650
         }
       }
   "49":
@@ -3373,13 +2816,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 30ae7493-6a50-4648-8d42-a0085bd7b2b2
+      id: b64b4202-99ae-4107-8bc8-48daae103681
       iscommand: false
       name: Save Expanse Issue Id to Context
       script: Set
       type: regular
       version: -1
-    taskid: 30ae7493-6a50-4648-8d42-a0085bd7b2b2
+    taskid: b64b4202-99ae-4107-8bc8-48daae103681
     timertriggers: []
     type: regular
     view: |-
@@ -3409,13 +2852,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 6d2ace02-f1d5-44e6-8b9b-8561d44e27ea
+      id: fdba973c-1b69-4f71-8c59-014033ddca9e
       iscommand: true
       name: expanse-update-issue (Change Progress Status)
       script: '|||expanse-update-issue'
       type: regular
       version: -1
-    taskid: 6d2ace02-f1d5-44e6-8b9b-8561d44e27ea
+    taskid: fdba973c-1b69-4f71-8c59-014033ddca9e
     timertriggers: []
     type: regular
     view: |-
@@ -3447,13 +2890,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 45cc404c-2595-4b26-86fc-62eb49de2ac9
+      id: e3b395d2-c15b-41c8-8eac-8ed738f873ad
       iscommand: false
       name: Save Expanse Issue Progress Status to Context
       script: Set
       type: regular
       version: -1
-    taskid: 45cc404c-2595-4b26-86fc-62eb49de2ac9
+    taskid: e3b395d2-c15b-41c8-8eac-8ed738f873ad
     timertriggers: []
     type: regular
     view: |-
@@ -3484,13 +2927,13 @@ tasks:
     task:
       brand: ""
       description: Delete field from context
-      id: f12561b1-3f4e-4021-892d-6580308c139a
+      id: 8d00e1f4-ec36-4062-823f-bbb22986a7fb
       iscommand: false
       name: Delete Expanse Issue From Context
       script: DeleteContext
       type: regular
       version: -1
-    taskid: f12561b1-3f4e-4021-892d-6580308c139a
+    taskid: 8d00e1f4-ec36-4062-823f-bbb22986a7fb
     timertriggers: []
     type: regular
     view: |-
@@ -3521,13 +2964,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: bfd2ac51-9cde-4ebf-8ded-a3aae48cf97c
+      id: a6373f9e-d646-4724-86bc-e331aee955d3
       iscommand: true
       name: expanse-update-issue (Reset Progress Status to Original Value)
       script: '|||expanse-update-issue'
       type: regular
       version: -1
-    taskid: bfd2ac51-9cde-4ebf-8ded-a3aae48cf97c
+    taskid: a6373f9e-d646-4724-86bc-e331aee955d3
     timertriggers: []
     type: regular
     view: |-
@@ -3560,13 +3003,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: bde457e7-b94b-4e97-832d-ee82ceedc8b9
+      id: 2f659921-56c2-4373-8bf9-62ba78c914be
       iscommand: false
       name: Save Expanse IP Range ID
       script: Set
       type: regular
       version: -1
-    taskid: bde457e7-b94b-4e97-832d-ee82ceedc8b9
+    taskid: 2f659921-56c2-4373-8bf9-62ba78c914be
     timertriggers: []
     type: regular
     view: |-
@@ -3597,13 +3040,13 @@ tasks:
     task:
       brand: ""
       description: Delete field from context
-      id: 1e3f122c-1241-41b3-80b7-286ad4d39b5e
+      id: 5e9ee44c-81ce-43ab-86b2-f1cf9bed233a
       iscommand: false
       name: Delete Context (Except things to keep)
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 1e3f122c-1241-41b3-80b7-286ad4d39b5e
+    taskid: 5e9ee44c-81ce-43ab-86b2-f1cf9bed233a
     timertriggers: []
     type: regular
     view: |-
@@ -3636,13 +3079,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: a8c1ac77-5a2d-4f1f-89d5-e2b58440f93d
+      id: 8028cf4d-efbc-4070-8777-f72573ea0773
       iscommand: false
       name: Save Expanse IP Range CIDR
       script: Set
       type: regular
       version: -1
-    taskid: a8c1ac77-5a2d-4f1f-89d5-e2b58440f93d
+    taskid: 8028cf4d-efbc-4070-8777-f72573ea0773
     timertriggers: []
     type: regular
     view: |-
@@ -3675,13 +3118,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: b3b7765c-9da6-4acc-81e3-5a2fe771e911
+      id: 9f500300-93f6-4708-8623-bb1386aee49c
       iscommand: false
       name: Save Expanse Certificate ID
       script: Set
       type: regular
       version: -1
-    taskid: b3b7765c-9da6-4acc-81e3-5a2fe771e911
+    taskid: 9f500300-93f6-4708-8623-bb1386aee49c
     timertriggers: []
     type: regular
     view: |-
@@ -3714,13 +3157,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: f4b234bb-2f72-4ec8-8109-a6c6948c1f06
+      id: 17c96ac7-1ce6-49f3-8880-9ecd170ca87a
       iscommand: false
       name: Save Expanse Certificate MD5
       script: Set
       type: regular
       version: -1
-    taskid: f4b234bb-2f72-4ec8-8109-a6c6948c1f06
+    taskid: 17c96ac7-1ce6-49f3-8880-9ecd170ca87a
     timertriggers: []
     type: regular
     view: |-
@@ -3751,13 +3194,13 @@ tasks:
     task:
       brand: ""
       description: Delete field from context
-      id: d8cd6f10-032c-4858-863a-30e84ab83880
+      id: d8ba5e6a-2ac1-4f51-8332-87288a3f5c2b
       iscommand: false
       name: Delete Context (Except things to keep)
       script: DeleteContext
       type: regular
       version: -1
-    taskid: d8cd6f10-032c-4858-863a-30e84ab83880
+    taskid: d8ba5e6a-2ac1-4f51-8332-87288a3f5c2b
     timertriggers: []
     type: regular
     view: |-
@@ -3790,13 +3233,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: efaed8c3-cd3c-4b5b-8541-549266e57402
+      id: 3fb4d4b2-44b0-4278-8f23-d13121b768a4
       iscommand: false
       name: Save Expanse Certificate SHA256
       script: Set
       type: regular
       version: -1
-    taskid: efaed8c3-cd3c-4b5b-8541-549266e57402
+    taskid: 3fb4d4b2-44b0-4278-8f23-d13121b768a4
     timertriggers: []
     type: regular
     view: |-
@@ -3829,13 +3272,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 3be47dec-c55b-4b4a-8568-8af478d80704
+      id: 94be788d-b0db-4818-8e38-59ee7254a6f5
       iscommand: false
       name: Save Expanse Domain ID
       script: Set
       type: regular
       version: -1
-    taskid: 3be47dec-c55b-4b4a-8568-8af478d80704
+    taskid: 94be788d-b0db-4818-8e38-59ee7254a6f5
     timertriggers: []
     type: regular
     view: |-
@@ -3868,13 +3311,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: c751cbf7-4d12-4b1f-8e26-4a6c431bc714
+      id: 361d556a-f944-4c92-8f7a-be32ac44bc6f
       iscommand: false
       name: Save Expanse Domain Name
       script: Set
       type: regular
       version: -1
-    taskid: c751cbf7-4d12-4b1f-8e26-4a6c431bc714
+    taskid: 361d556a-f944-4c92-8f7a-be32ac44bc6f
     timertriggers: []
     type: regular
     view: |-
@@ -3905,13 +3348,13 @@ tasks:
     task:
       brand: ""
       description: Delete field from context
-      id: 90f68b44-8b45-404a-888a-2006f4ba2a56
+      id: e06759db-3cde-44a1-8a23-3cf17c97f08d
       iscommand: false
       name: Delete Context (Except things to keep)
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 90f68b44-8b45-404a-888a-2006f4ba2a56
+    taskid: e06759db-3cde-44a1-8a23-3cf17c97f08d
     timertriggers: []
     type: regular
     view: |-
@@ -3943,13 +3386,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: a65b20d2-c57a-4892-8079-07addcaf9277
+      id: 7491a0a4-5a1b-419a-8aa3-ee3c9e46b8f6
       iscommand: false
       name: Save Expanse Issue IP to Context
       script: Set
       type: regular
       version: -1
-    taskid: a65b20d2-c57a-4892-8079-07addcaf9277
+    taskid: 7491a0a4-5a1b-419a-8aa3-ee3c9e46b8f6
     timertriggers: []
     type: regular
     view: |-
@@ -3965,7 +3408,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 11060,
+        "height": 9665,
         "width": 380,
         "x": 50,
         "y": 50

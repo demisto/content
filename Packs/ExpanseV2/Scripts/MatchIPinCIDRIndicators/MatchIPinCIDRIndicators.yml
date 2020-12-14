@@ -1,11 +1,11 @@
 args:
-- description: IP Address to match
+- description: IP Address to match.
   name: ip
   required: true
-- description: Tags to search (comma separated)
+- description: Tags to search (comma separated string).
   isArray: true
   name: tags
-comment: Match IP address in all the CIDRs indicators (longest match)
+comment: Match provided IP address in all the Indicators of type CIDR with the provided tags (longest match).
 commonfields:
   id: MatchIPinCIDRIndicators
   version: -1

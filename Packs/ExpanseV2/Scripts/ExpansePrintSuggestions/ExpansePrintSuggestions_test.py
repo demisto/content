@@ -57,14 +57,14 @@ def test_match_ip_in_cidr_indicators(mocker):
         'provider': MOCK_PROVIDER,
         'region': MOCK_REGION,
         'service': MOCK_SERVICE,
-        'expansebusinessunits': MOCK_BUSINESS_UNITS,
-        'expanseissuetags': MOCK_ISSUE_TAGS,
-        'expanseassettags': MOCK_ASSET_TAGS,
-        'expanseusers': mock_users,
-        'expansedevices': mock_devices,
-        'expanseips': mock_ips,
-        'prismacloudassets': mock_prisma,
-        'shadowit': mock_shadowit
+        'expanse_business_units': MOCK_BUSINESS_UNITS,
+        'expanse_issue_tags': MOCK_ISSUE_TAGS,
+        'expanse_asset_tags': MOCK_ASSET_TAGS,
+        'expanse_users': mock_users,
+        'expanse_devices': mock_devices,
+        'expanse_ips': mock_ips,
+        'prisma_cloud_assets': mock_prisma,
+        'shadow_it': mock_shadowit
     })
 
     assert result.readable_output == mock_markdown_result

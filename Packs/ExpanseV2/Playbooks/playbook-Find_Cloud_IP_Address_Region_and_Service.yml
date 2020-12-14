@@ -1,0 +1,320 @@
+description: Find Region and Service for IP Address belonging to Public Cloud, using
+  Indicators (CIDRs) from Public Cloud feeds. Correlates based on longest match.
+id: Find Cloud IP Address Region and Service
+inputs:
+- description: IP Address to find.
+  key: ip
+  playbookInputQuery:
+  required: true
+  value:
+    simple: ${IP.Address}
+- description: Cloud Provider (Google,Amazon web services,Microsoft azure) or empty
+    to search in all.
+  key: Provider
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Tags to search for AWS Indicators.
+  key: AWSIndicatorTags
+  playbookInputQuery:
+  required: false
+  value:
+    simple: AWS
+- description: Tags to search for GCP Indicators.
+  key: GCPIndicatorTags
+  playbookInputQuery:
+  required: false
+  value:
+    simple: GCP
+- description: Tags to search for Azure Indicators.
+  key: AzureIndicatorTags
+  playbookInputQuery:
+  required: false
+  value:
+    simple: Azure
+name: Find Cloud IP Address Region and Service
+outputs:
+- contextPath: MatchingCIDRIndicator
+  description: Matching CIDR Indicator
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 962e831b-47d9-485a-8030-795d6b48c8db
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 962e831b-47d9-485a-8030-795d6b48c8db
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Provider
+          operator: inList
+          right:
+            value:
+              simple: AWS,Amazon Web Services,Amazon
+      label: AWS
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Provider
+          operator: inList
+          right:
+            value:
+              simple: Google,GCP,Google Cloud Platform
+      label: GCP
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Provider
+          operator: inList
+          right:
+            value:
+              simple: Microsoft,Microsoft Azure,Azure
+      label: AZURE
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      AWS:
+      - "2"
+      AZURE:
+      - "4"
+      GCP:
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Select the appropriate branch depending on the Cloud Provider
+      id: 092e54ea-8f59-4208-89a4-b829124faf5f
+      iscommand: false
+      name: Cloud Provider Selector
+      type: condition
+      version: -1
+    taskid: 092e54ea-8f59-4208-89a4-b829124faf5f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.ip
+      tags:
+        complex:
+          root: inputs.AWSIndicatorTags
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Match IP address in all the CIDRs indicators (longest match)
+      id: 22f35e1a-8e65-4cde-8319-a17af9ab449b
+      iscommand: false
+      name: Match IP in AWS CIDR Indicators
+      script: MatchIPinCIDRIndicators
+      type: regular
+      version: -1
+    taskid: 22f35e1a-8e65-4cde-8319-a17af9ab449b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 670
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.ip
+      tags:
+        complex:
+          root: inputs.GCPIndicatorTags
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Match IP address in all the CIDRs indicators (longest match)
+      id: fbcc59ad-78c3-4caf-86a2-4f40347d0434
+      iscommand: false
+      name: Match IP in GCP CIDR Indicators
+      script: MatchIPinCIDRIndicators
+      type: regular
+      version: -1
+    taskid: fbcc59ad-78c3-4caf-86a2-4f40347d0434
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 670
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.ip
+      tags:
+        complex:
+          root: inputs.AzureIndicatorTags
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Match IP address in all the CIDRs indicators (longest match)
+      id: 6d03c220-7552-4c0f-8209-21a511dc21fe
+      iscommand: false
+      name: Match IP in AZURE CIDR Indicators
+      script: MatchIPinCIDRIndicators
+      type: regular
+      version: -1
+    taskid: 6d03c220-7552-4c0f-8209-21a511dc21fe
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 670
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 602ae52b-e637-46be-831f-450c45b13dfb
+      iscommand: false
+      name: Check All Providers
+      type: title
+      version: -1
+      description: ''
+    taskid: 602ae52b-e637-46be-831f-450c45b13dfb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 410
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0ae27264-35d4-4aa6-8b01-715a1c5cdae1
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 0ae27264-35d4-4aa6-8b01-715a1c5cdae1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1090
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1105,
+        "width": 1330,
+        "x": -20,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
