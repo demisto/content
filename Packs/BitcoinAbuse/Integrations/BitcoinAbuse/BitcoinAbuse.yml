@@ -7,8 +7,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: pkQyoEhD908PqiN4zzT3fUAJtPPPwYO6AhizHlvDjiHI7pSlbJY8cul1vinA
-  display: API Key
+- display: API Key
   name: api_key
   required: true
   type: 4
@@ -116,5 +115,3 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
-defaultclassifier: BitcoinAbuse
-defaultmapperin: BitcoinAbuse-mapper

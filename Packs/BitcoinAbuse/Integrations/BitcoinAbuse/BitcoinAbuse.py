@@ -9,7 +9,6 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 SERVER_URL = 'https://www.bitcoinabuse.com/api/'
-API_KEY = demisto.params().get('api_key', '')
 FEED_ENDPOINT_PREFIX = 'download/'
 REPORT_ADDRESS_ENDPOINT_PREFIX = 'reports/create'
 abuse_type_name_to_id: Dict[str, int] = {
@@ -56,6 +55,10 @@ class _DownloadParams:
 
 class BitcoinAbuseClient(BaseClient):
 
+    def __init__(self, api_key, verify, proxy):
+        super().__init__(base_url=SERVER_URL, verify=verify, proxy=proxy)
+        self.api_key = api_key
+
     def report_address(self, report_address_params: _ReportAddressParams) -> Dict:
         """
         Sends a post request to report an abuse to BitcoinAbuse servers.
@@ -71,7 +74,7 @@ class BitcoinAbuseClient(BaseClient):
             params=vars(report_address_params)
         )
 
-    def download_csv(self, download_params: _DownloadParams, time_period: str) -> str:
+    def download_csv(self, download_params: _DownloadParams, time_period) -> str:
         """
         Sends a post request to report an abuse to BitcoinAbuse servers.
 
@@ -91,34 +94,6 @@ class BitcoinAbuseClient(BaseClient):
         )
 
 
-def test_module(client: BitcoinAbuseClient, params: Dict) -> str:
-    """
-    Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :param client: BitcoinAbuseClient the client to use for the api request
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-
-    Args:
-        client: BitcoinAbuseClient does the API calls
-        params: Dict
-
-    Returns:
-
-    """
-
-    time_period = params.get('fetchInterval')
-
-    download_params = _DownloadParams(API_KEY)
-    client.download_csv(download_params, time_period)
-    return "ok"
-
-
 def _build_fetch_indicators_params(demisto_params: Dict) -> Dict:
     """
     helper function that builds the params for CSVFeedApiModule to fetch indicators
@@ -130,12 +105,15 @@ def _build_fetch_indicators_params(demisto_params: Dict) -> Dict:
         csv_api_params: Dict
 
     """
-    params = {k: v for k, v in demisto.params().items() if v is not None}
+    params = {k: v for k, v in demisto_params.items() if v is not None}
 
     fetch_interval = params.get('fetchInterval')
+    api_key = demisto_params.get('api_key', '')
+
+    url = f'{SERVER_URL}{FEED_ENDPOINT_PREFIX}{fetch_interval}?api_token={api_key}'
 
     feed_url_to_config = {
-        f'{SERVER_URL}{FEED_ENDPOINT_PREFIX}{fetch_interval}?api_token={API_KEY}': {
+        url: {
             'fieldnames': ['id', 'address', 'abuse_type_id', 'abuse_type_other', 'abuser',
                            'description', 'from_country', 'from_country_code', 'created_at'],
             'indicator_type': 'Cryptocurrency Address',
@@ -149,7 +127,7 @@ def _build_fetch_indicators_params(demisto_params: Dict) -> Dict:
         }
     }
 
-    params['url'] = f'{SERVER_URL}{FEED_ENDPOINT_PREFIX}{fetch_interval}?api_token={API_KEY}'
+    params['url'] = url
     params['feed_url_to_config'] = feed_url_to_config
     params['delimiter'] = ','
     return params
@@ -171,13 +149,14 @@ def fetch_indicators(demisto_params: Dict) -> None:
     feed_main('Bitcoin Abuse Feed', csv_api_params, 'bitcoin')
 
 
-def _build_report_address_params(args: Dict) -> _ReportAddressParams:
+def _build_report_address_params(args: Dict, api_key: str) -> _ReportAddressParams:
     """
     Builds the params for reporting an address to Bitcoin Abuse
     after running some validation on the input
 
     Args:
         args: Dict
+        api_key: str
 
     Returns:
         report_address_params: _ReportAddressParams if validation succeeded
@@ -189,13 +168,13 @@ def _build_report_address_params(args: Dict) -> _ReportAddressParams:
     abuse_type_other = args.get('abuse_type_other')
 
     if abuse_type_id is None:
-        raise DemistoException("Bitcoin Abuse: invalid type of abuse, please insert a correct abuse type")
+        raise DemistoException('Bitcoin Abuse: invalid type of abuse, please insert a correct abuse type')
 
     if abuse_type_id == OTHER_ABUSE_TYPE_ID and abuse_type_other is None:
-        raise DemistoException("Bitcoin Abuse: abuse_type_other is mandatory when abuse type is other")
+        raise DemistoException('Bitcoin Abuse: abuse_type_other is mandatory when abuse type is other')
 
     return _ReportAddressParams(
-        api_token=API_KEY,
+        api_token=api_key,
         address=args.get('address', ''),
         abuse_type_id=abuse_type_id,
         abuse_type_other=abuse_type_other,
@@ -221,7 +200,7 @@ def report_address_command(client: BitcoinAbuseClient, args: Dict) -> str:
     Returns:
         'ok' if http request was successful
     """
-    report_address_params: _ReportAddressParams = _build_report_address_params(args)
+    report_address_params: _ReportAddressParams = _build_report_address_params(args, client.api_key)
     response = client.report_address(report_address_params)
     if response.get('success') is True:
         return "ok"
@@ -237,23 +216,29 @@ def main() -> None:
 
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
+    api_key = demisto.params().get('api_key', '')
 
     demisto.debug(f'Bitcoin Abuse: Command being called is {demisto.command()}')
 
     client = BitcoinAbuseClient(
-        base_url=SERVER_URL,
         verify=verify_certificate,
-        proxy=proxy)
+        proxy=proxy,
+        api_key=api_key)
     try:
 
         if command == 'test-module':
-            return_results(test_module(client, params))
+            time_period = params.get('fetchInterval')
+
+            download_params = _DownloadParams(client.api_key)
+            client.download_csv(download_params, time_period)
+
+            return_results("ok")
 
         elif command == 'fetch-indicators':
             fetch_indicators(params)
 
         elif command == 'bitcoin-report-address':
-            return_results(report_address_command(client, params, args))
+            return_results(report_address_command(client, args))
 
     # Log exceptions and return errors
     except Exception as e:
