@@ -131,8 +131,7 @@ def calculate_all_packs_dependencies(pack_dependencies_result: dict, id_set: dic
         Using these results we write the dependencies
         """
         try:
-            # Check if process raised an exception
-            future.exception()
+
             # Process future result
             first_level_dependencies, all_level_dependencies, pack_name = future.result()  # blocks until results ready
             logging.debug(f'Got dependencies for pack {pack_name}\n: {pformat(all_level_dependencies)}')
@@ -145,6 +144,7 @@ def calculate_all_packs_dependencies(pack_dependencies_result: dict, id_set: dic
             }
         except Exception:
             logging.exception('Failed to collect pack dependencies results')
+            raise
 
     # Generating one graph with dependencies for all packs
     dependency_graph = get_all_packs_dependency_graph(id_set, packs)
