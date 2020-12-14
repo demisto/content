@@ -29,9 +29,9 @@ def create_bar_widget() -> BarColumnPieWidget:
         users.remove(NASICH)
 
     for user in users:
-        widget.add_category(user, random.randrange(start=0, stop=5))
+        widget.add_category(user, random.randrange(start=0, stop=3))
 
-    widget.add_category(NASICH, random.randrange(start=5, stop=10))
+    widget.add_category(NASICH, random.randrange(start=12, stop=15))
 
     return widget
 
