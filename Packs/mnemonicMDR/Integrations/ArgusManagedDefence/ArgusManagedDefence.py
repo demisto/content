@@ -237,7 +237,7 @@ def fetch_incidents(
                     "createdTimestamp": case["createdTimestamp"],
                     "customer": case["customer"]["shortName"],
                 },
-                "rawJson": json.dumps(case),
+                "rawJSON": json.dumps(case),
             }
         )
     if result["data"]:
@@ -380,7 +380,6 @@ def close_case_command(args: Dict[str, Any]) -> CommandResults:
     result = close_case(
         caseID=case_id,
         comment=args.get("comment", None),
-        # notification=notifcation, TODO implement
     )
     readable_output = f"# #{case_id}: close case\n"
     readable_output += (
@@ -420,18 +419,13 @@ def create_case_command(args: Dict[str, Any]) -> CommandResults:
         category=args.get("category", None),
         type=case_type,
         status=args.get("status", None),
-        # watchers=args.get("watchers", None), TODO implement
-        # fields=args.get("fields", None), TODO needed?
         tags=tags,
         subject=subject,
         description=description,
         customerReference=args.get("customer_reference", None),
         priority=args.get("priority", None),
         accessMode=args.get("access_mode", None),
-        # aclMembers=args.get("acl_members", None), TODO needed?
-        # notification=args.get("notification", None), TODO implement
         originEmailAddress=args.get("origin_email_address", None),
-        # triggers=args.get("triggers", None), TODO needed?
         publish=args.get("publish", None),
         defaultWatchers=args.get("default_watchers", None),
     )
@@ -689,7 +683,6 @@ def update_case_command(args: Dict[str, Any]) -> CommandResults:
         assignedTech=args.get("assigned_tech", None),
         customerReference=args.get("customer_reference", None),
         comment=args.get("comment", None),
-        # notification=args.get("notification", None), TODO needed?
         originEmailAddress=args.get("origin_email_address", None),
         hasEvents=args.get("has_events", None),
         internalComment=args.get("internal_comment", None),
@@ -753,7 +746,6 @@ def find_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
     result = find_aggregated_events(
         skipFutureEvents=args.get("skip_future_events", None),
         exclude=args.get("exclude", None),
-        eventIdentifier=argToList(args.get("event_identifier", None)),  # TODO needed?
         locationID=argToList(args.get("location_id", None)),
         severity=argToList(args.get("severity", None)),
         customer=argToList(args.get("customer", None)),
