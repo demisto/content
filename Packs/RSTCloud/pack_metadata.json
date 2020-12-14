@@ -1,0 +1,57 @@
+{
+    "name": "RST Threat Feed",
+    "description": "Aggregated, filtered, and scored threat intelligence database available via  API to check domains, URLs, and IP addresses",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "RST Cloud",
+    "url": "https://rstcloud.net/",
+    "email": "support@rstcloud.net",
+    "created": "2020-12-05T12:02:49Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Breach",
+        "Dark Web",
+        "Incident Handling",
+        "Incident Response",
+        "Malware",
+        "Threat Intelligence"
+    ],
+    "useCases": [
+        "Breach Notification",
+        "Incident Response",
+        "Hunting",
+        "Malware",
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "rstcloud",
+        "threat feed",
+        "feed",
+        "IOC",
+        "IOCs",
+        "indicators",
+        "threat intelligence",
+        "cti",
+        "cyber threat intelligence",
+        "malware",
+        "fraud",
+        "Tor",
+        "Botnet",
+        "emotet",
+        "trickbot",
+        "ursnif",
+        "C2",
+        "Cryptomining",
+        "command and control",
+        "DDoS",
+        "enrich",
+        "enrichment"
+    ],
+    "githubUser": [
+        "k1r10n"
+    ],
+    "dependencies": {},
+    "displayedImages": []
+}
