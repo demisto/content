@@ -3,7 +3,7 @@
     "description": "Palo Alto Networks IoT 3rd Party Integrations",
     "support": "community",
     "currentVersion": "6.0.0",
-    "author": "ZingboxTeam",
+    "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/network-security/iot-security",
     "email": "",
     "created": "2020-11-16T03:10:41Z",
