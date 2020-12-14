@@ -61,7 +61,6 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 PRETTY_DATE_FORMAT = "%b %d, %Y, %H:%M:%S"
-MAX_INCIDENTS_TO_FETCH = 50
 FETCH_TAG = demisto.params().get("fetch_tag")
 
 
@@ -211,7 +210,7 @@ def fetch_incidents(last_run: dict, first_fetch_period: str):
     result = advanced_case_search(
         startTimestamp=start_timestamp if start_timestamp else first_fetch_period,
         endTimestamp="now",
-        limit=demisto.params().get("max_limit", 0),
+        limit=demisto.params().get("max_fetch", 25),
         sortBy=["createdTimestamp"],
         priority=build_argus_priority_from_min_severity(
             demisto.params().get("min_severity", "medium")

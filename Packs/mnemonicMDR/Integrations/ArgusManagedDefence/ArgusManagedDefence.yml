@@ -11,7 +11,8 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: '50'
+- additionalinfo: 0 means up to system limit (100 000)
+  defaultvalue: '25'
   display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
