@@ -100,21 +100,6 @@ class TestMetadataParsing:
 
         assert parsed_metadata['price'] == expected
 
-    @pytest.mark.parametrize('is_feed_pack, tags',
-                             [(True, ["tag number one", "Tag number two", 'TIM']),
-                              (False, ["tag number one", "Tag number two"])
-                              ])
-    def test_tim_tag_added_to_feed_pack(self, dummy_pack_metadata, is_feed_pack, tags):
-        """ Test 'TIM' tag is added if is_feed_pack is True
-        """
-        parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
-                                                    pack_id='test_pack_id', integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="5.5.0",
-                                                    build_number="dummy_build_number", commit_hash="dummy_commit",
-                                                    downloads_count=10, is_feed_pack=True)
-
-        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'TIM', 'Use Case']
-
     def test_use_case_tag_added_to_metadata(self, dummy_pack_metadata):
         """
            Given:
@@ -132,6 +117,21 @@ class TestMetadataParsing:
                                                     downloads_count=10, is_feed_pack=False)
 
         assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'Use Case']
+
+    @pytest.mark.parametrize('is_feed_pack, tags',
+                             [(True, ["tag number one", "Tag number two", 'TIM']),
+                              (False, ["tag number one", "Tag number two"])
+                              ])
+    def test_tim_tag_added_to_feed_pack(self, dummy_pack_metadata, is_feed_pack, tags):
+        """ Test 'TIM' tag is added if is_feed_pack is True
+        """
+        parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                    pack_id='test_pack_id', integration_images=[], author_image="",
+                                                    dependencies_data={}, server_min_version="5.5.0",
+                                                    build_number="dummy_build_number", commit_hash="dummy_commit",
+                                                    downloads_count=10, is_feed_pack=True)
+
+        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'Use Case', 'TIM']
 
 
 class TestParsingInternalFunctions:
