@@ -337,7 +337,6 @@ def create_update_incident_from_ticket(issue: dict) -> dict:
                         'emailAddress': str(issue['fields']['reporter'].get('emailAddress', ''))},
             'summary': str(demisto.get(issue, 'fields.summary')),
             'description': str(demisto.get(issue, 'fields.description')),
-            # 'attachment':  demisto.get(issue, 'fields.attachment'),
             'duedate': str(demisto.get(issue, 'fields.duedate')),  #TODO need to test
             'labels': str(demisto.get(issue, 'fields.labels')),
             'updated': str(demisto.get(issue, 'fields.updated')),  #TODO need to test
@@ -775,15 +774,9 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
                 'Tags': ['comment'],  # the list of tags to add to the entry
                 'Note': True
             })
-
         for attachment in entries['attachments']:
-            parsed_entries.append({
-                'Type': EntryType.FILE,
-                'Contents': attachment,
-                'ContentsFormat': EntryFormat.TEXT,
-                'Tags': ['attachment'],  # the list of tags to add to the entry
-                'Note': False  # boolean, True for Note, False otherwise
-            })
+            parsed_entries.append(attachment)
+
 
     if parsed_entries:
         demisto.info(f'&&&&&&&&&&&&&&&: \n{parsed_entries}\n')
