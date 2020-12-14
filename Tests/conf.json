@@ -2235,6 +2235,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "iDefense Feed",
+            "playbookID": "Feed iDefense Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Traps",
             "playbookID": "Traps test",
             "timeout": 600
