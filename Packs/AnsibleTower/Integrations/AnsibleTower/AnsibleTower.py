@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 
 class Client(BaseClient):
     def __init__(self, input_url: str, username: str, password: str, verify_certificate: bool, proxy: bool):
-        base_url = urljoin(input_url, '/api/v2')
+        base_url = urljoin(input_url, '/api/v2/')
         headers = {
             "Content-Type": "application/json",
         }
@@ -23,8 +23,11 @@ class Client(BaseClient):
                                      auth=authentication,
                                      proxy=proxy)
 
-    def threat_indicator_search(self, url_suffix: str, data: dict = {}) -> dict:
+    def api_request(self, url_suffix: str, data: dict = {}) -> dict:
         return self._http_request(method='GET', url_suffix=url_suffix, params=data)
+
+
+def inventories_list(client: Client):
 
 
 def main() -> None:
@@ -34,9 +37,7 @@ def main() -> None:
     :rtype:
     """
 
-    api_key = demisto.params().get('apikey')
-
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    base_url = demisto.params()['url']
 
     verify_certificate = not demisto.params().get('insecure', False)
 
@@ -48,22 +49,21 @@ def main() -> None:
     password = demisto.params().get("credentials")["password"],
 
     try:
-        headers = {
-            'Authorization': f'Bearer {api_key}'
-        }
+
         client = Client(
             base_url=base_url,
+            username=username,
+            password=password,
             verify=verify_certificate,
-            headers=headers,
             proxy=proxy)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            # return_results(test_module(client))
+            x=1
 
         elif demisto.command() == 'ansible-awx-inventories-list ':
-            return_results(inventories-list(client, demisto.args(), default_threshold_ip))
+            return_results(inventories_list(client,))
 
 
     # Log exceptions and return errors
