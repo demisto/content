@@ -62,4 +62,4 @@ There is no context output for this command.
 >#### Indicators
 >|value|type|rawJSON|
 >|---|---|---|
->| http://url.com | URL | {}
+>| http://example.com | URL | confidence: 50<br/>display_text: http://example.com <br/> index_timestamp: 2020-12-13T23:31:03.848Z<br/>key: http://example.com <br/>last_modified: 2020-12-13T23:29:13.000Z<br/>last_published: 2020-12-07T14:50:44.000Z<br/>last_seen: 2020-12-13T20:08:24.000Z<br/>last_seen_as: MALWARE_DOWNLOAD<br/>malware_family: <br/>replication_id: xxx <br/>severity: 3<br/>threat_types: Cyber Crime<br/>type: url<br/>uuid: xxx |
