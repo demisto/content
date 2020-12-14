@@ -17,7 +17,10 @@ UPSERT_PARAMS = {'resource_id': 'id', 'policy_settings': 'properties.policySetti
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = '2020-05-01'
-
+BASE_URL = 'https://management.azure.com'
+SUBSCRIPTION_PATH = 'subscriptions/{}'
+RESOURCE_PATH = 'resourceGroups/{}'
+POLICY_PATH = 'providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies'
 ''' CLIENT CLASS '''
 
 
@@ -25,12 +28,13 @@ class AzureWAFClient:
     @logger
     def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy):
 
+        # for dev environment use:
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = demisto.getIntegrationContext()
             integration_context.update(current_refresh_token=refresh_token)
             demisto.setIntegrationContext(integration_context)
-        base_url = f'https://management.azure.com/subscriptions/{subscription_id}/'
+        base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
         client_args = {
@@ -70,28 +74,25 @@ class AzureWAFClient:
     def get_policy_by_name(self, policy_name: str, resource_group_name: str) -> Dict:
         return self.http_request(
             method='GET',
-            url_suffix=f'/resourceGroups/{resource_group_name}/providers/Microsoft.Network/'
-                       f'ApplicationGatewayWebApplicationFirewallPolicies/{policy_name}'
+            url_suffix=f'{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}'
         )
 
     def get_policy_list_by_resource_group_name(self, resource_group_name: str) -> Dict:
         return self.http_request(
             method='GET',
-            url_suffix=f'/resourceGroups/{resource_group_name}/providers/'
-                       f'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies'
+            url_suffix=f'{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}'
         )
 
     def get_policy_list_by_subscription_id(self) -> Dict:
         return self.http_request(
             method='GET',
-            url_suffix='/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies'
+            url_suffix=POLICY_PATH
         )
 
     def update_policy_upsert(self, policy_name: str, resource_group_name: str, data: Dict) -> Dict:
         return self.http_request(
             method='PUT',
-            url_suffix=f'/resourceGroups/{resource_group_name}/providers/'
-                       f'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/{policy_name}',
+            url_suffix=f'{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}',
             data=data
         )
 
@@ -100,8 +101,7 @@ class AzureWAFClient:
             method='DELETE',
             return_empty_response=True,
             resp_type='response',
-            url_suffix=f'/resourceGroups/{resource_group_name}/providers/'
-                       f'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/{policy_name}',
+            url_suffix=f'{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}',
         )
 
 
@@ -140,11 +140,9 @@ def policy_get_command(client: AzureWAFClient, **args) -> CommandResults:
 
     policy_name: str = args.get('policy_name', '')
     resource_group_name: str = args.get('resource_group_name', client.resource_group_name)
-    verbose = True if args.get("verbose", "false") == "true" else False
+    verbose = args.get("verbose", "false") == "true"
     limit = str(args.get("limit"))
-    if not limit.isdigit():
-        raise Exception("please provide a numeric limit")
-    limit = int(limit)
+    limit = int(args.get("limit", '20'))
 
     policies: List[Dict] = []
     try:
@@ -159,11 +157,10 @@ def policy_get_command(client: AzureWAFClient, **args) -> CommandResults:
         policies_num = len(policies)
     except Exception:
         raise
-    res = CommandResults(readable_output=policies_to_markdown(policies, verbose, limit),
-                         outputs=policies[:min(limit, policies_num)],
-                         outputs_key_field='id', outputs_prefix='AzureWAF.Policy',
-                         raw_response=policies)
-    return res
+    return CommandResults(readable_output=policies_to_markdown(policies, verbose, limit),
+                          outputs=policies[:min(limit, policies_num)],
+                          outputs_key_field='id', outputs_prefix='AzureWAF.Policy',
+                          raw_response=policies)
 
 
 def policy_get_list_by_subscription_command(client: AzureWAFClient, **args: Dict[str, Any]) -> CommandResults:
@@ -171,11 +168,8 @@ def policy_get_list_by_subscription_command(client: AzureWAFClient, **args: Dict
     Retrieve all policies within the subscription id.
     """
     policies: List[Dict] = []
-    verbose = True if args.get("verbose", "false") == "true" else False
-    limit = str(args.get("limit"))
-    if not limit.isdigit():
-        raise Exception("please provide a numeric limit")
-    limit = int(limit)
+    verbose = args.get("verbose", "false") == "true"
+    limit = int(args.get("limit", '20'))
 
     try:
         policies.extend(client.get_policy_list_by_subscription_id().get("value", []))
@@ -184,10 +178,10 @@ def policy_get_list_by_subscription_command(client: AzureWAFClient, **args: Dict
         policies_num = len(policies)
     except DemistoException:
         raise
-    res = CommandResults(readable_output=policies_to_markdown(policies, verbose, limit),
-                         outputs=policies[:min(limit, policies_num)], outputs_key_field='id',
-                         outputs_prefix='AzureWAF.Policy', raw_response=policies)
-    return res
+
+    return CommandResults(readable_output=policies_to_markdown(policies, verbose, limit),
+                          outputs=policies[:min(limit, policies_num)], outputs_key_field='id',
+                          outputs_prefix='AzureWAF.Policy', raw_response=policies)
 
 
 def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> CommandResults:
@@ -209,7 +203,7 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
     resource_group_name = str(args.get('resource_group_name', client.resource_group_name))
     managed_rules = args.get('managed_rules', {})
     location = args.get("location", '')  # location is not required by documentation but is required by the api itself.
-    verbose = True if args.get("verbose", "false") == "true" else False
+    verbose = args.get("verbose", "false") == "true"
 
     if not policy_name or not managed_rules or not location:
         raise Exception('In order to add/ update policy, '
@@ -229,11 +223,11 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
             parse_nested_keys_to_dict(base_dict=body, keys=key_hierarchy, value=val)
 
     updated_policy = [client.update_policy_upsert(policy_name, resource_group_name, data=body)]
-    res = CommandResults(readable_output=policies_to_markdown(updated_policy, verbose),
-                         outputs=updated_policy,
-                         outputs_key_field='id', outputs_prefix='AzureWAF.Policy',
-                         raw_response=updated_policy)
-    return res
+
+    return CommandResults(readable_output=policies_to_markdown(updated_policy, verbose),
+                          outputs=updated_policy,
+                          outputs_key_field='id', outputs_prefix='AzureWAF.Policy',
+                          raw_response=updated_policy)
 
 
 def policy_delete_command(client: AzureWAFClient, **args: Dict[str, str]):
@@ -243,8 +237,10 @@ def policy_delete_command(client: AzureWAFClient, **args: Dict[str, str]):
     """
     policy_name = str(args.get('policy_name', ''))
     resource_group_name = str(args.get('resource_group_name', client.resource_group_name))
-    policy_id = f'/subscriptions/{client.subscription_id}/resourceGroups/{resource_group_name}/' \
-                f'providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/{policy_name}'
+
+    # policy_path is unique and used as unique id in the product.
+    policy_id = f'{SUBSCRIPTION_PATH.format(client.subscription_id)}/' \
+                f'{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}'
     status = client.delete_policy(policy_name, resource_group_name)
     md = ""
     context = None
@@ -265,8 +261,7 @@ def policy_delete_command(client: AzureWAFClient, **args: Dict[str, str]):
     if status.status_code == 204:
         md = f"Policy {policy_name} was not found."
 
-    res = CommandResults(outputs=context, readable_output=md)
-    return res
+    return CommandResults(outputs=context, readable_output=md)
 
 
 def policies_to_markdown(policies: List[Dict], verbose: bool = False, limit: int = 10) -> str:
@@ -317,6 +312,9 @@ def policies_to_markdown(policies: List[Dict], verbose: bool = False, limit: int
         return short_md
 
     md = ""
+    if not policies:
+        return "No policies was found."
+
     policies_num = len(policies)
     policies = policies[:min(limit, policies_num)]
     for policy in policies:
