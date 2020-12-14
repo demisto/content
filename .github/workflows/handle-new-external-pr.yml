@@ -37,6 +37,7 @@ jobs:
           pipenv install --dev
           cat ./handle_external_pr.py
           echo "Finished Handling External PR"
+          echo "Finished Handling External PR"
       - name: Send Notification
         env:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
