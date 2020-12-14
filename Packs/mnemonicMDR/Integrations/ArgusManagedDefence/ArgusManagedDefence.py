@@ -1026,88 +1026,88 @@ def main() -> None:
         elif demisto.command() == "get-mapping-fields":
             return_results(get_mapping_fields_command(demisto.args()))
 
-        elif demisto.command() == "argus_add_case_tag":
+        elif demisto.command() == "argus-add-case-tag":
             return_results(add_case_tag_command(demisto.args()))
 
-        elif demisto.command() == "argus_add_comment":
+        elif demisto.command() == "argus-add-comment":
             return_results(add_comment_command(demisto.args()))
 
-        elif demisto.command() == "argus_advanced_case_search":
+        elif demisto.command() == "argus-advanced-case-search":
             return_results(advanced_case_search_command(demisto.args()))
 
-        elif demisto.command() == "argus_close_case":
+        elif demisto.command() == "argus-close-case":
             return_results(close_case_command(demisto.args()))
 
-        elif demisto.command() == "argus_create_case":
+        elif demisto.command() == "argus-create-case":
             return_results(create_case_command(demisto.args()))
 
-        elif demisto.command() == "argus_delete_case":
+        elif demisto.command() == "argus-delete-case":
             return_results(delete_case_command(demisto.args()))
 
-        elif demisto.command() == "argus_delete_comment":
+        elif demisto.command() == "argus-delete-comment":
             return_results(delete_comment_command(demisto.args()))
 
-        elif demisto.command() == "argus_download_attachment":
+        elif demisto.command() == "argus-download-attachment":
             return_results(download_attachment_command(demisto.args()))
 
-        elif demisto.command() == "argus_edit_comment":
+        elif demisto.command() == "argus-edit-comment":
             return_results(edit_comment_command(demisto.args()))
 
-        elif demisto.command() == "argus_get_attachment":
+        elif demisto.command() == "argus-get-attachment":
             return_results(get_attachment_command(demisto.args()))
 
-        elif demisto.command() == "argus_get_case_metadata_by_id":
+        elif demisto.command() == "argus-get-case-metadata-by-id":
             return_results(get_case_metadata_by_id_command(demisto.args()))
 
-        elif demisto.command() == "argus_list_case_attachments":
+        elif demisto.command() == "argus-list-case-attachments":
             return_results(list_case_attachments_command(demisto.args()))
 
-        elif demisto.command() == "argus_list_case_tags":
+        elif demisto.command() == "argus-list-case-tags":
             return_results(list_case_tags_command(demisto.args()))
 
-        elif demisto.command() == "argus_list_case_comments":
+        elif demisto.command() == "argus-list-case-comments":
             return_results(list_case_comments_command(demisto.args()))
 
-        elif demisto.command() == "argus_remove_case_tag_by_id":
+        elif demisto.command() == "argus-remove-case-tag-by-id":
             return_results(remove_case_tag_by_id_command(demisto.args()))
 
-        elif demisto.command() == "argus_remove_case_tag_by_key_value":
+        elif demisto.command() == "argus-remove-case-tag-by-key-value":
             return_results(remove_case_tag_by_key_value_command(demisto.args()))
 
-        elif demisto.command() == "argus_update_case":
+        elif demisto.command() == "argus-update-case":
             return_results(update_case_command(demisto.args()))
 
-        elif demisto.command() == "argus_get_event":
+        elif demisto.command() == "argus-get-event":
             return_results(get_event_command(demisto.args()))
 
-        elif demisto.command() == "argus_get_events_for_case":
+        elif demisto.command() == "argus-get-events-for-case":
             return_results(get_events_for_case_command(demisto.args()))
 
-        elif demisto.command() == "argus_find_aggregated_events":
+        elif demisto.command() == "argus-find-aggregated-events":
             return_results(find_aggregated_events_command(demisto.args()))
 
-        elif demisto.command() == "argus_list_aggregated_events":
+        elif demisto.command() == "argus-list-aggregated-events":
             return_results(list_aggregated_events_command(demisto.args()))
 
-        elif demisto.command() == "argus_get_payload":
+        elif demisto.command() == "argus-get-payload":
             return_results(get_payload_command(demisto.args()))
 
-        elif demisto.command() == "argus_get_pcap":
+        elif demisto.command() == "argus-get-pcap":
             return_results(get_pcap_command(demisto.args()))
 
-        elif demisto.command() == "argus_find_nids_events":
+        elif demisto.command() == "argus-find-nids-events":
             return_results(find_nids_events_command(demisto.args()))
 
-        elif demisto.command() == "argus_list_nids_events":
+        elif demisto.command() == "argus-list-nids-events":
             return_results(list_nids_events_command(demisto.args()))
 
-        elif demisto.command() == "argus_pdns_search_records":
+        elif demisto.command() == "argus-pdns-search-records":
             return_results(search_records_command(demisto.args()))
 
-        elif demisto.command() == "argus_fetch_observations_for_domain":
+        elif demisto.command() == "argus-fetch-observations-for-domain":
             return_results(fetch_observations_for_domain_command(demisto.args()))
 
-        elif demisto.command() == "argus_fetch_observations_for_ip":
+        elif demisto.command() == "argus-fetch-observations-for-ip":
             return_results(fetch_observations_for_i_p_command(demisto.args()))
 
     # Log exceptions and return errors

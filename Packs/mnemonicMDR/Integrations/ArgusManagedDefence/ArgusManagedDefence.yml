@@ -78,7 +78,7 @@ script:
     deprecated: false
     description: Adds a key, value tag to an Argus case
     execution: false
-    name: argus_add_case_tag
+    name: argus-add-case-tag
     outputs:
     - contextPath: Argus.Tags.responseCode
       description: Argus
@@ -186,7 +186,7 @@ script:
     deprecated: false
     description: List tags attached to an Argus case
     execution: false
-    name: argus_list_case_tags
+    name: argus-list-case-tags
     outputs:
     - contextPath: Argus.Tags.responseCode
       description: Argus
@@ -317,7 +317,7 @@ script:
     deprecated: false
     description: Add comment to an Argus case
     execution: false
-    name: argus_add_comment
+    name: argus-add-comment
     outputs:
     - contextPath: Argus.Comment.responseCode
       description: Argus
@@ -473,7 +473,7 @@ script:
     deprecated: false
     description: List the comments of an Argus case
     execution: false
-    name: argus_list_case_comments
+    name: argus-list-case-comments
     outputs:
     - contextPath: Argus.Comments.responseCode
       description: Argus
@@ -852,7 +852,7 @@ script:
     deprecated: false
     description: Returns cases matching the defined case search criteria
     execution: false
-    name: argus_advanced_case_search
+    name: argus-advanced-case-search
     outputs:
     - contextPath: Argus.Cases.responseCode
       description: Argus
@@ -1263,7 +1263,7 @@ script:
     deprecated: false
     description: Close an Argus case
     execution: false
-    name: argus_close_case
+    name: argus-close-case
     outputs:
     - contextPath: Argus.Case.responseCode
       description: Argus
@@ -1817,7 +1817,7 @@ script:
     deprecated: false
     description: Create Argus case
     execution: false
-    name: argus_create_case
+    name: argus-create-case
     outputs:
     - contextPath: Argus.Case.responseCode
       description: Argus
@@ -2222,7 +2222,7 @@ script:
     deprecated: false
     description: Mark existing case as deleted
     execution: false
-    name: argus_delete_case
+    name: argus-delete-case
     outputs:
     - contextPath: Argus.Case.responseCode
       description: Argus
@@ -2633,7 +2633,7 @@ script:
     deprecated: false
     description: Mark existing comment as deleted
     execution: false
-    name: argus_delete_comment
+    name: argus-delete-comment
     outputs:
     - contextPath: Argus.Comment.responseCode
       description: Argus
@@ -2765,7 +2765,7 @@ script:
     deprecated: false
     description: Edit existing comment
     execution: false
-    name: argus_edit_comment
+    name: argus-edit-comment
     outputs:
     - contextPath: Argus.Comment.responseCode
       description: Argus
@@ -2895,7 +2895,7 @@ script:
     deprecated: false
     description: Returns the basic case descriptor for the case identified by ID
     execution: false
-    name: argus_get_case_metadata_by_id
+    name: argus-get-case-metadata-by-id
     outputs:
     - contextPath: Argus.Case.responseCode
       description: Argus
@@ -3312,7 +3312,7 @@ script:
     deprecated: false
     description: List attachments for an existing case
     execution: false
-    name: argus_list_case_attachments
+    name: argus-list-case-attachments
     outputs:
     - contextPath: Argus.Attachments.responseCode
       description: Argus
@@ -3420,7 +3420,7 @@ script:
     deprecated: false
     description: Remove existing tag by tag ID
     execution: false
-    name: argus_remove_case_tag_by_id
+    name: argus-remove-case-tag-by-id
     outputs:
     - contextPath: Argus.Tags.responseCode
       description: Argus
@@ -3528,7 +3528,7 @@ script:
     deprecated: false
     description: Remove existing tag with key, value matching
     execution: false
-    name: argus_remove_case_tag_by_key_value
+    name: argus-remove-case-tag-by-key-value
     outputs:
     - contextPath: Argus.Tags.responseCode
       description: Argus
@@ -3758,7 +3758,7 @@ script:
     deprecated: false
     description: Request changes to basic fields of an existing case.
     execution: false
-    name: argus_update_case
+    name: argus-update-case
     outputs:
     - contextPath: Argus.Case.responseCode
       description: Argus
@@ -4169,7 +4169,7 @@ script:
     deprecated: false
     description: Fetch specific attachment metadata
     execution: false
-    name: argus_get_attachment
+    name: argus-get-attachment
     outputs:
     - contextPath: Argus.Attachment.responseCode
       description: Argus
@@ -4277,7 +4277,7 @@ script:
     deprecated: false
     description: Download specific attachment contents.
     execution: false
-    name: argus_download_attachment
+    name: argus-download-attachment
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -4331,7 +4331,7 @@ script:
     deprecated: false
     description: Fetch events associated with specified case.
     execution: false
-    name: argus_get_events_for_case
+    name: argus-get-events-for-case
     outputs:
     - contextPath: Argus.Events.responseCode
       description: Argus
@@ -4631,7 +4631,7 @@ script:
     deprecated: false
     description: List aggraget events
     execution: false
-    name: argus_list_aggregated_events
+    name: argus-list-aggregated-events
     outputs:
     - contextPath: Argus.Events.responseCode
       description: Argus
@@ -5135,7 +5135,7 @@ script:
     description: 'Search for aggregated events (OSB! advanced method: look in API
       doc)'
     execution: false
-    name: argus_find_aggregated_events
+    name: argus-find-aggregated-events
     outputs:
     - contextPath: Argus.Events.responseCode
       description: Argus
@@ -5422,7 +5422,7 @@ script:
     deprecated: false
     description: Fetch specified event payload
     execution: false
-    name: argus_get_payload
+    name: argus-get-payload
     outputs:
     - contextPath: Argus.Payload.responseCode
       description: Argus
@@ -5496,7 +5496,7 @@ script:
     deprecated: false
     description: Fetch specified event payload as PCAP.
     execution: false
-    name: argus_get_pcap
+    name: argus-get-pcap
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -5530,7 +5530,7 @@ script:
     deprecated: false
     description: Fetch specified event.
     execution: false
-    name: argus_get_event
+    name: argus-get-event
     outputs:
     - contextPath: Argus.Event.responseCode
       description: Argus
@@ -5647,7 +5647,7 @@ script:
     deprecated: false
     description: Simple search for NIDS events.
     execution: false
-    name: argus_list_nids_events
+    name: argus-list-nids-events
     outputs:
     - contextPath: Argus.NIDS.responseCode
       description: Argus
@@ -6129,7 +6129,7 @@ script:
     deprecated: false
     description: Search for NIDS events.
     execution: false
-    name: argus_find_nids_events
+    name: argus-find-nids-events
     outputs:
     - contextPath: Argus.NIDS.responseCode
       description: Argus
@@ -6454,7 +6454,7 @@ script:
     deprecated: false
     description: Search against PassiveDNS with criteria and return matching records.
     execution: false
-    name: argus_pdns_search_records
+    name: argus-pdns-search-records
     outputs:
     - contextPath: Argus.PDNS.responseCode
       description: Argus
@@ -6547,7 +6547,7 @@ script:
     deprecated: false
     description: Look up reputation observations for the given domain
     execution: false
-    name: argus_fetch_observations_for_domain
+    name: argus-fetch-observations-for-domain
     outputs:
     - contextPath: Argus.ObservationsDomain.responseCode
       description: Argus
@@ -6601,7 +6601,7 @@ script:
     deprecated: false
     description: Look up reputation observations for the given IP
     execution: false
-    name: argus_fetch_observations_for_ip
+    name: argus-fetch-observations-for-ip
     outputs:
     - contextPath: Argus.ObservationsIP.responseCode
       description: Argus
