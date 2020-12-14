@@ -213,7 +213,7 @@ def fetch_incidents(last_run: dict, first_fetch_period: str):
         limit=demisto.params().get("max_fetch", 25),
         sortBy=["createdTimestamp"],
         priority=build_argus_priority_from_min_severity(
-            demisto.params().get("min_severity", "medium")
+            demisto.params().get("min_severity", "low")
         ),
         subCriteria=[
             {"exclude": True, "status": ["closed"]},
@@ -330,9 +330,9 @@ def advanced_case_search_command(args: Dict[str, Any]) -> CommandResults:
         exclude=args.get("exclude", None),
         required=args.get("required", None),
         customerID=argToList(args.get("customer_id", None)),
-        caseID=argToList(args.get("case_id", None),
+        caseID=argToList(args.get("case_id", None)),
         customer=argToList(args.get("customer", None)),
-        type=argToList(args.get("type", None)),
+        type=argToList(args.get("case_type", None)),
         service=argToList(args.get("service", None)),
         category=argToList(args.get("category", None)),
         status=argToList(args.get("status", None)),
@@ -345,7 +345,7 @@ def advanced_case_search_command(args: Dict[str, Any]) -> CommandResults:
         timeFieldStrategy=argToList(args.get("time_field_strategy", None)),
         timeMatchStrategy=args.get("time_match_strategy", None),
         keywordFieldStrategy=argToList(args.get("keyword_field_strategy", None)),
-        keywordMatchStrategy=args.get("keyword_match_strategy", None)),
+        keywordMatchStrategy=args.get("keyword_match_strategy", None),
         user=argToList(args.get("user", None)),
         userFieldStrategy=argToList(args.get("user_field_strategy", None)),
         userAssigned=args.get("user_assigned", None),
