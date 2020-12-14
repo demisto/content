@@ -149,7 +149,7 @@ def calculate_all_packs_dependencies(pack_dependencies_result: dict, id_set: dic
 
     with ProcessPool(max_workers=cpu_count(), max_tasks=100) as pool:
         for pack in dependency_graph:
-            future_object = pool.schedule(calculate_single_pack_dependencies, args=(pack, dependency_graph), timeout=10)
+            future_object = pool.schedule(calculate_single_pack_dependencies, args=(pack, dependency_graph), timeout=1)
             future_object.add_done_callback(add_pack_metadata_results)
 
 
