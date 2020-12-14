@@ -17,7 +17,10 @@
  "content": true,
  "group": 0,
  "hidden": false,
- "associatedToAll": true,
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Argus Case"
+ ],
  "unmapped": false,
  "unsearchable": false,
  "caseInsensitive": true,
