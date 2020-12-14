@@ -18,6 +18,10 @@
 					"complex": null,
 					"simple": "alert_count"
 				},
+				"XDR Alerts": {
+					"complex": null,
+					"simple": "alerts"
+				},
 				"XDR Assigned User Email": {
 					"complex": null,
 					"simple": "assigned_user_mail"
@@ -44,6 +48,10 @@
 					},
 					"simple": ""
 				},
+				"XDR File Artifacts": {
+					"complex": null,
+					"simple": "file_artifacts"
+				},
 				"XDR High Severity Alert Count": {
 					"complex": null,
 					"simple": "high_severity_alert_count"
@@ -63,6 +71,10 @@
 				"XDR Medium Severity Alert Count": {
 					"complex": null,
 					"simple": "med_severity_alert_count"
+				},
+				"XDR Network Artifacts": {
+					"complex": null,
+					"simple": "network_artifacts"
 				},
 				"XDR Notes": {
 					"complex": null,
@@ -105,6 +117,38 @@
 				"severity": {
 					"complex": null,
 					"simple": "severity"
+				},
+				"LastMirroredInTime": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "last_mirrored_in",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "TimeStampToDate"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"XDR Modification Time": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "modification_time",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "TimeStampToDate"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"XDR manual severity": {
+					"complex": null,
+					"simple": "manual_severity"
 				}
 			}
 		},
