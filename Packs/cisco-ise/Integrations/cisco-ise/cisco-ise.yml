@@ -359,6 +359,7 @@ script:
     - contextPath: Endpoint.MACAddress
       description: Endpoint MAC address.
       type: string
+  - arguments:
     - description: The MAC address from which to remove the policy.
       name: mac_address
       required: true

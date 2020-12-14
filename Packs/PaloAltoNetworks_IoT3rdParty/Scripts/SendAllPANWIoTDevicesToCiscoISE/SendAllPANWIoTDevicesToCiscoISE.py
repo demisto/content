@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 PANW_IOT_INSTANCE = demisto.args().get('panw_iot_3rd_party_instance')
 CISCO_ISE_ACTIVE_INSTANCE = demisto.args().get("active_ise_instance")
+GET_EP_ID_CMD = 'cisco-ise-get-endpoint-id-by-name'
 
 
 def send_status_to_panw_iot_cloud(status, msg):
@@ -154,15 +155,16 @@ def create_or_update_ep(mac, attr_map):
     """
 
     global CISCO_ISE_ACTIVE_INSTANCE
-    get_ep_id_cmd = "cisco-ise-get-endpoint-id-by-name"
+    global GET_EP_ID_CMD
+
     cmd_mac_syntax_map = {
         "cisco-ise-get-endpoint-id-by-name": "mac_address",
         "cisco-ise-get-endpoint-id": "macAddress"
     }
 
     # Check if this mac address (endpoint) is present in ISE by attempting to get its ID
-    resp = demisto.executeCommand(get_ep_id_cmd, {
-        cmd_mac_syntax_map[get_ep_id_cmd]: mac,
+    resp = demisto.executeCommand(GET_EP_ID_CMD, {
+        cmd_mac_syntax_map[GET_EP_ID_CMD]: mac,
         "using": CISCO_ISE_ACTIVE_INSTANCE
     })
 
@@ -175,7 +177,7 @@ def create_or_update_ep(mac, attr_map):
 
         # 405 - Method not allowed means we need to switch to an old filter based API
         elif err_msg == '405':
-            get_ep_id_cmd = "cisco-ise-get-endpoint-id"
+            GET_EP_ID_CMD = "cisco-ise-get-endpoint-id"
 
         # The primary went down (connection Error) or 401 if a fail over occurred (this primary/active
         # is not a secondary/standby device).We should attempt to get the new Primary/Active
