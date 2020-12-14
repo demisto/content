@@ -2,7 +2,7 @@ import os
 import json
 import argparse
 import logging
-from asyncio import as_completed
+from concurrent.futures import as_completed
 from contextlib import contextmanager
 from pprint import pformat
 
