@@ -292,7 +292,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'False'
+      defaultValue: 'false'
       description: Whether this comment will be shown to the customer
       isArray: false
       name: internal
