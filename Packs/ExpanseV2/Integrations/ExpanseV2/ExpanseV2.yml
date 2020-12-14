@@ -153,8 +153,7 @@ script:
       required: false
       secret: false 
     - default: false
-      description: Returns results whose identifier includes an IP matching the query.
-      additionalinfo: Search for results in a given IP/CIDR block using a single IP (d.d.d.d), a dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.), or a wildcard (d.d.*.d).
+      description: Returns results whose identifier includes an IP matching the query. Search for results in a given IP/CIDR block using a single IP (d.d.d.d), a dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.), or a wildcard (d.d.*.d).
       isArray: false
       name: inet_search
       required: false
@@ -1495,15 +1494,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to assign to the asset (comma separated string).
-      additionalinfo: If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to assign to the asset (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to assign to the asset (comma separated string).
-      additionalinfo: If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to assign to the asset (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -1532,15 +1529,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to unassign from the asset (comma separated string).
-      additionalinfo: If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to unassign from the asset (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to unassign from the asset (comma separated string).
-      additionalinfo: If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to unassign from the asset (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -1558,15 +1553,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to assign to the IP range (comma separated string).
-      additionalinfo: If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to assign to the IP range (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to assign to the IP range (comma separated string).
-      additionalinfo: If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to assign to the IP range (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -1584,15 +1577,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to unassign from the IP range (comma separated string).
-      additionalinfo: If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to unassign from the IP range (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to unassign from the IP range (comma separated string).
-      additionalinfo: If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to unassign from the IP range (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -1610,15 +1601,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to assign to the certificate (comma separated string).
-      additionalinfo: If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to assign to the certificate (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to assign to the certificate (comma separated string).
-      additionalinfo: If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to assign to the certificate (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -1636,15 +1625,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to unassign from the certificate (comma separated string).
-      additionalinfo: If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to unassign from the certificate (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to unassign from the certificate (comma separated string).
-      additionalinfo: If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to unassign from the certificate (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -1662,15 +1649,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to assign to the domain (comma separated string).
-      additionalinfo: If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to assign to the domain (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to assign to the domain (comma separated string).
-      additionalinfo: If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to assign to the domain (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -1688,15 +1673,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to unassign from the domain (comma separated string).
-      additionalinfo: If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to unassign from the domain (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to unassign from the domain (comma separated string).
-      additionalinfo: If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to unassign from the domain (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -1747,29 +1730,25 @@ script:
     execution: false
     arguments:
     - default: false
-      description: Asset ID of the Expanse IP range to retrieve.
-      additionalinfo: If provided, other search parameters are ignored.
+      description: Asset ID of the Expanse IP range to retrieve. If provided, other search parameters are ignored.
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string).
-      additionalinfo: Cannot be used with the 'businessunit_names' argument.
+      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'businessunit_names' argument.
       isArray: true
       name: businessunits
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string).
-      additionalinfo: Cannot be used with the 'businessunits' argument.
+      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'businessunits' argument.
       isArray: true
       name: businessunit_names
       required: false
       secret: false
     - default: false
-      description: Search for a given IP, CIDR or IP Range.
-      additionalinfo: Search for given IP/CIDR block using a single IP (d.d.d.d), a dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.), or a wildcard (d.d.*.d).
+      description: Search for given IP/CIDR block using a single IP (d.d.d.d), a dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.), or a wildcard (d.d.*.d).
       isArray: false
       name: inet
       required: false
@@ -1781,15 +1760,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Tag ID falls in the provided list. (comma separated string).
-      additionalinfo: Cannot be used with the 'tag_names' argument.
+      description: Returns only results whose Tag ID falls in the provided list. (comma separated string). Cannot be used with the 'tag_names' argument.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Tag name falls in the provided list. (comma separated string).
-      additionalinfo: Cannot be used with the 'tags' argument.
+      description: Returns only results whose Tag name falls in the provided list. (comma separated string). Cannot be used with the 'tags' argument.
       isArray: true
       name: tag_names
       required: false
@@ -1970,8 +1947,7 @@ script:
     execution: false
     arguments:
     - default: false
-      description: Domain name to retrieve (exact match).
-      additionalinfo: If provided, other search parameters are ignored.
+      description: Domain name to retrieve (exact match). If provided, other search parameters are ignored.
       isArray: false
       name: domain
       required: false
@@ -2025,41 +2001,35 @@ script:
       - 'true'
       - 'false'
     - default: false
-      description: Returns only results whose Tag ID falls in the provided list. (comma separated string).
-      additionalinfo: Cannot be used with the 'tag_names' argument.
+      description: Returns only results whose Tag ID falls in the provided list. (comma separated string). Cannot be used with the 'tag_names' argument.
       isArray: false
       name: tags
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Tag name falls in the provided list. (comma separated string).
-      additionalinfo: Cannot be used with the 'tags' argument.
+      description: Returns only results whose Tag name falls in the provided list. (comma separated string). Cannot be used with the 'tags' argument.
       name: tag_names
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string).
-      additionalinfo: Cannot be used with the 'businessunit_names' argument.
+      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'businessunit_names' argument.
       isArray: false
       name: businessunits
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's name falls in the provided list. (comma separated string).
-      additionalinfo: Cannot be used with the 'businessunits' argument.
+      description: Returns only results whose Business Unit's name falls in the provided list. (comma separated string). Cannot be used with the 'businessunits' argument.
       name: businessunit_names
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Provider's ID falls in the provided list. (comma separated string).
-      additionalinfo: Cannot be used with the 'provider_names' argument.
+      description: Returns only results whose Provider's ID falls in the provided list. (comma separated string). Cannot be used with the 'provider_names' argument.
       isArray: false
       name: providers
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Provider's name falls in the provided list. (comma separated string).
-      additionalinfo: Cannot be used with the 'providers' argument.
+      description: Returns only results whose Provider's name falls in the provided list. (comma separated string). Cannot be used with the 'providers' argument.
       name: provider_names
       required: false
       secret: false
@@ -2439,8 +2409,7 @@ script:
   - name: expanse-get-associated-domains
     arguments:
     - default: false
-      description: The common name of the certificate to search domains for.
-      additionalinfo: Fuzzy matching is done on this name, however query times can grow quite large when searching for short strings. Ex. "*.myhost.com" is a better search term than "host".
+      description: The common name of the certificate to search domains for. Fuzzy matching is done on this name, however query times can grow quite large when searching for short strings. Ex. "*.myhost.com" is a better search term than "host".
       isArray: false
       name: common_name
       required: false
@@ -2496,8 +2465,7 @@ script:
     execution: false
     arguments:
     - default: false
-      description: MD5 Hash of the certificate.
-      additionalinfo: If provided, other search parameters are ignored.
+      description: MD5 Hash of the certificate. If provided, other search parameters are ignored.
       isArray: false
       name: md5_hash
       required: false
@@ -2551,41 +2519,35 @@ script:
       - 'true'
       - 'false'
     - default: false
-      description: Returns only results whose Tag ID falls in the provided list. (comma separated string).
-      additionalinfo: Cannot be used with the 'tag_names' argument.
+      description: Returns only results whose Tag ID falls in the provided list. (comma separated string). Cannot be used with the 'tag_names' argument.
       isArray: false
       name: tags
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Tag name falls in the provided list. (comma separated string).
-      additionalinfo: Cannot be used with the 'tags' argument.
+      description: Returns only results whose Tag name falls in the provided list. (comma separated string). Cannot be used with the 'tags' argument.
       name: tag_names
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string).
-      additionalinfo: Cannot be used with the 'businessunit_names' argument.
+      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'businessunit_names' argument.
       isArray: false
       name: businessunits
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's name falls in the provided list. (comma separated string).
-      additionalinfo: Cannot be used with the 'businessunits' argument.
+      description: Returns only results whose Business Unit's name falls in the provided list. (comma separated string). Cannot be used with the 'businessunits' argument.
       name: businessunit_names
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Provider's ID falls in the provided list. (comma separated string).
-      additionalinfo: Cannot be used with the 'provider_names' argument.
+      description: Returns only results whose Provider's ID falls in the provided list. (comma separated string). Cannot be used with the 'provider_names' argument.
       isArray: false
       name: providers
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Provider's name falls in the provided list. (comma separated string).
-      additionalinfo: Cannot be used with the 'providers' argument.
+      description: Returns only results whose Provider's name falls in the provided list. (comma separated string). Cannot be used with the 'providers' argument.
       name: provider_names
       required: false
       secret: false
