@@ -1,26 +1,35 @@
 import json
 import io
-from unittest import mock
 
 import demistomock as demisto
 from BoxV2 import Client
 
 
 def util_load_json(path):
+    """
+    Simple test utility to open the recorded JSON files.
+
+    :param path: str - Path to the JSON file
+    :return: dict - A dict representation of the JSON
+    """
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 class TestBox:
+    """
+    Test class to handle the client.
+    """
     def __init__(self, mocker):
-        test_params = {
-            'client_id': '',
-            'client_secret': '',
-            'pub_key_id': '',
-            'private_key': '',
-            'passphrase': '',
-            'enterprise_id': ''
-        }
+        test_params = {'credentials_json': str('{"boxAppSettings": {"clientID": '
+                                               '"1234", '
+                                               '"clientSecret": '
+                                               '"1234", "appAuth": {'
+                                               '"publicKeyID": "1234", "privateKey": '
+                                               '"-----BEGIN ENCRYPTED PRIVATE KEY----------END '
+                                               'ENCRYPTED PRIVATE KEY-----", "passphrase": '
+                                               '"1234"}}, '
+                                               '"enterpriseID": "1234"}')}
         testing_auth_header = {'Authorization': f'Bearer JWT_TOKEN'}
         mocker.patch.object(Client, '_request_token', return_value=testing_auth_header)
 
@@ -34,11 +43,19 @@ class TestBox:
 
 def test_find_file_folder_by_share_link(requests_mock, mocker):
     """
-    Tests the box-find-file-by-share-link function and command.
+    Tests the box-find-file-folder-by-share-link function and command.
 
     Configures requests_mock instance to generate the appropriate
     get_alerts API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
+    Verifies:
+      - The Authorization header is correct
+      - BoxApi header matches the expected query.
+
+    Given: A valid shared_link and password
+    When: Executing the box-find-file-folder-by-share-link command
+    Then: Return the result where the outputs match the mocked response.
+
     """
     from BoxV2 import find_file_folder_by_share_link_command
 
@@ -66,6 +83,11 @@ def test_find_file_folder_by_share_link(requests_mock, mocker):
 
 
 def test_file_share_link_object():
+    """
+    Tests the creation of a file_share_link object. Since the function which uses this is a CRUD
+    function, this test simply asserts that arguments given to it will return the correct request
+    object
+    """
     from BoxV2 import FileShareLink
     testing_args = {}
     testing_args.update({'access': 'some_access'})
@@ -90,6 +112,11 @@ def test_file_share_link_object():
 
 
 def test_folder_share_link_object():
+    """
+    Tests the creation of a folder_share_link object. Since the function which uses this is a CRUD
+    function, this test simply asserts that arguments given to it will return the correct request
+    object
+    """
     from BoxV2 import FolderShareLink
     testing_args = {}
     testing_args.update({'access': 'some_access'})
@@ -115,11 +142,20 @@ def test_folder_share_link_object():
 
 def test_create_update_file_share_link(requests_mock, mocker):
     """
-    Tests the box-find-file-by-share-link function and command.
+    Tests the box-create-file-share-link function and command.
 
     Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
+    files API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
+    Verifies:
+      - The Authorization header is correct
+      - Shared link request sends the correct password
+      - Outputs match the expected result.
+
+    Given: A valid file_id and password
+    When: Executing the box-create-file-share-link command
+    Then: Return the result where the outputs match the mocked response.
+
     """
     from BoxV2 import create_update_file_share_link_command
 
@@ -148,11 +184,21 @@ def test_create_update_file_share_link(requests_mock, mocker):
 
 def test_remove_file_share_link_command(requests_mock, mocker):
     """
-    Tests the box-find-file-by-share-link function and command.
+    Tests the box-remove-file-share-link function and command.
 
     Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
+    files API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
+    Verifies:
+      - The Authorization header is correct
+      - Shared link request sends the correct password
+      - Outputs match the expected result.
+      - Readable output matches the correct result for deletion.
+
+    Given: A valid file_id and password
+    When: Executing the box-remove-file-share-link command
+    Then: Return the result where the outputs match the mocked response.
+
     """
     from BoxV2 import remove_file_share_link_command
 
@@ -182,11 +228,20 @@ def test_remove_file_share_link_command(requests_mock, mocker):
 
 def test_get_shared_link_for_file_command(requests_mock, mocker):
     """
-    Tests the box-get-shared-link-for-file function and command.
+    Tests the box-get-shared-link-by-file function and command.
 
     Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
+    files API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
+    Verifies:
+      - The Authorization header is correct
+      - Query string sends the share_link as a field.
+      - Outputs match the expected result.
+
+    Given: A valid file_id.
+    When: Executing the box-get-shared-link-by-file command.
+    Then: Return the result where the outputs match the mocked response.
+
     """
     from BoxV2 import get_shared_link_for_file_command
 
@@ -213,11 +268,20 @@ def test_get_shared_link_for_file_command(requests_mock, mocker):
 
 def test_create_update_folder_share_link_command(requests_mock, mocker):
     """
-    Tests the box-get-shared-link-for-file function and command.
+    Tests the box-create/update-folder-share-link function and command.
 
     Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
+    folders API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
+    Verifies:
+      - The Authorization header is correct
+      - The access field is requested as True.
+      - Outputs match the expected result.
+
+    Given: A valid folder_id, password, and unshared_at time.
+    When: Executing the  box-create/update-folder-share-link command.
+    Then: Return the result where the outputs match the mocked response.
+
     """
     from BoxV2 import Client, create_update_folder_share_link_command
 
@@ -248,11 +312,20 @@ def test_create_update_folder_share_link_command(requests_mock, mocker):
 
 def test_remove_folder_share_link_command(requests_mock, mocker):
     """
-    Tests the box-get-shared-link-for-file function and command.
+    Tests the box-remove-folder-share-link function and command.
 
     Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
+    folders API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
+    Verifies:
+      - The Authorization header is correct
+      - The shared_link argument is requested as None.
+      - Outputs match the expected result.
+
+    Given: A valid folder_id.
+    When: Executing the box-remove-folder-share-link command.
+    Then: Return the result where the outputs match the mocked response.
+
     """
     from BoxV2 import remove_folder_share_link_command
 
@@ -279,11 +352,20 @@ def test_remove_folder_share_link_command(requests_mock, mocker):
 
 def test_get_folder_command(requests_mock, mocker):
     """
-    Tests the box-get-shared-link-for-file function and command.
+    Tests the box-get-folder function and command.
 
     Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
+    folders API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
+    Verifies:
+      - The Authorization header is correct
+      - The correct URL is called with the folder ID.
+      - Outputs match the expected result.
+
+    Given: A valid folder_id.
+    When: Executing the box-get-folder command.
+    Then: Return the result where the outputs match the mocked response.
+
     """
     from BoxV2 import get_folder_command
 
@@ -310,11 +392,20 @@ def test_get_folder_command(requests_mock, mocker):
 
 def test_list_folder_items_command(requests_mock, mocker):
     """
-    Tests the box-get-shared-link-for-file function and command.
+    Tests the box-list-folder-items function and command.
 
     Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
+    folders API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
+    Verifies:
+      - The Authorization header is correct
+      - The query string is sent with the sort parameter as asc.
+      - Outputs match the expected result.
+
+    Given: A valid folder_id.
+    When: Executing the box-list-folder-items command.
+    Then: Return the result where the outputs match the mocked response.
+
     """
     from BoxV2 import list_folder_items_command
 
@@ -344,11 +435,20 @@ def test_list_folder_items_command(requests_mock, mocker):
 
 def test_folder_create_command(requests_mock, mocker):
     """
-    Tests the box-get-shared-link-for-file function and command.
+    Tests the box-create-folder function and command.
 
     Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
+    folders API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
+    Verifies:
+      - The Authorization header is correct
+      - The folder name is requested as Testing Folder.
+      - Outputs match the expected result.
+
+    Given: A valid parent_id and name.
+    When: Executing the box-create-folder command.
+    Then: Return the result where the outputs match the mocked response.
+
     """
     from BoxV2 import folder_create_command
 
@@ -376,11 +476,20 @@ def test_folder_create_command(requests_mock, mocker):
 
 def test_file_delete_command(requests_mock, mocker):
     """
-    Tests the box-get-shared-link-for-file function and command.
+    Tests the box-file-delete function and command.
 
     Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
+    files API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
+    Verifies:
+      - The Authorization header is correct
+      - The request method is DELETE.
+      - Outputs match the expected result.
+
+    Given: A valid file_id.
+    When: Executing the box-file-delete command.
+    Then: Return the result where the outputs match the mocked response.
+
     """
     from BoxV2 import file_delete_command
 
@@ -406,11 +515,20 @@ def test_file_delete_command(requests_mock, mocker):
 
 def test_list_users_command(requests_mock, mocker):
     """
-    Tests the box-get-shared-link-for-file function and command.
+    Tests the box-list-users function and command.
 
     Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
+    users API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
+    Verifies:
+      - The Authorization header is correct
+      - The query string contains the filter term test_user.
+      - Outputs match the expected result.
+
+    Given: A valid filter_term and fields to search in.
+    When: Executing the box-list-users command.
+    Then: Return the result where the outputs match the mocked response.
+
     """
     from BoxV2 import list_users_command
 
@@ -435,16 +553,25 @@ def test_list_users_command(requests_mock, mocker):
 
     assert response.outputs_prefix == 'Box.Users'
     assert response.outputs_key_field == 'id'
-    assert response.outputs == mock_response
+    assert response.outputs == mock_response.get('entries')
 
 
 def test_upload_file_command(requests_mock, mocker):
     """
-    Tests the box-get-shared-link-for-file function and command.
+    Tests the box-upload function and command.
 
-    Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
+    Configures multiple requests_mock instances to generate the appropriate
+    file API responses which are loaded from local JSON files. Checks
     the output of the command function with the expected output.
+    Verifies:
+     - The correct number of chunks were created and uploaded.
+     - Content-Range and Digest headers are correct.
+     - The commit request contains the proper amount of parts.
+
+    Given: A file entry ID, file name and destination folder.
+    When: Executing the box-upload-file command.
+    Then: Return the result where the outputs match the mocked response.
+
     """
     from BoxV2 import upload_file_command
     from unittest import mock
@@ -475,7 +602,8 @@ def test_upload_file_command(requests_mock, mocker):
     session_commit_response = {
         'entities': {
             'name': 'some_file',
-            'file_type': 'jpg'
+            'file_type': 'jpg',
+            'id': 123
         }
     }
 
@@ -530,10 +658,25 @@ def test_upload_file_command(requests_mock, mocker):
 
     assert response.outputs_prefix == 'Box.File'
     assert response.outputs_key_field == 'id'
-    assert response.outputs == session_commit_response
+    assert response.outputs == session_commit_response.get('entities')
 
 
 def test_get_current_user_command(requests_mock, mocker):
+    """
+    Tests the box-get-current-user function and command.
+
+    Configures a requests_mock instance to generate the appropriate
+    user API response which is loaded from a local JSON file. Checks
+    the output of the command function with the expected output.
+    Verifies:
+     - The As-User header is correct
+     - Outputs match the expected format
+
+    Given: A valid user id.
+    When: Executing the box-get-current-user command.
+    Then: Return the result where the outputs match the mocked response.
+
+    """
     from BoxV2 import get_current_user_command
 
     mock_response = util_load_json('test_data/get_current_user.json')
@@ -560,6 +703,23 @@ def test_get_current_user_command(requests_mock, mocker):
 
 
 def test_create_user_command(requests_mock, mocker):
+    """
+     Tests the box-create-user function and command.
+
+     Configures a requests_mock instance to generate the appropriate
+     user API response which is loaded from a local JSON file. Checks
+     the output of the command function with the expected output.
+     Verifies:
+      - The As-User header is correct
+      - Outputs match the expected format
+      - Expected user id is sent in the request.
+      - Tracking code parameter is formatted correctly.
+
+     Given: Arguments defining a new user's properties.
+     When: Executing the box-create-user command.
+     Then: Return the result where the outputs match the mocked response.
+
+     """
     from BoxV2 import create_user_command
 
     mock_response = util_load_json('test_data/create_user.json')
@@ -609,6 +769,24 @@ def test_create_user_command(requests_mock, mocker):
 
 
 def test_update_user_command(requests_mock, mocker):
+    """
+     Tests the box-update-user function and command.
+
+     Configures a requests_mock instance to generate the appropriate
+     user API response which is loaded from a local JSON file. Checks
+     the output of the command function with the expected output.
+     Verifies:
+      - The As-User header is correct
+      - Outputs match the expected format
+      - Expected user id is sent in the request.
+      - Expected user's name is correct.
+      - Tracking code parameter is formatted correctly.
+
+     Given: Arguments defining a new user's properties.
+     When: Executing the box-update-user command.
+     Then: Return the result where the outputs match the mocked response.
+
+     """
     from BoxV2 import update_user_command
 
     mock_response = util_load_json('test_data/create_user.json')
@@ -659,6 +837,23 @@ def test_update_user_command(requests_mock, mocker):
 
 
 def test_delete_user_command(requests_mock, mocker):
+    """
+     Tests the box-delete-user function and command.
+
+     Configures a requests_mock instance to generate the appropriate
+     user API response which is loaded from a local JSON file. Checks
+     the output of the command function with the expected output.
+     Verifies:
+      - The As-User header is correct
+      - Outputs match the expected format
+      - Force parameter is True
+      - Readable output matches the expected result.
+
+     Given: A valid user ID to delete and the force argument.
+     When: Executing the box-delete-user command.
+     Then: Return the result where the outputs match the mocked response.
+
+     """
     from BoxV2 import delete_user_command
 
     client = TestBox(mocker).client
@@ -681,3 +876,51 @@ def test_delete_user_command(requests_mock, mocker):
     assert requests_mock.request_history[0].qs.get('force') == ['true']
 
     assert response.readable_output == 'The user 12345 was successfully deleted.'
+
+
+def test_fetch_incidents(requests_mock, mocker):
+    """
+     Tests the fetch-incidents function and command.
+
+     Configures a requests_mock instance to generate the appropriate
+     events API response which is loaded from a local JSON file. Checks
+     the output of the command function with the expected output.
+     Verifies:
+      - The As-User header is correct
+      - Outputs match the expected format
+      - Stream_type parameter is correct.
+      - Created after time is formatted correctly.
+      - Readable output matches the expected result.
+      - New last run time is newer than old last run time.
+
+     Given: A valid last run object and time in the past.
+     When: Executing the fetch-incidents command.
+     Then: Return a tuple of the last run object and an array of incidents.
+
+     """
+    from BoxV2 import fetch_incidents
+
+    client = TestBox(mocker).client
+
+    as_user = 'sample_current_user'
+    max_results = 10
+    last_run = {'time': '2015-10-21T04:29-8:00'}
+    first_fetch_time = 1607935741
+
+    mock_response = util_load_json('test_data/events.json')
+    expected_fetch_results = util_load_json('test_data/fetch_expected_response.json')
+
+    requests_mock.get(
+        'https://api.box.com/2.0/events/',
+        json=mock_response
+    )
+
+    response = fetch_incidents(client, max_results, last_run, first_fetch_time, as_user)
+
+    assert requests_mock.request_history[0].headers.get('As-User') == "sample_current_user"
+    assert requests_mock.request_history[0].headers.get('Authorization') == "Bearer JWT_TOKEN"
+    assert requests_mock.request_history[0].qs.get('stream_type') == ['admin_logs']
+    assert requests_mock.request_history[0].qs.get('created_after') == ['2015-10-21t04:29-8:00']
+
+    assert response[0] > '2015-10-21T04:29-8:00'
+    assert response[1] == expected_fetch_results

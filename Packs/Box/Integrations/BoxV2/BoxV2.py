@@ -161,12 +161,15 @@ class Client(BaseClient):
     Client class to interact with the service API
     """
     def __init__(self, base_url, verify, proxy, auth_params):
-        self.client_id = auth_params.get('client_id')
-        self.client_secret = auth_params.get('client_secret')
-        self.public_key_id = auth_params.get('pub_key_id')
-        self.private_key = auth_params.get('private_key')
-        self.passphrase = auth_params.get('passphrase')
-        self.enterprise_id = auth_params.get('enterprise_id')
+        self.credentials_dict = json.loads(auth_params.get('credentials_json', '{}'))
+        self.credentials = self.credentials_dict.get('boxAppSettings')
+        self.client_id = self.credentials.get('clientID')
+        self.app_auth = self.credentials.get('appAuth')
+        self.client_secret = self.credentials.get('clientSecret')
+        self.public_key_id = self.app_auth.get('publicKeyID')
+        self.private_key = self.app_auth.get('privateKey')
+        self.passphrase = self.app_auth.get('passphrase')
+        self.enterprise_id = self.credentials_dict.get('enterpriseID')
         self.authentication_url = 'https://api.box.com/oauth2/token'
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
@@ -1390,7 +1393,7 @@ def upload_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix='Box.File',
         outputs_key_field='id',
-        outputs=response
+        outputs=response.get('entities')
     )
 
 
@@ -1786,7 +1789,6 @@ def main() -> None:
             return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
-            stream_type = demisto.params().get('stream_type', None)
             as_user = demisto.params().get('as_user', None)
             max_results = arg_to_int(
                 arg=demisto.params().get('max_fetch'),
