@@ -178,7 +178,11 @@ def generate_dn_and_remove_from_user_profile(user):
         return user_dn
 
     cn = user.get("cn")
+    if not cn:
+        raise Exception("User must have cn, please provide a valid value")
     ou = user.get("ou")
+    if not ou:
+        raise Exception("User must have ou, please provide a valid value")
 
     return 'CN=' + str(cn) + ',' + str(ou)
 
@@ -745,7 +749,6 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
 
         else:
             user_dn = generate_dn_and_remove_from_user_profile(ad_user)
-
             object_classes = ["top", "person", "organizationalPerson", "user"]
 
             success = conn.add(user_dn, object_classes, ad_user)
