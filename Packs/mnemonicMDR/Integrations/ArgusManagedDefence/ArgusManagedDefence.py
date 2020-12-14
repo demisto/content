@@ -203,17 +203,17 @@ def test_module_command() -> str:
     )
 
 
-def fetch_incidents(last_run: dict, first_fetch_period: str):
+def fetch_incidents(
+    last_run: dict, first_fetch_period: str, limit: int = 25, min_severity: str = "low"
+):
     start_timestamp = last_run.get("start_time", None) if last_run else None
     # noinspection PyTypeChecker
     result = advanced_case_search(
         startTimestamp=start_timestamp if start_timestamp else first_fetch_period,
         endTimestamp="now",
-        limit=demisto.params().get("max_fetch", 25),
+        limit=limit,
         sortBy=["createdTimestamp"],
-        priority=build_argus_priority_from_min_severity(
-            demisto.params().get("min_severity", "low")
-        ),
+        priority=build_argus_priority_from_min_severity(min_severity),
         subCriteria=[
             {"exclude": True, "status": ["closed"]},
         ],
@@ -262,7 +262,9 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     raise NotImplementedError
     scheme = SchemeTypeMapping(type_name="Argus Case")  # Argus Case type
     # This command is possibly run by the pull from instance button in  the create incoming mapper
-    scheme.add_field(name="Argus test field", description="Argues test field description")
+    scheme.add_field(
+        name="Argus test field", description="Argues test field description"
+    )
     return GetMappingFieldsResponse(scheme)
 
 
@@ -1013,6 +1015,8 @@ def main() -> None:
             next_run, incidents = fetch_incidents(
                 last_run=demisto.getLastRun(),
                 first_fetch_period=first_fetch_period,
+                limit=demisto.params().get("max_fetch", 25),
+                min_severity=demisto.params().get("min_severity", "low"),
             )
 
             demisto.setLastRun(next_run)
