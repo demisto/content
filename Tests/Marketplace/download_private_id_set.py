@@ -5,7 +5,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client
 
 
 STORAGE_ID_SET_PATH = 'content/blablaprivate_id_set.json'
-ARTIFACTS_PATH = '/home/circleci/project/artifacts/'
+ARTIFACTS_PATH = '/home/runner/work/content-private/content-private/content/artifacts'
 PRIVATE_ID_SET_FILE = 'private_id_set.json'
 
 
