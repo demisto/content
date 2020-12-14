@@ -43,10 +43,10 @@ def download_private_id_set_from_gcp(public_storage_bucket, storage_client):
         str: private ID set file full path.
     """
 
-    is_private_id_set_file_exist = is_file_exist(public_storage_bucket, storage_client)
-
     if not os.path.exists(ARTIFACTS_PATH):
         os.mkdir(ARTIFACTS_PATH)
+
+    is_private_id_set_file_exist = is_file_exist(public_storage_bucket, storage_client)
 
     if is_private_id_set_file_exist:
         index_blob = public_storage_bucket.blob(STORAGE_ID_SET_PATH)
