@@ -740,6 +740,7 @@ Used in the IAM premium pack.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-profile | A User Profile indicator that contains user information, such as name, email address, etc. | Required | 
+| allow-enable | When set to true, after the command execution the status of the user in the 3rd-party integration will be active. | Optional | 
 
 
 #### Context Output
@@ -785,7 +786,7 @@ Used in the IAM premium pack.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-profile | A User Profile indicator that contains user information, such as name, email address, etc. | Required | 
-| create-if-not-exists | When true, the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'. | Optional | 
+| allow-enable | When set to true, after the command execution the status of the user in the 3rd-party integration will be active. | Optional | 
 
 
 #### Context Output
