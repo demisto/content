@@ -1,15 +1,16 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 from datetime import timezone
 import secrets
 import string
 import hashlib
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 import dateparser
 import urllib3
 import traceback
 from operator import itemgetter
+import copy
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -889,6 +890,256 @@ class Client(BaseClient):
         else:
             raise TypeError(f'got unexpected response from api: {reply_content}\n')
 
+    def delete_endpoints(self, endpoint_ids: list):
+        request_data: Dict[str, Any] = {
+            'filters': [
+                {
+                    'field': 'endpoint_id_list',
+                    'operator': 'in',
+                    'value': endpoint_ids
+                }
+            ]
+        }
+
+        self._http_request(
+            method='POST',
+            url_suffix='/endpoints/delete/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+    def get_policy(self, endpoint_id) -> Dict[str, Any]:
+        request_data: Dict[str, Any] = {
+            'endpoint_id': endpoint_id
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/endpoints/get_policy/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply')
+
+    def get_endpoint_device_control_violations(self, endpoint_ids: list, type_of_violation, timestamp_gte: int,
+                                               timestamp_lte: int,
+                                               ip_list: list, vendor: list, vendor_id: list, product: list,
+                                               product_id: list,
+                                               serial: list,
+                                               hostname: list, violation_ids: list, username: list) \
+            -> Dict[str, Any]:
+        arg_list = {'type': type_of_violation,
+                    'endpoint_id_list': endpoint_ids,
+                    'ip_list': ip_list,
+                    'vendor': vendor,
+                    'vendor_id': vendor_id,
+                    'product': product,
+                    'product_id': product_id,
+                    'serial': serial,
+                    'hostname': hostname,
+                    'violation_id_list': violation_ids,
+                    'username': username
+                    }
+
+        filters: list = [{
+            'field': arg_key,
+            'operator': 'in',
+            'value': arg_val
+        } for arg_key, arg_val in arg_list.items() if arg_val and arg_val[0]]
+
+        if timestamp_lte:
+            filters.append({
+                'field': 'timestamp',
+                'operator': 'lte',
+                'value': timestamp_lte
+            })
+        if timestamp_gte:
+            filters.append({
+                'field': 'timestamp',
+                'operator': 'gte',
+                'value': timestamp_gte})
+
+        request_data: Dict[str, Any] = {
+            'filters': filters
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/device_control/get_violations/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply')
+
+    def retrieve_file(self, endpoint_id_list: list, windows: list, linux: list, macos: list) -> Dict[str, Any]:
+        files = {}
+        if windows:
+            files['windows'] = windows
+        if linux:
+            files['linux'] = linux
+        if macos:
+            files['linux'] = macos
+
+        if not windows and not linux and not macos:
+            raise ValueError('You should enter at least one path.')
+
+        request_data: Dict[str, Any] = {
+            'filters': [
+                {
+                    'field': 'endpoint_id_list',
+                    'operator': 'in',
+                    'value': endpoint_id_list
+                }
+            ],
+            'files': files
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/endpoints/file_retrieval/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+        return reply.get('reply')
+
+    def retrieve_file_details(self, action_id: int) -> Dict[str, Any]:
+        request_data: Dict[str, Any] = {
+            'group_action_id': action_id
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/actions/file_retrieval_details/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply').get('data')
+
+    def get_scripts(self, name: list, description: list, created_by: list, windows_supported,
+                    linux_supported, macos_supported, is_high_risk) -> Dict[str, Any]:
+
+        arg_list = {'name': name,
+                    'description': description,
+                    'created_by': created_by,
+                    'windows_supported': windows_supported,
+                    'linux_supported': linux_supported,
+                    'macos_supported': macos_supported,
+                    'is_high_risk': is_high_risk
+                    }
+
+        filters: list = [{
+            'field': arg_key,
+            'operator': 'in',
+            'value': arg_val
+        } for arg_key, arg_val in arg_list.items() if arg_val and arg_val[0]]
+
+        request_data: Dict[str, Any] = {
+            'filters': filters
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/scripts/get_scripts/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply')
+
+    def get_script_metadata(self, script_uid) -> Dict[str, Any]:
+        request_data: Dict[str, Any] = {
+            'script_uid': script_uid
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/scripts/get_script_metadata/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply')
+
+    def get_script_code(self, script_uid) -> Dict[str, Any]:
+        request_data: Dict[str, Any] = {
+            'script_uid': script_uid
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/scripts/get_script_code/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply')
+
+    def run_script(self, script_uid, endpoint_ids: list, timeout: int, parameters: Dict[str, Any]) -> Dict[str, Any]:
+        filters: list = [{
+            'field': 'endpoint_id_list',
+            'operator': 'in',
+            'value': endpoint_ids
+        }]
+        request_data: Dict[str, Any] = {'script_uid': script_uid, 'timeout': timeout, 'filters': filters,
+                                        'parameters_values': parameters}
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/scripts/run_script/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply')
+
+    def get_script_execution_status(self, action_id) -> Dict[str, Any]:
+        request_data: Dict[str, Any] = {
+            'action_id': action_id
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/scripts/get_script_execution_status/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+
+        return reply.get('reply')
+
+    def action_status_get(self, action_id) -> Dict[str, Any]:
+        request_data: Dict[str, Any] = {
+            'group_action_id': action_id,
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/actions/get_action_status/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+        return reply.get('reply').get('data')
+
+    def get_file(self, file_link):
+        reply = self._http_request(
+            method='POST',
+            full_url=file_link,
+            timeout=self.timeout,
+            resp_type='content'
+        )
+        return reply
+
+    def save_modified_incidents_to_integration_context(self):
+        last_modified_incidents = self.get_incidents(limit=100, sort_by_modification_time='desc')
+        modified_incidents_context = {}
+        for incident in last_modified_incidents:
+            incident_id = incident.get('incident_id')
+            modified_incidents_context[incident_id] = incident.get('modification_time')
+
+        set_integration_context({'modified_incidents': modified_incidents_context})
+
 
 def get_incidents_command(client, args):
     """
@@ -957,10 +1208,54 @@ def get_incidents_command(client, args):
     )
 
 
+def check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time_timestamp, last_modified_incidents_dict):
+    if incident_id in last_modified_incidents_dict:  # search the incident in the dict of modified incidents
+        incident_modification_time_in_xdr = int(str(last_modified_incidents_dict[incident_id]))
+
+        demisto.debug(f"XDR incident {incident_id}\n"
+                      f"modified time:         {incident_modification_time_in_xdr}\n"
+                      f"last mirrored in time: {last_mirrored_in_time_timestamp}")
+
+        if incident_modification_time_in_xdr > last_mirrored_in_time_timestamp:  # need to update this incident
+            demisto.info(f"Incident '{incident_id}' was modified. performing extra-data request.")
+            return True
+    else:  # the incident was not modified
+        return False
+
+
+def get_last_mirrored_in_time(args):
+    demisto_incidents = demisto.get_incidents()  # type: ignore
+
+    if demisto_incidents:  # handling 5.5 version
+        demisto_incident = demisto_incidents[0]
+        last_mirrored_in_time = demisto_incident.get('CustomFields', {}).get('lastmirroredintime')
+        if not last_mirrored_in_time:  # this is an old incident, update anyway
+            return 0
+        last_mirrored_in_timestamp = arg_to_timestamp(last_mirrored_in_time, 'last_mirrored_in_time')
+
+    else:  # handling 6.0 version
+        last_mirrored_in_time = arg_to_timestamp(args.get('last_update'), 'last_update')
+        last_mirrored_in_timestamp = (last_mirrored_in_time - 120)
+
+    return last_mirrored_in_timestamp
+
+
 def get_incident_extra_data_command(client, args):
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
+    return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
 
+    if return_only_updated_incident:
+        last_mirrored_in_time = get_last_mirrored_in_time(args)
+        last_modified_incidents_dict = get_integration_context().get('modified_incidents', {})
+
+        if check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time, last_modified_incidents_dict):
+            pass  # the incident was modified. continue to perform extra-data request
+
+        else:  # the incident was not modified
+            return "The incident was not modified in XDR since the last mirror in.", {}, {}
+
+    demisto.debug(f"Performing extra-data request on incident: {incident_id}")
     raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
 
     incident = raw_incident.get('incident')
@@ -1840,22 +2135,19 @@ def get_remote_data_command(client, args):
     incident_data = {}
     try:
         incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
-                                                                 "alerts_limit": 1000})[2].get('incident')
-
-        incident_data['id'] = incident_data.get('incident_id')
-        current_modified_time = int(str(incident_data.get('modification_time')))
-        demisto.debug(f"XDR incident {remote_args.remote_incident_id}\n"  # type:ignore
-                      f"modified time: {int(incident_data.get('modification_time'))}\n"
-                      f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
-
-        sort_all_list_incident_fields(incident_data)
-
-        # deleting creation time as it keeps updating in the system
-        del incident_data['creation_time']
-
-        if arg_to_timestamp(current_modified_time, 'modification_time') > \
-                arg_to_timestamp(remote_args.last_update, 'last_update'):
+                                                                 "alerts_limit": 1000,
+                                                                 "return_only_updated_incident": True,
+                                                                 "last_update": remote_args.last_update})
+        if 'The incident was not modified' not in incident_data[0]:
             demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
+
+            incident_data = incident_data[2].get('incident')
+            incident_data['id'] = incident_data.get('incident_id')
+
+            sort_all_list_incident_fields(incident_data)
+
+            # deleting creation time as it keeps updating in the system
+            del incident_data['creation_time']
 
             # handle unasignment
             if incident_data.get('assigned_user_mail') is None:
@@ -1880,13 +2172,11 @@ def get_remote_data_command(client, args):
                 entries=reformatted_entries
             )
 
-        else:
-            # no new data modified - resetting error if needed
-            incident_data['in_mirror_error'] = ''
-
-            # handle unasignment
-            if incident_data.get('assigned_user_mail') is None:
-                handle_incoming_user_unassignment(incident_data)
+        else:  # no need to update this incident
+            incident_data = {
+                'id': remote_args.remote_incident_id,
+                'in_mirror_error': ""
+            }
 
             return GetRemoteDataResponse(
                 mirrored_object=incident_data,
@@ -1996,25 +2286,25 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
         raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch,
                                              limit=max_fetch, sort_by_creation_time='asc')
 
+    # save the last 100 modified incidents to the integration context - for mirroring purposes
+    client.save_modified_incidents_to_integration_context()
+
     # maintain a list of non created incidents in a case of a rate limit exception
     non_created_incidents: list = raw_incidents.copy()
     next_run = dict()
-
     try:
         for raw_incident in raw_incidents:
             incident_id = raw_incident.get('incident_id')
 
-            if demisto.params().get('extra_data'):
-                incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
-                                                                         "alerts_limit": 1000})[2].get('incident')
-            else:
-                incident_data = raw_incident
+            incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
+                                                                     "alerts_limit": 1000})[2].get('incident')
 
             sort_all_list_incident_fields(incident_data)
 
             incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
                                                                      None)
             incident_data['mirror_instance'] = integration_instance
+            incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
 
             description = raw_incident.get('description')
             occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
@@ -2050,6 +2340,248 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     next_run['time'] = last_fetch + 1
 
     return next_run, incidents
+
+
+def delete_endpoints_command(client: Client, args: Dict[str, str]) -> Tuple[str, Any, Any]:
+    endpoint_id_list: list = argToList(args.get('endpoint_ids'))
+
+    client.delete_endpoints(endpoint_id_list)
+
+    return f'Successfully deleted the following endpoints: {args.get("endpoint_ids")}', None, None
+
+
+def get_policy_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    endpoint_id = args.get('endpoint_id')
+
+    reply = client.get_policy(endpoint_id)
+    context = {'endpoint_id': endpoint_id,
+               'policy_name': reply.get('policy_name')}
+
+    return (
+        f'The policy name of endpoint: {endpoint_id} is: {reply.get("policy_name")}.',
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.Policy(val.endpoint_id == obj.endpoint_id)': context
+        },
+        reply
+    )
+
+
+def get_endpoint_device_control_violations_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    endpoint_ids: list = argToList(args.get('endpoint_ids'))
+    type_of_violation = args.get('type')
+    timestamp_gte: int = arg_to_timestamp(
+        arg=args.get('timestamp_gte'),
+        arg_name='timestamp_gte'
+    )
+    timestamp_lte: int = arg_to_timestamp(
+        arg=args.get('timestamp_lte'),
+        arg_name='timestamp_lte'
+    )
+    ip_list: list = argToList(args.get('ip_list'))
+    vendor: list = argToList(args.get('vendor'))
+    vendor_id: list = argToList(args.get('vendor_id'))
+    product: list = argToList(args.get('product'))
+    product_id: list = argToList(args.get('product_id'))
+    serial: list = argToList(args.get('serial'))
+    hostname: list = argToList(args.get('hostname'))
+    violation_id_list: list = argToList(args.get('violation_id_list', ''))
+    username: list = argToList(args.get('username'))
+
+    violation_ids = [arg_to_int(arg=item, arg_name=str(item)) for item in violation_id_list]
+
+    reply = client.get_endpoint_device_control_violations(
+        endpoint_ids=endpoint_ids,
+        type_of_violation=[type_of_violation],
+        timestamp_gte=timestamp_gte,
+        timestamp_lte=timestamp_lte,
+        ip_list=ip_list,
+        vendor=vendor,
+        vendor_id=vendor_id,
+        product=product,
+        product_id=product_id,
+        serial=serial,
+        hostname=hostname,
+        violation_ids=violation_ids,
+        username=username
+    )
+
+    headers = ['date', 'hostname', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product',
+               'serial']
+    violations: list = copy.deepcopy(reply.get('violations'))  # type: ignore
+    for violation in violations:
+        timestamp: str = violation.get('timestamp')
+        violation['date'] = timestamp_to_datestring(timestamp, TIME_FORMAT)
+
+    return (
+        tableToMarkdown(name='Endpoint Device Control Violation', t=violations, headers=headers,
+                        headerTransform=string_to_table_header, removeNull=True),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.EndpointViolations(val.violation_id==obj.violation_id)': violations
+        },
+        reply
+    )
+
+
+def retrieve_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    endpoint_id_list: list = argToList(args.get('endpoint_ids'))
+    windows: list = argToList(args.get('windows_file_paths'))
+    linux: list = argToList(args.get('linux_file_paths'))
+    macos: list = argToList(args.get('mac_file_paths'))
+
+    reply = client.retrieve_file(
+        endpoint_id_list=endpoint_id_list,
+        windows=windows,
+        linux=linux,
+        macos=macos
+    )
+    result = {'action_id': reply.get('action_id')}
+    return (
+        tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.RetrievedFiles(val.action_id == obj.action_id)': result
+        },
+        reply
+    )
+
+
+def retrieve_file_details_command(client: Client, args):
+    action_id_list = argToList(args.get('action_id', ''))
+    action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
+
+    result = []
+    raw_result = []
+    file_results = []
+    endpoints_count = 0
+    retrived_files_count = 0
+
+    for action_id in action_id_list:
+        data = client.retrieve_file_details(action_id)
+        raw_result.append(data)
+
+        for endpoint, link in data.items():
+            endpoints_count += 1
+            obj = {
+                'action_id': action_id,
+                'endpoint_id': endpoint
+            }
+            if link:
+                retrived_files_count += 1
+                obj['file_link'] = link
+                file = client.get_file(file_link=link)
+                file_results.append(fileResult(filename=f'{endpoint}_{retrived_files_count}.zip', data=file))
+            result.append(obj)
+
+    hr = f'### Action id : {args.get("action_id", "")} \n Retrieved {retrived_files_count} files from ' \
+         f'{endpoints_count} endpoints. \n To get the exact action status run the xdr-action-status-get command'
+
+    return_entry = {'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': raw_result,
+                    'HumanReadable': hr,
+                    'ReadableContentsFormat': formats['markdown'],
+                    'EntryContext': {}
+                    }
+    return return_entry, file_results
+
+
+def get_scripts_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    script_name: list = argToList(args.get('script_name'))
+    description: list = argToList(args.get('description'))
+    created_by: list = argToList(args.get('created_by'))
+    windows_supported = args.get('windows_supported')
+    linux_supported = args.get('linux_supported')
+    macos_supported = args.get('macos_supported')
+    is_high_risk = args.get('is_high_risk')
+    offset = arg_to_int(arg=args.get('offset', 0), arg_name='offset')
+    limit = arg_to_int(arg=args.get('limit', 50), arg_name='limit')
+
+    result = client.get_scripts(
+        name=script_name,
+        description=description,
+        created_by=created_by,
+        windows_supported=[windows_supported],
+        linux_supported=[linux_supported],
+        macos_supported=[macos_supported],
+        is_high_risk=[is_high_risk]
+    )
+    scripts = copy.deepcopy(result.get('scripts')[offset:(offset + limit)])  # type: ignore
+    for script in scripts:
+        timestamp = script.get('modification_date')
+        script['modification_date_timestamp'] = timestamp
+        script['modification_date'] = timestamp_to_datestring(timestamp, TIME_FORMAT)
+    headers: list = ['name', 'description', 'script_uid', 'modification_date', 'created_by',
+                     'windows_supported', 'linux_supported', 'macos_supported', 'is_high_risk']
+
+    return (
+        tableToMarkdown(name='Scripts', t=scripts, headers=headers, removeNull=True,
+                        headerTransform=string_to_table_header),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.Scripts(val.script_uid == obj.script_uid)': scripts
+        },
+        result
+    )
+
+
+def get_script_metadata_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    script_uid = args.get('script_uid')
+
+    reply = client.get_script_metadata(script_uid)
+    script_metadata = copy.deepcopy(reply)
+
+    timestamp = script_metadata.get('modification_date')
+    script_metadata['modification_date_timestamp'] = timestamp
+    script_metadata['modification_date'] = timestamp_to_datestring(timestamp, TIME_FORMAT)
+
+    return (
+        tableToMarkdown(name='Script Metadata', t=script_metadata, removeNull=True,
+                        headerTransform=string_to_table_header),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.ScriptMetadata(val.script_uid == obj.script_uid)': reply
+        },
+        reply
+    )
+
+
+def get_script_code_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    script_uid = args.get('script_uid')
+
+    reply = client.get_script_code(script_uid)
+    context = {
+        'script_uid': script_uid,
+        'code': reply
+    }
+
+    return (
+        f'### Script code: \n ``` {str(reply)} ```',
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.ScriptCode(val.script_uid == obj.script_uid)': context
+        },
+        reply
+    )
+
+
+def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:
+    action_id_list = argToList(args.get('action_id', ''))
+    action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
+
+    result = []
+    for action_id in action_id_list:
+        data = client.action_status_get(action_id)
+
+        for endpoint_id, status in data.items():
+            result.append({
+                'action_id': action_id,
+                'endpoint_id': endpoint_id,
+                'status': status
+            })
+
+    return (
+        tableToMarkdown(name='Get Action Status', t=result, removeNull=True),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.GetActionStatus(val.action_id == obj.action_id)': result
+        },
+        result
+    )
 
 
 def main():
@@ -2097,6 +2629,8 @@ def main():
         timeout=timeout
     )
 
+    args = demisto.args()
+
     try:
         if demisto.command() == 'test-module':
             client.test_module(first_fetch_time)
@@ -2110,73 +2644,103 @@ def main():
             demisto.incidents(incidents)
 
         elif demisto.command() == 'xdr-get-incidents':
-            return_outputs(*get_incidents_command(client, demisto.args()))
+            return_outputs(*get_incidents_command(client, args))
 
         elif demisto.command() == 'xdr-get-incident-extra-data':
-            return_outputs(*get_incident_extra_data_command(client, demisto.args()))
+            return_outputs(*get_incident_extra_data_command(client, args))
 
         elif demisto.command() == 'xdr-update-incident':
-            return_outputs(*update_incident_command(client, demisto.args()))
+            return_outputs(*update_incident_command(client, args))
 
         elif demisto.command() == 'xdr-get-endpoints':
-            return_outputs(*get_endpoints_command(client, demisto.args()))
+            return_outputs(*get_endpoints_command(client, args))
 
         elif demisto.command() == 'xdr-insert-parsed-alert':
-            return_outputs(*insert_parsed_alert_command(client, demisto.args()))
+            return_outputs(*insert_parsed_alert_command(client, args))
 
         elif demisto.command() == 'xdr-insert-cef-alerts':
-            return_outputs(*insert_cef_alerts_command(client, demisto.args()))
+            return_outputs(*insert_cef_alerts_command(client, args))
 
         elif demisto.command() == 'xdr-isolate-endpoint':
-            return_outputs(*isolate_endpoint_command(client, demisto.args()))
+            return_outputs(*isolate_endpoint_command(client, args))
 
         elif demisto.command() == 'xdr-unisolate-endpoint':
-            return_outputs(*unisolate_endpoint_command(client, demisto.args()))
+            return_outputs(*unisolate_endpoint_command(client, args))
 
         elif demisto.command() == 'xdr-get-distribution-url':
-            return_outputs(*get_distribution_url_command(client, demisto.args()))
+            return_outputs(*get_distribution_url_command(client, args))
 
         elif demisto.command() == 'xdr-get-create-distribution-status':
-            return_outputs(*get_distribution_status_command(client, demisto.args()))
+            return_outputs(*get_distribution_status_command(client, args))
 
         elif demisto.command() == 'xdr-get-distribution-versions':
             return_outputs(*get_distribution_versions_command(client))
 
         elif demisto.command() == 'xdr-create-distribution':
-            return_outputs(*create_distribution_command(client, demisto.args()))
+            return_outputs(*create_distribution_command(client, args))
 
         elif demisto.command() == 'xdr-get-audit-management-logs':
-            return_outputs(*get_audit_management_logs_command(client, demisto.args()))
+            return_outputs(*get_audit_management_logs_command(client, args))
 
         elif demisto.command() == 'xdr-get-audit-agent-reports':
-            return_outputs(*get_audit_agent_reports_command(client, demisto.args()))
+            return_outputs(*get_audit_agent_reports_command(client, args))
 
         elif demisto.command() == 'xdr-blacklist-files':
-            return_outputs(*blacklist_files_command(client, demisto.args()))
+            return_outputs(*blacklist_files_command(client, args))
 
         elif demisto.command() == 'xdr-whitelist-files':
-            return_outputs(*whitelist_files_command(client, demisto.args()))
+            return_outputs(*whitelist_files_command(client, args))
 
         elif demisto.command() == 'xdr-quarantine-files':
-            return_outputs(*quarantine_files_command(client, demisto.args()))
+            return_outputs(*quarantine_files_command(client, args))
 
         elif demisto.command() == 'xdr-get-quarantine-status':
-            return_outputs(*get_quarantine_status_command(client, demisto.args()))
+            return_outputs(*get_quarantine_status_command(client, args))
 
         elif demisto.command() == 'xdr-restore-file':
-            return_outputs(*restore_file_command(client, demisto.args()))
+            return_outputs(*restore_file_command(client, args))
 
         elif demisto.command() == 'xdr-endpoint-scan':
-            return_outputs(*endpoint_scan_command(client, demisto.args()))
+            return_outputs(*endpoint_scan_command(client, args))
 
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
 
         elif demisto.command() == 'get-remote-data':
-            return_results(get_remote_data_command(client, demisto.args()))
+            return_results(get_remote_data_command(client, args))
 
         elif demisto.command() == 'update-remote-system':
-            return_results(update_remote_system_command(client, demisto.args()))
+            return_results(update_remote_system_command(client, args))
+
+        elif demisto.command() == 'xdr-delete-endpoints':
+            return_outputs(*delete_endpoints_command(client, args))
+
+        elif demisto.command() == 'xdr-get-policy':
+            return_outputs(*get_policy_command(client, args))
+
+        elif demisto.command() == 'xdr-get-endpoint-device-control-violations':
+            return_outputs(*get_endpoint_device_control_violations_command(client, args))
+
+        elif demisto.command() == 'xdr-retrieve-files':
+            return_outputs(*retrieve_files_command(client, args))
+
+        elif demisto.command() == 'xdr-retrieve-file-details':
+            return_entry, file_results = retrieve_file_details_command(client, args)
+            demisto.results(return_entry)
+            if file_results:
+                demisto.results(file_results)
+
+        elif demisto.command() == 'xdr-get-scripts':
+            return_outputs(*get_scripts_command(client, args))
+
+        elif demisto.command() == 'xdr-get-script-metadata':
+            return_outputs(*get_script_metadata_command(client, args))
+
+        elif demisto.command() == 'xdr-get-script-code':
+            return_outputs(*get_script_code_command(client, args))
+
+        elif demisto.command() == 'xdr-action-status-get':
+            return_outputs(*action_status_get_command(client, args))
 
         elif demisto.command() == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, demisto.args()))

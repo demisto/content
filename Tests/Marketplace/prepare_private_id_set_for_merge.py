@@ -12,15 +12,15 @@ def remove_old_pack_from_private_id_set(private_id_set, new_pack_name):
     Returns:
         Private id set without the old data of the new package
     """
-    for entity, entity_list in private_id_set.items():
-        for item in entity_list[:]:
-            item_value = item.get(list(item.keys())[0], {})
-            if item_value.get('pack') == new_pack_name:
-                entity_list.remove(item)
+    for content_entity, content_entity_value_list in private_id_set.items():
+        for content_entity_value in content_entity_value_list[:]:
+            content_item_value = content_entity_value.get(list(content_entity_value.keys())[0], {})
+            if content_item_value.get('pack') == new_pack_name:
+                content_entity_value_list.remove(content_entity_value)
     return private_id_set
 
 
-def prepare_private_id_set_for_merge(private_id_set_path, new_pack_name):
+def get_and_set_private_id_set_by_path(private_id_set_path, new_pack_name):
     with open(private_id_set_path, 'r') as id_set_file:
         private_id_set = json.load(id_set_file)
 
@@ -44,7 +44,7 @@ def main():
     options = options_handler()
     private_id_set_path = options.private_id_set_path
     new_pack_name = options.new_pack_name
-    prepare_private_id_set_for_merge(private_id_set_path, new_pack_name)
+    get_and_set_private_id_set_by_path(private_id_set_path, new_pack_name)
 
 
 if __name__ == '__main__':
