@@ -1,6 +1,4 @@
-description: |
-  Find an AWS resources by FQDN using Prisma Cloud inventory.
-  Supported services: EC2, Application Load Balancer, ECS, Route53, CloudFront, S3, API Gateway.
+description: Find an AWS resources by FQDN using Prisma Cloud inventory
 id: Prisma Cloud - Find AWS Resource by FQDN
 inputs:
 - description: FQDN to look up

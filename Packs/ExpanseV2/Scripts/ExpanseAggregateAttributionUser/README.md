@@ -19,10 +19,10 @@ This script is used in the following playbooks and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| input | input list |
-| current | current aggregation state |
-| username_fields | comma separated list of fields to treat as serial number |
-| sightings_fields | comma separated list of field names to be considered sighting counts |
+| input | Input list. |
+| current | Current aggregation state. |
+| username_fields | Comma separated list of fields to treat as serial number. |
+| sightings_fields | Comma separated list of field names to be considered sighting counts. |
 
 ## Outputs
 ---
