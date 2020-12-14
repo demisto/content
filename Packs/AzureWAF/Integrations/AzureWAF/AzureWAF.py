@@ -350,7 +350,7 @@ def main() -> None:
         proxy=params.get('proxy', False),
     )
 
-    demisto.debug(f'Command being called in Azure WAF is {demisto.command()}')
+    demisto.debug(f'Command being called in Azure WAF is {command}')
     try:
 
         if command == 'test-module':
