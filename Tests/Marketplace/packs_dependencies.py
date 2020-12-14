@@ -40,18 +40,11 @@ def ProcessPoolHandler() -> ProcessPool:
     with ProcessPool(max_workers=3) as pool:
         try:
             yield pool
-        except KeyboardInterrupt:
-            logging.info("\nCTRL+C Pressed!\nGracefully release all resources due to keyboard interrupt...")
-            pool.stop()
-            pool.join()
-            raise
         except Exception as e:
             logging.exception(e)
             logging.error("Gracefully release all resources due to Error...")
-            pool.stop()
-            pool.join()
             raise
-        else:
+        finally:
             pool.close()
             pool.join()
 
