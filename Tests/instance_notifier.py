@@ -28,7 +28,7 @@ def options_handler():
 
 
 def install_new_content(client, server):
-    update_content_on_demisto_instance(client, server, 'Demisto Marketplace')
+    update_content_on_demisto_instance(client, server, 'Server Master')
 
 
 def get_integrations(secret_conf_path):
