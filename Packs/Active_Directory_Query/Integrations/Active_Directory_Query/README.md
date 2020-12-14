@@ -91,8 +91,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 36. [Get an AD user, used in the IAM premium pack: get-user](#iam-get-user)
 38. [Create an AD user, used in the IAM premium pack: create-user](#iam-create-user)
 40. [Update an AD user, used in the IAM premium pack: update-user](#iam-update-user)
-42. [Enable an AD user, used in the IAM premium pack: enable-user](#giam-enable-user)
-44. [Diable an AD user, used in the IAM premium pack: disable-user](#iam-diable-user)
+42. [Disable an AD user, used in the IAM premium pack: disable-user](#iam-diable-user)
 
 ### 1. Expire a password
 
@@ -864,49 +863,7 @@ Used in the IAM premium pack.
 | Active Directory Query | IAM_instance_1 | true | true |  | testdemisto2| testdemisto2@paloaltonetworks.com | status: PROVISIONED<br />created: 2020-10-18T17:54:30.000Z<br />activated: 2020-10-18T17:54:30.000Z<br />statusChanged: 2020-10-18T17:54:30.000Z<br />lastLogin: null<br />lastUpdated: 2020-10-18T17:54:30.000Z<br />passwordChanged: null<br />type: {"id": "oty8zfz6plq7b0r830h7"}<br />profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br />credentials: {"provider": {"type": "Active Directory Query", "name": "Active Directory Query"}}}
 
 
-### 22. Enable an AD user
-
-Enable an active AD user.
-Used in the IAM premium pack.
-
-#### Base Command
-`iam-enable-user`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| user-profile | A User Profile indicator that contains user information, such as name, email address, etc. | Required | 
-| create-if-not-exists | When true, the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| IAM.Vendor.active | Boolean | When true, indicates that the employee's status is active. | 
-| IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | String | Indicates if the API was successful or provides error information. | 
-| IAM.Vendor.email | String | The email address of the employee. | 
-| IAM.Vendor.errorCode | Number | HTTP error response code. | 
-| IAM.Vendor.errorMessage | String | Reason why the API failed. | 
-| IAM.Vendor.id | String | The employee's user ID in the app. | 
-| IAM.Vendor.instanceName | String | Name of the integration instance. | 
-| IAM.Vendor.success | Boolean | When true, indicates that the command was executed successfully. | 
-| IAM.Vendor.username | String | The employee's username in the app. | 
-| IAM.Vendor.action | String | The command name. | 
-
-#### Command Example
-```
-!iam-enable-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}
-```
-#### Human Readable Output
-
-### Enable User Results
-|brand|instanceName|success|active|id|username|email|details|
-|---|---|---|---|---|---|---|---|
-| Active Directory Query | IAM_instance_1 | true | true |  | testdemisto2| testdemisto2@paloaltonetworks.com | status: PROVISIONED<br />created: 2020-10-18T17:54:30.000Z<br />activated: 2020-10-18T17:54:30.000Z<br />statusChanged: 2020-10-18T17:54:30.000Z<br />lastLogin: null<br />lastUpdated: 2020-10-18T17:54:30.000Z<br />passwordChanged: null<br />type: {"id": "oty8zfz6plq7b0r830h7"}<br />profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br />credentials: {"provider": {"type": "Active Directory Query", "name": "Active Directory Query"}}}
-
-
-### 23. Disable an AD user
+### 22. Disable an AD user
 
 Disable an active AD user.
 Used in the IAM premium pack.
