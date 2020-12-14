@@ -2750,5 +2750,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- BoxV2_TestPlaybook
 fromversion: 5.0.0
