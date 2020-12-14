@@ -124,14 +124,10 @@ def build_tags_from_list(lst: list) -> List[Dict]:
     return tags
 
 
-def str_to_list(string: str) -> list:
-    return list(i.strip() for i in string.split(",")) if string else []
-
-
 def str_to_dict(string: str) -> dict:
     if not string:
         return {}
-    lst = str_to_list(string)
+    lst = argToList(string)
     if len(lst) % 2 != 0:
         return {}
     return {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
@@ -755,42 +751,42 @@ def find_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
     result = find_aggregated_events(
         skipFutureEvents=args.get("skip_future_events", None),
         exclude=args.get("exclude", None),
-        eventIdentifier=str_to_list(args.get("event_identifier", None)),  # TODO needed?
-        locationID=str_to_list(args.get("location_id", None)),
-        severity=str_to_list(args.get("severity", None)),
-        customer=str_to_list(args.get("customer", None)),
-        alarmID=str_to_list(args.get("alarm_id", None)),
-        attackCategoryID=str_to_list(args.get("attack_category_id", None)),
-        sourceGeoCountry=str_to_list(args.get("source_geo_country", None)),
-        destinationGeoCountry=str_to_list(args.get("destination_geo_country", None)),
-        geoCountry=str_to_list(args.get("geo_country", None)),
+        eventIdentifier=argToList(args.get("event_identifier", None)),  # TODO needed?
+        locationID=argToList(args.get("location_id", None)),
+        severity=argToList(args.get("severity", None)),
+        customer=argToList(args.get("customer", None)),
+        alarmID=argToList(args.get("alarm_id", None)),
+        attackCategoryID=argToList(args.get("attack_category_id", None)),
+        sourceGeoCountry=argToList(args.get("source_geo_country", None)),
+        destinationGeoCountry=argToList(args.get("destination_geo_country", None)),
+        geoCountry=argToList(args.get("geo_country", None)),
         properties=str_to_dict(args.get("properties", None)),
         exactMatchProperties=args.get("exact_match_properties", None),
-        subCriteria=str_to_list(args.get("sub_criteria", None)),
-        signature=str_to_list(args.get("signature", None)),
+        subCriteria=argToList(args.get("sub_criteria", None)),
+        signature=argToList(args.get("signature", None)),
         lastUpdatedTimestamp=args.get("last_updated_timestamp", None),
         indexStartTime=args.get("index_start_time", None),
         indexEndTime=args.get("index_end_time", None),
-        destinationIP=str_to_list(args.get("destination_ip", None)),
-        sourceIP=str_to_list(args.get("source_ip", None)),
-        ip=str_to_list(args.get("ip", None)),
-        destinationPort=str_to_list(args.get("destination_port", None)),
-        sourcePort=str_to_list(args.get("source_port", None)),
-        port=str_to_list(args.get("port", None)),
+        destinationIP=argToList(args.get("destination_ip", None)),
+        sourceIP=argToList(args.get("source_ip", None)),
+        ip=argToList(args.get("ip", None)),
+        destinationPort=argToList(args.get("destination_port", None)),
+        sourcePort=argToList(args.get("source_port", None)),
+        port=argToList(args.get("port", None)),
         minSeverity=args.get("min_severity", None),
         maxSeverity=args.get("max_severity", None),
         limit=args.get("limit", 25),
         offset=args.get("offset", None),
         includeDeleted=args.get("include_deleted", None),
         minCount=args.get("min_count", None),
-        associatedCaseID=str_to_list(args.get("associated_case_id", None)),
+        associatedCaseID=argToList(args.get("associated_case_id", None)),
         sourceIPMinBits=args.get("source_ip_min_bits", None),
         destinationIPMinBits=args.get("destination_ip_min_bits", None),
         startTimestamp=args.get("start_timestamp", "-24hours"),
         endTimestamp=args.get("end_timestamp", "now"),
-        sortBy=str_to_list(args.get("sort_by", None)),
-        includeFlags=str_to_list(args.get("include_flags", None)),
-        excludeFlags=str_to_list(args.get("exclude_flags", None)),
+        sortBy=argToList(args.get("sort_by", None)),
+        includeFlags=argToList(args.get("include_flags", None)),
+        excludeFlags=argToList(args.get("exclude_flags", None)),
     )
 
     return CommandResults(
@@ -872,29 +868,29 @@ def find_nids_events_command(args: Dict[str, Any]) -> CommandResults:
     result = find_n_i_d_s_events(
         skipFutureEvents=args.get("skip_future_events", None),
         exclude=args.get("exclude", None),
-        eventIdentifier=str_to_list(args.get("event_identifier", None)),
-        locationID=str_to_list(args.get("location_id", None)),
-        severity=str_to_list(args.get("severity", None)),
-        customer=str_to_list(args.get("customer", None)),
-        alarmID=str_to_list(args.get("alarm_id", None)),
-        attackCategoryID=str_to_list(args.get("attack_category_id", None)),
-        sourceGeoCountry=str_to_list(args.get("source_geo_country", None)),
-        destinationGeoCountry=str_to_list(args.get("destination_geo_country", None)),
-        geoCountry=str_to_list(args.get("geo_country", None)),
+        eventIdentifier=argToList(args.get("event_identifier", None)),
+        locationID=argToList(args.get("location_id", None)),
+        severity=argToList(args.get("severity", None)),
+        customer=argToList(args.get("customer", None)),
+        alarmID=argToList(args.get("alarm_id", None)),
+        attackCategoryID=argToList(args.get("attack_category_id", None)),
+        sourceGeoCountry=argToList(args.get("source_geo_country", None)),
+        destinationGeoCountry=argToList(args.get("destination_geo_country", None)),
+        geoCountry=argToList(args.get("geo_country", None)),
         properties=str_to_dict(args.get("properties", None)),
         exactMatchProperties=args.get("exact_match_properties", None),
-        sensorID=str_to_list(args.get("sensor_id", None)),
-        subCriteria=str_to_list(args.get("sub_criteria", None)),
-        signature=str_to_list(args.get("signature", None)),
+        sensorID=argToList(args.get("sensor_id", None)),
+        subCriteria=argToList(args.get("sub_criteria", None)),
+        signature=argToList(args.get("signature", None)),
         lastUpdatedTimestamp=args.get("last_updated_timestamp", None),
         indexStartTime=args.get("index_start_time", None),
         indexEndTime=args.get("index_end_time", None),
-        destinationIP=str_to_list(args.get("destination_ip", None)),
-        sourceIP=str_to_list(args.get("source_ip", None)),
-        ip=str_to_list(args.get("ip", None)),
-        destinationPort=str_to_list(args.get("destination_port", None)),
-        sourcePort=str_to_list(args.get("source_port", None)),
-        port=str_to_list(args.get("port", None)),
+        destinationIP=argToList(args.get("destination_ip", None)),
+        sourceIP=argToList(args.get("source_ip", None)),
+        ip=argToList(args.get("ip", None)),
+        destinationPort=argToList(args.get("destination_port", None)),
+        sourcePort=argToList(args.get("source_port", None)),
+        port=argToList(args.get("port", None)),
         minSeverity=args.get("min_severity", None),
         maxSeverity=args.get("max_severity", None),
         limit=args.get("limit", 25),
@@ -902,9 +898,9 @@ def find_nids_events_command(args: Dict[str, Any]) -> CommandResults:
         includeDeleted=args.get("include_deleted", None),
         startTimestamp=args.get("start_timestamp", "-24hours"),
         endTimestamp=args.get("end_timestamp", "now"),
-        sortBy=str_to_list(args.get("sort_by", None)),
-        includeFlags=str_to_list(args.get("include_flags", None)),
-        excludeFlags=str_to_list(args.get("exclude_flags", None)),
+        sortBy=argToList(args.get("sort_by", None)),
+        includeFlags=argToList(args.get("include_flags", None)),
+        excludeFlags=argToList(args.get("exclude_flags", None)),
     )
 
     return CommandResults(
@@ -942,10 +938,10 @@ def search_records_command(args: Dict[str, Any]) -> CommandResults:
         query=query,
         aggregateResult=args.get("aggregate_result", None),
         includeAnonymousResults=args.get("include_anonymous_results", None),
-        rrClass=str_to_list(args.get("rr_class", None)),
-        rrType=str_to_list(args.get("rr_type", None)),
-        customerID=str_to_list(args.get("customer_id", None)),
-        tlp=str_to_list((args.get("tlp", None))),
+        rrClass=argToList(args.get("rr_class", None)),
+        rrType=argToList(args.get("rr_type", None)),
+        customerID=argToList(args.get("customer_id", None)),
+        tlp=argToList((args.get("tlp", None))),
         limit=args.get("limit", 25),
         offset=args.get("offset", None),
     )
