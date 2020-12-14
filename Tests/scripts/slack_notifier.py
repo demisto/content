@@ -11,6 +11,7 @@ from slackclient import SlackClient
 
 from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import str2bool, run_command
+from Tests.Marketplace.marketplace_services import BucketUploadFlow, get_successful_and_failed_packs
 
 DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/' \
                     'uploads/2018/07/Demisto-Icon-Dark.png'
@@ -19,11 +20,8 @@ TEST_PLAYBOOK_TYPE = 'test_playbooks'
 SDK_UNITTESTS_TYPE = 'sdk_unittests'
 SDK_FAILED_STEPS_TYPE = 'sdk_faild_steps'
 SDK_RUN_AGAINST_FAILED_STEPS_TYPE = 'sdk_run_against_failed_steps'
-BUCKET_UPLOAD_TYPE = 'bucket_upload_flow'
 SDK_BUILD_TITLE = 'SDK Nightly Build'
 SDK_XSOAR_BUILD_TITLE = 'Demisto SDK Nightly - Run Against Cortex XSOAR'
-BUCKET_UPLOAD_BUILD_TITLE = 'Upload Packs To Marketplace Storage'
-PACKS_RESULTS_FILE = "packs_results.json"
 
 
 def get_faild_steps_list():
@@ -130,7 +128,8 @@ def get_attachments_for_unit_test(build_url, is_sdk_build=False):
 def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_file_path=None):
     steps_fields = get_entities_fields(entity_title="Failed Steps")
     color = 'good' if not steps_fields else 'danger'
-    title = f'{BUCKET_UPLOAD_BUILD_TITLE} - Success' if not steps_fields else f'{BUCKET_UPLOAD_BUILD_TITLE} - Failure'
+    title = f'{BucketUploadFlow.BUCKET_UPLOAD_BUILD_TITLE} - Success' if not steps_fields \
+        else f'{BucketUploadFlow.BUCKET_UPLOAD_BUILD_TITLE} - Failure'
 
     if job_name and color == 'danger':
         steps_fields = [{
@@ -139,29 +138,23 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
             "short": False
         }] + steps_fields
 
-    if job_name and job_name == 'Upload Packs To Marketplace':
-        if os.path.exists(packs_results_file_path):
-            try:
-                with open(packs_results_file_path, 'r') as json_file:
-                    packs_results_file = json.load(json_file)
-                if packs_results_file:
-                    successful_packs = packs_results_file.get('successful_packs', {})
-                    if successful_packs:
-                        steps_fields += [{
-                            "title": "Successful Packs:",
-                            "value": "\n".join([pack_name for pack_name in {*successful_packs}]),
-                            "short": False
-                        }]
-                    failed_packs = packs_results_file.get('failed_packs', {})
-                    if failed_packs:
-                        steps_fields += [{
-                            "title": "Failed Packs:",
-                            "value": "\n".join([f"{pack_name}: {pack_data.get('status')}" for pack_name, pack_data in
-                                                failed_packs.items()]),
-                            "short": False
-                        }]
-            except json.decoder.JSONDecodeError:
-                pass
+    if job_name and job_name == BucketUploadFlow.UPLOAD_JOB_NAME:
+        successful_packs, failed_packs = get_successful_and_failed_packs(
+            packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
+        )
+        if successful_packs:
+            steps_fields += [{
+                "title": "Successful Packs:",
+                "value": "\n".join([pack_name for pack_name in {*successful_packs}]),
+                "short": False
+            }]
+        if failed_packs:
+            steps_fields += [{
+                "title": "Failed Packs:",
+                "value": "\n".join([f"{pack_name}: {pack_data.get(BucketUploadFlow.STATUS)}"
+                                    for pack_name, pack_data in failed_packs.items()]),
+                "short": False
+            }]
 
     if job_name and job_name != 'Upload Packs To Marketplace' and color == 'good':
         logging.info('On bucket upload flow we are not notifying on jobs that are not Upload Packs. exiting...')
@@ -300,7 +293,7 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
         elif test_type == SDK_FAILED_STEPS_TYPE:
             logging.info('Starting Slack notifications about SDK nightly build - test playbook')
             content_team_attachments = get_attachments_for_all_steps(build_url, build_title=SDK_BUILD_TITLE)
-        elif test_type == BUCKET_UPLOAD_TYPE:
+        elif test_type == BucketUploadFlow.BUCKET_UPLOAD_TYPE:
             logging.info('Starting Slack notifications about upload to production bucket build')
             content_team_attachments = get_attachments_for_bucket_upload_flow(
                 build_url=build_url, job_name=job_name, packs_results_file_path=packs_results_file
@@ -336,7 +329,9 @@ def main():
         slack_notifier(url, slack, test_type, env_results_file_name)
     elif bucket_upload:
         slack_notifier(url, slack, test_type,
-                       packs_results_file=os.path.join(circle_artifacts_path, PACKS_RESULTS_FILE), job_name=job_name)
+                       packs_results_file=os.path.join(
+                           circle_artifacts_path, BucketUploadFlow.PACKS_RESULTS_FILE), job_name=job_name
+                       )
     elif test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
         slack_notifier(url, slack, test_type)
     else:
