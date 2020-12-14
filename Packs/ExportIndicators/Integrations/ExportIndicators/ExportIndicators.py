@@ -449,7 +449,7 @@ def json_format_single_indicator(indicator: dict):
     json_format_indicator = {
         "indicator": indicator.get("value")
     }
-    del indicator["value"]
+    indicator.pop("value", None)
 
     json_format_indicator["value"] = indicator
     return json_format_indicator
