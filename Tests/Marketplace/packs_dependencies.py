@@ -131,6 +131,9 @@ def calculate_all_packs_dependencies(pack_dependencies_result: dict, id_set: dic
         Using these results we write the dependencies
         """
         try:
+            # Check if process raised an exception
+            future.exception()
+            # Process future result
             first_level_dependencies, all_level_dependencies, pack_name = future.result()  # blocks until results ready
             logging.debug(f'Got dependencies for pack {pack_name}\n: {pformat(all_level_dependencies)}')
             pack_dependencies_result[pack_name] = {
