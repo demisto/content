@@ -40,7 +40,7 @@ def download_private_id_set_from_gcp(public_storage_bucket):
     index_blob = public_storage_bucket.blob(STORAGE_ID_SET_PATH)
 
     if not os.path.exists(ARTIFACTS_PATH):
-        os.mkdir(ARTIFACTS_PATH)
+        os.makedirs(ARTIFACTS_PATH)
 
     try:
         index_blob.download_to_filename(f'{ARTIFACTS_PATH}/{PRIVATE_ID_SET_FILE}')
