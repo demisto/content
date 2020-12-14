@@ -2,9 +2,14 @@ import os
 import json
 import demistomock as demisto
 from tempfile import mkdtemp
-from Anomali_ThreatStream_v2 import main, file_name_to_valid_string
-
+from Anomali_ThreatStream_v2 import main, file_name_to_valid_string, get_file_reputation
 import emoji
+import pytest
+
+
+def util_load_json(path):
+    with open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 def http_request_with_approval_mock(req_type, suffix, params, data=None, files=None):
@@ -107,3 +112,28 @@ def test_import_ioc_without_approval(mocker):
 
     assert results[0]['Contents']
     assert expected_import_json == http_mock.call_args[1]['json']
+
+
+SHA_256_FILE_HASH = '178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1'
+SHA_512_FILE_HASH = '665564674b6b4a7a3a69697221acef98ee5ca3664ce6b370059cb7d3b0942589556e5a9d69d83d038339535ea4ced2d4d' \
+                    '300e07013a16'
+
+
+@pytest.mark.parametrize('file_hash, expected_result_file_path, raw_response_file_path', [
+    (SHA_256_FILE_HASH,
+     'test_data/file_256_context.json',
+     'test_data/file_256_response.json'),
+    (SHA_512_FILE_HASH,
+     'test_data/file_512_context.json',
+     'test_data/file_512_response.json')
+])
+def test_get_file_reputation(mocker, file_hash, expected_result_file_path, raw_response_file_path):
+    expected_result = util_load_json(expected_result_file_path)
+    raw_response = util_load_json(raw_response_file_path)
+    mocker.patch('Anomali_ThreatStream_v2.search_indicator_by_params', return_value=raw_response)
+    mocker.patch.object(demisto, 'results')
+
+    get_file_reputation(file_hash)
+    context = demisto.results.call_args_list[0][0][0].get('EntryContext')
+
+    assert context == expected_result
