@@ -21,7 +21,7 @@ DEFAULT_PAGE_SIZE = 50
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Test for validating premium packs on servers.')
-    parser.add_argument('--ami_env', '-a',
+    parser.add_argument('-a', '--ami_env',
                         help='The AMI environment for the current run. Options are '
                              '"Demisto 6.0", "Demisto Marketplace". The server url is determined by the'
                              ' AMI environment.', default='Demisto Marketplace')
@@ -146,7 +146,8 @@ def verify_pack_in_list(pack: dict, pack_list: list, pack_list_name: str = "pack
     return False
 
 
-def verify_packs_inside(inner_packs: list, outer_packs: list, inner_packs_name: str, outer_packs_name: str) -> bool:
+def verify_outer_contains_inner(inner_packs: list, outer_packs: list, inner_packs_name: str,
+                                outer_packs_name: str) -> bool:
     """Verify inner_packs are all inside outer_packs.
 
     Args:
@@ -156,7 +157,6 @@ def verify_packs_inside(inner_packs: list, outer_packs: list, inner_packs_name: 
         outer_packs_name: Name of outer packs for better logging.
 
     Returns: True if all inner_packs are inside, false otherwise.
-
     """
     missing_packs = []
     for inner_pack in inner_packs:
@@ -184,16 +184,16 @@ def verify_server_paid_packs_by_index(server_paid_packs: list, index_data_packs:
     """
 
     logging.info("Verifying all premium server packs are in the index.json")
-    all_server_packs_in_index = verify_packs_inside(inner_packs=server_paid_packs,
-                                                    outer_packs=index_data_packs,
-                                                    inner_packs_name="premium server packs",
-                                                    outer_packs_name="index packs")
+    all_server_packs_in_index = verify_outer_contains_inner(inner_packs=server_paid_packs,
+                                                            outer_packs=index_data_packs,
+                                                            inner_packs_name="premium server packs",
+                                                            outer_packs_name="index packs")
 
     logging.info("Verifying all premium index packs are in the server")
-    all_index_packs_in_server = verify_packs_inside(inner_packs=index_data_packs,
-                                                    outer_packs=server_paid_packs,
-                                                    inner_packs_name="index packs",
-                                                    outer_packs_name="premium server packs")
+    all_index_packs_in_server = verify_outer_contains_inner(inner_packs=index_data_packs,
+                                                            outer_packs=server_paid_packs,
+                                                            inner_packs_name="index packs",
+                                                            outer_packs_name="premium server packs")
 
     return all([all_index_packs_in_server, all_server_packs_in_index])
 
@@ -216,6 +216,7 @@ def extract_credentials_from_secret(secret_path: str) -> (str, str):
 def main():
     install_logging("Validate Premium Packs.log")
     options = options_handler()
+    exit_code = 0
 
     index_data, index_path = get_index_json_data(service_account=options.service_account,
                                                  production_bucket_name=options.production_bucket_name,
@@ -236,14 +237,15 @@ def main():
                                  error_message=f"Test failed on host: {server.host}.",
                                  success_message=f"All premium packs in host: {server.host} are valid")
         if not paid_packs_are_identical:
-            if os.path.exists(options.service_account):
-                os.remove(options.service_account)
-            sys.exit(1)
+            exit_code = 1
     else:
         logging.critical(f"Missing all premium packs in host: {server.host}")
-        if os.path.exists(options.service_account):
-            os.remove(options.service_account)
-        sys.exit(1)
+        exit_code = 1
+
+    # Deleting GCS PATH before exit
+    if os.path.exists(options.service_account):
+        os.remove(options.service_account)
+    sys.exit(exit_code)
 
 
 if __name__ == '__main__':

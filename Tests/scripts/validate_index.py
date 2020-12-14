@@ -9,8 +9,9 @@ import logging
 import sys
 import os
 
-from Tests.Marketplace.marketplace_services import init_storage_client, load_json, GCPConfig, CONTENT_ROOT_PATH
-from Tests.Marketplace.upload_packs import download_and_extract_index, get_content_git_client
+from Tests.Marketplace.marketplace_services import init_storage_client, load_json, get_content_git_client, \
+    GCPConfig, CONTENT_ROOT_PATH
+from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.scripts.utils.log_util import install_logging
 from pprint import pformat
 
@@ -95,8 +96,8 @@ def verify_pack(pack: dict) -> bool:
     id_exists = log_message_if_statement(statement=(pack.get("id", "") not in ("", None)),
                                          error_message="There is a missing pack id.")
     price_is_valid = log_message_if_statement(statement=(pack.get("price", -1) >= 0),
-                                              error_message=f"The price on the pack {pack['id']} is invalid.",
-                                              success_message=f"The price on the pack {pack['id']} is valid.")
+                                              error_message=f"The price on the pack {pack.get('id', '')} is invalid.",
+                                              success_message=f"The price on the pack {pack.get('id', '')} is valid.")
     return all([id_exists, price_is_valid])
 
 
@@ -142,6 +143,7 @@ def get_index_json_data(service_account: str, production_bucket_name: str, extra
 def main():
     install_logging("Validate index.log")
     options = options_handler()
+    exit_code = 0
     index_data, index_file_path = get_index_json_data(service_account=options.service_account,
                                                       production_bucket_name=options.production_bucket_name,
                                                       extract_path=options.extract_path)
@@ -153,11 +155,19 @@ def main():
                              success_message=f"{index_file_path} file was found valid")
 
     # Validate commit hash in master history
-    commit_hash_is_valid = check_commit_in_master_history(index_data.get("commit", ""))
+    commit_hash_is_valid = log_message_if_statement(statement=("commit" in index_data),
+                                                    error_message="No commit field was found in the index.json")
+    if commit_hash_is_valid:
+        commit_hash_is_valid = check_commit_in_master_history(index_data.get("commit", ""))
 
     if not all([index_is_valid, commit_hash_is_valid]):
         logging.critical("Index content is invalid. Aborting.")
-        sys.exit(1)
+        exit_code = 1
+
+    # Deleting GCS PATH before exit
+    if os.path.exists(options.service_account):
+        os.remove(options.service_account)
+    sys.exit(exit_code)
 
 
 if __name__ == '__main__':
