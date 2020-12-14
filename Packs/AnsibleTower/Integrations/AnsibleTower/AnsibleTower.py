@@ -27,7 +27,16 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=url_suffix, params=data)
 
 
-def inventories_list(client: Client):
+def inventories_list(client: Client, args: dict) -> List[CommandResults]:
+    input_id = args.get('id')
+    query = args.get('search')
+    data = {
+        'page': args.get('page', 1),
+        'page_size': args.get('page_size', 50),
+
+    }
+    return_results = client.api_request('inventories/', data)
+
 
 
 def main() -> None:
@@ -36,6 +45,9 @@ def main() -> None:
     :return:
     :rtype:
     """
+    commands = {
+        'ansible-awx-inventories-list': inventories_list
+    }
 
     base_url = demisto.params()['url']
 
@@ -57,14 +69,13 @@ def main() -> None:
             verify=verify_certificate,
             proxy=proxy)
 
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            # return_results(test_module(client))
+        command = demisto.command()
+
+        if command == 'test-module':
             x=1
-
-        elif demisto.command() == 'ansible-awx-inventories-list ':
-            return_results(inventories_list(client,))
-
+            # return_results(test_module(client))
+        elif command in commands:
+            return_results(commands[command](client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
