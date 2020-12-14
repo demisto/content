@@ -74,25 +74,25 @@ class AzureWAFClient:
     def get_policy_by_name(self, policy_name: str, resource_group_name: str) -> Dict:
         return self.http_request(
             method='GET',
-            url_suffix=f'{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}'
+            url_suffix=f'/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}'
         )
 
     def get_policy_list_by_resource_group_name(self, resource_group_name: str) -> Dict:
         return self.http_request(
             method='GET',
-            url_suffix=f'{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}'
+            url_suffix=f'/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}'
         )
 
     def get_policy_list_by_subscription_id(self) -> Dict:
         return self.http_request(
             method='GET',
-            url_suffix=POLICY_PATH
+            url_suffix=f'/{POLICY_PATH}'
         )
 
     def update_policy_upsert(self, policy_name: str, resource_group_name: str, data: Dict) -> Dict:
         return self.http_request(
             method='PUT',
-            url_suffix=f'{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}',
+            url_suffix=f'/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}',
             data=data
         )
 
@@ -101,7 +101,7 @@ class AzureWAFClient:
             method='DELETE',
             return_empty_response=True,
             resp_type='response',
-            url_suffix=f'{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}',
+            url_suffix=f'/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}',
         )
 
 
@@ -141,8 +141,7 @@ def policy_get_command(client: AzureWAFClient, **args) -> CommandResults:
     policy_name: str = args.get('policy_name', '')
     resource_group_name: str = args.get('resource_group_name', client.resource_group_name)
     verbose = args.get("verbose", "false") == "true"
-    limit = str(args.get("limit"))
-    limit = int(args.get("limit", '20'))
+    limit = int(str(args.get("limit", '20')))
 
     policies: List[Dict] = []
     try:
@@ -169,7 +168,7 @@ def policy_get_list_by_subscription_command(client: AzureWAFClient, **args: Dict
     """
     policies: List[Dict] = []
     verbose = args.get("verbose", "false") == "true"
-    limit = int(args.get("limit", '20'))
+    limit = int(str(args.get("limit", '20')))
 
     try:
         policies.extend(client.get_policy_list_by_subscription_id().get("value", []))
