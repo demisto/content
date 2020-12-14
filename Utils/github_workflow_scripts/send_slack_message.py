@@ -40,7 +40,7 @@ def main():
                     },
                     {
                         "type": "mrkdwn",
-                        "text": "*Test Update:*\nMar 10, 2015 (3 years, 5 months)"
+                        "text": "*Last Update:*\nMar 10, 2015 (3 years, 5 months)"
                     },
                     {
                         "type": "mrkdwn",
