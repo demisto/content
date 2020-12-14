@@ -27,25 +27,32 @@ EMPTY_ID_SET = {
 }
 
 
-def download_private_id_set_from_gcp(public_storage_bucket):
+def is_private_id_set_file_exist(public_storage_bucket, storage_client):
+    blob = public_storage_bucket.get_blob(STORAGE_ID_SET_PATH)
+    return blob.exsits(storage_client)
+
+
+def download_private_id_set_from_gcp(public_storage_bucket, storage_client):
     """Downloads private ID set file from cloud storage.
 
     Args:
         public_storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where private_id_set.json
         is stored.
+        storage_client: The GCP storage client
     Returns:
         str: private ID set file full path.
     """
 
-    index_blob = public_storage_bucket.blob(STORAGE_ID_SET_PATH)
+    is_file_exists = is_private_id_set_file_exist(public_storage_bucket, storage_client)
 
     if not os.path.exists(ARTIFACTS_PATH):
         os.mkdir(ARTIFACTS_PATH)
 
-    try:
+    if is_file_exists:
+        index_blob = public_storage_bucket.blob(STORAGE_ID_SET_PATH)
         index_blob.download_to_filename(f'{ARTIFACTS_PATH}/{PRIVATE_ID_SET_FILE}')
 
-    except Exception:
+    else:
         with open(f'{ARTIFACTS_PATH}/{PRIVATE_ID_SET_FILE}', 'w') as empty_id_set:
             json.dump(EMPTY_ID_SET, empty_id_set)
 
@@ -84,7 +91,7 @@ def main():
     storage_client = init_storage_client(service_account)
     public_bucket_name = options.public_bucket_name
     public_storage_bucket = storage_client.bucket(public_bucket_name)
-    private_id_set = download_private_id_set_from_gcp(public_storage_bucket)
+    private_id_set = download_private_id_set_from_gcp(public_storage_bucket, storage_client)
     return private_id_set
 
 
