@@ -1,0 +1,82 @@
+{
+ "description": "",
+ "feed": false,
+ "id": "User Profile - Salesforce (Outgoing)",
+ "mapping": {
+  "User Profile": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+    "in the api": {
+     "complex": null,
+     "simple": "user profile"
+    },
+     "simple": ""
+    },
+    "department": {
+     "complex": null,
+     "simple": "department"
+    },
+    "displayName": {
+     "complex": null,
+     "simple": "displayname"
+    },
+    "employeeID": {
+     "complex": null,
+     "simple": "employeeid"
+    },
+    "givenName": {
+     "complex": null,
+     "simple": "givenname"
+    },
+    "l": {
+     "complex": null,
+     "simple": "city"
+    },
+    "mail": {
+     "complex": null,
+     "simple": "email"
+    },
+    "mobile": {
+     "complex": null,
+     "simple": "mobilephone"
+    },
+    "ou": {
+     "complex": null,
+     "simple": "locationregion"
+    },
+    "postalCode": {
+     "complex": null,
+     "simple": "zipcode"
+    },
+    "sn": {
+     "complex": null,
+     "simple": "surname"
+    },
+    "st": {
+     "complex": null,
+     "simple": "statename"
+    },
+    "streetAddress": {
+     "complex": null,
+     "simple": "streetaddress"
+    },
+    "title": {
+     "complex": null,
+     "simple": "title"
+    },
+    "userPrincipalName": {
+     "complex": null,
+     "simple": "username"
+    },
+    "ou":{
+     "complex": null,
+     "simple": ""
+    }
+   }
+  }
+ },
+ "name": "User Profile - Salesforce (Outgoing)",
+ "type": "mapping-outgoing",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

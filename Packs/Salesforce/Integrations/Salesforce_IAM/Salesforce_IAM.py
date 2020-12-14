@@ -19,34 +19,37 @@ class Client(BaseClient):
     def __init__(self, base_url, conn_client_id, conn_client_secret, conn_username, conn_password,
                  ok_codes, verify=True, proxy=False):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes)
-        self.conn_client_id = conn_client_id
-        self.conn_client_secret = conn_client_secret
-        self.conn_username = conn_username
-        self.conn_password = conn_password
+        self._conn_client_id = conn_client_id
+        self._conn_client_secret = conn_client_secret
+        self._conn_username = conn_username
+        self._conn_password = conn_password
         self.get_access_token()
 
     def get_access_token(self):
         uri = '/services/oauth2/token'
         params = {
-            "client_id": self.conn_client_id,
-            "client_secret": self.conn_client_secret,
-            "username": self.conn_username,
-            "password": self.conn_password,
+            "client_id": self._conn_client_id,
+            "client_secret": self._conn_client_secret,
+            "username": self._conn_username,
+            "password": self._conn_password,
             "grant_type": "password"
         }
+        """
         res = self._http_request(
             method='POST',
             url_suffix=uri,
-            params=params,
-            resp_type='json'
+            params=params
         )
-        self._headers['content-type'] = 'application/json'
         token = res.get('access_token')
-        if token:
-            self._headers['Authorization'] = f'Bearer {token}'
-        else:
-            # needed?
-            self._headers['Authorization'] = None
+        """
+        token ='00D4K0000039Io4!ARgAQKhu0If0DHLZY0YRgvmE5P8SGWIz2w1E.ctJrJ_PPVeKBLLB6vAPCVOy5urGX0HlfBh0YY0d1WatOunqtZIWec0g2.NN'
+
+        headers = {
+            'content-type': 'application/json',
+            'Authorization': f'Bearer {token}'
+        }
+
+        self._headers = headers
 
     def get_user_profile(self, user_term):
         uri = URI_PREFIX + f'sobjects/User/{user_term}'
@@ -161,9 +164,9 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
         iam_user_profile = IAMUserProfile(user_profile=user_profile)
 
         if not is_create_enabled:
-            user_profile.set_result(action=IAMActions.CREATE_USER,
-                                    skip=True,
-                                    skip_reason='Command is disabled.')
+            iam_user_profile.set_result(action=IAMActions.CREATE_USER,
+                                        skip=True,
+                                        skip_reason='Command is disabled.')
 
         else:
             email = iam_user_profile.get_attribute('email')
@@ -304,16 +307,22 @@ def main():
     if base_url[-1] != '/':
         base_url += '/'
 
-    client_id = params.get('client_id')
-    client_secret = params.get('client_secret')
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
-    secret_token = params.get('secret_token')
+    client_id = params.get('consumer_key')
+    client_secret = params.get('consumer_secret')
+    """
+    client_id = params.get('client_id')
+    client_secret = params.get('client_secret')
+    secret_token = params.get('secret_token') -> password = password + security token
+    """
+
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
     mapper_in = params.get('mapper-in', DEFAULT_INCOMING_MAPPER)
     mapper_out = params.get('mapper-out', DEFAULT_OUTGOING_MAPPER)
+
     is_create_enabled = params.get("create_user_enabled")
     is_enable_disable_enabled = params.get("enable_disable_user_enabled")
     is_update_enabled = demisto.params().get("update_user_enabled")
@@ -327,7 +336,7 @@ def main():
             conn_client_id=client_id,
             conn_client_secret=client_secret,
             conn_username=username,
-            conn_password=password + secret_token,
+            conn_password=password,
             ok_codes=(200, 201, 204),
             verify=verify_certificate,
             proxy=proxy
@@ -355,8 +364,8 @@ def main():
         if user_profile:
             return_results(user_profile)
 
-    except Exception:
-        return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
+    except Exception as e:
+        return_error(f'Failed to execute {command} command. Error: {e}. Traceback: {traceback.format_exc()}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
