@@ -13,6 +13,8 @@ from demisto_sdk.commands.find_dependencies.find_dependencies import VerboseFile
 from typing import Tuple, Iterable
 from Tests.scripts.utils.log_util import install_logging
 
+PROCESS_FAILURE = False
+
 
 def option_handler():
     """Validates and parses script arguments.
@@ -144,7 +146,7 @@ def calculate_all_packs_dependencies(pack_dependencies_result: dict, id_set: dic
             }
         except Exception:
             logging.exception('Failed to collect pack dependencies results')
-            raise
+            exit(1)
 
     # Generating one graph with dependencies for all packs
     dependency_graph = get_all_packs_dependency_graph(id_set, packs)
