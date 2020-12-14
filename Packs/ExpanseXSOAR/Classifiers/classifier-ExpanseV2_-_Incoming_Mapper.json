@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "2e331df1-6d09-4031-841a-37b44ae80cbd",
+    "id": "ExpanseV2-mapper",
     "mapping": {
         "Expanse Issue": {
             "dontMapEventToLabels": false,
