@@ -45,5 +45,6 @@ jobs:
         run: |
           echo "Sending notification about External PR ${{ github.event.pull_request.html_url }}"
           cd Utils/github_workflow_scripts
+          ls -l
           pipenv run ./send_slack_message.py
           echo "Finshed sending message"
