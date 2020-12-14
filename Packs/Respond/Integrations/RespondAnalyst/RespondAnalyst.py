@@ -582,6 +582,16 @@ def format_raw_incident(raw_incident, external_tenant_id, internal_tenant_id):
     if unknown:
         accounts.append({'name': 'Unknown', 'domain': None})
 
+    # dedupe accounts
+    seen = set()
+    deduped_accounts = []
+    for account in accounts:
+        t = tuple(account.items())
+        if t not in seen:
+            seen.add(t)
+            deduped_accounts.append(account)
+
+    accounts = deduped_accounts
 
     # collect hashes
     hashes = []
