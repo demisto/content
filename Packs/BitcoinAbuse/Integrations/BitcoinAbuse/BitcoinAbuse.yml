@@ -77,7 +77,8 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-description: This is integration for Bitcoin Abuse API. contains 2 commands, bitcoin-report-address and fetch-indicators
+description: This is integration for Bitcoin Abuse API. contains 2 commands, bitcoin-report-address
+  and fetch-indicators
 display: BitcoinAbuse
 name: BitcoinAbuse
 script:
@@ -97,8 +98,9 @@ script:
       name: abuse_type
       predefined:
       - ransomware
-      - darknetmarketbitcointumbler
-      - blackmailscam
+      - darknet market
+      - bitcoin tumbler
+      - blackmail scam
       - sextortion
       - other
       required: true
