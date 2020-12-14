@@ -9,8 +9,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 SERVER_URL = 'https://www.bitcoinabuse.com/api/'
-FEED_ENDPOINT_PREFIX = 'download/'
-REPORT_ADDRESS_ENDPOINT_PREFIX = 'reports/create'
+FEED_ENDPOINT_PREFIX = 'download/1d'
 abuse_type_name_to_id: Dict[str, int] = {
     'ransomware': 1,
     'darknet market': 2,
@@ -20,7 +19,7 @@ abuse_type_name_to_id: Dict[str, int] = {
     'other': 99
 }
 OTHER_ABUSE_TYPE_ID = 99
-REPORT_ADDRESS_SUFFIX = '/reports/create'
+REPORT_ADDRESS_PREFIX = '/reports/create'
 
 
 @dataclass
@@ -64,31 +63,29 @@ class BitcoinAbuseClient(BaseClient):
         Sends a post request to report an abuse to BitcoinAbuse servers.
 
         Args:
-            report_address_params: _ReportAddressParams contains all the required parameters for report address http post request
+            report_address_params: _ReportAddressParams contains all the required parameters for report
+            address http post request
         Returns:
             Returns if post request was successful.
         """
         return self._http_request(
             method='POST',
-            url_suffix=REPORT_ADDRESS_SUFFIX,
+            url_suffix=REPORT_ADDRESS_PREFIX,
             params=vars(report_address_params)
         )
 
-    def download_csv(self, download_params: _DownloadParams, time_period) -> str:
+    def download_csv(self, download_params: _DownloadParams) -> str:
         """
         Sends a post request to report an abuse to BitcoinAbuse servers.
 
         Args:
             download_params: _DownloadParams contains all the required parameters for download get http request
-            time_period: str the time period to receive in the csv from Bitcoin Abuse API.
-                         Allowed options are 1d, 30d, or forever
         Returns:
             Returns response representing the csv file of text if get request was successful.
         """
-        url_suffix = FEED_ENDPOINT_PREFIX + time_period
         return self._http_request(
             method='GET',
-            url_suffix=url_suffix,
+            url_suffix=FEED_ENDPOINT_PREFIX,
             params=vars(download_params),
             resp_type='text'
         )
@@ -187,25 +184,21 @@ def report_address_command(client: BitcoinAbuseClient, args: Dict) -> str:
     """
     Reports a bitcoin abuse to Bitcoin Abuse integration
 
-    :param client
-    Args:
-        client: BitcoinAbuseClient  used to post abuse to the api
-        params: Dict
-
-
     Args:
         client: BitcoinAbuseClient  used to post abuse to the api
         args: Dict
 
     Returns:
-        'ok' if http request was successful
+        'bitcoin address (address reported) by abuser (abuser reported) was
+        reported to BitcoinAbuse API' if http request was successful'
     """
     report_address_params: _ReportAddressParams = _build_report_address_params(args, client.api_key)
     response = client.report_address(report_address_params)
     if response.get('success') is True:
-        return "ok"
+        return f'bitcoin address {report_address_params.address} by abuser {report_address_params.abuser} was ' \
+               f'reported to BitcoinAbuse API'
     else:
-        raise DemistoException(f"bitcoin report address did not succeed, response was {response}")
+        raise DemistoException(f'bitcoin report address did not succeed, response was {response}')
 
 
 def main() -> None:
@@ -227,10 +220,9 @@ def main() -> None:
     try:
 
         if command == 'test-module':
-            time_period = params.get('fetchInterval')
 
             download_params = _DownloadParams(client.api_key)
-            client.download_csv(download_params, time_period)
+            client.download_csv(download_params)
 
             return_results("ok")
 

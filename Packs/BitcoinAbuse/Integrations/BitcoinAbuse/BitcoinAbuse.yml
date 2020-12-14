@@ -19,14 +19,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Indicators Fetch Interval
-  name: fetchInterval
-  options:
-  - 1d
-  - 30d
-  - forever
-  required: false
-  type: 15
 - additionalinfo: Incremental feeds pull only new or modified indicators that have
     been sent from the integration. As the determination if the indicator is new or
     modified happens on the 3rd-party vendor's side, and only indicators that are
@@ -93,7 +85,8 @@ script:
     - description: description of the abusement
       name: description
     - auto: PREDEFINED
-      description: type of abusement done
+      description: 'type of abuse made. abuse_type_other field is required when abuse_type
+        is other '
       name: abuse_type
       predefined:
       - ransomware
@@ -103,9 +96,11 @@ script:
       - sextortion
       - other
       required: true
-    - description: description of abuse type, required when abuse type is other
+    - description: description of abuse type, abuse_type_other field is required when
+        abuse_type is other
       name: abuse_type_other
-    description: Reports an abuser to Bitcoin Abuse API
+    description: Reports an abuser to Bitcoin Abuse API. abuse_type_other field is
+      required when abuse_type is other
     name: bitcoin-report-address
   dockerimage: demisto/python3:3.8.6.13358
   feed: true
