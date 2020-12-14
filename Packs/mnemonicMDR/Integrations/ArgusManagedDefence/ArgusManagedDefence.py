@@ -8,12 +8,10 @@ import urllib3
 
 import dateparser
 import traceback
-from typing import Any, Dict, List, Union  # , Tuple, Optional, cast
+from typing import Any, Dict, List, Union
 
 import logging
 
-# from argus_cli.utils import formatting
-# from argus_cli.settings import settings
 from argus_api import session as argus_session
 
 from argus_api.api.currentuser.v1.user import get_current_user
