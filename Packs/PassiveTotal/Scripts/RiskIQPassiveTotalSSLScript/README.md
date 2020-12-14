@@ -1,7 +1,7 @@
-Enhancement script to enrich SSL information for Email, RiskIQSHA1 and RiskIQSerialNumber type of indicators.
+Enhancement script to enrich SSL information for Email, File SHA-1 and RiskIQSerialNumber type of indicators.
 It can be set by following these steps:
  - Settings > ADVANCED > Indicator Type
- - Edit Email, RiskIQSHA1 and RiskIQSerialNumber Indicator one by one 
+ - Edit Email, File SHA-1 and RiskIQSerialNumber Indicator one by one 
  - Add this script into Enhancement Scripts
 
 ## Script Data
@@ -23,7 +23,7 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| indicator_value | Email, RiskIQSHA1 and RiskIQSerialNumber indicator value that need to enrich |
+| indicator_value | Email, File SHA-1 and RiskIQSerialNumber indicator value that need to enrich |
 
 ## Outputs
 ---

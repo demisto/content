@@ -2,20 +2,19 @@
     "name": "Bastille Networks",
     "description": "RF monitoring for wireless intrusion detection and policy enforcement. Visit https://www.bastille.net for details.",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.2",
     "author": "Bastille Networks",
-    "url": "https://www.bastille.net",
-    "email": "info@bastille.net",
+    "url": "https://www.bastille.net/support",
+    "email": "ask-customer-support@bastille.io",
     "categories": [
         "Network Security"
     ],
-    "tags": [
-        "RF"
-    ],
+    "tags": [],
     "created": "2020-05-07T16:59:04Z",
     "useCases": [],
     "keywords": [],
     "githubUser": [
         "sszilvasi"
-    ]
+    ],
+    "certification": "certified"
 }

@@ -53,8 +53,10 @@ def test_say_hello_command():
         'name': 'Dbot'
     }
 
-    readable_output, outputs, raw_response = say_hello_command(args)
+    response = say_hello_command(args)
 
-    assert readable_output == '## Hello Dbot'
-    assert outputs['HelloWorld']['hello'] == 'Hello Dbot'
-    assert raw_response == 'Hello Dbot'
+    assert response.outputs == {
+        'HelloWorld': {
+            'hello': 'Hello Dbot'
+        }
+    }

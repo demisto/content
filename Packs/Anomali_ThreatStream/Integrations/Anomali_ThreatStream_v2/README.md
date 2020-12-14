@@ -137,10 +137,8 @@ Checks the reputation of the given domain name.
 | --- | --- | --- |
 | Domain.Name | String | The domain name. | 
 | Domain.DNS | String | IPs resolved by DNS.  | 
-| Domain.WHOIS.CreationDate | Date | Date the domain was created. The date format is: YYYYMMDDThhmmss.
-Where T denotes the start of the value for time, in UTC time. | 
-| Domain.WHOIS.UpdatedDate | Date | Date the domain was last updated. The date format is: YYYYMMDDThhmmss.
-Where T denotes the start of the value for time, in UTC time. | 
+| Domain.WHOIS.CreationDate | Date | Date the domain was created. The date format is: YYYYMMDDThhmmss. Where T denotes the start of the value for time, in UTC time. | 
+| Domain.WHOIS.UpdatedDate | Date | Date the domain was last updated. The date format is: YYYYMMDDThhmmss. Where T denotes the start of the value for time, in UTC time. | 
 | Domain.WHOIS.Registrant.Name | String | Name of the registrant. | 
 | Domain.WHOIS.Registrant.Email | String | Email address of the registrant. | 
 | Domain.WHOIS.Registrant.Phone | String | Phone number of the registrant. | 
@@ -214,7 +212,7 @@ Where T denotes the start of the value for time, in UTC time. |
 
 ### file
 ***
-Checks the reputation of the given MD5 hash of the file.
+Checks the reputation of the given hash of the file.
 
 
 #### Base Command
@@ -224,8 +222,8 @@ Checks the reputation of the given MD5 hash of the file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | The MD5 hash of file to check. | Required | 
-| threshold | If severity is greater than or equal to the threshold, then the MD5 hash of file will be considered malicious. This argument will override the default threshold defined as a parameter. | Optional | 
+| file | The hash of file to check. | Required | 
+| threshold | If severity is greater than or equal to the threshold, then the hash of file will be considered malicious. This argument will override the default threshold defined as a parameter. | Optional | 
 | include_inactive | Whether to include results with the status "Inactive". Default is "False". | Optional | 
 
 
@@ -234,6 +232,9 @@ Checks the reputation of the given MD5 hash of the file.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | File.MD5 | String | MD5 hash of the file. | 
+| File.SHA1 | String | SHA1 hash of the file. | 
+| File.SHA256 | String | SHA256 hash of the file. | 
+| File.SHA512 | String | SHA512 hash of the file. | 
 | File.Malicious.Vendor | String | Vendor that reported the indicator as malicious. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
@@ -244,6 +245,9 @@ Checks the reputation of the given MD5 hash of the file.
 | ThreatStream.File.Status | String | Status assigned to the indicator. | 
 | ThreatStream.File.Type | String | The indicator type. | 
 | ThreatStream.File.MD5 | String | The MD5 hash of the indicator. | 
+| ThreatStream.File.SHA1 | String | The SHA1 hash of the indicator. | 
+| ThreatStream.File.SHA256 | String | The SHA256 hash of the indicator. | 
+| ThreatStream.File.SHA512 | String | The SHA512 hash of the indicator. | 
 | ThreatStream.File.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
 | ThreatStream.File.Source | String | The source of the indicator. | 
 
@@ -1720,9 +1724,9 @@ Checks the reputation of the given URL.
 
 #### Human Readable Output
 
-##### URL reputation for: http://194.147.35.172/mikey.mpsl
+##### URL reputation for: `http://194.147.35.172/mikey.mpsl`
 
 | Address | Confidence | Source | Type | Status | Modified | Organization | Country | Severity |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| http://194.147.35.172/mikey.mpsl | 90 | H3X Tracker | url | active | 2019-06-24T10:10:05.890Z | LLC Baxet | RU | very-high |
+| `http://194.147.35.172/mikey.mpsl` | 90 | H3X Tracker | url | active | 2019-06-24T10:10:05.890Z | LLC Baxet | RU | very-high |
 

@@ -1,0 +1,30 @@
+{
+ "id": "incident_techniquename",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "modified": "2020-10-26T15:44:53.870145028Z",
+ "name": "Technique Name",
+ "ownerOnly": false,
+ "cliName": "techniquename",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "XM Cyber Technique"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72
+}

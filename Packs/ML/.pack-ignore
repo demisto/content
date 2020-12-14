@@ -1,2 +1,5 @@
 [file:GetDuplicatesMlv2.yml]
 ignore=SC100
+
+[file:playbook-DBot_Create_Phishing_Classifier_V2_Job.yml]
+ignore=PB105

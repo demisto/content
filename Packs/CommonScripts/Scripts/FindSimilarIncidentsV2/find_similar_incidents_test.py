@@ -97,6 +97,62 @@ incident1_dup2 = {
     'attachment': [{'name': 'Test word1 word2'}]
 }
 
+incident_by_keys = [
+    {
+        'CustomFields': {},
+        'account': '',
+        'activated': '0001-01-01T00:00:00Z',
+        'attachment': None,
+        'autime': 1550670443962164000,
+        'canvases': None,
+        'category': '',
+        'closeNotes': '',
+        'closeReason': '',
+        'closed': '0001-01-01T00:00:00Z',
+        'closingUserId': '',
+        'created': '2019-02-20T15:47:23.962164+02:00',
+        'details': '',
+        'droppedCount': 0,
+        'dueDate': '2019-03-02T15:47:23.962164+02:00',
+        'hasRole': False,
+        'id': '1',
+        'investigationId': '1',
+        'isPlayground': False,
+        'labels': [{'type': 'Instance', 'value': 'test'},
+                   {'type': 'Brand', 'value': 'Manual'}],
+        'lastOpen': '0001-01-01T00:00:00Z',
+        'linkedCount': 0,
+        'linkedIncidents': None,
+        'modified': '2019-02-20T15:47:27.158969+02:00',
+        'name': '1',
+        'notifyTime': '2019-02-20T15:47:27.156966+02:00',
+        'occurred': '2019-02-20T15:47:23.962163+02:00',
+        'openDuration': 0,
+        'owner': 'analyst',
+        'parent': '',
+        'phase': '',
+        'playbookId': 'playbook0',
+        'previousRoles': None,
+        'rawCategory': '',
+        'rawCloseReason': '',
+        'rawJSON': '',
+        'rawName': '1',
+        'rawPhase': '',
+        'rawType': 'Unclassified',
+        'reason': '',
+        'reminder': '0001-01-01T00:00:00Z',
+        'roles': None,
+        'runStatus': 'waiting',
+        'severity': 0,
+        'sla': 0,
+        'sourceBrand': 'Manual',
+        'sourceInstance': 'amichay',
+        'status': 1,
+        'type': 'Unclassified',
+        'version': 6
+    }
+]
+
 
 def execute_command(command, args=None):
     if command == 'getIncidents':
@@ -116,6 +172,13 @@ def execute_command(command, args=None):
             return []
     else:
         return []
+
+
+def test_get_incidents_by_keys():
+    from FindSimilarIncidentsV2 import get_incidents_by_keys
+    res = get_incidents_by_keys({u'name': u'\U0001f489'}, 'created', '2020-10-07T19:49:37.392378+03:00', '7137', 72,
+                                False, '1000', 'status:Closed', 'AND')
+    assert res == incident_by_keys
 
 
 def test_similar_incidents_fields(mocker):

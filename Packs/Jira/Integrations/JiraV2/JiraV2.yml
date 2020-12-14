@@ -5,7 +5,9 @@ name: jira-v2
 display: Atlassian Jira v2
 fromversion: 5.0.0
 category: Case Management
-description: Use the Jira integration to manage issues and create Demisto incidents from projects.
+description: Use the Jira integration to manage issues and create Demisto incidents
+  from projects, From version XSOAR 6.0 and above mirror issues to existing issue
+  incidents in demisto.
 configuration:
 - display: 'Jira URL, for example: https://demisto.atlassian.net/'
   name: url
@@ -72,6 +74,12 @@ configuration:
   name: isFetch
   type: 8
   required: false
+- defaultvalue: 'false'
+  display: Mirror incoming incidents
+  hidden: false
+  name: incoming_mirror
+  required: false
+  type: 8
 - display: Incident type
   name: incidentType
   type: 13
@@ -167,10 +175,12 @@ script:
       required: true
       description: The summary of the issue.
     - name: projectKey
+      required: false
       description: The project key with which to associate the issue.
     - name: issueTypeName
       description: 'Select an issue type by name, for example: "Problem".'
     - name: issueTypeId
+      required: false
       description: Select an issue type by its numeric ID.
     - name: projectName
       description: The project name with which to associate the issue.
@@ -185,7 +195,7 @@ script:
     - name: assignee
       description: The name of the assignee.
     - name: reporter
-      description: The ID of the reporter.
+      description: The account ID of the reporter.
     - name: parentIssueKey
       description: The parent issue key (if you create a sub-task).
     - name: parentIssueId
@@ -204,7 +214,8 @@ script:
     - name: upload
       description: The entry ID to upload.
     - name: attachmentName
-      description: The attachment name to be displayed in Jira (overrides original file name)
+      description: The attachment name to be displayed in Jira (overrides original
+        file name)
     description: Uploads a file attachment to an issue.
   - name: jira-issue-add-comment
     arguments:
@@ -221,8 +232,8 @@ script:
   - name: jira-issue-add-link
     arguments:
     - name: globalId
-      description: If a globalId is provided, and a remote issue link exists with that
-        globalId, the remote issue link is updated.
+      description: If a globalId is provided, and a remote issue link exists with
+        that globalId, the remote issue link is updated.
     - name: relationship
       description: 'The object relationship to issue, for example: "causes".'
     - name: url
@@ -239,7 +250,8 @@ script:
     - name: applicationType
       description: The application type of the linked remote application. E.g "com.atlassian.confluence".
     - name: applicationName
-      description: The application name of the linked remote application. E.g "My Confluence Instance".
+      description: The application name of the linked remote application. E.g "My
+        Confluence Instance".
     description: Creates (or updates) an issue link.
   - name: jira-edit-issue
     arguments:
@@ -247,7 +259,8 @@ script:
       required: true
       description: The ID of the issue to edit.
     - name: issueJson
-      description: 'The issue object (in JSON format). e.g, {"fields":{"customfield_10037": "field_value"}}'
+      description: 'The issue object (in JSON format). e.g, {"fields":{"customfield_10037":
+        "field_value"}}'
     - name: summary
       description: The summary of the issue.
     - name: description
@@ -299,13 +312,35 @@ script:
       description: The ID or key of the issue.
     description: Deletes an issue in Jira.
   - name: jira-get-id-offset
+    description: Returns the ID offset, for example, the first issue ID.
     outputs:
     - contextPath: Ticket.idOffSet
       description: The ID offset.
       type: string
-    description: Returns the ID offset, for example, the first issue ID.
-  dockerimage: demisto/oauthlib:1.0.0.8892
+  - arguments:
+    - default: false
+      description: The remote incident id - Issue id.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: UTC timestamp in seconds. The incident is only updated if it was
+        modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    deprecated: false
+    description: Get remote data from a remote incident. Please note that this method
+      will not update the current incident, it's here for debugging purposes.
+    execution: false
+    name: get-remote-data
+  dockerimage: demisto/oauthlib:1.0.0.13983
   isfetch: true
+  isremotesyncin: true
   runonce: false
 tests:
 - Jira-v2-Test
+defaultmapperin: classifier-mapper-incoming-JiraV2

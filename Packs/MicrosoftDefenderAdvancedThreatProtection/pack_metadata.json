@@ -2,7 +2,7 @@
     "name": "Microsoft Defender Advanced Threat Protection",
     "description": "Microsoft Defender Advanced ThreatProtection",
     "support": "xsoar",
-    "currentVersion": "1.2.1",
+    "currentVersion": "1.2.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

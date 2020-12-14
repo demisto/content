@@ -1,0 +1,41 @@
+{
+  "kind": "admin#directory#user",
+  "id": "113088517730792434177",
+  "etag": "\"XVqXMfEoKXKeCEJHh6Z_d9s0pNqKA90jMskGKajpbM8/yoBzzK7UXygooDvmCaFYRntvr6Y\"",
+  "primaryEmail": "newuser@domain.io",
+  "name": {
+    "givenName": "new",
+    "familyName": "user"
+  },
+  "isAdmin": false,
+  "isDelegatedAdmin": false,
+  "creationTime": "creation time",
+  "hashFunction": "MD5",
+  "suspended": false,
+  "ipWhitelisted": false,
+  "addresses": [
+    {
+      "country": "india",
+      "type": "home",
+      "postalCode": "361001",
+      "primary": "false",
+      "extendedAddress": "near india",
+      "streetAddress": "near india"
+    }],
+  "phones": [
+    {
+      "value": "phone number",
+      "primary": true,
+      "type": "mobile"
+    }
+  ],
+  "notes": {
+    "value": "hello word"
+  },
+  "gender": {
+    "type": "male"
+  },
+  "customerId": "customer id",
+  "orgUnitPath": "/",
+  "isMailboxSetup": false
+}

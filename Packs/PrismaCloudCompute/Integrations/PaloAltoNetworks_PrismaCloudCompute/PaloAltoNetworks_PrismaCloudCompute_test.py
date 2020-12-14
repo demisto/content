@@ -1,16 +1,47 @@
+import pytest
 from PaloAltoNetworks_PrismaCloudCompute import Client, camel_case_transformer, fetch_incidents, get_headers, \
     HEADERS_BY_NAME
 
+from CommonServerPython import DemistoException
+
 
 def test_camel_case_transformer(requests_mock):
-    test_strings = ['camelCase', 'camelCaSe', 'camelCaseString', 'camelcase', 'CAMELCASE', 'cve', 'id']
-    expected_results = ['Camel Case', 'Camel Ca Se', 'Camel Case String', 'Camelcase', 'Camelcase', 'CVE', 'ID']
+    test_strings = ['camelCase', 'camelCaSe', 'camelCaseString', 'camelcase', 'CAMELCASE', 'cve', 'id', 4]
+    expected_results = ['Camel Case', 'Camel Ca Se', 'Camel Case String', 'Camelcase', 'Camelcase', 'CVE', 'ID', '4']
 
     results = []
     for string in test_strings:
         results.append(camel_case_transformer(string))
 
     assert results == expected_results
+
+
+def test_api_fallback(requests_mock):
+    test_url = 'https://test.com'
+    xsoar_endpoint = test_url + '/xsoar-alerts'
+    demisto_endpoint = test_url + '/demisto-alerts'
+    test_response = {'foo': 'bar'}
+    client = Client(base_url=test_url, verify='False', project='', auth=('test', 'test'))
+
+    # Validate new API
+    requests_mock.get(xsoar_endpoint, json=test_response)
+    assert client.list_incidents() == test_response
+
+    # Validate fallback to previous API (backward compatibility)
+    requests_mock.get(xsoar_endpoint, status_code=404)
+    requests_mock.get(demisto_endpoint, json=test_response)
+    assert client.list_incidents() == test_response
+
+    # Validate error from new API is returned without fallback
+    requests_mock.get(xsoar_endpoint, status_code=500)
+    with pytest.raises(DemistoException, match='500'):
+        client.list_incidents()
+
+    # Validate error on previous API
+    requests_mock.get(xsoar_endpoint, status_code=404)
+    requests_mock.get(demisto_endpoint, status_code=504)
+    with pytest.raises(DemistoException, match='504'):
+        client.list_incidents()
 
 
 def test_fetch_incidents(requests_mock):
@@ -333,7 +364,7 @@ def test_fetch_incidents(requests_mock):
                     'medium | ALAS-2019-1188 | fixed in 1.0.2k-16.150.amzn1 | libcrypto1.0 | openssl | 1.0.1m-r0 |  '
                     '|\\n"}'}]
 
-    requests_mock.get('https://test.com/demisto-alerts', json=json_incidents_mock_response)
+    requests_mock.get('https://test.com/xsoar-alerts', json=json_incidents_mock_response)
     client = Client(base_url='https://test.com', verify='False', project='', auth=('test', 'test'))
     assert fetch_incidents(client) == expected_incidents
 
