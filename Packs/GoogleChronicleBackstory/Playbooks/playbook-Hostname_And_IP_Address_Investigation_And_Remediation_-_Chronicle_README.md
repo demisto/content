@@ -43,4 +43,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Hostname And IP Address Investigation And Remediation - Chronicle](https://raw.githubusercontent.com/demisto/content/94f5c6cd2d456d700e20cc18c233cad547c04d63/Packs/GoogleChronicleBackstory/doc_files/Hostname_And_IP_Address_Investigation_And_Remediation_-_Chronicle.png)
+![Hostname And IP Address Investigation And Remediation - Chronicle](https://raw.githubusercontent.com/demisto/content/6ed8556fa886b498aaeec84580c751fbc759eec9/Packs/GoogleChronicleBackstory/doc_files/Hostname_And_IP_Address_Investigation_And_Remediation_-_Chronicle.png)
