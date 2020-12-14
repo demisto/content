@@ -29,7 +29,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
     params['page_size'] = 200
 
     if not limit:
-        limit = 10000
+        limit = 20000  # This limit was added to make sure we do not hit a timeout on the fetch
         integration_context[f'{current_indicator_type}_fetch_time'] = str(params['end_date'])
         set_integration_context(integration_context)
 
@@ -40,17 +40,18 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
         params['page'] = page_number
         demisto.debug(f"Initiating API call to iDefense with url: {feed.get('url', client.url)} ,with parameters: "
                       f"{params} and page number: {page_number} ")
-        r = requests.get(
-            url=feed.get('url', client.url),
-            verify=client.verify,
-            auth=client.auth,
-            cert=client.cert,
-            headers=client.headers,
-            params=params,
-            **kwargs
-        )
-
         try:
+
+            r = requests.get(
+                url=feed.get('url', client.url),
+                verify=client.verify,
+                auth=client.auth,
+                cert=client.cert,
+                headers=client.headers,
+                params=params,
+                **kwargs
+            )
+
             r.raise_for_status()
             data = r.json()
             if data.get('total_size'):
@@ -132,10 +133,7 @@ def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
 
     filters: Dict[str, Optional[Union[str, list]]] = build_feed_filters(params)
-    indicator_type_field = argToList(params.get('indicator_type', []))
-    indicators_type: list = indicator_type_field if len(indicator_type_field) \
-        else ['IP', 'Domain', 'URL']
-
+    indicators_type: list = argToList(params.get('indicator_type', []))
     params['feed_name_to_config'] = create_fetch_configuration(indicators_type, filters, params)
 
     params['headers'] = {"Content-Type": "application/json",
