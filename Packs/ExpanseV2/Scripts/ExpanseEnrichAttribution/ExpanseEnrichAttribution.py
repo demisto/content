@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any
 import traceback
 
 
@@ -48,16 +48,13 @@ def enrich(current_list: List[Dict[str, Any]], enrich_list: List[Dict[str, Any]]
 
 
 def enrich_command(args: Dict[str, Any]) -> CommandResults:
-    type_: Optional[str]
-    if (type_ := args.get("type")) is not None:
-        type_ = type_.lower()
-
+    type_ = args.pop("type", None)
     current_list = argToList(args.get('current', []))
     enrich_list = argToList(args.get('enrich', []))
     enrich_key = args.get('enrich_key', "")
     enrich_fields = argToList(args.get('enrich_fields', []))
 
-    if type_ == "ip":
+    if type_ == "IP":
         return enrich(
             current_list,
             enrich_list,
@@ -65,7 +62,7 @@ def enrich_command(args: Dict[str, Any]) -> CommandResults:
             enrich_fields,
             key_field="ip",
             outputs_prefix="Expanse.AttributionIP")
-    elif type_ == "device":
+    elif type_ == "Device":
         return enrich(
             current_list,
             enrich_list,
@@ -73,7 +70,7 @@ def enrich_command(args: Dict[str, Any]) -> CommandResults:
             enrich_fields,
             key_field="serial",
             outputs_prefix="Expanse.AttributionDevice")
-    elif type_ == "user":
+    elif type_ == "User":
         return enrich(
             current_list,
             enrich_list,

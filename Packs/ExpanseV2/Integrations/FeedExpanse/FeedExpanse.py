@@ -22,7 +22,9 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 """ CONSTANTS """
 
+SERVER = "https://expander.expanse.co"
 TOKEN_DURATION = 7200
+PREFIX = SERVER + "/api"
 DEFAULT_MAX_INDICATORS = 10  # used in expanse-get-indicators
 DEFAULT_FETCH_MAX_INDICATORS = 1000  # used in fetch-indicators
 DEFAULT_FETCH_MIN_LAST_OBSERVED = 7  # used in fetch-indicators
@@ -52,6 +54,7 @@ class Client(BaseClient):
         retrieves new token when expired
         """
         current_utc_timestamp = int(datetime.utcnow().timestamp())
+        token_expiration = current_utc_timestamp + TOKEN_DURATION
 
         stored_token = demisto.getIntegrationContext()
         if (
@@ -92,7 +95,8 @@ class Client(BaseClient):
 
             data = result.get('data', [])
             if data is not None:
-                yield from data
+                for a in data:
+                    yield a
 
             pagination = result.get('pagination', None)
             if pagination is None:
@@ -104,7 +108,7 @@ class Client(BaseClient):
             params = None
 
     def get_iprange_by_id(self, iprange_id: str) -> Dict[str, Any]:
-        result = self._http_request(
+        result: Dict = self._http_request(
             method="GET",
             url_suffix=f"/v2/ip-range/{iprange_id}",
             raise_on_status=True,
@@ -119,7 +123,7 @@ class Client(BaseClient):
         if last_observed_date is not None:
             params['minRecentIpLastObservedDate'] = last_observed_date
 
-        result = self._http_request(
+        result: Dict = self._http_request(
             method="GET",
             url_suffix=f"/v2/assets/domains/{domain}",
             raise_on_status=True,
@@ -133,7 +137,7 @@ class Client(BaseClient):
         if last_observed_date is not None:
             params['minRecentIpLastObservedDate'] = last_observed_date
 
-        result = self._http_request(
+        result: Dict = self._http_request(
             method="GET",
             url_suffix=f"/v2/assets/certificates/{pem_md5_hash}",
             raise_on_status=True,
@@ -262,12 +266,22 @@ def ip_to_demisto_indicator(ip_indicator: Dict[str, Any]) -> Optional[Dict[str, 
     if value is None:
         return None
 
-    provider_name = ip_indicator.get('provider', {}).get('name')
+    provider_name: Optional[str] = None
+    provider = ip_indicator.get('provider', None)
+    if provider is not None:
+        provider_name = provider.get('name', None)
 
-    tenant_name = ip_indicator.get('tenant', {}).get('name')
+    tenant_name: Optional[str] = None
+    tenant = ip_indicator.get('tenant', None)
+    if tenant is not None:
+        tenant_name = tenant.get('name', None)
 
+    business_unit_names: List[str] = []
     business_units = ip_indicator.get("businessUnits", [])
-    business_unit_names = [bu['name'] for bu in business_units if bu.get('name')]
+    for bu in business_units:
+        if 'name' not in bu:
+            continue
+        business_unit_names.append(bu['name'])
 
     # to faciliate classifiers
     ip_indicator['expanseType'] = 'ip'
@@ -321,15 +335,26 @@ def certificate_to_demisto_indicator(certificate: Dict[str, Any]) -> Optional[Di
         ec_names.add(ec_subject_name)
 
     annotations = certificate.get('annotations', {})
-    tags = [tag['name'] for tag in annotations.get('tags', [])]
+    tags = []
+    if 'tags' in annotations:
+        tags = [tag['name'] for tag in annotations['tags']]
 
-    providers = certificate.get('providers', [])
-    provider_name = None if len(providers) == 0 else providers[0].get('name')
+    provider_name: Optional[str] = None
+    providers = certificate.get('providers', None)
+    if isinstance(providers, list) and len(providers) > 0:
+        provider_name = providers[0].get('name', None)
 
-    tenant_name = certificate.get('tenant', {}).get('name')
+    tenant_name: Optional[str] = None
+    tenant = certificate.get('tenant', None)
+    if tenant is not None:
+        tenant_name = tenant.get('name', None)
 
+    business_unit_names: List[str] = []
     business_units = certificate.get("businessUnits", [])
-    business_unit_names = [bu['name'] for bu in business_units if bu.get('name')]
+    for bu in business_units:
+        if 'name' not in bu:
+            continue
+        business_unit_names.append(bu['name'])
 
     return {
         'type': 'Certificate',
@@ -381,15 +406,26 @@ def domain_to_demisto_indicator(domain_indicator: Dict[str, Any]) -> Optional[Di
         return None
 
     annotations = domain_indicator.get('annotations', {})
-    tags = [tag['name'] for tag in annotations.get('tags', [])]
+    tags = []
+    if 'tags' in annotations:
+        tags = [tag['name'] for tag in annotations['tags']]
 
-    providers = domain_indicator.get('providers', [])
-    provider_name = None if len(providers) == 0 else providers[0].get('name')
+    provider_name: Optional[str] = None
+    provider = domain_indicator.get('provider', None)
+    if provider is not None:
+        provider_name = provider.get('name', None)
 
-    tenant_name = domain_indicator.get('tenant', {}).get('name')
+    tenant_name: Optional[str] = None
+    tenant = domain_indicator.get('tenant', None)
+    if tenant is not None:
+        tenant_name = tenant.get('name', None)
 
+    business_unit_names: List[str] = []
     business_units = domain_indicator.get("businessUnits", [])
-    business_unit_names = [bu['name'] for bu in business_units if bu.get('name')]
+    for bu in business_units:
+        if 'name' not in bu:
+            continue
+        business_unit_names.append(bu['name'])
 
     # to faciliate classifiers
     domain_indicator['expanseType'] = 'domain'
@@ -444,12 +480,23 @@ def iprange_to_demisto_indicator(iprange_indicator: Dict[str, Any]) -> Iterable[
         return []
 
     annotations = iprange_indicator.get('annotations', {})
-    tags = [tag['name'] for tag in annotations.get('tags', []) if tag.get('name')]
+    tags = []
+    if 'tags' in annotations:
+        tags = [tag['name'] for tag in annotations['tags']]
 
+    business_unit_names: List[str] = []
     business_units = iprange_indicator.get("businessUnits", [])
-    business_unit_names = [bu['name'] for bu in business_units if bu.get('name')]
+    for bu in business_units:
+        demisto.debug(f"{bu!r}")
+        if 'name' not in bu:
+            continue
+        business_unit_names.append(bu['name'])
 
-    attribution_reasons: List[str] = [ar['reason'] for ar in iprange_indicator.get('attributionReason', []) if ar.get('reason')]
+    attribution_reasons: List[str] = []
+    for ar in iprange_indicator.get('attributionReason', []):
+        if 'reason' not in ar:
+            continue
+        attribution_reasons.append(ar['reason'])
 
     # to faciliate classifiers
     iprange_indicator['expanseType'] = 'iprange'
@@ -648,8 +695,8 @@ def main() -> None:
     base_url = urljoin(params["url"], "/api")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    max_indicators_param = params.get('max_fetch')
-    min_last_observed_param = params.get('min_last_observed')
+    max_indicators_param = params.get('maxIndicators')
+    min_last_observed_param = params.get('minLastObserved')
     tlp_color = params.get('tlp_color')
     feed_tags = params.get('feedTags', '')
 

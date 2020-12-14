@@ -1,15 +1,15 @@
 args:
-- description: IP Address to match.
+- description: IP Address to match
   name: ip
   required: true
-- description: Tags to search (comma separated string).
+- description: Tags to search (comma separated)
   isArray: true
   name: tags
-comment: Match provided IP address in all the Indicators of type CIDR with the provided tags (longest match).
+comment: Match IP address in all the CIDRs indicators (longest match)
 commonfields:
   id: MatchIPinCIDRIndicators
   version: -1
-dockerimage: demisto/python3:3.8.6.14516
+dockerimage: demisto/python3:3.8.6.13358
 enabled: true
 name: MatchIPinCIDRIndicators
 outputs:

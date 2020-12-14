@@ -19,13 +19,13 @@ This script is used in the following playbooks and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| input | Input list. |
-| current | Current aggregation state. |
-| serial_fields | Comma separated list of fields to treat as serial number. |
-| vsys_fields | Comma separate list of field names to be used as vsys. |
-| sightings_fields | Comma separated list of field names to be considered sighting counts. |
-| source_ip_fields | Comma separated list of field names to be considered as source IPs. |
-| internal_ip_networks | Comma separated list of IPv4 Networks to be considered internal \(default to RFC private networks\). |
+| input | input list |
+| current | current aggregation state |
+| serial_fields | comma separated list of fields to treat as serial number |
+| vsys_fields | comma separate list of field names to be used as vsys |
+| sightings_fields | comma separated list of field names to be considered sighting counts |
+| source_ip_fields | comma separated list of field names to be considered as source IPs |
+| internal_ip_networks | comma separated list of IPv4 Networks to be considered internal \(default to RFC private networks\) |
 
 ## Outputs
 ---

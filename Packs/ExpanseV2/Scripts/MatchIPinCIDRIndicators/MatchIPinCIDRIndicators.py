@@ -17,18 +17,7 @@ import traceback
 
 
 def match_ip_in_cidr_indicators(args: Dict[str, Any]) -> CommandResults:
-    """
-    match_ip_in_cidr_indicators
-    Given ip address in the args dictionary returns the indicator of type CIDR with the
-    longest prefix matching the ip.
 
-    :type args: ``Dict[str, Any]``
-    :param args: Dictionary of arguments. Should contain the "ip" address, and optionally
-        a "tags" argument with a list of tags to filter indicators.
-
-    :return: Result of the search.
-    :rtype: ``CommandResults``
-    """
     ip = args.get('ip', None)
     if not ip:
         raise ValueError('ip not provided')

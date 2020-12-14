@@ -1,0 +1,786 @@
+description: This playbook blocks a Destination IP and Service (tcp or udp port) by
+  creating a rule on a specific Device Group
+id: PAN-OS - Block Destination Service
+inputs:
+- description: Panorama log forwarding object name
+  key: LogForwarding
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: IP address to block
+  key: IP
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: |-
+    This input establishes whether to commit the configuration automatically.
+    Yes - Commit automatically.
+    No - Commit manually.
+  key: AutoCommit
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "No"
+- description: Device Group
+  key: DeviceGroup
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Destination port to block
+  key: Port
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Protocol
+  key: Protocol
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Prefix of the Service name
+  key: ServiceNamePrefix
+  playbookInputQuery:
+  required: false
+  value:
+    simple: xsoar-service-
+- description: Prefix of the Rule
+  key: RuleNamePrefix
+  playbookInputQuery:
+  required: false
+  value:
+    simple: xsoar-rule-
+name: PAN-OS - Block Destination Service
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fb6461a4-6aa1-42e5-8d9e-aada772609a9
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: fb6461a4-6aa1-42e5-8d9e-aada772609a9
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Panorama
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether PAN-OS integration is enabled.
+      id: 731a6c61-1cd9-41cb-8992-10a80aaa825e
+      iscommand: false
+      name: Palo Alto Networks PAN-OS enabled?
+      type: condition
+      version: -1
+    taskid: 731a6c61-1cd9-41cb-8992-10a80aaa825e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 165
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: drop
+      application: {}
+      category: {}
+      description: {}
+      destination:
+        complex:
+          root: inputs.IP
+      destination_zone: {}
+      device-group:
+        complex:
+          root: inputs.DeviceGroup
+      disable: {}
+      log_forwarding:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.LogForwarding
+              operator: isNotEmpty
+          root: inputs.LogForwarding
+      negate_destination: {}
+      negate_source: {}
+      pre_post:
+        simple: pre-rulebase
+      rulename:
+        simple: ${inputs.RuleNamePrefix} - ${incident.id}
+      service:
+        complex:
+          root: PanoramaServiceName
+      source: {}
+      source_user: {}
+      source_zone: {}
+      tags: {}
+      target: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a policy rule.
+      id: fde672f3-4bc2-439a-85b4-d85958213042
+      iscommand: true
+      name: Panorama - Create custom block rule
+      script: '|||panorama-create-rule'
+      type: regular
+      version: -1
+    taskid: fde672f3-4bc2-439a-85b4-d85958213042
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 1965
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 562ebca6-5238-449d-8e81-0fbf2ed2c86d
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 562ebca6-5238-449d-8e81-0fbf2ed2c86d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2435
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description: {}
+      device-group: {}
+      fqdn: {}
+      ip_netmask:
+        simple: 255.255.255.255
+      ip_range: {}
+      name:
+        complex:
+          root: inputs.IP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates an address object
+      id: a7cdd75f-ee8d-4d47-8b05-f73e07218b6f
+      iscommand: true
+      name: PAN-OS - Create address object
+      script: '|||panorama-create-address'
+      type: regular
+      version: -1
+    taskid: a7cdd75f-ee8d-4d47-8b05-f73e07218b6f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1370
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cc70c336-169a-4b27-8efe-8118e0ab126b
+      iscommand: false
+      name: PAN-OS Commit Configuration
+      playbookId: PAN-OS Commit Configuration
+      type: playbook
+      version: -1
+      description: ''
+    taskid: cc70c336-169a-4b27-8efe-8118e0ab126b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 1800
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a222c7cc-28e4-4e82-80fc-b3f0bb8c99ba
+      iscommand: false
+      name: PAN-OS Commit Configuration
+      playbookId: PAN-OS Commit Configuration
+      type: playbook
+      version: -1
+      description: ''
+    taskid: a222c7cc-28e4-4e82-80fc-b3f0bb8c99ba
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 2130
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.AutoCommit
+          operator: isEqualString
+          right:
+            value:
+              simple: "Yes"
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether auto-commit is enabled.
+      id: 6d5fb59d-6ae9-4b47-8ed9-9e58b3f565e5
+      iscommand: false
+      name: AutoCommit defined?
+      type: condition
+      version: -1
+    taskid: 6d5fb59d-6ae9-4b47-8ed9-9e58b3f565e5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1545
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Commit manually on PAN-OS.
+      id: 84dddadb-b29b-45fe-8b8e-c7218fa8a8b0
+      iscommand: false
+      name: Commit PAN-OS Instance manually
+      type: regular
+      version: -1
+    taskid: 84dddadb-b29b-45fe-8b8e-c7218fa8a8b0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1800
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Commit manually on PAN-OS.
+      id: 376e2781-dd13-4a00-83f9-96be544deef2
+      iscommand: false
+      name: Commit PAN-OS Instance manually
+      type: regular
+      version: -1
+    taskid: 376e2781-dd13-4a00-83f9-96be544deef2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 2130
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.IP
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Port
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Protocol
+          operator: isExists
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether there is an IP/Service/Port to block.
+      id: 64c0a18a-32e8-44ec-8cf2-84cb81c32058
+      iscommand: false
+      name: Is there an IP/Service/Port to block?
+      type: condition
+      version: -1
+    taskid: 64c0a18a-32e8-44ec-8cf2-84cb81c32058
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 300
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.DeviceGroup
+      tag: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns a list of addresses.
+      id: 2f8f2cec-27df-4c45-8180-a07f5124606a
+      iscommand: true
+      name: List Panorama Services
+      script: '|||panorama-list-services'
+      type: regular
+      version: -1
+    taskid: 2f8f2cec-27df-4c45-8180-a07f5124606a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 500
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: PanoramaServiceName
+      stringify: {}
+      value:
+        complex:
+          accessor: Name
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Panorama.Services.DestinationPort
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.Port
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: Panorama.Services.Protocol
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.Protocol
+          - - left:
+                iscontext: true
+                value:
+                  simple: Panorama.Services.Name
+              operator: startWith
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.ServiceNamePrefix
+          root: Panorama.Services
+          transformers:
+          - operator: uniq
+          - operator: FirstArrayElement
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      id: 6f66b1a1-7aba-4e76-87c7-970443881ecc
+      iscommand: false
+      name: Find Panorama Service
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 6f66b1a1-7aba-4e76-87c7-970443881ecc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 650
+        }
+      }
+  "18":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: PanoramaServiceName
+          operator: isNotEmpty
+      label: "yes"
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the service exists in PAN-OS.
+      id: 32fc4bd8-75aa-4e3c-894b-b2e83277191d
+      iscommand: false
+      name: Is there an existing Service?
+      type: condition
+      version: -1
+    taskid: 32fc4bd8-75aa-4e3c-894b-b2e83277191d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 845
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: Created by Cortex XSOAR
+      destination_port:
+        simple: ${inputs.Port}
+      device-group:
+        complex:
+          root: inputs.DeviceGroup
+      name:
+        complex:
+          root: PanoramaServiceName
+      protocol:
+        complex:
+          root: inputs.Protocol
+      source_port: {}
+      tags: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a service.
+      id: 36643daf-f01c-4c18-846a-b19ba19d59c6
+      iscommand: true
+      name: Create Panorama Service
+      script: '|||panorama-create-service'
+      type: regular
+      version: -1
+    taskid: 36643daf-f01c-4c18-846a-b19ba19d59c6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1180
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: PanoramaServiceName
+      stringify: {}
+      value:
+        simple: ${inputs.ServiceNamePrefix}${inputs.Port}-${inputs.Protocol}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 24d33e39-3917-4b59-8e5e-97d224415ae1
+      iscommand: false
+      name: Set Service Name
+      script: Set
+      type: regular
+      version: -1
+    taskid: 24d33e39-3917-4b59-8e5e-97d224415ae1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1020
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: drop
+      application: {}
+      category: {}
+      description: {}
+      destination:
+        complex:
+          root: inputs.IP
+      destination_zone: {}
+      device-group:
+        complex:
+          root: inputs.DeviceGroup
+      disable: {}
+      log_forwarding:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.LogForwarding
+              operator: isNotEmpty
+          root: inputs.LogForwarding
+      negate_destination: {}
+      negate_source: {}
+      pre_post:
+        simple: pre-rulebase
+      rulename:
+        simple: ${inputs.RuleNamePrefix} - ${incident.id}
+      service:
+        complex:
+          root: PanoramaServiceName
+      source: {}
+      source_user: {}
+      source_zone: {}
+      tags: {}
+      target: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a policy rule.
+      id: efaa8236-fe4c-4f25-8dbc-ed4d3b1cfa6f
+      iscommand: true
+      name: Panorama - Create custom block rule
+      script: '|||panorama-create-rule'
+      type: regular
+      version: -1
+    taskid: efaa8236-fe4c-4f25-8dbc-ed4d3b1cfa6f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1965
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_4_#default#": 0.17,
+      "1_4_#default#": 0.15
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2450,
+        "width": 1345,
+        "x": 265,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

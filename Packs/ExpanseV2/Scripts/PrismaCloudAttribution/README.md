@@ -1,4 +1,4 @@
-Recursively extracts specified fields from provided list of assets for Prisma Cloud attribution use case.
+Prisma Cloud Attribution
 
 ## Script Data
 ---
@@ -14,8 +14,8 @@ Recursively extracts specified fields from provided list of assets for Prisma Cl
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| assets | List of Prisma Cloud assets to return. |
-| fields | Fields to be returned \(comma separated\). |
+| assets | List of Prisma Cloud assets to return |
+| fields | Fields to be returned \(comma separated\) |
 
 ## Outputs
 ---

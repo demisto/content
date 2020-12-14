@@ -1,47 +1,47 @@
 args:
-- description: Formatted list of users connecting to the service.
+- description: Expanse Users
   isArray: true
-  name: expanse_users
-- description: Formatted list of firewall devices with evidence of connections.
+  name: expanseusers
+- description: Expanse Devices
   isArray: true
-  name: expanse_devices
-- description: Formatted list of public IPs connecting to the service.
+  name: expansedevices
+- description: Expanse IPs
   isArray: true
-  name: expanse_ips
+  name: expanseips
 - isArray: true
-  name: prisma_cloud_assets
-  description: Formatted list of assets found in Prisma Cloud related to this service.
-- description: List of Shadow IT checks and results.
+  name: prismacloudassets
+  description: Assets found in Prisma Cloud
+- description: Shadow IT suggestions
   isArray: true
-  name: shadow_it
-- description: IP Address of the service.
+  name: shadowit
+- description: IP Address of the service
   name: ip
   required: true
-- description: Port of the service.
+- description: Port of the service
   name: port
   required: true
-- description: FQDN or Domain of the service.
+- description: FQDN or Domain of the service
   name: fqdn
-- description: Public Cloud region.
+- description: Public Cloud region
   name: region
-- description: Public cloud service (i.e. EC2).
+- description: Public cloud service
   name: service
-- description: Provider of the service.
+- description: Provider
   name: provider
-- description: List of Expanse tags associated to the issue.
+- description: Expanse Issue Tags
   isArray: true
-  name: expanse_issue_tags
-- description: List of Expanse tags associated to the asset.
+  name: expanseissuetags
+- description: Expanse Asset Tags
   isArray: true
-  name: expanse_asset_tags
-- description: List of Expanse Business Units.
+  name: expanseassettags
+- description: Expanse Business Units
   isArray: true
-  name: expanse_business_units
-comment: Generates and prints a report in markdown format containing useful suggestions for the Analyst to attribute an Expanse Issue to an owner.
+  name: expansebusinessunits
+comment: Print  Expanse Attribution Suggestions
 commonfields:
   id: ExpansePrintSuggestions
   version: -1
-dockerimage: demisto/python3:3.8.6.14516
+dockerimage: demisto/python3:3.8.6.13358
 enabled: true
 name: ExpansePrintSuggestions
 runas: DBotWeakRole

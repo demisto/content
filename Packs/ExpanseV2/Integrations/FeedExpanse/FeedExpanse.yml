@@ -31,12 +31,12 @@ configuration:
   type: 8
 - defaultvalue: '20000'
   display: The maximum number of indicators to fetch.
-  name: max_fetch
+  name: maxIndicators
   required: false
   type: 0
 - defaultvalue: '7'
   display: Retrieve indicators observed in the last specified number of days
-  name: min_last_observed
+  name: minLastObserved
   required: false
   type: 0
 - defaultvalue: suddenDeath
@@ -154,7 +154,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.8.6.13358
 fromversion: 6.0.0
 tests:
 - Feed Expanse Test

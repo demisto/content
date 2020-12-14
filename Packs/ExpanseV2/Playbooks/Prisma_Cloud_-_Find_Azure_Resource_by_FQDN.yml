@@ -1,0 +1,1368 @@
+description: Find Azure resources using Prisma Cloud inventory
+id: Prisma Cloud - Find Azure Resource by FQDN
+inputs:
+- description: FQDN to look up
+  key: FQDN
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Azure domains (comma separated)
+  key: AzureDomains
+  playbookInputQuery:
+  required: false
+  value:
+    simple: .azure.com,.azurewebsites.net,.windows.net,.azmk8s.io
+name: Prisma Cloud - Find Azure Resource by FQDN
+outputs:
+- contextPath: PrismaCloud.Attribution
+  description: Prisma Cloud attributed asset information.
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dc9d6a5a-4994-4597-8b74-a23e8a264105
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: dc9d6a5a-4994-4597-8b74-a23e8a264105
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 2350,
+          "y": -1190
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b2b878bc-b032-4949-84c9-033ae5e17e6a
+      iscommand: false
+      name: Check Results
+      type: title
+      version: -1
+      description: ''
+    taskid: b2b878bc-b032-4949-84c9-033ae5e17e6a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1690
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: NONAzureSplitFQDN
+      stringify: {}
+      value:
+        complex:
+          root: NONAzureFQDN
+          transformers:
+          - args:
+              groups:
+                value:
+                  simple: 0,1
+              keys:
+                value:
+                  simple: hostname,domain
+              regex:
+                value:
+                  simple: ([A-z0-9\-]*)\.(.*)
+            operator: RegexGroups
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      id: dfe20d23-b99c-4b94-8690-a1ff677c5721
+      iscommand: false
+      name: Split Hostname from Domain
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: dfe20d23-b99c-4b94-8690-a1ff677c5721
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1580,
+          "y": 875
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Asset
+                root: Redlock
+          operator: isNotEmpty
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether results are found.
+      id: 8fe1c99a-93f1-4710-80d7-51226de6b6e5
+      iscommand: false
+      name: Are results found?
+      type: condition
+      version: -1
+    taskid: 8fe1c99a-93f1-4710-80d7-51226de6b6e5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1810
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assets:
+        complex:
+          accessor: Asset
+          root: Redlock
+      fields: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prisma Cloud Attribution
+      id: 0ae7d2c8-e8b6-499b-8e24-92c78c24f070
+      iscommand: false
+      name: Transform Results
+      script: PrismaCloudAttribution
+      type: regular
+      version: -1
+    taskid: 0ae7d2c8-e8b6-499b-8e24-92c78c24f070
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 2070
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 17fc72b7-178a-474e-85b0-99ddcb963089
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 17fc72b7-178a-474e-85b0-99ddcb963089
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2320
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: RedLock
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether Prisma Cloud integration is enabled.
+      id: d7664dec-9d97-487d-8ce8-efe6fde7094c
+      iscommand: false
+      name: Is Prisma Cloud enabled?
+      type: condition
+      version: -1
+    taskid: d7664dec-9d97-487d-8ce8-efe6fde7094c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2140,
+          "y": -850
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c6882355-f658-4015-8edf-afdf9007adf3
+      iscommand: false
+      name: Prepare for Search
+      type: title
+      version: -1
+      description: ''
+    taskid: c6882355-f658-4015-8edf-afdf9007adf3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": -380
+        }
+      }
+  "20":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.FQDN
+          operator: isNotEmpty
+      label: "yes"
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if there are any FQDNs in the input.
+      id: 52e12bb1-ae00-471f-8b51-a757c4b82455
+      iscommand: false
+      name: Are there FQDNs in input?
+      type: condition
+      version: -1
+    taskid: 52e12bb1-ae00-471f-8b51-a757c4b82455
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2350,
+          "y": -1060
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: AzureFQDN
+      stringify: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.FQDN
+              operator: StringContainsArray
+              right:
+                iscontext: true
+                value:
+                  simple: ProviderDomains
+          root: inputs.FQDN
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      id: cf2a24a7-2c08-445c-8493-580f320d1943
+      iscommand: false
+      name: Extract Azure FQDNs
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: cf2a24a7-2c08-445c-8493-580f320d1943
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": -50
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: NONAzureFQDN
+      stringify: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.FQDN
+              operator: notInList
+              right:
+                iscontext: true
+                value:
+                  simple: AzureFQDN
+          root: inputs.FQDN
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      id: badae8b1-6ef7-420d-8792-cef032a5b7a2
+      iscommand: false
+      name: Extract NON Azure FQDNs
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: badae8b1-6ef7-420d-8792-cef032a5b7a2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 140
+        }
+      }
+  "24":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: AzureFQDN
+          operator: isNotEmpty
+      label: "yes"
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether AWS FQDNs are present in the inputs.
+      id: 5140e256-fc8f-47f1-8009-412afc641a06
+      iscommand: false
+      name: Are there Azure FQDNs?
+      type: condition
+      version: -1
+    taskid: 5140e256-fc8f-47f1-8009-412afc641a06
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 470
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+      - "26"
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d595ff5f-6b3e-42d7-873d-3b6ff3492c71
+      iscommand: false
+      name: Search in Prisma Cloud Inventory
+      type: title
+      version: -1
+      description: ''
+    taskid: d595ff5f-6b3e-42d7-873d-3b6ff3492c71
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 330
+        }
+      }
+  "26":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: AzureFQDN
+          operator: isNotEmpty
+      label: "yes"
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether non AWS FQDNs are present in the inputs.
+      id: d4a425c6-c418-482f-8082-5eace5d3f858
+      iscommand: false
+      name: Are there NON Azure FQDNs?
+      type: condition
+      version: -1
+    taskid: d4a425c6-c418-482f-8082-5eace5d3f858
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -1350,
+          "y": 470
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e549643a-02c6-4f52-8d81-3a51f1b1929f
+      iscommand: false
+      name: Search NON Azure FQDNs
+      type: title
+      version: -1
+      description: ''
+    taskid: e549643a-02c6-4f52-8d81-3a51f1b1929f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -1650,
+          "y": 715
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "31"
+      - "34"
+      - "38"
+      - "41"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9aab445e-4195-4a68-8b93-4fa0f08f742d
+      iscommand: false
+      name: Search Azure FQDNs
+      type: title
+      version: -1
+      description: ''
+    taskid: 9aab445e-4195-4a68-8b93-4fa0f08f742d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 650
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7badd3cc-8477-4723-8476-5aebbbf66d63
+      iscommand: false
+      name: Search Everything
+      type: title
+      version: -1
+      description: ''
+    taskid: 7badd3cc-8477-4723-8476-5aebbbf66d63
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -1020,
+          "y": 650
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ProviderDomains
+      stringify: {}
+      value:
+        complex:
+          root: inputs.AzureDomains
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: ','
+            operator: splitAndTrim
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      id: 708a2033-af04-4b81-8fb4-f117d9693ac3
+      iscommand: false
+      name: Split Azure Domains
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 708a2033-af04-4b81-8fb4-f117d9693ac3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": -220
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: APPSFQDN
+      stringify: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: AzureFQDN
+              operator: endWith
+              right:
+                value:
+                  simple: .azurewebsites.net
+          root: AzureFQDN
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      id: 497bab68-8ded-4178-8710-9c65f34ef037
+      iscommand: false
+      name: Filter App Service FQDNs
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 497bab68-8ded-4178-8710-9c65f34ef037
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 800
+        }
+      }
+  "32":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: APPSFQDN
+          operator: isNotEmpty
+      label: "yes"
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "33"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether any App Service FQDNs are found.
+      id: d16523f9-90f3-493b-88e0-cdedc8e6ffeb
+      iscommand: false
+      name: Found any App Service FQDNs?
+      type: condition
+      version: -1
+    taskid: d16523f9-90f3-493b-88e0-cdedc8e6ffeb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 970
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          root: APPSFQDN
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'properties.enabledHostNames[*] equals '
+              suffix: {}
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: 'config where cloud.type = ''azure'' and cloud.service =
+                    ''Azure App Service'' and json.rule =  ( '
+              suffix:
+                value:
+                  simple: )
+            operator: concat
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-unit: {}
+      time-range-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Search configuration inventory on the Prisma Cloud (RedLock) platform
+        using RQL language
+      id: 1310abac-4fba-442a-8917-50b083086dc9
+      iscommand: true
+      name: Search FQDNs in App Service
+      script: '|||redlock-search-config'
+      type: regular
+      version: -1
+    taskid: 1310abac-4fba-442a-8917-50b083086dc9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 1140
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: CloudAppFQDN
+      stringify: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: AzureFQDN
+              operator: endWith
+              right:
+                value:
+                  simple: .cloudapp.azure.com
+          root: AzureFQDN
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      id: 0638fa4a-2d68-4d56-800e-4b8010df219d
+      iscommand: false
+      name: Filter CloudApp FQDNs
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 0638fa4a-2d68-4d56-800e-4b8010df219d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 800
+        }
+      }
+  "35":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: CloudAppFQDN
+          operator: isNotEmpty
+      label: "yes"
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "36"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether any Cloud App FQDNs are found.
+      id: 6d85b776-fc25-499b-816c-c3a7a50078cc
+      iscommand: false
+      name: Found any Cloud App FQDNs?
+      type: condition
+      version: -1
+    taskid: 6d85b776-fc25-499b-816c-c3a7a50078cc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 970
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          root: CloudAppFQDN
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'properties.dnsSettings.fqdn equals '
+              suffix: {}
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: 'config where cloud.type = ''azure'' and cloud.service =
+                    ''Azure Virtual Network'' and json.rule =  ( '
+              suffix:
+                value:
+                  simple: )
+            operator: concat
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-unit: {}
+      time-range-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Search configuration inventory on the Prisma Cloud (RedLock) platform
+        using RQL language
+      id: bd299765-2d65-4603-827c-43ed8978261e
+      iscommand: true
+      name: Search FQDNs in Public IPs
+      script: '|||redlock-search-config'
+      type: regular
+      version: -1
+    taskid: bd299765-2d65-4603-827c-43ed8978261e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1140
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          root: NONAzureFQDN
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: '[''properties.httpListeners''].[*].[''properties.hostName'']
+                    equals '
+              suffix: {}
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: 'config where cloud.type = ''azure'' and cloud.service =
+                    ''Azure Application Gateway'' and json.rule =  ( '
+              suffix:
+                value:
+                  simple: )
+            operator: concat
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-unit: {}
+      time-range-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Search configuration inventory on the Prisma Cloud (RedLock) platform
+        using RQL language
+      id: b9f87a1a-8f45-44e3-8233-6e07a7320f58
+      iscommand: true
+      name: Search FQDNs in Azure Application Gateway
+      script: '|||redlock-search-config'
+      type: regular
+      version: -1
+    taskid: b9f87a1a-8f45-44e3-8233-6e07a7320f58
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1750,
+          "y": 1065
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: StorageFQDN
+      stringify: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: AzureFQDN
+              operator: endWith
+              right:
+                value:
+                  simple: .core.windows.net
+          root: AzureFQDN
+          transformers:
+          - operator: uniq
+          - args:
+              groups:
+                value:
+                  simple: "0"
+              keys:
+                value:
+                  simple: hostname
+              regex:
+                value:
+                  simple: ^([^\.]+)\..+$
+            operator: RegexGroups
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      id: a0030930-fbec-4df1-8b2c-e1f15519384c
+      iscommand: false
+      name: Filter Azure Storage FQDNs
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: a0030930-fbec-4df1-8b2c-e1f15519384c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 800
+        }
+      }
+  "39":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: StorageFQDN
+          operator: isNotEmpty
+      label: "yes"
+    id: "39"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "40"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether any Azure Storage FQDNs are found.
+      id: e061af02-5289-480a-83c3-e4e66377614f
+      iscommand: false
+      name: Found any Azure Storage FQDNs?
+      type: condition
+      version: -1
+    taskid: e061af02-5289-480a-83c3-e4e66377614f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 970
+        }
+      }
+  "40":
+    id: "40"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          accessor: hostname
+          root: StorageFQDN
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'name equals '
+              suffix: {}
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: 'config where cloud.type = ''azure'' and cloud.service =
+                    ''Azure Storage'' and json.rule =  ( '
+              suffix:
+                value:
+                  simple: )
+            operator: concat
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-unit: {}
+      time-range-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Search configuration inventory on the Prisma Cloud (RedLock) platform
+        using RQL language
+      id: e7b16762-83e9-41b7-8095-266d36a5d466
+      iscommand: true
+      name: Search FQDNs in Azure Storage
+      script: '|||redlock-search-config'
+      type: regular
+      version: -1
+    taskid: e7b16762-83e9-41b7-8095-266d36a5d466
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 1280
+        }
+      }
+  "41":
+    id: "41"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: AKSFQDN
+      stringify: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: AzureFQDN
+              operator: endWith
+              right:
+                value:
+                  simple: .azmk8s.io
+          root: AzureFQDN
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      id: 22a005f4-3f9b-45cf-84c8-dc181b70b23c
+      iscommand: false
+      name: Filter AKS FQDNs
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 22a005f4-3f9b-45cf-84c8-dc181b70b23c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 800
+        }
+      }
+  "42":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: AKSFQDN
+          operator: isNotEmpty
+      label: "yes"
+    id: "42"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "43"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether any AKS FQDNs are found.
+      id: c0d6428d-b624-4229-859b-4536d740ef49
+      iscommand: false
+      name: Found any AKS FQDNs?
+      type: condition
+      version: -1
+    taskid: c0d6428d-b624-4229-859b-4536d740ef49
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -460,
+          "y": 970
+        }
+      }
+  "43":
+    id: "43"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          root: AKSFQDN
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'properties.fqdn equals '
+              suffix: {}
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: 'config where cloud.type = ''azure'' and cloud.service =
+                    ''Azure Kubernetes Service'' and json.rule =  ( '
+              suffix:
+                value:
+                  simple: )
+            operator: concat
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-unit: {}
+      time-range-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Search configuration inventory on the Prisma Cloud (RedLock) platform
+        using RQL language
+      id: 28ea4616-343e-4625-8289-2a946282bbb6
+      iscommand: true
+      name: Search FQDNs in AKS
+      script: '|||redlock-search-config'
+      type: regular
+      version: -1
+    taskid: 28ea4616-343e-4625-8289-2a946282bbb6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 1110
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3575,
+        "width": 4480,
+        "x": -1750,
+        "y": -1190
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- ExpanseV2 Test
+- Feed Expanse Test

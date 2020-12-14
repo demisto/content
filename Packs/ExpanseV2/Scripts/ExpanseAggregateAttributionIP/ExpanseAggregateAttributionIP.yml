@@ -6,24 +6,21 @@ commonfields:
   version: -1
 args:
 - name: input
-  description: Input list.
+  description: input list
   isArray: true
 - name: current
   required: false
-  description: Current aggregation state.
+  description: current aggregation state
   isArray: true
 - name: source_ip_fields
-  description: Comma separated list of fields to treat as source IPs.
+  description: comma separated list of fields to treat as source IPs
   defaultValue: src,src_ip
-  isArray: true
 - name: internal_ip_networks
-  description: Comma separated list of IPv4 Networks to be considered internal (default to RFC private networks).
+  description: comma separated list of IPv4 Networks to be considered internal (default to RFC private networks)
   defaultValue: ""
-  isArray: true
 - name: sightings_fields
-  description: Comma separated list of field names to be considered sighting counts.
+  description: comma separated list of field names to be considered sighting counts
   defaultValue: count
-  isArray: true
 outputs:
 - contextPath: Expanse.AttributionIP.ip
   description: IP address
@@ -40,5 +37,5 @@ tags: []
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.8.6.14516
+dockerimage: demisto/python3:3.8.6.13358
 fromversion: 6.0.0
