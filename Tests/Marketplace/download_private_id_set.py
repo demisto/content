@@ -4,7 +4,7 @@ import argparse
 from Tests.Marketplace.marketplace_services import init_storage_client
 
 
-STORAGE_ID_SET_PATH = 'content/blablaprivate_id_set.json'
+STORAGE_ID_SET_PATH = 'content/private_id_set.json'
 ARTIFACTS_PATH = '/home/runner/work/content-private/content-private/content/artifacts'
 PRIVATE_ID_SET_FILE = 'private_id_set.json'
 
@@ -27,7 +27,7 @@ EMPTY_ID_SET = {
 }
 
 
-def is_private_id_set_file_exist(public_storage_bucket, storage_client):
+def is_file_exist(public_storage_bucket, storage_client):
     blob = public_storage_bucket.blob(STORAGE_ID_SET_PATH)
     return blob.exists(storage_client)
 
@@ -43,12 +43,12 @@ def download_private_id_set_from_gcp(public_storage_bucket, storage_client):
         str: private ID set file full path.
     """
 
-    is_file_exists = is_private_id_set_file_exist(public_storage_bucket, storage_client)
+    is_private_id_set_file_exist = is_file_exist(public_storage_bucket, storage_client)
 
     if not os.path.exists(ARTIFACTS_PATH):
         os.mkdir(ARTIFACTS_PATH)
 
-    if is_file_exists:
+    if is_private_id_set_file_exist:
         index_blob = public_storage_bucket.blob(STORAGE_ID_SET_PATH)
         index_blob.download_to_filename(f'{ARTIFACTS_PATH}/{PRIVATE_ID_SET_FILE}')
 
