@@ -62,6 +62,55 @@ def test_build_argus_priority_from_min_severity():
     ]
 
 
+def test_date_time_to_epoch_milliseconds_datetime():
+    from ArgusManagedDefence import date_time_to_epoch_milliseconds
+    import datetime
+    date = datetime.datetime(2000, 1, 1, 00, 00, 00)
+    timestamp = date.timestamp() * 1000
+    assert date_time_to_epoch_milliseconds(date) == timestamp
+
+
+def test_date_time_to_epoch_milliseconds_str():
+    from ArgusManagedDefence import date_time_to_epoch_milliseconds
+    import datetime
+    timestamp = int(datetime.datetime(2000, 1, 1, 00, 00, 00).timestamp() * 1000)
+    assert date_time_to_epoch_milliseconds("2000-01-01 00:00:00") == timestamp
+
+
+def test_date_time_to_epoch_milliseconds_malformed_str():
+    from ArgusManagedDefence import date_time_to_epoch_milliseconds
+    assert date_time_to_epoch_milliseconds("gibberish")
+
+
+def test_date_time_to_epoch_milliseconds_empty():
+    from ArgusManagedDefence import date_time_to_epoch_milliseconds
+    assert date_time_to_epoch_milliseconds()
+
+
+def test_pretty_print_date_datetime():
+    from ArgusManagedDefence import pretty_print_date, PRETTY_DATE_FORMAT
+    import datetime
+    date = datetime.datetime(2000, 1, 1, 00, 00, 00)
+    assert pretty_print_date(date) == date.strftime(PRETTY_DATE_FORMAT)
+
+
+def test_pretty_print_date_str():
+    from ArgusManagedDefence import pretty_print_date
+    date_string = "Jan 01, 2000, 00:00:00"
+    assert pretty_print_date(date_string) == date_string
+
+
+def test_pretty_print_date_malformed_str():
+    from ArgusManagedDefence import pretty_print_date
+    date_string = "gibberish"
+    assert pretty_print_date(date_string)
+
+
+def test_pretty_print_date_empty():
+    from ArgusManagedDefence import pretty_print_date
+    assert pretty_print_date()
+
+
 def test_build_tags_from_list():
     from ArgusManagedDefence import build_tags_from_list
 
@@ -127,6 +176,11 @@ def test_fetch_incidents(requests_mock):
 
 
 def test_get_remote_data_command(requests_mock):
+    from ArgusManagedDefence import get_remote_data_command
+
+    with open("argus_json/argus_case_metadata.json") as json_file:
+        data = json.load(json_file)
+    method_url = "/cases/v2/case/search"
     raise NotImplementedError
 
 

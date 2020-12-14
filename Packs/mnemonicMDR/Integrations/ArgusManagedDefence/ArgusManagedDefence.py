@@ -1,13 +1,14 @@
 import demistomock as demisto
 from CommonServerPython import *
-''' IMPORTS '''
+
+""" IMPORTS """
 
 import json
 import urllib3
 
-# import dateparser
+import dateparser
 import traceback
-from typing import Any, Dict, List  # , Tuple, Optional, Union, cast
+from typing import Any, Dict, List, Union  # , Tuple, Optional, cast
 
 import logging
 
@@ -61,6 +62,7 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+PRETTY_DATE_FORMAT = "%b %d, %Y, %H:%M:%S"
 MAX_INCIDENTS_TO_FETCH = 50
 FETCH_TAG = demisto.params().get("fetch_tag")
 
@@ -137,14 +139,30 @@ def str_to_dict(string: str) -> dict:
     return {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
 
 
+def date_time_to_epoch_milliseconds(date_time: Union[datetime, str] = None) -> int:
+    if isinstance(date_time, datetime):
+        return int(date_time.timestamp() * 1000)
+    if isinstance(date_time, str):
+        return date_time_to_epoch_milliseconds(dateparser.parse(date_time))
+    return int(datetime.now().timestamp() * 1000)
+
+
+def pretty_print_date(date_time: Union[datetime, str] = None) -> str:
+    if isinstance(date_time, datetime):
+        return date_time.strftime(PRETTY_DATE_FORMAT)
+    if isinstance(date_time, str):
+        return pretty_print_date(dateparser.parse(date_time))
+    return datetime.now().strftime(PRETTY_DATE_FORMAT)
+
+
 def pretty_print_case_metadata(result: dict, title: str = None) -> str:
     data = result["data"]
     string = title if title else f"# #{data['id']}: {data['subject']}\n"
     string += "_Priority: {}, status: {}, last updated: {}_\n".format(
-        data["priority"], data["status"], data["lastUpdatedTime"]
+        data["priority"], data["status"], pretty_print_date(data["lastUpdatedTime"])
     )
     string += "Reported by {} at {}\n\n".format(
-        data["publishedByUser"]["name"], data["publishedTime"]
+        data["publishedByUser"]["name"], pretty_print_date(data["publishedTime"])
     )
     string += data["description"]
     return string
@@ -152,9 +170,9 @@ def pretty_print_case_metadata(result: dict, title: str = None) -> str:
 
 def pretty_print_comment(comment: dict, title: str = None) -> str:
     string = title if title else ""
-    string += f"#### *{comment['addedByUser']['userName']} - {comment['addedTime']}*\n"
+    string += f"#### *{comment['addedByUser']['userName']} - {pretty_print_date(comment['addedTime'])}*\n"
     string += (
-        f"_Last updated {comment['lastUpdatedTime']}_\n"
+        f"_Last updated {pretty_print_date(comment['lastUpdatedTime'])}_\n"
         if comment["lastUpdatedTime"]
         else ""
     )
@@ -248,8 +266,12 @@ def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
     raise NotImplementedError
 
 
-def get_mapping_fields_command(args: Dict[str, Any]) -> CommandResults:
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
     raise NotImplementedError
+    scheme = SchemeTypeMapping(type_name="Argus Case")  # Argus Case type
+    # This command is possibly run by the pull from instance button in  the create incoming mapper
+    scheme.add_field(name="Argus test field", description="Argues test field description")
+    return GetMappingFieldsResponse(scheme)
 
 
 def add_case_tag_command(args: Dict[str, Any]) -> CommandResults:
@@ -981,7 +1003,7 @@ def main() -> None:
         demisto.params().get("api_key"),
         demisto.params().get("api_url"),
         handle_proxy(),
-        demisto.params().get("insecure", None)
+        demisto.params().get("insecure", None),
     )
 
     demisto.debug(f"Command being called is {demisto.command()}")
