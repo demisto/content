@@ -1,4 +1,4 @@
-This playbook receives indicators from its parent playbook, performs enrichment and investigation for each one of them, provides an opportunity to isolate and block the Hostname or IP Address associated with the current indicator, and gives out a list of isolated and blocked entities.
+This playbook receives ChronicleAsset type of indicators from its parent playbook "ChronicleAsset Investigation And Remediation - Chronicle", performs enrichment and investigation for each one of them, provides an opportunity to isolate and block the Hostname or IP Address associated with the current indicator, and gives out a list of isolated and blocked entities.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -43,4 +43,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![ChronicleAsset Hostname And IP Address Investigation And Remediation - Chronicle](https://raw.githubusercontent.com/demisto/content/94f5c6cd2d456d700e20cc18c233cad547c04d63/Packs/GoogleChronicleBackstory/doc_files/ChronicleAsset_Hostname_And_IP_Address_Investigation_And_Remediation_-_Chronicle.png)
+![Hostname And IP Address Investigation And Remediation - Chronicle](https://raw.githubusercontent.com/demisto/content/94f5c6cd2d456d700e20cc18c233cad547c04d63/Packs/GoogleChronicleBackstory/doc_files/Hostname_And_IP_Address_Investigation_And_Remediation_-_Chronicle.png)
