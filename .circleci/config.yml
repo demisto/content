@@ -442,19 +442,19 @@ references:
         requires:
           - Run Unit Testing And Lint
           - Run Validations
-    - Install Packs in Demisto 6_0:
+    - Install Packs in Server 6_0:
         context: bucket_upload_env
         requires:
           - Create Instances
-    - Install Packs in Server Master - Master:
+    - Install Packs in Server Master:
         context: bucket_upload_env
         requires:
           - Create Instances
     - Upload Packs To Marketplace:
         context: bucket_upload_env
         requires:
-          - Install Packs in Demisto 6_0
-          - Install Packs in Server Master - Master
+          - Install Packs in Server 6_0
+          - Install Packs in Server Master
 
   check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
     when:
@@ -1158,7 +1158,7 @@ jobs:
             ./Tests/scripts/slack_notifier.sh 'sdk_run_against_failed_steps' ./env_results.json
           when: always
 
-  Install Packs in Demisto 6_0:
+  Install Packs in Server 6_0:
     <<: *container_config
     resource_class: medium
     <<: *environment
@@ -1194,7 +1194,7 @@ jobs:
       - *destroy_instances
       - *store_artifacts
 
-  Install Packs in Server Master - Master:
+  Install Packs in Server Master:
     <<: *container_config
     resource_class: medium
     <<: *environment
