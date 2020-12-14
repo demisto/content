@@ -1,0 +1,464 @@
+[
+    {
+        "type": "IP",
+        "value": "192.0.2.1",
+        "rawJSON": {
+            "ip": "192.0.2.1",
+            "domain": "example.example.com",
+            "type": "DOMAIN_RESOLUTION",
+            "assetType": "DOMAIN",
+            "assetKey": "example.example.com",
+            "provider": {
+                "id": "RFC5737Cloud",
+                "name": "RFC5737Cloud"
+            },
+            "lastObserved": "2020-11-19T06:24:12.059Z",
+            "tenant": {
+                "id": "aac0820c-508d-485f-bec1-c72c5d80c97b",
+                "name": "Example.com Ltd",
+                "tenantId": "aac0820c-508d-485f-bec1-c72c5d80c97b"
+            },
+            "businessUnits": [
+                {
+                    "id": "44d64f93-8327-4c2c-97aa-8c6dd7be2e31",
+                    "name": "BU1",
+                    "tenantId": "aac0820c-508d-485f-bec1-c72c5d80c97b"
+                }
+            ],
+            "commonName": null,
+            "expanseType": "ip"
+        },
+        "score": 0,
+        "fields": {
+            "expansetype": "DOMAIN_RESOLUTION",
+            "expanseassetype": "DOMAIN",
+            "expansedomain": "example.example.com",
+            "expansecommonname": null,
+            "expanselastobserved": "2020-11-19T06:24:12.059Z",
+            "lastseenbysource": "2020-11-19T06:24:12.059Z",
+            "expanseprovidername": "RFC5737Cloud",
+            "expansetenantname": "Example.com Ltd",
+            "expansebusinessunits": [
+                "BU1"
+            ],
+            "trafficlightprotocol": "Red",
+            "tags": "tag1"
+        }
+    },
+    {
+        "type": "IP",
+        "value": "192.0.2.2",
+        "rawJSON": {
+            "ip": "192.0.2.2",
+            "domain": "useless.example.com",
+            "type": "DOMAIN_RESOLUTION",
+            "assetType": "DOMAIN",
+            "assetKey": "useless.example.com",
+            "provider": {
+                "id": "RFC5737Cloud",
+                "name": "RFC5737Cloud"
+            },
+            "lastObserved": "2020-11-19T06:24:12.059Z",
+            "tenant": {
+                "id": "aac0820c-508d-485f-bec1-c72c5d80c97b",
+                "name": "Example.com Ltd",
+                "tenantId": "aac0820c-508d-485f-bec1-c72c5d80c97b"
+            },
+            "businessUnits": [
+                {
+                    "id": "44d64f93-8327-4c2c-97aa-8c6dd7be2e31",
+                    "name": "BU2",
+                    "tenantId": "aac0820c-508d-485f-bec1-c72c5d80c97b"
+                }
+            ],
+            "commonName": null,
+            "expanseType": "ip"
+        },
+        "score": 0,
+        "fields": {
+            "expansetype": "DOMAIN_RESOLUTION",
+            "expanseassetype": "DOMAIN",
+            "expansedomain": "useless.example.com",
+            "expansecommonname": null,
+            "expanselastobserved": "2020-11-19T06:24:12.059Z",
+            "lastseenbysource": "2020-11-19T06:24:12.059Z",
+            "expanseprovidername": "RFC5737Cloud",
+            "expansetenantname": "Example.com Ltd",
+            "expansebusinessunits": [
+                "BU2"
+            ],
+            "trafficlightprotocol": "Red",
+            "tags": "tag1"
+        }
+    },
+    {
+        "score": 0,
+        "type": "Certificate",
+        "value": "dda1230f3b151d87ec03b9108b6120222ec75caddb8ef568b5f920ae2110b1e8",
+        "rawJSON": {
+            "id": "58b41e52-694d-3c5a-8112-d522a4ea6993",
+            "tenant": {
+                "id": "aac0820c-508d-485f-bec1-c72c5d80c97b",
+                "name": "Example Inc.",
+                "tenantId": "aac0820c-508d-485f-bec1-c72c5d80c97b"
+            },
+            "businessUnits": [
+                {
+                    "id": "f77af27f-70a4-4533-9b89-2c0426dc306c",
+                    "name": "BU1",
+                    "tenantId": "aac0820c-508d-485f-bec1-c72c5d80c97b"
+                }
+            ],
+            "dateAdded": "2020-09-28T14:28:31.069Z",
+            "firstObserved": null,
+            "lastObserved": null,
+            "providers": [
+                {
+                    "id": "Unknown",
+                    "name": "None"
+                }
+            ],
+            "certificate": {
+                "md5Hash": "E2PIqhovq3mmZd45A8abRw==",
+                "id": "1363c8aa-1a2f-3779-a665-de3903c69b47",
+                "issuer": "O=Example.com,CN=example.com",
+                "issuerAlternativeNames": "",
+                "issuerCountry": null,
+                "issuerEmail": null,
+                "issuerLocality": null,
+                "issuerName": "ExampleCA",
+                "issuerOrg": "ExampleCA",
+                "formattedIssuerOrg": "ExampleCA",
+                "issuerOrgUnit": null,
+                "issuerState": null,
+                "publicKey": "3aEjDzsVHYfsA7kQi2EgIi7HXK3bjvVotfkgriEQseg=",
+                "publicKeyAlgorithm": "RSA",
+                "publicKeyRsaExponent": 65537,
+                "signatureAlgorithm": "SHA256withRSA",
+                "subject": "O=Example.com,CN=example.example.com",
+                "subjectAlternativeNames": "example.example.com *.example.com",
+                "subjectCountry": null,
+                "subjectEmail": null,
+                "subjectLocality": null,
+                "subjectName": "example.example.com",
+                "subjectOrg": "Example.com",
+                "subjectOrgUnit": null,
+                "subjectState": null,
+                "serialNumber": "2",
+                "validNotBefore": "2019-12-06T04:03:00Z",
+                "validNotAfter": "2022-12-05T04:03:00Z",
+                "version": "3",
+                "publicKeyBits": 2048,
+                "pemSha256": "3aEjDzsVHYfsA7kQi2EgIi7HXK3bjvVotfkgriEQseg=",
+                "pemSha1": "h5p90eUUheWHSx61SNVPbaQcyt4=",
+                "publicKeyModulus": "deaddead",
+                "publicKeySpki": "3aEjDzsVHYfsA7kQi2EgIi7HXK3bjvVotfkgriEQseg="
+            },
+            "commonName": "example.example.com",
+            "properties": [
+                "HEALTHY"
+            ],
+            "hasLinkedCloudResources": false,
+            "certificateAdvertisementStatus": [
+                "NO_CERTIFICATE_ADVERTISEMENT"
+            ],
+            "serviceStatus": [
+                "NO_ACTIVE_SERVICE",
+                "NO_ACTIVE_ON_PREM_SERVICE",
+                "NO_ACTIVE_CLOUD_SERVICE"
+            ],
+            "details": null,
+            "annotations": {
+                "contacts": [],
+                "tags": [],
+                "note": ""
+            }
+        },
+        "fields": {
+            "certificatenames": "*.example.com\nexample.example.com",
+            "certificatesignature": {
+                "algorithm": "SHA256withRSA"
+            },
+            "expansebusinessunits": [
+                "BU1"
+            ],
+            "expansecertificateadvertisementstatus": [
+                "NO_CERTIFICATE_ADVERTISEMENT"
+            ],
+            "expansedateadded": "2020-09-28T14:28:31.069Z",
+            "expansefirstobserved": null,
+            "expanselastobserved": null,
+            "expanseproperties": "HEALTHY",
+            "expanseprovidername": "None",
+            "expanseservicestatus": [
+                "NO_ACTIVE_SERVICE",
+                "NO_ACTIVE_ON_PREM_SERVICE",
+                "NO_ACTIVE_CLOUD_SERVICE"
+            ],
+            "expansetags": [],
+            "expansetenantname": "Example Inc.",
+            "firstseenbysource": null,
+            "issuerdn": "O=Example.com,CN=example.com",
+            "lastseenbysource": null,
+            "md5": "1363c8aa1a2fab79a665de3903c69b47",
+            "publickey": {
+                "algorithm": "RSA",
+                "exponent": 65537,
+                "length": 2048,
+                "modulus": "de:ad:de:ad",
+                "publickey": "dd:a1:23:0f:3b:15:1d:87:ec:03:b9:10:8b:61:20:22:2e:c7:5c:ad:db:8e:f5:68:b5:f9:20:ae:21:10:b1:e8"
+            },
+            "serialnumber": "2",
+            "sha1": "879a7dd1e51485e5874b1eb548d54f6da41ccade",
+            "sha256": "dda1230f3b151d87ec03b9108b6120222ec75caddb8ef568b5f920ae2110b1e8",
+            "spkisha256": "dda1230f3b151d87ec03b9108b6120222ec75caddb8ef568b5f920ae2110b1e8",
+            "subjectalternativenames": [
+                {
+                    "value": "example.example.com"
+                },
+                {
+                    "value": "*.example.com"
+                }
+            ],
+            "subjectdn": "O=Example.com,CN=example.example.com",
+            "validitynotafter": "2022-12-05T04:03:00Z",
+            "validitynotbefore": "2019-12-06T04:03:00Z",
+            "tags": "tag1",
+            "trafficlightprotocol": "Red"
+        }
+    },
+    {
+        "type": "Domain",
+        "value": "example.example.com",
+        "rawJSON": {
+            "id": "17f94d88-55bf-32f7-ad61-acb447851ef2",
+            "dateAdded": "2020-11-22T04:00:22.500Z",
+            "domain": "example.example.com",
+            "tenant": {
+                "id": "aac0820c-508d-485f-bec1-c72c5d80c97b",
+                "name": "Example.com Ltd",
+                "tenantId": "aac0820c-508d-485f-bec1-c72c5d80c97b"
+            },
+            "businessUnits": [
+                {
+                    "id": "aac0820c-508d-485f-bec1-c72c5d80c97b",
+                    "name": "BU1",
+                    "tenantId": "aac0820c-508d-485f-bec1-c72c5d80c97b"
+                }
+            ],
+            "providers": [
+                {
+                    "id": "OnPrem",
+                    "name": "On Prem"
+                }
+            ],
+            "firstObserved": "2020-11-20T06:00:53.530Z",
+            "lastObserved": "2020-11-22T05:56:49.031Z",
+            "hasLinkedCloudResources": false,
+            "sourceDomain": "example.com",
+            "whois": [
+                {
+                    "domain": "example.com",
+                    "registryDomainId": null,
+                    "updatedDate": "2017-08-30T20:42:10Z",
+                    "creationDate": "2005-02-21T02:42:10Z",
+                    "registryExpiryDate": "2024-02-21T02:42:10Z",
+                    "reseller": null,
+                    "registrar": {
+                        "name": "MarkMonitor Inc.",
+                        "formattedName": "MarkMonitor",
+                        "whoisServer": "whois.markmonitor.com",
+                        "url": null,
+                        "ianaId": null,
+                        "registrationExpirationDate": null,
+                        "abuseContactEmail": null,
+                        "abuseContactPhone": null
+                    },
+                    "domainStatuses": [
+                        "clientDeleteProhibited clientTransferProhibited clientUpdateProhibited"
+                    ],
+                    "nameServers": [
+                        "NS1.EXAMPLE.COM",
+                        "NS2.EXAMPLE.COM"
+                    ],
+                    "registrant": {
+                        "name": "",
+                        "organization": "Example.com Ltd",
+                        "street": "",
+                        "city": "",
+                        "province": "PR",
+                        "postalCode": "",
+                        "country": "ITALY",
+                        "phoneNumber": "",
+                        "phoneExtension": "",
+                        "faxNumber": "",
+                        "faxExtension": "",
+                        "emailAddress": "",
+                        "registryId": null
+                    },
+                    "admin": {
+                        "name": "",
+                        "organization": "Example.com Ltd",
+                        "street": "",
+                        "city": "",
+                        "province": "PR",
+                        "postalCode": "",
+                        "country": "ITALY",
+                        "phoneNumber": "",
+                        "phoneExtension": "",
+                        "faxNumber": "",
+                        "faxExtension": "",
+                        "emailAddress": "",
+                        "registryId": null
+                    },
+                    "tech": null,
+                    "dnssec": null
+                }
+            ],
+            "isCollapsed": false,
+            "lastSampledIp": "192.0.2.1",
+            "details": null,
+            "lastSubdomainMetadata": null,
+            "dnsResolutionStatus": [
+                "HAS_DNS_RESOLUTION"
+            ],
+            "serviceStatus": [
+                "NO_ACTIVE_SERVICE",
+                "NO_ACTIVE_ON_PREM_SERVICE",
+                "NO_ACTIVE_CLOUD_SERVICE"
+            ],
+            "isPaidLevelDomain": false,
+            "annotations": {
+                "contacts": [],
+                "tags": [],
+                "note": ""
+            },
+            "expanseType": "domain"
+        },
+        "score": 0,
+        "fields": {
+            "expansetags": [],
+            "expansednsresolutionstatus": [
+                "HAS_DNS_RESOLUTION"
+            ],
+            "expansedateadded": "2020-11-22T04:00:22.500Z",
+            "expansefirstobserved": "2020-11-20T06:00:53.530Z",
+            "firstseenbysource": "2020-11-20T06:00:53.530Z",
+            "expanselastobserved": "2020-11-22T05:56:49.031Z",
+            "lastseenbysource": "2020-11-22T05:56:49.031Z",
+            "expanselastsampledip": "192.0.2.1",
+            "expanseservicestatus": [
+                "NO_ACTIVE_SERVICE",
+                "NO_ACTIVE_ON_PREM_SERVICE",
+                "NO_ACTIVE_CLOUD_SERVICE"
+            ],
+            "expansesourcedomain": "example.com",
+            "expanseprovidername": null,
+            "expansetenantname": "Example.com Ltd",
+            "expansebusinessunits": [
+                "BU1"
+            ],
+            "trafficlightprotocol": "Red",
+            "tags": "tag1"
+        }
+    },
+    {
+        "type": "CIDR",
+        "value": "198.51.100.0/24",
+        "rawJSON": {
+            "id": "e3740069-9cc3-4174-9e17-e3208066d718",
+            "created": "2020-09-28",
+            "modified": "2020-11-23",
+            "ipVersion": "4",
+            "startAddress": "198.51.100.0",
+            "endAddress": "198.51.100.255",
+            "businessUnits": [
+                {
+                    "id": "aac0820c-508d-485f-bec1-c72c5d80c97b",
+                    "name": "Example.com Ltd"
+                }
+            ],
+            "annotations": {
+                "tags": [
+                    {
+                        "id": "5122f7cd-bf49-3dea-97a0-400766d3bfb0",
+                        "created": "2020-10-23",
+                        "modified": "2020-10-23",
+                        "name": "test-documentation"
+                    },
+                    {
+                        "id": "8c115105-9909-3594-ac50-a0656316da92",
+                        "created": "2020-10-26",
+                        "modified": "2020-10-26",
+                        "name": "test-bulk"
+                    },
+                    {
+                        "id": "864981f0-ed48-31e3-8015-3193ce75f62e",
+                        "created": "2020-10-26",
+                        "modified": "2020-10-26",
+                        "name": "test-tag-1"
+                    }
+                ],
+                "additionalNotes": "",
+                "pointsOfContact": []
+            },
+            "severityCounts": [
+                {
+                    "type": "CRITICAL",
+                    "count": 0
+                },
+                {
+                    "type": "ROUTINE",
+                    "count": 151
+                },
+                {
+                    "type": "UNCATEGORIZED",
+                    "count": 0
+                },
+                {
+                    "type": "WARNING",
+                    "count": 108
+                }
+            ],
+            "rangeSize": 256,
+            "responsiveIpCount": 60,
+            "rangeIntroduced": "2020-09-28",
+            "rangeType": "parent",
+            "customChildRanges": [],
+            "expanseType": "iprange"
+        },
+        "score": 0,
+        "fields": {
+            "expansetags": [
+                "test-documentation",
+                "test-bulk",
+                "test-tag-1"
+            ],
+            "expansebusinessunits": [
+                "Example.com Ltd"
+            ],
+            "expanseseveritycount": [
+                {
+                    "type": "CRITICAL",
+                    "count": 0
+                },
+                {
+                    "type": "ROUTINE",
+                    "count": 151
+                },
+                {
+                    "type": "UNCATEGORIZED",
+                    "count": 0
+                },
+                {
+                    "type": "WARNING",
+                    "count": 108
+                }
+            ],
+            "expanseattributionreason": [],
+            "expanseresponsiveipcount": 60,
+            "trafficlightprotocol": "Red",
+            "tags": "tag1"
+        }
+    }
+]

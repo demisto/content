@@ -1,0 +1,27 @@
+args:
+- description: IP Address to match
+  name: ip
+  required: true
+- description: Tags to search (comma separated)
+  isArray: true
+  name: tags
+comment: Match IP address in all the CIDRs indicators (longest match)
+commonfields:
+  id: MatchIPinCIDRIndicators
+  version: -1
+dockerimage: demisto/python3:3.8.6.13358
+enabled: true
+name: MatchIPinCIDRIndicators
+outputs:
+- contextPath: MatchingCIDRIndicator
+  description: Matching CIDR Indicator
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

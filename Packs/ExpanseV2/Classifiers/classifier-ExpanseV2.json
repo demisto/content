@@ -1,0 +1,17 @@
+{
+    "defaultIncidentType": "Expanse Issue",
+    "description": "",
+    "feed": false,
+    "id": "ExpanseV2",
+    "keyTypeMap": {
+
+    },
+    "name": "ExpanseV2",
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,28 @@
+{
+    "name": "Expanse",
+    "description": "The Cortex XSOAR Content Pack for Expanse enables automated Attack Surface Management through powerful Integrations and Playbooks.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-11-20T16:01:46Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Expanse",
+        "Network",
+        "Security"
+    ],
+    "useCases": [
+        "Attack Surface Management",
+        "Threat Intelligence Management",
+        "Vulnerability Management"
+    ],
+    "keywords": [
+        "Expanse",
+        "Expander",
+        "Behavior"
+    ]
+}
