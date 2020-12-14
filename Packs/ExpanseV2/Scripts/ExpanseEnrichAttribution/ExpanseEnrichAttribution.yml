@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: List of entries to extract additional data from
+  description: List of entries to extract additional data from.
   isArray: true
   name: enrich
   required: false
@@ -8,20 +8,20 @@ args:
 - default: false
   description: >
     Primary key in the enrichment entries to match against primary
-    key in the attribution data structure
+    key in the attribution data structure.
   isArray: false
   name: enrich_key
   required: true
   secret: false
 - default: false
-  description: Current attribution data structure
+  description: Current attribution data structure.
   isArray: true
   name: current
   required: false
   secret: false
 - default: false
   name: type
-  description: What attribution structure to enrich
+  description: What attribution structure to enrich.
   isArray: false
   required: true
   secret: false

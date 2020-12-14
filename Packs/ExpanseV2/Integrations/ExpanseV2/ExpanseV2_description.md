@@ -2,7 +2,7 @@
 
 ### Basic Information
 
-- The API Key can be retrieved by contacting your technical account manager.
+The API Key can be retrieved by contacting your Expanse technical account manager.
 
 ### Additional Options
 

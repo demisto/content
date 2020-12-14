@@ -1620,7 +1620,7 @@ script:
       description: Names of the tags to assign to the certificate (comma separated string).
       additionalinfo: If used in combination with 'tags' the lists of tags are merged.
       isArray: true
-      name: tagnames
+      name: tag_names
       required: false
       secret: false
     outputs: []

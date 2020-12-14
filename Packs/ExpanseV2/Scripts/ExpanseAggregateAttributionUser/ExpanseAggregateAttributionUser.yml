@@ -6,17 +6,17 @@ commonfields:
   version: -1
 args:
 - name: input
-  description: input list
+  description: Input list.
   isArray: true
 - name: current
   required: false
-  description: current aggregation state
+  description: Current aggregation state.
   isArray: true
 - name: username_fields
-  description: comma separated list of fields to treat as serial number
+  description: Comma separated list of fields to treat as serial number.
   defaultValue: source_user,srcuser,user
 - name: sightings_fields
-  description: comma separated list of field names to be considered sighting counts
+  description: Comma separated list of field names to be considered sighting counts.
   defaultValue: count
 outputs:
 - contextPath: Expanse.AttributionUser.username

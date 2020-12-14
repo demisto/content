@@ -1,4 +1,4 @@
-Match IP address in all the CIDRs indicators (longest match)
+Match provided IP address in all the Indicators of type CIDR with the provided tags (longest match).
 
 ## Script Data
 ---
@@ -14,8 +14,8 @@ Match IP address in all the CIDRs indicators (longest match)
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| ip | IP Address to match |
-| tags | Tags to search \(comma separated\) |
+| ip | IP Address to match. |
+| tags | Tags to search \(comma separated string\). |
 
 ## Outputs
 ---

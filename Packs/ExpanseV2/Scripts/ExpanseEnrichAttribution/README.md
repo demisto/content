@@ -20,11 +20,11 @@ This script is used in the following playbooks and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| enrich | List of entries to extract additional data from |
-| enrich_key | Primary key in the enrichment entries to match against primary key in the attribution data structure<br/> |
-| current | Current attribution data structure |
-| type | What attribution structure to enrich |
-| enrich_fields | comma separated list of fields to take enrichment details from |
+| enrich | List of entries to extract additional data from. |
+| enrich_key | Primary key in the enrichment entries to match against primary key in the attribution data structure. |
+| current | Current attribution data structure. |
+| type | What attribution structure to enrich. |
+| enrich_fields | comma separated list of fields to take enrichment details from. |
 
 ## Outputs
 ---

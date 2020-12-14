@@ -1,6 +1,4 @@
-description: |
-  Find GCP resources by FQDN using Prisma Cloud inventory.
-  Supported services: Cloud DNS.
+description: Find GCP resources by FQDN using Prisma Cloud inventory
 id: Prisma Cloud - Find GCP Resource by FQDN
 inputs:
 - description: FQDN to look up
