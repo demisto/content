@@ -10,8 +10,8 @@ from typing import Dict, Any
 
 def refresh_issue_assets_command(args: Dict[str, Any]) -> CommandResults:
     incident = demisto.incident()
-    custom_fields = incident.get('CustomFields', {})
-    assets = custom_fields.get('expanseasset', [])
+    custom_fields = incident.get('CustomFields')
+    assets = custom_fields.get('expanseasset')
 
     for asset in assets:
         asset_type = asset.get('assettype')
@@ -20,11 +20,11 @@ def refresh_issue_assets_command(args: Dict[str, Any]) -> CommandResults:
         if asset_type == 'Domain':
             new_asset = demisto.executeCommand('expanse-get-domain', {"domain": asset_key})
         elif asset_type == 'IpRange':
-            new_asset = demisto.executeCommand('expanse-get-iprange', {"id": asset_key, "include": "annotations"})
+            new_asset = demisto.executeCommand('expanse-get-iprange', {"id": asset_key})
         elif asset_type == 'Certificate':
-            new_asset = demisto.executeCommand('expanse-get-certificate', {"md5_hash": asset_key})
+            new_asset = demisto.executeCommand('expanse-get-certificate', {"hash": asset_key})
         else:
-            # Unknown asset type, ignore.
+            # ???
             continue
 
         if isinstance(new_asset, list):
@@ -44,8 +44,6 @@ def refresh_issue_assets_command(args: Dict[str, Any]) -> CommandResults:
 
         if (ar := contents.get('attributionReasons', None)) and isinstance(ar, list) and len(ar) > 0:
             asset['attributionReasons'] = '\n'.join(a['reason'] for a in ar if 'reason' in a)
-
-        asset['id'] = contents.get('id') or asset['id']
 
     demisto.executeCommand('setIncident', {
         "expanseasset": assets

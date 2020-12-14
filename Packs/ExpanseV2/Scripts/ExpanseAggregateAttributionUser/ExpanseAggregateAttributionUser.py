@@ -6,7 +6,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-from typing import Dict, List, Any, Tuple, Optional
+from typing import Dict, List, Any, Tuple
 import traceback
 
 
@@ -18,23 +18,6 @@ def deconstruct_entry(entry: Dict[str, str],
                       sightings_fields: List[str]) -> Tuple[Optional[str],
                                                             Optional[str],
                                                             Optional[int]]:
-    """
-    deconstruct_entry
-    Extracts device relevant fields from a log entry.
-
-    :type entry: ``Dict[str, str]``
-    :param entry: Log entry as dictionary of fields.
-
-    :type sightings_fields: ``List[str]``
-    :param sightings_fields: List of possible field names in log entry to be considered as number of occurences.
-
-    :type username_fields: ``List[str]``
-    :param username_fields: List of possible field names in log entry to be considered as username.
-
-    :return: Tuple where the first element is the username or None, the second is the domain extracted from the
-        username field and the third element is the number of occurences of the event.
-    :rtype: ``Tuple[Optional[str], Optional[str], Optional[int]]``
-    """
     username = next((entry[field] for field in username_fields if field in entry), None)
     sightings = next((int(entry[field]) for field in sightings_fields if field in entry), 1)
 
@@ -95,7 +78,7 @@ def aggregate_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=markdown,
-        outputs=outputs or None,
+        outputs=outputs if len(outputs) > 0 else None,
         outputs_prefix="Expanse.AttributionUser",
         outputs_key_field=["username", "domain"]
     )

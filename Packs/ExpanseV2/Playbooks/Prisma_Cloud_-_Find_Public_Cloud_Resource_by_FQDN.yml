@@ -1,0 +1,636 @@
+description: |-
+  Find a Public Cloud resource by FQDN using Prisma Cloud inventory
+id: Prisma Cloud - Find Public Cloud Resource by FQDN
+inputs:
+- description: FQDN to look up
+  key: FQDN
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Public Cloud Provider (AWS, Azure, GCP)
+  key: CloudProvider
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Prisma Cloud - Find Public Cloud Resource by FQDN
+outputs:
+- contextPath: PrismaCloud.Attribution
+  description: Prisma Cloud attributed asset information.
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 233469d4-00ac-4da3-89bc-bc6fbb5000c0
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 233469d4-00ac-4da3-89bc-bc6fbb5000c0
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": -1210
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.CloudProvider
+          operator: inList
+          right:
+            value:
+              simple: AWS,Amazon Web Services,Amazon
+      label: AWS
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.CloudProvider
+          operator: inList
+          right:
+            value:
+              simple: Azure,Microsoft Azure
+      label: Azure
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.CloudProvider
+          operator: inList
+          right:
+            value:
+              simple: GCP,Google Cloud Platform,Google
+      label: GCP
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      AWS:
+      - "3"
+      Azure:
+      - "4"
+      GCP:
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Branch based on Cloud Provider
+      id: cf810e4e-3be0-49df-81f2-2c2555b5f06b
+      iscommand: false
+      name: What Cloud Provider?
+      type: condition
+      version: -1
+    taskid: cf810e4e-3be0-49df-81f2-2c2555b5f06b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 98184b95-282e-419f-8eb6-6525125140e8
+      iscommand: false
+      name: Search in AWS
+      type: title
+      version: -1
+      description: ''
+    taskid: 98184b95-282e-419f-8eb6-6525125140e8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 630
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bf4933c9-f314-48f7-8e75-1b163e55ce3b
+      iscommand: false
+      name: Search in Azure
+      type: title
+      version: -1
+      description: ''
+    taskid: bf4933c9-f314-48f7-8e75-1b163e55ce3b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 630
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e61bb662-18e6-42d8-86a3-4b24573f0df2
+      iscommand: false
+      name: Search in GCP
+      type: title
+      version: -1
+      description: ''
+    taskid: e61bb662-18e6-42d8-86a3-4b24573f0df2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 630
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+      - "4"
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 52ba0293-1d05-48a0-8b47-859e96eb5298
+      iscommand: false
+      name: Search All Cloud Providers
+      type: title
+      version: -1
+      description: ''
+    taskid: 52ba0293-1d05-48a0-8b47-859e96eb5298
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 380
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 764cacac-5fd0-4b0f-8d3c-d325ff6bc323
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 764cacac-5fd0-4b0f-8d3c-d325ff6bc323
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1610
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: RedLock
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether Prisma Cloud integration is enabled.
+      id: 5037e75b-1b6d-464a-8c17-9faafac909aa
+      iscommand: false
+      name: Is Prisma Cloud enabled?
+      type: condition
+      version: -1
+    taskid: 5037e75b-1b6d-464a-8c17-9faafac909aa
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": -865
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 061c6be4-68dd-40dd-8628-5e193ccd92d7
+      iscommand: false
+      name: Search Prisma Cloud Inventory
+      type: title
+      version: -1
+      description: ''
+    taskid: 061c6be4-68dd-40dd-8628-5e193ccd92d7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -80
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 06e89eb9-f232-40cf-8d18-02a639b8d7ed
+      iscommand: false
+      name: Extract CNAMEs for domain(s)
+      type: title
+      version: -1
+      description: ''
+    taskid: 06e89eb9-f232-40cf-8d18-02a639b8d7ed
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": -650
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.FQDN
+      qtype:
+        simple: CNAME
+      server: {}
+      use_tcp: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns DNS details for a domain
+      id: c8698828-22df-4ea8-8b77-f00c9c488511
+      iscommand: false
+      name: Get Domain DNS Details
+      script: GetDomainDNSDetails
+      type: regular
+      version: -1
+    taskid: c8698828-22df-4ea8-8b77-f00c9c488511
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": -510
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: FQDN
+      stringify: {}
+      value:
+        complex:
+          root: inputs.FQDN
+          transformers:
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: DomainDNSDetails.CNAME
+            operator: append
+          - args:
+              regex:
+                value:
+                  simple: \.$
+              replaceWith: {}
+            operator: replaceMatch
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      id: a3ad6ced-1383-405b-83d6-650df4aeff52
+      iscommand: false
+      name: Join list of inputs with CNAMEs
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: a3ad6ced-1383-405b-83d6-650df4aeff52
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": -350
+        }
+      }
+  "20":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.FQDN
+          operator: isNotEmpty
+      label: "yes"
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if there are any FQDNs in the input.
+      id: 4e7f38c1-dada-4da6-8155-94ccc8c44249
+      iscommand: false
+      name: Are there FQDNs in input?
+      type: condition
+      version: -1
+    taskid: 4e7f38c1-dada-4da6-8155-94ccc8c44249
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": -1080
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AWSDomains:
+        simple: .amazonaws.com,.cloudfront.net
+      FQDN:
+        complex:
+          root: FQDN
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Find an AWS resource using Prisma Cloud inventory
+      id: 838decb7-a3bd-4af5-83dd-3250df3938f8
+      iscommand: false
+      name: Prisma Cloud - Find AWS Resource by FQDN
+      playbookId: Prisma Cloud - Find AWS Resource by FQDN
+      type: playbook
+      version: -1
+    taskid: 838decb7-a3bd-4af5-83dd-3250df3938f8
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 790
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AzureDomains:
+        simple: .azure.com,.azurewebsites.net,.windows.net,.azmk8s.io
+      FQDN:
+        complex:
+          root: FQDN
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Find Azure resources using Prisma Cloud inventory
+      id: 91f7be39-0c10-4605-8f67-8028cdf526fe
+      iscommand: false
+      name: Prisma Cloud - Find Azure Resource by FQDN
+      playbookId: Prisma Cloud - Find Azure Resource by FQDN
+      type: playbook
+      version: -1
+    taskid: 91f7be39-0c10-4605-8f67-8028cdf526fe
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 790
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      FQDN:
+        complex:
+          root: FQDN
+      GCPDomains:
+        simple: .google.com
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Find GCP resources using Prisma Cloud inventory
+      id: 403e6f56-f3b0-4430-8d30-6a242557971e
+      iscommand: false
+      name: Prisma Cloud - Find GCP Resource by FQDN
+      playbookId: Prisma Cloud - Find GCP Resource by FQDN
+      type: playbook
+      version: -1
+    taskid: 403e6f56-f3b0-4430-8d30-6a242557971e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 790
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_AWS": 0.26,
+      "2_4_Azure": 0.29,
+      "2_5_GCP": 0.82
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2885,
+        "width": 2180,
+        "x": 30,
+        "y": -1210
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

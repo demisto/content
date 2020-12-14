@@ -1,5 +1,4 @@
 Expanse Expander V2
-
 This integration was integrated and tested with version Expanse Expander and Behavior
 ## Configure ExpanseV2 on Cortex XSOAR
 

@@ -6,9 +6,9 @@ import ExpanseRefreshIssueAssets
 EXAMPLE_INCIDENT = {
     'CustomFields': {
         'expanseasset': [
-            {'assettype': 'Certificate', 'assetkey': 'fakeMD5', 'id': 'id-old-certificate'},
-            {'assettype': 'IpRange', 'assetkey': 'fakeIPRange', 'id': 'id-old-iprange'},
-            {'assettype': 'Domain', 'assetkey': 'fakeDomain', 'id': 'id-old-domain'},
+            {'assettype': 'Certificate', 'assetkey': 'fakeMD5'},
+            {'assettype': 'IpRange', 'assetkey': 'fakeIPRange'},
+            {'assettype': 'Domain', 'assetkey': 'fakeDomain'},
         ]
     }
 }
@@ -17,17 +17,14 @@ EXAMPLE_INCIDENT = {
 REFRESH_RESULT = {'expanseasset': [{'assettype': 'Certificate',
                                     'assetkey': 'fakeMD5',
                                     'tags': 'tag-certificate',
-                                    'id': 'id-certificate',
                                     'attributionReasons': 'fake-certificate-reason1\nfake-certificate-reason2'},
                                    {'assettype': 'IpRange',
                                     'assetkey': 'fakeIPRange',
                                     'tags': 'tag-iprange1\ntag-iprange2',
-                                    'id': 'id-iprange',
                                     'attributionReasons': 'fake-iprange-reason'},
                                    {'assettype': 'Domain',
                                     'assetkey': 'fakeDomain',
                                     'tags': 'tag-domain',
-                                    'id': 'id-domain',
                                     'attributionReasons': 'fake-domain-reason'},
                                    ]}
 
@@ -36,8 +33,7 @@ ASSET_CERTIFICATE = {
     'annotations': {
         'tags': [{'name': 'tag-certificate'}]
     },
-    'attributionReasons': [{'reason': 'fake-certificate-reason1'}, {'reason': 'fake-certificate-reason2'}],
-    'id': 'id-certificate'
+    'attributionReasons': [{'reason': 'fake-certificate-reason1'}, {'reason': 'fake-certificate-reason2'}]
 }
 
 
@@ -45,8 +41,7 @@ ASSET_IPRANGE = {
     'annotations': {
         'tags': [{'name': 'tag-iprange1'}, {'name': 'tag-iprange2'}]
     },
-    'attributionReasons': [{'reason': 'fake-iprange-reason'}],
-    'id': 'id-iprange'
+    'attributionReasons': [{'reason': 'fake-iprange-reason'}]
 }
 
 
@@ -54,8 +49,7 @@ ASSET_DOMAIN = {
     'annotations': {
         'tags': [{'name': 'tag-domain'}]
     },
-    'attributionReasons': [{'reason': 'fake-domain-reason'}],
-    'id': 'id-domain'
+    'attributionReasons': [{'reason': 'fake-domain-reason'}]
 }
 
 
@@ -74,7 +68,7 @@ def test_refresh_issue_assets_command(mocker):
             return [{'Contents': ASSET_DOMAIN}]
         elif name == "expanse-get-iprange" and args['id'] == 'fakeIPRange':
             return [{'Contents': ASSET_IPRANGE}]
-        elif name == "expanse-get-certificate" and args['md5_hash'] == 'fakeMD5':
+        elif name == "expanse-get-certificate" and args['hash'] == 'fakeMD5':
             return [{'Contents': ASSET_CERTIFICATE}]
         elif name == "setIncident":
             return "OK"

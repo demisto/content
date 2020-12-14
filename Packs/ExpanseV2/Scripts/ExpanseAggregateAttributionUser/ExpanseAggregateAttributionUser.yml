@@ -6,20 +6,18 @@ commonfields:
   version: -1
 args:
 - name: input
-  description: Input list.
+  description: input list
   isArray: true
 - name: current
   required: false
-  description: Current aggregation state.
+  description: current aggregation state
   isArray: true
 - name: username_fields
-  description: Comma separated list of fields to treat as serial number.
+  description: comma separated list of fields to treat as serial number
   defaultValue: source_user,srcuser,user
-  isArray: true
 - name: sightings_fields
-  description: Comma separated list of field names to be considered sighting counts.
+  description: comma separated list of field names to be considered sighting counts
   defaultValue: count
-  isArray: true
 outputs:
 - contextPath: Expanse.AttributionUser.username
   description: Username of the user
@@ -44,5 +42,5 @@ tags: []
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.8.6.14516
+dockerimage: demisto/python3:3.8.6.13358
 fromversion: 6.0.0

@@ -1,0 +1,492 @@
+description: |-
+  Find Azure resources using Prisma Cloud inventory
+id: Prisma Cloud - Find Azure Resource by Public IP
+inputs:
+- description: Public IP Address to look up
+  key: PublicIPAddress
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Prisma Cloud - Find Azure Resource by Public IP
+outputs:
+- contextPath: PrismaCloud.Attribution
+  description: Prisma Cloud attributed asset information.
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: eea6468a-1ae8-4066-8c3b-d68ae31a0278
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: eea6468a-1ae8-4066-8c3b-d68ae31a0278
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": -500
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c45dbc41-b306-40fb-8004-c91ca1fdf627
+      iscommand: false
+      name: Check Results
+      type: title
+      version: -1
+      description: ''
+    taskid: c45dbc41-b306-40fb-8004-c91ca1fdf627
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1160
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.PublicIPAddress
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: '[''properties.networkProfile''].networkInterfaces[*].publicIpAddress
+                    equals '
+              suffix: {}
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: 'config where cloud.type = ''azure'' AND cloud.service =
+                    ''Azure Compute'' AND json.rule = ( '
+              suffix:
+                value:
+                  simple: ' )'
+            operator: concat
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-date-unit: {}
+      time-range-date-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Search Azure VM instances in Prisma Cloud
+      id: ef6587a9-3f8d-42da-841b-7ea508b3e19a
+      iscommand: true
+      name: Search in Azure Compute
+      script: '|||redlock-search-config'
+      type: regular
+      version: -1
+    taskid: ef6587a9-3f8d-42da-841b-7ea508b3e19a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 260
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Asset
+                root: Redlock
+          operator: isNotEmpty
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether results are found.
+      id: 385cc47e-55cb-47cb-82f6-7a6a6ffcee37
+      iscommand: false
+      name: Are Results Found?
+      type: condition
+      version: -1
+    taskid: 385cc47e-55cb-47cb-82f6-7a6a6ffcee37
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1350
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assets:
+        complex:
+          accessor: Asset
+          root: Redlock
+      fields: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prisma Cloud Attribution
+      id: 8e61f71b-1962-4af9-8dda-c868f1716764
+      iscommand: false
+      name: Transform Results
+      script: PrismaCloudAttribution
+      type: regular
+      version: -1
+    taskid: 8e61f71b-1962-4af9-8dda-c868f1716764
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 1580
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 32081987-a64a-4dc2-86cc-286562d974cf
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 32081987-a64a-4dc2-86cc-286562d974cf
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+      - "17"
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 41fee779-d27a-4881-81df-eb903fa87a42
+      iscommand: false
+      name: Search in Prisma Cloud
+      type: title
+      version: -1
+      description: ''
+    taskid: 41fee779-d27a-4881-81df-eb903fa87a42
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 60
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: RedLock
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether Prisma Cloud integration is enabled.
+      id: 28701bd7-3772-4e66-8d50-e9438fd07044
+      iscommand: false
+      name: Is Prisma Cloud enabled?
+      type: condition
+      version: -1
+    taskid: 28701bd7-3772-4e66-8d50-e9438fd07044
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": -150
+        }
+      }
+  "16":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.PublicIPAddress
+          operator: isNotEmpty
+      label: "yes"
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if there are any IP in the input.
+      id: 156f032a-0995-4ada-8ccd-06a9d6da3f16
+      iscommand: false
+      name: Are there IPs in input?
+      type: condition
+      version: -1
+    taskid: 156f032a-0995-4ada-8ccd-06a9d6da3f16
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": -330
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.PublicIPAddress
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'properties.ipAddress equals '
+              suffix: {}
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: 'config where cloud.type = ''azure'' AND cloud.service =
+                    ''Azure Virtual Network'' AND json.rule = ( '
+              suffix:
+                value:
+                  simple: ' )'
+            operator: concat
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-date-unit: {}
+      time-range-date-value: {}
+      time-range-unit: {}
+      time-range-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Search Azure VM instances in Prisma Cloud
+      id: 881c9029-ed14-489d-8a2f-7def9adba178
+      iscommand: true
+      name: Search in Azure Public IP
+      script: '|||redlock-search-config'
+      type: regular
+      version: -1
+    taskid: 881c9029-ed14-489d-8a2f-7def9adba178
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 260
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.PublicIPAddress
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'properties.inboundIpAddress equals '
+              suffix: {}
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' OR '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: 'config where cloud.type = ''azure'' AND cloud.service =
+                    ''Azure App Service'' AND json.rule = ( '
+              suffix:
+                value:
+                  simple: ' )'
+            operator: concat
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-date-unit: {}
+      time-range-date-value: {}
+      time-range-unit: {}
+      time-range-value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Search Azure VM instances in Prisma Cloud
+      id: 311faecb-5148-49cb-8feb-b1fb58a9dcd7
+      iscommand: true
+      name: Search in Azure App Service
+      script: '|||redlock-search-config'
+      type: regular
+      version: -1
+    taskid: 311faecb-5148-49cb-8feb-b1fb58a9dcd7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 260
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2335,
+        "width": 2590,
+        "x": -390,
+        "y": -500
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- ExpanseV2 Test
+- Feed Expanse Test

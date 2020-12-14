@@ -1,16 +1,15 @@
 args:
-- description: List of Prisma Cloud assets to return.
+- description: List of Prisma Cloud assets to return
   isArray: true
   name: assets
 - defaultValue: id,cloudType,resourceName,resourceType,regionId,accountId,accountName,hasAlert,service,ip,fqdn
-  description: Fields to be returned (comma separated string).
+  description: Fields to be returned (comma separated)
   name: fields
-  isArray: true
-comment: Recursively extracts specified fields from provided list of assets for Prisma Cloud attribution use case.
+comment: Prisma Cloud Attribution
 commonfields:
   id: PrismaCloudAttribution
   version: -1
-dockerimage: demisto/python3:3.8.6.14516
+dockerimage: demisto/python3:3.8.6.13358
 enabled: true
 name: PrismaCloudAttribution
 outputs:
