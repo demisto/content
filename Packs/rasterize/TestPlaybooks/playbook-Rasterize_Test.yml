@@ -388,7 +388,7 @@ tasks:
     task:
       id: 5533a172-35f4-4612-8221-ecba2c82d365
       version: -1
-      name: Rasterize URL to PNG (Github)
+      name: Rasterize URL to PNG (Google)
       description: Rasterize a URL into image or PDF
       script: '|||rasterize'
       type: regular
@@ -402,7 +402,7 @@ tasks:
       type:
         simple: png
       url:
-        simple: https://github.com
+        simple: https://google.com
       wait_time:
         simple: "5"
       width: {}
@@ -506,7 +506,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: github
+              simple: google
     view: |-
       {
         "position": {
