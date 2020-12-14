@@ -165,7 +165,7 @@ def main():
         exit_code = 1
 
     # Deleting GCS PATH before exit
-    if os.path.exists(options.service_account):
+    if exit_code == 1 and os.path.exists(options.service_account):
         os.remove(options.service_account)
     sys.exit(exit_code)
 
