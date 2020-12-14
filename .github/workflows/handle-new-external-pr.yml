@@ -35,7 +35,7 @@ jobs:
           echo "Updating External PR ${{ github.event.pull_request.html_url }}"
           cd Utils/github_workflow_scripts
           pipenv install --dev
-          pipenv run ./handle_external_pr.py
+          cat ./handle_external_pr.py
           echo "Finished Handling External PR"
       - name: Send Notification
         env:
