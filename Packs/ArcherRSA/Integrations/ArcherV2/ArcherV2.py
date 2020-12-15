@@ -383,10 +383,11 @@ class Client(BaseClient):
             record['Id'] = content_obj.get('Id')
         return record, res, errors
 
+    @staticmethod
     def record_to_incident(
-            self, record_item, app_id, fetch_param_id
+            record_item, app_id, fetch_param_id
     ) -> Tuple[dict, datetime]:
-        """Transform a recotrd to incident
+        """Transform a record to incident
 
         Args:
             record_item: The record item dict
@@ -394,7 +395,7 @@ class Client(BaseClient):
             fetch_param_id: ID of the fetch param.
 
         Returns:
-            incident, incident created time (in Archer's local time)
+            incident, incident created time (UTC Time)
         """
         labels = []
         raw_record = record_item['raw']
@@ -547,7 +548,15 @@ class Client(BaseClient):
                 return str(field['FieldId'])
         raise DemistoException(f'Could not find field ID {field_name}')
 
-    def get_application_fields(self, app_id) -> Tuple[list, list]:
+    def get_application_fields(self, app_id: str) -> Tuple[list, list]:
+        """Getting all fields in the application
+
+        Args:
+            app_id: Application to find the fields on
+
+        Returns:
+            fields, raw response
+        """
         res = self.do_request('GET', f'/api/core/system/fielddefinition/application/{app_id}')
 
         fields = []
@@ -564,7 +573,7 @@ class Client(BaseClient):
             else:
                 errors = get_errors_from_res(field)
                 if errors:
-                    return_error(errors)
+                    raise DemistoException(errors)
         return fields, res
 
 
@@ -732,7 +741,7 @@ def search_applications_command(client: Client, args: Dict[str, str]):
 
 
 def get_application_fields_command(client: Client, args: Dict[str, str]):
-    app_id = args.get('applicationId')
+    app_id = args['applicationId']
     fields, res = client.get_application_fields(app_id)
 
     markdown = tableToMarkdown('Application fields', fields)
@@ -1109,6 +1118,7 @@ def fetch_incidents(
         client: Client derived from BaseClient
         params: demisto.params dict.
         from_time: Time to start the fetch from
+        fetch_param_id: Param ID to find occurred time. can be acquired by get_fetch_param_id
 
     Returns:
         incidents, next_run datetime in archer's local time
@@ -1135,8 +1145,12 @@ def fetch_incidents(
         # Encountered that sometimes, somehow, on of next_fetch/incident_created_time are not UTC.
         next_fetch = next_fetch.replace(tzinfo=timezone.utc)
         incident_created_time = incident_created_time.replace(tzinfo=timezone.utc)
-        if incident_created_time > next_fetch:
+        if incident_created_time >= next_fetch:
             next_fetch = incident_created_time
+        else:
+            demisto.debug(
+                f'The newly fetched incident is older than last fetch. {incident_created_time=} {next_fetch=}'
+            )
         incidents.append(incident)
 
     return incidents, next_fetch

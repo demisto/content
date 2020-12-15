@@ -6,10 +6,6 @@ This integration was integrated and tested with version xx of RSA Archer v2
 2. Search for RSA Archer v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
-## Clarifications  
-The timezone (offset) parameter should be used if the Cortex XSOAR server and Archer's server aren't in the same time zone.
-If the Cortex XSOAR server time is 00:00 and the Archer server time is 01:00, the timezone parameter should be +60 (minutes).
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Server URL \(e.g. https://example.net\) | True |
@@ -25,8 +21,6 @@ If the Cortex XSOAR server time is 00:00 and the Archer server time is 01:00, th
 | fetch_limit | How many incidents to fetch each time | False |
 | fetch_time | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
 | fields_to_fetch | List of fields from the application to gets into the incident | False |
-| time_zone | Timezone offset in minutes of the RSA Archer server machine \(\+60, \-60, in minutes\) | False |
-| useEuropeanTime | Use European Time format (DD/MM/YYYY) instead of the American one. (According to the applicationDateField) | False | 
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
