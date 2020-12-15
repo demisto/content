@@ -365,14 +365,6 @@ script:
 
                 if (lastRun.end_time && lastRun.end_time !== '') {
                         endTime = lastRun.end_time;
-                    }
-                } else {
-                    next = null;
-
-                    // Reset time when the query is modified
-                    n = now;
-                    n.setTime(now.getTime() - 1 * DAY_IN_MILLIS);
-                    startTime = n.toISOString();
                 }
             }
         } else if (first_fetch_time) {
