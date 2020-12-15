@@ -594,7 +594,7 @@ script:
             Mitre ATT&CK tatics and techniques
           type: Unknown
   dockerimage: demisto/sixgill:1.0.0.12410
-  feed: true
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
