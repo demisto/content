@@ -5,15 +5,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3103bede-9ac0-4642-8d4b-9ee8cbcc28bc
+    taskid: 20e090a9-9479-4c2c-8cee-ec95f3396d7e
     type: start
     task:
-      id: 3103bede-9ac0-4642-8d4b-9ee8cbcc28bc
+      id: 20e090a9-9479-4c2c-8cee-ec95f3396d7e
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -32,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 6a74e05b-878a-46fc-8787-7ee23c8c31f0
+    taskid: 61bf5839-0ab1-4ca5-8381-7ac94511be66
     type: regular
     task:
-      id: 6a74e05b-878a-46fc-8787-7ee23c8c31f0
+      id: 61bf5839-0ab1-4ca5-8381-7ac94511be66
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -63,22 +62,29 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 222b90f2-381c-47ed-862b-5d1ac450bd8c
+    taskid: 97eb9205-c21e-4dce-8023-07e323b015b9
     type: regular
     task:
-      id: 222b90f2-381c-47ed-862b-5d1ac450bd8c
+      id: 97eb9205-c21e-4dce-8023-07e323b015b9
       version: -1
-      name: domain
-      script: 'Recorded Future v2|||domain'
+      name: domain (multiple)
+      script: Recorded Future v2|||domain
       type: regular
       iscommand: true
-      brand: ""
+      brand: Recorded Future v2
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
       domain:
-        simple: wgwuhauaqcrx.com
+        simple: wgwuhauaqcrx.com,google.com
+      fullResponse: {}
+      include_inactive: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
     separatecontext: false
     view: |-
       {
@@ -94,10 +100,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: c03fc3e0-d4ac-45fa-85d4-8a81a094f378
+    taskid: fa45ea3d-390e-4971-8e52-cccb31124b50
     type: condition
     task:
-      id: c03fc3e0-d4ac-45fa-85d4-8a81a094f378
+      id: fa45ea3d-390e-4971-8e52-cccb31124b50
       version: -1
       name: Verify Outputs
       type: condition
@@ -110,11 +116,14 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
               simple: DBotScore.Indicator
             iscontext: true
+          right:
+            value:
+              simple: wgwuhauaqcrx.com
       - - operator: isNotEmpty
           left:
             value:
@@ -195,6 +204,14 @@ tasks:
             value:
               simple: RecordedFuture.Domain.ruleCount
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: google.com
     view: |-
       {
         "position": {
@@ -209,22 +226,29 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: f45803d1-98a4-4380-877e-e6450a6aadf2
+    taskid: 8783f162-2c40-41da-81ab-0818464b23dc
     type: regular
     task:
-      id: f45803d1-98a4-4380-877e-e6450a6aadf2
+      id: 8783f162-2c40-41da-81ab-0818464b23dc
       version: -1
-      name: ip
-      script: 'Recorded Future v2|||ip'
+      name: ip (multiple)
+      script: Recorded Future v2|||ip
       type: regular
       iscommand: true
-      brand: ""
+      brand: Recorded Future v2
     nexttasks:
       '#none#':
       - "5"
     scriptarguments:
+      fullResponse: {}
+      include_inactive: {}
       ip:
-        simple: 199.188.201.124
+        simple: 199.188.201.124,8.8.8.8
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
     separatecontext: false
     view: |-
       {
@@ -240,10 +264,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 36a16ef5-ac8d-47cf-8271-ef7b3e7f5acb
+    taskid: d543e6ec-388a-490d-80c3-9acedc02c90a
     type: condition
     task:
-      id: 36a16ef5-ac8d-47cf-8271-ef7b3e7f5acb
+      id: d543e6ec-388a-490d-80c3-9acedc02c90a
       version: -1
       name: Verify Outputs
       type: condition
@@ -256,11 +280,14 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
               simple: DBotScore.Indicator
             iscontext: true
+          right:
+            value:
+              simple: 199.188.201.124
       - - operator: isNotEmpty
           left:
             value:
@@ -275,16 +302,6 @@ tasks:
           left:
             value:
               simple: DBotScore.Score
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: IP.Malicious.Vendor
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: IP.Malicious.Description
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -341,6 +358,14 @@ tasks:
             value:
               simple: RecordedFuture.IP.ruleCount
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
     view: |-
       {
         "position": {
@@ -355,22 +380,27 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 6953142d-6cbf-4dba-8171-451ac8be9c8c
+    taskid: 956f9f78-d438-4c0d-8ce0-996f18f47090
     type: regular
     task:
-      id: 6953142d-6cbf-4dba-8171-451ac8be9c8c
+      id: 956f9f78-d438-4c0d-8ce0-996f18f47090
       version: -1
-      name: file
-      script: 'Recorded Future v2|||file'
+      name: file (multiple)
+      script: Recorded Future v2|||file
       type: regular
       iscommand: true
-      brand: ""
+      brand: Recorded Future v2
     nexttasks:
       '#none#':
       - "7"
     scriptarguments:
       file:
-        simple: fa964842244e752950fd4ed711759382a8950e13cc2794d6f73ab7eb9169e5ee
+        simple: fa964842244e752950fd4ed711759382a8950e13cc2794d6f73ab7eb9169e5ee,178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1
+      include_inactive: {}
+      long: {}
+      retries: {}
+      threshold: {}
+      wait: {}
     separatecontext: false
     view: |-
       {
@@ -386,10 +416,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 5a1e28cd-732f-4bc8-8a9d-c8eef6c028bc
+    taskid: 847ac283-6dea-470f-8dce-8ebd799f1754
     type: condition
     task:
-      id: 5a1e28cd-732f-4bc8-8a9d-c8eef6c028bc
+      id: 847ac283-6dea-470f-8dce-8ebd799f1754
       version: -1
       name: Verify Outputs
       type: condition
@@ -402,11 +432,14 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
               simple: File.SHA256
             iscontext: true
+          right:
+            value:
+              simple: fa964842244e752950fd4ed711759382a8950e13cc2794d6f73ab7eb9169e5ee
       - - operator: isNotEmpty
           left:
             value:
@@ -487,6 +520,14 @@ tasks:
             value:
               simple: RecordedFuture.File.ruleCount
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: 178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1
     view: |-
       {
         "position": {
@@ -501,13 +542,13 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: e15df64a-2cfc-440f-8129-9bd2db87315c
+    taskid: 3638d3e5-5f6f-45da-8783-ab5b838f48de
     type: regular
     task:
-      id: e15df64a-2cfc-440f-8129-9bd2db87315c
+      id: 3638d3e5-5f6f-45da-8783-ab5b838f48de
       version: -1
       name: cve
-      script: 'Recorded Future v2|||cve'
+      script: Recorded Future v2|||cve
       type: regular
       iscommand: true
       brand: ""
@@ -532,10 +573,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 2ec9e978-d9fe-468f-8b9a-f8cbd6f6db39
+    taskid: 4a92dec0-77c1-486d-8884-b019f9309fa3
     type: condition
     task:
-      id: 2ec9e978-d9fe-468f-8b9a-f8cbd6f6db39
+      id: 4a92dec0-77c1-486d-8884-b019f9309fa3
       version: -1
       name: Verify Outputs
       type: condition
@@ -617,22 +658,29 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 2a0eda4f-5517-41c1-85a1-f646a0b21460
+    taskid: 82d9aa0c-5d49-4e2a-8ecc-3d22ab22132d
     type: regular
     task:
-      id: 2a0eda4f-5517-41c1-85a1-f646a0b21460
+      id: 82d9aa0c-5d49-4e2a-8ecc-3d22ab22132d
       version: -1
-      name: url
-      script: 'Recorded Future v2|||url'
+      name: url (multiple)
+      script: Recorded Future v2|||url
       type: regular
       iscommand: true
-      brand: ""
+      brand: Recorded Future v2
     nexttasks:
       '#none#':
       - "11"
     scriptarguments:
+      include_inactive: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
       url:
-        simple: http://lasdamas.com/DKndhFG72
+        simple: http://lasdamas.com/DKndhFG72,www.google.com
+      wait: {}
     separatecontext: false
     view: |-
       {
@@ -648,10 +696,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 45cc44be-894c-4043-89a4-c74da20c5e4d
+    taskid: 1563b0fe-d5cb-4a4b-8f1a-39ec571c2355
     type: condition
     task:
-      id: 45cc44be-894c-4043-89a4-c74da20c5e4d
+      id: 1563b0fe-d5cb-4a4b-8f1a-39ec571c2355
       version: -1
       name: Verify Outputs
       type: condition
@@ -664,41 +712,14 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
               simple: DBotScore.Indicator
             iscontext: true
-      - - operator: isNotEmpty
-          left:
+          right:
             value:
-              simple: DBotScore.Type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DBotScore.Vendor
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DBotScore.Score
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: URL.Malicious.Vendor
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: URL.Malicious.Description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: URL.Data
-            iscontext: true
+              simple: http://lasdamas.com/DKndhFG72
       - - operator: isNotEmpty
           left:
             value:
@@ -749,6 +770,14 @@ tasks:
             value:
               simple: RecordedFuture.URL.ruleCount
             iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
     view: |-
       {
         "position": {
@@ -763,10 +792,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 164a5018-6477-41d2-887c-23e54486bf6b
+    taskid: 7e9785f0-5890-45ba-82b8-cf0abb217f84
     type: regular
     task:
-      id: 164a5018-6477-41d2-887c-23e54486bf6b
+      id: 7e9785f0-5890-45ba-82b8-cf0abb217f84
       version: -1
       name: recordedfuture-threat-assessment
       script: '|||recordedfuture-threat-assessment'
@@ -800,10 +829,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 0f9bac99-885c-46cd-8295-957efc6d99ae
+    taskid: 96386e3b-2a32-4230-8e28-6186ad3c2353
     type: condition
     task:
-      id: 0f9bac99-885c-46cd-8295-957efc6d99ae
+      id: 96386e3b-2a32-4230-8e28-6186ad3c2353
       version: -1
       name: Verify Outputs
       type: condition
@@ -885,10 +914,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: a7c38d92-4e0a-4911-8087-5659749cc73a
+    taskid: 98b31663-855b-4a94-8eb2-a1c912845ff1
     type: regular
     task:
-      id: a7c38d92-4e0a-4911-8087-5659749cc73a
+      id: 98b31663-855b-4a94-8eb2-a1c912845ff1
       version: -1
       name: recordedfuture-alert-rules
       script: '|||recordedfuture-alert-rules'
@@ -913,10 +942,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 47810134-6b4c-4840-8b3a-e9979685d82b
+    taskid: 38034637-74fa-4129-83b4-738b21cc5da5
     type: condition
     task:
-      id: 47810134-6b4c-4840-8b3a-e9979685d82b
+      id: 38034637-74fa-4129-83b4-738b21cc5da5
       version: -1
       name: Verify Outputs
       type: condition
@@ -953,10 +982,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 3e73e1b2-7d17-4141-8f75-6a64155a4206
+    taskid: 9cc5a53b-8c80-4229-8809-6c6eb240df2d
     type: regular
     task:
-      id: 3e73e1b2-7d17-4141-8f75-6a64155a4206
+      id: 9cc5a53b-8c80-4229-8809-6c6eb240df2d
       version: -1
       name: recordedfuture-alerts
       script: '|||recordedfuture-alerts'
@@ -981,10 +1010,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 580d09b3-1a5f-48dc-87e0-839dab17bfb5
+    taskid: cdfe43e9-3eca-4abe-8c41-2ca9e623ae76
     type: condition
     task:
-      id: 580d09b3-1a5f-48dc-87e0-839dab17bfb5
+      id: cdfe43e9-3eca-4abe-8c41-2ca9e623ae76
       version: -1
       name: Verify Outputs
       type: condition
@@ -1041,10 +1070,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 57c98765-6bca-45cf-8a79-391011d8239a
+    taskid: 64964758-029e-409f-8268-44fdf719677d
     type: regular
     task:
-      id: 57c98765-6bca-45cf-8a79-391011d8239a
+      id: 64964758-029e-409f-8268-44fdf719677d
       version: -1
       name: recordedfuture-intelligence
       script: '|||recordedfuture-intelligence'
@@ -1078,10 +1107,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 87102bd9-f690-4b1f-87cc-b7765b82ebdc
+    taskid: 3c3f8f06-f1cf-4936-81a7-e341724190cf
     type: condition
     task:
-      id: 87102bd9-f690-4b1f-87cc-b7765b82ebdc
+      id: 3c3f8f06-f1cf-4936-81a7-e341724190cf
       version: -1
       name: Verify Outputs
       type: condition
@@ -1273,16 +1302,15 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: b0c2b1fd-0009-4111-8742-a1d603f7a855
+    taskid: eab56fc7-fbc4-43cc-8822-c72d2e66aaaf
     type: title
     task:
-      id: b0c2b1fd-0009-4111-8742-a1d603f7a855
+      id: eab56fc7-fbc4-43cc-8822-c72d2e66aaaf
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {

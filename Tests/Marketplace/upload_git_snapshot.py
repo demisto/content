@@ -1,7 +1,9 @@
+import logging
 import os
 import argparse
 from Tests.Marketplace.marketplace_services import init_storage_client
-from demisto_sdk.commands.common.tools import print_error
+
+from Tests.scripts.utils.log_util import install_logging
 
 
 def upload_git_snapshot(git_snapshot_path, pack_name, branch_name, pack_version, storage_bucket, repo_name, git_org):
@@ -13,8 +15,8 @@ def upload_git_snapshot(git_snapshot_path, pack_name, branch_name, pack_version,
 
         with open(git_snapshot_path, "rb") as git_snapshot:
             git_snapshot_blob.upload_from_file(git_snapshot)
-    except Exception as e:
-        print_error(f"Error: failed uploading git snapshot. \n{e}")
+    except Exception:
+        logging.exception("Error: failed uploading git snapshot.")
 
 
 def option_handler():
@@ -48,6 +50,7 @@ def option_handler():
 
 
 def main():
+    install_logging('upload_git_snapshot.log')
     option = option_handler()
     storage_bucket_name = option.bucket_name
     service_account = option.service_account

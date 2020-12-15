@@ -298,7 +298,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets the reputation of a hash.
+    description: Get file reputation by a SHA1 hash.
     execution: false
     name: sentinelone-get-hash
     outputs:
@@ -828,7 +828,7 @@ script:
       name: site_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Expires a site.
     execution: false
     name: sentinelone-expire-site
@@ -1444,7 +1444,7 @@ script:
     description: Sends an uninstall command to all agents that match the input filter.
     execution: false
     name: sentinelone-uninstall-agent
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.13358
   isfetch: true
   longRunning: false
   longRunningPort: false

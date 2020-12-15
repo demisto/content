@@ -487,6 +487,11 @@ Function TableToMarkdown{
                 # Need to convert hashtables to ordered dicts so that the keys/values will be in the same order
                 $item = $item | ConvertTo-OrderedDict
             }
+            elseif ($item -Is [PsCustomObject]){
+            $newItem = @{}
+            $item.PSObject.Properties | ForEach-Object { $newItem[$_.Name] = $_.Value }
+            $item = $newItem | ConvertTo-OrderedDict
+        }
             $items += $item
         }
     }
@@ -527,7 +532,7 @@ End {
                 }
                 foreach ($raw_value in $raw_values)
                 {
-                    if ($raw_value)
+                    if ($null -ne $raw_value)
                     {
                         if ($raw_value -Is [System.Array] -Or $raw_value -Is [Collections.IDictionary] -Or $raw_value -Is [PSCustomObject])
                         {

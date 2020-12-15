@@ -27,9 +27,11 @@ The following permissions are required for all commands:
     Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
     <ul>
       <li><strong>Name</strong>: a textual name for the integration instance.</li>
-   <li><strong>ID (received from the authorization step - see Detailed Instructions (?) section)</strong></li>
-   <li><strong>Token (received from the authorization step - see Detailed Instructions (?) section)</strong></li>
-   <li><strong>Key (received from the authorization step - see Detailed Instructions (?) section)</strong></li>
+   <li><strong>ID or Client ID - see Detailed Instructions (?)</strong></li>
+   <li><strong>Token or Tenant ID - see Detailed Instructions (?)</strong></li>
+   <li><strong>Key or Client Secret - see Detailed Instructions (?)</strong></li>
+   <li><strong>Authorization code (required for self-deployed Azure app)</strong></li>
+   <li><strong>Application redirect URI (required for self-deployed Azure app)</strong></li>
    <li><strong>Fetch incidents</strong></li>
    <li><strong>Email address from which to fetch incidents  (e.g. "example@demisto.com")</strong></li>
    <li><strong>Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing)</strong></li>

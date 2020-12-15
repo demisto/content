@@ -116,6 +116,9 @@ def get_url_data(client: Client, url: str):
     current_data_url = None
     if is_reload_needed(client, integration_context):
         data = reload(client)
+        current_date = date_to_timestamp(datetime.now(), DATE_FORMAT)
+        context = {"list": data, "timestamp": current_date}
+        demisto.setIntegrationContext(context)
         data_contains_url = url in data
         if data_contains_url:
             current_data_url = data[url]

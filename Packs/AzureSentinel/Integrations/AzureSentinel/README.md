@@ -2,6 +2,8 @@
 Use the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
 This integration was integrated and tested with API version ***2019-01-01-preview*** of Azure Sentinel.
 
+> <i>Note:</i> The integration is in ***beta*** as it uses a preview version of the Azure Sentniel API. The stable Azure Sentniel API version does not contain all  required endpoints used in some of the integration commands.
+
 ## Authorize Cortex XSOAR for Azure Sentinel
 
 You need to grant Cortex XSOAR authorization to access Azure Sentinel.
@@ -348,6 +350,9 @@ Gets a list of an incident's related entities from Azure Sentinel.
 ##### Base Command
 
 `azure-sentinel-list-incident-relations`
+
+> <i>Note:</i> In this command we use an endpoint which is not available in the stable API version.
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -388,6 +393,9 @@ Gets a single entity from Azure Sentinel. Use the azure-sentinel-list-incident-r
 ##### Base Command
 
 `azure-sentinel-get-entity-by-id`
+
+> <i>Note:</i> In this command we use an endpoint which is not available in the stable API version.
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -417,6 +425,9 @@ Gets a list of an entity's relations from Azure Sentinel.
 ##### Base Command
 
 `azure-sentinel-list-entity-relations`
+
+> <i>Note:</i> In this command we use an endpoint which is not available in the stable API version.
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |

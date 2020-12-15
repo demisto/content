@@ -5,7 +5,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import pandas as pd
 from bs4 import BeautifulSoup
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 from numpy import dot
 from numpy.linalg import norm
 from email.utils import parseaddr
@@ -16,7 +16,8 @@ import re
 no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
 pd.options.mode.chained_assignment = None  # default='warn'
 
-SIMILARITY_THRESHOLD = 0.99
+SIMILARITY_THRESHOLD = float(demisto.args().get('threshold', 0.97))
+CLOSE_TO_SIMILAR_DISTANCE = 0.2
 
 EMAIL_BODY_FIELD = 'emailbody'
 EMAIL_SUBJECT_FIELD = 'emailsubject'
@@ -38,8 +39,10 @@ FROM_POLICY = FROM_POLICY_TEXT_ONLY
 URL_REGEX = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
             r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
 
+IGNORE_INCIDENT_TYPE_VALUE = 'None'
 
-def get_existing_incidents(input_args):
+
+def get_existing_incidents(input_args, current_incident_type):
     global DEFAULT_ARGS
     get_incidents_args = {}
     get_incidents_args['limit'] = input_args.get('limit', DEFAULT_ARGS['limit'])
@@ -59,8 +62,8 @@ def get_existing_incidents(input_args):
         pass
     else:
         return_error('Unsupported statusScope: {}'.format(status_scope))
-    type_values = input_args.get('incidentTypes')
-    if type_values is not None and type_values != 'None':
+    type_values = input_args.get('incidentTypes', current_incident_type)
+    if type_values != IGNORE_INCIDENT_TYPE_VALUE:
         type_field = input_args.get('incidentTypeFieldName', 'type')
         type_query = generate_incident_type_query_component(type_field, type_values)
         query_components.append(type_query)
@@ -156,9 +159,10 @@ def preprocess_incidents_df(existing_incidents):
 
 def incident_has_text_fields(incident):
     text_fields = [EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, EMAIL_BODY_FIELD]
+    custom_fields = incident.get('CustomFields', []) or []
     if any(field in incident for field in text_fields):
         return True
-    elif 'CustomFields' in incident and any(field in incident['CustomFields'] for field in text_fields):
+    elif 'CustomFields' in incident and any(field in custom_fields for field in text_fields):
         return True
     return False
 
@@ -187,7 +191,7 @@ def find_duplicate_incidents(new_incident, existing_incidents_df):
     global MERGED_TEXT_FIELD, FROM_POLICY
     new_incident_text = new_incident[MERGED_TEXT_FIELD]
     text = [new_incident_text] + existing_incidents_df[MERGED_TEXT_FIELD].tolist()
-    vectorizer = TfidfVectorizer(token_pattern=r"(?u)\b\w\w+\b|!|\?|\"|\'").fit(text)
+    vectorizer = CountVectorizer(token_pattern=r"(?u)\b\w\w+\b|!|\?|\"|\'").fit(text)
     new_incident_vector = vectorize(new_incident_text, vectorizer)
     existing_incidents_df['vector'] = existing_incidents_df[MERGED_TEXT_FIELD].apply(lambda x: vectorize(x, vectorizer))
     existing_incidents_df['similarity'] = existing_incidents_df['vector'].apply(
@@ -214,14 +218,15 @@ def find_duplicate_incidents(new_incident, existing_incidents_df):
         return None, None
 
 
-def return_entry(message, existing_incident=None):
+def return_entry(message, existing_incident=None, similarity=0):
     if existing_incident is None:
         similar_incident = {}
     else:
         similar_incident = {
             'rawId': existing_incident['id'],
             'id': existing_incident['id'],
-            'name': existing_incident.get('name')
+            'name': existing_incident.get('name'),
+            'similarity': similarity
         }
     outputs = {
         'similarIncident': similar_incident,
@@ -231,30 +236,43 @@ def return_entry(message, existing_incident=None):
 
 
 def close_new_incident_and_link_to_existing(new_incident, existing_incident, similarity):
-    res = demisto.executeCommand("CloseInvestigationAsDuplicate", {
-        'duplicateId': existing_incident['id']})
-
-    if is_error(res):
-        return_error(res)
-    message = 'Duplicate incidents found: #{}, #{} with similarity of {:.1f}%. '.format(new_incident['id'],
-                                                                                        existing_incident['id'],
-                                                                                        similarity * 100)
-    message += 'This incident will be closed and linked to #{}.'.format(existing_incident['id'])
-    return_entry(message, existing_incident.to_dict())
+    formatted_incident = format_similar_incident(existing_incident, similarity)
+    message = tableToMarkdown("Duplicate incident found with similarity {:.1f}%".format(similarity * 100),
+                              formatted_incident)
+    if demisto.args().get('closeAsDuplicate', 'true') == 'true':
+        res = demisto.executeCommand("CloseInvestigationAsDuplicate", {
+            'duplicateId': existing_incident['id']})
+        if is_error(res):
+            return_error(res)
+        message += 'This incident (#{}) will be closed and linked to #{}.'.format(new_incident['id'],
+                                                                                  existing_incident['id'])
+    return_entry(message, existing_incident.to_dict(), similarity)
 
 
 def create_new_incident():
     return_entry('This incident is not a duplicate of an existing incident.')
 
 
+def format_similar_incident(incident, similairy):
+    return {'Id': "[%s](#/Details/%s)" % (incident['id'], incident['id']),
+            'Name': incident['name'],
+            'Closed': incident.get('closed') != "0001-01-01T00:00:00Z",
+            'Time': str(incident['created']),
+            'Email from': incident.get(demisto.args().get('emailFrom')),
+            'Text Similarity': "{:.1f}%".format(similairy * 100),
+            }
+
+
 def create_new_incident_low_similarity(existing_incident, similarity):
-    message = 'This incident is not a duplicate of an existing incident.\n'
-    message += 'Most similar incident found is #{} with similarity of {:.1f}%.\n'.format(existing_incident['id'],
-                                                                                         similarity * 100)
-    message += 'The threshold for considering 2 incidents as duplicate is a similarity ' \
-               'of {:.1f}%.\n'.format(SIMILARITY_THRESHOLD * 100)
-    message += 'Therefore these 2 incidents will not be considered as duplicate and the current incident ' \
-               'will remain active.\n'
+    message = '## This incident is not a duplicate of an existing incident.\n'
+
+    if similarity > SIMILARITY_THRESHOLD - CLOSE_TO_SIMILAR_DISTANCE:
+        formatted_incident = format_similar_incident(existing_incident, similarity)
+        message += tableToMarkdown("Most similar incident found", formatted_incident)
+        message += 'The threshold for considering 2 incidents as duplicate is a similarity ' \
+                   'of {:.1f}%.\n'.format(SIMILARITY_THRESHOLD * 100)
+        message += 'Therefore these 2 incidents will not be considered as duplicate and the current incident ' \
+                   'will remain active.\n'
     return_entry(message)
 
 
@@ -277,12 +295,12 @@ def main():
     EMAIL_HTML_FIELD = input_args.get('emailBodyHTML', EMAIL_HTML_FIELD)
     FROM_FIELD = input_args.get('emailFrom', FROM_FIELD)
     FROM_POLICY = input_args.get('fromPolicy', FROM_POLICY)
-    existing_incidents = get_existing_incidents(input_args)
-    demisto.results('found {} incidents by query'.format(len(existing_incidents)))
+    new_incident = demisto.incidents()[0]
+    existing_incidents = get_existing_incidents(input_args, new_incident.get('type', IGNORE_INCIDENT_TYPE_VALUE))
+    demisto.debug('found {} incidents by query'.format(len(existing_incidents)))
     if len(existing_incidents) == 0:
         create_new_incident()
         return
-    new_incident = demisto.incidents()[0]
     if not incident_has_text_fields(new_incident):
         create_new_incident_no_text_fields()
         return

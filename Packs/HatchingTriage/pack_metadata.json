@@ -1,11 +1,11 @@
 {
     "name": "Hatching Triage",
     "description": "Scalable malware sandbox",
-    "support": "community",
+    "support": "partner",
     "currentVersion": "1.0.0",
-    "author": "Matt Houston",
-    "url": "",
-    "email": "mhouston@paloaltonetworks.com",
+    "author": "Hatching",
+    "url": "https://hatching.io/",
+    "email": "support@hatching.io",
     "created": "2020-08-18T00:00:00Z",
     "categories": [
         "Forensics & Malware Analysis"

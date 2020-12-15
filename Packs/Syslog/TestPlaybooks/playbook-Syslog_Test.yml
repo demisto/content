@@ -38,7 +38,7 @@ tasks:
       version: -1
       name: Get the server URL
       description: Get the Server URL.
-      scriptName: GetServerURL
+      scriptName: GetServerURL_syslog
       type: regular
       iscommand: false
       brand: ""

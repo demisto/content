@@ -1,0 +1,52 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"Qradar Generic"
+	],
+	"breachScript": "",
+	"caseInsensitive": true,
+	"cliName": "technicaluser",
+	"closeForm": false,
+	"columns": null,
+	"content": true,
+	"defaultRows": null,
+	"description": "The technical user of the asset.",
+	"editForm": true,
+	"extractIndicatorTypesIDs": [],
+	"fieldCalcScript": "",
+	"fromServerVersion": "",
+	"group": 0,
+	"hidden": false,
+	"id": "incident_technicaluser",
+	"isExtractingSpecificIndicatorTypes": false,
+	"isReadOnly": false,
+	"itemVersion": "",
+	"locked": false,
+	"mergeStrategy": "",
+	"name": "Technical User",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"propagationLabels": [
+		"all"
+	],
+	"required": false,
+	"script": "",
+	"selectValues": [
+		""
+	],
+	"sla": 0,
+	"sortValues": null,
+	"system": false,
+	"systemAssociatedTypes": null,
+	"threshold": 72,
+	"toServerVersion": "",
+	"type": "multiSelect",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": false,
+	"validatedError": "",
+	"validationRegex": "",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

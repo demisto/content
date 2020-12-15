@@ -1,0 +1,53 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"Qradar Generic"
+	],
+	"breachScript": "",
+	"caseInsensitive": true,
+	"cliName": "cvssintegrityrequirement",
+	"closeForm": false,
+	"columns": null,
+	"content": true,
+	"defaultRows": null,
+	"description": "The CVSS integrity requirement for the asset.",
+	"editForm": true,
+	"extractIndicatorTypesIDs": [],
+	"fieldCalcScript": "",
+	"fromServerVersion": "",
+	"group": 0,
+	"hidden": false,
+	"id": "incident_cvssintegrityrequirement",
+	"isExtractingSpecificIndicatorTypes": false,
+	"isReadOnly": false,
+	"itemVersion": "",
+	"locked": false,
+	"mergeStrategy": "",
+	"name": "CVSS Integrity Requirement",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"packID": "72fd0d6b-7c76-4c89-85d7-573db74c1aba",
+	"placeholder": "",
+	"propagationLabels": [
+		"all"
+	],
+	"required": false,
+	"script": "",
+	"selectValues": [
+		""
+	],
+	"sla": 0,
+	"sortValues": null,
+	"system": false,
+	"systemAssociatedTypes": null,
+	"threshold": 72,
+	"toServerVersion": "",
+	"type": "multiSelect",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": false,
+	"validatedError": "",
+	"validationRegex": "",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

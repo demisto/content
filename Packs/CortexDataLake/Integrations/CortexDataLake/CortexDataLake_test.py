@@ -1,4 +1,5 @@
 import pytest
+import json
 from CommonServerPython import parse_date_range
 
 HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES = [(1582210145000000, False, '2020-02-20T14:49:05'),
@@ -23,6 +24,11 @@ QUERY_TIMESTAMPS_TEST_CASES = [
         'Both start/end time and time range'
     )
 ]
+
+
+def load_test_data(json_path):
+    with open(json_path) as f:
+        return json.load(f)
 
 
 @pytest.mark.parametrize('epoch_time, utc_time, expected_response', HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES)
@@ -117,9 +123,50 @@ def test_prepare_fetch_incidents_query():
                                                               fetch_limit)
 
 
+MILLISECONDS_HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES = [(1582017903000000, '2020-02-18T09:25:03.001Z'),
+                                                               (1582027208002000, '2020-02-18T12:00:08.003Z')]
+
+
+@pytest.mark.parametrize('epoch_time, expected_response', MILLISECONDS_HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES)
+def test_epoch_to_timestamp_and_add_milli(epoch_time, expected_response):
+    from CortexDataLake import epoch_to_timestamp_and_add_milli
+    assert epoch_to_timestamp_and_add_milli(epoch_time) == expected_response
+
+
 def test_get_table_name():
     from CortexDataLake import get_table_name
     query = 'SELECT pcap FROM `firewall.threat` WHERE is_packet_capture = true  AND severity = "Critical" LIMIT 10'
     assert get_table_name(query) == 'firewall.threat'
     query = 'Wrongly formmated query'
     assert get_table_name(query) == 'Unrecognized table name'
+
+
+def test_query_logs_command_transform_results_1():
+    """
+    Given:
+        - a list of CDL query results
+    When
+        - running query_logs_command function
+    Then
+        - if transform_results is not specified, CDL query results are mapped into the CDL common context (test 1)
+        - if transform_results is set to false, CDL query results are returned unaltered (test 2)
+    """
+    from CortexDataLake import query_logs_command
+
+    cdl_records = load_test_data('./test_data/test_query_logs_command_transform_results_original.json')
+    cdl_records_xform = load_test_data('./test_data/test_query_logs_command_transform_results_xformed.json')
+
+    class MockClient():
+        def query_loggings(self, query):
+            return cdl_records, []
+
+    # test 1, with no transform_results options, should transform to common context
+    _, results_xform, _ = query_logs_command({'limit': '1', 'query': 'SELECT * FROM `firewall.traffic`'}, MockClient())
+    assert results_xform == {'CDL.Logging': cdl_records_xform}
+
+    # test 2, with transform_results options, should transform to common context
+    _, results_noxform, _ = query_logs_command(
+        {'limit': '1', 'query': 'SELECT * FROM `firewall.traffic`', 'transform_results': 'false'},
+        MockClient()
+    )
+    assert results_noxform == {'CDL.Logging': cdl_records}

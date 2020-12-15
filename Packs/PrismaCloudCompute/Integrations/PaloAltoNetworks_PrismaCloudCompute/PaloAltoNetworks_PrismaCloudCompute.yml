@@ -43,7 +43,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.8.6.12176
   isfetch: true
   longRunning: false
   longRunningPort: false

@@ -1,0 +1,31 @@
+{
+ "id": "incident_chroniclelastseen",
+ "version": -1,
+ "modified": "2020-07-24T14:15:22.06839786+05:30",
+ "name": "Chronicle Last Seen",
+ "ownerOnly": false,
+ "description": "Last seen time fetched from the Chronicle IOC Domain Matches.",
+ "cliName": "chroniclelastseen",
+ "type": "date",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Chronicle IOC Domain Matches"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}

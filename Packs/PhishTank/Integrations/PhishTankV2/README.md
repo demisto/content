@@ -50,12 +50,13 @@ Checks the reputation of the supplied URLs.
 ```!url url=hxxp://login.rakuten.co.jp.reise```
 
 #### Human Readable Output
-### PhishTankV2 Database - URL Query
-#### Found matches for URL hxxp://login.rakuten.co.jp.reise
-|online|phish_id|submission_time|target|verification_time|verified|
-|---|---|---|---|---|---|
-| yes | 6784982 | 2020-09-27T19:04:35+00:00 | Other | 2020-09-27T19:10:20+00:00 | yes |
-Additional details at http://www.phishtank.com/phish_detail.php?phish_id=6784982 
+>### PhishTankV2 Database - URL Query
+>#### Found matches for URL hxxp://login.rakuten.co.jp.reise
+>|online|phish_id|submission_time|target|verification_time|verified|
+>|---|---|---|---|---|---|
+>| yes | 6784982 | 2020-09-27T19:04:35+00:00 | Other | 2020-09-27T19:10:20+00:00 | yes |
+>
+>Additional details at http://www.phishtank.com/phish_detail.php?phish_id=6784982 
 
 ### phishtank-reload
 ***
@@ -77,8 +78,8 @@ There is no context output for this command.
 ```!phishtank-reload```
 
 #### Human Readable Output
-<br>PhishTankV2 Database reloaded</br>
-<br>Total **13181** URLs loaded.</br>
+>PhishTankV2 Database reloaded
+><br/>Total **13181** URLs loaded
 
 
 
@@ -102,8 +103,8 @@ There is no context output for this command.
 ```!phishtank-status```
 
 #### Human Readable Output
-<br>PhishTankV2 Database Status</br>
-<br>Total **13181** URLs loaded.</br>
-<br>Last Load time **Sun Oct 04 2020 09:43:01 (UTC)**</br>
+>PhishTankV2 Database Status
+><br/>Total **13181** URLs loaded
+><br/>Last Load time **Sun Oct 04 2020 09:43:01 (UTC)**
 
 

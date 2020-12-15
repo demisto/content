@@ -1,0 +1,28 @@
+args:
+- default: false
+  description: List name.
+  isArray: false
+  name: listName
+  required: true
+  secret: false
+- default: false
+  description: Key.
+  isArray: false
+  name: keyName
+  required: true
+  secret: false
+comment: Removes a key in key/value store backed by an XSOAR list.
+outputs: []
+commonfields:
+  id: RemoveKeyFromList
+  version: -1
+enabled: false
+name: RemoveKeyFromList
+script: '-'
+system: false
+tags: []
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.8.6.13358
+fromversion: 5.0.0

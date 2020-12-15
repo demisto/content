@@ -1,12 +1,15 @@
 import os
 import shutil
 import dateparser
+from urllib import parse
 from typing import List, Tuple, Dict, Callable, Any, Union, Optional
 
 from CommonServerPython import *
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
+
+COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
 TICKET_STATES = {
     'incident': {
@@ -359,6 +362,9 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
                 ticket_fields[arg] = inv_states.get(input_arg, input_arg)
             elif arg == 'approval':
                 ticket_fields[arg] = inv_approval.get(input_arg, input_arg)
+            elif arg == 'change_type':
+                # this change is required in order to use type 'Standard' as well.
+                ticket_fields['type'] = input_arg
             else:
                 ticket_fields[arg] = input_arg
         elif template_name and arg in template_name:
@@ -418,6 +424,26 @@ def split_fields(fields: str = '') -> dict:
     return dic_fields
 
 
+def build_query_for_request_params(query):
+    """Split query that contains '&' to a list of queries.
+
+    Args:
+        query: query (Example: "id=5&status=1")
+
+    Returns:
+        List of sub queries. (Example: ["id=5", "status=1"])
+    """
+
+    if '&' in query:
+        query_params = []  # type: ignore
+        query_args = parse.parse_qsl(query)
+        for arg in query_args:
+            query_params.append(parse.urlencode([arg]))  # type: ignore
+        return query_params
+    else:
+        return query
+
+
 class Client(BaseClient):
     """
     Client to use in the ServiceNow integration. Overrides BaseClient.
@@ -425,7 +451,7 @@ class Client(BaseClient):
 
     def __init__(self, server_url: str, sc_server_url: str, username: str, password: str, verify: bool, fetch_time: str,
                  sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
-                 incident_name: str):
+                 incident_name: str, oauth_params: dict = {}):
         """
 
         Args:
@@ -433,6 +459,8 @@ class Client(BaseClient):
             sc_server_url: SNOW Service Catalog url
             username: SNOW username
             password: SNOW password
+            oauth_params: (optional) the parameters for the ServiceNowClient that should be used to create an
+                          access token when using OAuth2 authentication.
             verify: whether to verify the request
             fetch_time: first time fetch for fetch_incidents
             sysparm_query: system query
@@ -448,6 +476,7 @@ class Client(BaseClient):
         self._username = username
         self._password = password
         self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
+        self.use_oauth = True if oauth_params else False
         self.fetch_time = fetch_time
         self.timestamp_field = timestamp_field
         self.ticket_type = ticket_type
@@ -456,6 +485,18 @@ class Client(BaseClient):
         self.sys_param_query = sysparm_query
         self.sys_param_limit = sysparm_limit
         self.sys_param_offset = 0
+
+        if self.use_oauth:  # if user selected the `Use OAuth` checkbox, OAuth2 authentication should be used
+            self.snow_client: ServiceNowClient = ServiceNowClient(credentials=oauth_params.get('credentials', {}),
+                                                                  use_oauth=self.use_oauth,
+                                                                  client_id=oauth_params.get('client_id', ''),
+                                                                  client_secret=oauth_params.get('client_secret', ''),
+                                                                  url=oauth_params.get('url', ''),
+                                                                  verify=oauth_params.get('verify', False),
+                                                                  proxy=oauth_params.get('proxy', False),
+                                                                  headers=oauth_params.get('headers', ''))
+        else:
+            self._auth = (self._username, self._password)
 
     def send_request(self, path: str, method: str = 'GET', body: dict = None, params: dict = None,
                      headers: dict = None, file=None, sc_api: bool = False):
@@ -494,17 +535,31 @@ class Client(BaseClient):
                     file_name = file['name']
                     shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
                     with open(file_name, 'rb') as f:
-                        res = requests.request(method, url, headers=headers, data=body, params=params,
-                                               files={'file': f}, auth=(self._username, self._password),
-                                               verify=self._verify, proxies=self._proxies)
+                        if self.use_oauth:
+                            access_token = self.snow_client.get_access_token()
+                            headers.update({
+                                'Authorization': f'Bearer {access_token}'
+                            })
+                            res = requests.request(method, url, headers=headers, data=body, params=params,
+                                                   files={'file': f}, verify=self._verify, proxies=self._proxies)
+                        else:
+                            res = requests.request(method, url, headers=headers, data=body, params=params,
+                                                   files={'file': f}, auth=self._auth,
+                                                   verify=self._verify, proxies=self._proxies)
                     shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
                 except Exception as err:
                     raise Exception('Failed to upload file - ' + str(err))
             else:
-                res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
-                                       params=params,
-                                       auth=(self._username, self._password),
-                                       verify=self._verify, proxies=self._proxies)
+                if self.use_oauth:
+                    access_token = self.snow_client.get_access_token()
+                    headers.update({
+                        'Authorization': f'Bearer {access_token}'
+                    })
+                    res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
+                                           params=params, verify=self._verify, proxies=self._proxies)
+                else:
+                    res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
+                                           params=params, auth=self._auth, verify=self._verify, proxies=self._proxies)
 
             if "Instance Hibernating page" in res.text:
                 raise DemistoException(
@@ -770,9 +825,10 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
+
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
-            query_params['sysparm_query'] = sys_param_query
+            query_params['sysparm_query'] = build_query_for_request_params(sys_param_query)
         if system_params:
             query_params.update(system_params)
         return self.send_request(f'table/{table_name}', 'GET', params=query_params)
@@ -1867,7 +1923,11 @@ def fetch_incidents(client: Client) -> list:
     return incidents
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
+def test_instance(client: Client):
+    """
+    The function that executes the logic for the instance testing. If the instance wasn't configured correctly, this
+    function will raise an exception and cause the test_module/oauth_test_module function to fail.
+    """
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(client.fetch_time, '%Y-%m-%d %H:%M:%S')
 
@@ -1883,7 +1943,61 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
         if client.incident_name not in ticket:
             raise ValueError(f"The field [{client.incident_name}] does not exist in the ticket.")
 
+
+def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
+    """
+    Test the instance configurations when using basic authorization.
+    """
+    # Notify the user that test button can't be used when using OAuth 2.0:
+    if client.use_oauth:
+        raise Exception('Test button cannot be used when using OAuth 2.0. Please use the !servicenow-oauth-login '
+                        'command followed by the !servicenow-oauth-test command to test the instance.')
+
+    test_instance(client)
     return 'ok', {}, {}, True
+
+
+def oauth_test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
+    """
+    Test the instance configurations when using OAuth authentication.
+    """
+    if not client.use_oauth:
+        raise Exception('!servicenow-oauth-test command should be used only when using OAuth 2.0 authorization.\n '
+                        'Please select the `Use OAuth Login` checkbox in the instance configuration before running '
+                        'this command.')
+
+    test_instance(client)
+    hr = '### Instance Configured Successfully.\n'
+    return hr, {}, {}, True
+
+
+def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
+    """
+    Login the user using OAuth authorization
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    # Verify that the user checked the `Use OAuth` checkbox:
+    if not client.use_oauth:
+        raise Exception('!servicenow-oauth-login command can be used only when using OAuth 2.0 authorization.\n Please '
+                        'select the `Use OAuth Login` checkbox in the instance configuration before running this '
+                        'command.')
+
+    username = args.get('username', '')
+    password = args.get('password', '')
+    try:
+        client.snow_client.login(username, password)
+        hr = '### Logged in successfully.\n A refresh token was saved to the integration context. This token will be ' \
+             'used to generate a new access token once the current one expires.'
+    except Exception as e:
+        return_error(f'Failed to login. Please verify that the provided username and password are correct, and that you '
+                     f'entered the correct client id and client secret in the instance configuration (see ? for'
+                     f'correct usage when using OAuth).\n\n{e}')
+    return hr, {}, {}, True
 
 
 def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> Union[List[Dict[str, Any]], str]:
@@ -1994,7 +2108,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         user_email = user.get('email')
         ticket['caller_id'] = user_email
 
-    if ticket.get('resolved_by'):
+    if ticket.get('resolved_by') or ticket.get('closed_at'):
         if params.get('close_incident'):
             demisto.debug(f'ticket is closed: {ticket}')
             entries.append({
@@ -2034,6 +2148,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     ticket_id = parsed_args.remote_incident_id
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
+        # Closing sc_type ticket. This ticket type can be closed only when changing the ticket state.
+        if ticket_type == 'sc_task' and parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
+            parsed_args.data['state'] = '3'
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
         if not params.get('close_ticket'):
             fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
@@ -2103,9 +2220,34 @@ def main():
     LOG(f'Executing command {command}')
 
     params = demisto.params()
-    username = params.get('credentials', {}).get('identifier')
-    password = params.get('credentials', {}).get('password')
     verify = not params.get('insecure', False)
+    use_oauth = params.get('use_oauth', False)
+    oauth_params = {}
+
+    if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
+        username = ''
+        password = ''
+        client_id = params.get('credentials', {}).get('identifier')
+        client_secret = params.get('credentials', {}).get('password')
+        oauth_params = {
+            'credentials': {
+                'identifier': username,
+                'password': password
+            },
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'url': params.get('url'),
+            'headers': {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            'verify': verify,
+            'proxy': params.get('proxy'),
+            'use_oauth': use_oauth
+        }
+    else:  # use basic authentication
+        username = params.get('credentials', {}).get('identifier')
+        password = params.get('credentials', {}).get('password')
 
     version = params.get('api_version')
     if version:
@@ -2128,10 +2270,14 @@ def main():
 
     raise_exception = False
     try:
-        client = Client(server_url, sc_server_url, username, password, verify, fetch_time, sysparm_query,
-                        sysparm_limit, timestamp_field, ticket_type, get_attachments, incident_name)
+        client = Client(server_url=server_url, sc_server_url=sc_server_url, username=username, password=password,
+                        verify=verify, fetch_time=fetch_time, sysparm_query=sysparm_query, sysparm_limit=sysparm_limit,
+                        timestamp_field=timestamp_field, ticket_type=ticket_type, get_attachments=get_attachments,
+                        incident_name=incident_name, oauth_params=oauth_params)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]]] = {
             'test-module': test_module,
+            'servicenow-oauth-test': oauth_test_module,
+            'servicenow-oauth-login': login_command,
             'servicenow-update-ticket': update_ticket_command,
             'servicenow-create-ticket': create_ticket_command,
             'servicenow-delete-ticket': delete_ticket_command,
@@ -2173,7 +2319,9 @@ def main():
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
         else:
-            raise NotImplementedError(f'Command "{command}" is not implemented.')
+            raise_exception = True
+            raise NotImplementedError(f'{COMMAND_NOT_IMPLEMENTED_MSG}: {demisto.command()}')
+
     except Exception as err:
         LOG(err)
         LOG.print_log()
@@ -2181,6 +2329,9 @@ def main():
             return_error(f'Unexpected error: {str(err)}', error=traceback.format_exc())
         else:
             raise
+
+
+from ServiceNowApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

@@ -9,9 +9,6 @@ parameters:
   server_branch_name:
     type: string
     default: ""
-  backward_compatibility:
-    type: string
-    default: ""
   nightly:
     type: string
     default: ""
@@ -42,17 +39,19 @@ parameters:
   packs_to_upload:
     type: string
     default: ""
+  bucket_upload:
+    type: string
+    default: ""
 
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.10.0"
+      CONTENT_VERSION: "20.12.0"
       SERVER_VERSION: "6.0.0"
-      GIT_SHA1: "8a93f9ad1328fc1f2e4ed75aec24d10159d68312" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "c49eabe52f748c4e2a3a5bdd1ab64ccf3c12a83b" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
-      BACKWARD_COMPATIBILITY: << pipeline.parameters.backward_compatibility >>
       MEM_CHECK: << pipeline.parameters.mem_check >>
       CONTRIB_BRANCH: << pipeline.parameters.contrib_branch >>
       CONTRIB_PACK_NAME: << pipeline.parameters.contrib_pack_name >>
@@ -65,10 +64,11 @@ references:
       DEMISTO_SDK_NIGHTLY_PARAMETER: << pipeline.parameters.demisto_sdk_nightly >>
       FORCE_PACK_UPLOAD_PARAMETER: << pipeline.parameters.force_pack_upload >>
       PACKS_TO_UPLOAD_PARAMETER: << pipeline.parameters.packs_to_upload >>
+      BUCKET_UPLOAD_PARAMETER: << pipeline.parameters.bucket_upload >>
 
   container_config: &container_config
     docker:
-      - image: devdemisto/content-build:3.0.0.7332  # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.12681  # disable-secrets-detection
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -125,6 +125,10 @@ references:
         then
             echo "export PACKS_TO_UPLOAD=$PACKS_TO_UPLOAD_PARAMETER" >> $BASH_ENV
         fi
+        if [ -n "${BUCKET_UPLOAD_PARAMETER}" ];
+        then
+            echo "export BUCKET_UPLOAD=$BUCKET_UPLOAD_PARAMETER" >> $BASH_ENV
+        fi
 
         echo "=== sourcing $BASH_ENV ==="
         source $BASH_ENV
@@ -132,11 +136,11 @@ references:
         mkdir -p $CIRCLE_ARTIFACTS/logs
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/lastest_server_build_scripts/*
+        chmod +x ./Tests/Marketplace/*
         if [ ! -e "venv" ]; then
           echo "installing venv"
           NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
           source ./venv/bin/activate
-          pip install -r .circleci/build-requirements.txt
           pip3 install -r .circleci/build-requirements.txt
         else
           echo "venv exists (from cache). activating"
@@ -153,7 +157,7 @@ references:
         fi
 
         echo "========== Build Parameters =========="
-        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD="
+        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD="
         python --version
         python3 --version
         demisto-sdk --version
@@ -188,6 +192,9 @@ references:
             elif [[ -n "${CONTRIB_BRANCH}" || -n "${DEMISTO_SDK_NIGHTLY}" ]] ;
               then
                 export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
+            elif [ -n "${BUCKET_UPLOAD}" ] ;
+              then
+                export IFRA_ENV_TYPE="Bucket-Upload" # disable-secrets-detection
             else
               export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
             fi
@@ -209,7 +216,7 @@ references:
 
   restore_cache: &restore_cache
     restore_cache:
-      key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+      key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
 
   destroy_instances: &destroy_instances
     run:
@@ -220,18 +227,16 @@ references:
             echo "Skipping - not running in contribution instance"
             exit 0
         fi
-        echo "$INSTANCE_ROLE"
-        export TEMP=$(cat ./Tests/filter_envs.json | jq '."$INSTANCE_ROLE"')
-        if [[ "$TEMP" == "false" ]];
-          then
-            echo "Skipping - instance was not setup"
-            exit 0
-        fi
         python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
 
         export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
         zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
         rm -f $CIRCLE_ARTIFACTS/server*.log
+        if [ -f $CIRCLE_ARTIFACTS/logs/Run_Tests.log ];
+        then
+            zip -P $PSWD $CIRCLE_ARTIFACTS/logs/Run_Tests.zip $CIRCLE_ARTIFACTS/logs/Run_Tests.log
+            rm -f $CIRCLE_ARTIFACTS/logs/Run_Tests.log
+        fi
       when: always
 
   persist_to_workspace: &persist_to_workspace
@@ -256,7 +261,6 @@ references:
         ./Tests/scripts/pyflake.sh *.py
         find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
 
-        [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
         ./Tests/scripts/validate.sh
 
   run_unit_testing_and_lint: &run_unit_testing_and_lint
@@ -290,10 +294,9 @@ references:
         python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
         python3 -m pytest ./Tests/Marketplace/Tests/ -v
         python3 -m pytest ./Tests/scripts/utils/tests -v
-
-        # TODO: replace this line with running all unit tests in Utils directory
-        # see issue https://github.com/demisto/etc/issues/29435
-        python3 -m pytest ./Utils/github_workflow_scripts/ -v
+        python3 -m pytest ./Tests/tests -v
+        python3 -m pytest ./Tests/private_build/ -v
+        python3 -m pytest Utils -v
 
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
           ./Tests/scripts/sdk_pylint_check.sh
@@ -387,9 +390,10 @@ references:
         command: |
           demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure
           demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
-          demisto-sdk upload -i Packs/HelloWorld/Layouts/layout-Hello_World_Test_Layout.json --insecure
+          demisto-sdk upload -i Packs/HelloWorld/Layouts/layoutscontainer-Hello_World_Test_Layout.json --insecure
           demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_Incident_Test.json --insecure
           demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert_Test.json --insecure
+          demisto-sdk upload -i Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json --insecure
 
 
   sdk_nightly_jobs: &sdk_nightly_jobs
@@ -397,6 +401,94 @@ references:
         context: sdk_nightly_env
     - Demisto SDK Nightly - Run against Cortex XSOAR:
         context: sdk_nightly_env
+
+  instance_tests_jobs: &instance_tests_jobs
+    - Create Instances:
+        context: instances_test_env
+    - Instance Test:
+        context: instances_test_env
+        requires:
+          - Create Instances
+
+  nightly_jobs: &nightly_jobs
+    - Setup Environment:
+        context: nightly_env
+    - Create Instances:
+        context: nightly_env
+    - Run Unit Testing And Lint:
+        context: nightly_env
+        requires:
+          - Setup Environment
+    - Run Validations:
+        requires:
+          - Setup Environment
+    - Server Master:
+        requires:
+          - Create Instances
+        context: nightly_env
+
+  bucket_upload_jobs: &bucket_upload_jobs
+    - Setup Environment:
+        context: bucket_upload_env
+    - Run Unit Testing And Lint:
+        context: bucket_upload_env
+        requires:
+          - Setup Environment
+    - Run Validations:
+        context: bucket_upload_env
+        requires:
+          - Setup Environment
+    - Create Instances:
+        context: bucket_upload_env
+        requires:
+          - Run Unit Testing And Lint
+          - Run Validations
+    - Install Packs in Demisto 6_0:
+        context: bucket_upload_env
+        requires:
+          - Create Instances
+    - Install Packs in Demisto Marketplace - Master:
+        context: bucket_upload_env
+        requires:
+          - Create Instances
+    - Upload Packs To Marketplace:
+        context: bucket_upload_env
+        requires:
+          - Install Packs in Demisto 6_0
+          - Install Packs in Demisto Marketplace - Master
+
+  check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
+    when:
+      condition:
+        or:
+          - << pipeline.parameters.force_pack_upload >>
+          - << pipeline.parameters.bucket_upload >>
+      steps:
+        - run:
+            name: Check User Permissions to Upload Pack
+            command: |
+              CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H "Authorization: token ${GITHUB_TOKEN}")
+              LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
+              LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" )
+              if [[ -z "${CIRCLE_USERNAME}" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "${CIRCLE_USERNAME}"`" ]]; then
+                  echo -e "User '${CIRCLE_USERNAME}' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
+                  exit 1
+              else
+                  echo "User '${CIRCLE_USERNAME}' is allowed to upload packs / force upload packs."
+              fi
+
+  wait_until_server_ready: &wait_until_server_ready
+    run:
+      name: Wait until server ready
+      shell: /bin/bash
+      when: always
+      command: |
+        if ./Tests/scripts/is_ami.sh ;
+          then
+            python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
+        else
+            python3 ./Tests/scripts/wait_until_server_ready.py "master"
+        fi
 
 jobs:
   Setup Environment:
@@ -411,7 +503,7 @@ jobs:
           paths:
             - venv
             - node_modules
-          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+          key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
       - *get_contribution_pack
       - *add_ssh_keys
       - *persist_to_workspace
@@ -422,85 +514,82 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - unless:
-          condition: << pipeline.parameters.instance_tests >>
-          steps:
-            - setup_remote_docker
-            - *restore_cache
-            - *add_ssh_keys
-            - *prepare_environment
-            - *infrastructure_testing
-            - *run_unit_testing_and_lint
-            - store_test_results:
-                path: ./unit-tests
-            - run:
-                name: Slack Notifier
-                shell: /bin/bash
-                command: |
-                  ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
-                when: always
-            - *store_artifacts
+      - setup_remote_docker
+      - *restore_cache
+      - *add_ssh_keys
+      - *prepare_environment
+      - *infrastructure_testing
+      - *run_unit_testing_and_lint
+      - store_test_results:
+          path: ./unit-tests
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+            else
+              ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
+            fi
+          when: always
+      - *store_artifacts
+
   Run Validations:
     <<: *container_config
     resource_class: medium
     <<: *environment
     steps:
       - *attach_workspace
-      - unless:
-          condition: << pipeline.parameters.instance_tests >>
-          steps:
-            - *restore_cache
-            - *add_ssh_keys
-            - *prepare_environment
-            - *secrets
-            - *create_id_set
-            - *update_tests_step
-            - *validate_files_and_yaml
-            - run:
-                name: Content Docs Site
-                when: always
-                command: |
-                  ./Documentation/docs_site_update.sh
-            - run:
-                name: Spell Checks
-                command: |
-                  python3 ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
-            - run:
-                name: Check if CircleCI's config file is up to date
-                when: always
-                command: |
-                  if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-                    echo "Skipping, Should not run on contributor's branch."
+      - *restore_cache
+      - *add_ssh_keys
+      - *prepare_environment
+      - *secrets
+      - *create_id_set
+      - *update_tests_step
+      - *validate_files_and_yaml
+      - run:
+          name: Content Docs Site
+          when: always
+          command: |
+            ./Documentation/docs_site_update.sh
+      - run:
+          name: Spell Checks
+          command: |
+            python3 ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
+      - run:
+          name: Check if CircleCI's config file is up to date
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping, Should not run on contributor's branch."
+              exit 0
+            fi
+            # Checks if there's any diff from master
+            if [[ `git diff origin/master -- .circleci/config.yml` ]]; then
+                # Checks if part of the branch's changes
+                if [[ -z `git diff origin/master..."$CIRCLE_BRANCH" --name-only | grep .circleci/config.yml` ]]; then
+                    echo ".circleci/config.yml has been changed. Merge from master"
+                    exit 1
+                else
+                    echo ".circleci/config.yml is part of the branch changes, proceeding"
                     exit 0
-                  fi
-                  # Checks if there's any diff from master
-                  if [[ `git diff origin/master -- .circleci/config.yml` ]]; then
-                      # Checks if part of the branch's changes
-                      if [[ -z `git diff origin/master..."$CIRCLE_BRANCH" --name-only | grep .circleci/config.yml` ]]; then
-                          echo ".circleci/config.yml has been changed. Merge from master"
-                          exit 1
-                      else
-                          echo ".circleci/config.yml is part of the branch changes, proceeding"
-                          exit 0
-                      fi
-                  else
-                      echo ".circleci/config.yml is up to date!"
-                  fi
-            - run:
-                name: Verify Base Branch for Contribution
-                when: always
-                command: |
-                  if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
-                    then
-                      python3 ./Tests/scripts/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
-                  fi
+                fi
+            else
+                echo ".circleci/config.yml is up to date!"
+            fi
+      - run:
+          name: Verify Base Branch for Contribution
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
+              then
+                python3 ./Tests/scripts/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
+            fi
       - unless:
           condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - equal:
-                  - master
-                  - << pipeline.git.branch >>
+            equal:
+              - master
+              - << pipeline.git.branch >>
           steps:
             - run:
                 name: validate content-test-conf branch merged
@@ -517,6 +606,15 @@ jobs:
                     echo "ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CIRCLE_BRANCH.\n Merge it in order to merge the current branch into content repo."
                     exit 1
                   fi
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+            fi
+          when: always
+
   Create Instances:
     <<: *container_config
     resource_class: medium
@@ -575,6 +673,15 @@ jobs:
             - *create_instance
             - *store_artifacts
       - *persist_to_workspace
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+            fi
+          when: always
+
   Server 5_0:
     <<: *container_config
     resource_class: medium
@@ -583,24 +690,18 @@ jobs:
       - when:
           condition:
             or:
-              - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
               - << pipeline.parameters.non_ami_run >>
           steps:
             - run:
                 name:  Not running this job
                 when: always
                 command: |
-                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
+                  echo "Not running this job when triggered with one of contrib_branch, non_ami_run"
       - unless:
           condition:
             or:
-              - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
               - << pipeline.parameters.non_ami_run >>
           steps:
             - *attach_workspace
@@ -608,34 +709,51 @@ jobs:
             - *add_ssh_keys
             - *prepare_environment
             - run:
+                name: Collect Instance Role And Check If Instance Was Created
+                when: always
+                command: |
+                  echo 'export INSTANCE_ROLE="Demisto GA"' >> $BASH_ENV
+                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto GA"')
+                  echo "Demisto GA filter=$TEMP"
+                  if [[ "$TEMP" == "true" ]];
+                    then
+                      echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
+                      exit 0
+                  fi
+                  source $BASH_ENV
+            - run:
                 name: Wait until server ready
                 shell: /bin/bash
                 when: always
                 command: |
-                  python3 ./Tests/scripts/wait_until_server_ready.py "Demisto GA"
+                  python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+            - run:
+                name: Install Content And Configure Integrations On Server
+                shell: /bin/bash
+                command: |
+                  if [ -z $INSTANCE_WAS_CREATED ];
+                    then
+                      echo "Skipping - instance was not created"
+                      exit 0
+                  fi
+                  ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
             - run:
                 name: Run Tests - Server 5.0
+                no_output_timeout: 5h
                 shell: /bin/bash
-                when: always
                 command: |
-                  echo 'export INSTANCE_ROLE="Demisto GA"' >> $BASH_ENV
-                  source $BASH_ENV
-                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto GA"')
-                  echo "Demisto GA filter=$TEMP"
-                  if [[ "$TEMP" == "false" ]];
+                  if [ -z $INSTANCE_WAS_CREATED ];
                     then
-                      echo "Skipping - Instance was not setup"
+                      echo "Skipping - instance was not created"
                       exit 0
                   fi
                   if ./Tests/scripts/is_ami.sh ;
                     then
-                      echo 'export INSTANCE_ROLE="Demisto GA"' >> $BASH_ENV
+                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
                     else
                       echo "Not AMI run, can't run on this version"
                       exit 0
                   fi
-                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-
             - *destroy_instances
             - *store_artifacts
   Server 5_5:
@@ -646,57 +764,66 @@ jobs:
       - when:
           condition:
             or:
-              - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
               - << pipeline.parameters.non_ami_run >>
           steps:
             - run:
                 name: Not running this job
                 when: always
                 command: |
-                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
+                  echo "Not running this job when triggered with one of instance_tests or non_ami_run"
       - unless:
           condition:
             or:
-              - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
               - << pipeline.parameters.non_ami_run >>
           steps:
             - *attach_workspace
             - *add_ssh_keys
             - *prepare_environment
             - run:
+                name: Collect Instance Role And Check If Instance Was Created
+                when: always
+                command: |
+                  echo 'export INSTANCE_ROLE="Demisto PreGA"' >> $BASH_ENV
+                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto PreGA"')
+                  echo "Demisto PreGA filter=$TEMP"
+                  if [[ "$TEMP" == "true" ]];
+                    then
+                      echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
+                      exit 0
+                  fi
+                  source $BASH_ENV
+            - run:
                 name: Wait until server ready
                 shell: /bin/bash
                 when: always
                 command: |
-                  python3 ./Tests/scripts/wait_until_server_ready.py "Demisto PreGA"
+                  python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+            - run:
+                name: Install Content And Configure Integrations On Server
+                shell: /bin/bash
+                command: |
+                  if [ -z $INSTANCE_WAS_CREATED ];
+                    then
+                      echo "Skipping - instance was not created"
+                      exit 0
+                  fi
+                  ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
             - run:
                 name: Run Tests - 5.5
+                no_output_timeout: 5h
                 shell: /bin/bash
-                when: always
                 command: |
-                  echo 'export INSTANCE_ROLE="Demisto PreGA"' >> $BASH_ENV
-                  source $BASH_ENV
-                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto PreGA"')
-                  echo "Demisto PreGA filter=$TEMP"
-                  if [[ "$TEMP" == "false" ]];
+                  if [ -z $INSTANCE_WAS_CREATED ];
                     then
-                      echo "Skipping - instance was not setup"
+                      echo "Skipping - instance was not created"
                       exit 0
                   fi
                   if ./Tests/scripts/is_ami.sh ;
                     then
                       ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-                      export RETVAL=$?
-                      cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
-                      exit $RETVAL
-
-                  else
+                    else
                       echo "Not AMI run, can't run on this version"
                       exit 0
                   fi
@@ -710,160 +837,81 @@ jobs:
       - when:
           condition:
             or:
-              - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
               - << pipeline.parameters.non_ami_run >>
           steps:
             - run:
                 name: Not running this job
                 when: always
                 command: |
-                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
+                  echo "Not running this job when triggered with one of contrib_branch or non_ami_run"
       - unless:
           condition:
             or:
-              - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
               - << pipeline.parameters.non_ami_run >>
           steps:
             - *attach_workspace
             - *add_ssh_keys
             - *prepare_environment
             - run:
+                name: Collect Instance Role And Check If Instance Was Created
+                when: always
+                command: |
+                  echo 'export INSTANCE_ROLE="Demisto 6.0"' >> $BASH_ENV
+                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto 6.0"')
+                  echo "Demisto PreGA filter=$TEMP"
+                  if [[ "$TEMP" == "true" ]];
+                    then
+                      echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
+                      exit 0
+                  fi
+                  source $BASH_ENV
+            - run:
                 name: Wait until server ready
                 shell: /bin/bash
                 when: always
                 command: |
-                  if ./Tests/scripts/is_ami.sh ;
+                  python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+            - run:
+                name: Install Content And Configure Integrations On Server
+                shell: /bin/bash
+                when: always
+                command: |
+                  if [ -z $INSTANCE_WAS_CREATED ];
                     then
-                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto 6.0"
-                  else
-                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto"
+                      echo "Skipping - instance was not created"
+                      exit 0
                   fi
+                  ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
             - run:
                 name: Run Tests - Demisto 6.0
                 shell: /bin/bash
                 when: always
                 no_output_timeout: 5h
                 command: |
-                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto 6.0"')
-                  echo "Demisto 6.0 filter=$TEMP"
-                  if [[ "$TEMP" == "false" ]];
+                  if [ -z $INSTANCE_WAS_CREATED ];
                     then
-                      echo "Skipping - instance was not setup"
+                      echo "Skipping - instance was not created"
                       exit 0
                   fi
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      echo 'export INSTANCE_ROLE="Demisto 6.0"' >> $BASH_ENV
-                  else
-                    echo 'export INSTANCE_ROLE="master"' >> $BASH_ENV
-                  fi
-                  source $BASH_ENV
                   ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
                   export RETVAL=$?
-                  cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                  if [ -f ./Tests/failed_tests.txt ];
+                    then
+                      cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                  fi
                   exit $RETVAL
             - run:
-                name: Upload Packs To Marketplace Storage
+                name: Slack Notifier
+                shell: /bin/bash
                 command: |
-                  # IMPORTANT! By removing this condition, branch changes will be uploaded to production bucket.
-                  if [[ $CIRCLE_BRANCH != master ]]; then
-                    echo "Skipping packs uploading on non master branch"
-                    exit 0
-                  fi
+                  ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
+                when: always
+            - *destroy_instances
+            - *store_artifacts
 
-                  EXTRACT_FOLDER=$(mktemp -d)
-                  PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
-                  PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
-                  ID_SET=$CIRCLE_ARTIFACTS/id_set.json
-                  GCS_PATH=$(mktemp)
-                  echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private'
-                  rm $GCS_PATH
-                when: on_success
-            - run:
-                name: Slack Notifier
-                shell: /bin/bash
-                command: |
-                  ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
-                when: always
-            - *destroy_instances
-            - *store_artifacts
   Server Master:
-    <<: *container_config
-    resource_class: medium
-    <<: *environment
-    steps:
-      - when:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-          steps:
-            - run:
-                name: Not running this job
-                when: always
-                command: |
-                  echo "Not running this job when triggered with one of instance_tests or demisto_sdk_nightly"
-      - unless:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-          steps:
-            - *attach_workspace
-            - *add_ssh_keys
-            - *prepare_environment
-            - run:
-                name: Wait until server ready
-                shell: /bin/bash
-                when: always
-                command: |
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
-                  else
-                      python3 ./Tests/scripts/wait_until_server_ready.py "master"
-                  fi
-            - run:
-                name: Run Tests - Demisto Master
-                shell: /bin/bash
-                when: always
-                no_output_timeout: 5h
-                command: |
-                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
-                  echo "Demisto Marketplace filter=$TEMP"
-                  if [[ "$TEMP" == "false" ]];
-                    then
-                      echo "Skipping - instance was not setup"
-                      exit 0
-                  fi
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
-                  else
-                    echo 'export INSTANCE_ROLE="master"' >> $BASH_ENV
-                  fi
-                  source $BASH_ENV
-                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-                  export RETVAL=$?
-                  cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
-                  exit $RETVAL
-            - run:
-                name: Slack Notifier
-                shell: /bin/bash
-                command: |
-                  ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
-                when: always
-            - *comment_on_contrib_pr
-            - *destroy_instances
-            - *store_artifacts
-  Force Pack Upload:
     <<: *container_config
     resource_class: medium
     <<: *environment
@@ -872,31 +920,130 @@ jobs:
       - *add_ssh_keys
       - *prepare_environment
       - run:
-          name: Check User Permissions to Force Upload Pack
+          name: Collect Instance Role And Check If Instance Was Created
+          when: always
           command: |
-            CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H "Authorization: token ${GITHUB_TOKEN}")
-            LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
-            LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" )
-            if [[ -z "${CIRCLE_USERNAME}" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "${CIRCLE_USERNAME}"`" ]]; then
-                echo -e "User '${CIRCLE_USERNAME}' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
-                exit 1
-            else
-                echo "User '${CIRCLE_USERNAME}' is allowed to force pack uploads."
+            echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
+            echo "Demisto Marketplace filter=$TEMP"
+            if [[ "$TEMP" == "true" || -n "${NIGHTLY}" ]];
+              then
+                echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
+                exit 0
             fi
-
+            source $BASH_ENV
       - run:
-          name: Upload Packs To Marketplace Storage
+          name: Wait until server ready
+          shell: /bin/bash
+          when: always
+          command: |
+            python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+      - run:
+          name: Install Content And Configure Integrations On Server
+          shell: /bin/bash
+          when: always
+          command: |
+            if [ -z $INSTANCE_WAS_CREATED ];
+              then
+                echo "Skipping - instance was not created"
+                exit 0
+            fi
+            ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
+      - run:
+          name: Run Tests - Demisto Master
+          shell: /bin/bash
+          when: always
+          no_output_timeout: 5h
+          command: |
+            if [ -z $INSTANCE_WAS_CREATED ];
+              then
+                echo "Skipping - instance was not created"
+                exit 0
+            fi
+            ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+            export RETVAL=$?
+            if [ -f ./Tests/failed_tests.txt ];
+              then
+                cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+            fi
+            exit $RETVAL
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
+          when: always
+      - *comment_on_contrib_pr
+      - *destroy_instances
+      - *store_artifacts
+
+  Force Upload Packs To Marketplace:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - *attach_workspace
+      - *add_ssh_keys
+      - *prepare_environment
+      - *check_user_permissions_to_upload_packs
+      - run:
+          name: Force Upload Packs To Marketplace Storage
           command: |
             EXTRACT_FOLDER=$(mktemp -d)
             PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
             PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
-            ID_SET=$CIRCLE_ARTIFACTS/id_set.json
             GCS_PATH=$(mktemp)
+            CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
+            CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
             echo $GCS_MARKET_KEY > $GCS_PATH
-            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -p "${PACKS_TO_UPLOAD}" -o
+
+            GCS_BUILD_BUCKET="marketplace-ci-build"
+            GCS_MARKET_BUCKET="marketplace-dist"
+
+            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}"
             rm $GCS_PATH
           when: on_success
-      - *destroy_instances
+      - *store_artifacts
+
+  Upload Packs To Marketplace:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - *attach_workspace
+      - *add_ssh_keys
+      - *prepare_environment
+      - *check_user_permissions_to_upload_packs
+      - when:
+          condition:
+            equal:
+              - master
+              - << pipeline.git.branch >>
+          steps:
+            - run:
+                name: Upload Packs To Marketplace Storage
+                command: |
+                  EXTRACT_FOLDER=$(mktemp -d)
+                  PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
+                  PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
+                  GCS_PATH=$(mktemp)
+                  CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
+                  CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
+                  echo $GCS_MARKET_KEY > $GCS_PATH
+
+                  GCS_BUILD_BUCKET="marketplace-ci-build"
+                  GCS_MARKET_BUCKET="marketplace-dist"
+
+                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH
+                  rm $GCS_PATH
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+            fi
+          when: always
       - *store_artifacts
 
   Instance Test:
@@ -977,7 +1124,6 @@ jobs:
       - *create_instance
       - run:
           name: Wait until server ready
-          when: always
           command: |
             python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
       - run:
@@ -993,7 +1139,7 @@ jobs:
           name: Unlock HelloWorld integration and playbook
           command: python3 Tests/sdknightly/unlock_entity.py integration HelloWorld
       - run:
-          name: Create and upload incident type, incident field and a layout to Cortex XSOAR
+          name: Create and upload incident type, incident field, mapper and a layout to Cortex XSOAR
           command: python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $CIRCLE_ARTIFACTS
       - *upload_entities_to_cortex_xsoar
       - run:
@@ -1003,6 +1149,7 @@ jobs:
             demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
             demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Incident Test" --insecure -f
             demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Alert Test" --insecure -f
+            demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Test - Incoming Mapper" --insecure -f
       - run:
           name: Format the entities
           command: demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
@@ -1022,14 +1169,83 @@ jobs:
             ./Tests/scripts/slack_notifier.sh 'sdk_run_against_failed_steps' ./env_results.json
           when: always
 
+  Install Packs in Demisto 6_0:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - *attach_workspace
+      - *add_ssh_keys
+      - *prepare_environment
+      - run:
+          name: Wait until server ready
+          shell: /bin/bash
+          when: always
+          command: |
+            python3 ./Tests/scripts/wait_until_server_ready.py "Demisto 6.0"
+      - run:
+          name: Install Packs
+          shell: /bin/bash
+          when: always
+          no_output_timeout: 5h
+          command: |
+            echo 'export INSTANCE_ROLE="Demisto 6.0"' >> $BASH_ENV
+            source $BASH_ENV
+            ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
+            exit $RETVAL
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+            fi
+          when: always
+      - *persist_to_workspace
+      - *destroy_instances
+      - *store_artifacts
+
+  Install Packs in Demisto Marketplace - Master:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - *attach_workspace
+      - *add_ssh_keys
+      - *prepare_environment
+      - *wait_until_server_ready
+      - run:
+          name: Install Packs
+          shell: /bin/bash
+          when: always
+          no_output_timeout: 5h
+          command: |
+            echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
+            source $BASH_ENV
+            ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
+            exit $RETVAL
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+            fi
+          when: always
+      - *destroy_instances
+      - *store_artifacts
+
 workflows:
   version: 2
   commit:
     when:
       not:
         or:
-        - << pipeline.parameters.force_pack_upload >>
-        - << pipeline.parameters.demisto_sdk_nightly >>
+          - << pipeline.parameters.force_pack_upload >>
+          - << pipeline.parameters.bucket_upload >>
+          - << pipeline.parameters.demisto_sdk_nightly >>
+          - << pipeline.parameters.nightly >>
+          - << pipeline.parameters.instance_tests >>
     jobs:
       - Setup Environment
       - Create Instances:
@@ -1066,23 +1282,22 @@ workflows:
               ignore: /pull\/[0-9]+/
           requires:
             - Create Instances
-      - Instance Test:
-          requires:
-            - Create Instances
 
   force_pack_upload:
     when: << pipeline.parameters.force_pack_upload >>
     jobs:
-      - Setup Environment
-      - Run Validations:
-          requires:
-            - Setup Environment
+      - Setup Environment:
+          context: bucket_upload_env
       - Create Instances:
+          context: bucket_upload_env
           filters:
             branches:
               only:
                 - master
-      - Force Pack Upload:
+          requires:
+            - Setup Environment
+      - Force Upload Packs To Marketplace:
+          context: bucket_upload_env
           filters:
             branches:
               only:
@@ -1102,12 +1317,11 @@ workflows:
               only:
                 - master
     jobs:
-      - Create Instances:
-          context: instances_test_env
-      - Instance Test:
-          context: instances_test_env
-          requires:
-            - Create Instances
+      *instance_tests_jobs
+  instances_testing_trigger:
+    when: << pipeline.parameters.instance_tests >>
+    jobs:
+      *instance_tests_jobs
 
   nightly:
     triggers:
@@ -1119,21 +1333,13 @@ workflows:
               only:
                 - master
     jobs:
-      - Setup Environment:
-          context: nightly_env
-      - Create Instances:
-          context: nightly_env
-      - Run Unit Testing And Lint:
-          context: nightly_env
-          requires:
-            - Setup Environment
-      - Run Validations:
-          requires:
-            - Setup Environment
-      - Server Master:
-          requires:
-            - Create Instances
-          context: nightly_env
+      *nightly_jobs
+
+  nightly_trigger:
+    # will initiate when using the trigger script.
+    when: << pipeline.parameters.nightly >>
+    jobs:
+      *nightly_jobs
 
   sdk_nightly:
     triggers:
@@ -1152,3 +1358,21 @@ workflows:
     when: << pipeline.parameters.demisto_sdk_nightly>>
     jobs:
       *sdk_nightly_jobs
+
+  bucket_upload:
+    triggers:
+      - schedule:
+          # should trigger every day at 10 AM & 10 PM UTC (12:00 PM & 00:00 AM Israel Time)
+          cron: "0 10,22 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      *bucket_upload_jobs
+
+  bucket_upload_trigger:
+    # will initiate when using the trigger script.
+    when: << pipeline.parameters.bucket_upload>>
+    jobs:
+      *bucket_upload_jobs

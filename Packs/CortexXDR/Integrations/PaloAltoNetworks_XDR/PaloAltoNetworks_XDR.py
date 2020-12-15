@@ -966,14 +966,17 @@ def get_incident_extra_data_command(client, args):
     incident = raw_incident.get('incident')
     incident_id = incident.get('incident_id')
     raw_alerts = raw_incident.get('alerts').get('data')
-    alerts = clear_trailing_whitespace(raw_alerts)
+    context_alerts = clear_trailing_whitespace(raw_alerts)
+    for alert in context_alerts:
+        alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
     file_artifacts = raw_incident.get('file_artifacts').get('data')
     network_artifacts = raw_incident.get('network_artifacts').get('data')
 
     readable_output = [tableToMarkdown('Incident {}'.format(incident_id), incident)]
 
-    if len(alerts) > 0:
-        readable_output.append(tableToMarkdown('Alerts', alerts))
+    if len(context_alerts) > 0:
+        readable_output.append(tableToMarkdown('Alerts', context_alerts,
+                                               headers=[key for key in context_alerts[0] if key != 'host_ip']))
     else:
         readable_output.append(tableToMarkdown('Alerts', []))
 
@@ -988,7 +991,7 @@ def get_incident_extra_data_command(client, args):
         readable_output.append(tableToMarkdown('File Artifacts', []))
 
     incident.update({
-        'alerts': alerts,
+        'alerts': context_alerts,
         'file_artifacts': file_artifacts,
         'network_artifacts': network_artifacts
     })
@@ -1811,8 +1814,29 @@ def get_mapping_fields_command():
     return mapping_response
 
 
+def get_modified_remote_data_command(client, args):
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update  # In the first run, this value will be set to 1 minute earlier
+
+    demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
+
+    last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
+    last_update_without_ms = last_update_utc.isoformat().split('.')[0]
+
+    raw_incidents = client.get_incidents(gte_modification_time=last_update_without_ms, limit=100)
+
+    modified_incident_ids = list()
+    for raw_incident in raw_incidents:
+        incident_id = raw_incident.get('incident_id')
+        modified_incident_ids.append(incident_id)
+
+    return GetModifiedRemoteDataResponse(modified_incident_ids)
+
+
 def get_remote_data_command(client, args):
     remote_args = GetRemoteDataArgs(args)
+    demisto.debug(f'Performing get-remote-data command with incident id: {remote_args.remote_incident_id}')
+
     incident_data = {}
     try:
         incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
@@ -1872,6 +1896,10 @@ def get_remote_data_command(client, args):
     except Exception as e:
         demisto.debug(f"Error in XDR incoming mirror for incident {remote_args.remote_incident_id} \n"
                       f"Error message: {str(e)}")
+
+        if "Rate limit exceeded" in str(e):
+            return_error("API rate limit")
+
         if incident_data:
             incident_data['in_mirror_error'] = str(e)
             sort_all_list_incident_fields(incident_data)
@@ -1952,50 +1980,75 @@ def update_remote_system_command(client, args):
         return remote_args.remote_incident_id
 
 
-def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: int = 10):
+def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10):
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
-
+    incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
+                                                                                                dict) else []
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
 
     incidents = []
-    raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch,
-                                         limit=max_fetch, sort_by_creation_time='asc')
+    if incidents_from_previous_run:
+        raw_incidents = incidents_from_previous_run
+    else:
+        raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch,
+                                             limit=max_fetch, sort_by_creation_time='asc')
 
-    for raw_incident in raw_incidents:
-        incident_id = raw_incident.get('incident_id')
+    # maintain a list of non created incidents in a case of a rate limit exception
+    non_created_incidents: list = raw_incidents.copy()
+    next_run = dict()
 
-        if demisto.params().get('extra_data'):
-            incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
-                                                                     "alerts_limit": 1000})[2].get('incident')
+    try:
+        for raw_incident in raw_incidents:
+            incident_id = raw_incident.get('incident_id')
+
+            if demisto.params().get('extra_data'):
+                incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
+                                                                         "alerts_limit": 1000})[2].get('incident')
+            else:
+                incident_data = raw_incident
+
+            sort_all_list_incident_fields(incident_data)
+
+            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
+                                                                     None)
+            incident_data['mirror_instance'] = integration_instance
+
+            description = raw_incident.get('description')
+            occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
+            incident = {
+                'name': f'#{incident_id} - {description}',
+                'occurred': occurred,
+                'rawJSON': json.dumps(incident_data),
+            }
+
+            if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
+                incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
+
+            # Update last run and add incident if the incident is newer than last fetch
+            if raw_incident['creation_time'] > last_fetch:
+                last_fetch = raw_incident['creation_time']
+
+            incidents.append(incident)
+            non_created_incidents.remove(raw_incident)
+
+    except Exception as e:
+        if "Rate limit exceeded" in str(e):
+            demisto.info(f"Cortex XDR - rate limit exceeded, number of non created incidents is: "
+                         f"'{len(non_created_incidents)}'.\n The incidents will be created in the next fetch")
+
         else:
-            incident_data = raw_incident
+            raise
 
-        sort_all_list_incident_fields(incident_data)
+    if non_created_incidents:
+        next_run['incidents_from_previous_run'] = non_created_incidents
+    else:
+        next_run['incidents_from_previous_run'] = []
 
-        incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'), None)
-        incident_data['mirror_instance'] = demisto.integrationInstance()
+    next_run['time'] = last_fetch + 1
 
-        description = raw_incident.get('description')
-        occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
-        incident = {
-            'name': f'#{incident_id} - {description}',
-            'occurred': occurred,
-            'rawJSON': json.dumps(incident_data),
-        }
-
-        if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
-            incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
-
-        # Update last run and add incident if the incident is newer than last fetch
-        if raw_incident['creation_time'] > last_fetch:
-            last_fetch = raw_incident['creation_time']
-
-        incidents.append(incident)
-
-    next_run = {'time': last_fetch + 1}
     return next_run, incidents
 
 
@@ -2050,7 +2103,9 @@ def main():
             demisto.results('ok')
 
         elif demisto.command() == 'fetch-incidents':
-            next_run, incidents = fetch_incidents(client, first_fetch_time, demisto.getLastRun(), max_fetch)
+            integration_instance = demisto.integrationInstance()
+            next_run, incidents = fetch_incidents(client, first_fetch_time, integration_instance, demisto.getLastRun(),
+                                                  max_fetch)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
@@ -2122,6 +2177,9 @@ def main():
 
         elif demisto.command() == 'update-remote-system':
             return_results(update_remote_system_command(client, demisto.args()))
+
+        elif demisto.command() == 'get-modified-remote-data':
+            return_results(get_modified_remote_data_command(client, demisto.args()))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':

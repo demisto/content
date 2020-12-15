@@ -81,11 +81,21 @@ class Client(BaseClient):
         if from_:
             params['from'] = from_
 
-        return self._http_request(
-            method='GET',
-            url_suffix='demisto-alerts',
-            params=params
-        )
+        # If the endpoint not found, fallback to the previous demisto-alerts endpoint (backward compatibility)
+        try:
+            return self._http_request(
+                method='GET',
+                url_suffix='xsoar-alerts',
+                params=params
+            )
+        except Exception as e:
+            if '[404]' in str(e):
+                return self._http_request(
+                    method='GET',
+                    url_suffix='demisto-alerts',
+                    params=params
+                )
+            raise e
 
 
 def str_to_bool(s):

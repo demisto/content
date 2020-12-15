@@ -101,7 +101,8 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, found_thre
     csr_matrix_at_threshold = calculate_confusion_matrix(y_true, y_pred, y_pred_per_class, found_threshold)
     csr_matrix_no_threshold = calculate_confusion_matrix(y_true, y_pred, y_pred_per_class, 0)
 
-    metrics_df, metrics_explanation = generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, found_threshold)
+    metrics_df, metrics_explanation = generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class,
+                                                          found_threshold)
 
     coverage = metrics_df.loc[['All']]['Coverage'][0]
     test_set_size = metrics_df.loc[['All']]['Total'][0]
@@ -154,8 +155,8 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, found_thre
     human_readable += csr_matrix_no_thresh_readable
     human_readable = '\n'.join(human_readable)
     contents = {'threshold': found_threshold,
-                'csr_matrix_at_threshold': csr_matrix_at_threshold.to_json(),
-                'csr_matrix_no_threshold': csr_matrix_no_threshold.to_json(),
+                'csr_matrix_at_threshold': csr_matrix_at_threshold.to_json(orient='index'),
+                'csr_matrix_no_threshold': csr_matrix_no_threshold.to_json(orient='index'),
                 'metrics_df': metrics_df.to_json()}
     entry = {
         'Type': entryTypes['note'],
@@ -166,11 +167,23 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, found_thre
         'EntryContext': {
             'GetMLModelEvaluation': {
                 'Threshold': found_threshold,
-                'ConfusionMatrixAtThreshold': csr_matrix_at_threshold.to_json(),
-                'ConfusionMatrixNoThreshold': csr_matrix_no_threshold.to_json(),
+                'ConfusionMatrixAtThreshold': csr_matrix_at_threshold.to_json(orient='index'),
+                'ConfusionMatrixNoThreshold': csr_matrix_no_threshold.to_json(orient='index'),
                 'Metrics': metrics_df.to_json()
             }
         }
+    }
+    return entry
+
+
+def merge_entries(entry, per_class_entry):
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': entry['Contents'],
+        'ContentsFormat': formats['json'],
+        'HumanReadable': entry['HumanReadable'] + '\n' + per_class_entry['HumanReadable'],
+        'HumanReadableFormat': formats['markdown'],
+        'EntryContext': {**entry['EntryContext'], **per_class_entry['EntryContext']}
     }
     return entry
 
@@ -192,7 +205,8 @@ def find_threshold(y_true_str, y_pred_str, customer_target_precision, target_rec
 
     class_to_arrs = {class_: {} for class_ in labels}  # type: Dict[str, Dict[str, Any]]
     for class_ in labels:
-        precision_arr, recall_arr, thresholds_arr = precision_recall_curve(y_true_per_class[class_], y_pred_per_class[class_])
+        precision_arr, recall_arr, thresholds_arr = precision_recall_curve(y_true_per_class[class_],
+                                                                           y_pred_per_class[class_])
         class_to_arrs[class_]['precisions'] = precision_arr
         class_to_arrs[class_]['recalls'] = recall_arr
         class_to_arrs[class_]['thresholds'] = thresholds_arr
@@ -207,7 +221,8 @@ def find_threshold(y_true_str, y_pred_str, customer_target_precision, target_rec
     entry = output_report(np.array(y_true), y_true_per_class, np.array(y_pred), y_pred_per_class, unified_threshold,
                           customer_target_precision, unified_threshold_precision, detailed_output)
     per_class_entry = calculate_per_class_report_entry(class_to_arrs, labels, y_pred_per_class, y_true_per_class)
-    return [entry, per_class_entry]
+    res = merge_entries(entry, per_class_entry)
+    return res
 
 
 def find_best_threshold_for_target_precision(class_to_arrs, customer_target_precision, labels):

@@ -1,0 +1,30 @@
+{
+ "id": "indicator_chronicleassetmac",
+ "version": -1,
+ "modified": "2020-07-24T12:11:16.464663907+05:30",
+ "name": "ChronicleAssetMAC",
+ "ownerOnly": false,
+ "cliName": "chronicleassetmac",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 2,
+ "hidden": false,
+ "associatedTypes": [
+  "ChronicleAsset"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}
