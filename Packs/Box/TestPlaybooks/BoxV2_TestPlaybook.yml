@@ -4,91 +4,126 @@ version: -1
 fromversion: 5.0.0
 starttaskid: '0'
 tasks:
-  '0':
-    id: '0'
-    taskid: '0'
+  "0":
+    id: "0"
+    taskid: "0"
     type: start
     task:
-      id: '0'
+      id: "0"
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 50}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: 1
-    taskid: '1'
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: "1"
     type: regular
     task:
-      id: '1'
+      id: "1"
       version: -1
       name: DeleteContext
-      description: ''
       script: DeleteContext
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '2':
-    id: 2
-    taskid: '2'
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4ba7c3a1-fb70-487c-8587-70ff2fc66bd2
     type: regular
     task:
-      id: '2'
+      id: 4ba7c3a1-fb70-487c-8587-70ff2fc66bd2
       version: -1
       name: box-search-content
-      description: ''
       script: '|||box-search-content'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
-    scriptarguments: {}
+      - "3"
+    scriptarguments:
+      ancestor_folder_ids: {}
+      comments: {}
+      created_range: {}
+      file_extensions: {}
+      item_description: {}
+      item_name:
+        simple: test
+      limit:
+        simple: "1"
+      offset: {}
+      owner_uids: {}
+      query: {}
+      tag: {}
+      trash_content: {}
+      type:
+        simple: file
+      updated_at_range: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '3':
-    id: '3'
-    taskid: '3'
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 97205ff8-48f5-42d8-80e0-edbb076bb630
     type: condition
     task:
-      id: '3'
+      id: 97205ff8-48f5-42d8-80e0-edbb076bb630
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '4'
+      "yes":
+      - "4"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -105,307 +140,67 @@ tasks:
             value:
               simple: Box.Query.type
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.sha1
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.file_version.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.file_version.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.file_version.sha1
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.size
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.path_collection.total_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.path_collection.entries.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.path_collection.entries.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.path_collection.entries.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.path_collection.entries.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.path_collection.entries.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.created_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.modified_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.trashed_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.purged_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.content_created_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.content_modified_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.created_by.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.created_by.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.created_by.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.created_by.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.modified_by.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.modified_by.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.modified_by.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.modified_by.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.owned_by.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.owned_by.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.owned_by.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.owned_by.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.shared_link.url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.shared_link.download_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.shared_link.vanity_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.shared_link.vanity_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.entries.shared_link.access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.shared_link.effective_access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.shared_link.effective_permission
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.shared_link.unshared_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.shared_link.is_password_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.shared_link.permissions.can_download
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.shared_link.permissions.can_preview
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.entries.shared_link.download_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.shared_link.preview_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.parent.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.parent.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.parent.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.parent.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.parent.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Query.item_status
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '4':
-    id: 4
-    taskid: '4'
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 7b7d402c-0876-4339-8d05-72b5d4d7f37a
     type: regular
     task:
-      id: '4'
+      id: 7b7d402c-0876-4339-8d05-72b5d4d7f37a
       version: -1
       name: box-find-file-folder-by-share-link
-      description: ''
       script: '|||box-find-file-folder-by-share-link'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '5'
-    scriptarguments: {}
+      - "5"
+    scriptarguments:
+      password: {}
+      shared_link:
+        simple: https://app.box.com/s/oyujr5qpxy1nbky394slw7n98v8pnpmy
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '5':
-    id: '5'
-    taskid: '5'
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 3122d7f2-0c30-407c-8fe0-d4f299cf88e5
     type: condition
     task:
-      id: '5'
+      id: 3122d7f2-0c30-407c-8fe0-d4f299cf88e5
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '6'
+      "yes":
+      - "6"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -417,3245 +212,706 @@ tasks:
             value:
               simple: Box.ShareLink.etag
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.sha1
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.file_version.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.file_version.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.file_version.sha1
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.size
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.path_collection.total_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.path_collection.entries.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.path_collection.entries.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.path_collection.entries.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.path_collection.entries.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.path_collection.entries.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.created_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.modified_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.trashed_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.purged_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.content_created_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.content_modified_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.created_by.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.created_by.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.created_by.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.created_by.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.modified_by.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.modified_by.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.modified_by.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.modified_by.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.owned_by.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.owned_by.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.owned_by.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.owned_by.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.download_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.vanity_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.vanity_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.effective_access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.effective_permission
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.unshared_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.is_password_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.permissions.can_download
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.permissions.can_preview
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.download_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.preview_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.parent.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.parent.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.parent.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.parent.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.parent.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.item_status
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 1000}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '6':
-    id: 6
-    taskid: '6'
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: f864dfd8-6c25-46ba-8ded-b13f2e3b2e82
     type: regular
     task:
-      id: '6'
+      id: f864dfd8-6c25-46ba-8ded-b13f2e3b2e82
       version: -1
       name: box-get-shared-link-by-file
-      description: ''
       script: '|||box-get-shared-link-by-file'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
-    scriptarguments: {}
+      - "7"
+    scriptarguments:
+      as_user: {}
+      file_id:
+        simple: "742246263170"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 1200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '7':
-    id: '7'
-    taskid: '7'
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 85c9361e-2bbb-4771-8288-22143f90bbd7
     type: condition
     task:
-      id: '7'
+      id: 85c9361e-2bbb-4771-8288-22143f90bbd7
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '8'
+      "yes":
+      - "8"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: Box.ShareLink.id
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.download_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.vanity_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.vanity_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.entries.shared_link.access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.effective_access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.effective_permission
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.unshared_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.is_password_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.permissions.can_download
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.permissions.can_preview
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.download_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.preview_count
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 1400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '8':
-    id: 8
-    taskid: '8'
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f55b1740-8a53-41c2-8baa-90bab9a561b2
     type: regular
     task:
-      id: '8'
+      id: f55b1740-8a53-41c2-8baa-90bab9a561b2
       version: -1
       name: box-create-file-share-link
-      description: ''
       script: '|||box-create-file-share-link'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
-    scriptarguments: {}
+      - "9"
+    scriptarguments:
+      access:
+        simple: open
+      as_user: {}
+      can_download: {}
+      file_id:
+        simple: "742246263170"
+      password: {}
+      unshared_at: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 1600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '9':
-    id: '9'
-    taskid: '9'
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: f8d3d698-c354-4993-8cc5-83810b315294
     type: condition
     task:
-      id: '9'
+      id: f8d3d698-c354-4993-8cc5-83810b315294
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '10'
+      "yes":
+      - "10"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: Box.ShareLink.id
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.download_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.vanity_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.vanity_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.entries.shared_link.access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.effective_access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.effective_permission
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.unshared_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.is_password_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.permissions.can_download
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.permissions.can_preview
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.download_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.preview_count
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 1800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '10':
-    id: 10
-    taskid: '10'
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 87ef27f1-0aa7-4607-8b69-11f196d197a8
     type: regular
     task:
-      id: '10'
+      id: 87ef27f1-0aa7-4607-8b69-11f196d197a8
       version: -1
       name: box-update-file-share-link
-      description: ''
       script: '|||box-update-file-share-link'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '11'
-    scriptarguments: {}
+      - "11"
+    scriptarguments:
+      access:
+        simple: open
+      as_user: {}
+      can_download: {}
+      file_id:
+        simple: "742246263170"
+      password: {}
+      unshared_at: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2000}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '11':
-    id: '11'
-    taskid: '11'
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: de2950ea-940e-4b03-8a2c-c18fddbc736a
     type: condition
     task:
-      id: '11'
+      id: de2950ea-940e-4b03-8a2c-c18fddbc736a
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '12'
+      "yes":
+      - "12"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: Box.ShareLink.id
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.download_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.vanity_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.vanity_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.entries.shared_link.access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.effective_access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.effective_permission
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.unshared_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.is_password_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.permissions.can_download
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.permissions.can_preview
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.download_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.preview_count
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 2200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '12':
-    id: 12
-    taskid: '12'
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: e288cbb0-8756-4d26-8b6e-4b19e9ecf039
     type: regular
     task:
-      id: '12'
+      id: e288cbb0-8756-4d26-8b6e-4b19e9ecf039
       version: -1
       name: box-remove-file-share-link
-      description: ''
       script: '|||box-remove-file-share-link'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '13'
-    scriptarguments: {}
+      - "14"
+    scriptarguments:
+      as_user: {}
+      file_id:
+        simple: "742246263170"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '13':
-    id: '13'
-    taskid: '13'
-    type: condition
-    task:
-      id: '13'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '14'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.type
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 2600}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '14':
-    id: 14
-    taskid: '14'
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 2ff4e9e0-13d3-43e5-8da8-a3e7b66d15ca
     type: regular
     task:
-      id: '14'
+      id: 2ff4e9e0-13d3-43e5-8da8-a3e7b66d15ca
       version: -1
       name: box-get-shared-link-by-folder
-      description: ''
       script: '|||box-get-shared-link-by-folder'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '15'
-    scriptarguments: {}
+      - "15"
+    scriptarguments:
+      as_user: {}
+      folder_id:
+        simple: "125959916474"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '15':
-    id: '15'
-    taskid: '15'
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 4894f828-cde6-43d4-81ca-d6b6a14d9d34
     type: condition
     task:
-      id: '15'
+      id: 4894f828-cde6-43d4-81ca-d6b6a14d9d34
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '16'
+      "yes":
+      - "16"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: Box.ShareLink.id
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.download_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.vanity_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.vanity_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.entries.shared_link.access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.effective_access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.effective_permission
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.unshared_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.is_password_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.permissions.can_download
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.permissions.can_preview
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.download_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.preview_count
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 3000}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '16':
-    id: 16
-    taskid: '16'
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 25086c20-fe51-4f7d-8f80-14996ccf37ac
     type: regular
     task:
-      id: '16'
+      id: 25086c20-fe51-4f7d-8f80-14996ccf37ac
       version: -1
       name: box-create-folder-share-link
-      description: ''
       script: '|||box-create-folder-share-link'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '17'
-    scriptarguments: {}
+      - "17"
+    scriptarguments:
+      access:
+        simple: open
+      as_user: {}
+      can_download: {}
+      folder_id:
+        simple: "125959916474"
+      password: {}
+      unshared_at: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 3200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '17':
-    id: '17'
-    taskid: '17'
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 89bc2e27-de47-4b1a-8848-dd7904edfa61
     type: condition
     task:
-      id: '17'
+      id: 89bc2e27-de47-4b1a-8848-dd7904edfa61
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '18'
+      "yes":
+      - "18"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: Box.ShareLink.id
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.download_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.vanity_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.vanity_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.entries.shared_link.access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.effective_access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.effective_permission
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.unshared_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.is_password_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.permissions.can_download
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.permissions.can_preview
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.download_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.preview_count
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 3400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '18':
-    id: 18
-    taskid: '18'
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: b1492e61-a912-4bae-8b5b-1a9e8cd3afb1
     type: regular
     task:
-      id: '18'
+      id: b1492e61-a912-4bae-8b5b-1a9e8cd3afb1
       version: -1
       name: box-update-folder-share-link
-      description: ''
       script: '|||box-update-folder-share-link'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '19'
-    scriptarguments: {}
+      - "19"
+    scriptarguments:
+      access:
+        simple: open
+      as_user: {}
+      can_download: {}
+      folder_id:
+        simple: "125959916474"
+      password: {}
+      unshared_at: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 3600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '19':
-    id: '19'
-    taskid: '19'
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 20de152e-d921-4627-803d-5ea51a39f45c
     type: condition
     task:
-      id: '19'
+      id: 20de152e-d921-4627-803d-5ea51a39f45c
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '20'
+      "yes":
+      - "20"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: Box.ShareLink.id
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.download_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.vanity_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.vanity_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.entries.shared_link.access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.effective_access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.effective_permission
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.unshared_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.is_password_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.permissions.can_download
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.permissions.can_preview
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.download_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.preview_count
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 3800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '20':
-    id: 20
-    taskid: '20'
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: a0a4b18d-cab0-40ba-8759-3523d78d04de
     type: regular
     task:
-      id: '20'
+      id: a0a4b18d-cab0-40ba-8759-3523d78d04de
       version: -1
       name: box-remove-folder-share-link
-      description: ''
       script: '|||box-remove-folder-share-link'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '21'
-    scriptarguments: {}
+      - "22"
+    scriptarguments:
+      as_user: {}
+      folder_id:
+        simple: "125959916474"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 4000}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '21':
-    id: '21'
-    taskid: '21'
-    type: condition
-    task:
-      id: '21'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '22'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.type
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 4200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '22':
-    id: 22
-    taskid: '22'
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: f236805c-1e30-4494-881e-83865e6cecdf
     type: regular
     task:
-      id: '22'
+      id: f236805c-1e30-4494-881e-83865e6cecdf
       version: -1
       name: box-get-folder
-      description: ''
       script: '|||box-get-folder'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '23'
-    scriptarguments: {}
+      - "24"
+    scriptarguments:
+      as_user: {}
+      folder_id:
+        simple: "0"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 4400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '23':
-    id: '23'
-    taskid: '23'
-    type: condition
-    task:
-      id: '23'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '24'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.sha1
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.file_version.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.file_version.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.file_version.sha1
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.size
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.path_collection.total_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.path_collection.entries.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.path_collection.entries.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.path_collection.entries.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.path_collection.entries.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.path_collection.entries.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.created_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.modified_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.trashed_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.purged_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.content_created_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.content_modified_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.created_by.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.created_by.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.created_by.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.created_by.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.modified_by.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.modified_by.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.modified_by.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.modified_by.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.owned_by.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.owned_by.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.owned_by.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.owned_by.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.download_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.vanity_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.vanity_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.effective_access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.effective_permission
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.unshared_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.is_password_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.permissions.can_download
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.permissions.can_preview
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.download_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.shared_link.preview_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.parent.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.parent.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.parent.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.parent.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.parent.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.ShareLink.item_status
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 4600}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '24':
-    id: 24
-    taskid: '24'
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 6b8a9fb5-0624-4941-8987-e778592a3a6e
     type: regular
     task:
-      id: '24'
+      id: 6b8a9fb5-0624-4941-8987-e778592a3a6e
       version: -1
       name: box-list-folder-items
-      description: ''
       script: '|||box-list-folder-items'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '25'
-    scriptarguments: {}
+      - "29"
+    scriptarguments:
+      as_user: {}
+      folder_id:
+        simple: "0"
+      limit:
+        simple: "1"
+      offset: {}
+      sort: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 4800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '25':
-    id: '25'
-    taskid: '25'
-    type: condition
-    task:
-      id: '25'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '26'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.sha1
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.file_version.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.file_version.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.file_version.sha1
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 5000}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '26':
-    id: 26
-    taskid: '26'
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: c25e08f2-a867-4809-8d10-08087b59f081
     type: regular
     task:
-      id: '26'
-      version: -1
-      name: box-folder-create
-      description: ''
-      script: '|||box-folder-create'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '27'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 5200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '27':
-    id: '27'
-    taskid: '27'
-    type: condition
-    task:
-      id: '27'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '28'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.sha1
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.file_version.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.file_version.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.file_version.sha1
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.size
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.path_collection.total_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.path_collection.entries.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.path_collection.entries.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.path_collection.entries.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.path_collection.entries.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.path_collection.entries.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.created_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.modified_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.trashed_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.purged_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.content_created_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.content_modified_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.created_by.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.created_by.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.created_by.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.created_by.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.modified_by.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.modified_by.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.modified_by.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.modified_by.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.owned_by.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.owned_by.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.owned_by.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.owned_by.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.shared_link.url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.shared_link.download_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.shared_link.vanity_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.shared_link.vanity_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.shared_link.access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.shared_link.effective_access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.shared_link.effective_permission
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.shared_link.unshared_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.shared_link.is_password_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.shared_link.permissions.can_download
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.shared_link.permissions.can_preview
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.shared_link.download_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.shared_link.preview_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.parent.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.parent.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.parent.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.parent.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.parent.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Folder.item_status
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 5400}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '28':
-    id: 28
-    taskid: '28'
-    type: regular
-    task:
-      id: '28'
-      version: -1
-      name: box-file-delete
-      description: ''
-      script: '|||box-file-delete'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '29'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 5600}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '29':
-    id: 29
-    taskid: '29'
-    type: regular
-    task:
-      id: '29'
+      id: c25e08f2-a867-4809-8d10-08087b59f081
       version: -1
       name: box-list-users
-      description: ''
       script: '|||box-list-users'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '30'
-    scriptarguments: {}
+      - "33"
+    scriptarguments:
+      fields:
+        simple: name
+      filter_term:
+        simple: Andrew
+      limit: {}
+      offset: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 5800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '30':
-    id: '30'
-    taskid: '30'
-    type: condition
-    task:
-      id: '30'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '31'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.created_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.modified_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.language
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.timezone
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.space_amount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.space_used
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.max_upload_size
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.job_title
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.phone
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.avatar_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.notification_email.email
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.notification_email.is_confirmed
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 6000}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '31':
-    id: 31
-    taskid: '31'
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 7ea9e8d2-8a24-496f-8489-7c43a3b811ef
     type: regular
     task:
-      id: '31'
-      version: -1
-      name: box-upload-file
-      description: ''
-      script: '|||box-upload-file'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '32'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 6200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '32':
-    id: '32'
-    taskid: '32'
-    type: condition
-    task:
-      id: '32'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '33'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.sha1
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.file_version.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.file_version.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.file_version.sha1
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.size
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.path_collection.total_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.path_collection.entries.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.path_collection.entries.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.path_collection.entries.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.path_collection.entries.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.path_collection.entries.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.created_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.modified_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.trashed_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.purged_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.content_created_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.content_modified_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.created_by.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.created_by.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.created_by.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.created_by.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.modified_by.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.modified_by.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.modified_by.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.modified_by.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.owned_by.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.owned_by.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.owned_by.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.owned_by.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.shared_link.url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.shared_link.download_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.shared_link.vanity_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.shared_link.vanity_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.shared_link.access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.shared_link.effective_access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.shared_link.effective_permission
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.shared_link.unshared_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.shared_link.is_password_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.shared_link.permissions.can_download
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.shared_link.permissions.can_preview
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.shared_link.download_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.shared_link.preview_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.parent.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.parent.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.parent.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.parent.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.parent.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.File.item_status
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 6400}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '33':
-    id: 33
-    taskid: '33'
-    type: regular
-    task:
-      id: '33'
+      id: 7ea9e8d2-8a24-496f-8489-7c43a3b811ef
       version: -1
       name: box-trashed-items-list
-      description: ''
       script: '|||box-trashed-items-list'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '34'
-    scriptarguments: {}
+      - "38"
+    scriptarguments:
+      as_user: {}
+      limit:
+        simple: "1"
+      offset: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 6600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '34':
-    id: '34'
-    taskid: '34'
-    type: condition
-    task:
-      id: '34'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '35'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Trash.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Trash.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Trash.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Trash.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Trash.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Trash.sha1
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Trash.file_version.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Trash.file_version.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Trash.file_version.sha1
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 6800}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '35':
-    id: 35
-    taskid: '35'
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 8fa5184b-ff24-41e1-8a4b-cb927a004dc6
     type: regular
     task:
-      id: '35'
-      version: -1
-      name: box-trashed-item-restore
-      description: ''
-      script: '|||box-trashed-item-restore'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '36'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 7000}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '36':
-    id: '36'
-    taskid: '36'
-    type: condition
-    task:
-      id: '36'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '37'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.sha1
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.file_version.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.file_version.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.file_version.sha1
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.size
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.path_collection.total_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.path_collection.entries.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.path_collection.entries.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.path_collection.entries.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.path_collection.entries.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.path_collection.entries.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.created_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.modified_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.trashed_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.purged_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.content_created_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.content_modified_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.created_by.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.created_by.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.created_by.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.created_by.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.modified_by.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.modified_by.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.modified_by.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.modified_by.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.owned_by.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.owned_by.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.owned_by.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.owned_by.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.shared_link.url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.shared_link.download_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.shared_link.vanity_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.shared_link.vanity_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.shared_link.access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.shared_link.effective_access
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.shared_link.effective_permission
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.shared_link.unshared_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.shared_link.is_password_enabled
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.shared_link.permissions.can_download
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.shared_link.permissions.can_preview
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.shared_link.download_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.shared_link.preview_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.parent.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.parent.etag
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.parent.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.parent.sequence_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.parent.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.Item.item_status
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 7200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '37':
-    id: 37
-    taskid: '37'
-    type: regular
-    task:
-      id: '37'
-      version: -1
-      name: box-trashed-item-delete-permanently
-      description: ''
-      script: '|||box-trashed-item-delete-permanently'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '38'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 7400}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '38':
-    id: 38
-    taskid: '38'
-    type: regular
-    task:
-      id: '38'
+      id: 8fa5184b-ff24-41e1-8a4b-cb927a004dc6
       version: -1
       name: box-get-current-user
-      description: ''
       script: '|||box-get-current-user'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '39'
-    scriptarguments: {}
+      - "45"
+    scriptarguments:
+      as_user: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 7600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '39':
-    id: '39'
-    taskid: '39'
-    type: condition
-    task:
-      id: '39'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '40'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.created_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.modified_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.language
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.timezone
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.space_amount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.space_used
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.max_upload_size
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.job_title
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.phone
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.avatar_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.notification_email.email
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.notification_email.is_confirmed
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 7800}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '40':
-    id: 40
-    taskid: '40'
-    type: regular
-    task:
-      id: '40'
-      version: -1
-      name: box-update-user
-      description: ''
-      script: '|||box-update-user'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '41'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 8000}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '41':
-    id: '41'
-    taskid: '41'
-    type: condition
-    task:
-      id: '41'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '42'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.created_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.modified_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.language
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.timezone
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.space_amount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.space_used
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.max_upload_size
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.job_title
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.phone
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.avatar_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.notification_email.email
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.notification_email.is_confirmed
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 8200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '42':
-    id: 42
-    taskid: '42'
-    type: regular
-    task:
-      id: '42'
-      version: -1
-      name: box-create-user
-      description: ''
-      script: '|||box-create-user'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '43'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 8400}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '43':
-    id: '43'
-    taskid: '43'
-    type: condition
-    task:
-      id: '43'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '44'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.login
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.created_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.modified_at
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.language
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.timezone
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.space_amount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.space_used
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.max_upload_size
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.job_title
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.phone
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.avatar_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.notification_email.email
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Box.User.notification_email.is_confirmed
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 8600}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '44':
-    id: 44
-    taskid: '44'
-    type: regular
-    task:
-      id: '44'
-      version: -1
-      name: box-delete-user
-      description: ''
-      script: '|||box-delete-user'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '45'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 8800}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '45':
-    id: '45'
-    taskid: '45'
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: "45"
     type: title
     task:
-      id: '45'
+      id: "45"
       version: -1
       name: Test Done
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 9000}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
-  380, "x": 50, "y": 50}}}'
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4410,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []
