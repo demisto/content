@@ -461,22 +461,20 @@ def test_remove_empty_elements():
     assert expected_result == remove_empty_elements(test_dict)
 
 
-def test_aws_table_to_markdown():
-    header = "AWS DynamoDB DescribeBackup"
-    raw_input = {
+@pytest.mark.parametrize('header,raw_input,expected_output', [
+    ('AWS DynamoDB DescribeBackup', {
         'BackupDescription': {
             "Foo": "Bar",
             "Baz": "Bang",
             "TestKey": "TestValue"
         }
-    }
-    expected_output = '''### AWS DynamoDB DescribeBackup
-|Baz|Foo|TestKey|
-|---|---|---|
-| Bang | Bar | TestValue |
-'''
+    }, '''### AWS DynamoDB DescribeBackup\n|Baz|Foo|TestKey|\n|---|---|---|\n| Bang | Bar | TestValue |\n'''),
+    ('Empty Results', {'key': []}, ' ###Empty Results \n**No entries.**\n')
+])
+def test_aws_table_to_markdown(header, raw_input, expected_output):
 
-    assert expected_output == aws_table_to_markdown(raw_input, header)
+
+    assert aws_table_to_markdown(raw_input, header) == expected_output
 
 
 def test_argToList():
@@ -1620,7 +1618,7 @@ class TestCommandResults:
         )
 
         CONTEXT_PATH = "Certificate(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || " \
-            "val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512)"
+                       "val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512)"
 
         assert results.to_context() == {
             'Type': EntryType.NOTE,
@@ -3396,4 +3394,3 @@ def test_arg_to_timestamp_invalid_inputs():
 
     except ValueError as e:
         assert '"2010-32-01" is not a valid date' in str(e)
-
