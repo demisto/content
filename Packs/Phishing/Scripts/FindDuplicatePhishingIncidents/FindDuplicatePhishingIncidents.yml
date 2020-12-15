@@ -1,0 +1,158 @@
+args:
+- default: false
+  defaultValue: type
+  description: The name of the incident field where its type is stored. Default is
+    "type". Change this arguement only in case you use a custom field for specifying
+    incident type.
+  isArray: false
+  name: incidentTypeFieldName
+  required: false
+  secret: false
+- default: false
+  description: A comma-separatetd list of incident types by which to filter. The default
+    is the current incident type. Specify "None" to ignore incident type from deduplication
+    logic.
+  isArray: false
+  name: incidentTypes
+  required: false
+  secret: false
+- default: false
+  defaultValue: 30 days ago
+  description: The start date by which to search for duplicated existing incidents.
+    Date format is the same as in the incidents query page. For example, "3 days ago",
+    ""2019-01-01T00:00:00 +0200").
+  isArray: false
+  name: exsitingIncidentsLookback
+  required: false
+  secret: false
+- default: false
+  description: Additional text by which to query incidents.
+  isArray: false
+  name: query
+  required: false
+  secret: false
+- default: false
+  defaultValue: '3000'
+  description: The maximum number of incidents to fetch. The default value is 3000.
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: emailsubject
+  description: Subject of the email.
+  isArray: false
+  name: emailSubject
+  predefined:
+  - Subject of the email.
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailbody
+  description: Body of the email.
+  isArray: false
+  name: emailBody
+  predefined:
+  - ''
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailbodyhtml
+  description: HTML body of the email.
+  isArray: false
+  name: emailBodyHTML
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailfrom
+  description: 'Incident fields contains the email from value. '
+  isArray: false
+  name: emailFrom
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: TextOnly
+  description: Whether to take into account the email from field for deduplication.
+    "TextOnly" - incidents will be considered as duplicated based on test similarity
+    only, ignoring the sender's adress. "Exact" - incidents will be considered as
+    duplicated if their text is similar and their sender is the same. "Domain" -  incidents
+    will be considered as duplicated if their text is similar and their senders' adress
+    has the same domain. Default is "Domain".
+  isArray: false
+  name: fromPolicy
+  predefined:
+  - TextOnly
+  - Exact
+  - Domain
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: All
+  description: Whether to compare the new incident to past closed or non closed incidents
+    only. Default is "All".
+  isArray: false
+  name: statusScope
+  predefined:
+    - All
+    - ClosedOnly
+    - NonClosedOnly
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Wheter to close or not the current incident if duplicate incident found
+  isArray: false
+  name: closeAsDuplicate
+  predefined:
+    - 'true'
+    - 'false'
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.99'
+  description: Threshold to consider incident as duplication, number between 0-1
+  isArray: false
+  name: threshold
+  required: false
+  secret: false
+comment: An out-of-the-box deduplication preprocessing script based on a machine learning
+  algorithm.
+commonfields:
+  id: FindDuplicatePhishingIncidents
+  version: -1
+enabled: false
+name: FindDuplicatePhishingIncidents
+outputs:
+  - contextPath: similarIncident.id
+    description: Similar incident ID.
+    type: string
+  - contextPath: isSimilarIncidentFound
+    description: Whether a similar incident was found ("true" or "false").
+    type: boolean
+  - contextPath: similarIncident
+    description: Similar incident.
+    type: unknown
+  - contextPath: similarIncident.name
+    description: Similar incident name.
+    type: string
+  - contextPath: similarIncident.rawId
+    description: Similar incident ID.
+    type: Unknown
+  - contextPath: similarIncident.similarity
+    description: 'Number in range 0-1 which describe the similairty between the existing
+    incident and the new incident. '
+    type: Unknown
+script: '-'
+subtype: python3
+system: false
+tags:
+- ml
+- phishing
+timeout: '0'
+type: python
+dockerimage: demisto/sklearn:1.0.0.12410
+fromversion: 5.0.0
