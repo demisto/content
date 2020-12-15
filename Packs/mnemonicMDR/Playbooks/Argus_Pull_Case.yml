@@ -38,14 +38,14 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 1bd17da8-b5ce-4543-8335-648414da8d92
+    taskid: 16f51adf-fb2c-45ce-8fac-82d0767f5892
     type: regular
     task:
-      id: 1bd17da8-b5ce-4543-8335-648414da8d92
+      id: 16f51adf-fb2c-45ce-8fac-82d0767f5892
       version: -1
-      name: argus_list_case_comments
+      name: List case comments
       description: List the comments of an Argus case
-      script: ArgusManagedDefence|||argus_list_case_comments
+      script: ArgusManagedDefence|||argus-list-case-comments
       type: regular
       iscommand: true
       brand: ArgusManagedDefence
@@ -75,14 +75,14 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: d35527ce-1840-43af-8dc5-0cd65a7ef8fe
+    taskid: 6233263f-e009-4ba9-8412-312aca6f8774
     type: regular
     task:
-      id: d35527ce-1840-43af-8dc5-0cd65a7ef8fe
+      id: 6233263f-e009-4ba9-8412-312aca6f8774
       version: -1
-      name: argus_list_case_attachments
+      name: List case attachments
       description: List attachments for an existing case
-      script: ArgusManagedDefence|||argus_list_case_attachments
+      script: ArgusManagedDefence|||argus-list-case-attachments
       type: regular
       iscommand: true
       brand: ArgusManagedDefence
@@ -109,14 +109,14 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 90964f7a-3705-480b-8af3-810c3cac938d
+    taskid: da0deff5-699d-44cb-8910-4ec8b1526ad1
     type: regular
     task:
-      id: 90964f7a-3705-480b-8af3-810c3cac938d
+      id: da0deff5-699d-44cb-8910-4ec8b1526ad1
       version: -1
-      name: argus_list_case_tags
+      name: List case tags
       description: List tags attached to an Argus case
-      script: ArgusManagedDefence|||argus_list_case_tags
+      script: ArgusManagedDefence|||argus-list-case-tags
       type: regular
       iscommand: true
       brand: ArgusManagedDefence
@@ -143,14 +143,14 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: df1b2a7c-0969-4d43-8354-93772c6f06ba
+    taskid: 6c3a5a67-ea81-4b2d-8702-9d00733ef80b
     type: regular
     task:
-      id: df1b2a7c-0969-4d43-8354-93772c6f06ba
+      id: 6c3a5a67-ea81-4b2d-8702-9d00733ef80b
       version: -1
-      name: argus_get_events_for_case
+      name: Get Events related to event
       description: Fetch events associated with specified case.
-      script: ArgusManagedDefence|||argus_get_events_for_case
+      script: ArgusManagedDefence|||argus-get-events-for-case
       type: regular
       iscommand: true
       brand: ArgusManagedDefence
