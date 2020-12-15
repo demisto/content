@@ -80,7 +80,8 @@ script:
     - description: address of the abuser
       name: address
       required: true
-    - name: abuser
+    - description: information of the abuser
+      name: abuser
       required: true
     - description: description of the abusement
       name: description
