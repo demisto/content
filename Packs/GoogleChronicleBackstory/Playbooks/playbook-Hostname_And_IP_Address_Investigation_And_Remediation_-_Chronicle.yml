@@ -2,7 +2,7 @@ id: Hostname And IP Address Investigation And Remediation - Chronicle
 version: -1
 name: Hostname And IP Address Investigation And Remediation - Chronicle
 description: |-
-  This playbook receives ChronicleAsset type of indicators from its parent playbook "ChronicleAsset Investigation And Remediation - Chronicle", performs enrichment and investigation for each one of them, provides an opportunity to isolate and block the Hostname or IP Address associated with the current indicator, and gives out a list of isolated and blocked entities.
+  This playbook receives ChronicleAsset type of indicators from its parent playbook "ChronicleAsset Investigation - Chronicle", performs enrichment and investigation for each one of them, provides an opportunity to isolate and block the Hostname or IP Address associated with the current indicator, and gives out a list of isolated and blocked entities.
 starttaskid: "0"
 tasks:
   "0":
