@@ -63,6 +63,20 @@ script:
       name: security_group_name
       required: true
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of rules to display. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The index of the first rule to display.  Used for pagination.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
     deprecated: false
     description: List all rules of the specified security groups.
     execution: false
@@ -516,7 +530,12 @@ script:
       used after running the azure-nsg-auth-start command.
     execution: false
     name: azure-nsg-auth-complete
-  dockerimage: demisto/crypto:1.0.0.13944
+  - deprecated: false
+    description: Run this command if for some reason you need to rerun the authentication
+      process.
+    execution: false
+    name: azure-nsg-auth-reset
+  dockerimage: demisto/crypto:1.0.0.14297
   feed: false
   isfetch: false
   longRunning: false

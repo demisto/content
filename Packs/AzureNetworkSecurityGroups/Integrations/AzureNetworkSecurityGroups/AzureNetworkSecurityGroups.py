@@ -144,21 +144,27 @@ def list_groups_command(client: AzureNSGClient) -> CommandResults:
 
 
 @logger
-def list_rules_command(client: AzureNSGClient, security_group_name: str) -> CommandResults:
+def list_rules_command(client: AzureNSGClient, security_group_name: str, limit: str = '50', offset: str = '1')\
+        -> CommandResults:
     """
 
     Args:
         client: The MSclient
         security_group_name: a comma-seperated list of security group names
+        limit: The maximum number of rules to display
+        offset: The index of the first rule to display
 
     Returns:
         a list of  rules for the security group
     """
     security_groups = argToList(security_group_name)
+    rules_limit = int(limit)
+    rules_offset = int(offset) - 1  # As offset will start at 1
     rules: List = list()
     for group in security_groups:
         rules_returned = client.list_rules(group)
         rules.extend(rules_returned.get('value', []))
+    rules = rules[rules_offset:rules_offset + rules_limit]
     return format_rule(rules, f"in {security_group_name}")
 
 
@@ -301,6 +307,13 @@ def complete_auth(client: AzureNSGClient):
     return '✅ Authorization completed successfully.'
 
 
+@logger
+def reset_auth(client: AzureNSGClient):
+    demisto.setIntegrationContext({})
+    return CommandResults(readable_output='Authorization was reset successfully. You can now run '
+                                          '**!azure-nsg-auth-start** and **!azure-nsg-auth-complete**.')
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -327,6 +340,7 @@ def main() -> None:
             'azure-nsg-security-rules-get': get_rule_command,
             'azure-nsg-auth-start': start_auth,
             'azure-nsg-auth-complete': complete_auth,
+            'azure-nsg-auth-reset': reset_auth,
         }
         if command == 'test-module':
             raise ValueError("Please run `!azure-nsg-auth-start` and `!azure-nsg-auth-complete` to log in."

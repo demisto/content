@@ -649,7 +649,6 @@ def main():
     logged_in = False
     try:
         logged_in = client.login(username, password)
-        return_results(logged_in)
         if logged_in:
             if demisto.command() == 'test-module':
                 demisto.results('ok')
