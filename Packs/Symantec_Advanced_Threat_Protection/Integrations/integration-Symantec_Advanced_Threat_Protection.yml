@@ -363,10 +363,7 @@ script:
             if (lastRun.next && lastRun.next !== '') {
                 next = lastRun.next;
 
-                if (lastRun.query && lastRun.query !== '' && query == lastRun.query ){
-                    query = lastRun.query;
-
-                    if (lastRun.end_time && lastRun.end_time !== '') {
+                if (lastRun.end_time && lastRun.end_time !== '') {
                         endTime = lastRun.end_time;
                     }
                 } else {
