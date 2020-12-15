@@ -1,0 +1,474 @@
+id: O365 - Security And Compliance - Search Action - Delete
+version: -1
+name: O365 - Security And Compliance - Search Action - Delete
+description: |-
+  This playbook performs the following steps:
+  1. Creates a new compliance search action Purge - Hard or Soft.
+  2. Waits for the compliance search action to complete.
+  3. Retrieves the delete search action.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c6f4105e-de9e-4f21-8f03-9fa3f3d68ba6
+    type: start
+    task:
+      id: c6f4105e-de9e-4f21-8f03-9fa3f3d68ba6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 99c91b4d-3b24-4451-87cf-b913ef28cc4b
+    type: regular
+    task:
+      id: 99c91b4d-3b24-4451-87cf-b913ef28cc4b
+      version: -1
+      name: Search action - Hard delete
+      description: After you create a content search using the !o365-sc-new-search
+        command and run it using the !o365-sc-start-search command, you assign a search
+        action to the search using the !o365-sc-new-search-action command.
+      script: '|||o365-sc-new-search-action'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      action:
+        simple: Purge
+      purge_type:
+        simple: HardDelete
+      search_name:
+        complex:
+          root: inputs.search_name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 26863f80-1e92-4308-852f-776438bac123
+    type: playbook
+    task:
+      id: 26863f80-1e92-4308-852f-776438bac123
+      version: -1
+      name: Waiting for delete operation to complete
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: O365.SecurityAndCompliance.ContentSearch.SearchAction
+          accessor: Name
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: search_action_name
+      PollingCommandName:
+        simple: o365-sc-get-search-action
+      Timeout:
+        simple: "10"
+      dt:
+        simple: O365.SecurityAndCompliance.ContentSearch.SearchAction(val.Status &&  val.Status
+          == "InProgress" || val.Status == "Starting" || val.Status == "Purging")
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: d1ed7ae5-902a-4e35-848f-7ba81129bcf9
+    type: title
+    task:
+      id: d1ed7ae5-902a-4e35-848f-7ba81129bcf9
+      version: -1
+      name: Search action completed.
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 639b4a44-9d7f-444d-821b-8fbcd4013457
+    type: condition
+    task:
+      id: 639b4a44-9d7f-444d-821b-8fbcd4013457
+      version: -1
+      name: Perform a hard delete on the compliance search results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      Hard delete:
+      - "1"
+      Soft delete:
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: Hard delete
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.delete_type
+                transformers:
+                - operator: toUpperCase
+            iscontext: true
+          right:
+            value:
+              simple: HARD
+    - label: Soft delete
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.delete_type
+                transformers:
+                - operator: toUpperCase
+            iscontext: true
+          right:
+            value:
+              simple: SOFT
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 51c3a18f-f252-4a4c-893f-c6274048264a
+    type: regular
+    task:
+      id: 51c3a18f-f252-4a4c-893f-c6274048264a
+      version: -1
+      name: Search action - Soft delete.
+      description: After you create a content search using the !o365-sc-new-search
+        command and run it using the !o365-sc-start-search command, you assign a search
+        action to the search using the !o365-sc-new-search-action command.
+      script: '|||o365-sc-new-search-action'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      action:
+        simple: Purge
+      purge_type:
+        simple: SoftDelete
+      search_name:
+        complex:
+          root: inputs.search_name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 6d749512-d68b-465d-8543-8c31f1200b94
+    type: regular
+    task:
+      id: 6d749512-d68b-465d-8543-8c31f1200b94
+      version: -1
+      name: Get the search action.
+      description: Get the compliance search action from the Security & Compliance Center.
+      script: '|||o365-sc-get-search-action'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      export:
+        simple: "true"
+      limit: {}
+      results: {}
+      search_action_name:
+        complex:
+          root: O365.SecurityAndCompliance.ContentSearch.SearchAction
+          accessor: Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: c934dc98-9fbe-4a31-8306-464511500f3d
+    type: regular
+    task:
+      id: c934dc98-9fbe-4a31-8306-464511500f3d
+      version: -1
+      name: Error - Invalid delete_type parameter.
+      description: Print an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: delete_type parameter should be Soft or Hard.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -500,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_1_Hard delete": 0.48,
+      "5_6_Soft delete": 0.54
+    },
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 1370,
+        "x": -500,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: search_name
+  value: {}
+  required: true
+  description: The name of the compliance search.
+  playbookInputQuery: null
+- key: delete_type
+  value:
+    simple: Soft
+  required: true
+  description: 'Purge type. Possible values are: "Soft" and "Hard". Default is "Soft".'
+  playbookInputQuery: null
+outputs:
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
+  description: Security and compliance search action type. Either "Purge" or "Preview".
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AllowNotFoundExchangeLocationsEnabled
+  description: Whether to include mailboxes other than regular user mailboxes in the
+    compliance search.
+  type: Boolean
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AzureBatchFrameworkEnabled
+  description: Whether the Azure Batch Framework is enabled for job processing.
+  type: Boolean
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseId
+  description: Identity of a Core eDiscovery case which is associated with the compliance
+    search.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseName
+  description: Name of a Core eDiscovery case which is associated with the compliance
+    search.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CreatedBy
+  description: Security and compliance search action creator.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CreatedTime
+  description: Security and compliance search action creation time.
+  type: Date
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Description
+  description: Security and compliance search action description.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Errors
+  description: Security and compliance search action errors.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.EstimateSearchJobId
+  description: Security and compliance search action job ID estimation.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.EstimateSearchRunId
+  description: Security and compliance search action run ID estimation.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.ExchangeLocation
+  description: Security and compliance search action exchange locations to include.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.ExchangeLocationExclusion
+  description: Security and compliance search action exchange locations to exclude.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Identity
+  description: Security and compliance search action identity.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.IsValid
+  description: Whether the security and compliance search action is valid.
+  type: Boolean
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobEndTime
+  description: Security and compliance search action job end time.
+  type: Date
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobId
+  description: Security and compliance search action job ID.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobRunId
+  description: Security and compliance search action job run ID.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobStartTime
+  description: Security and compliance search action job start time.
+  type: Date
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.LastModifiedTime
+  description: Security and compliance search action last modified time.
+  type: Date
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Name
+  description: Security and compliance search action name.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocation
+  description: Security and compliance search action public folder locations to include.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocationExclusion
+  description: Security and compliance search action public folder locations to exclude.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Location
+  description: Security and compliance search action result location.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Sender
+  description: Security and compliance search action result mail sender.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Subject
+  description: Security and compliance search action result subject.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Type
+  description: Security and compliance search action result type.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Size
+  description: Security and compliance search action result size.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.ReceivedTime
+  description: Security and compliance search action result received time.
+  type: Date
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.DataLink
+  description: Security and compliance search action data link.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Retry
+  description: Whether to retry if the search action failed.
+  type: Boolean
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.RunBy
+  description: Security and compliance search action run by UPN (email address).
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.RunspaceId
+  description: Security and compliance search action run space ID.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SearchName
+  description: Security and compliance search action search name.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocation
+  description: Security and compliance search action SharePoint locations to include.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocationExclusion
+  description: Security and compliance search action SharePoint locations to exclude.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Status
+  description: Security and compliance search action status. Either "Started" or "Completed".
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
+  description: Security and compliance search action Tenant ID.
+  type: String
+sourceplaybookid: O365 - Security And Compliance - Search Action
+fromversion: 5.5.0
+tests:
+  - O365-SecurityAndCompliance-Test
