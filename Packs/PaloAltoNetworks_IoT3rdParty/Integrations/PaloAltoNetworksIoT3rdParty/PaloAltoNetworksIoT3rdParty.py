@@ -752,21 +752,23 @@ def connection_test_command() -> str:
 def main() -> None:
     """main function, parses args and runs command functions
     """
-    demisto.debug(f'Command being called is {demisto.command()}')
+    command = demisto.command()
+    args = demisto.args()
+    demisto.debug(f'Command being called is {command}')    
     try:
-        if demisto.command() == 'test-module':
-            return_results(connection_test_command())
-        elif demisto.command() == 'panw-iot-3rd-party-get-asset-list':
-            results = get_asset_list()
+        if command == 'test-module':
+            return_results(connection_test_command(args))
+        elif command == 'panw-iot-3rd-party-get-asset-list':
+            results = get_asset_list(args)
             return_results(results)
-        elif demisto.command() == 'panw-iot-3rd-party-get-single-asset':
-            results = get_single_asset()
+        elif command == 'panw-iot-3rd-party-get-single-asset':
+            results = get_single_asset(args)
             return_results(results)
-        elif demisto.command() == 'panw-iot-3rd-party-report-status-to-panw':
-            results = report_status_to_iot_cloud()
+        elif command == 'panw-iot-3rd-party-report-status-to-panw':
+            results = report_status_to_iot_cloud(args)
             return_results(results)
-        elif demisto.command() == 'panw-iot-3rd-party-convert-assets-to-external-format':
-            results = convert_asset_to_external_format()
+        elif command == 'panw-iot-3rd-party-convert-assets-to-external-format':
+            results = convert_asset_to_external_format(args)
             return_results(results)
         # Log exceptions and return errors
     except Exception as e:
