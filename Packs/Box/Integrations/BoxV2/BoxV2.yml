@@ -10,8 +10,8 @@ configuration:
   type: 8
 - display: Credentials JSON
   name: credentials_json
-  type: 12
   required: true
+  type: 12
 - display: As User for Fetching Incidents
   hidden: false
   name: as_user
@@ -620,7 +620,7 @@ script:
       description: The user ID for the account used to access the file.
       isArray: false
       name: as_user
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Gets the information for a shared link on a file.
@@ -719,7 +719,7 @@ script:
       description: User which is making the request.
       isArray: false
       name: as_user
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Adds a shared link to a file.
@@ -818,7 +818,7 @@ script:
       description: The user which is performing the action.
       isArray: false
       name: as_user
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Updates a shared link on a file.
@@ -884,7 +884,7 @@ script:
       description: The user which is performing the action.
       isArray: false
       name: as_user
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Removes a shared link from a file.
@@ -911,7 +911,7 @@ script:
       description: User which is performing the action.
       isArray: false
       name: as_user
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Gets the information for a shared link on a folder.
@@ -1010,7 +1010,7 @@ script:
       description: The user which is performing the action.
       isArray: false
       name: as_user
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Adds a shared link to a folder.
@@ -1076,7 +1076,7 @@ script:
       description: The user which is performing the action.
       isArray: false
       name: as_user
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -1175,7 +1175,7 @@ script:
       description: User which is performing the action.
       isArray: false
       name: as_user
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Removes a shared link from a folder.
@@ -1202,7 +1202,7 @@ script:
       description: The user that is performing the action.
       isArray: false
       name: as_user
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Retrieves details for a folder, including the first 100 entries in
@@ -1388,7 +1388,7 @@ script:
       description: The user which is performing the action.
       isArray: false
       name: as_user
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: '100'
@@ -1468,7 +1468,7 @@ script:
       description: The user which is performing the action.
       isArray: false
       name: as_user
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Creates a new empty folder within the specified parent folder.
@@ -1653,7 +1653,7 @@ script:
       description: The user which is performing the action.
       isArray: false
       name: as_user
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Deletes a file, either permanently or by moving it to the trash.
@@ -1763,7 +1763,7 @@ script:
       description: The id of the user who is performing the action.
       isArray: false
       name: as_user
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the file.
@@ -1955,7 +1955,7 @@ script:
       description: The user performing the action.
       isArray: false
       name: as_user
-      required: true
+      required: false
       secret: false
     - default: false
       description: The maximum number of items to return per page.
@@ -2023,7 +2023,7 @@ script:
       description: The user which is performing the action.
       isArray: false
       name: as_user
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Restores a file or folder that has been moved to the trash.
@@ -2218,7 +2218,7 @@ script:
       description: The user which is performing the action.
       isArray: false
       name: as_user
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Permanently deletes a file or folder that is in the trash. This action
@@ -2740,6 +2740,146 @@ script:
       field to delete the user and their files.
     execution: true
     name: box-delete-user
+  - arguments:
+    - default: false
+      description: "The user who is performing the action."
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: "The type of stream to retrieve."
+      default: false
+      isArray: false
+      name: stream_type
+      predefined:
+      - all
+      - changes
+      - sync
+      required: true
+      secret: false
+    - default: false
+      description: "The maximum amount of events to return."
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns up to a year of past events for a given user.
+    execution: false
+    name: box-list-user-events
+    outputs:
+    - contextPath: Box.Events.type
+      description: 'The type of the event.'
+      type: String
+    - contextPath: Box.Events.event_id
+      description: 'The ID of the event object. You can use this to detect duplicate events.'
+      type: String
+    - contextPath: Box.Events.created_by.type
+      description: 'Value is always user.'
+      type: String
+    - contextPath: Box.Events.created_by.id
+      description: 'The unique identifier for this user.'
+      type: Date
+    - contextPath: Box.Events.created_by.name
+      description: 'The display name of this user.'
+      type: String
+    - contextPath: Box.Events.created_by.login
+      description: 'The primary email address of this user.'
+      type: String
+    - contextPath: Box.Events.created_at
+      description: 'Time which the event was created.'
+      type: Date
+    - contextPath: Box.Events.recorded_at
+      description: 'Time which the event was recorded.'
+      type: Date
+    - contextPath: Box.Events.event_type
+      description: 'The event type that triggered this event.'
+      type: String
+    - contextPath: Box.Events.session_id
+      description: 'The session of the user that performed the action. Not all events will populate this attribute.'
+      type: String
+  - arguments:
+    - default: false
+      description: "The user who is performing the action."
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    - default: false
+      description: "The lower bound date and time to return events for."
+      isArray: false
+      name: created_after
+      required: false
+      secret: false
+    - default: false
+      description: "The maximum amount of events to return."
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns up to a year of past events for the entire enterprise.
+    execution: false
+    name: box-list-enterprise-events
+    outputs:
+    - contextPath: Box.Events.source.item_type
+      description: 'The type of the item that the event represents.'
+      type: String
+    - contextPath: Box.Events.source.item_id
+      description: 'The unique identifier that represents the item.'
+      type: Date
+    - contextPath: Box.Events.source.item_name
+      description: 'The name of the item.'
+      type: String
+    - contextPath: Box.Events.source.parent.type
+      description: 'Value is always folder.'
+      type: String
+    - contextPath: Box.Events.source.parent.name
+      description: 'The name of the folder.'
+      type: String
+    - contextPath: Box.Events.source.parent.id
+      description: 'The unique identifier that represents a folder.'
+      type: String
+    - contextPath: Box.Events.source.owned_by.type
+      description: 'Value is always user.'
+      type: String
+    - contextPath: Box.Events.source.owned_by.id
+      description: 'The unique identifier for this user.'
+      type: Date
+    - contextPath: Box.Events.source.owned_by.name
+      description: 'The display name of this user.'
+      type: String
+    - contextPath: Box.Events.source.owned_by.login
+      description: 'The primary email address of this user.'
+      type: String
+    - contextPath: Box.Events.created_by.type
+      description: 'Value is always user.'
+      type: String
+    - contextPath: Box.Events.created_by.id
+      description: 'The unique identifier for this user.'
+      type: Date
+    - contextPath: Box.Events.created_by.name
+      description: 'The display name of this user.'
+      type: String
+    - contextPath: Box.Events.created_by.login
+      description: 'The primary email address of this user.'
+      type: String
+    - contextPath: Box.Events.created_at
+      description: 'Time which the event was created.'
+      type: Date
+    - contextPath: Box.Events.event_id
+      description: 'The ID of the event object. You can use this to detect duplicate events.'
+      type: String
+    - contextPath: Box.Events.event_type
+      description: 'The event type that triggered this event.'
+      type: String
+    - contextPath: Box.Events.ip_address
+      description: 'IP address of the user which triggered the event.'
+      type: String
+    - contextPath: Box.Events.type
+      description: 'Always event.'
+      type: String
   dockerimage: demisto/pyjwt3:1.0.0.13142
   feed: false
   isfetch: true

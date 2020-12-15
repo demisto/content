@@ -580,7 +580,7 @@ def test_upload_file_command(requests_mock, mocker):
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': './test_data/test_image.jpg'})
 
     mock_obj = mock.Mock()
-    mock_obj.st_size = 10500000
+    mock_obj.st_size = 105000000
     mocker.patch('os.stat', return_value=mock_obj)
 
     # The size of the file we are testing is 298,306 bytes for testing purposes, we will use 70,000
@@ -634,16 +634,16 @@ def test_upload_file_command(requests_mock, mocker):
 
     # Validate request to open a session
     assert requests_mock.request_history[0].headers.get('Authorization') == "Bearer JWT_TOKEN"
-    assert requests_mock.request_history[0].text == '{"file_name": "test_user.png", "file_size": 10500000, "folder_id": "100"}'
+    assert requests_mock.request_history[0].text == '{"file_name": "test_user.png", "file_size": 105000000, "folder_id": "100"}'
 
     # Validate first PUT request
     assert requests_mock.request_history[1].headers.get('Authorization') == "Bearer JWT_TOKEN"
-    assert requests_mock.request_history[1].headers.get('Content-Range') == "bytes 0-69999/10500000"
+    assert requests_mock.request_history[1].headers.get('Content-Range') == "bytes 0-69999/105000000"
     assert requests_mock.request_history[1].headers.get('Digest') == "SHA=X1QbZ9o+V8TFMLKQ6LBmYEiBdD8="
 
     # Validate second PUT request
     assert requests_mock.request_history[2].headers.get('Authorization') == "Bearer JWT_TOKEN"
-    assert requests_mock.request_history[2].headers.get('Content-Range') == "bytes 70000-139999/10500000"
+    assert requests_mock.request_history[2].headers.get('Content-Range') == "bytes 70000-139999/105000000"
     assert requests_mock.request_history[2].headers.get('Digest') == "SHA=XkaxVkVB+djbRD6KHylwQCQOAZY="
 
     # Skipping the remaining PUT requests
@@ -924,3 +924,84 @@ def test_fetch_incidents(requests_mock, mocker):
 
     assert response[0] > '2015-10-21T04:29-8:00'
     assert response[1] == expected_fetch_results
+
+
+def test_list_user_events_command(requests_mock, mocker):
+    """
+     Tests the box-list-user-events function and command.
+
+     Configures a requests_mock instance to generate the appropriate
+     user API response which is loaded from a local JSON file. Checks
+     the output of the command function with the expected output.
+     Verifies:
+      - The As-User header is correct
+      - stream_type is all
+      - Length of returned events are greater than 0.
+
+     Given: A valid user ID to delete and the force argument.
+     When: Executing the box-list-user-events command.
+     Then: Return the result where the outputs match the mocked response.
+
+     """
+    from BoxV2 import list_user_events_command
+
+    client = TestBox(mocker).client
+
+    args = {
+        'as_user': 'sample_current_user',
+        'stream_type': 'all'
+    }
+    mock_response = util_load_json('test_data/events.json')
+    requests_mock.get(
+        'https://api.box.com/2.0/events/',
+        json=mock_response
+    )
+
+    response = list_user_events_command(client, args)
+
+    assert requests_mock.request_history[0].headers.get('As-User') == "sample_current_user"
+    assert requests_mock.request_history[0].headers.get('Authorization') == "Bearer JWT_TOKEN"
+    assert requests_mock.request_history[0].qs.get('stream_type') == ['all']
+
+    assert len(response.outputs) > 0
+
+
+def test_list_enterprise_events_command(requests_mock, mocker):
+    """
+     Tests the box-list-enterprise-events function and command.
+
+     Configures a requests_mock instance to generate the appropriate
+     user API response which is loaded from a local JSON file. Checks
+     the output of the command function with the expected output.
+     Verifies:
+      - The As-User header is correct
+      - Created after time is more than 3 days from the time test was written.
+      - Length of returned events are greater than 0.
+
+     Given: A valid user ID to delete and the force argument.
+     When: Executing the box-list-enterprise-events command.
+     Then: Return the result where the outputs match the mocked response.
+
+     """
+    from BoxV2 import list_enterprise_events_command
+
+    client = TestBox(mocker).client
+
+    args = {
+        'as_user': 'sample_current_user',
+        'stream_type': 'all',
+        'created_after': '3 days'
+    }
+    mock_response = util_load_json('test_data/events.json')
+    requests_mock.get(
+        'https://api.box.com/2.0/events/',
+        json=mock_response
+    )
+
+    response = list_enterprise_events_command(client, args)
+
+    assert requests_mock.request_history[0].headers.get('As-User') == "sample_current_user"
+    assert requests_mock.request_history[0].headers.get('Authorization') == "Bearer JWT_TOKEN"
+    assert requests_mock.request_history[0].qs.get('created_after')[0] > '2020-12-12t09:51:28'
+
+    assert len(response.outputs) > 0
