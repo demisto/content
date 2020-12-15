@@ -1,0 +1,112 @@
+{
+  "data": {
+    "newEscalations": [
+      {
+        "timeGenerated": "1602718419000",
+        "sourceType": "IPS",
+        "incident": {
+          "id": "627",
+          "priority": "Medium",
+          "probabilityBucket": "VeryHigh"
+        },
+        "idx": "idx-1234",
+        "nidsAction": {
+          "action": "Permitted"
+        },
+        "actionExt": "alert",
+        "trafficFlow": "int-ext",
+        "signature": {
+          "vendor": "Palo Alto Networks",
+          "category": "Malware",
+          "idx": "13264"
+        },
+        "signatureImportance": "High",
+        "signatureName": "Gh0st.Gen Command and Control Traffic",
+        "categoryExt": "spyware",
+        "deviceId": "dvc-12345",
+        "protocol": "tcp",
+        "sourceHostname": "None",
+        "sourceIpAddress": "10.150.15.1",
+        "sourceZone": "",
+        "sourceSystem": {
+          "isInternal": "True",
+          "isCritical": "False"
+        },
+        "sourceAssetClassification": "Unknown",
+        "sourceSubClassifications": [],
+        "sourceCriticality": "Unknown",
+        "sourcePort": {
+          "number": 23123
+        },
+        "sourceSuspicion": "High",
+        "destinationHostname": "None",
+        "destinationIpAddress": "64.233.175.1",
+        "destinationZone": "",
+        "destinationSystem": {
+          "isInternal": "False",
+          "isCritical": "False"
+        },
+        "destinationAssetClassification": "Unknown",
+        "destinationSubClassifications": [],
+        "destinationCriticality": "Unknown",
+        "destinationPort": {
+          "number": 443
+        },
+        "destinationSuspicion": "Medium"
+      },
+      {
+        "timeGenerated": "1703818411543",
+        "sourceType": "AV",
+        "incident": {
+          "id": "628",
+          "priority": "Medium",
+          "probabilityBucket": "VeryHigh"
+        },
+        "idx": "idx-1234",
+        "nidsAction": {
+          "action": "Permitted"
+        },
+        "actionExt": "alert",
+        "trafficFlow": "int-ext",
+        "signature": {
+          "vendor": "Palo Alto Networks",
+          "category": "Malware",
+          "idx": "13264"
+        },
+        "signatureImportance": "High",
+        "signatureName": "Gh0st.Gen Command and Control Traffic",
+        "categoryExt": "spyware",
+        "deviceId": "dvc-12345",
+        "protocol": "tcp",
+        "sourceHostname": "None",
+        "sourceIpAddress": "10.150.15.1",
+        "sourceZone": "",
+        "sourceSystem": {
+          "isInternal": "True",
+          "isCritical": "False"
+        },
+        "sourceAssetClassification": "Unknown",
+        "sourceSubClassifications": [],
+        "sourceCriticality": "Unknown",
+        "sourcePort": {
+          "number": 23123
+        },
+        "sourceSuspicion": "High",
+        "destinationHostname": "None",
+        "destinationIpAddress": "64.233.175.1",
+        "destinationZone": "",
+        "destinationSystem": {
+          "isInternal": "False",
+          "isCritical": "False"
+        },
+        "destinationAssetClassification": "Unknown",
+        "destinationSubClassifications": [],
+        "destinationCriticality": "Unknown",
+        "destinationPort": {
+          "number": 443
+        },
+        "destinationSuspicion": "Medium"
+      }
+    ]
+  }
+}

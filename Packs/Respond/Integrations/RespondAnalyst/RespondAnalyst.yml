@@ -3,6 +3,17 @@ commonfields:
   id: Respond_Analyst
   version: -1
 configuration:
+- defaultvalue: None
+  display: Incident Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Both
+  required: false
+  type: 15
 - display: base url
   name: base_url
   required: true
@@ -19,27 +30,16 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: Password
-  name: password
-  required: true
-  type: 4
 - display: Username
   name: username
   required: true
   type: 0
-- display: max fetch
-  defaultvalue: '50'
-  name: max_fetch
-  required: false
-  type: 0
-- defaultvalue: 7 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: first_fetch
-  required: false
-  type: 0
-
-description: Respond Software Description
-display: Respond Analyst (Developer Contribution)
+- display: Password
+  name: password
+  required: true
+  type: 4
+description: Respond Software Integration - fetches incidents with mirroring api enabled
+display: Respond Analyst
 name: Respond_Analyst
 script:
   commands:
@@ -47,7 +47,7 @@ script:
     - default: false
       description: ID of the Tenant in which the incident resides
       isArray: false
-      name: tenant_id
+      name: respond_tenant_id
       required: false
       secret: false
     - default: false
@@ -68,7 +68,7 @@ script:
     - default: false
       description: ID of the Tenant in which the incident resides
       isArray: false
-      name: tenant_id
+      name: respond_tenant_id
       required: false
       secret: false
     - default: false
@@ -108,7 +108,7 @@ script:
     - default: false
       description: tenant id
       isArray: false
-      name: tenant_id
+      name: respond_tenant_id
       required: false
       secret: false
     - default: false
@@ -131,7 +131,7 @@ script:
     - default: false
       description: tenant id
       isArray: false
-      name: tenant_id
+      name: respond_tenant_id
       required: false
       secret: false
     - default: false
@@ -144,9 +144,27 @@ script:
     description: remove a user from a Respond incident
     execution: false
     name: respond-remove-user
+  - arguments:
+    - default: false
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: respond_tenant_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get escalation data associated with incident
+    execution: false
+    name: respond-get-escalations
   dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false

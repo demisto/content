@@ -1,0 +1,114 @@
+{
+  "data": {
+    "fullIncidents": [
+      {
+        "assetClass": "Critical",
+        "attackStage": "LateralMovement",
+        "dateCreated": "1591374021992",
+        "eventCount": 24,
+        "feedback": {
+          "closedAt": "1593468999299",
+          "closedBy": "qa-user@respond-software.com",
+          "newStatus": "NonActionable",
+          "optionalText": "blah blah blah",
+          "timeGiven": "1593469076049",
+          "userId": "qa-user@respond-software.com"
+        },
+        "firstEventTime": "1576933531016",
+        "id": "6",
+        "allSystems": [
+          {
+            "hostname": "host1",
+            "ipAddress": "10.150.0.11",
+            "isInternal": true
+          },
+          {
+            "hostname": "host2",
+            "ipAddress": "10.150.0.22",
+            "isInternal": false
+          }
+        ],
+        "avMalwareNames": [
+          {
+            "name": "Ransom.Win32.CRYSIS.SM",
+            "type": "Ransomware",
+            "vendor": "McAfee"
+          },
+          {
+            "name": "RAT.Win32.CRYSIS.SM",
+            "type": "RAT",
+            "vendor": "McAfee"
+          }
+        ],
+        "internalSystemsCount": 1,
+        "lastEventTime": "1591345217664",
+        "priority": "Critical",
+        "probabilityBucket": "VeryHigh",
+        "status": "Closed",
+        "tags": [
+          {
+            "label": "Multiple Network IPS Signatures Triggered by Same Internal Asset"
+          }
+        ],
+        "title": "Virus Infections, Suspicious Repeated Connections and Int - Int Network IPS Activity",
+        "description": "description of the incident",
+        "userIds": [
+          "cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a"
+        ],
+        "authDataAccounts": [
+          {
+            "domain": "test",
+            "name": "svc_adminscom3"
+          },
+          {
+            "domain": "test",
+            "name": "svc_adminscom"
+          },
+          {
+            "domain": "test",
+            "name": "svc_adminscom2"
+          }
+        ],
+        "avAccounts": [
+          {
+            "domain": null,
+            "name": ""
+          },
+          {
+            "domain": null,
+            "name": "svc_adminscom3"
+          },
+          {
+            "domain": null,
+            "name": ""
+          },
+          {
+            "domain": null,
+            "name": "svc_adminscom"
+          },
+          {
+            "domain": "test",
+            "name": "svc_adminscom2"
+          },
+          {
+            "domain": null,
+            "name": "svc_adminscom2"
+          },
+          {
+            "domain": null,
+            "name": "svc_adminscom2"
+          }
+        ],
+        "avFileHashes": [
+          {
+            "hash": "44d88612fea8a8f36de82e1278abb02f"
+          }
+        ],
+        "edrAccounts": [],
+        "nidsSignatures": [],
+        "wpAccounts": [],
+        "wpHosts": []
+      }
+    ]
+  }
+}
