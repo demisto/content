@@ -37,4 +37,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![ChronicleAsset Investigation - Chronicle](https://raw.githubusercontent.com/demisto/content/6ed8556fa886b498aaeec84580c751fbc759eec9/Packs/GoogleChronicleBackstory/doc_files/ChronicleAsset_Investigation_-_Chronicle.png)
+![ChronicleAsset Investigation - Chronicle](https://raw.githubusercontent.com/demisto/content/16ffc1758735f7ac94990651419a94961c81f329/Packs/GoogleChronicleBackstory/doc_files/ChronicleAsset_Investigation_-_Chronicle.png)
