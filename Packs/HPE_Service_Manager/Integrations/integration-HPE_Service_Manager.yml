@@ -3,7 +3,7 @@ commonfields:
   version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Service Manager
-display: Service Manager
+display: Micro Focus Service Manager
 category: Case Management
 image: data:image/png;base64,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
 description: Service Manager By Micro Focus (Formerly HPE Software).
@@ -27,15 +27,16 @@ configuration:
 script:
   script: |
     var url = params.url + '/SM/9/rest';
-
     // handle '/' at the end of the url
     if (url[url.length - 1] === '/') {
         url = url.substring(0, url.length - 1);
     }
 
     var token = Base64.encode(params.username.identifier + ':' + params.username.password);
-
     var result;
+    var resourceKey = args.resourceKey;
+    var resourceName = args.resourceName;
+
     // The command input arg holds the command sent from the user.
     switch (command) {
         case 'test-module':
@@ -46,13 +47,25 @@ script:
             result = createIncident();
             break;
         case 'hpsm-update-incident':
-            result = updateIncident();
+            result = createIncident();
             break;
         case 'hpsm-list-incidents':
             result = listIncidents();
             break;
         case 'hpsm-get-incident-by-id':
             result = getIncidentById();
+            break;
+        case 'hpsm-create-resource':
+            result = createResource();
+            break;
+        case 'hpsm-update-resource':
+            result = updateResource();
+            break;
+        case 'hpsm-list-resource':
+            result = listResources();
+            break;
+        case 'hpsm-get-resource-by-id':
+            result = getResourceById();
             break;
         case 'hpsm-list-devices':
             result = listDevices();
@@ -66,7 +79,7 @@ script:
 
     function updateIncident() {
         var newIncident = {
-            [args.resourcename]: {
+            Incident: {
                 Category: args.category,
                 Description: [
                     args.description
@@ -75,91 +88,59 @@ script:
                 Title: args.title,
             }
         };
-        newIncident[args.resourcename][args.resourcekey] = args.incidentId
+        if (args.customFields !== undefined){
+            fields = JSON.parse(args.customFields);
+            for (var field in fields) {
+                newIncident['Incident'][field] = fields[field]
+            }
+        }
         if (args.impact) {
-            newIncident[args.resourcename]['Impact'] = args.impact;
+            newIncident.Incident.Impact = args.impact;
         }
         if (args.urgency) {
-            newIncident[args.resourcename]['Urgency'] = args.urgency;
+            newIncident.Incident.Urgency = args.urgency;
         }
         if (args.alertStatus) {
-            newIncident[args.resourcename]['AlertStatus'] = args.alertStatus;
+            newIncident.Incident.AlertStatus = args.alertStatus;
         }
         if (args.area) {
-            newIncident[args.resourcename]['Area'] = args.area;
+            newIncident.Incident.Area = args.area;
         }
-        if (args.assignmentgroup) {
-            newIncident[args.resourcename]['AssignmentGroup'] = args.assignmentGroup;
+        if (args.assignmentGroup) {
+            newIncident.Incident.AssignmentGroup = args.assignmentGroup;
         }
         if (args.affectedCI) {
-            newIncident[args.resourcename]['AffectedCI'] = args.affectedCI;
+            newIncident.Incident.AffectedCI = args.affectedCI;
         }
         if (args.company) {
-            newIncident[args.resourcename]['Company'] = args.company;
+            newIncident.Incident.Company = args.company;
         }
         if (args.category) {
-            newIncident[args.resourcename]['Category'] = args.category;
-        }
-        if (args.type) {
-            newIncident[args.resourcename]['Type'] = args.type;
+            newIncident.Incident.Category = args.category;
         }
         if (args.phase) {
-            newIncident[args.resourcename]['Phase'] = args.phase;
+            newIncident.Incident.Phase = args.phase;
         }
         if (args.status) {
-            newIncident[args.resourcename]['Status'] = args.status;
+            newIncident.Incident.Status = args.status;
         }
         if (args.subarea) {
-            newIncident[args.resourcename]['Subarea'] = args.subarea;
+            newIncident.Incident.Subarea = args.subarea;
         }
-        if (args.contactmethod) {
-            newIncident[args.resourcename]['ContactMethod'] = args.contactmethod;
-        }
-        if (args.servicerecipient) {
-            newIncident[args.resourcename]['ServiceRecipient'] = args.servicerecipient;
-        }
-        if (args.affectedservice) {
-            newIncident[args.resourcename]['AffectedService'] = args.affectedservice;
-        }
-        if (args.servicecontact) {
-            newIncident[args.resourcename]['ServiceContact'] = args.servicecontact;
-        }
-        if (args.subcategory) {
-            newIncident[args.resourcename]['SubCategory'] = args.subcategory;
-        }
-        if (args.classification) {
-            newIncident[args.resourcename]['Classification'] = args.classification;
-        }
-        if (args.priority) {
-            newIncident[args.resourcename]['Priority'] = args.priority;
-        }
-        if (args.serviceprovidercompany) {
-            newIncident[args.resourcename]['ServiceProviderCompany'] = args.serviceprovidercompany;
-        }
-        if (args.updateactiontitle) {
-            newIncident[args.resourcename]['UpdateActionTitle'] = args.updateactiontitle;
-        }
-        if (args.updateactiondescription) {
-            newIncident[args.resourcename]['UpdateActionDescription'] = args.updateactiondescription;
-        }
-        if (args.serviceassociatedwith) {
-            newIncident[args.resourcename]['ServiceAssociatedWith'] = args.serviceassociatedwith;
-        }
-        //throw JSON.stringify(newIncident)
-        var res = doPost('/'+args.resourcename+'/'+args.incidentId, newIncident);
+        var res = doPost('/incidents/'+args.incidentId, newIncident);
         var parsedRes = JSON.parse(res);
         if (parsedRes.ReturnCode !== 0) {
-            throw 'Failed to create incident. Error Response: ' + res.Messages;
+            throw 'Failed to update incident. Error Response: ' + res.Messages;
         }
-        hrIncident = parsedRes[args.resourcename];
+        hrIncident = parsedRes.Incident;
         var entryContext = {
-            'HPSM.Incidents': [parsedRes[args.resourcename]],
+            'HPSM.Incidents': [parsedRes.Incident],
             Ticket: [
                 {
-                    ID: parsedRes[args.resourcename][args.resourcekey],
-                    Creator: parsedRes[args.resourcename]['OpenedBy'],
-                    Assignee: parsedRes[args.resourcename]['Assignee'],
-                    State: parsedRes[args.resourcename]['Status']
+                    ID: parsedRes.Incident.IncidentID,
+                    Creator: parsedRes.Incident.OpenedBy,
+                    Assignee: parsedRes.Incident.Assignee,
+                    State: parsedRes.Incident.Status
                 }
             ]
         };
@@ -168,14 +149,14 @@ script:
             ContentsFormat: formats.json,
             Contents: parsedRes,
             ReadableContentsFormat: formats.markdown,
-            HumanReadable: tableToMarkdown('Updated Incident ' + parsedRes[args.resourcename][args.resourcekey], hrIncident),
+            HumanReadable: tableToMarkdown('Updated Incident ' + parsedRes.Incident.IncidentID, hrIncident),
             EntryContext: entryContext
         };
-    }
+    } // queryToObject takes query of format field1=value1&field2=value2 and return query object like: { "field1": "value1", "field2": "value2" }
 
     function createIncident() {
         var newIncident = {
-            [args.resourcename]: {
+            Incident: {
                 Category: args.category,
                 Description: [
                     args.description
@@ -184,87 +165,59 @@ script:
                 Title: args.title,
             }
         };
+        if (args.customFields !== undefined){
+            fields = JSON.parse(args.customFields);
+            for (var field in fields) {
+                newIncident['Incident'][field] = fields[field]
+            }
+        }
         if (args.impact) {
-            newIncident[args.resourcename]['Impact'] = args.impact;
+            newIncident.Incident.Impact = args.impact;
         }
         if (args.urgency) {
-            newIncident[args.resourcename]['Urgency'] = args.urgency;
+            newIncident.Incident.Urgency = args.urgency;
         }
         if (args.alertStatus) {
-            newIncident[args.resourcename]['AlertStatus'] = args.alertStatus;
+            newIncident.Incident.AlertStatus = args.alertStatus;
         }
         if (args.area) {
-            newIncident[args.resourcename]['Area'] = args.area;
+            newIncident.Incident.Area = args.area;
         }
-        if (args.assignmentgroup) {
-            newIncident[args.resourcename]['AssignmentGroup'] = args.assignmentGroup;
+        if (args.assignmentGroup) {
+            newIncident.Incident.AssignmentGroup = args.assignmentGroup;
         }
         if (args.affectedCI) {
-            newIncident[args.resourcename]['AffectedCI'] = args.affectedCI;
+            newIncident.Incident.AffectedCI = args.affectedCI;
         }
         if (args.company) {
-            newIncident[args.resourcename]['Company'] = args.company;
+            newIncident.Incident.Company = args.company;
         }
         if (args.category) {
-            newIncident[args.resourcename]['Category'] = args.category;
-        }
-        if (args.type) {
-            newIncident[args.resourcename]['Type'] = args.type;
+            newIncident.Incident.Category = args.category;
         }
         if (args.phase) {
-            newIncident[args.resourcename]['Phase'] = args.phase;
+            newIncident.Incident.Phase = args.phase;
         }
         if (args.status) {
-            newIncident[args.resourcename]['Status'] = args.status;
+            newIncident.Incident.Status = args.status;
         }
         if (args.subarea) {
-            newIncident[args.resourcename]['Subarea'] = args.subarea;
+            newIncident.Incident.Subarea = args.subarea;
         }
-        if (args.contactmethod) {
-            newIncident[args.resourcename]['ContactMethod'] = args.contactmethod;
-        }
-        if (args.servicerecipient) {
-            newIncident[args.resourcename]['ServiceRecipient'] = args.servicerecipient;
-        }
-        if (args.affectedservice) {
-            newIncident[args.resourcename]['AffectedService'] = args.affectedservice;
-        }
-        if (args.servicecontact) {
-            newIncident[args.resourcename]['ServiceContact'] = args.servicecontact;
-        }
-        if (args.subcategory) {
-            newIncident[args.resourcename]['SubCategory'] = args.subcategory;
-        }
-        if (args.classification) {
-            newIncident[args.resourcename]['Classification'] = args.classification;
-        }
-        if (args.priority) {
-            newIncident[args.resourcename]['Priority'] = args.priority;
-        }
-        if (args.serviceprovidercompany) {
-            newIncident[args.resourcename]['ServiceProviderCompany'] = args.serviceprovidercompany;
-        }
-        if (args.updateactiontitle) {
-            newIncident[args.resourcename]['UpdateActionTitle'] = args.updateactiontitle;
-        }
-        if (args.serviceassociatedwith) {
-            newIncident[args.resourcename]['ServiceAssociatedWith'] = args.serviceassociatedwith;
-        }
-
-        var res = doPost('/'+args.resourcename, newIncident);
+        var res = doPost('/incidents', newIncident);
         var parsedRes = JSON.parse(res);
         if (parsedRes.ReturnCode !== 0) {
             throw 'Failed to create incident. Error Response: ' + res.Messages;
         }
-        hrIncident = parsedRes[args.resourcename];
+        hrIncident = parsedRes.Incident;
         var entryContext = {
-            'HPSM.Incidents': [parsedRes[args.resourcename]],
+            'HPSM.Incidents': [parsedRes.Incident],
             Ticket: [
                 {
-                    ID: parsedRes[args.resourcename][args.resourcekey],
-                    Creator: parsedRes[args.resourcename]['OpenedBy'],
-                    Assignee: parsedRes[args.resourcename]['Assignee'],
-                    State: parsedRes[args.resourcename]['Status']
+                    ID: parsedRes.Incident.IncidentID,
+                    Creator: parsedRes.Incident.OpenedBy,
+                    Assignee: parsedRes.Incident.Assignee,
+                    State: parsedRes.Incident.Status
                 }
             ]
         };
@@ -273,17 +226,15 @@ script:
             ContentsFormat: formats.json,
             Contents: parsedRes,
             ReadableContentsFormat: formats.markdown,
-            HumanReadable: tableToMarkdown('Created Incident ' + parsedRes[args.resourcename][args.resourcekey], hrIncident),
+            HumanReadable: tableToMarkdown('Created Incident ' + parsedRes.Incident.IncidentID, hrIncident),
             EntryContext: entryContext
         };
-    }
+    } // queryToObject takes query of format field1=value1&field2=value2 and return query object like: { "field1": "value1", "field2": "value2" }
 
-    // queryToObject takes query of format field1=value1&field2=value2 and return query object like: { "field1": "value1", "field2": "value2" }
     function queryToObject(query) {
         if (!query) {
             return null;
         }
-
         var queryObj = {};
         var queryArr = query.split('&');
         queryArr.forEach(function(keyValuePair) {
@@ -292,52 +243,44 @@ script:
             var value = a[1];
             queryObj[key] = value;
         });
-
         return queryObj;
     }
-
     function listIncidents() {
-        var incidents = doGet('/'+args.resourcename, args.query);
+        var incidents = doGet('/incidents', args.query);
         incidents = JSON.parse(incidents);
-
         var hrIncidents = [];
         var incidentIds = [];
         if (incidents.content && incidents.content.length > 0) {
             incidents.content.forEach(function(inc) {
-                hrIncidents.push(inc[args.resourcename]);
-                incidentIds.push(inc[args.resourcename][args.resourcekey]);
+                hrIncidents.push(inc.Incident);
+                incidentIds.push(inc.Incident.IncidentID);
             });
         }
-
         var entryContext = {
             'HPSM.IncidentIDs': incidentIds
         };
-
         return {
             Type: entryTypes.note,
             ContentsFormat: formats.json,
             Contents: incidents,
-
             ReadableContentsFormat: formats.markdown,
             HumanReadable: tableToMarkdown('Incidents List', hrIncidents),
-
             EntryContext: entryContext
         };
     }
 
     function getIncidentById() {
-        var incident = doGet('/'+args.resourcename + '/' + args.incidentId);
+        var incident = doGet('/incidents/' + args.incidentId);
         incident = JSON.parse(incident);
-
-        hrIncident = incident[args.resourcename];
+        hrIncident = incident.Incident;
         var entryContext = {
-            'HPSM.Incidents': [incident[args.resourcename]],
+            'HPSM.Incidents': [incident.Incident],
             Ticket: [
                 {
-                    ID: incident[args.resourcename][args.resourcekey],
-                    Creator: incident[args.resourcename]['OpenedBy'],
-                    Assignee: incident[args.resourcename]['Assignee'],
-                    State: incident[args.resourcename]['Status']
+                    ID: incident.Incident.IncidentID,
+                    Creator: incident.Incident.OpenedBy,
+                    Assignee: incident.Incident.Assignee,
+                    State: incident.Incident.Status
                 }
             ]
         };
@@ -345,10 +288,8 @@ script:
             Type: entryTypes.note,
             ContentsFormat: formats.json,
             Contents: incident,
-
             ReadableContentsFormat: formats.markdown,
             HumanReadable: tableToMarkdown('Incident ' + args.incidentId, hrIncident),
-
             EntryContext: entryContext
         };
     }
@@ -356,7 +297,6 @@ script:
     function listDevices() {
         var devices = doGet('/devices', args.query);
         devices = JSON.parse(devices);
-
         var hrDevices = [];
         var deviceIds = [];
         if (devices.content && devices.content.length > 0) {
@@ -365,19 +305,220 @@ script:
                 deviceIds.push(dev.Device.ConfigurationItem);
             });
         }
-
         var entryContext = {
             'HPSM.DeviceIDs': deviceIds
         };
-
         return {
             Type: entryTypes.note,
             ContentsFormat: formats.json,
             Contents: devices,
-
             ReadableContentsFormat: formats.markdown,
             HumanReadable: tableToMarkdown('Devices List', hrDevices),
+            EntryContext: entryContext
+        };
+    }
 
+    function updateResource() {
+        var newIncident = {
+            [resourceName]: {
+                Category: args.category,
+                Description: [
+                    args.description
+                ],
+                Service: args.service,
+                Title: args.title,
+            }
+        };
+        if (args.customFields !== undefined){
+            fields = JSON.parse(args.customFields);
+            for (var field in fields) {
+                newIncident[resourceName][field] = fields[field]
+            }
+        }
+        if (args.impact) {
+            newIncident[resourceName]['Impact'] = args.impact;
+        }
+        if (args.urgency) {
+            newIncident[resourceName]['Urgency'] = args.urgency;
+        }
+        if (args.alertStatus) {
+            newIncident[resourceName]['AlertStatus'] = args.alertStatus;
+        }
+        if (args.area) {
+            newIncident[resourceName]['Area'] = args.area;
+        }
+        if (args.assignmentGroup) {
+            newIncident[resourceName]['AssignmentGroup'] = args.assignmentGroup;
+        }
+        if (args.affectedCI) {
+            newIncident[resourceName]['AffectedCI'] = args.affectedCI;
+        }
+        if (args.company) {
+            newIncident[resourceName]['Company'] = args.company;
+        }
+        if (args.category) {
+            newIncident[resourceName]['Category'] = args.category;
+        }
+        if (args.phase) {
+            newIncident[resourceName]['Phase'] = args.phase;
+        }
+        if (args.status) {
+            newIncident[resourceName]['Status'] = args.status;
+        }
+        if (args.subarea) {
+            newIncident[resourceName]['Subarea'] = args.subarea;
+        }
+        var res = doPost('/'+resourceName+'/'+args.incidentId, newIncident);
+        var parsedRes = JSON.parse(res);
+        if (parsedRes.ReturnCode !== 0) {
+            throw 'Failed to update resource. Error Response: ' + res.Messages;
+        }
+        hrIncident = parsedRes[resourceName];
+
+        var entryContext = {
+            'HPSM.Resources': [parsedRes[resourceName]],
+            Ticket: [
+                {
+                    ID: parsedRes[resourceName][resourceKey],
+                    Creator: parsedRes[resourceName]['OpenedBy'],
+                    Assignee: parsedRes[resourceName]['Assignee'],
+                    State: parsedRes[resourceName]['Status']
+                }
+            ]
+        };
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: parsedRes,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown('Updated Resource ' + parsedRes[resourceName][resourceKey], hrIncident),
+            EntryContext: entryContext
+        };
+    } // queryToObject takes query of format field1=value1&field2=value2 and return query object like: { "field1": "value1", "field2": "value2" }
+
+    function createResource() {
+        var newIncident = {
+            [resourceName]: {
+                Category: args.category,
+                Description: [
+                    args.description
+                ],
+                Service: args.service,
+                Title: args.title,
+            }
+        };
+        if (args.customFields !== undefined){
+            fields = JSON.parse(args.customFields);
+            for (var field in fields) {
+                newIncident[resourceName][field] = fields[field]
+            }
+        }
+        if (args.impact) {
+            newIncident[resourceName]['Impact'] = args.impact;
+        }
+        if (args.urgency) {
+            newIncident[resourceName]['Urgency'] = args.urgency;
+        }
+        if (args.alertStatus) {
+            newIncident[resourceName]['AlertStatus'] = args.alertStatus;
+        }
+        if (args.area) {
+            newIncident[resourceName]['Area'] = args.area;
+        }
+        if (args.assignmentGroup) {
+            newIncident[resourceName]['AssignmentGroup'] = args.assignmentGroup;
+        }
+        if (args.affectedCI) {
+            newIncident[resourceName]['AffectedCI'] = args.affectedCI;
+        }
+        if (args.company) {
+            newIncident[resourceName]['Company'] = args.company;
+        }
+        if (args.category) {
+            newIncident[resourceName]['Category'] = args.category;
+        }
+        if (args.phase) {
+            newIncident[resourceName]['Phase'] = args.phase;
+        }
+        if (args.status) {
+            newIncident[resourceName]['Status'] = args.status;
+        }
+        if (args.subarea) {
+            newIncident[resourceName]['Subarea'] = args.subarea;
+        }
+        var res = doPost('/'+resourceName, newIncident);
+        var parsedRes = JSON.parse(res);
+        if (parsedRes.ReturnCode !== 0) {
+            throw 'Failed to create resource. Error Response: ' + res.Messages;
+        }
+        hrIncident = parsedRes[resourceName];
+
+        var entryContext = {
+            'HPSM.Resources': [parsedRes[resourceName]],
+            Ticket: [
+                {
+                    ID: parsedRes[resourceName][resourceKey],
+                    Creator: parsedRes[resourceName]['OpenedBy'],
+                    Assignee: parsedRes[resourceName]['Assignee'],
+                    State: parsedRes[resourceName]['Status']
+                }
+            ]
+        };
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: parsedRes,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown('Created Resource ' + parsedRes[resourceName][resourceKey], hrIncident),
+            EntryContext: entryContext
+        };
+    } // queryToObject takes query of format field1=value1&field2=value2 and return query object like: { "field1": "value1", "field2": "value2" }
+
+    function listResources() {
+        var incidents = doGet('/'+resourceName, args.query);
+        incidents = JSON.parse(incidents);
+        var hrIncidents = [];
+        var incidentIds = [];
+        if (incidents.content && incidents.content.length > 0) {
+            incidents.content.forEach(function(inc) {
+                hrIncidents.push(inc[resourceName]);
+                incidentIds.push(inc[resourceName][resourceKey]);
+            });
+        }
+        var entryContext = {
+            'HPSM.ResourceIDs': incidentIds
+        };
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: incidents,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown('Resources List', hrIncidents),
+            EntryContext: entryContext
+        };
+    }
+
+    function getResourceById() {
+        var incident = doGet('/'+resourceName+'/'+ args.resourceId);
+        incident = JSON.parse(incident);
+        hrIncident = incident.Incident;
+        var entryContext = {
+            'HPSM.Resources': [incident.Incident],
+            Ticket: [
+                {
+                    ID: incident.Incident.IncidentID,
+                    Creator: incident.Incident.OpenedBy,
+                    Assignee: incident.Incident.Assignee,
+                    State: incident.Incident.Status
+                }
+            ]
+        };
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: incident,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown('Resource ' + args.incidentId, hrIncident),
             EntryContext: entryContext
         };
     }
@@ -385,7 +526,6 @@ script:
     function getDeviceById() {
         var device = doGet('/devices/' + args.configurationItem);
         device = JSON.parse(device);
-
         hrDevice = device.Device;
         var entryContext = {
             'HPSM.Devices': [device.Device],
@@ -394,10 +534,8 @@ script:
             Type: entryTypes.note,
             ContentsFormat: formats.json,
             Contents: device,
-
             ReadableContentsFormat: formats.markdown,
             HumanReadable: tableToMarkdown('Device ' + args.configurationItem, hrDevice),
-
             EntryContext: entryContext
         };
     }
@@ -409,7 +547,6 @@ script:
     function doPut(queryPath, body) {
         return doRequest('PUT', queryPath, body);
     }
-
     function doRequest(method, queryPath, body) {
         var requestUrl = url + queryPath;
         var res = http(
@@ -425,20 +562,16 @@ script:
             params.insecure,
             params.proxy
         );
-
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             var parsedRes;
             try {
                 parsedRes = JSON.parse(res.Body);
             } catch (err) {}
-
             if (res.Body && parsedRes && parsedRes.ReturnCode !== 0 && parsedRes.Messages) {
                 throw method + ' Request Failed to ' + requestUrl + '.\nStatus code: ' + res.StatusCode + '.\nError from Service Manager: ' + parsedRes.Messages;
             }
-
             throw method + ' Request Failed to ' + requestUrl + '.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res.Body) + '.';
         }
-
         return res.Body;
     }
 
@@ -452,7 +585,6 @@ script:
             // if the query is object then we encode it
             requestUrl += encodeToURLQuery(queryParams);
         }
-
         var res = http(
             requestUrl,
             {
@@ -465,11 +597,9 @@ script:
             params.insecure,
             params.proxy
         );
-
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'GET Request Failed to ' + requestUrl + '.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
-
         return res.Body;
     }
   type: javascript
@@ -483,6 +613,7 @@ script:
       required: true
       description: The description of the incident
     - name: service
+      required: true
       description: 'Examples: CI1001060, CI1001030'
     - name: impact
       description: Default is 4. Should be number like 3 or 4
@@ -508,37 +639,9 @@ script:
     - name: subarea
       description: 'Example: system or application hangs, function or feature not
         working, error message, job failed, hardware failure, etc.'
-    - name: contactmethod
-      description: What contact method has been used
-    - name: servicerecipient
-      description: The Service Recipient
-    - name: affectedservice
-      description: The affected service
-    - name: servicecontact
-      description: The Service Contact
-    - name: subcategory
-      description: The Sub Category
-    - name: classification
-      description: The classification
-    - name: priority
-      description: The Priority
-    - name: serviceprovidercompany
-      description: The Service Provider Company
-    - name: updateactiontitle
-      description: The update action title
-    - name: serviceassociatedwith
-      description: The service associated with
-    - name: resourcekey
-      required: true
-      description: The KEY name for the resource
-      defaultValue: IncidentID
-    - name: resourcename
-      required: true
-      description: The incident endpoint name that will be used to operate on the
-        incidents
-      defaultValue: Incidents
-    - name: type
-      description: The Category Type
+    - name: customFields
+      description: Custom fields in JSON format e.g., {"buisnessUnit":"5"}. Field
+        name is case sensitive.
     outputs:
     - contextPath: Ticket.ID
       description: The id of the ticket
@@ -606,6 +709,7 @@ script:
       required: true
       description: The description of the incident
     - name: service
+      required: true
       description: 'Examples: CI1001060, CI1001030'
     - name: impact
       description: Default is 4. Should be number like 3 or 4
@@ -631,38 +735,9 @@ script:
     - name: subarea
       description: 'Example: system or application hangs, function or feature not
         working, error message, job failed, hardware failure, etc.'
-    - name: contactmethod
-      description: What contact method has been used
-    - name: servicerecipient
-      description: The Service Recipient
-    - name: affectedservice
-      description: The affected service
-    - name: servicecontact
-      description: The Service Contact
-    - name: subcategory
-      description: The Sub Category
-    - name: classification
-      description: The classification
-    - name: priority
-      description: The Priority
-    - name: serviceprovidercompany
-      description: The Service Provider Company
-    - name: updateactiontitle
-      description: The update action title
-    - name: serviceassociatedwith
-      description: The service associated with
-    - name: resourcekey
-      required: true
-      description: The KEY name for the resource
-      defaultValue: IncidentID
-    - name: resourcename
-      required: true
-      description: The incident endpoint name that will be used to operate on the
-        incidents
-      defaultValue: Incidents
-    - name: incidentId
-      required: true
-      description: The Incident ID
+    - name: customFields
+      description: Custom fields in JSON format e.g., {"buisnessUnit":"5"}. Field
+        name is case sensitive.
     outputs:
     - contextPath: Ticket.ID
       description: The id of the ticket
@@ -720,18 +795,11 @@ script:
       description: Incident update time
     - contextPath: HPSM.Incidents.Urgency
       description: Incident urgency
-    description: Updates a incident.
+    description: Creates a new incident.
   - name: hpsm-list-incidents
     arguments:
     - name: query
       description: 'OPTIONAL example: field1=value1&field2=value2. Also look https://docs.software.hpe.com/SM/9.50/Hybrid/Content/webservicesguide/rest_queries.htm'
-    - name: resourcekey
-      required: true
-      description: The resource key
-      defaultValue: IncidentID
-    - name: resourcename
-      required: true
-      defaultValue: Incidents
     outputs:
     - contextPath: HPSM.IncidentIDs
       description: Result of incident query. Contains array of incident ids
@@ -742,14 +810,6 @@ script:
       required: true
       default: true
       description: The id of incident (example IM10013)
-    - name: resourcekey
-      required: true
-      description: The resource key
-      defaultValue: IncidentID
-    - name: resourcename
-      required: true
-      description: The resource name
-      defaultValue: Incidents
     outputs:
     - contextPath: Ticket.ID
       description: The id of the ticket
@@ -809,6 +869,292 @@ script:
       description: Incident urgency
     description: Returns single incident by id. If incident not exists with such id,
       then error will returned
+  - name: hpsm-create-resource
+    arguments:
+    - name: title
+      required: true
+      description: The title of resource
+    - name: description
+      required: true
+      description: The description of the resource
+    - name: service
+      required: true
+      description: 'Examples: CI1001060, CI1001030'
+    - name: impact
+      description: Default is 4. Should be number like 3 or 4
+    - name: urgency
+      description: Default is 4. Should be number like 3 or 4
+    - name: alertStatus
+      description: 'The alert status. Example: SLA BREACH'
+    - name: area
+      description: 'The area. Example: performance, failure, hardware, access, '
+    - name: assignmentGroup
+      description: 'Example: "Office Supplies (North America)"'
+    - name: affectedCI
+      description: 'Examples: CI1000783'
+    - name: category
+      required: true
+      description: 'Category of resource. Example: (resource, complaint)'
+    - name: company
+      description: 'Example: advantage'
+    - name: phase
+      description: 'Example: "Categorization"'
+    - name: status
+      description: 'Example: "Categorize"'
+    - name: subarea
+      description: 'Example: system or application hangs, function or feature not
+        working, error message, job failed, hardware failure, etc.'
+    - name: customFields
+      description: Custom fields in JSON format e.g., {"buisnessUnit":"5"}. Field
+        name is case sensitive.
+    - name: resourceName
+      required: true
+      description: The resource name(the API uri) that will be used eg. incidents
+    - name: resourceKey
+      required: true
+      description: The resource key that will be used eg. InteractionID
+    outputs:
+    - contextPath: Ticket.ID
+      description: The id of the ticket
+    - contextPath: Ticket.Creator
+      description: Who created/opened the ticket
+    - contextPath: Ticket.Assignee
+      description: To whom the ticket assigned
+    - contextPath: Ticket.State
+      description: The state of the ticket (e.g open, closed, on hold)
+    - contextPath: HPSM.Resources.ResourceID
+      description: The id of resource
+    - contextPath: HPSM.Resources.Service
+      description: Service/device number (e.g CI1001030)
+    - contextPath: HPSM.Resources.Area
+      description: Resource area
+    - contextPath: HPSM.Resources.Assignee
+      description: Resource assignee
+    - contextPath: HPSM.Resources.AssignmentGroup
+      description: Resource assignment group
+    - contextPath: HPSM.Resources.Category
+      description: Resource category
+    - contextPath: HPSM.Resources.ClosedBy
+      description: The user that closed the resource
+    - contextPath: HPSM.Resources.ClosedTime
+      description: Resource close time
+    - contextPath: HPSM.Resources.ClosureCode
+      description: Resource closure code
+    - contextPath: HPSM.Resources.Company
+      description: Resource company
+    - contextPath: HPSM.Resources.Contact
+      description: Resource contact details
+    - contextPath: HPSM.Resources.Description
+      description: Resource description
+    - contextPath: HPSM.Resources.Impact
+      description: Resource impact
+    - contextPath: HPSM.Resources.JournalUpdates
+      description: Resource journal updates
+    - contextPath: HPSM.Resources.OpenTime
+      description: Resource open time
+    - contextPath: HPSM.Resources.OpenedBy
+      description: The user that opened the resource
+    - contextPath: HPSM.Resources.Phase
+      description: Resource phase
+    - contextPath: HPSM.Resources.Solution
+      description: Resource solution
+    - contextPath: HPSM.Resources.Status
+      description: Resource status
+    - contextPath: HPSM.Resources.Subarea
+      description: Resource sub area
+    - contextPath: HPSM.Resources.Title
+      description: Resource title
+    - contextPath: HPSM.Resources.UpdatedBy
+      description: The last user that update the resource
+    - contextPath: HPSM.Resources.UpdatedTime
+      description: Resource update time
+    - contextPath: HPSM.Resources.Urgency
+      description: Resource urgency
+    description: Creates a new resource.
+  - name: hpsm-update-resource
+    arguments:
+    - name: title
+      required: true
+      description: The title of resource
+    - name: description
+      required: true
+      description: The description of the resource
+    - name: service
+      required: true
+      description: 'Examples: CI1001060, CI1001030'
+    - name: impact
+      description: Default is 4. Should be number like 3 or 4
+    - name: urgency
+      description: Default is 4. Should be number like 3 or 4
+    - name: alertStatus
+      description: 'The alert status. Example: SLA BREACH'
+    - name: area
+      description: 'The area. Example: performance, failure, hardware, access, '
+    - name: assignmentGroup
+      description: 'Example: "Office Supplies (North America)"'
+    - name: affectedCI
+      description: 'Examples: CI1000783'
+    - name: category
+      required: true
+      description: 'Category of resource. Example: (resource, complaint)'
+    - name: company
+      description: 'Example: advantage'
+    - name: phase
+      description: 'Example: "Categorization"'
+    - name: status
+      description: 'Example: "Categorize"'
+    - name: subarea
+      description: 'Example: system or application hangs, function or feature not
+        working, error message, job failed, hardware failure, etc.'
+    - name: customFields
+      description: Custom fields in JSON format e.g., {"buisnessUnit":"5"}. Field
+        name is case sensitive.
+    - name: resourceName
+      required: true
+      description: The resource name(the API uri) that will be used eg. incidents
+    - name: resourceKey
+      required: true
+      description: The resource key that will be used eg. InteractionID
+    outputs:
+    - contextPath: Ticket.ID
+      description: The id of the ticket
+    - contextPath: Ticket.Creator
+      description: Who created/opened the ticket
+    - contextPath: Ticket.Assignee
+      description: To whom the ticket assigned
+    - contextPath: Ticket.State
+      description: The state of the ticket (e.g open, closed, on hold)
+    - contextPath: HPSM.Resources.ResourceID
+      description: The id of resource
+    - contextPath: HPSM.Resources.Service
+      description: Service/device number (e.g CI1001030)
+    - contextPath: HPSM.Resources.Area
+      description: Resource area
+    - contextPath: HPSM.Resources.Assignee
+      description: Resource assignee
+    - contextPath: HPSM.Resources.AssignmentGroup
+      description: Resource assignment group
+    - contextPath: HPSM.Resources.Category
+      description: Resource category
+    - contextPath: HPSM.Resources.ClosedBy
+      description: The user that closed the resource
+    - contextPath: HPSM.Resources.ClosedTime
+      description: Resource close time
+    - contextPath: HPSM.Resources.ClosureCode
+      description: Resource closure code
+    - contextPath: HPSM.Resources.Company
+      description: Resource company
+    - contextPath: HPSM.Resources.Contact
+      description: Resource contact details
+    - contextPath: HPSM.Resources.Description
+      description: Resource description
+    - contextPath: HPSM.Resources.Impact
+      description: Resource impact
+    - contextPath: HPSM.Resources.JournalUpdates
+      description: Resource journal updates
+    - contextPath: HPSM.Resources.OpenTime
+      description: Resource open time
+    - contextPath: HPSM.Resources.OpenedBy
+      description: The user that opened the resource
+    - contextPath: HPSM.Resources.Phase
+      description: Resource phase
+    - contextPath: HPSM.Resources.Solution
+      description: Resource solution
+    - contextPath: HPSM.Resources.Status
+      description: Resource status
+    - contextPath: HPSM.Resources.Subarea
+      description: Resource sub area
+    - contextPath: HPSM.Resources.Title
+      description: Resource title
+    - contextPath: HPSM.Resources.UpdatedBy
+      description: The last user that update the resource
+    - contextPath: HPSM.Resources.UpdatedTime
+      description: Resource update time
+    - contextPath: HPSM.Resources.Urgency
+      description: Resource urgency
+    description: Creates a new resource.
+  - name: hpsm-list-resources
+    arguments:
+    - name: query
+      description: 'OPTIONAL example: field1=value1&field2=value2. Also look https://docs.software.hpe.com/SM/9.50/Hybrid/Content/webservicesguide/rest_queries.htm'
+    - name: resourceName
+      required: true
+      description: The resource name(the API uri) that will be used eg. incidents
+    outputs:
+    - contextPath: HPSM.ResourceIDs
+      description: Result of resource query. Contains array of resource ids
+    description: Returns all resources
+  - name: hpsm-get-resource-by-id
+    arguments:
+    - name: resourceId
+      required: true
+      default: true
+      description: The id of resource (example IM10013)
+    - name: resourceName
+      required: true
+      description: The resource name(the API uri) that will be used eg. incidents
+    - name: resourceKey
+      required: true
+      description: The resource key that will be used eg. InteractionID
+    outputs:
+    - contextPath: Ticket.ID
+      description: The id of the ticket
+    - contextPath: Ticket.Creator
+      description: Who created/opened the ticket
+    - contextPath: Ticket.Assignee
+      description: To whom the ticket assigned
+    - contextPath: Ticket.State
+      description: The state of the ticket (e.g open, closed, on hold)
+    - contextPath: HPSM.Resources.ResourceID
+      description: The id of resource
+    - contextPath: HPSM.Resources.Service
+      description: Service/device number (e.g CI1001030)
+    - contextPath: HPSM.Resources.Area
+      description: Resource area
+    - contextPath: HPSM.Resources.Assignee
+      description: Resource Assignee
+    - contextPath: HPSM.Resources.AssignmentGroup
+      description: Resource assignment group
+    - contextPath: HPSM.Resources.Category
+      description: Resource category
+    - contextPath: HPSM.Resources.ClosedBy
+      description: The user that closed the resource
+    - contextPath: HPSM.Resources.ClosedTime
+      description: Resource close time
+    - contextPath: HPSM.Resources.ClosureCode
+      description: Resource closure code
+    - contextPath: HPSM.Resources.Company
+      description: Resource company
+    - contextPath: HPSM.Resources.Contact
+      description: Resource contact details
+    - contextPath: HPSM.Resources.Description
+      description: Resource description
+    - contextPath: HPSM.Resources.Impact
+      description: Resource impact
+    - contextPath: HPSM.Resources.JournalUpdates
+      description: Resource journal updates
+    - contextPath: HPSM.Resources.OpenTime
+      description: Resource open time
+    - contextPath: HPSM.Resources.OpenedBy
+      description: The user that opened the resource
+    - contextPath: HPSM.Resources.Phase
+      description: Resource phase
+    - contextPath: HPSM.Resources.Solution
+      description: Resource solution
+    - contextPath: HPSM.Resources.Status
+      description: Resource status
+    - contextPath: HPSM.Resources.Subarea
+      description: Resource sub area
+    - contextPath: HPSM.Resources.Title
+      description: Resource title
+    - contextPath: HPSM.Resources.UpdatedBy
+      description: The last user that update the resource
+    - contextPath: HPSM.Resources.UpdatedTime
+      description: Resource update time
+    - contextPath: HPSM.Resources.Urgency
+      description: Resource urgency
+    description: Returns single resource by id. If resource not exists with such id,
+      then error will returned
   - name: hpsm-list-devices
     arguments:
     - name: query
@@ -852,4 +1198,3 @@ script:
       description: The last user that update the device
     description: Find and return device by id
   runonce: false
-sourcemoduleid: Service Manager
