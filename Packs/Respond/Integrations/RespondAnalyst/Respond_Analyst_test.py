@@ -7,11 +7,11 @@ import demistomock as demisto
 requests.packages.urllib3.disable_warnings()
 
 BASE_URL = 'https://localhost:6078'
+API_TOKEN = 'apitoken'
 
 params = {
     'base_url': BASE_URL,
-    'username': 'qa-user@respond-software.com',
-    'password': 'password',
+    'token': API_TOKEN,
     'insecure': True,
     'mirror_direction': 'Both'
 }
@@ -28,6 +28,13 @@ def load_test_data(json_path):
     with open(json_path) as f:
         return json.load(f)
 
+def mock_rest_client():
+    from RespondAnalyst import RestClient
+    return RestClient(
+        base_url=BASE_URL,
+        verify=False
+    )
+
 
 def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_mock):
     from RespondAnalyst import fetch_incidents, RestClient
@@ -35,18 +42,14 @@ def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_m
     get_ids_response = []
     get_full_incidents_response = []
 
-    client = RestClient(
-        base_url=BASE_URL,
-        auth=('un', 'pw'),
-        verify=False
-    )
+    client = mock_rest_client()
 
     last_run = {
         'Tenant 1': {'time': 1593044883}
     }
 
     requests_mock.get(
-        f'{BASE_URL}/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping?tempId={API_TOKEN}',
         json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
     )
     mocker.patch.object(client, 'construct_and_send_get_incident_ids_query',
@@ -68,22 +71,18 @@ def test_get_incident_command(requests_mock):
 
     expected_result = load_test_data('test_data/get_incident_response.json')
 
-    client = RestClient(
-        base_url=BASE_URL,
-        auth=('un', 'pw'),
-        verify=False
-    )
+    client = mock_rest_client()
 
     requests_mock.get(
-        f'{BASE_URL}/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping?tempId={API_TOKEN}',
         json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
     )
     requests_mock.post(
-        f'{BASE_URL}/graphql?tenantId=dev1',
+        f'{BASE_URL}/graphql?tempId={API_TOKEN}&tenantId=dev1',
         json=full_incidents_response
     )
     args = {
-        'respond_tenant_id': 'Tenant 1',
+        'tenant_id': 'Tenant 1',
         'incident_id': 6
     }
     incident = get_incident_command(client, args)
@@ -98,18 +97,14 @@ def test_fetch_incidents_no_new(mocker, requests_mock):
     get_ids_response = []
     get_full_incidents_response = []
 
-    client = RestClient(
-        base_url='https://localhost:6078',
-        auth=('un', 'pw'),
-        verify=False
-    )
+    client = mock_rest_client()
 
     last_run = {
         'Tenant 1': {'time': 1593044883}
     }
 
     requests_mock.get(
-        f'{BASE_URL}/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping?tempId={API_TOKEN}',
         json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
     )
     mocker.patch.object(client, 'construct_and_send_get_incident_ids_query',
@@ -129,14 +124,10 @@ def test_fetch_incidents(mocker, requests_mock):
     get_ids_response = [{'id': '8'}, {'id': '14'}]
     get_full_incidents_response = load_test_data('test_data/full_incidents.json')
 
-    client = RestClient(
-        base_url='https://localhost:6078',
-        auth=('un', 'pw'),
-        verify=False
-    )
+    client = mock_rest_client()
 
     requests_mock.get(
-        f'{BASE_URL}/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping?tempId={API_TOKEN}',
         json={'dev1': 'Tenant 1'}
     )
     mocker.patch.object(client, 'construct_and_send_get_incident_ids_query',
@@ -154,25 +145,21 @@ def test_fetch_incidents(mocker, requests_mock):
 def test_remove_user(mocker, requests_mock):
     from RespondAnalyst import remove_user_command, RestClient
 
-    rest_client = RestClient(
-        base_url='https://localhost:6078',
-        auth=('un', 'pw'),
-        verify=False
-    )
+    rest_client = mock_rest_client()
     get_all_users_response = load_test_data('test_data/users.json')
     remove_user_response = {'data': {'removeUserFromIncident': {'id': '5', 'userIds': []}}}
     mocker.patch.object(demisto, 'info')
 
     requests_mock.post(
-        f'{BASE_URL}/graphql?tenantId=dev1',
+        f'{BASE_URL}/graphql?tempId={API_TOKEN}&tenantId=dev1',
         json=remove_user_response
     )
     requests_mock.get(
-        f'{BASE_URL}/api/v0/users',
+        f'{BASE_URL}/api/v0/users?tempId={API_TOKEN}',
         json=get_all_users_response
     )
     requests_mock.get(
-        f'{BASE_URL}/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping?tempId={API_TOKEN}',
         json={'dev1': 'Tenant 1'}
     )
     requests_mock.get(
@@ -183,7 +170,7 @@ def test_remove_user(mocker, requests_mock):
     )
 
     args = {
-        'respond_tenant_id': 'Tenant 1',
+        'tenant_id': 'Tenant 1',
         'incident_id': 5,
         'username': 'qa-user2@respond-software.com'
     }
@@ -198,19 +185,15 @@ def test_assign_user(mocker, requests_mock):
         'addUserToIncident': {'id': '5', 'userIds': ['675ad53a-d8f4-4ae7-9a3a-59de6c70b912']}}}
     get_all_users_response = load_test_data('test_data/users.json')
 
-    rest_client = RestClient(
-        base_url='https://localhost:6078',
-        auth=('un', 'pw'),
-        verify=False
-    )
+    rest_client = mock_rest_client()
     mocker.patch.object(demisto, 'info')
 
     requests_mock.get(
-        f'{BASE_URL}/api/v0/users',
+        f'{BASE_URL}/api/v0/users?tempId={API_TOKEN}',
         json=get_all_users_response
     )
     requests_mock.get(
-        f'{BASE_URL}/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping?tempId={API_TOKEN}',
         json={'dev1': 'Tenant 1'}
     )
     requests_mock.get(
@@ -220,12 +203,12 @@ def test_assign_user(mocker, requests_mock):
               'firstname': 'jay', 'lastname': 'blue'}
     )
     requests_mock.post(
-        f'{BASE_URL}/graphql?tenantId=dev1',
+        f'{BASE_URL}/graphql?tempId={API_TOKEN}&tenantId=dev1',
         json=assign_user_response
     )
 
     args = {
-        'respond_tenant_id': 'Tenant 1',
+        'tenant_id': 'Tenant 1',
         'incident_id': 5,
         'username': 'qa-user2@respond-software.com',
     }
@@ -244,11 +227,7 @@ def test_assign_user(mocker, requests_mock):
 def test_close_incident(mocker, requests_mock):
     from RespondAnalyst import close_incident_command, RestClient
 
-    rest_client = RestClient(
-        base_url='https://localhost:6078',
-        auth=('un', 'pw'),
-        verify=False
-    )
+    rest_client = mock_rest_client()
     # test
     mocker.patch.object(demisto, 'info')
 
@@ -260,11 +239,11 @@ def test_close_incident(mocker, requests_mock):
                         return_value=single_full_incident_response)
 
     requests_mock.get(
-        f'{BASE_URL}/api/v0/users',
+        f'{BASE_URL}/api/v0/users?tempId={API_TOKEN}',
         json=get_all_users_response
     )
     requests_mock.get(
-        f'{BASE_URL}/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping?tempId={API_TOKEN}',
         json={'dev1': 'Tenant 1'}
     )
     requests_mock.get(
@@ -274,12 +253,12 @@ def test_close_incident(mocker, requests_mock):
               'firstname': 'jay', 'lastname': 'blue'}
     )
     requests_mock.post(
-        f'{BASE_URL}/graphql?tenantId=dev1',
+        f'{BASE_URL}/graphql?tempId={API_TOKEN}&tenantId=dev1',
         json=close_incident_response
     )
 
     args = {
-        'respond_tenant_id': 'Tenant 1',
+        'tenant_id': 'Tenant 1',
         'incident_id': 5,
         'incident_feedback': 'NonActionable',
         'feedback_selected_options': [{'id': '4', 'key': 'unmonitoredAssets', 'value': 'true'},
@@ -307,11 +286,7 @@ def test_close_incident(mocker, requests_mock):
 def test_assign_user_raise_exception(mocker, requests_mock):
     from RespondAnalyst import assign_user_command, RestClient
 
-    rest_client = RestClient(
-        base_url='https://localhost:6078',
-        auth=('un', 'pw'),
-        verify=False
-    )
+    rest_client = mock_rest_client()
 
     mocker.patch.object(demisto, 'error')
 
@@ -319,11 +294,11 @@ def test_assign_user_raise_exception(mocker, requests_mock):
     mocker.patch.object(rest_client, 'construct_and_send_add_user_to_incident_mutation',
                         return_value=Exception)
     requests_mock.get(
-        f'{BASE_URL}/api/v0/users',
+        f'{BASE_URL}/api/v0/users?tempId={API_TOKEN}',
         json=get_all_users_response
     )
     requests_mock.get(
-        f'{BASE_URL}/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping?tempId={API_TOKEN}',
         json={'dev1': 'Tenant 1'}
     )
     requests_mock.get(
@@ -333,7 +308,7 @@ def test_assign_user_raise_exception(mocker, requests_mock):
               'firstname': 'jay', 'lastname': 'blue'}
     )
     args = {
-        'respond_tenant_id': 'Tenant 1',
+        'tenant_id': 'Tenant 1',
         'incident_id': 5,
         'username': 'qa-user2@respond-software.com',
     }
@@ -346,11 +321,7 @@ def test_assign_user_raise_exception(mocker, requests_mock):
 def test_remove_user_raises_exception(mocker, requests_mock):
     from RespondAnalyst import remove_user_command, RestClient
 
-    rest_client = RestClient(
-        base_url='https://localhost:6078',
-        auth=('un', 'pw'),
-        verify=False
-    )
+    rest_client = mock_rest_client()
 
     mocker.patch.object(demisto, 'error')
 
@@ -358,21 +329,21 @@ def test_remove_user_raises_exception(mocker, requests_mock):
     mocker.patch.object(rest_client, 'construct_and_send_remove_user_from_incident_mutation',
                         return_value=Exception)
     requests_mock.get(
-        f'{BASE_URL}/api/v0/users',
+        f'{BASE_URL}/api/v0/users?tempId={API_TOKEN}',
         json=get_all_users_response
     )
     requests_mock.get(
-        f'{BASE_URL}/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping?tempId={API_TOKEN}',
         json={'dev1': 'Tenant 1'}
     )
     requests_mock.get(
-        f'{BASE_URL}/session/activeUser',
+        f'{BASE_URL}/session/activeUser?tempId={API_TOKEN}',
         json={'userId': 'qa1-user-id', 'currentTenant': 'dev1',
               'email': 'qa-user@respond-software.com',
               'firstname': 'jay', 'lastname': 'blue'}
     )
     args = {
-        'respond_tenant_id': 'Tenant 1',
+        'tenant_id': 'Tenant 1',
         'incident_id': 5,
         'username': 'qa-user4@respond-software.com'
     }
@@ -386,12 +357,7 @@ def test_remove_user_raises_exception(mocker, requests_mock):
 def test_close_incident_with_bad_responses(mocker, requests_mock):
     from RespondAnalyst import close_incident_command, RestClient
 
-    rest_client = RestClient(
-        base_url='https://localhost:6078',
-        auth=('un', 'pw'),
-        verify=False
-    )
-
+    rest_client = mock_rest_client()
     mocker.patch.object(demisto, 'error')
 
     get_all_users_response = load_test_data('test_data/users.json')
@@ -401,11 +367,11 @@ def test_close_incident_with_bad_responses(mocker, requests_mock):
     mocker.patch.object(rest_client, 'construct_and_send_full_incidents_query',
                         return_value=Exception)
     requests_mock.get(
-        f'{BASE_URL}/api/v0/users',
+        f'{BASE_URL}/api/v0/users?tempId={API_TOKEN}',
         json=get_all_users_response
     )
     requests_mock.get(
-        f'{BASE_URL}/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping?tempId={API_TOKEN}',
         json={'dev1': 'Tenant 1'}
     )
     requests_mock.get(
@@ -416,7 +382,7 @@ def test_close_incident_with_bad_responses(mocker, requests_mock):
     )
 
     args = {
-        'respond_tenant_id': 'Tenant 1',
+        'tenant_id': 'Tenant 1',
         'incident_id': 5,
         'incident_feedback': 'NonActionable',
         'feedback_selected_options': [{'id': '4', 'key': 'unmonitoredAssets', 'value': 'true'},
@@ -435,17 +401,13 @@ def test_get_remote_data_command(requests_mock):
     full_incidents_response = load_test_data(
         'test_data/full_incidents_response_single_full_incident.json')
 
-    rest_client = RestClient(
-        base_url='https://localhost:6078',
-        auth=('un', 'pw'),
-        verify=False
-    )
+    rest_client = mock_rest_client()
     requests_mock.get(
-        f'{BASE_URL}/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping?tempId={API_TOKEN}',
         json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
     )
     requests_mock.post(
-        f'{BASE_URL}/graphql?tenantId=dev1',
+        f'{BASE_URL}/graphql?tempId={API_TOKEN}&tenantId=dev1',
         json=full_incidents_response
     )
 
@@ -524,18 +486,15 @@ def test_update_remote_system_command(mocker, requests_mock):
         "status": "status val",
         "delta": {"title": "title val", "responddescription": "description val"}
     }
-    rest_client = RestClient(
-        base_url='https://localhost:6078',
-        auth=('un', 'pw'),
-        verify=False
-    )
+    rest_client = mock_rest_client()
+
     get_all_users_response = load_test_data('test_data/users.json')
     requests_mock.get(
-        f'{BASE_URL}/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping?tempId={API_TOKEN}',
         json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
     )
     requests_mock.get(
-        f'{BASE_URL}/api/v0/users',
+        f'{BASE_URL}/api/v0/users?tempId={API_TOKEN}',
         json=get_all_users_response
     )
     requests_mock.get(
@@ -568,18 +527,14 @@ def test_get_escalations_no_new(requests_mock, mocker):
     from RespondAnalyst import get_escalations_command, RestClient
     escalation_query_response = {'data': {'newEscalations': []}}
     requests_mock.post(
-        f'{BASE_URL}/graphql?tenantId=dev1',
+        f'{BASE_URL}/graphql?tempId={API_TOKEN}&tenantId=dev1',
         json=escalation_query_response
     )
-    args = {'respond_tenant_id': 'Tenant 1', 'incident_id': '1'}
-    rest_client = RestClient(
-        base_url='https://localhost:6078',
-        auth=('un', 'pw'),
-        verify=False
-    )
+    args = {'incident_id': '1'}
+    rest_client = mock_rest_client()
     requests_mock.get(
-        f'{BASE_URL}/session/tenantIdMapping',
-        json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
+        f'{BASE_URL}/session/tenantIdMapping?tempId={API_TOKEN}',
+        json={'dev1': 'Tenant 1'}
     )
     escalations_spy = mocker.spy(rest_client, 'construct_and_send_new_escalations_query')
     res = get_escalations_command(rest_client, args)
@@ -589,14 +544,10 @@ def test_get_escalations_no_new(requests_mock, mocker):
 
 def test_get_escalations_throws_exception(requests_mock, mocker):
     from RespondAnalyst import get_escalations_command, RestClient
-    args = {'respond_tenant_id': 'Tenant 1', 'incident_id': '1'}
-    rest_client = RestClient(
-        base_url='https://localhost:6078',
-        auth=('un', 'pw'),
-        verify=False
-    )
+    args = {'tenant_id': 'Tenant 1', 'incident_id': '1'}
+    rest_client = mock_rest_client()
     requests_mock.get(
-        f'{BASE_URL}/session/tenantIdMapping',
+        f'{BASE_URL}/session/tenantIdMapping?tempId={API_TOKEN}',
         json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
     )
     debug_spy = mocker.spy(demisto, 'debug')
@@ -605,7 +556,7 @@ def test_get_escalations_throws_exception(requests_mock, mocker):
         'Unauthorized')
     with pytest.raises(Exception):
         get_escalations_command(rest_client, args)
-    assert debug_spy.call_count == 2
+    assert debug_spy.call_count == 1
     debug_spy.assert_called_with(
         "Error while getting escalation data in Respond incoming mirror for incident 1 Error message: Unauthorized")
 

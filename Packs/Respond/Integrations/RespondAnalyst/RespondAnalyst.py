@@ -12,9 +12,8 @@ requests.packages.urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 INTEGRATION_CONTEXT_BRAND = 'RespondSoftwareAnalyst'
 BASE_URL = demisto.params().get('base_url')
-USERNAME = demisto.params().get('username')
-PASSWORD = demisto.params().get('password')
 VERIFY_CERT = not demisto.params().get('insecure', False)
+API_TOKEN = demisto.params().get('token')
 
 MIRROR_DIRECTION = {
     'None': None,
@@ -87,7 +86,7 @@ def arg_to_timestamp(arg, arg_name: str, required: bool = False):
             raise ValueError(f'Invalid date: {arg_name}')
 
         return int(date.timestamp() * 1000)
-    if isinstance(arg, int):
+    if isinstance(arg, (int, float)):
         return arg
 
 
@@ -97,113 +96,134 @@ def extract_id(incident_id_map):
 
 
 class RestClient(BaseClient):
+    def send_graphql_request(self, tenant_id, data):
+        return self._http_request(
+            method='POST',
+            url_suffix=f'/graphql?tempId={API_TOKEN}&tenantId={tenant_id}',
+            retries=3,
+            json_data=data,
+        )
+
     def get_tenant_mappings(self):
         # need to send one request to big-monolith service to get the external tenant id
-        tenant_mappings = self._http_request(
+        res = self._http_request(
             method='GET',
-            url_suffix='/session/tenantIdMapping',
-            retries=3
+            url_suffix=f'/session/tenantIdMapping?tempId={API_TOKEN}',
+            retries=3,
+            resp_type='none'
         )
-        if len(tenant_mappings) == 0:
-            demisto.error('no tenants found for user')
-            raise Exception('no tenants found for user')
-        return tenant_mappings
+
+        '''
+        this is a hacky way of checking for a bad api token
+        if an api token is bad, Respond will redirect to the login page, which is html
+        normally requests using the BaseClient assume resp_type=json and return a parsed json object from the body
+        for this request we specifically use a resp_type that will return the entire response and allow us to attempt
+        to parse the json. if parsing fails, try to parse as text, and then search the text for 'login'
+        if we find that, it is sufficient to say we have a bad token, and can return a more helpful error.
+        
+        this isn't ideal. this is also, at the time of this writing, the first REST request made by all of our commands
+        because we need to get the internal tenant id before doing anything else. that's why we only do this hack on 
+        this request.
+        '''
+        try:
+            tenant_mappings = res.json()
+            if len(tenant_mappings) == 0:
+                raise Exception('no tenants found for user')
+            return tenant_mappings
+        except ValueError as e:
+            if 'login' in res.text.lower():
+                raise Exception(f'invalid API token for {BASE_URL}')
 
     def get_current_user(self):
         return self._http_request(
             method='GET',
-            url_suffix='/session/activeUser',
+            url_suffix=f'/session/activeUser?tempId={API_TOKEN}',
             retries=3
         )
 
     def get_all_users(self):
         return self._http_request(
             method='GET',
-            url_suffix='/api/v0/users',
+            url_suffix=f'/api/v0/users?tempId={API_TOKEN}',
             retries=3
         )
 
     # sadly the linting process will fail if the format below is not used. Hard to read
     def construct_and_send_full_incidents_query(self, tenant_id, incident_ids):
         query = {"query": "query { "
-                          "     fullIncidents(ids: " + str(incident_ids) + ") {"
-                                                                           "         id"
-                                                                           "         dateCreated"
-                                                                           "         eventCount"
-                                                                           "         firstEventTime"
-                                                                           "         lastEventTime"
-                                                                           "         title"
-                                                                           "         description"
-                                                                           "         attackStage"
-                                                                           "         assetClass"
-                                                                           "         probabilityBucket"
-                                                                           "         status"
-                                                                           "         priority"
-                                                                           "         internalSystemsCount"
-                                                                           "         allSystems{"
-                                                                           "            hostname"
-                                                                           "            ipAddress" 
-                                                                           "            isInternal"       
-                                                                           "         }"
-                                                                           "         avAccounts{"
-                                                                           "            name"
-                                                                           "            domain"
-                                                                           "         }"
-                                                                           "         wpAccounts{"
-                                                                           "            name"
-                                                                           "            domain"
-                                                                           "         }"
-                                                                           "         authDataAccounts{"
-                                                                           "            name"
-                                                                           "            domain"
-                                                                           "         }"
-                                                                           "         edrAccounts{"
-                                                                           "            name"
-                                                                           "            domain"
-                                                                           "         }"
-                                                                           "         avMalwareNames{"
-                                                                           "            name"
-                                                                           "            vendor"
-                                                                           "            type"
-                                                                           "         }"
-                                                                           "         nidsSignatures{"
-                                                                           "            vendor"
-                                                                           "            name"
-                                                                           "            category"
-                                                                           "         }"
-                                                                           "         wpHosts{"
-                                                                           "            hostname"
-                                                                           "            categorizations"
-                                                                           "         }"
-                                                                           "         avFileHashes{"
-                                                                           "            hash"
-                                                                           "         }"
-                                                                           "         feedback {"
-                                                                           "             newStatus"
-                                                                           "             status"
-                                                                           "             newSelectedOptions{"
-                                                                           "                 id"
-                                                                           "                 key"
-                                                                           "                 value"
-                                                                           "             }"
-                                                                           "             timeGiven"
-                                                                           "             optionalText"
-                                                                           "             userId"
-                                                                           "             closedAt"
-                                                                           "             closedBy"
-                                                                           "         }"
-                                                                           "         userIds"
-                                                                           "         tags {"
-                                                                           "             label"
-                                                                           "         }"
-                                                                           "} }"
+                          "fullIncidents(ids: " + str(incident_ids) + ") {"
+                                                                      "         id"
+                                                                      "         dateCreated"
+                                                                      "         eventCount"
+                                                                      "         firstEventTime"
+                                                                      "         lastEventTime"
+                                                                      "         title"
+                                                                      "         description"
+                                                                      "         attackStage"
+                                                                      "         assetClass"
+                                                                      "         probabilityBucket"
+                                                                      "         status"
+                                                                      "         priority"
+                                                                      "         internalSystemsCount"
+                                                                      "         allSystems{"
+                                                                      "            hostname"
+                                                                      "            ipAddress"
+                                                                      "            isInternal"
+                                                                      "         }"
+                                                                      "         avAccounts{"
+                                                                      "            name"
+                                                                      "            domain"
+                                                                      "         }"
+                                                                      "         wpAccounts{"
+                                                                      "            name"
+                                                                      "            domain"
+                                                                      "         }"
+                                                                      "         authDataAccounts{"
+                                                                      "            name"
+                                                                      "            domain"
+                                                                      "         }"
+                                                                      "         edrAccounts{"
+                                                                      "            name"
+                                                                      "            domain"
+                                                                      "         }"
+                                                                      "         avMalwareNames{"
+                                                                      "            name"
+                                                                      "            vendor"
+                                                                      "            type"
+                                                                      "         }"
+                                                                      "         nidsSignatures{"
+                                                                      "            vendor"
+                                                                      "            name"
+                                                                      "            category"
+                                                                      "         }"
+                                                                      "         wpHosts{"
+                                                                      "            hostname"
+                                                                      "            categorizations"
+                                                                      "         }"
+                                                                      "         avFileHashes{"
+                                                                      "            hash"
+                                                                      "         }"
+                                                                      "         feedback {"
+                                                                      "             newStatus"
+                                                                      "             status"
+                                                                      "             newSelectedOptions{"
+                                                                      "                 id"
+                                                                      "                 key"
+                                                                      "                 value"
+                                                                      "             }"
+                                                                      "             timeGiven"
+                                                                      "             optionalText"
+                                                                      "             userId"
+                                                                      "             closedAt"
+                                                                      "             closedBy"
+                                                                      "         }"
+                                                                      "         userIds"
+                                                                      "         tags {"
+                                                                      "             label"
+                                                                      "         }"
+                                                                      "} }"
                  }
-        res = self._http_request(
-            method='POST',
-            url_suffix='/graphql?tenantId=' + tenant_id,
-            retries=3,
-            json_data=query
-        )
+        res = self.send_graphql_request(tenant_id, query)
         return res.get('data').get('fullIncidents')
 
     def construct_and_send_get_incident_ids_query(self, tenant_id, from_time_str):
@@ -212,12 +232,7 @@ class RestClient(BaseClient):
                               " ] ){ id } }"}
         else:
             query = {"query": "query { incidents( createdAfter:\"" + from_time_str + "\" ){ id } }"}
-        res = self._http_request(
-            method='POST',
-            url_suffix='/graphql?tenantId=' + tenant_id,
-            retries=3,
-            json_data=query
-        )
+        res = self.send_graphql_request(tenant_id, query)
         return res.get('data').get('incidents')
 
     def construct_and_send_close_incident_mutation(self, tenant_id, feedback_status,
@@ -227,263 +242,242 @@ class RestClient(BaseClient):
             feedback_selected_options = []
 
         # sadly the linting process will fail if the format below is not used. Hard to read
-        data = {"query": "mutation closeIncident( "
-                         "$incidentId: ID! "
-                         "$user: User! "
-                         "$feedbackStatus: FeedbackStatus! "
-                         "$newFeedbackSelectedOptions: [FeedbackSelectionInput!] "
-                         "$feedbackOptionalText: String ){ "
-                         "closeIncident( "
-                         "incidentId: $incidentId "
-                         "user: $user "
-                         "feedbackStatus: $feedbackStatus "
-                         "newFeedbackSelectedOptions: $newFeedbackSelectedOptions "
-                         "feedbackOptionalText: $feedbackOptionalText "
-                         ") { "
-                         "id "
-                         "status "
-                         "feedback { "
-                         "userId "
-                         "newStatus "
-                         "timeGiven "
-                         "newSelectedOptions{ "
-                         "id "
-                         "key "
-                         "value "
-                         "} "
-                         "optionalText "
-                         "} "
-                         "} "
-                         "}",
-                "variables": {"incidentId": incident_id, "user": user,
-                              "feedbackStatus": feedback_status,
-                              "newFeedbackSelectedOptions": feedback_selected_options,
-                              "feedbackOptionalText": feedback_optional_text}
-                }
-        res = self._http_request(
-            method='POST',
-            url_suffix='/graphql?tenantId=' + tenant_id,
-            retries=3,
-            json_data=data
-        )
+        query = {"query": "mutation closeIncident( "
+                          "$incidentId: ID! "
+                          "$user: User! "
+                          "$feedbackStatus: FeedbackStatus! "
+                          "$newFeedbackSelectedOptions: [FeedbackSelectionInput!] "
+                          "$feedbackOptionalText: String ){ "
+                          "closeIncident( "
+                          "incidentId: $incidentId "
+                          "user: $user "
+                          "feedbackStatus: $feedbackStatus "
+                          "newFeedbackSelectedOptions: $newFeedbackSelectedOptions "
+                          "feedbackOptionalText: $feedbackOptionalText "
+                          ") { "
+                          "id "
+                          "status "
+                          "feedback { "
+                          "userId "
+                          "newStatus "
+                          "timeGiven "
+                          "newSelectedOptions{ "
+                          "id "
+                          "key "
+                          "value "
+                          "} "
+                          "optionalText "
+                          "} "
+                          "} "
+                          "}",
+                 "variables": {"incidentId": incident_id, "user": user,
+                               "feedbackStatus": feedback_status,
+                               "newFeedbackSelectedOptions": feedback_selected_options,
+                               "feedbackOptionalText": feedback_optional_text}
+                 }
+        res = self.send_graphql_request(tenant_id, query)
         return res.get('data').get('closeIncident')
 
     def construct_and_send_add_user_to_incident_mutation(self, tenant_id, user_id, incident_id):
-        data = {"query": "mutation addUserToIncident($id: ID! $userId: String!) { "
-                         "addUserToIncident(incidentId: $id userId: $userId) { "
-                         "id "
-                         "userIds "
-                         "} "
-                         "}",
-                "variables": {"id": incident_id, "userId": user_id}
-                }
+        query = {"query": "mutation addUserToIncident($id: ID! $userId: String!) { "
+                          "addUserToIncident(incidentId: $id userId: $userId) { "
+                          "id "
+                          "userIds "
+                          "} "
+                          "}",
+                 "variables": {"id": incident_id, "userId": user_id}
+                 }
 
-        res = self._http_request(
-            method='POST',
-            url_suffix='/graphql?tenantId=' + tenant_id,
-            retries=3,
-            json_data=data
-        )
+        res = self.send_graphql_request(tenant_id, query)
         return res.get('data').get('addUserToIncident')
 
     def construct_and_send_remove_user_from_incident_mutation(self, tenant_id, user_id,
                                                               incident_id):
-        data = {"query": "mutation removeUserFromIncident($id: ID! $userId: String!) { "
-                         "removeUserFromIncident(incidentId: $id userId: $userId) { "
-                         "id "
-                         "userIds "
-                         "} "
-                         "}",
-                "variables": {"id": incident_id, "userId": user_id}
-                }
+        query = {"query": "mutation removeUserFromIncident($id: ID! $userId: String!) { "
+                          "removeUserFromIncident(incidentId: $id userId: $userId) { "
+                          "id "
+                          "userIds "
+                          "} "
+                          "}",
+                 "variables": {"id": incident_id, "userId": user_id}
+                 }
 
-        res = self._http_request(
-            method='POST',
-            url_suffix='/graphql?tenantId=' + tenant_id,
-            retries=3,
-            json_data=data
-        )
+        res = self.send_graphql_request(tenant_id, query)
         return res.get('data').get('removeUserFromIncident')
 
     def construct_and_send_new_escalations_query(self, tenant_id, incident_id):
-        data = {"query": "query {"
-                         "newEscalations(consumer: \"XSOAR" + tenant_id + "\", patterns: [{type: INCIDENT_ID, value: \"" + incident_id + "\"}]) { "
-                                                                                                                                         "    timeGenerated "
-                                                                                                                                         "    sourceType "
-                                                                                                                                         "    incident { "
-                                                                                                                                         "      id "
-                                                                                                                                         "      priority "
-                                                                                                                                         "      probabilityBucket "
-                                                                                                                                         "    } "
-                                                                                                                                         "    ... on NIDSEvent { "
-                                                                                                                                         "      idx "
-                                                                                                                                         "      nidsAction: action { "
-                                                                                                                                         "        action "
-                                                                                                                                         "      } "
-                                                                                                                                         "      actionExt "
-                                                                                                                                         "      trafficFlow "
+        query = {"query": "query {"
+                          "newEscalations(consumer: \"XSOAR" + tenant_id + "\", patterns: [{type: INCIDENT_ID, value: \"" + incident_id + "\"}]) { "
+                                                                                                                                          "    timeGenerated "
+                                                                                                                                          "    sourceType "
+                                                                                                                                          "    incident { "
+                                                                                                                                          "      id "
+                                                                                                                                          "      priority "
+                                                                                                                                          "      probabilityBucket "
+                                                                                                                                          "    } "
+                                                                                                                                          "    ... on NIDSEvent { "
+                                                                                                                                          "      idx "
+                                                                                                                                          "      nidsAction: action { "
+                                                                                                                                          "        action "
+                                                                                                                                          "      } "
+                                                                                                                                          "      actionExt "
+                                                                                                                                          "      trafficFlow "
 
-                                                                                                                                         "      signature { "
-                                                                                                                                         "        vendor "
-                                                                                                                                         "        category "
-                                                                                                                                         "        idx "
-                                                                                                                                         "      } "
-                                                                                                                                         "      signatureImportance "
-                                                                                                                                         "      signatureName "
-                                                                                                                                         "      categoryExt "
-                                                                                                                                         "      deviceId "
+                                                                                                                                          "      signature { "
+                                                                                                                                          "        vendor "
+                                                                                                                                          "        category "
+                                                                                                                                          "        idx "
+                                                                                                                                          "      } "
+                                                                                                                                          "      signatureImportance "
+                                                                                                                                          "      signatureName "
+                                                                                                                                          "      categoryExt "
+                                                                                                                                          "      deviceId "
 
-                                                                                                                                         "      protocol "
+                                                                                                                                          "      protocol "
 
-                                                                                                                                         "      sourceHostname "
-                                                                                                                                         "      sourceIpAddress "
-                                                                                                                                         "      sourceZone "
-                                                                                                                                         "      sourceSystem { "
-                                                                                                                                         "        isInternal "
-                                                                                                                                         "        isCritical "
-                                                                                                                                         "      } "
-                                                                                                                                         "      sourceAssetClassification "
-                                                                                                                                         "      sourceSubClassifications "
-                                                                                                                                         "      sourceCriticality "
-                                                                                                                                         "      sourcePort { "
-                                                                                                                                         "        number "
-                                                                                                                                         "      } "
-                                                                                                                                         "      sourceSuspicion "
+                                                                                                                                          "      sourceHostname "
+                                                                                                                                          "      sourceIpAddress "
+                                                                                                                                          "      sourceZone "
+                                                                                                                                          "      sourceSystem { "
+                                                                                                                                          "        isInternal "
+                                                                                                                                          "        isCritical "
+                                                                                                                                          "      } "
+                                                                                                                                          "      sourceAssetClassification "
+                                                                                                                                          "      sourceSubClassifications "
+                                                                                                                                          "      sourceCriticality "
+                                                                                                                                          "      sourcePort { "
+                                                                                                                                          "        number "
+                                                                                                                                          "      } "
+                                                                                                                                          "      sourceSuspicion "
 
-                                                                                                                                         "      destinationHostname "
-                                                                                                                                         "      destinationIpAddress "
-                                                                                                                                         "      destinationZone "
-                                                                                                                                         "      destinationSystem { "
-                                                                                                                                         "        isInternal "
-                                                                                                                                         "        isCritical "
-                                                                                                                                         "      } "
-                                                                                                                                         "      destinationAssetClassification "
-                                                                                                                                         "      destinationSubClassifications "
-                                                                                                                                         "      destinationCriticality "
-                                                                                                                                         "      destinationPort { "
-                                                                                                                                         "        number "
-                                                                                                                                         "      } "
-                                                                                                                                         "      destinationSuspicion "
-                                                                                                                                         "    } "
-                                                                                                                                         "    ... on AVEvent {"
-                                                                                                                                         "      system {"
-                                                                                                                                         "        hostname"
-                                                                                                                                         "        ipAddress"
-                                                                                                                                         "        zone "
-                                                                                                                                         "      }"
-                                                                                                                                         "      account {"
-                                                                                                                                         "        domain"
-                                                                                                                                         "        name"
-                                                                                                                                         "      }"
-                                                                                                                                         "      hash {"
-                                                                                                                                         "        hash"
-                                                                                                                                         "      }"
-                                                                                                                                         "      malwareName {"
-                                                                                                                                         "        name"
-                                                                                                                                         "        type"
-                                                                                                                                         "        vendor"
-                                                                                                                                         "      }"
-                                                                                                                                         "      accountType "
-                                                                                                                                         "      isKnownBadHash "
-                                                                                                                                         "      deviceId"
-                                                                                                                                         "      scanTypeExt"
-                                                                                                                                         "      actionExt"
-                                                                                                                                         "      malwareSeverity"
-                                                                                                                                         "      malwareSeverityExt"
-                                                                                                                                         "      malwareTypeExt"
-                                                                                                                                         "      assetClassification"
-                                                                                                                                         "      assetSubClassifications"
-                                                                                                                                         "      assetCriticality"
-                                                                                                                                         "      systemRepeatOffender"
-                                                                                                                                         "      accountRepeatOffender"
-                                                                                                                                         "      malwareSpreading"
-                                                                                                                                         "      avFilepath: filepath"
-                                                                                                                                         "    }"
+                                                                                                                                          "      destinationHostname "
+                                                                                                                                          "      destinationIpAddress "
+                                                                                                                                          "      destinationZone "
+                                                                                                                                          "      destinationSystem { "
+                                                                                                                                          "        isInternal "
+                                                                                                                                          "        isCritical "
+                                                                                                                                          "      } "
+                                                                                                                                          "      destinationAssetClassification "
+                                                                                                                                          "      destinationSubClassifications "
+                                                                                                                                          "      destinationCriticality "
+                                                                                                                                          "      destinationPort { "
+                                                                                                                                          "        number "
+                                                                                                                                          "      } "
+                                                                                                                                          "      destinationSuspicion "
+                                                                                                                                          "    } "
+                                                                                                                                          "    ... on AVEvent {"
+                                                                                                                                          "      system {"
+                                                                                                                                          "        hostname"
+                                                                                                                                          "        ipAddress"
+                                                                                                                                          "        zone "
+                                                                                                                                          "      }"
+                                                                                                                                          "      account {"
+                                                                                                                                          "        domain"
+                                                                                                                                          "        name"
+                                                                                                                                          "      }"
+                                                                                                                                          "      hash {"
+                                                                                                                                          "        hash"
+                                                                                                                                          "      }"
+                                                                                                                                          "      malwareName {"
+                                                                                                                                          "        name"
+                                                                                                                                          "        type"
+                                                                                                                                          "        vendor"
+                                                                                                                                          "      }"
+                                                                                                                                          "      accountType "
+                                                                                                                                          "      isKnownBadHash "
+                                                                                                                                          "      deviceId"
+                                                                                                                                          "      scanTypeExt"
+                                                                                                                                          "      actionExt"
+                                                                                                                                          "      malwareSeverity"
+                                                                                                                                          "      malwareSeverityExt"
+                                                                                                                                          "      malwareTypeExt"
+                                                                                                                                          "      assetClassification"
+                                                                                                                                          "      assetSubClassifications"
+                                                                                                                                          "      assetCriticality"
+                                                                                                                                          "      systemRepeatOffender"
+                                                                                                                                          "      accountRepeatOffender"
+                                                                                                                                          "      malwareSpreading"
+                                                                                                                                          "      avFilepath: filepath"
+                                                                                                                                          "    }"
 
-                                                                                                                                         "    ... on WPEvent {"
-                                                                                                                                         "      wpAction: action { "
-                                                                                                                                         "        action "
-                                                                                                                                         "      } "
-                                                                                                                                         "      sourceSystem {"
-                                                                                                                                         "        hostname"
-                                                                                                                                         "        ipAddress"
-                                                                                                                                         "        zone "
-                                                                                                                                         "        isInternal "
-                                                                                                                                         "      }"
-                                                                                                                                         "      sourceAssetClassification "
-                                                                                                                                         "      sourceSubClassifications "
-                                                                                                                                         "      sourceCriticality "
-                                                                                                                                         "      destinationAddress {"
-                                                                                                                                         "        hostname"
-                                                                                                                                         "        ipAddress"
-                                                                                                                                         "        zone "
-                                                                                                                                         "        isInternal "
-                                                                                                                                         "      }"
-                                                                                                                                         "      destinationAssetClassification "
-                                                                                                                                         "      destinationSubClassifications "
-                                                                                                                                         "      destinationCriticality "
-                                                                                                                                         "      account {"
-                                                                                                                                         "        domain"
-                                                                                                                                         "        name"
-                                                                                                                                         "      }"
-                                                                                                                                         "      accountType "
-                                                                                                                                         "      categorizationsExternal "
-                                                                                                                                         "      protocol "
-                                                                                                                                         "      method  "
-                                                                                                                                         "      status  "
-                                                                                                                                         "      userAgent "
-                                                                                                                                         "      contentType "
-                                                                                                                                         "      fileType    "
-                                                                                                                                         "      deviceId "
-                                                                                                                                         "      deviceVendor "
-                                                                                                                                         "      fullUrl "
-                                                                                                                                         "      campaign "
-                                                                                                                                         "  } "
-                                                                                                                                         "    ... on EDREvent {"
-                                                                                                                                         "      system {"
-                                                                                                                                         "        hostname"
-                                                                                                                                         "        ipAddress"
-                                                                                                                                         "        zone "
-                                                                                                                                         "        isInternal "
-                                                                                                                                         "      }"
-                                                                                                                                         "      assetClassification"
-                                                                                                                                         "      assetSubClassifications"
-                                                                                                                                         "      assetCriticality"
-                                                                                                                                         "      account {"
-                                                                                                                                         "        domain"
-                                                                                                                                         "        name"
-                                                                                                                                         "      }"
-                                                                                                                                         "      accountType "
-                                                                                                                                         "      deviceId "
-                                                                                                                                         "      deviceVendor "
-                                                                                                                                         "      edrFilepath: filepath "
-                                                                                                                                         "      fileHash "
-                                                                                                                                         "      watchlistName "
-                                                                                                                                         "      processName "
-                                                                                                                                         "      isBinarySigned "
-                                                                                                                                         "      parentProcessName "
-                                                                                                                                         "      parentFileHash "
-                                                                                                                                         "      parentFilepath "
-                                                                                                                                         "      isParentBinarySigned "
-                                                                                                                                         "      binarySuspicion "
-                                                                                                                                         "      accountActivitySuspicion "
-                                                                                                                                         "      diskOperationSuspicion "
-                                                                                                                                         "      networkConnectionSuspicion "
-                                                                                                                                         "    } "
-                                                                                                                                         "}"
-                                                                                                                                         "}"}
-        res = self._http_request(
-            method='POST',
-            url_suffix='/graphql?tenantId=' + tenant_id,
-            retries=3,
-            json_data=data,
-            timeout=60
-        )
+                                                                                                                                          "    ... on WPEvent {"
+                                                                                                                                          "      wpAction: action { "
+                                                                                                                                          "        action "
+                                                                                                                                          "      } "
+                                                                                                                                          "      sourceSystem {"
+                                                                                                                                          "        hostname"
+                                                                                                                                          "        ipAddress"
+                                                                                                                                          "        zone "
+                                                                                                                                          "        isInternal "
+                                                                                                                                          "      }"
+                                                                                                                                          "      sourceAssetClassification "
+                                                                                                                                          "      sourceSubClassifications "
+                                                                                                                                          "      sourceCriticality "
+                                                                                                                                          "      destinationAddress {"
+                                                                                                                                          "        hostname"
+                                                                                                                                          "        ipAddress"
+                                                                                                                                          "        zone "
+                                                                                                                                          "        isInternal "
+                                                                                                                                          "      }"
+                                                                                                                                          "      destinationAssetClassification "
+                                                                                                                                          "      destinationSubClassifications "
+                                                                                                                                          "      destinationCriticality "
+                                                                                                                                          "      account {"
+                                                                                                                                          "        domain"
+                                                                                                                                          "        name"
+                                                                                                                                          "      }"
+                                                                                                                                          "      accountType "
+                                                                                                                                          "      categorizationsExternal "
+                                                                                                                                          "      protocol "
+                                                                                                                                          "      method  "
+                                                                                                                                          "      status  "
+                                                                                                                                          "      userAgent "
+                                                                                                                                          "      contentType "
+                                                                                                                                          "      fileType    "
+                                                                                                                                          "      deviceId "
+                                                                                                                                          "      deviceVendor "
+                                                                                                                                          "      fullUrl "
+                                                                                                                                          "      campaign "
+                                                                                                                                          "  } "
+                                                                                                                                          "    ... on EDREvent {"
+                                                                                                                                          "      system {"
+                                                                                                                                          "        hostname"
+                                                                                                                                          "        ipAddress"
+                                                                                                                                          "        zone "
+                                                                                                                                          "        isInternal "
+                                                                                                                                          "      }"
+                                                                                                                                          "      assetClassification"
+                                                                                                                                          "      assetSubClassifications"
+                                                                                                                                          "      assetCriticality"
+                                                                                                                                          "      account {"
+                                                                                                                                          "        domain"
+                                                                                                                                          "        name"
+                                                                                                                                          "      }"
+                                                                                                                                          "      accountType "
+                                                                                                                                          "      deviceId "
+                                                                                                                                          "      deviceVendor "
+                                                                                                                                          "      edrFilepath: filepath "
+                                                                                                                                          "      fileHash "
+                                                                                                                                          "      watchlistName "
+                                                                                                                                          "      processName "
+                                                                                                                                          "      isBinarySigned "
+                                                                                                                                          "      parentProcessName "
+                                                                                                                                          "      parentFileHash "
+                                                                                                                                          "      parentFilepath "
+                                                                                                                                          "      isParentBinarySigned "
+                                                                                                                                          "      binarySuspicion "
+                                                                                                                                          "      accountActivitySuspicion "
+                                                                                                                                          "      diskOperationSuspicion "
+                                                                                                                                          "      networkConnectionSuspicion "
+                                                                                                                                          "    } "
+                                                                                                                                          "}"
+                                                                                                                                          "}"}
+        res = self.send_graphql_request(tenant_id, query)
         return res.get('data').get('newEscalations')
 
-    def construct_and_send_update_description_mutation(self, internal_tenant_id, incident_id,
+    def construct_and_send_update_description_mutation(self, tenant_id, incident_id,
                                                        description):
-        data = {
+        mutation = {
             "query": "mutation updateIncidentDescription($incidentId: ID!, $input: IncidentDescription!) { "
                      "updateIncidentDescription( "
                      "incidentId: $incidentId "
@@ -496,16 +490,11 @@ class RestClient(BaseClient):
             "variables": {"incidentId": incident_id, "input": {"description": description}}
         }
 
-        res = self._http_request(
-            method='POST',
-            url_suffix='/graphql?tenantId=' + internal_tenant_id,
-            retries=3,
-            json_data=data
-        )
+        res = self.send_graphql_request(tenant_id, mutation)
         return res.get('data').get('updateIncidentDescription')
 
-    def construct_and_send_update_title_mutation(self, internal_tenant_id, incident_id, title):
-        data = {
+    def construct_and_send_update_title_mutation(self, tenant_id, incident_id, title):
+        mutation = {
             "query": "mutation updateIncidentTitle($incidentId: ID!, $input: IncidentTitle!) { "
                      "updateIncidentTitle( "
                      "incidentId: $incidentId "
@@ -518,27 +507,18 @@ class RestClient(BaseClient):
             "variables": {"incidentId": incident_id, "input": {"title": title}}
         }
 
-        res = self._http_request(
-            method='POST',
-            url_suffix='/graphql?tenantId=' + internal_tenant_id,
-            retries=3,
-            json_data=data
-        )
+        res = self.send_graphql_request(tenant_id, mutation)
         return res.get('data').get('updateIncidentTitle')
 
 
 def test_module(client):
     """
-    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
+    Tests connection to Respond Analyst Server
 
     Returns:
-        'ok' if test passed, anything else will fail the test.
+        nothing if test passed
     """
-    response = client.construct_and_send_get_incident_ids_query(
-        convert_datetime_to_epoch_millis(datetime.now() - timedelta(hours=1)))
-    id_list = list(map(extract_id, response))
-    client.construct_and_send_full_incidents_query(id_list)
-    return 'ok'
+    client.get_tenant_mappings()
 
 
 def fetch_incidents_for_tenant(rest_client, internal_tenant_id, external_tenant_id, from_time):
@@ -563,8 +543,10 @@ def format_raw_incident(raw_incident, external_tenant_id, internal_tenant_id):
     assets = []
     external_systems = []
     if raw_incident.get('allSystems'):
-        assets = list(filter(lambda system: system['isInternal'] is True, raw_incident['allSystems']))
-        external_systems = list(filter(lambda system: system['isInternal'] is False, raw_incident['allSystems']))
+        assets = list(
+            filter(lambda system: system['isInternal'] is True, raw_incident['allSystems']))
+        external_systems = list(
+            filter(lambda system: system['isInternal'] is False, raw_incident['allSystems']))
 
     # aggregate accounts
     accounts = []
@@ -666,11 +648,8 @@ def get_internal_tenant_from_mapping_with_external(tenant_mappings, external_ten
     for curr_internal_tid, curr_external_tid in tenant_mappings.items():
         if external_tenant_id == curr_external_tid:
             return curr_internal_tid
-    demisto.error(
-        'no respond tenant matches external tenant: ' + external_tenant_id + 'or user does not have '
-                                                                             'permission to access tenant')
     raise Exception(
-        'no respond tenant matches external tenant: ' + external_tenant_id + 'or user does not have '
+        'no respond tenant matches external tenant: ' + external_tenant_id + ' or user does not have '
                                                                              'permission to access tenant')
 
 
@@ -708,7 +687,7 @@ def get_user_id_from_email(email, users):
 
 
 def get_formatted_incident(rest_client, args):
-    external_tenant_id = args.get('respond_tenant_id')
+    external_tenant_id = args.get('tenant_id')
     user_tenant_mappings = rest_client.get_tenant_mappings()
 
     if external_tenant_id is None:
@@ -727,7 +706,7 @@ def get_formatted_incident(rest_client, args):
 
 
 def get_tenant_ids(rest_client, args):
-    external_tenant_id = args.get('respond_tenant_id')
+    external_tenant_id = args.get('tenant_id')
     user_tenant_mappings = rest_client.get_tenant_mappings()
 
     if external_tenant_id is None:
@@ -844,7 +823,7 @@ def close_incident_command(rest_client, args):
 def get_incident_command(rest_client, args):
     formatted_incident = get_formatted_incident(rest_client, args)
     new_incident = {
-        'name': args['respond_tenant_id'] + ': ' + formatted_incident['incidentId'],
+        'name': args['tenant_id'] + ': ' + formatted_incident['incidentId'],
         'occurred': formatted_incident.get('timeGenerated'),
         'rawJSON': json.dumps(formatted_incident)
     }
@@ -854,19 +833,24 @@ def get_incident_command(rest_client, args):
 def get_escalations_command(rest_client, args):
     start = datetime.now().timestamp()
     fourMinutes = 240
-    demisto.debug(
-        f'getting escalations for incident {args["incident_id"]} on {args["respond_tenant_id"]} starting at {start}')
+
     try:
-        entries = []
+        external_tenant_id = args.get('tenant_id')
         user_tenant_mappings = rest_client.get_tenant_mappings()
-        internal_tenant_id = get_internal_tenant_from_mapping_with_external(user_tenant_mappings,
-                                                                            args[
-                                                                                'respond_tenant_id'])
+
+        if external_tenant_id is None:
+            internal_tenant_id, external_tenant_id = get_tenant_map_if_single_tenant(
+                user_tenant_mappings)
+        else:
+            internal_tenant_id = get_internal_tenant_from_mapping_with_external(user_tenant_mappings,
+                                                                                external_tenant_id)
+        entries = []
+
         more_data = True
         while more_data:
             if datetime.now().timestamp() - start > fourMinutes:
                 demisto.debug(
-                    f'exiting safely for incident {args["incident_id"]} on {args["respond_tenant_id"]} starting at {start}')
+                    f'exiting safely for incident {args["incident_id"]} on {external_tenant_id} starting at {start}')
                 entries.append({
                     'Type': EntryType.NOTE,
                     'Contents': 'Safely exited before timeout, but more data needs to be collected. Please re-run command.',
@@ -896,12 +880,12 @@ def get_escalations_command(rest_client, args):
         })
 
     demisto.debug(
-        f'returning escalations for incident {args["incident_id"]} on {args["respond_tenant_id"]}: {entries}')
+        f'returning escalations for incident {args["incident_id"]} on {external_tenant_id}: {entries}')
     return entries
 
 
 def get_remote_data_command(rest_client, args):
-    args['respond_tenant_id'] = args.get('id').split(':')[0]
+    args['tenant_id'] = args.get('id').split(':')[0]
     args['incident_id'] = args.get('id').split(':')[1]
     entries = []
     try:
@@ -971,7 +955,7 @@ def update_remote_system_command(rest_client, args):
                 # todo do we want to map xsoar close reasons to respond incident outcomes
                 # for now just set everything to inconclusive
                 feedback_args = {
-                    'respond_tenant_id': tenant_id,
+                    'tenant_id': tenant_id,
                     'incident_id': incident_id,
                     'incident_feedback': 'Inconclusive',
                     'incident_comments': remote_args.delta.get('closeNotes')
@@ -985,7 +969,7 @@ def update_remote_system_command(rest_client, args):
                     f'changed owner for {remote_args.remote_incident_id}: {remote_args.delta["owner"]}')
                 user_email = demisto.findUser(username=remote_args.delta['owner']).get('email')
                 assigned_user_args = {
-                    'respond_tenant_id': tenant_id,
+                    'tenant_id': tenant_id,
                     'incident_id': incident_id,
                     'username': user_email
                 }
@@ -1088,13 +1072,12 @@ def main():
     rest_client = RestClient(
         base_url=BASE_URL,
         verify=VERIFY_CERT,
-        auth=(USERNAME, PASSWORD),
         proxy=True
     )
 
     try:
         if demisto.command() == 'test-module':
-            fetch_incidents(rest_client, demisto.getLastRun())
+            test_module(rest_client)
             demisto.results('ok')
 
         elif demisto.command() == 'fetch-incidents':
@@ -1134,7 +1117,8 @@ def main():
         if demisto.command() == 'fetch-incidents':
             LOG(str(err))
             raise
-        return_error(str(err))
+        raise
+        # return_error(str(err))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

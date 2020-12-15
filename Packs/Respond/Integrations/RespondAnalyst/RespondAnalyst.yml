@@ -30,12 +30,8 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: Username
-  name: username
-  required: true
-  type: 0
-- display: Password
-  name: password
+- display: API Token
+  name: token
   required: true
   type: 4
 description: Respond Software Integration - fetches incidents with mirroring api enabled
@@ -47,7 +43,7 @@ script:
     - default: false
       description: ID of the Tenant in which the incident resides
       isArray: false
-      name: respond_tenant_id
+      name: tenant_id
       required: false
       secret: false
     - default: false
@@ -68,7 +64,7 @@ script:
     - default: false
       description: ID of the Tenant in which the incident resides
       isArray: false
-      name: respond_tenant_id
+      name: tenant_id
       required: false
       secret: false
     - default: false
@@ -108,7 +104,7 @@ script:
     - default: false
       description: tenant id
       isArray: false
-      name: respond_tenant_id
+      name: tenant_id
       required: false
       secret: false
     - default: false
@@ -131,7 +127,7 @@ script:
     - default: false
       description: tenant id
       isArray: false
-      name: respond_tenant_id
+      name: tenant_id
       required: false
       secret: false
     - default: false
@@ -152,8 +148,8 @@ script:
       secret: false
     - default: false
       isArray: false
-      name: respond_tenant_id
-      required: true
+      name: tenant_id
+      required: false
       secret: false
     deprecated: false
     description: Get escalation data associated with incident
