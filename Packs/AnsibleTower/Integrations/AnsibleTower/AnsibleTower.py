@@ -27,15 +27,9 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=url_suffix, params=data)
 
 
-def inventories_list(client: Client, args: dict) -> List[CommandResults]:
-    input_id = args.get('id')
-    query = args.get('search')
-    data = {
-        'page': args.get('page', 1),
-        'page_size': args.get('page_size', 50),
+def inventories_list(client: Client, url_suffix: str, args: dict) -> List[CommandResults]:
 
-    }
-    return_results = client.api_request('inventories/', data)
+    res = client.api_request(url_suffix, args)
 
 
 
