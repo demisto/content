@@ -16,7 +16,7 @@ def get_cisco_ise_active_instance_or_err_msg():
         local_instance = resp['ModuleName']
         if isError(resp):
             err = resp['Contents']
-            err_msg.append(err.split('-')[0] + ", instance name = %s" % local_instance)
+            err_msg.append(f'{err.split("-")[0]} , instance name = {local_instance}')
         else:
             # Check if the output has any node that matches the local instance
             # and is also a primary or is in standalone mode

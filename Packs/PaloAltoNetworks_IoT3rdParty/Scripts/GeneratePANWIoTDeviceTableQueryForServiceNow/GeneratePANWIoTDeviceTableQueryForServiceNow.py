@@ -9,16 +9,15 @@ def main():
     query_str = 'mac_addressIN'
     DEFAULT_VALUE_SIZE = 100  # each query contains 100 deviceid
     res = {}
-    output_description = "Total data length is " + str(len(device_list))
+    output_description = f'Total data length is {len(device_list)}'
 
-    for i in range(len(device_list)):
-        entry = device_list[i]
+    for i, entry in enumerate(device_list):
         query_str += entry['deviceid'] + ','
         if ((i + 1) % DEFAULT_VALUE_SIZE == 0 or i == (len(device_list) - 1)):
             query_strs.append(query_str[0:len(query_str) - 1])
             query_str = 'mac_addressIN'
     res['query'] = query_strs
-    output_description = output_description + " total number of query is " + str(len(query_strs))
+    output_description = f'{output_description} total number of query is {len(query_strs)}'
 
     results = CommandResults(
         readable_output=output_description,

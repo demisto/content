@@ -1,5 +1,5 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import demistomock as demisto
+from CommonServerPython import *
 SIEM_INSTANCE = demisto.args().get('syslog_sender_instance')
 PANW_IOT_INSTANCE = demisto.args().get('panw_iot_3rd_party_instance')
 
@@ -89,7 +89,7 @@ def get_all_panw_iot_assets_and_send_to_siem(asset_type):
     offset = 0
     page_size = 1000
     if asset_type is None:
-        raise TypeError("Invalid asset type")
+        raise TypeError("Invalid asset type. Asset type passed is null")
     asset_type_map = {"device": "Devices", "alert": "Alerts", "vulnerability": "Vulnerabilities"}
 
     while True:

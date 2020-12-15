@@ -23,10 +23,10 @@ commonfields:
   version: -1
 dependson:
   must:
-  - |||panw-iot-3rd-party-get-asset-list
-  - |||panw-iot-3rd-party-report-status-to-panw
-  - |||panw-iot-3rd-party-convert-assets-to-external-format
-  - Syslog Sender|||syslog-send
+  - '|||panw-iot-3rd-party-get-asset-list'
+  - '|||panw-iot-3rd-party-report-status-to-panw'
+  - '|||panw-iot-3rd-party-convert-assets-to-external-format'
+  - '|||syslog-send'
 dockerimage: demisto/python3:3.8.6.13358
 enabled: true
 name: SendAllPANWIoTAssetsToSIEM

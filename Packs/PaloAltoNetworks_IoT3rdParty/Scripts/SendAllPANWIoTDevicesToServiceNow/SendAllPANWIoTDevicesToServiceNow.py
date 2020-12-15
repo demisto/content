@@ -147,7 +147,7 @@ def get_all_panw_iot_devices_and_send_to_servicenow():
                     f'devices from PANW IoT cloud {upsert_devices_result}'
                 )
                 send_status_to_panw_iot_cloud("error", err_msg)
-                demisto.info(f'{PANW_IOT_INSTANCE} {err_msg}')
+                LOG(f'{PANW_IOT_INSTANCE} {err_msg}')
                 raise Exception(err_msg)
             if insert_count > 0:
                 insert_list = upsert_devices_result['insert']

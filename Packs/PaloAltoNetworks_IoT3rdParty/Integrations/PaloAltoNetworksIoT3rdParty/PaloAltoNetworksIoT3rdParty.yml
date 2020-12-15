@@ -14,11 +14,11 @@ configuration:
 - display: Access Key.
   name: Access Key
   required: true
-  type: 0
+  type: 4
 - display: Key ID.
   name: Key ID
   required: true
-  type: 0
+  type: 4
 description: Base Integration for Palo Alto IOT third party integrations. This integrations
   communicates with Palo Alto IoT Cloud to get alerts, vulnerabilities,  device inventory.
 display: Palo Alto Networks IoT 3rd Party

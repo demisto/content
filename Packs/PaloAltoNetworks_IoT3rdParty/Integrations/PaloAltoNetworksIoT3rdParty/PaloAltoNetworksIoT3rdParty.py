@@ -186,14 +186,14 @@ def http_request(method, url, api_params={}, data=None):
     return response
 
 
-def get_asset_list():
+def get_asset_list(args):
     """
     Returns a list of assets for the specifed asset type.
     """
-    asset_type = demisto.args().get('asset_type')
-    increment_time = demisto.args().get('increment_time')
-    page_length = demisto.args().get('page_length')
-    offset = demisto.args().get('offset')
+    asset_type = args.get('asset_type')
+    increment_time = args.get('increment_time')
+    page_length = args.get('page_length')
+    offset = args.get('offset')
 
     url = BASE_URL + API_TYPE_MAP[asset_type]['list_url']
     one_call = False
@@ -269,14 +269,14 @@ def get_asset_list():
     )
 
 
-def get_single_asset():
+def get_single_asset(args):
     """
     For input asset type and asset ID,
     returns the asset details.
     """
 
-    asset_type = demisto.args().get('asset_type')
-    asset_id = demisto.args().get('asset_id')
+    asset_type = args.get('asset_type')
+    asset_id = args.get('asset_id')
 
     if asset_type is None:
         raise TypeError("Invalid Asset Type")
@@ -310,15 +310,15 @@ def get_single_asset():
     )
 
 
-def report_status_to_iot_cloud():
+def report_status_to_iot_cloud(args):
     """
     Reports status details back to PANW IoT Cloud.
     """
-    status = demisto.args().get('status')
-    message = demisto.args().get('message')
-    integration_name = demisto.args().get('integration_name')
-    playbook_name = demisto.args().get('playbook_name')
-    asset_type = demisto.args().get('asset_type')
+    status = args.get('status')
+    message = args.get('message')
+    integration_name = args.get('integration_name')
+    playbook_name = args.get('playbook_name')
+    asset_type = args.get('asset_type')
 
     curr_time = int(round(time.time() * 1000))
 
@@ -658,7 +658,7 @@ def get_servicenow_upsert_devices(args):
     return result
 
 
-def convert_asset_to_external_format():
+def convert_asset_to_external_format(args):
     """
     For a given asset (alert, device, vuln) converts it
     to specified 3rd party format.
@@ -680,24 +680,24 @@ def convert_asset_to_external_format():
         }
     }
 
-    asset_type = demisto.args().get('asset_type')
-    output_format = demisto.args().get('output_format')
-    asset_list = demisto.args().get('asset_list')
+    asset_type = args.get('asset_type')
+    output_format = args.get('output_format')
+    asset_list = args.get('asset_list')
     data = []
     readable_res = ''
 
     if output_format == "ServiceNow":
         if asset_list:
             if asset_type == "device":
-                data = get_servicenow_upsert_devices(demisto.args())
+                data = get_servicenow_upsert_devices(args)
                 readable_res = f'Converted Device list to {len(data)} upsert {output_format} list'
             elif asset_type == 'alert':
-                data = convert_alert_to_servicenow(demisto.args())
-                correlation_id = demisto.args().get('incident')['correlation_id']
+                data = convert_alert_to_servicenow(args)
+                correlation_id = args.get('incident')['correlation_id']
                 readable_res = f'Converted Alert {correlation_id} to {output_format}'
             elif asset_type == 'vulnerability':
-                data = convert_vulnerability_to_servicenow(demisto.args())
-                correlation_id = demisto.args().get('incident')['correlation_id']
+                data = convert_vulnerability_to_servicenow(args)
+                correlation_id = args.get('incident')['correlation_id']
                 readable_res = f'Converted Vulnerability {correlation_id} to {output_format}'
         else:
             err_msg = f'Output format ServiceNow not supported for {asset_type}'
@@ -754,10 +754,10 @@ def main() -> None:
     """
     command = demisto.command()
     args = demisto.args()
-    demisto.debug(f'Command being called is {command}')    
+    demisto.debug(f'Command being called is {command}')
     try:
         if command == 'test-module':
-            return_results(connection_test_command(args))
+            return_results(connection_test_command())
         elif command == 'panw-iot-3rd-party-get-asset-list':
             results = get_asset_list(args)
             return_results(results)
