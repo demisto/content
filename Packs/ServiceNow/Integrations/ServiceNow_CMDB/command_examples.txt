@@ -1,0 +1,6 @@
+!servicenow-cmdb-records-list class=cmdb_ci_linux_server limit=3
+!servicenow-cmdb-record-create class=cmdb_ci_linux_server attributes="name=README Record"
+!servicenow-cmdb-record-get-by-id class=cmdb_ci_linux_server sys_id=a8decc3f1b9c2410042611b4bd4bcb7d
+!servicenow-cmdb-record-update class=cmdb_ci_linux_server sys_id=a8decc3f1b9c2410042611b4bd4bcb7d attributes="name=Update Name README"
+!servicenow-cmdb-record-add-relations class=cmdb_ci_linux_server sys_id=a8decc3f1b9c2410042611b4bd4bcb7d inbound_relations="[{'type': 'cb5592603751200032ff8c00dfbe5d17','target':'829e953a0ad3370200af63483498b1ea','sys_class_name':'cmdb_ci_appl'}]"
+!servicenow-cmdb-record-delete-relations class=cmdb_ci_linux_server sys_id=a8decc3f1b9c2410042611b4bd4bcb7d relation_sys_id=9daa24af1bd02410042611b4bd4bcbee

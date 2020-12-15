@@ -1,0 +1,37 @@
+{
+    "data": {
+        "id": "bf262445-1110-4c21-9957-b55b59d1384e",
+        "job_id": null,
+        "status": "finished",
+        "credits": 1,
+        "code": null,
+        "message": null,
+        "percent": 100,
+        "operation": "convert",
+        "engine": "imagemagick",
+        "engine_version": "7.0.10",
+        "result": {
+            "files": [
+                {
+                    "filename": "Screen.jpg",
+                    "size": 202825
+                }
+            ]
+        },
+        "created_at": "2020-10-26T13:04:20+00:00",
+        "started_at": "2020-10-26T13:04:20+00:00",
+        "ended_at": "2020-10-26T13:04:22+00:00",
+        "retry_of_task_id": null,
+        "copy_of_task_id": null,
+        "user_id": 45698979,
+        "priority": -10,
+        "host_name": "missouri",
+        "storage": "ovh-lim",
+        "depends_on_task_ids": [
+            "9e40a399-72c0-4e96-83e0-9f678b26b0b4"
+        ],
+        "links": {
+            "self": "https://api.cloudconvert.com/v2/tasks/bf262445-1110-4c21-9957-b55b59d1384e"
+        }
+    }
+}
