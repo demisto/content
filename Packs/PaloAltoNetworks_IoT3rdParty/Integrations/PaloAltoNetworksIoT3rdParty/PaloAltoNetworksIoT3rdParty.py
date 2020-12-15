@@ -750,9 +750,7 @@ def connection_test_command() -> str:
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-    :return:
-    :rtype:
+    """main function, parses args and runs command functions
     """
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
