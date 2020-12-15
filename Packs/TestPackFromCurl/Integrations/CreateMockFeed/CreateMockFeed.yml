@@ -1,0 +1,162 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Create-Mock-Feed
+  version: -1
+configuration:
+- display: Indicator Type
+  name: indicator_type
+  options:
+  - Domain
+  - File
+  - IP
+  required: true
+  type: 16
+- defaultvalue: "100000"
+  display: Amount of indicators
+  name: amount_inidcators
+  required: false
+  type: 0
+- defaultvalue: "30000"
+  display: size of batches
+  hidden: true
+  name: batch_size
+  required: false
+  type: 0
+- defaultvalue: "1"
+  display: Fetch Interval
+  name: feedFetchInterval
+  required: true
+  type: 19
+- defaultvalue: "true"
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- display: Incidents name
+  hidden: true
+  name: incidents_name
+  required: false
+  type: 0
+- additionalinfo: Make sure to have the key "indicator" in the appropriate CSV column
+    where the value of the indicator is expected to be
+  defaultvalue: indicator,description,date
+  display: Fieldnames (CSV)
+  name: fieldnames
+  required: false
+  type: 0
+- defaultvalue: F - Reliability cannot be judged
+  display: Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- additionalinfo: When selected, the exclusion list will be ignored for this feed.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- defaultvalue: feedInstanceReputationNotSet
+  display: Mark as reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- defaultvalue: indicatorType
+  display: ""
+  name: feedExpirationPolicy
+  required: false
+  type: 17
+- display: ""
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- display: Indicator Reputation
+  name: feedReputation
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+- display: Source Reliability
+  name: feedReliability
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data
+- display: ''
+  name: feedExpirationPolicy
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  type: 19
+  required: false
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+display: Create-Mock-Feed
+name: Create-Mock-Feed
+script:
+  commands:
+  - arguments: []
+    name: fetch-indicators
+  - arguments:
+    - description: indicators to run on
+      isArray: true
+      name: indicators
+      required: true
+    name: random-score-indicators
+  dockerimage: devdemisto/feed-performance-test:1.0.10653
+  feed: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,15 @@
+{
+    "details": "new_type",
+    "disabled": false,
+    "expiration": 0,
+    "file": false,
+    "id": "new_type",
+    "locked": false,
+    "mergeContext": false,
+    "regex": "",
+    "reputationCommand": "fetch-indicators",
+    "system": false,
+    "updateAfter": 0,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

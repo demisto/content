@@ -1,0 +1,94 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Indicator Feed Integration 6e1dab1c823a40338dd5226c1b6dce2c
+  version: -1
+configuration:
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: indicatorType
+  display: ""
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: "20160"
+  display: ""
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: "240"
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  type: 8
+  required: false
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+display: Indicator Feed Integration 6e1dab1c823a40338dd5226c1b6dce2c
+name: Indicator Feed Integration 6e1dab1c823a40338dd5226c1b6dce2c
+script:
+  commands:
+  - arguments: []
+    name: fetch-indicators
+  feed: true
+  runonce: false
+  script: ''
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

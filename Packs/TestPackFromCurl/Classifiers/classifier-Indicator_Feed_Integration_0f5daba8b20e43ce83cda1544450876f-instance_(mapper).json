@@ -1,0 +1,24 @@
+{
+    "description": "",
+    "feed": true,
+    "id": "c5f67469-e141-4648-8133-4cfb1cb5f26d-mapper",
+    "mapping": {
+        "ipRep": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Indicator Multi Select Fieldc4ec4311a98047d88ef6e31276f5cacd": {
+                    "complex": null,
+                    "simple": "myMultiSelect"
+                },
+                "Indicator Short Text Field5717dd6f2158445986ed539ec4f1884d": {
+                    "complex": null,
+                    "simple": "myShortText"
+                }
+            }
+        }
+    },
+    "name": "Indicator Feed Integration 0f5daba8b20e43ce83cda1544450876f-instance (mapper)",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
