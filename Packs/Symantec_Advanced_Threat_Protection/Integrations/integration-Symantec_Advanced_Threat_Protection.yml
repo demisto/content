@@ -37,11 +37,6 @@ configuration:
   - incidents
   - events
   - incidentevents
-- display: Query string for fetch incidents
-  name: fetch_incidents_query
-  defaultvalue: ""
-  type: 0
-  required: false
 - display: Maximum number of events per fetch.
   name: max_fetch
   defaultvalue: "50"
