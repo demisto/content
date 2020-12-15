@@ -18,6 +18,14 @@ abuse_type_name_to_id: Dict[str, int] = {
     'sextortio': 5,
     'other': 99
 }
+abuse_type_id_to_name: Dict[str, str] = {
+    '1': 'ransomware',
+    '2': 'darknet market',
+    '3': 'bitcoin tumbler',
+    '4': 'blackmail scam',
+    '5': 'sextortio',
+    '99': 'other'
+}
 OTHER_ABUSE_TYPE_ID = 99
 REPORT_ADDRESS_PREFIX = '/reports/create'
 
@@ -117,8 +125,8 @@ def _build_fetch_indicators_params(demisto_params: Dict) -> Dict:
                 'Value': ('address', None, 'bitcoin-{}'),
                 'Country Name': 'from_country',
                 'Creation Date': 'created_at',
-                'Bitcoin Abuse Description': 'description',
-                'todo': 'abuse_type'  # TODO TOM
+                'description': 'description',
+                'abuse_type_id': 'abuse_type'
             }
         }
     }
@@ -126,28 +134,9 @@ def _build_fetch_indicators_params(demisto_params: Dict) -> Dict:
     params['url'] = url
     params['feed_url_to_config'] = feed_url_to_config
     params['delimiter'] = ','
-    return params
 
 
-#
-# import csv
-#
-# #define the min and max value of angle
-# alpha_min = 110
-# alpha_max = 125
-#
-# #read csv file and loop through with a filter
-# with open('test_csv.csv', 'r') as input_file:
-#     csv_reader = csv.reader(input_file)#, delimiter=',')
-#     lines = [i for i in csv_reader]
-#     header = lines[0]
-#     results = filter(lambda row: alpha_min<int(row[1])<alpha_max, lines[1:])
-#
-# #create output file
-# with open('test_output_csv.csv', "w", newline='') as output_file:
-#     csv_writer = csv.writer(output_file, delimiter=',')
-#     csv_writer.writerow(header)
-#     csv_writer.writerows(results)
+return params
 
 
 def fetch_indicators(demisto_params: Dict) -> None:
