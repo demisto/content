@@ -84,6 +84,13 @@ script:
             }
         };
 
+        if (args.customFields !== undefined){
+            fields = JSON.parse(args.customFields);
+            for (var field in fields) {
+                newIncident['Incident'][field] = fields[field]
+            }
+        }
+
         if (args.impact) {
             newIncident.Incident.Impact = args.impact;
         }
@@ -391,6 +398,8 @@ script:
       description: 'Example: "Categorize"'
     - name: subarea
       description: "Example: system or application hangs, function or feature not working, error message, job failed, hardware failure, etc."
+    - name: customFields
+      description: Custom fields in JSON format e.g., {"buisnessUnit":"5"}. Field name is case sensitive.
     outputs:
     - contextPath: Ticket.ID
       description: The id of the ticket

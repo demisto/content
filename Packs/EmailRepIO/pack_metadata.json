@@ -1,0 +1,15 @@
+{
+    "name": "EmailRepIO",
+    "description": "Provide email address reputation and reports from EmailRep.io.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://emailrep.io",
+    "email": "",
+    "created": "2020-03-10T08:37:18Z",
+    "certification": "verified",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

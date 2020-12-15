@@ -1,0 +1,534 @@
+{
+ "kind": "quickView",
+ "layout": {
+  "id": "FireEye NX Alert",
+  "kind": "quickView",
+  "modified": "2020-09-28T11:12:06.639021784+05:30",
+  "name": "",
+  "sections": [
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_type",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_severity",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_owner",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_dbotstatus",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sourcebrand",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sourceinstance",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_playbookid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_phase",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_roles",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Basic Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "sortValues": null,
+    "type": "",
+    "version": 0
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_dbotcreated",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_occurred",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_dbotduedate",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_dbotmodified",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_dbottotaltime",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Timeline Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "sortValues": null,
+    "type": "",
+    "version": 0
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_fireeyenxalerttype",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalertaction",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalertid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalertmalwarename",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalertscversion",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalerttargetip",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalerttargetmacaddress",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalerttargetport",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalerturl",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalertuuid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalertvictimip",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalertvictimmacaddress",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxalertvictimport",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Alert Details",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "sortValues": null,
+    "type": "",
+    "version": 0
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_dbotprediction",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_dbotpredictionprobability",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_destinationhostname",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_destinationnetwork",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_destinationport",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_detectionsla",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_devicehash",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_eventid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_eventtype",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_firstname",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_investigationstage",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_lastname",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_logsource",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_mobiledevicemodel",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_niststage",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_os",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_osversion",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_phonenumber",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_protocol",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_remediationsla",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sansstage",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sourcenetwork",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sourceport",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sourceusername",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_tenantname",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_timetoassignment",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_urlsslverification",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Custom Fields",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "sortValues": null,
+    "type": "",
+    "version": 0
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_labels",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Labels",
+    "query": null,
+    "queryType": "",
+    "readOnly": true,
+    "sortValues": null,
+    "type": "labels",
+    "version": 0
+   }
+  ],
+  "system": false,
+  "typeId": "FireEye NX Alert",
+  "version": -1
+ },
+ "typeId": "FireEye NX Alert",
+ "version": -1,
+ "toVersion": "5.9.9",
+ "fromVersion": "5.0.0",
+ "description": ""
+}

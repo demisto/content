@@ -45,17 +45,23 @@ def search_incidents(args: Dict):
             return 'Incidents not found.', {}, {}
         else:
             data: Dict = res[0]['Contents']['data']
-            context_entry: Dict = {'foundIncidents': data}
             headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed']
             md: str = tableToMarkdown(name="Incidents found", t=data, headers=headers)
-            return md, context_entry, res
+            return md, data, res
 
 
 def main():
     args: Dict = demisto.args()
     try:
         readable_output, outputs, raw_response = search_incidents(args)
-        return_outputs(readable_output, outputs, raw_response)
+        results = CommandResults(
+            outputs_prefix='foundIncidents',
+            outputs_key_field='id',
+            readable_output=readable_output,
+            outputs=outputs,
+            raw_response=raw_response
+        )
+        return_results(results)
     except DemistoException as error:
         return_error(str(error), error)
 

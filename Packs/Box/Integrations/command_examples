@@ -1,0 +1,9 @@
+!box_add_user login=exampleuser@paloaltonetworks.com name="My Name"
+!box_delete_user user_id=14226855135
+!box_files_get file_id=723447059947
+!box_files_get_info file_id=723447059947
+!box_get_current_user
+!box_get_users
+!box_initiate access_code=wOK4V7vzcljJNTFu2mSDyQq7phlFY5nx
+!box_move_folder from_user_id=13917563262 to_user_id=13917129310
+!box_update_user user_id=13916934338

@@ -1,0 +1,388 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Pulsedive
+  version: -1
+configuration:
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: Low
+  display: Minimum severity of alerts to fetch
+  name: min_severity
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: true
+  type: 15
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+description: Enrich and analyze any domain, URL, or IP. Pivot to search on data points
+  and linked indicators to investigate risky properties.
+display: Pulsedive
+name: Pulsedive
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: List of IPs.
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Return IP information and reputation
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: Pulsedive.IP.asn
+      description: The autonomous system name for the IP address.
+      type: String
+    - contextPath: Pulsedive.IP.asn_cidr
+      description: The ASN CIDR.
+      type: String
+    - contextPath: Pulsedive.IP.asn_country_code
+      description: The ASN country code.
+      type: String
+    - contextPath: Pulsedive.IP.asn_date
+      description: The date on which the ASN was assigned.
+      type: Date
+    - contextPath: Pulsedive.IP.asn_description
+      description: The ASN description.
+      type: String
+    - contextPath: Pulsedive.IP.asn_registry
+      description: The registry the ASN belongs to.
+      type: String
+    - contextPath: Pulsedive.IP.entities
+      description: Entities associated to the IP.
+      type: String
+    - contextPath: Pulsedive.IP.ip
+      description: The actual IP address.
+      type: String
+    - contextPath: Pulsedive.IP.network.cidr
+      description: Network CIDR for the IP address.
+      type: String
+    - contextPath: Pulsedive.IP.network.country
+      description: The country of the IP address.
+      type: Unknown
+    - contextPath: Pulsedive.IP.network.end_address
+      description: The last IP address of the CIDR.
+      type: String
+    - contextPath: Pulsedive.IP.network.events.action
+      description: The action that happened on the event.
+      type: String
+    - contextPath: Pulsedive.IP.network.events.actor
+      description: The actor that performed the action on the event.
+      type: Unknown
+    - contextPath: Pulsedive.IP.network.events.timestamp
+      description: The timestamp when the event occurred.
+      type: String
+    - contextPath: Pulsedive.IP.network.handle
+      description: The handle of the network.
+      type: String
+    - contextPath: Pulsedive.IP.network.ip_version
+      description: The IP address version.
+      type: String
+    - contextPath: Pulsedive.IP.network.links
+      description: Links associated to the IP address.
+      type: String
+    - contextPath: Pulsedive.IP.network.name
+      description: The name of the network.
+      type: String
+    - contextPath: Pulsedive.IP.network.notices.description
+      description: The description of the notice.
+      type: String
+    - contextPath: Pulsedive.IP.network.notices.links
+      description: Links associated with the notice.
+      type: Unknown
+    - contextPath: Pulsedive.IP.network.notices.title
+      description: Title of the notice.
+      type: String
+    - contextPath: Pulsedive.IP.network.parent_handle
+      description: Handle of the parent network.
+      type: String
+    - contextPath: Pulsedive.IP.network.raw
+      description: Additional raw data for the network.
+      type: Unknown
+    - contextPath: Pulsedive.IP.network.remarks
+      description: Additional remarks for the network.
+      type: Unknown
+    - contextPath: Pulsedive.IP.network.start_address
+      description: The first IP address of the CIDR.
+      type: String
+    - contextPath: Pulsedive.IP.network.status
+      description: Status of the network.
+      type: String
+    - contextPath: Pulsedive.IP.network.type
+      description: The type of the network.
+      type: String
+    - contextPath: Pulsedive.IP.query
+      description: IP address that was queried.
+      type: String
+    - contextPath: Pulsedive.IP.raw
+      description: Additional raw data for the IP address.
+      type: Unknown
+    - contextPath: Pulsedive.IP.score
+      description: Reputation score from HelloWorld for this IP (0 to 100, where higher
+        is worse).
+      type: Number
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
+    - contextPath: IP.ASN
+      description: The autonomous system name for the IP address.
+      type: String
+  - arguments:
+    - default: true
+      description: List of Domains.
+      isArray: true
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns Domain information and reputation.
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor reporting the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description explaining why the domain was reported as malicious.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.Organization
+      description: The organization of the domain.
+      type: String
+    - contextPath: Domain.CreationDate
+      description: The creation date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: Domain.ExpirationDate
+      description: The expiration date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: Domain.UpdatedDate
+      description: The date when the domain was last updated. Format is ISO8601 (i.e.
+        '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: Domain.NameServers
+      description: Name servers of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.NameServers
+      description: A CSV string of name servers, for example 'ns1.bla.com, ns2.bla.com'.
+      type: String
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The creation date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The date when the domain was last updated. Format is ISO8601 (i.e.
+        '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: The name of the registrar, for example 'GoDaddy'
+      type: String
+    - contextPath: IP.ASN
+      description: The autonomous system name for the IP address.
+      type: String
+    - contextPath: Pulsedive.Domain.address
+      description: Domain admin address.
+      type: String
+    - contextPath: Pulsedive.Domain.city
+      description: Domain admin city.
+      type: String
+    - contextPath: Pulsedive.Domain.country
+      description: Domain admin country.
+      type: String
+    - contextPath: Pulsedive.Domain.creation_date
+      description: Domain creation date. Format is ISO8601.
+      type: Date
+    - contextPath: Pulsedive.Domain.dnssec
+      description: DNSSEC status.
+      type: String
+    - contextPath: Pulsedive.Domain.domain
+      description: The domain name.
+      type: String
+    - contextPath: Pulsedive.Domain.domain_name
+      description: Domain name options.
+      type: String
+    - contextPath: Pulsedive.Domain.emails
+      description: Contact emails.
+      type: String
+    - contextPath: Pulsedive.Domain.expiration_date
+      description: Expiration date. Format is ISO8601.
+      type: Date
+    - contextPath: Pulsedive.Domain.name
+      description: Domain admin name.
+      type: String
+    - contextPath: Pulsedive.Domain.name_servers
+      description: Name server.
+      type: String
+    - contextPath: Pulsedive.Domain.org
+      description: Domain organization.
+      type: String
+    - contextPath: Pulsedive.Domain.referral_url
+      description: Referral URL.
+      type: Unknown
+    - contextPath: Pulsedive.Domain.registrar
+      description: Domain registrar.
+      type: String
+    - contextPath: Pulsedive.Domain.score
+      description: Reputation score from HelloWorld for this domain (0 to 100, where
+        higher is worse).
+      type: Number
+    - contextPath: Pulsedive.Domain.state
+      description: Domain admin state.
+      type: String
+    - contextPath: Pulsedive.Domain.status
+      description: Domain status.
+      type: String
+    - contextPath: Pulsedive.Domain.updated_date
+      description: Updated date. Format is ISO8601.
+      type: Date
+    - contextPath: Pulsedive.Domain.whois_server
+      description: WHOIS server.
+      type: String
+    - contextPath: Pulsedive.Domain.zipcode
+      description: Domain admin zipcode.
+      type: Unknown
+  - arguments:
+    - default: true
+      description: List of Urls.
+      isArray: true
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns URL information and reputation.
+    execution: false
+    name: url
+    outputs:
+    - contextPath: URL.Data
+      description: The URL
+      type: string
+    - contextPath: URL.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: string
+    - contextPath: URL.PositiveDetections
+      description: The number of engines that positively detected the indicator as
+        malicious.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor reporting the URL as malicious.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: A description of the malicious URL.
+      type: string
+  dockerimage: demisto/python3:3.8.6.12176
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

@@ -13,7 +13,7 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/jmespath:1.0.0.10854
+dockerimage: demisto/jmespath:1.0.0.12410
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0

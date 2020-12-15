@@ -1,0 +1,31 @@
+IPS Executive Summary Report
+Created at: 07/08/2020 15:27:58 Asia/Calcutta
+Reporting: Past day
+
+Events Summary
+MVX Correlated IPS,IPS Critical,IPS Major,IPS Minor,# of Attackers,# of Victim Hosts
+0,0,0,0,0,0
+
+Top 10 Attacks by Rules
+#,Rules Description,Attack Count
+
+
+Top 10 MVX Correlated IPS Events
+#,IPS Rule Description,# of MVX Correlated IPS Events
+
+
+Top 10 Attackers
+#,Hosts,#of Victims
+
+
+
+Top 10 Victims
+#,Hosts,#of Rules Matched
+
+
+Top Attacks by Category
+Category Type,Number of Attacks,Percentage
+
+
+IPS Alerts Trend Analysis
+occured_at,ips_critical,ips_major

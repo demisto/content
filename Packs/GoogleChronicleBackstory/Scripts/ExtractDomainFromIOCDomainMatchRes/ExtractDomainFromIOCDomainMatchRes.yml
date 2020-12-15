@@ -1,0 +1,36 @@
+commonfields:
+  id: ExtractDomainFromIOCDomainMatchRes
+  version: -1
+name: ExtractDomainFromIOCDomainMatchRes
+script: ''
+type: python
+tags: []
+comment: Extracts domain and its details from the Chronicle IOC Domain match response.
+enabled: true
+args:
+- name: json_response
+  description: JSON response of IOC Domain Match
+outputs:
+- contextPath: Domain.Name
+  description: The suspicious domain name recently observed in enterprise.
+  type: string
+- contextPath: ChronicleIOCDomainMatches.Domain
+  description: The suspicious domain name recently observed in enterprise.
+  type: string
+- contextPath: ChronicleIOCDomainMatches.IOCIngestTime
+  description: Time(UTC) the IOC was first seen by Chronicle.
+  type: date
+- contextPath: ChronicleIOCDomainMatches.FirstSeen
+  description: Time(UTC) the artifact was first seen within your enterprise.
+  type: date
+- contextPath: ChronicleIOCDomainMatches.LastSeen
+  description: Time(UTC) the artifact was most recently seen within your enterprise.
+  type: date
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.6.13358
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

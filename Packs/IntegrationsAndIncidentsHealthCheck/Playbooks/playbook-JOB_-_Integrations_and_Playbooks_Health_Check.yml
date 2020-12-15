@@ -189,7 +189,7 @@ tasks:
       - "19"
     scriptarguments:
       name:
-        simple: Integrations and Incidents Health
+        simple: Integrations and Incidents Health Check
       type: {}
     separatecontext: false
     view: |-

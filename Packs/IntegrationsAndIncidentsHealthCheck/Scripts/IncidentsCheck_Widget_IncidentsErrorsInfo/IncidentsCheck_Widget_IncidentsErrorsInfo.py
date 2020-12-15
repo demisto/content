@@ -36,14 +36,14 @@ def parse_data(list_json):
 
     else:
         data = {"total": 1, "data": [{
-            "Incident Creation Date": "N\\A",
-            "Incident ID": "N\\A",
-            "Incident Owner": "N\\A",
-            "Number of Errors": "N\\A",
-            "Playbook Name": "N\\A",
-            "Task ID": "N\\A",
-            "Task Name": "N\\A",
-            "Command Name": "N\\A"
+            "Incident Creation Date": "N\A",
+            "Incident ID": "N\A",
+            "Incident Owner": "N\A",
+            "Number of Errors": "N\A",
+            "Playbook Name": "N\A",
+            "Task ID": "N\A",
+            "Task Name": "N\A",
+            "Command Name": "N\A"
         }]}
 
         return data

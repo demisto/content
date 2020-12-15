@@ -170,26 +170,35 @@ def get_host_attribute_context_data(records: List[Dict[str, Any]]) -> Tuple[list
     Prepares context data for get components and get trackers command
 
     :param records: API response
-    :return: standard entry context and custom entry context
+    :return: standard entry command results list and custom entry context
     """
-    standard_ec: List[Union[Common.Domain, Common.IP]] = []
-
+    custom_ec = createContext(data=records, removeNull=True)
+    standard_results: List[CommandResults] = []
     for record in records:
         if record.get('hostname'):
             hostname = record.get('hostname')
             dbot_score = Common.DBotScore(indicator=hostname, indicator_type=DBotScoreType.DOMAIN,
                                           integration_name=INTEGRATION_NAME, score=Common.DBotScore.NONE)
             if auto_detect_indicator_type(hostname) == FeedIndicatorType.Domain:
-                standard_ec.append(Common.Domain(domain=hostname, dbot_score=dbot_score))
+                domain_ioc = Common.Domain(domain=hostname, dbot_score=dbot_score)
+                # add standard output with standard readable output
+                standard_results.append(CommandResults(
+                    indicator=domain_ioc,
+                    readable_output=tableToMarkdown('', domain_ioc.to_context().get(Common.Domain.CONTEXT_PATH))
+                ))
         elif record.get('address'):
             address = record.get('address')
             dbot_score = Common.DBotScore(indicator=address, indicator_type=DBotScoreType.IP,
                                           integration_name=INTEGRATION_NAME, score=Common.DBotScore.NONE)
             if auto_detect_indicator_type(address) == FeedIndicatorType.IP:
-                standard_ec.append(Common.IP(ip=address, dbot_score=dbot_score))
+                ip_ioc = Common.IP(ip=address, dbot_score=dbot_score)
+                # add standard output with standard readable output
+                standard_results.append(CommandResults(
+                    indicator=ip_ioc,
+                    readable_output=tableToMarkdown('', ip_ioc.to_context().get(Common.IP.CONTEXT_PATH))
+                ))
 
-    custom_ec = createContext(data=records, removeNull=True)
-    return standard_ec, custom_ec
+    return standard_results, custom_ec
 
 
 def get_components_hr(components: List[Dict[str, Any]]) -> str:
@@ -350,9 +359,9 @@ def get_context_for_whois_commands(domains: List[Dict[str, Any]]) -> Tuple[list,
     Prepare context for whois and domain reputation commands.
 
     :param domains: list of domains return from response
-    :return: standard context and custom context for whois and domain reputation command
+    :return: command results for standard context and custom context for whois and domain reputation command
     """
-    standard_context_domain_list: List[Common.Domain] = []
+    command_results: List[CommandResults] = []
     custom_context: List[Dict[str, Any]] = []
     # set domain standard context
     for domain in domains:
@@ -381,7 +390,12 @@ def get_context_for_whois_commands(domains: List[Dict[str, Any]]) -> Tuple[list,
                     score=Common.DBotScore.NONE
                 )
             )
-            standard_context_domain_list.append(standard_context_domain)
+            # add standard output with standard readable output
+            command_results.append(CommandResults(
+                indicator=standard_context_domain,
+                readable_output=tableToMarkdown('',
+                                                standard_context_domain.to_context().get(Common.Domain.CONTEXT_PATH))
+            ))
 
         # set custom context for whois commands
         custom_context.append(
@@ -391,7 +405,7 @@ def get_context_for_whois_commands(domains: List[Dict[str, Any]]) -> Tuple[list,
                 exclude_keys=('zone', 'rawText')
             )
         )
-    return standard_context_domain_list, createContext(custom_context, removeNull=True)
+    return command_results, createContext(custom_context, removeNull=True)
 
 
 def prepare_hr_cell_for_whois_info(domain_info: Dict[str, Any]) -> str:
@@ -543,15 +557,15 @@ def get_pdns_details_hr(results: List[Dict[str, Any]], total_record: int) -> str
     return hr
 
 
-def create_pdns_standard_context(results: List[Dict[str, Any]]) -> List[Union[Common.Domain, Common.IP]]:
+def create_pdns_standard_context(results: List[Dict[str, Any]]) -> List[CommandResults]:
     """
     Preparing standard context and dbotScore for pdns command.
     here, standard context includes ip and domain model.
 
     :param results: pdns details from response
-    :return: standard context
+    :return: list of CommandResults of standard context
     """
-    standard_ec: List[Union[Common.Domain, Common.IP]] = []
+    standard_results: List[CommandResults] = []
     for result in results:
         resolve_type = result.get('resolveType', '')
         resolve = result.get('resolve', '')
@@ -559,13 +573,23 @@ def create_pdns_standard_context(results: List[Dict[str, Any]]) -> List[Union[Co
         if 'domain' == resolve_type:
             dbot_score = Common.DBotScore(resolve, resolve_type, INTEGRATION_NAME, Common.DBotScore.NONE)
             if auto_detect_indicator_type(resolve) == FeedIndicatorType.Domain:
-                standard_ec.append(Common.Domain(resolve, dbot_score))
+                domain_ioc = Common.Domain(resolve, dbot_score)
+                # add standard output with standard readable output
+                standard_results.append(CommandResults(
+                    indicator=domain_ioc,
+                    readable_output=tableToMarkdown('', domain_ioc.to_context().get(Common.Domain.CONTEXT_PATH))
+                ))
         elif 'ip' == resolve_type:
             dbot_score = Common.DBotScore(resolve, resolve_type, INTEGRATION_NAME, Common.DBotScore.NONE)
             if auto_detect_indicator_type(resolve) == FeedIndicatorType.IP:
-                standard_ec.append(Common.IP(resolve, dbot_score))
+                ip_ioc = Common.IP(resolve, dbot_score)
+                # add standard output with standard readable output
+                standard_results.append(CommandResults(
+                    indicator=ip_ioc,
+                    readable_output=tableToMarkdown('', ip_ioc.to_context().get(Common.IP.CONTEXT_PATH))
+                ))
 
-    return standard_ec
+    return standard_results
 
 
 ''' REQUESTS FUNCTIONS '''
@@ -584,7 +608,7 @@ def test_function(client: Client) -> str:
 
 
 @logger
-def get_components_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def get_components_command(client: Client, args: Dict[str, Any]) -> Union[str, List[CommandResults]]:
     """
     Retrieves the host attribute components for a domain or IP address.
 
@@ -609,23 +633,24 @@ def get_components_command(client: Client, args: Dict[str, Any]) -> Union[str, C
     results = resp.get('results', [])
 
     # Creating entry context
-    standard_ec, custom_ec = get_host_attribute_context_data(results)
+    command_results, custom_ec = get_host_attribute_context_data(results)
 
     # Creating human-readable
     hr = get_components_hr(results)
 
-    return CommandResults(
+    command_results.insert(0, CommandResults(
         outputs_prefix='PassiveTotal.Component',
         outputs_key_field='',
         outputs=custom_ec,
         readable_output=hr,
         raw_response=resp,
-        indicators=standard_ec
-    )
+    ))
+
+    return command_results
 
 
 @logger
-def pt_whois_search_command(client_obj: Client, args: Dict[str, Any]) -> Union[CommandResults, str]:
+def pt_whois_search_command(client_obj: Client, args: Dict[str, Any]) -> Union[List[CommandResults], str]:
     """
     Gets WHOIS information records based on field matching queries
 
@@ -648,23 +673,24 @@ def pt_whois_search_command(client_obj: Client, args: Dict[str, Any]) -> Union[C
         return MESSAGES['NO_RECORDS_FOUND'].format('domain information')
 
     # Creating entry context
-    standard_ec, custom_ec = get_context_for_whois_commands(domains)
+    command_results, custom_ec = get_context_for_whois_commands(domains)
 
     # Creating human-readable
     hr = get_human_readable_for_whois_commands(domains)
 
-    return CommandResults(
+    command_results.insert(0, CommandResults(
         outputs_prefix='PassiveTotal.WHOIS',
         outputs_key_field='domain',
         outputs=custom_ec,
-        indicators=standard_ec,
         readable_output=hr,
         raw_response=response
-    )
+    ))
+
+    return command_results
 
 
 @logger
-def get_trackers_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def get_trackers_command(client: Client, args: Dict[str, Any]) -> Union[str, List[CommandResults]]:
     """
     Retrieves the host attribute trackers for a domain or IP address.
 
@@ -689,19 +715,20 @@ def get_trackers_command(client: Client, args: Dict[str, Any]) -> Union[str, Com
     results = resp.get('results', [])
 
     # Creating entry context
-    standard_ec, custom_ec = get_host_attribute_context_data(results)
+    command_results, custom_ec = get_host_attribute_context_data(results)
 
     # Creating human-readable
     hr = get_trackers_hr(results)
 
-    return CommandResults(
+    command_results.insert(0, CommandResults(
         outputs_prefix='PassiveTotal.Tracker',
         outputs_key_field='',
         outputs=custom_ec,
         readable_output=hr,
         raw_response=resp,
-        indicators=standard_ec
-    )
+    ))
+
+    return command_results
 
 
 @logger
@@ -749,7 +776,7 @@ def ssl_cert_search_command(client: Client, args: Dict[str, Any]) -> Union[str, 
 
 
 @logger
-def get_pdns_details_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def get_pdns_details_command(client: Client, args: Dict[str, Any]) -> Union[str, List[CommandResults]]:
     """
     Retrieve passive DNS details based on ip or host.
 
@@ -770,7 +797,7 @@ def get_pdns_details_command(client: Client, args: Dict[str, Any]) -> Union[str,
     # Creating entry context
     results = resp.get('results', [])
     custom_ec = createContext(results, removeNull=True)
-    standard_ec = create_pdns_standard_context(results)
+    command_results = create_pdns_standard_context(results)
 
     # Creating human-readable
     hr = get_pdns_details_hr(results, total_record)
@@ -779,14 +806,15 @@ def get_pdns_details_command(client: Client, args: Dict[str, Any]) -> Union[str,
     output_path = 'PassiveTotal.PDNS(val.{0} == obj.{0} && val.{1} == obj.{1} && val.{2} == obj.{2})' \
         .format('resolve', 'recordType', 'resolveType')
 
-    return CommandResults(
+    command_results.insert(0, CommandResults(
         outputs_prefix=output_path,
         outputs_key_field='',
-        indicators=standard_ec,
         outputs=custom_ec,
         readable_output=hr,
         raw_response=resp
-    )
+    ))
+
+    return command_results
 
 
 @logger
@@ -834,7 +862,7 @@ def get_host_pairs_command(client: Client, args: Dict[str, Any]) -> Union[str, C
 
 
 @logger
-def domain_reputation_command(client_obj: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def domain_reputation_command(client_obj: Client, args: Dict[str, Any]) -> Union[str, List[CommandResults]]:
     """
     Reputation command for domain.
 
@@ -849,9 +877,9 @@ def domain_reputation_command(client_obj: Client, args: Dict[str, Any]) -> Union
     if len(domains) == 0:
         raise ValueError('domain(s) not specified')
 
-    domain_standard_list: List[Common.Domain] = []
-    custom_domain_context = []
-    domain_responses = []
+    command_results: List[CommandResults] = []
+    custom_domain_context: List[Dict[str, Any]] = []
+    domain_responses: List[Dict[str, Any]] = []
 
     for domain in domains:
         # argument validation
@@ -871,8 +899,9 @@ def domain_reputation_command(client_obj: Client, args: Dict[str, Any]) -> Union
             continue
 
         # Creating entry context
-        domain_standard_list += get_context_for_whois_commands(domains_response)[0]
-        custom_domain_context += get_context_for_whois_commands(domains_response)[1]
+        standard_results, custom_context = get_context_for_whois_commands(domains_response)
+        command_results.extend(standard_results)
+        custom_domain_context += custom_context
         domain_responses += domains_response
 
     # Creating human-readable
@@ -881,13 +910,14 @@ def domain_reputation_command(client_obj: Client, args: Dict[str, Any]) -> Union
         is_reputation_command=True
     )
 
-    return CommandResults(
+    command_results.insert(0, CommandResults(
         readable_output=domain_standard_hr,
         outputs_prefix='PassiveTotal.Domain',
         outputs_key_field='domain',
         outputs=custom_domain_context,
-        indicators=domain_standard_list
-    )
+    ))
+
+    return command_results
 
 
 def main() -> None:

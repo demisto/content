@@ -1,0 +1,1729 @@
+category: IT Services
+commonfields:
+  id: GoogleDrive
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: User's Service Account JSON
+  name: user_service_account_json
+  required: true
+  type: 4
+- display: User ID
+  name: user_id
+  additionalinfo: The primary email address of the user to fetch the incident(s).
+  required: false
+  type: 0
+- display: Action Detail Case Include
+  name: action_detail_case_include
+  additionalinfo: Action types to include for fetching the incident.
+  required: false
+  type: 16
+  options:
+  - CREATE
+  - EDIT
+  - MOVE
+  - RENAME
+  - DELETE
+  - RESTORE
+  - COMMENT
+  - REFERENCE
+- display: Drive Item Search Field
+  name: drive_item_search_field
+  required: false
+  additionalinfo: The options itemName - Fetch activities for this Drive item. The format is "items/ITEM_ID".
+    folderName- Fetch activities for this Drive folder and all children and descendants.
+    The format is "items/ITEM_ID".
+  type: 15
+  options:
+  - itemName
+  - folderName
+- display: Drive Item Search Value
+  name: drive_item_search_value
+  additionalinfo: itemName or folderName for fetching the incident.
+  required: false
+  type: 0
+- display: Max Incidents
+  name: max_fetch
+  additionalinfo: The maximum number of incidents to fetch each time.
+  required: false
+  type: 0
+  defaultvalue: 50
+- display: First Fetch Time Interval
+  name: first_fetch
+  type: 0
+  additionalinfo: The time range to consider for the initial data fetch in the format <number> <unit> 
+    e.g., 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours).
+  required: false
+  defaultvalue: '10 minutes'
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Google Drive allows users to store files on their servers, synchronize files across devices, and share files. This integration helps you to create a new drive, query past activity, and view change logs performed by the users.
+display: Google Drive
+name: GoogleDrive
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The user's primary email address.
+      isArray: false
+      name: user_id
+      required: false
+      secret: false
+    - default: false
+      description: The name of this shared drive.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether the shared drive is hidden from the default view.
+      isArray: false
+      name: hidden
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      Creates a new Team Drive. The name argument specifies the name of the Team Drive. The specified user will be the first organizer.
+      This shared drive/team drive feature is available only with G Suite Enterprise, Enterprise for Education, G Suite Essentials, Business, Education, and Nonprofits edition.
+    execution: false
+    name: google-drive-create
+    outputs:
+    - contextPath: GoogleDrive.Drive.kind
+      description: Identifies what kind of resource this is.
+      type: String
+    - contextPath: GoogleDrive.Drive.id
+      description: The ID of the shared drive which is also the ID of the top level
+        folder of the shared drive.
+      type: String
+    - contextPath: GoogleDrive.Drive.name
+      description: The name of the shared drive.
+      type: String
+    - contextPath: GoogleDrive.Drive.hidden
+      description: Whether the shared drive is hidden from default view.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The token for continuing a previous list request on the next page.
+      isArray: false
+      name: page_token
+      required: true
+      secret: false
+    - default: false
+      description: The user's primary email address.
+      isArray: false
+      name: user_id
+      required: false
+      secret: false
+    - default: false
+      description: The shared drive from which changes are returned.
+      isArray: false
+      name: drive_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether changes should include the file resource if the file is
+        still accessible by the user at the time of the request, even when a file
+        was removed from the list of changes and there will be no further change entries
+        for this file. Default is "false".
+      isArray: false
+      name: include_corpus_removals
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether both My Drive and shared drive items should be included
+        in the results. Default is "false".
+      isArray: false
+      name: include_items_from_all_drives
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Specifies which additional view's permissions to include in the
+        response. Only 'published' is supported.
+      isArray: false
+      name: include_permissions_for_view
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether to include changes indicating that items have been removed
+        from the list of changes, for example by deletion or loss of access. Default is "true".
+      isArray: false
+      name: include_removed
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 100
+      description: The maximum number of changes to return per page. Acceptable values
+        are 1 to 1000, inclusive. Default is "100".
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to restrict the results to changes inside the My Drive
+        hierarchy. This omits changes to files such as those in the Application Data
+        folder or shared files which have not been added to My Drive. Default is "false".
+      isArray: false
+      name: restrict_to_my_drive
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of spaces to query within the user corpus.
+        Possible values are 'drive', 'appDataFolder', and 'photos'.
+      isArray: false
+      name: spaces
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether the requesting application supports both My Drives and
+        shared drives. Default is "false".
+      isArray: false
+      name: supports_all_drives
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: basic
+      description: 'The paths of the fields you want to include in the response. Possible values are: "basic" (the response will include a default set of fields specific to this method) and "advance" (you can use the value * to return all the fields). Default is "basic".'
+      isArray: false
+      name: fields
+      predefined:
+      - basic
+      - advance
+      required: false
+      secret: false
+    deprecated: false
+    description: Lists the changes for a user or shared drive.
+    execution: false
+    name: google-drive-changes-list
+    outputs:
+    - contextPath: GoogleDrive.PageToken.DriveChange.nextPageToken
+      description: The page token for the next page of changes. 
+      type: String
+    - contextPath: GoogleDrive.PageToken.DriveChange.newStartPageToken
+      description: The starting page token for future changes.
+      type: String
+    - contextPath: GoogleDrive.PageToken.DriveChange.driveId
+      description: The ID of the shared drive associated with this change.
+      type: String
+    - contextPath: GoogleDrive.PageToken.DriveChange.userId
+      description: The user's primary email address.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.userId
+      description: The user's primary email address.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.kind
+      description: Identifies what kind of resource this is.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.changeType
+      description: The type of the change. Possible values are "file" and "drive".
+      type: String
+    - contextPath: GoogleDrive.DriveChange.time
+      description: The time of this change (RFC 3339 date-time).
+      type: Date
+    - contextPath: GoogleDrive.DriveChange.removed
+      description: Whether the file or shared drive has been removed from this list
+        of changes, for example by deletion or loss of access.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.fileId
+      description: The ID of the file which has changed.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.driveId
+      description: The ID of the shared drive associated with this change.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.kind
+      description: Identifies what kind of resource this is.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.id
+      description: The ID of the file.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.name
+      description: The name of the file.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.mimeType
+      description: The MIME type of the file.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.description
+      description: A short description of the file.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.starred
+      description: Whether the user has starred the file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.trashed
+      description: Whether the file has been trashed, either explicitly or from a
+        trashed parent folder. Only the owner may trash a file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.explicitlyTrashed
+      description: Whether the file has been explicitly trashed, as opposed to recursively
+        trashed from a parent folder.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.trashingUser.kind
+      description: Identifies what kind of resource this is.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.trashingUser.displayName
+      description: A plain text displayable name for this user.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.trashingUser.photoLink
+      description: A link to the user's profile photo, if available.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.trashingUser.me
+      description: Whether this user is the requesting user.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.trashingUser.permissionId
+      description: The user's ID as visible in Permission resources.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.trashingUser.emailAddress
+      description: The email address of the user. This may not be present in certain
+        contexts if the user has not made their email address visible to the requester.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.trashedTime
+      description: The time that the item was trashed (RFC 3339 date-time). Only populated
+        for items in shared drives.
+      type: Date
+    - contextPath: GoogleDrive.DriveChange.file.parents
+      description: The IDs of the parent folders which contain the file.
+      type: Unknown
+    - contextPath: GoogleDrive.DriveChange.file.properties
+      description: A collection of arbitrary key-value pairs which are visible to
+        all apps.
+      type: Unknown
+    - contextPath: GoogleDrive.DriveChange.file.appProperties
+      description: A collection of arbitrary key-value pairs which are private to
+        the requesting app.
+      type: Unknown
+    - contextPath: GoogleDrive.DriveChange.file.spaces
+      description: The list of spaces which contain the file. The currently supported
+        values are 'drive', 'appDataFolder' and 'photos'.
+      type: Unknown
+    - contextPath: GoogleDrive.DriveChange.file.version
+      description: A monotonically increasing version number for the file. This reflects
+        every change made to the file on the server, even those not visible to the
+        user.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.webContentLink
+      description: A link for downloading the content of the file in a browser. This
+        is only available for files with binary content in Google Drive.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.webViewLink
+      description: A link for opening the file in a relevant Google editor or viewer
+        in a browser.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.iconLink
+      description: A static, unauthenticated link to the file's icon.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.hasThumbnail
+      description: Whether this file has a thumbnail.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.thumbnailLink
+      description: A short-lived link to the file's thumbnail, if available.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.thumbnailVersion
+      description: The thumbnail version for use in thumbnail cache invalidation.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.viewedByMe
+      description: Whether the file has been viewed by this user.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.viewedByMeTime
+      description: The last time the file was viewed by the user (RFC 3339 date-time).
+      type: Date
+    - contextPath: GoogleDrive.DriveChange.file.createdTime
+      description: The time at which the file was created (RFC 3339 date-time).
+      type: Date
+    - contextPath: GoogleDrive.DriveChange.file.modifiedTime
+      description: The last time the file was modified by anyone (RFC 3339 date-time).
+      type: Date
+    - contextPath: GoogleDrive.DriveChange.file.modifiedByMeTime
+      description: The last time the file was modified by the user (RFC 3339 date-time).
+      type: Date
+    - contextPath: GoogleDrive.DriveChange.file.modifiedByMe
+      description: Whether the file has been modified by the user.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.sharedWithMeTime
+      description: The time at which the file was shared with the user, if applicable
+        (RFC 3339 date-time).
+      type: Date
+    - contextPath: GoogleDrive.DriveChange.file.sharingUser.kind
+      description: Identifies what kind of resource this is.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.sharingUser.displayName
+      description: A plain text displayable name for this user.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.sharingUser.photoLink
+      description: A link to the user's profile photo, if available.
+      type: Date
+    - contextPath: GoogleDrive.DriveChange.file.sharingUser.me
+      description: Whether this user is the requesting user.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.sharingUser.permissionId
+      description: The user's ID as visible in the Permission resources.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.sharingUser.emailAddress
+      description: The email address of the user. This may not be present in certain
+        contexts if the user has not made their email address visible to the requester.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.owners.kind
+      description: Identifies what kind of resource this is.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.owners.displayName
+      description: A plain text displayable name for this user.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.owners.photoLink
+      description: A link to the user's profile photo, if available.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.owners.me
+      description: Whether this user is the requesting user.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.owners.permissionId
+      description: The user's ID as visible in the Permission resources.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.owners.emailAddress
+      description: The email address of the user. This may not be present in certain
+        contexts if the user has not made their email address visible to the requester.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.driveId
+      description: ID of the shared drive the file resides in. Only populated for
+        items in shared drives.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.lastModifyingUser.kind
+      description: Identifies what kind of resource this is.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.lastModifyingUser.displayName
+      description: A plain text displayable name for this user.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.lastModifyingUser.photoLink
+      description: A link to the user's profile photo, if available.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.lastModifyingUser.me
+      description: Whether this user is the requesting user.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.lastModifyingUser.permissionId
+      description: The user's ID as visible in Permission resources.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.lastModifyingUser.emailAddress
+      description: The email address of the user. This may not be present in certain
+        contexts if the user has not made their email address visible to the requester.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.shared
+      description: Whether the file has been shared. Not populated for items in shared
+        drives.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.ownedByMe
+      description: Whether the user owns the file. Not populated for items in shared
+        drives.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canAddChildren
+      description: Whether the current user can add children to this folder. This
+        is always false when the item is not a folder.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canAddFolderFromAnotherDrive
+      description: Whether the current user can add a folder from another drive (different
+        shared drive or My Drive) to this folder.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canAddMyDriveParent
+      description: Whether the current user can add a parent for the item without
+        removing an existing parent in the same request. Not populated for shared
+        drive files.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canChangeCopyRequiresWriterPermission
+      description: Whether the current user can change the copyRequiresWriterPermission
+        restriction of this file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canComment
+      description: Whether the current user can comment on this file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canCopy
+      description: Whether the current user can copy this file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canDelete
+      description: Whether the current user can delete this file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canDeleteChildren
+      description: Whether the current user can delete children of this folder. This
+        is false when the item is not a folder. Only populated for items in shared
+        drives.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canDownload
+      description: Whether the current user can download this file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canEdit
+      description: Whether the current user can edit this file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canListChildren
+      description: Whether the current user can list the children of this folder.
+        This is always false when the item is not a folder.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canModifyContent
+      description: Whether the current user can modify the content of this file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canModifyContentRestriction
+      description: Whether the current user can modify restrictions on content of
+        this file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canMoveChildrenOutOfDrive
+      description: Whether the current user can move children of this folder outside
+        of the shared drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canMoveChildrenWithinDrive
+      description: Whether the current user can move children of this folder within
+        this drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canMoveItemOutOfDrive
+      description: Whether the current user can move this item outside of this drive
+        by changing its parent.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canMoveItemWithinDrive
+      description: Whether the current user can move this item within this drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canReadRevisions
+      description: Whether the current user can read the revisions resource of this
+        file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canReadDrive
+      description: Whether the current user can read the shared drive to which this
+        file belongs. Only populated for items in shared drives.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canRemoveChildren
+      description: Whether the current user can remove children from this folder.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canRemoveMyDriveParent
+      description: Whether the current user can remove a parent from the item without
+        adding another parent in the same request. Not populated for shared drive
+        files.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canRename
+      description: Whether the current user can rename this file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canShare
+      description: Whether the current user can modify the sharing settings for this
+        file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canTrash
+      description: Whether the current user can move this file to trash.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canTrashChildren
+      description: Whether the current user can trash children of this folder. This
+        is false when the item is not a folder. Only populated for items in shared
+        drives.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.capabilities.canUntrash
+      description: Whether the current user can restore this file from trash.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.copyRequiresWriterPermission
+      description: Whether the options to copy, print, or download this file, should
+        be disabled for readers and commenters.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.writersCanShare
+      description: Whether users with only writer permission can modify the file's
+        permissions. Not populated for items in shared drives.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.permissions.kind
+      description: Identifies what kind of resource this is.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.permissions.id
+      description: The ID of this permission.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.permissions.type
+      description: The type of the grantee.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.permissions.emailAddress
+      description: The email address of the user or group to which this permission refers.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.permissions.domain
+      description: The domain to which this permission refers.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.permissions.role
+      description: The role granted by this permission.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.permissions.view
+      description: Indicates the view for this permission.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.permissions.allowFileDiscovery
+      description: Whether the permission allows the file to be discovered through search.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.permissions.displayName
+      description: The "pretty" name of the value of the permission.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.permissions.photoLink
+      description: A link to the user's profile photo, if available.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.permissions.expirationTime
+      description: The time at which this permission will expire (RFC 3339 date-time).
+      type: Date
+    - contextPath: GoogleDrive.DriveChange.file.permissions.permissionDetails.permissionType
+      description: The permission type for this user.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.permissions.permissionDetails.role
+      description: The primary role for this user.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.permissions.permissionDetails.inheritedFrom
+      description: The ID of the item from which this permission is inherited.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.permissions.permissionDetails.inherited
+      description: Whether this permission is inherited.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.permissions.deleted
+      description: Whether the account associated with this permission has been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.permissionIds
+      description: List of permission IDs for users with access to this file.
+      type: Unknown
+    - contextPath: GoogleDrive.DriveChange.file.hasAugmentedPermissions
+      description: Whether there are permissions directly on this file. This field
+        is only populated for items in shared drives.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.folderColorRgb
+      description: The color for a folder as an RGB hex string.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.originalFilename
+      description: The original filename of the uploaded content if available, or
+        else the original value of the name field. This is only available for files
+        with binary content in Google Drive.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.fullFileExtension
+      description: The full file extension extracted from the name field.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.fileExtension
+      description: The final component of fullFileExtension. This is only available
+        for files with binary content in Google Drive.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.md5Checksum
+      description: The MD5 checksum for the content of the file. This is only applicable
+        to files with binary content in Google Drive.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.size
+      description: The size of the file's content in bytes. This is only applicable
+        to files with binary content in Google Drive.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.quotaBytesUsed
+      description: The number of storage quota bytes used by the file. This includes
+        the head revision as well as previous revisions with keepForever enabled.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.headRevisionId
+      description: The ID of the file's head revision. This is currently only available
+        for files with binary content in Google Drive.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.contentHints.thumbnail.image
+      description: The thumbnail data encoded with URL-safe Base64 (RFC 4648 section
+        5).
+      type: Unknown
+    - contextPath: GoogleDrive.DriveChange.file.contentHints.thumbnail.mimeType
+      description: The MIME type of the thumbnail.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.contentHints.indexableText
+      description: Text to be indexed for the file to improve fullText queries. This
+        is limited to 128KB in length and may contain HTML elements.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.width
+      description: The width of the image in pixels.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.height
+      description: The height of the image in pixels.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.rotation
+      description: The number of clockwise 90 degree rotations applied from the image's
+        original orientation.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.location.latitude
+      description: The latitude stored in the image.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.location.longitude
+      description: The longitude stored in the image.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.location.altitude
+      description: The altitude stored in the image.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.time
+      description: The date and time the photo was taken (EXIF DateTime).
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.cameraMake
+      description: The make of the camera used to create the photo.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.cameraModel
+      description: The model of the camera used to create the photo.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.exposureTime
+      description: The length of the exposure, in seconds.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.aperture
+      description: The aperture used to create the photo (f-number).
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.flashUsed
+      description: Whether a flash was used to create the photo.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.focalLength
+      description: The focal length used to create the photo, in millimeters.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.isoSpeed
+      description: The ISO speed used to create the photo.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.meteringMode
+      description: The metering mode used to create the photo.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.sensor
+      description: The type of sensor used to create the photo.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.exposureMode
+      description: The exposure mode used to create the photo.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.colorSpace
+      description: The color space of the photo.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.whiteBalance
+      description: The white balance mode used to create the photo.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.exposureBias
+      description: The exposure bias of the photo (APEX value).
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.maxApertureValue
+      description: The smallest f-number of the lens at the focal length used to create
+        the photo (APEX value).
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.subjectDistance
+      description: The distance to the subject of the photo, in meters.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.imageMediaMetadata.lens
+      description: The lens used to create the photo.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.videoMediaMetadata.width
+      description: The width of the video in pixels.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.videoMediaMetadata.height
+      description: The height of the video in pixels.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.videoMediaMetadata.durationMillis
+      description: The duration of the video in milliseconds.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.file.isAppAuthorized
+      description: Whether the file was created or opened by the requesting app.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.exportLinks
+      description: Links for exporting Google Docs to specific formats.
+      type: Unknown
+    - contextPath: GoogleDrive.DriveChange.file.shortcutDetails.targetId
+      description: The ID of the file that this shortcut points to.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.shortcutDetails.targetMimeType
+      description: The MIME type of the file that this shortcut points to. The value
+        of this field is a snapshot of the target's MIME type, captured when the shortcut
+        is created.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.contentRestrictions.readOnly
+      description: Whether the content of the file is read-only.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.contentRestrictions.reason
+      description: Reason for why the content of the file is restricted. This is only
+        mutable on requests that also set readOnly=true.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.contentRestrictions.restrictingUser.kind
+      description: Identifies what kind of resource this is.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.contentRestrictions.restrictingUser.displayName
+      description: A plain text displayable name for this user.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.contentRestrictions.restrictingUser.photoLink
+      description: A link to the user's profile photo, if available.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.contentRestrictions.restrictingUser.me
+      description: Whether this user is the requesting user.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.file.contentRestrictions.restrictingUser.permissionId
+      description: The user's ID as visible in Permission resources.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.contentRestrictions.restrictingUser.emailAddress
+      description: The email address of the user. This may not be present in certain
+        contexts if the user has not made their email address visible to the requester.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.file.contentRestrictions.restrictionTime
+      description: The time at which the content restriction was set (formatted RFC
+        3339 timestamp). Only populated if readOnly is true.
+      type: Date
+    - contextPath: GoogleDrive.DriveChange.file.contentRestrictions.type
+      description: The type of the content restriction. Currently the only possible
+        value is globalContentRestriction.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.drive.kind
+      description: Identifies what kind of resource this is.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.drive.id
+      description: The ID of this shared drive which is also the ID of the top level folder of this shared drive.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.drive.name
+      description: The name of this shared drive.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.drive.themeId
+      description: The ID of the theme from which the background image and color will
+        be set.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.drive.colorRgb
+      description: The color of this shared drive as an RGB hex string. It can only
+        be set on a drive.drives.update request that does not set themeId.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.drive.backgroundImageFile.id
+      description: The ID of an image file in Google Drive to use for the background
+        image.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.drive.backgroundImageFile.xCoordinate
+      description: The X coordinate of the upper left corner of the cropping area
+        in the background image.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.drive.backgroundImageFile.yCoordinate
+      description: The Y coordinate of the upper left corner of the cropping area
+        in the background image.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.drive.backgroundImageFile.width
+      description: The width of the cropped image in the closed range of 0 to 1.
+      type: Number
+    - contextPath: GoogleDrive.DriveChange.drive.backgroundImageLink
+      description: A short-lived link to this shared drive's background image.
+      type: String
+    - contextPath: GoogleDrive.DriveChange.drive.capabilities.canAddChildren
+      description: Whether the current user can add children to folders in this shared
+        drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.capabilities.canChangeCopyRequiresWriterPermissionRestriction
+      description: Whether the current user can change the copyRequiresWriterPermission
+        restriction of this shared drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.capabilities.canChangeDomainUsersOnlyRestriction
+      description: Whether the current user can change the domainUsersOnly restriction
+        of this shared drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.capabilities.canChangeDriveBackground
+      description: Whether the current user can change the background of this shared
+        drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.capabilities.canChangeDriveMembersOnlyRestriction
+      description: Whether the current user can change the driveMembersOnly restriction
+        of this shared drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.capabilities.canComment
+      description: Whether the current user can comment on files in this shared drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.capabilities.canCopy
+      description: Whether the current user can copy files in this shared drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.capabilities.canDeleteChildren
+      description: Whether the current user can delete children from folders in this
+        shared drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.capabilities.canDeleteDrive
+      description: Whether the current user can delete this shared drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.capabilities.canDownload
+      description: Whether the current user can download files in this shared drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.capabilities.canEdit
+      description: Whether the current user can edit files in this shared drive
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.capabilities.canListChildren
+      description: Whether the current user can list the children of folders in this
+        shared drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.capabilities.canManageMembers
+      description: Whether the current user can add members to this shared drive or
+        remove them or change their role.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.capabilities.canReadRevisions
+      description: Whether the current user can read the revisions resource of files
+        in this shared drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.capabilities.canRename
+      description: Whether the current user can rename files or folders in this shared
+        drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.capabilities.canRenameDrive
+      description: Whether the current user can rename this shared drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.capabilities.canShare
+      description: Whether the current user can share files or folders in this shared
+        drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.capabilities.canTrashChildren
+      description: Whether the current user can trash children from folders in this
+        shared drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.createdTime
+      description: The time at which the shared drive was created (RFC 3339 date-time).
+      type: Date
+    - contextPath: GoogleDrive.DriveChange.drive.hidden
+      description: Whether the shared drive is hidden from default view.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.restrictions.adminManagedRestrictions
+      description: Whether administrative privileges on this shared drive are required
+        to modify restrictions.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.restrictions.copyRequiresWriterPermission
+      description: Whether the options to copy, print, or download files inside this
+        shared drive, should be disabled for readers and commenters.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.restrictions.domainUsersOnly
+      description: Whether access to this shared drive and items inside this shared
+        drive is restricted to users of the domain to which this shared drive belongs.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveChange.drive.restrictions.driveMembersOnly
+      description: Whether access to items inside this shared drive is restricted
+        to its members.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The user's primary email address.
+      isArray: false
+      name: user_id
+      required: false
+      secret: false
+    - default: false
+      description: Return activities for this drive folder and all children and descendants.
+        The format is "items/ITEM_ID".
+      isArray: false
+      name: folder_name
+      required: false
+      secret: false
+    - default: false
+      description: Return activities for this drive item. The format is "items/ITEM_ID".
+      isArray: false
+      name: item_name
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The filtering for items returned from this query request. The format of the filter string is a sequence of expressions, joined by an optional "AND", where each expression is of the form "field operator value".
+
+        Supported fields:
+        time - Uses numerical operators on date values either in terms of milliseconds since Jan 1, 1970 or in RFC 3339 format.
+        Examples:
+        time > 1452409200000 AND time <= 1492812924310
+        time >= "2016-01-10T01:02:03-05:00"
+
+        detail.action_detail_case - Uses the "has" operator (:) and either a singular value or a list of allowed action types enclosed in parentheses.
+        Examples:
+        detail.action_detail_case: RENAME
+        detail.action_detail_case:(CREATE EDIT)
+        -detail.action_detail_case:MOVE"
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: "The time range to consider for getting drive activity. Use the\
+        \ format \"<number> <time unit>\". \nExample: 12 hours, 7 days, 3 months,\
+        \ 1 year. This argument will override if the filter argument is given."
+      isArray: false
+      name: time_range
+      required: false
+      secret: false
+    - default: false
+      description: "A singular value or a list of allowed action types enclosed in\
+        \ parentheses. The filters are based on given actions. For example: \nRENAME \n\
+        (CREATE EDIT)\nThis argument will override if the filter argument is given."
+      isArray: false
+      name: action_detail_case_include
+      required: false
+      secret: false
+    - default: false
+      description: "A singular value or a list of allowed action types enclosed in\
+        \ parentheses. The filters are based on given actions. For example:\nRENAME \n(CREATE\
+        \ EDIT)\nThis argument will override if the filter argument is given."
+      isArray: false
+      name: action_detail_case_remove
+      required: false
+      secret: false
+    - default: false
+      description: The token identifying which page of results to return. Set this
+        to the nextPageToken value returned from a previous query to obtain the following
+        page of results. If not set, the first page of results will be returned.
+      isArray: false
+      name: page_token
+      required: false
+      secret: false
+    deprecated: false
+    description: Query past activity in Google Drive.
+    execution: false
+    name: google-drive-activity-list
+    outputs:
+    - contextPath: GoogleDrive.PageToken.DriveActivity.nextPageToken
+      description: Token to retrieve the next page of results, or empty if there are
+        no more results in the list.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.create.new
+      description: If true, the object was newly created.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.create.upload
+      description: If true, the object originated externally and was uploaded to Drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.create.copy.originalObject.driveItem.name
+      description: The target Drive item. The format is "items/ITEM_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.create.copy.originalObject.driveItem.title
+      description: The title of the Drive item.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.create.copy.originalObject.driveItem.driveFile
+      description: If true, the Drive item is a file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.create.copy.originalObject.driveItem.driveFolder.type
+      description: The type of Drive folder.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.create.copy.originalObject.drive.name
+      description: The resource name of the shared drive. The format is "COLLECTION_ID/DRIVE_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.create.copy.originalObject.drive.title
+      description: The title of the shared drive.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.edit
+      description: If true, the object was edited.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.move.addedParents.driveItem.name
+      description: The target Drive item. The format is "items/ITEM_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.move.addedParents.driveItem.title
+      description: The title of the Drive item.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.move.addedParents.driveItem.driveFile
+      description: If true, the Drive item is a file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.move.addedParents.driveItem.driveFolder.type
+      description: The type of a Drive folder.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.move.addedParents.drive.name
+      description: The resource name of the shared drive. The format is "COLLECTION_ID/DRIVE_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.move.addedParents.drive.title
+      description: The title of the shared drive.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.move.removedParents.driveItem.name
+      description: The target Drive item. The format is "items/ITEM_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.move.removedParents.driveItem.title
+      description: The title of the Drive item.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.move.removedParents.driveItem.driveFile
+      description: If true, the Drive item is a file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.move.removedParents.driveItem.driveFolder.type
+      description: The type of Drive folder.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.move.removedParents.drive.name
+      description: The resource name of the shared drive. The format is "COLLECTION_ID/DRIVE_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.move.removedParents.drive.title
+      description: The title of the shared drive.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.rename.oldTitle
+      description: The previous title of the drive object.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.rename.newTitle
+      description: The new title of the drive object.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.delete.type
+      description: The type of delete action taken.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.restore.type
+      description: The type of restore action taken.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.role
+      description: Indicates the Google Drive permissions role.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.allowDiscovery
+      description: If true, the item can be discovered (e.g., in the user's "Shared with me" collection) without needing a link to the item.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.user.knownUser.personName
+      description: The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.user.knownUser.isCurrentUser
+      description: True if this is the user making the request.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.user.deletedUser
+      description: If true, a user whose account has since been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.user.unknownUser
+      description: If true, a user about whom nothing is currently known.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.group.email
+      description: The email address of the group.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.group.title
+      description: The title of the group.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.domain.name
+      description: The name of the domain, e.g., "google.com".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.domain.legacyId
+      description: An opaque string used to identify this domain.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.anyone
+      description: If true, represents any user (including a logged out user).
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.role
+      description: Indicates the Google Drive permissions role.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.allowDiscovery
+      description: If true, the item can be discovered (e.g., in the user's "Shared with me" collection) without needing a link to the item.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.user.knownUser.personName
+      description: The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.user.knownUser.isCurrentUser
+      description: True if this is the user making the request.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.user.deletedUser
+      description: If true, a user whose account has since been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.user.unknownUser
+      description: If true, a user about whom nothing is currently known.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.group.email
+      description: The email address of the group.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.group.title
+      description: The title of the group.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.domain.name
+      description: The name of the domain, e.g., "google.com".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.domain.legacyId
+      description: An opaque string used to identify this domain.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.anyone
+      description: If true, represents any user (including a logged out user).
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.comment.mentionedUsers.knownUser.personName
+      description: The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.comment.mentionedUsers.knownUser.isCurrentUser
+      description: True if this is the user making the request.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.comment.mentionedUsers.deletedUser
+      description: If true, a user whose account has since been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.comment.mentionedUsers.unknownUser
+      description: If true, a user about whom nothing is currently known.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.comment.post.subtype
+      description: The sub-type of post event.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.comment.assignment.subtype
+      description: The sub-type of assignment event.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.comment.assignment.assignedUser.knownUser.personName
+      description: The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.comment.assignment.assignedUser.knownUser.isCurrentUser
+      description: True if this is the user making the request.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.comment.assignment.assignedUser.deletedUser
+      description: If true, a user whose account has since been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.comment.assignment.assignedUser.unknownUser
+      description: If true, a user about whom nothing is currently known.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.comment.suggestion.subtype
+      description: The sub-type of suggestion event.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.dlpChange.type
+      description: The type of Data Leak Prevention (DLP) change.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.reference.type
+      description: The reference type corresponding to this event.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.settingsChange.restrictionChanges.feature
+      description: The feature which had a change in restriction policy.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.primaryActionDetail.settingsChange.restrictionChanges.newRestriction
+      description: The restriction in place after the change.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actors.user.knownUser.personName
+      description: The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actors.user.knownUser.isCurrentUser
+      description: True if this is the user making the request.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actors.user.deletedUser
+      description: If true, a user whose account has since been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actors.user.unknownUser
+      description: If true, a user about whom nothing is currently known.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actors.anonymous
+      description: If true, the user is an anonymous user.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actors.impersonation.impersonatedUser.knownUser.personName
+      description: The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actors.impersonation.impersonatedUser.knownUser.isCurrentUser
+      description: True if this is the user making the request.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actors.impersonation.impersonatedUser.deletedUser
+      description: If true, a user whose account has since been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actors.impersonation.impersonatedUser.unknownUser
+      description: If true, a user about whom nothing is currently known.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actors.system.type
+      description: The type of the system event that may triggered activity.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actors.administrator
+      description: If true, the user is an administrator.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.create.new
+      description: If true, the object was newly created.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.create.upload
+      description: If true, the object originated externally and was uploaded to Drive.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.create.copy.originalObject.driveItem.name
+      description: The target Drive item. The format is "items/ITEM_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.create.copy.originalObject.driveItem.title
+      description: The title of the Drive item.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.create.copy.originalObject.driveItem.driveFile
+      description: If true, the Drive item is a file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.create.copy.originalObject.driveItem.driveFolder.type
+      description: The type of Drive folder.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.create.copy.originalObject.drive.name
+      description: The resource name of the shared drive. The format is "COLLECTION_ID/DRIVE_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.create.copy.originalObject.drive.title
+      description: The title of the shared drive.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.edit
+      description: If true, the object was edited.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.move.addedParents.driveItem.name
+      description: The target Drive item. The format is "items/ITEM_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.move.addedParents.driveItem.title
+      description: The title of the Drive item.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.move.addedParents.driveItem.driveFile
+      description: If true, the Drive item is a file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.move.addedParents.driveItem.driveFolder.type
+      description: The type of a Drive folder.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.move.addedParents.drive.name
+      description: The resource name of the shared drive. The format is "COLLECTION_ID/DRIVE_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.move.addedParents.drive.title
+      description: The title of the shared drive.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.move.removedParents.driveItem.name
+      description: The target Drive item. The format is "items/ITEM_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.move.removedParents.driveItem.title
+      description: The title of the Drive item.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.move.removedParents.driveItem.driveFile
+      description: If true, the Drive item is a file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.move.removedParents.driveItem.driveFolder.type
+      description: The type of Drive folder.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.move.removedParents.drive.name
+      description: The resource name of the shared drive. The format is "COLLECTION_ID/DRIVE_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.move.removedParents.drive.title
+      description: The title of the shared drive.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.rename.oldTitle
+      description: The previous title of the drive object.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.rename.newTitle
+      description: The new title of the drive object.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.delete.type
+      description: The type of delete action taken.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.restore.type
+      description: The type of restore action taken.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.role
+      description: Indicates the Google Drive permissions role.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.allowDiscovery
+      description: If true, the item can be discovered (e.g., in the user's "Shared with me" collection) without needing a link to the item.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.user.knownUser.personName
+      description: The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.user.knownUser.isCurrentUser
+      description: True if this is the user making the request.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.user.deletedUser
+      description: If true, a user whose account has since been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.user.unknownUser
+      description: If true, a user about whom nothing is currently known.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.group.email
+      description: The email address of the group.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.group.title
+      description: The title of the group.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.domain.name
+      description: The name of the domain, e.g., "google.com".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.domain.legacyId
+      description: An opaque string used to identify this domain.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.anyone
+      description: If true, represents any user (including a logged out user).
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.role
+      description: Indicates the Google Drive permissions role.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.allowDiscovery
+      description: If true, the item can be discovered (e.g., in the user's "Shared with me" collection) without needing a link to the item.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.user.knownUser.personName
+      description: The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.user.knownUser.isCurrentUser
+      description: True if this is the user making the request.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.user.deletedUser
+      description: If true, a user whose account has since been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.user.unknownUser
+      description: If true, a user about whom nothing is currently known.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.group.email
+      description: The email address of the group.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.group.title
+      description: The title of the group.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.domain.name
+      description: The name of the domain, e.g., "google.com".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.domain.legacyId
+      description: An opaque string used to identify this domain.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.anyone
+      description: If true, represents any user (including a logged out user).
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.comment.mentionedUsers.knownUser.personName
+      description: The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.comment.mentionedUsers.knownUser.isCurrentUser
+      description: True if this is the user making the request.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.comment.mentionedUsers.deletedUser
+      description: If true, a user whose account has since been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.comment.mentionedUsers.unknownUser
+      description: If true, a user about whom nothing is currently known.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.comment.post.subtype
+      description: The sub-type of post event.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.comment.assignment.subtype
+      description: The sub-type of assignment event.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.comment.assignment.assignedUser.knownUser.personName
+      description: The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.comment.assignment.assignedUser.knownUser.isCurrentUser
+      description: True if this is the user making the request.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.comment.assignment.assignedUser.deletedUser
+      description: If true, a user whose account has since been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.comment.assignment.assignedUser.unknownUser
+      description: If true, a user about whom nothing is currently known.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.comment.suggestion.subtype
+      description: The sub-type of suggestion event.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.dlpChange.type
+      description: The type of Data Leak Prevention (DLP) change.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.reference.type
+      description: The reference type corresponding to this event.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.settingsChange.restrictionChanges.feature
+      description: The feature which had a change in restriction policy.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.detail.settingsChange.restrictionChanges.newRestriction
+      description: The restriction in place after the change.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.actor.user.knownUser.personName
+      description: The identifier for this user that can be used with the People API to get more information.
+        The format is "people/ACCOUNT_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.actor.user.knownUser.isCurrentUser
+      description: True if this is the user making the request.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.actor.user.deletedUser
+      description: If true, a user whose account has since been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.actor.user.unknownUser
+      description: If true, a user about whom nothing is currently known.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.actor.anonymous
+      description: If true, the user is an anonymous user.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.actor.impersonation.impersonatedUser.knownUser.personName
+      description: The identifier for this user that can be used with the People API to get more information.
+        The format is "people/ACCOUNT_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.actor.impersonation.impersonatedUser.knownUser.isCurrentUser
+      description: True if this is the user making the request.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.actor.impersonation.impersonatedUser.deletedUser
+      description: If true, a user whose account has since been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.actor.impersonation.impersonatedUser.unknownUser
+      description: If true, a user about whom nothing is currently known.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.actor.system.type
+      description: The type of the system event that may triggered activity.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.actor.administrator
+      description: If true, the user is an administrator.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.target.driveItem.name
+      description: The target Drive item. The format is "items/ITEM_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.driveItem.title
+      description: The title of the Drive item.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.driveItem.mimeType
+      description: The MIME type of the Drive item.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.driveItem.owner.domain.name
+      description: The name of the domain, e.g., "google.com".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.driveItem.owner.domain.legacyId
+      description: An opaque string used to identify this domain.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.driveItem.owner.user.knownUser.personName
+      description: The identifier for this user that can be used with the People API to get more information.
+        The format is "people/ACCOUNT_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.driveItem.owner.user.knownUser.isCurrentUser
+      description: True if this is the user making the request.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.target.driveItem.owner.user.deletedUser
+      description: If true, a user whose account has since been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.target.driveItem.owner.user.unknownUser
+      description: If true, a user about whom nothing is currently known.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.target.driveItem.owner.drive.name
+      description: The resource name of the shared drive. The format is "COLLECTION_ID/DRIVE_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.driveItem.owner.drive.title
+      description: The title of the shared drive.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.driveItem.driveFile
+      description: If true, the Drive item is a file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.target.driveItem.driveFolder.type
+      description: The type of Drive folder.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.drive.name
+      description: The resource name of the shared drive. The format is "COLLECTION_ID/DRIVE_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.drive.title
+      description: The title of the shared drive.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.drive.root.name
+      description: The target Drive item. The format is "items/ITEM_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.drive.root.title
+      description: The title of the Drive item.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.drive.root.mimeType
+      description: The MIME type of the Drive item.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.drive.root.owner.domain.name
+      description: The name of the domain, e.g., "google.com".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.drive.root.owner.domain.legacyId
+      description: An opaque string used to identify this domain.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.drive.root.owner.user.knownUser.personName
+      description: The identifier for this user that can be used with the People API to get more information.
+        The format is "people/ACCOUNT_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.drive.root.owner.user.knownUser.isCurrentUser
+      description: True if this is the user making the request.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.target.drive.root.owner.user.deletedUser
+      description: If true, a user whose account has since been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.target.drive.root.owner.user.unknownUser
+      description: If true, a user about whom nothing is currently known.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.target.drive.root.owner.drive.name
+      description: The resource name of the shared drive. The format is "COLLECTION_ID/DRIVE_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.drive.root.owner.drive.title
+      description: The title of the shared drive.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.drive.root.driveFile
+      description: If true, the Drive item is a file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.target.drive.root.driveFolder.type
+      description: The type of Drive folder.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.fileComment.legacyCommentId
+      description: The comment in the discussion thread.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.fileComment.legacyDiscussionId
+      description: The discussion thread to which the comment was added.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.fileComment.linkToDiscussion
+      description: The link to the discussion thread containing this comment, for example,
+        "https://docs.google.com/DOCUMENT_ID/edit?disco=THREAD_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.fileComment.parent.name
+      description: The target Drive item. The format is "items/ITEM_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.fileComment.parent.title
+      description: The title of the Drive item.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.fileComment.parent.mimeType
+      description: The MIME type of the Drive item.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.fileComment.parent.owner.domain.name
+      description: The name of the domain, e.g., "google.com".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.fileComment.parent.owner.domain.legacyId
+      description: An opaque string used to identify this domain.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.fileComment.parent.owner.user.knownUser.personName
+      description: The identifier for this user that can be used with the People API to get more information.
+        The format is "people/ACCOUNT_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.fileComment.parent.owner.user.knownUser.isCurrentUser
+      description: True if this is the user making the request.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.target.fileComment.parent.owner.user.deletedUser
+      description: If true, a user whose account has since been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.target.fileComment.parent.owner.user.unknownUser
+      description: If true, a user about whom nothing is currently known.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.target.fileComment.parent.owner.drive.name
+      description: The resource name of the shared drive. The format is "COLLECTION_ID/DRIVE_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.fileComment.parent.owner.drive.title
+      description: The title of the shared drive.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.target.fileComment.parent.driveFile
+      description: If true, the Drive item is a file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.actions.target.fileComment.parent.driveFolder.type
+      description: The type of Drive folder.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.timestamp
+      description: The activity occurred at this specific time.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.timeRange.startTime
+      description: The start of the time range.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.actions.timeRange.endTime
+      description: The end of the time range.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.driveItem.name
+      description: The target Drive item. The format is "items/ITEM_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.driveItem.title
+      description: The title of the Drive item.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.driveItem.mimeType
+      description: The MIME type of the Drive item.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.driveItem.owner.domain.name
+      description: The name of the domain, e.g., "google.com".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.driveItem.owner.domain.legacyId
+      description: An opaque string used to identify this domain.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.driveItem.owner.user.knownUser.personName
+      description: The identifier for this user that can be used with the People API to get more information.
+        The format is "people/ACCOUNT_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.driveItem.owner.user.knownUser.isCurrentUser
+      description: True if this is the user making the request.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.targets.driveItem.owner.user.deletedUser
+      description: If true, a user whose account has since been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.targets.driveItem.owner.user.unknownUser
+      description: If true, a user about whom nothing is currently known.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.targets.driveItem.owner.drive.name
+      description: The resource name of the shared drive. The format is "COLLECTION_ID/DRIVE_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.driveItem.owner.drive.title
+      description: The title of the shared drive.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.driveItem.driveFile
+      description: If true, the Drive item is a file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.targets.driveItem.driveFolder.type
+      description: The type of Drive folder.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.drive.name
+      description: The resource name of the shared drive. The format is "COLLECTION_ID/DRIVE_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.drive.title
+      description: The title of the shared drive.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.drive.root.name
+      description: The target Drive item. The format is "items/ITEM_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.drive.root.title
+      description: The title of the Drive item.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.drive.root.mimeType
+      description: The MIME type of the Drive item.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.drive.root.owner.domain.name
+      description: The name of the domain, e.g., "google.com".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.drive.root.owner.domain.legacyId
+      description: An opaque string used to identify this domain.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.drive.root.owner.user.knownUser.personName
+      description: The identifier for this user that can be used with the People API to get more information.
+        The format is "people/ACCOUNT_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.drive.root.owner.user.knownUser.isCurrentUser
+      description: True if this is the user making the request.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.targets.drive.root.owner.user.deletedUser
+      description: If true, a user whose account has since been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.targets.drive.root.owner.user.unknownUser
+      description: If true, a user about whom nothing is currently known.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.targets.drive.root.owner.drive.name
+      description: The resource name of the shared drive. The format is "COLLECTION_ID/DRIVE_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.drive.root.owner.drive.title
+      description: The title of the shared drive.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.drive.root.driveFile
+      description: If true, the Drive item is a file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.targets.drive.root.driveFolder.type
+      description: The type of Drive folder.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.fileComment.legacyCommentId
+      description: The comment in the discussion thread.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.fileComment.legacyDiscussionId
+      description: The discussion thread to which the comment was added.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.fileComment.linkToDiscussion
+      description: The link to the discussion thread containing this comment, for example, "https://docs.google.com/DOCUMENT_ID/edit?disco=THREAD_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.fileComment.parent.name
+      description: The target Drive item. The format is "items/ITEM_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.fileComment.parent.title
+      description: The title of the Drive item.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.fileComment.parent.mimeType
+      description: The MIME type of the Drive item.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.fileComment.parent.owner.domain.name
+      description: The name of the domain, e.g., "google.com".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.fileComment.parent.owner.domain.legacyId
+      description: An opaque string used to identify this domain.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.fileComment.parent.owner.user.knownUser.personName
+      description: The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.fileComment.parent.owner.user.knownUser.isCurrentUser
+      description: True if this is the user making the request.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.targets.fileComment.parent.owner.user.deletedUser
+      description: If true, a user whose account has since been deleted.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.targets.fileComment.parent.owner.user.unknownUser
+      description: If true, a user about whom nothing is currently known.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.targets.fileComment.parent.owner.drive.name
+      description: The resource name of the shared drive. The format is "COLLECTION_ID/DRIVE_ID".
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.fileComment.parent.owner.drive.title
+      description: The title of the shared drive.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.targets.fileComment.parent.driveFile
+      description: If true, the Drive item is a file.
+      type: Boolean
+    - contextPath: GoogleDrive.DriveActivity.targets.fileComment.parent.driveFolder.type
+      description: The type of Drive folder.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.timestamp
+      description: The activity occurred at this specific time.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.timeRange.startTime
+      description: The start of the time range.
+      type: String
+    - contextPath: GoogleDrive.DriveActivity.timeRange.endTime
+      description: The end of the time range.
+      type: String
+  dockerimage: demisto/googleapi-python3:1.0.0.13812
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- GoogleDrive-Test
+defaultmapperin: Google Drive-mapper
+defaultclassifier: Google Drive
+fromversion: 5.0.0

@@ -1,0 +1,35 @@
+args:
+- default: false
+  description: Date value to check - Can be any non-timezone aware time format. ex.
+    "2020-01-01T00:00:00"
+  isArray: false
+  name: left
+  required: true
+  secret: false
+- default: false
+  description: Relative time ex. "6 months ago"
+  isArray: false
+  name: right
+  required: true
+  secret: false
+comment: Checks the given datetime has occured after the provided relative time.
+commonfields:
+  id: AfterRelativeDate
+  version: -1
+enabled: true
+name: AfterRelativeDate
+script: '-'
+subtype: python3
+system: false
+tags:
+- date
+- filter
+- Condition
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.6.12176
+runas: DBotWeakRole
+runonce: false
+fromversion: 5.0.0
+tests:
+- No tests (unit test)

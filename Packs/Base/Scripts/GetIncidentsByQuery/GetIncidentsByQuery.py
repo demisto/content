@@ -50,7 +50,9 @@ def build_incidents_query(extra_query, incident_types, time_field, from_date, to
     if extra_query:
         query_parts.append(extra_query)
     if incident_types:
-        types_part = "type:(%s)" % " ".join(map(lambda x: '"%s"' % x.strip(), incident_types.split(",")))
+        types = ['"{}"'.format(x.strip()) if '*' not in x else '{}'.format(x.strip())
+                 for x in incident_types.split(",")]
+        types_part = "type:({})".format(' '.join(types))
         query_parts.append(types_part)
     if from_date:
         from_part = '%s:>="%s"' % (time_field, parse_datetime(from_date))
@@ -59,12 +61,11 @@ def build_incidents_query(extra_query, incident_types, time_field, from_date, to
         to_part = '%s:<"%s"' % (time_field, parse_datetime(to_date))
         query_parts.append(to_part)
     if len(non_empty_fields) > 0:
-        non_empty_fields_part = " and ".join(map(lambda x: "%s:*" % x, non_empty_fields))
+        non_empty_fields_part = " and ".join("{}:*".format(x) for x in non_empty_fields)
         query_parts.append(non_empty_fields_part)
     if len(query_parts) == 0:
         raise Exception("Incidents query is empty - please fill one of the arguments")
-    query = " and ".join(map(lambda x: "(%s)" % x, query_parts))
-
+    query = " and ".join('({})'.format(x) for x in query_parts)
     return query
 
 
@@ -172,9 +173,9 @@ def main():
         file_name = str(uuid.uuid4())
         output_format = d_args['outputFormat']
         if output_format == 'pickle':
-            data_encoded = pickle.dumps(incidents)
+            data_encoded = pickle.dumps(incidents, protocol=2)
         elif output_format == 'json':
-            data_encoded = json.dumps(incidents)
+            data_encoded = json.dumps(incidents)  # type: ignore
         else:
             raise Exception("Invalid output format: %s" % output_format)
 
@@ -192,6 +193,6 @@ def main():
         return_error(str(e))
 
 
-if __name__ in ['__builtin__', '__main__']:
+if __name__ in ['builtins', '__main__']:
     entry = main()
     demisto.results(entry)

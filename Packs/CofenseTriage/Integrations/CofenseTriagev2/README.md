@@ -1,5 +1,5 @@
 Use the Cofense Triage integration to ingest reported phishing indicators.
-This integration was integrated and tested with version 1.19.1 of Cofense Triage v2
+This integration was integrated and tested with version 1.20 of Cofense Triage v2
 ## Configure Cofense Triage v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -42,7 +42,7 @@ Runs a query for reports.
 | subject | Report's subject | Optional | 
 | reported_at | Retrieve reports that were reported after this time, for example: "2 hours, 4 minutes, 6 month, 1 day". | Optional | 
 | created_at | Retrieve reports that were created after this time, for example: "2 hours, 4 minutes, 6 month, 1 day". | Optional | 
-| reporter | Name or ID of the reporter. | Optional | 
+| reporter | Address or ID of the reporter. | Optional | 
 | max_matches | Maximum number of matches to fetch. Default is 30. | Optional | 
 | verbose | Returns all fields of a report. | Optional | 
 
@@ -178,7 +178,7 @@ Runs a query for reports.
             "Location": "Processed",
             "MatchPriority": 1,
             "Md5": "d312e79695d5de744436006aab6b4ec1",
-            "ReportBody": "Testing PDF attachment\r\n\r\n\r\nMike Saurbaugh  |  Director, Technical Alliances\r\nCOFENSE\r\nm. 607-368-2012\r\ne. test@test.com<mailto:test@test.com>\r\n\r\nConnect with Cofense:\r\n\r\n[signature_527626984]<https://cofense.com/>[signature_379086648]<https://facebook.com/cofense>[signature_426568440]<https://twitter.com/cofense>[signature_1467413640]<https://linkedin.com/company/cofense>[signature_749445379]<https://www.instagram.com/cofense/>[signature_1384270593]<https://www.themuse.com/profiles/cofense>\r\n\r\nUniting Humanity Against Phishing. Watch Our Video<https://cofense.com/project/uhap-video/>\r\n\r\n",
+            "ReportBody": "Testing PDF attachment\r\n\r\n\r\nTest User  |  Director\r\nTEST\r\nm. 123-456-7890\r\ne. test@test.com<mailto:test@test.com>\r\n\r\nConnect with Cofense:\r\n\r\n[signature_527626984]<https://cofense.com/>[signature_379086648]<https://facebook.com/cofense>[signature_426568440]<https://twitter.com/cofense>[signature_1467413640]<https://linkedin.com/company/cofense>[signature_749445379]<https://www.instagram.com/cofense/>[signature_1384270593]<https://www.themuse.com/profiles/cofense>\r\n\r\nUniting Humanity Against Phishing. Watch Our Video<https://cofense.com/project/uhap-video/>\r\n\r\n",
             "ReportSubject": "2020-06-04 XSOAR attachment test",
             "ReportedAt": "2020-06-04T13:40:29.000Z",
             "ReporterId": 5331,
@@ -194,7 +194,179 @@ Runs a query for reports.
 >### Reports:
 >|Category Id|Created At|Email Attachments|Id|Location|Match Priority|Md5|Report Body|Report Subject|Reported At|Reporter Id|Sha256|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 4 | 2020-06-04T13:42:26.173Z | {'id': 18087, 'report_id': 13429, 'decoded_filename': 'image001.png', 'content_type': 'image/png; name=image001.png', 'size_in_bytes': 1397, 'email_attachment_payload': {'id': 7095, 'md5': '5008fb6e6652f56cac5bdc5bf1cbe9c2', 'sha256': '554aeaaace31c7038a09dd408945583e1035ec124a46b04e5c6c5b148dc96f68', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18089, 'report_id': 13429, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 1701, 'email_attachment_payload': {'id': 7097, 'md5': '731ffb7846c22e41e9de8de307c93ece', 'sha256': 'c911d07d1f7be624e00e44821148629d98cf6d0f2bfac112362c7c564522ea51', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18092, 'report_id': 13429, 'decoded_filename': 'image006.png', 'content_type': 'image/png; name=image006.png', 'size_in_bytes': 1994, 'email_attachment_payload': {'id': 7100, 'md5': '124bd437f87181fdfe3154b31fd2cf6b', 'sha256': '3d804c705545bf2a1e5ac6b0ea9b93a41ceb16d7453adebc58fba5df75335b20', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18088, 'report_id': 13429, 'decoded_filename': 'image002.png', 'content_type': 'image/png; name=image002.png', 'size_in_bytes': 1430, 'email_attachment_payload': {'id': 7096, 'md5': 'cc07463ceeaaed79783a7f2a607797f9', 'sha256': 'c6c2c95238f52648faaef4520fa9bba49c10ca0f1df9bfd1912be544f319b80b', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18090, 'report_id': 13429, 'decoded_filename': 'image004.png', 'content_type': 'image/png; name=image004.png', 'size_in_bytes': 1557, 'email_attachment_payload': {'id': 7098, 'md5': '95878e37974ed3cad67154d36dd58a9a', 'sha256': 'e0d478f6ce56721867a0584ddea0016d713b9b2ab758fd0c9be3f1409d6e2634', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18091, 'report_id': 13429, 'decoded_filename': 'image005.png', 'content_type': 'image/png; name=image005.png', 'size_in_bytes': 1609, 'email_attachment_payload': {'id': 7099, 'md5': '0e911498bf4dc5eddb544ab5ece4b06a', 'sha256': '5f2046b3c55a874aadde052f9da4af3c17e2b5bf5baf704f58b1dd1eadf08544', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18093, 'report_id': 13429, 'decoded_filename': 'XSOAR Attachment Test -Inquiry - Agent Tesla Keylogger.pdf', 'content_type': 'application/pdf; name="XSOAR Attachment Test -Inquiry - Agent Tesla Keylogger.pdf"', 'size_in_bytes': 49597, 'email_attachment_payload': {'id': 7110, 'md5': 'fb7f083f4fb93a88ab8110d857312978', 'sha256': '15ab1b20ada04dfc6285caff5e4da4eab09a9157c2cbe32cd96113da6304a5ee', 'mime_type': 'application/pdf; charset=binary'}} | 13429 | Processed | 1 | d312e79695d5de744436006aab6b4ec1 | Testing PDF attachment<br/><br/><br/>Mike Saurbaugh  \|  Director, Technical Alliances<br/>COFENSE<br/>m. 607-368-2012<br/>e. test@test.com<mailto:test@test.com><br/><br/>Connect with Cofense:<br/><br/>[signature_527626984]<https://cofense.com/>[signature_379086648]<https://facebook.com/cofense>[signature_426568440]<https://twitter.com/cofense>[signature_1467413640]<https://linkedin.com/company/cofense>[signature_749445379]<https://www.instagram.com/cofense/>[signature_1384270593]<https://www.themuse.com/profiles/cofense><br/><br/>Uniting Humanity Against Phishing. Watch Our Video<https://cofense.com/project/uhap-video/><br/><br/> | 2020-06-04 XSOAR attachment test | 2020-06-04T13:40:29.000Z | 5331 | ba77b5d984f7da97b6f96daa442535c79f47e4b6ea0055e3472b855ee8c244e4 |
+>| 4 | 2020-06-04T13:42:26.173Z | {'id': 18087, 'report_id': 13429, 'decoded_filename': 'image001.png', 'content_type': 'image/png; name=image001.png', 'size_in_bytes': 1397, 'email_attachment_payload': {'id': 7095, 'md5': '5008fb6e6652f56cac5bdc5bf1cbe9c2', 'sha256': '554aeaaace31c7038a09dd408945583e1035ec124a46b04e5c6c5b148dc96f68', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18089, 'report_id': 13429, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 1701, 'email_attachment_payload': {'id': 7097, 'md5': '731ffb7846c22e41e9de8de307c93ece', 'sha256': 'c911d07d1f7be624e00e44821148629d98cf6d0f2bfac112362c7c564522ea51', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18092, 'report_id': 13429, 'decoded_filename': 'image006.png', 'content_type': 'image/png; name=image006.png', 'size_in_bytes': 1994, 'email_attachment_payload': {'id': 7100, 'md5': '124bd437f87181fdfe3154b31fd2cf6b', 'sha256': '3d804c705545bf2a1e5ac6b0ea9b93a41ceb16d7453adebc58fba5df75335b20', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18088, 'report_id': 13429, 'decoded_filename': 'image002.png', 'content_type': 'image/png; name=image002.png', 'size_in_bytes': 1430, 'email_attachment_payload': {'id': 7096, 'md5': 'cc07463ceeaaed79783a7f2a607797f9', 'sha256': 'c6c2c95238f52648faaef4520fa9bba49c10ca0f1df9bfd1912be544f319b80b', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18090, 'report_id': 13429, 'decoded_filename': 'image004.png', 'content_type': 'image/png; name=image004.png', 'size_in_bytes': 1557, 'email_attachment_payload': {'id': 7098, 'md5': '95878e37974ed3cad67154d36dd58a9a', 'sha256': 'e0d478f6ce56721867a0584ddea0016d713b9b2ab758fd0c9be3f1409d6e2634', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18091, 'report_id': 13429, 'decoded_filename': 'image005.png', 'content_type': 'image/png; name=image005.png', 'size_in_bytes': 1609, 'email_attachment_payload': {'id': 7099, 'md5': '0e911498bf4dc5eddb544ab5ece4b06a', 'sha256': '5f2046b3c55a874aadde052f9da4af3c17e2b5bf5baf704f58b1dd1eadf08544', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18093, 'report_id': 13429, 'decoded_filename': 'XSOAR Attachment Test -Inquiry - Agent Tesla Keylogger.pdf', 'content_type': 'application/pdf; name="XSOAR Attachment Test -Inquiry - Agent Tesla Keylogger.pdf"', 'size_in_bytes': 49597, 'email_attachment_payload': {'id': 7110, 'md5': 'fb7f083f4fb93a88ab8110d857312978', 'sha256': '15ab1b20ada04dfc6285caff5e4da4eab09a9157c2cbe32cd96113da6304a5ee', 'mime_type': 'application/pdf; charset=binary'}} | 13429 | Processed | 1 | d312e79695d5de744436006aab6b4ec1 | Testing PDF attachment<br/><br/><br/>Test User  \|  Director<br/>COFENSE<br/>m. 123-456-7890<br/>e. test@test.com<mailto:test@test.com><br/><br/>Connect with Cofense:<br/><br/>[signature_527626984]<https://cofense.com/>[signature_379086648]<https://facebook.com/cofense>[signature_426568440]<https://twitter.com/cofense>[signature_1467413640]<https://linkedin.com/company/cofense>[signature_749445379]<https://www.instagram.com/cofense/>[signature_1384270593]<https://www.themuse.com/profiles/cofense><br/><br/>Uniting Humanity Against Phishing. Watch Our Video<https://cofense.com/project/uhap-video/><br/><br/> | 2020-06-04 XSOAR attachment test | 2020-06-04T13:40:29.000Z | 5331 | ba77b5d984f7da97b6f96daa442535c79f47e4b6ea0055e3472b855ee8c244e4 |
+
+
+### cofense-search-inbox-reports
+***
+Runs a query for reports from the `inbox` mailbox.
+
+
+#### Base Command
+
+`cofense-search-reports`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_hash | File hash, MD5 or SHA256. | Optional | 
+| url | The reported URLs. | Optional | 
+| subject | Report's subject | Optional | 
+| reported_at | Retrieve reports that were reported after this time, for example: "2 hours, 4 minutes, 6 month, 1 day". | Optional | 
+| created_at | Retrieve reports that were created after this time, for example: "2 hours, 4 minutes, 6 month, 1 day". | Optional | 
+| reporter | Address or ID of the reporter. | Optional | 
+| max_matches | Maximum number of matches to fetch. Default is 30. | Optional | 
+| verbose | Returns all fields of a report. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cofense.Report.ID | unknown | ID number of the report. | 
+| Cofense.Report.EmailAttachments | unknown | Email attachments. | 
+| Cofense.Report.EmailAttachments.id | unknown | Email attachment ID. | 
+| Cofense.Report.Tags | string | Report tags. | 
+| Cofense.Report.ClusterId | number | Cluster ID number. | 
+| Cofense.Report.CategoryId | number | Report category. | 
+| Cofense.Report.CreatedAt | date | Report creation date. | 
+| Cofense.Report.ReportedAt | string | Reporting time. | 
+| Cofense.Report.MatchPriority | number | The highest match priority based on rule hits for the report. | 
+| Cofense.Report.ReporterId | number | Reporter ID. | 
+| Cofense.Report.Location | string | Location of the report. | 
+| Cofense.Report.Reporter | string | Reporter email address. | 
+| Cofense.Report.SuspectFromAddress | string | Suspect from address. | 
+| Cofense.Report.ReportSubject | string | Report subject. | 
+| Cofense.Report.ReportBody | string | Report body. | 
+| Cofense.Report.Md5 | number | MD5 hash of the file. | 
+| Cofense.Report.Sha256 | unknown | SHA256 hash of the file. | 
+
+
+#### Command Example
+```!cofense-search-inbox-reports reported_at="7 days" created_at="7 days" max_matches="1"```
+
+#### Context Example
+```json
+{
+    "Cofense": {
+        "Report": {
+            "CategoryId": 4,
+            "ClusterId": null,
+            "CreatedAt": "2020-06-04T13:42:26.173Z",
+            "EmailAttachments": [
+                {
+                    "content_type": "image/png; name=image001.png",
+                    "decoded_filename": "image001.png",
+                    "email_attachment_payload": {
+                        "id": 7095,
+                        "md5": "5008fb6e6652f56cac5bdc5bf1cbe9c2",
+                        "mime_type": "image/png; charset=binary",
+                        "sha256": "554aeaaace31c7038a09dd408945583e1035ec124a46b04e5c6c5b148dc96f68"
+                    },
+                    "id": 18087,
+                    "report_id": 13429,
+                    "size_in_bytes": 1397
+                },
+                {
+                    "content_type": "image/png; name=image003.png",
+                    "decoded_filename": "image003.png",
+                    "email_attachment_payload": {
+                        "id": 7097,
+                        "md5": "731ffb7846c22e41e9de8de307c93ece",
+                        "mime_type": "image/png; charset=binary",
+                        "sha256": "c911d07d1f7be624e00e44821148629d98cf6d0f2bfac112362c7c564522ea51"
+                    },
+                    "id": 18089,
+                    "report_id": 13429,
+                    "size_in_bytes": 1701
+                },
+                {
+                    "content_type": "image/png; name=image006.png",
+                    "decoded_filename": "image006.png",
+                    "email_attachment_payload": {
+                        "id": 7100,
+                        "md5": "124bd437f87181fdfe3154b31fd2cf6b",
+                        "mime_type": "image/png; charset=binary",
+                        "sha256": "3d804c705545bf2a1e5ac6b0ea9b93a41ceb16d7453adebc58fba5df75335b20"
+                    },
+                    "id": 18092,
+                    "report_id": 13429,
+                    "size_in_bytes": 1994
+                },
+                {
+                    "content_type": "image/png; name=image002.png",
+                    "decoded_filename": "image002.png",
+                    "email_attachment_payload": {
+                        "id": 7096,
+                        "md5": "cc07463ceeaaed79783a7f2a607797f9",
+                        "mime_type": "image/png; charset=binary",
+                        "sha256": "c6c2c95238f52648faaef4520fa9bba49c10ca0f1df9bfd1912be544f319b80b"
+                    },
+                    "id": 18088,
+                    "report_id": 13429,
+                    "size_in_bytes": 1430
+                },
+                {
+                    "content_type": "image/png; name=image004.png",
+                    "decoded_filename": "image004.png",
+                    "email_attachment_payload": {
+                        "id": 7098,
+                        "md5": "95878e37974ed3cad67154d36dd58a9a",
+                        "mime_type": "image/png; charset=binary",
+                        "sha256": "e0d478f6ce56721867a0584ddea0016d713b9b2ab758fd0c9be3f1409d6e2634"
+                    },
+                    "id": 18090,
+                    "report_id": 13429,
+                    "size_in_bytes": 1557
+                },
+                {
+                    "content_type": "image/png; name=image005.png",
+                    "decoded_filename": "image005.png",
+                    "email_attachment_payload": {
+                        "id": 7099,
+                        "md5": "0e911498bf4dc5eddb544ab5ece4b06a",
+                        "mime_type": "image/png; charset=binary",
+                        "sha256": "5f2046b3c55a874aadde052f9da4af3c17e2b5bf5baf704f58b1dd1eadf08544"
+                    },
+                    "id": 18091,
+                    "report_id": 13429,
+                    "size_in_bytes": 1609
+                },
+                {
+                    "content_type": "application/pdf; name=\"XSOAR Attachment Test -Inquiry - Agent Tesla Keylogger.pdf\"",
+                    "decoded_filename": "XSOAR Attachment Test -Inquiry - Agent Tesla Keylogger.pdf",
+                    "email_attachment_payload": {
+                        "id": 7110,
+                        "md5": "fb7f083f4fb93a88ab8110d857312978",
+                        "mime_type": "application/pdf; charset=binary",
+                        "sha256": "15ab1b20ada04dfc6285caff5e4da4eab09a9157c2cbe32cd96113da6304a5ee"
+                    },
+                    "id": 18093,
+                    "report_id": 13429,
+                    "size_in_bytes": 49597
+                }
+            ],
+            "ID": 13429,
+            "Location": "Inbox",
+            "MatchPriority": 1,
+            "Md5": "d312e79695d5de744436006aab6b4ec1",
+            "ReportBody": "Testing PDF attachment\r\n\r\n\r\nTest User  |  Director\r\nTEST\r\nm. 123-456-7890\r\ne. test@test.com<mailto:test@test.com>\r\n\r\nConnect with Cofense:\r\n\r\n[signature_527626984]<https://cofense.com/>[signature_379086648]<https://facebook.com/cofense>[signature_426568440]<https://twitter.com/cofense>[signature_1467413640]<https://linkedin.com/company/cofense>[signature_749445379]<https://www.instagram.com/cofense/>[signature_1384270593]<https://www.themuse.com/profiles/cofense>\r\n\r\nUniting Humanity Against Phishing. Watch Our Video<https://cofense.com/project/uhap-video/>\r\n\r\n",
+            "ReportSubject": "2020-06-04 XSOAR attachment test",
+            "ReportedAt": "2020-06-04T13:40:29.000Z",
+            "ReporterId": 5331,
+            "Sha256": "ba77b5d984f7da97b6f96daa442535c79f47e4b6ea0055e3472b855ee8c244e4",
+            "Tags": []
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Reports:
+>|Category Id|Created At|Email Attachments|Id|Location|Match Priority|Md5|Report Body|Report Subject|Reported At|Reporter Id|Sha256|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 4 | 2020-06-04T13:42:26.173Z | {'id': 18087, 'report_id': 13429, 'decoded_filename': 'image001.png', 'content_type': 'image/png; name=image001.png', 'size_in_bytes': 1397, 'email_attachment_payload': {'id': 7095, 'md5': '5008fb6e6652f56cac5bdc5bf1cbe9c2', 'sha256': '554aeaaace31c7038a09dd408945583e1035ec124a46b04e5c6c5b148dc96f68', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18089, 'report_id': 13429, 'decoded_filename': 'image003.png', 'content_type': 'image/png; name=image003.png', 'size_in_bytes': 1701, 'email_attachment_payload': {'id': 7097, 'md5': '731ffb7846c22e41e9de8de307c93ece', 'sha256': 'c911d07d1f7be624e00e44821148629d98cf6d0f2bfac112362c7c564522ea51', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18092, 'report_id': 13429, 'decoded_filename': 'image006.png', 'content_type': 'image/png; name=image006.png', 'size_in_bytes': 1994, 'email_attachment_payload': {'id': 7100, 'md5': '124bd437f87181fdfe3154b31fd2cf6b', 'sha256': '3d804c705545bf2a1e5ac6b0ea9b93a41ceb16d7453adebc58fba5df75335b20', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18088, 'report_id': 13429, 'decoded_filename': 'image002.png', 'content_type': 'image/png; name=image002.png', 'size_in_bytes': 1430, 'email_attachment_payload': {'id': 7096, 'md5': 'cc07463ceeaaed79783a7f2a607797f9', 'sha256': 'c6c2c95238f52648faaef4520fa9bba49c10ca0f1df9bfd1912be544f319b80b', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18090, 'report_id': 13429, 'decoded_filename': 'image004.png', 'content_type': 'image/png; name=image004.png', 'size_in_bytes': 1557, 'email_attachment_payload': {'id': 7098, 'md5': '95878e37974ed3cad67154d36dd58a9a', 'sha256': 'e0d478f6ce56721867a0584ddea0016d713b9b2ab758fd0c9be3f1409d6e2634', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18091, 'report_id': 13429, 'decoded_filename': 'image005.png', 'content_type': 'image/png; name=image005.png', 'size_in_bytes': 1609, 'email_attachment_payload': {'id': 7099, 'md5': '0e911498bf4dc5eddb544ab5ece4b06a', 'sha256': '5f2046b3c55a874aadde052f9da4af3c17e2b5bf5baf704f58b1dd1eadf08544', 'mime_type': 'image/png; charset=binary'}},<br/>{'id': 18093, 'report_id': 13429, 'decoded_filename': 'XSOAR Attachment Test -Inquiry - Agent Tesla Keylogger.pdf', 'content_type': 'application/pdf; name="XSOAR Attachment Test -Inquiry - Agent Tesla Keylogger.pdf"', 'size_in_bytes': 49597, 'email_attachment_payload': {'id': 7110, 'md5': 'fb7f083f4fb93a88ab8110d857312978', 'sha256': '15ab1b20ada04dfc6285caff5e4da4eab09a9157c2cbe32cd96113da6304a5ee', 'mime_type': 'application/pdf; charset=binary'}} | 13429 | Processed | 1 | d312e79695d5de744436006aab6b4ec1 | Testing PDF attachment<br/><br/><br/>Test User  \|  Director<br/>TEST<br/>m. 123-456-7890<br/>e. test@test.com<mailto:test@test.com><br/><br/>Connect with Cofense:<br/><br/>[signature_527626984]<https://cofense.com/>[signature_379086648]<https://facebook.com/cofense>[signature_426568440]<https://twitter.com/cofense>[signature_1467413640]<https://linkedin.com/company/cofense>[signature_749445379]<https://www.instagram.com/cofense/>[signature_1384270593]<https://www.themuse.com/profiles/cofense><br/><br/>Uniting Humanity Against Phishing. Watch Our Video<https://cofense.com/project/uhap-video/><br/><br/> | 2020-06-04 XSOAR attachment test | 2020-06-04T13:40:29.000Z | 5331 | ba77b5d984f7da97b6f96daa442535c79f47e4b6ea0055e3472b855ee8c244e4 |
 
 
 ### cofense-get-attachment
@@ -362,7 +534,7 @@ Retrieves a report by the report ID number.
             "Location": "Processed",
             "MatchPriority": 0,
             "Md5": "f13bbc172fe7d394828ccabb25c3c99e",
-            "ReportSubject": "test@demisto.net Reset password instruction",
+            "ReportSubject": "test@test.net Reset password instruction",
             "ReportedAt": "2019-04-17T16:54:57.000Z",
             "ReporterId": 3280,
             "Sha256": "4f6bc0d9c1217a2a6f327423e16b7a6e9294c68cfb33864541bd805fe4ab2d72",
@@ -377,7 +549,7 @@ Retrieves a report by the report ID number.
 >{"HumanReadable":"### Cofense HTML Report:\nHTML report download request has been completed","name":"5760-report.html","path":"aaf1160b-9176-45d9-aab9-90efd278e05d"}### Report Summary:
 >|Category Id|Created At|Id|Location|Match Priority|Md5|Report Subject|Reported At|Reporter Id|Sha256|
 >|---|---|---|---|---|---|---|---|---|---|
->| 4 | 2019-04-17T20:53:02.090Z | 5760 | Processed | 0 | f13bbc172fe7d394828ccabb25c3c99e | test@demisto.net Reset password instruction | 2019-04-17T16:54:57.000Z | 3280 | 4f6bc0d9c1217a2a6f327423e16b7a6e9294c68cfb33864541bd805fe4ab2d72 |
+>| 4 | 2019-04-17T20:53:02.090Z | 5760 | Processed | 0 | f13bbc172fe7d394828ccabb25c3c99e | test@test.nul Reset password instruction | 2019-04-17T16:54:57.000Z | 3280 | 4f6bc0d9c1217a2a6f327423e16b7a6e9294c68cfb33864541bd805fe4ab2d72 |
 
 
 ### cofense-get-report-png-by-id
@@ -466,7 +638,7 @@ Threat Indicators that are designated by analysts as malicious, suspicious or be
             "ReportId": 5760,
             "ThreatKey": "URL",
             "ThreatLevel": "Malicious",
-            "ThreatValue": "http://bold-air.000webhostapp.com/notification.php?email=test@demisto.net.net"
+            "ThreatValue": "http://bold-air0example.com/notification.php?email=test@test.net"
         }
     }
 }
@@ -477,5 +649,5 @@ Threat Indicators that are designated by analysts as malicious, suspicious or be
 >### Threat Indicators:
 >|Created At|Id|Operator Id|Report Id|Threat Key|Threat Level|Threat Value|
 >|---|---|---|---|---|---|---|
->| 2020-05-28T22:14:52.690Z | 75 | 2 | 5760 | URL | Malicious | `http://bold-air.000webhostapp.com/notification.php?email=test@demisto.net.net` |
+>| 2020-05-28T22:14:52.690Z | 75 | 2 | 5760 | URL | Malicious | `http://bold-air0example.com/notification.php?email=test@test.net` |
 

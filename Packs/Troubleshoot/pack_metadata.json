@@ -1,0 +1,16 @@
+{
+    "name": "Troubleshoot",
+    "description": "Use this pack to troubleshoot your environment.",
+    "support": "xsoar",
+    "currentVersion": "1.1.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-09-23T10:48:50Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

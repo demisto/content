@@ -1930,7 +1930,7 @@ tasks:
       - "82"
     scriptarguments:
       columns:
-        simple: Bytes,DestinationIP,DestinationPort,Duration,EndTime,SourceIP,SourcePort,StartTime
+        simple: SourceIP,SourcePort,DestinationIP,DestinationPort,Duration,StartTime,EndTime,Bytes
       context_path:
         simple: PCAPResultsFlow
       grid_id:

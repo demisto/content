@@ -1,4 +1,3 @@
-
 category: Messaging
 commonfields:
   id: Microsoft Teams
@@ -101,6 +100,12 @@ script:
       description: The Microsoft Teams adaptive card to send.
       isArray: false
       name: adaptive_card
+      required: false
+      secret: false
+    - default: false
+      description: The team member to which to send the message.
+      isArray: false
+      name: to
       required: false
       secret: false
     deprecated: false
@@ -236,8 +241,8 @@ script:
       secret: false
     deprecated: false
     description: 'Ring a user''s Teams account. Note: This is a ring only! no media
-      will play in case the generated call is answered. To use this make sure your Bot has the following premissions - 
-      Calls.Initiate.All and Calls.InitiateGroupCall.All'
+      will play in case the generated call is answered. To use this make sure your
+      Bot has the following premissions - Calls.Initiate.All and Calls.InitiateGroupCall.All'
     execution: false
     name: microsoft-teams-ring-user
   - arguments:
@@ -286,7 +291,7 @@ script:
     description: Creates a new channel in a Microsoft Teams team.
     execution: false
     name: microsoft-teams-create-channel
-  dockerimage: demisto/teams:1.0.0.9652
+  dockerimage: demisto/teams:1.0.0.13080
   feed: false
   isfetch: false
   longRunning: true

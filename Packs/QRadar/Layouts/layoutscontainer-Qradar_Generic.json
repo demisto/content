@@ -1,0 +1,1104 @@
+{
+ "detailsV2": {
+  "tabs": [
+   {
+    "id": "summary",
+    "name": "Legacy Summary",
+    "type": "summary"
+   },
+   {
+    "id": "caseinfoid",
+    "name": "Incident Info",
+    "sections": [
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+      "isVisible": true,
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "type",
+        "height": 22,
+        "id": "incident-type-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "severity",
+        "height": 22,
+        "id": "incident-severity-field",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "owner",
+        "height": 22,
+        "id": "incident-owner-field",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "sourcebrand",
+        "height": 22,
+        "id": "incident-sourceBrand-field",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "sourceinstance",
+        "height": 22,
+        "id": "incident-sourceInstance-field",
+        "index": 5,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "playbookid",
+        "height": 22,
+        "id": "incident-playbookId-field",
+        "index": 6,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Case Details",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 0
+     },
+     {
+      "h": 2,
+      "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Notes",
+      "static": false,
+      "type": "notes",
+      "w": 1,
+      "x": 2,
+      "y": 0
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Work Plan",
+      "static": false,
+      "type": "workplan",
+      "w": 1,
+      "x": 1,
+      "y": 0
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+      "isVisible": true,
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Linked Incidents",
+      "static": false,
+      "type": "linkedIncidents",
+      "w": 1,
+      "x": 1,
+      "y": 6
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Child Incidents",
+      "static": false,
+      "type": "childInv",
+      "w": 1,
+      "x": 2,
+      "y": 4
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Evidence",
+      "static": false,
+      "type": "evidence",
+      "w": 1,
+      "x": 2,
+      "y": 2
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "hideName": false,
+      "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Team Members",
+      "static": false,
+      "type": "team",
+      "w": 1,
+      "x": 2,
+      "y": 6
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+      "maxH": null,
+      "maxW": 2,
+      "minH": 1,
+      "minW": 2,
+      "moved": false,
+      "name": "Indicators",
+      "query": "",
+      "queryType": "input",
+      "static": false,
+      "type": "indicators",
+      "w": 2,
+      "x": 0,
+      "y": 4
+     },
+     {
+      "displayType": "CARD",
+      "h": 2,
+      "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+      "items": [
+       {
+        "endCol": 1,
+        "fieldId": "occurred",
+        "height": 22,
+        "id": "incident-occurred-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 1,
+        "fieldId": "dbotmodified",
+        "height": 22,
+        "id": "incident-modified-field",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dbotduedate",
+        "height": 22,
+        "id": "incident-dueDate-field",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dbotcreated",
+        "height": 22,
+        "id": "incident-created-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 1
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dbotclosed",
+        "height": 22,
+        "id": "incident-closed-field",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 1
+       }
+      ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Timeline Information",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 2
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+      "isVisible": true,
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "dbotclosed",
+        "height": 22,
+        "id": "incident-dbotClosed-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "closereason",
+        "height": 22,
+        "id": "incident-closeReason-field",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "closenotes",
+        "height": 22,
+        "id": "incident-closeNotes-field",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Closing Information",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 6
+     },
+     {
+      "displayType": "CARD",
+      "h": 2,
+      "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+      "isVisible": true,
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "details",
+        "height": 22,
+        "id": "incident-details-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Investigation Data",
+      "static": false,
+      "w": 1,
+      "x": 1,
+      "y": 2
+     }
+    ],
+    "type": "custom"
+   },
+   {
+    "hidden": false,
+    "id": "ovd3iztlms",
+    "name": "QRadar Offense",
+    "sections": [
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "hideName": false,
+      "i": "ovd3iztlms-05534c20-06e3-11eb-a829-138a1bd44ae8",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "idasset",
+        "height": 22,
+        "id": "31475ef0-121b-11eb-9539-bf5583aac705",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dnsname",
+        "height": 22,
+        "id": "350e5200-121b-11eb-9539-bf5583aac705",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "ipaddressasset",
+        "height": 22,
+        "id": "82cc82f0-121b-11eb-9539-bf5583aac705",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "descriptionasset",
+        "height": 22,
+        "id": "39f38650-121b-11eb-9539-bf5583aac705",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Asset Summary",
+      "static": false,
+      "w": 1,
+      "x": 2,
+      "y": 4
+     },
+     {
+      "description": "",
+      "displayType": "ROW",
+      "h": 4,
+      "hideName": false,
+      "i": "ovd3iztlms-405ceb10-0cb4-11eb-9647-db2151019621",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "idoffense",
+        "height": 22,
+        "id": "89017d20-1189-11eb-85a5-f55901c2b8ed",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "statusoffense",
+        "height": 22,
+        "id": "37379280-118a-11eb-85a5-f55901c2b8ed",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "typeoffense",
+        "height": 22,
+        "id": "791aca50-118a-11eb-85a5-f55901c2b8ed",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "descriptionoffense",
+        "height": 22,
+        "id": "bcec8bb0-118a-11eb-85a5-f55901c2b8ed",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "domainoffense",
+        "height": 22,
+        "id": "157186a0-118b-11eb-85a5-f55901c2b8ed",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "lowlevelcategoriesoffense",
+        "height": 22,
+        "id": "c1d525f0-118b-11eb-85a5-f55901c2b8ed",
+        "index": 5,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "listofrulesoffense",
+        "height": 22,
+        "id": "68cb4390-118b-11eb-85a5-f55901c2b8ed",
+        "index": 6,
+        "listId": "ovd3iztlms-405ceb10-0cb4-11eb-9647-db2151019621",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "followup",
+        "height": 22,
+        "id": "11722900-118c-11eb-85a5-f55901c2b8ed",
+        "index": 7,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "assigneduser",
+        "height": 22,
+        "id": "57b263e0-1140-11eb-8f30-a32cef93d85e",
+        "index": 8,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "starttime",
+        "height": 22,
+        "id": "f21bd910-0cb4-11eb-9647-db2151019621",
+        "index": 9,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "lastupdatetime",
+        "height": 22,
+        "id": "0abf86b0-0cb5-11eb-9647-db2151019621",
+        "index": 10,
+        "listId": "ovd3iztlms-405ceb10-0cb4-11eb-9647-db2151019621",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "numberofflows",
+        "height": 22,
+        "id": "86d892c0-1433-11eb-aeaa-c7f0f3601dd5",
+        "index": 11,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "linktooffense",
+        "height": 22,
+        "id": "8d302340-178a-11eb-b628-e799505f430d",
+        "index": 12,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Offense Summary",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 0
+     },
+     {
+      "description": "",
+      "h": 1,
+      "hideName": true,
+      "i": "ovd3iztlms-80416cb0-0cb4-11eb-9647-db2151019621",
+      "items": [
+
+      ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Fetched Events",
+      "query": "QRadarFetchedEventsSum",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamic",
+      "w": 1,
+      "x": 1,
+      "y": 0
+     },
+     {
+      "displayType": "CARD",
+      "h": 3,
+      "hideName": false,
+      "i": "ovd3iztlms-1d035170-0cb6-11eb-9647-db2151019621",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "highlevelcategories",
+        "height": 53,
+        "id": "10822ab0-13b0-11eb-a881-c15bd78e854e",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "eventnames",
+        "height": 53,
+        "id": "da649e00-13a9-11eb-a881-c15bd78e854e",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "eventdescriptions",
+        "height": 53,
+        "id": "1bc3ca00-13b0-11eb-a881-c15bd78e854e",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+		"endCol": 2,
+		"fieldId": "usernames",
+		"height": 22,
+		"id": "aabaf2a0-3797-11eb-a84c-0143507d14c1",
+		"index": 3,
+		"sectionItemType": "field",
+		"startCol": 0
+		}
+      ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Event Details",
+      "static": false,
+      "w": 1,
+      "x": 1,
+      "y": 1
+     },
+     {
+      "description": "",
+      "displayType": "ROW",
+      "h": 2,
+      "hideName": false,
+      "i": "ovd3iztlms-94732f50-0cb6-11eb-9647-db2151019621",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "closingreason",
+        "height": 22,
+        "id": "130ca250-1190-11eb-85a5-f55901c2b8ed",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "closetime",
+        "height": 22,
+        "id": "19ca1910-1190-11eb-85a5-f55901c2b8ed",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "closinguser",
+        "height": 22,
+        "id": "95ee3030-1190-11eb-85a5-f55901c2b8ed",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Offense Closing Details",
+      "static": false,
+      "w": 1,
+      "x": 2,
+      "y": 2
+     },
+     {
+      "displayType": "ROW",
+      "h": 1,
+      "hideName": true,
+      "i": "ovd3iztlms-d55d0bb0-0e66-11eb-bcbf-9bb21b22f55d",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "severityoffense",
+        "height": 22,
+        "id": "e8cd02b0-118e-11eb-85a5-f55901c2b8ed",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "relevanceoffense",
+        "height": 22,
+        "id": "1d4133e0-118f-11eb-85a5-f55901c2b8ed",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "credibilityoffense",
+        "height": 22,
+        "id": "4abcba10-118f-11eb-85a5-f55901c2b8ed",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Offense Metrics",
+      "static": false,
+      "w": 1,
+      "x": 2,
+      "y": 1
+     },
+     {
+      "displayType": "ROW",
+      "h": 4,
+      "hideName": false,
+      "i": "ovd3iztlms-dd1f2730-1306-11eb-96b6-ed7f6d78ed9f",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "sourceips",
+        "height": 22,
+        "id": "1f76f2c0-1307-11eb-96b6-ed7f6d78ed9f",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "sourcegeolocation",
+        "height": 22,
+        "id": "9c00ed10-1306-11eb-96b6-ed7f6d78ed9f",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "srcports",
+        "height": 22,
+        "id": "8e6c3600-1306-11eb-96b6-ed7f6d78ed9f",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "destinationips",
+        "height": 22,
+        "id": "2fc06990-1307-11eb-96b6-ed7f6d78ed9f",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "sourceipv6",
+        "height": 22,
+        "id": "5d5b1080-1307-11eb-96b6-ed7f6d78ed9f",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "trafficdirection",
+        "height": 22,
+        "id": "a01eb2b0-1306-11eb-96b6-ed7f6d78ed9f",
+        "index": 5,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dstports",
+        "height": 22,
+        "id": "b08c0530-1306-11eb-96b6-ed7f6d78ed9f",
+        "index": 6,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "sourcemacaddress",
+        "height": 22,
+        "id": "6a7b5ae0-1307-11eb-96b6-ed7f6d78ed9f",
+        "index": 7,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "destinationgeolocation",
+        "height": 22,
+        "id": "3754b850-1307-11eb-96b6-ed7f6d78ed9f",
+        "index": 8,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "destinationmacaddress",
+        "height": 22,
+        "id": "6e152370-1307-11eb-96b6-ed7f6d78ed9f",
+        "index": 9,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "destinationipv6",
+        "height": 22,
+        "id": "6216c3d0-1307-11eb-96b6-ed7f6d78ed9f",
+        "index": 10,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Event Network Data",
+      "static": false,
+      "w": 1,
+      "x": 1,
+      "y": 4
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "hideName": false,
+      "i": "ovd3iztlms-f16b1370-1306-11eb-96b6-ed7f6d78ed9f",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "prenatsourceip",
+        "height": 22,
+        "id": "7ee83ca0-1307-11eb-96b6-ed7f6d78ed9f",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "prenatsourceport",
+        "height": 22,
+        "id": "81f83bc0-1307-11eb-96b6-ed7f6d78ed9f",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "prenatdestinationport",
+        "height": 22,
+        "id": "77851000-1307-11eb-96b6-ed7f6d78ed9f",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "postnatsourceip",
+        "height": 22,
+        "id": "8954b1a0-1307-11eb-96b6-ed7f6d78ed9f",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "postnatdestinationip",
+        "height": 22,
+        "id": "954a1090-1307-11eb-96b6-ed7f6d78ed9f",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "postnatsourceport",
+        "height": 22,
+        "id": "92658e40-1307-11eb-96b6-ed7f6d78ed9f",
+        "index": 5,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "postnatdestinationport",
+        "height": 22,
+        "id": "984e28d0-1307-11eb-96b6-ed7f6d78ed9f",
+        "index": 6,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Event NAT Data",
+      "static": false,
+      "w": 1,
+      "x": 2,
+      "y": 6
+     },
+     {
+      "h": 1,
+      "hideName": false,
+      "i": "ovd3iztlms-33062c70-130c-11eb-96b6-ed7f6d78ed9f",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Offense Magnitude",
+      "query": "QRadarMagnitude",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamic",
+      "w": 1,
+      "x": 2,
+      "y": 0
+     },
+     {
+      "displayType": "CARD",
+      "h": 2,
+      "hideName": false,
+      "i": "ovd3iztlms-4c6c8630-13ae-11eb-a881-c15bd78e854e",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "logsourcetype",
+        "height": 53,
+        "id": "cfa28ac0-13b0-11eb-a881-c15bd78e854e",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "logsourcename",
+        "height": 53,
+        "id": "e2780e30-13b1-11eb-a881-c15bd78e854e",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Event Log Sources",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 4
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "hideName": false,
+      "i": "ovd3iztlms-6cdf41a0-13ae-11eb-a881-c15bd78e854e",
+      "items": [
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "sourceipoffense",
+        "height": 22,
+        "id": "7d5aec00-13ae-11eb-a881-c15bd78e854e",
+        "index": 0,
+        "listId": "ovd3iztlms-6cdf41a0-13ae-11eb-a881-c15bd78e854e",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "sourcenetworkoffense",
+        "height": 22,
+        "id": "89d3abc0-13ae-11eb-a881-c15bd78e854e",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "destinationipoffense",
+        "height": 22,
+        "id": "820c6620-13ae-11eb-a881-c15bd78e854e",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "destinationnetworkoffense",
+        "height": 22,
+        "id": "8850b540-13ae-11eb-a881-c15bd78e854e",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Offense Network Data",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 6
+     }
+    ],
+    "type": "custom"
+   },
+   {
+    "hidden": false,
+    "id": "rlehdz7hto",
+    "name": "QRadar Events",
+    "sections": [
+     {
+      "h": 8,
+      "hideName": true,
+      "i": "rlehdz7hto-714adb10-0827-11eb-bbac-c10e1ad3b9a4",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Events",
+      "query": "QRadarPrintEvents",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamic",
+      "w": 3,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "type": "custom"
+   },
+   {
+    "hidden": false,
+    "id": "inroi8ol1r",
+    "name": "QRadar Assets",
+    "sections": [
+     {
+      "h": 9,
+      "hideName": true,
+      "i": "inroi8ol1r-9b60da00-0825-11eb-ad09-65f6a296b239",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Assets",
+      "query": "QRadarPrintAssets",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamic",
+      "w": 3,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "type": "custom"
+   },
+   {
+    "id": "warRoom",
+    "name": "War Room",
+    "type": "warRoom"
+   },
+   {
+    "id": "workPlan",
+    "name": "Work Plan",
+    "type": "workPlan"
+   },
+   {
+    "id": "evidenceBoard",
+    "name": "Evidence Board",
+    "type": "evidenceBoard"
+   },
+   {
+    "hidden": true,
+    "id": "canvas",
+    "name": "Canvas",
+    "type": "canvas"
+   },
+   {
+    "hidden": true,
+    "id": "relatedIncidents",
+    "name": "Related Incidents",
+    "type": "relatedIncidents"
+   }
+  ]
+ },
+ "group": "incident",
+ "id": "Qradar Generic",
+ "name": "Qradar Generic",
+ "system": false,
+ "fromVersion": "6.0.0",
+ "version": -1,
+ "description": ""
+}

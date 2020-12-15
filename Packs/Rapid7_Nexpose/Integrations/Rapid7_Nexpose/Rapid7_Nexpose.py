@@ -6,6 +6,7 @@ import re
 import requests
 import json
 
+
 RANGE_OPERATORS = ['in-range', 'is-between', 'not-in-range']
 YEAR_IN_MINUTES = 525600
 MONTH_IN_MINUTES = 43800
@@ -15,7 +16,7 @@ HOUR_IN_MINUTES = 60
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
+SESSION = ''
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 VERIFY_SSL = not demisto.params().get('unsecure', False)
@@ -60,9 +61,6 @@ def login():
         return ''
 
     return body['sessionID']
-
-
-SESSION = login()
 
 
 def get_headers():
@@ -1304,6 +1302,8 @@ def set_scan_status(scan_id, scan_status):
 def main():
     try:
         handle_proxy()
+        global SESSION
+        SESSION = login()
         if demisto.command() == 'test-module':
             get_assets(limit=1)
             demisto.results('ok')

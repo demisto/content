@@ -25,6 +25,16 @@ configuration:
   name: first_fetch_timestamp
   required: false
   type: 0
+- additionalinfo: Choose which table incidents will be fetched from.
+  defaultvalue: firewall.threat
+  display: Fetch Table
+  hidden: false
+  name: fetch_table
+  options:
+  - firewall.threat
+  - firewall.file_data
+  required: false
+  type: 15
 - display: Severity of events to fetch (Firewall)
   name: firewall_severity
   options:
@@ -71,12 +81,20 @@ configuration:
   - sctp
   required: false
   type: 16
+- additionalinfo: Comma-separated fields that will be fetched with every incident, e.g., "pcap,session_id".
+    Enter "*" for all possible fields.
+  defaultvalue: '*'
+  display: Fetch Fields
+  hidden: false
+  name: fetch_fields
+  required: false
+  type: 12
 - display: Incident type
   name: incidentType
   required: false
   type: 13
-- additionalinfo: "The maximum number of incidents to fetch per query.\t\nCaution: A large\
-    \ number could create overload. Default is 10."
+- additionalinfo: "The maximum number of incidents to fetch per query.\t\nCaution:\
+    \ A large number could create overload. Default is 10."
   defaultvalue: '10'
   display: Max. number of incidents fetched per query
   hidden: false
@@ -183,7 +201,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '''1970-01-01 00:00:00'''
-      description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
+      description: The query start time. For example, start_time="2018-04-26 00:00:00".
+        Default is 1970-01-01 00:00:00.
       isArray: false
       name: start_time
       required: false
@@ -211,6 +230,17 @@ script:
       - minutes
       - days
       - weeks
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: If set to false, query results are not mapped into the standard command context. Default is "true".
+      isArray: false
+      name: transform_results
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -322,8 +352,7 @@ script:
       description: Original source IP address.
       type: String
     - contextPath: CDL.Logging.Threat.RuleMatched
-      description: Name of the security policy rule that the network
-        traffic matched.
+      description: Name of the security policy rule that the network traffic matched.
       type: String
     - contextPath: CDL.Logging.Threat.ThreatCategory
       description: Threat category of the detected threat.
@@ -366,7 +395,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '''1970-01-01 00:00:00'''
-      description: Query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
+      description: Query start time. For example, start_time="2018-04-26 00:00:00".
+        Default is 1970-01-01 00:00:00.
       isArray: false
       name: start_time
       required: false
@@ -528,7 +558,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '''1970-01-01 00:00:00'''
-      description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
+      description: The query start time. For example, start_time="2018-04-26 00:00:00".
+        Default is 1970-01-01 00:00:00.
       isArray: false
       name: start_time
       required: false
@@ -743,8 +774,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Source port utilized by the session. Can be a port number or an array
-        of destination port numbers to search. For example '443' or '443,445'
+      description: Source port utilized by the session. Can be a port number or an
+        array of destination port numbers to search. For example '443' or '443,445'
       isArray: false
       name: source_port
       required: false
@@ -766,9 +797,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: all
-      description: 'The fields selected in the query. Selection can be "all" (same
-        as *) or a comma-separated list of specific fields. The list of fields can be
-        found after viewing all the outputted fields with "all".'
+      description: The fields selected in the query. Selection can be "all" (same
+        as *) or a comma-separated list of specific fields. The list of fields can
+        be found after viewing all the outputted fields with "all".
       isArray: false
       name: fields
       predefined:
@@ -913,7 +944,8 @@ script:
       secret: false
     - default: false
       defaultValue: '''1970-01-01 00:00:00'''
-      description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
+      description: The query start time. For example, start_time="2018-04-26 00:00:00".
+        Default is 1970-01-01 00:00:00.
       isArray: false
       name: start_time
       required: false
@@ -1130,15 +1162,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The networking zone from which the traffic originated. Enter the zone
-        or array of zones to search.
+      description: The networking zone from which the traffic originated. Enter the
+        zone or array of zones to search.
       isArray: false
       name: from_zone
       required: false
       secret: false
     - default: false
-      description: The networking zone to which the traffic was sent. Enter the zone or array
-        of zones to search.
+      description: The networking zone to which the traffic was sent. Enter the zone
+        or array of zones to search.
       isArray: false
       name: to_zone
       required: false
@@ -1350,7 +1382,8 @@ script:
       secret: false
     - default: false
       defaultValue: '''1970-01-01 00:00:00'''
-      description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
+      description: The query start time. For example, start_time="2018-04-26 00:00:00".
+        Default is 1970-01-01 00:00:00.
       isArray: false
       name: start_time
       required: false
@@ -2261,7 +2294,8 @@ script:
       secret: false
     - default: false
       defaultValue: '''1970-01-01 00:00:00'''
-      description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
+      description: The query start time. For example, start_time="2018-04-26 00:00:00".
+        Default is 1970-01-01 00:00:00.
       isArray: false
       name: start_time
       required: false
@@ -2317,8 +2351,8 @@ script:
       description: Name of the security policy rule that the network traffic matched.
       type: String
     - contextPath: CDL.Logging.File.LogSourceName
-      description: Name of the source of the log. The hostname of the firewall that logged
-        the network traffic.
+      description: Name of the source of the log. The hostname of the firewall that
+        logged the network traffic.
       type: String
     - contextPath: CDL.Logging.File.NatDestination
       description: If destination NAT performed, the post-NAT destination IP address.
@@ -2486,16 +2520,16 @@ script:
       description: Palo Alto Networks textual identifier for the threat.
       type: String
     - contextPath: CDL.Logging.File.IsPrismaMobile
-      description: If set to 1, the log record was generated using
-        a cloud-based GlobalProtect instance. If 0, GlobalProtect was hosted on-premise. (For internal use only.)
+      description: If set to 1, the log record was generated using a cloud-based GlobalProtect
+        instance. If 0, GlobalProtect was hosted on-premise. (For internal use only.)
       type: Boolean
     - contextPath: CDL.Logging.File.IsContainer
       description: Indicates if the session is a container page access (Container
         Page).
       type: Boolean
     - contextPath: CDL.Logging.File.IsSaasApp
-      description: Indicates whether the application associated
-        with this network traffic is a SAAS application. (For internal use only.)
+      description: Indicates whether the application associated with this network
+        traffic is a SAAS application. (For internal use only.)
       type: Boolean
     - contextPath: CDL.Logging.File.Vsys
       description: Unique identifier for a virtual system on a Palo Alto Networks
@@ -2565,7 +2599,11 @@ script:
       description: Identifies the origin of the data (the system that produced the
         data.
       type: String
-  dockerimage: demisto/python_pancloud_v2:1.0.0.11712
+  - name: cdl-reset-authentication-timeout
+    deprecated: false
+    description: Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
+    execution: false
+  dockerimage: demisto/python_pancloud_v2:1.0.0.14327
   feed: false
   isfetch: true
   longRunning: false

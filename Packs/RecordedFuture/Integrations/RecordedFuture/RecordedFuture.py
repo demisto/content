@@ -221,79 +221,70 @@ def get_output_prefix(entity_type: str) -> str:
 
 
 def lookup_command(client: Client, entities: List[str],
-                   entity_type: str) -> CommandResults:
+                   entity_type: str) -> List[CommandResults]:
     """Entity lookup command."""
     entity_data = client.entity_lookup(entities, entity_type)
-    indicators, context = build_rep_context(entity_data, entity_type)
-    return CommandResults(outputs_prefix=get_output_prefix(entity_type),
-                          outputs=context, raw_response=entity_data,
-                          readable_output=build_rep_markdown(entity_data,
-                                                             entity_type),
-                          outputs_key_field='name', indicators=indicators)
+    command_results = build_rep_context(entity_data, entity_type)
+    return command_results
 
 
-def build_rep_markdown(entity_data: Dict[str, Any], entity_type: str) -> str:
+def build_rep_markdown(ent: Dict[str, Any], entity_type: str) -> str:
     """Build Reputation Markdown."""
-    if entity_data and ('error' not in entity_data):
-        markdown = []
-        entity_title = entity_type.upper() \
-            if entity_type in ['ip', 'url', 'cve'] else entity_type.title()
-        for ent in entity_data['data']['results']:
-            try:
-                evidence = ent['risk']['rule']['evidence']
-            except KeyError:
-                evidence = {}
-            markdown.append('\n'.join(
-                [f'### Recorded Future {entity_title} reputation '
-                 f'for {ent["entity"]["name"]}',
-                 f'Risk score: {int(ent["risk"]["score"])}',
-                 f'Risk Summary: {ent["risk"]["rule"]["count"]} out of '
-                 f'{ent["risk"]["rule"]["maxCount"]} '
-                 f'Risk Rules currently observed',
-                 f'Criticality: {level_to_criticality(ent["risk"]["level"])}'
-                 f'\n']))
-            if ent['entity'].get('description', None):
-                markdown.append(f'NVD Vulnerability Description: '
-                                f'{ent["entity"]["description"]}\n')
-            if ent['entity'].get('id', None):
-                markdown.append('[Intelligence Card]'
-                                '(https://app.recordedfuture.com'
-                                f'/live/sc/entity/{ent["entity"]["id"]})\n')
-            if evidence:
-                evid_table = [{'Rule': detail['rule'],
-                               'Criticality':
-                                   level_to_criticality(detail['level']),
-                               'Evidence': detail['description'],
-                               'Timestamp': prettify_time(detail['timestamp']),
-                               'Level': detail['level']}
-                              for x, detail in evidence.items()]
-                evid_table.sort(key=lambda x: x.get('Level'), reverse=True)
-                markdown.append(tableToMarkdown('Risk Rules Triggered',
-                                                evid_table,
-                                                ['Criticality', 'Rule',
-                                                 'Evidence', 'Timestamp'],
-                                                removeNull=True))
-        return '\n'.join(markdown)
-    else:
-        return 'No records found'
+    markdown = []
+    entity_title = entity_type.upper() \
+        if entity_type in ['ip', 'url', 'cve'] else entity_type.title()
+    try:
+        evidence = ent['risk']['rule']['evidence']
+    except KeyError:
+        evidence = {}
+    markdown.append('\n'.join(
+        [f'### Recorded Future {entity_title} reputation '
+         f'for {ent["entity"]["name"]}',
+         f'Risk score: {int(ent["risk"]["score"])}',
+         f'Risk Summary: {ent["risk"]["rule"]["count"]} out of '
+         f'{ent["risk"]["rule"]["maxCount"]} '
+         f'Risk Rules currently observed',
+         f'Criticality: {level_to_criticality(ent["risk"]["level"])}'
+         f'\n']))
+    if ent['entity'].get('description', None):
+        markdown.append(f'NVD Vulnerability Description: '
+                        f'{ent["entity"]["description"]}\n')
+    if ent['entity'].get('id', None):
+        markdown.append('[Intelligence Card]'
+                        '(https://app.recordedfuture.com'
+                        f'/live/sc/entity/{ent["entity"]["id"]})\n')
+    if evidence:
+        evid_table = [{'Rule': detail['rule'],
+                       'Criticality':
+                           level_to_criticality(detail['level']),
+                       'Evidence': detail['description'],
+                       'Timestamp': prettify_time(detail['timestamp']),
+                       'Level': detail['level']}
+                      for x, detail in evidence.items()]
+        evid_table.sort(key=lambda x: x.get('Level'), reverse=True)
+        markdown.append(tableToMarkdown('Risk Rules Triggered',
+                                        evid_table,
+                                        ['Criticality', 'Rule',
+                                         'Evidence', 'Timestamp'],
+                                        removeNull=True))
+    return '\n'.join(markdown)
 
 
 def build_rep_context(entity_data: Dict[str, Any],
-                      entity_type: str) -> Tuple[List, List]:
+                      entity_type: str) -> List[CommandResults]:
     """Build Reputation Context."""
     if entity_type == 'hash':
         entity_type = 'file'
     elif entity_type == 'vulnerability':
         entity_type = 'cve'
-    indicators: List[Common.Indicator] = []
-    context: List[Dict[str, Any]] = []
+    command_results: List[CommandResults] = []
     if entity_data and ('error' not in entity_data):
         for ent in entity_data['data']['results']:
             try:
                 evidence = ent['risk']['rule']['evidence']
             except KeyError:
                 evidence = {}
-            context.append({
+            context = {
                 'riskScore': ent['risk']['score'],
                 'Evidence': [{'rule': y['rule'],
                               'mitigation': y['mitigation'],
@@ -314,14 +305,24 @@ def build_rep_context(entity_data: Dict[str, Any],
                 'maxRules': ent['risk']['rule']['maxCount'],
                 'description': ent['entity'].get('description', ''),
                 'name': ent['entity']['name']
-            })
-            indicators.append(
-                create_indicator(ent['entity']['name'], entity_type,
-                                 ent['risk']['score'], ent['entity'].get(
-                        'description', '')))
-        return indicators, context
+            }
+            indicator = create_indicator(ent['entity']['name'], entity_type, ent['risk']['score'],
+                                         ent['entity'].get('description', ''))
+            command_results.append(CommandResults(
+                outputs_prefix=get_output_prefix(entity_type),
+                outputs=context,
+                raw_response=entity_data,
+                readable_output=build_rep_markdown(ent, entity_type),
+                outputs_key_field='name',
+                indicator=indicator
+            )
+
+            )
+        return command_results
     else:
-        return [], []
+        return [CommandResults(
+            readable_output='No records found'
+        )]
 
 
 def triage_command(client: Client,

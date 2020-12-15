@@ -1,0 +1,80 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: PhishTank V2
+  version: -1
+configuration:
+- defaultvalue: '1'
+  display: Database refresh interval (number of hours to wait between each loading)
+  hidden: false
+  name: fetchIntervalHours
+  required: false
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: PhishTank is a free community site where anyone can submit, verify, track,
+  and share phishing data.
+display: PhishTank v2
+name: PhishTank V2
+script:
+  commands:
+  - arguments:
+    - default: true
+      defaultValue: ""
+      description: A comma-separated list of URLs to check the reputation of.
+      isArray: true
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks the reputation of the supplied URLs.
+    execution: false
+    name: url
+    outputs:
+    - contextPath: URL.Data
+      description: A list of URLs with a bad reputation.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that tagged the URL as malicious.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason the vendor tagged the URL as malicious.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The URL tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - deprecated: false
+    description: Reloads the PhishTank downloadable database. PhishTank database is an up to date phishing detection file (updated hourly) .
+    execution: false
+    name: phishtank-reload
+  - deprecated: false
+    description: Shows the status (timestamp) of the last time that PhishTank database was loaded.
+    execution: false
+    name: phishtank-status
+  dockerimage: demisto/python3:3.8.6.13358
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultEnabled: false
+tests:
+- PhishTank Testing
+fromversion: 5.0.0
