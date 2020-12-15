@@ -23,9 +23,9 @@ commonfields:
   version: -1
 dependson:
   must:
-  - Palo Alto Networks IoT 3rd Party|||panw-iot-3rd-party-get-asset-list
-  - Palo Alto Networks IoT 3rd Party|||panw-iot-3rd-party-report-status-to-panw
-  - Palo Alto Networks IoT 3rd Party|||panw-iot-3rd-party-convert-assets-to-external-format
+  - |||panw-iot-3rd-party-get-asset-list
+  - |||panw-iot-3rd-party-report-status-to-panw
+  - |||panw-iot-3rd-party-convert-assets-to-external-format
   - Syslog Sender|||syslog-send
 dockerimage: demisto/python3:3.8.6.13358
 enabled: true
