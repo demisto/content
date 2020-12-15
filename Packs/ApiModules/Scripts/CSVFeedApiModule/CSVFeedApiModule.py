@@ -262,7 +262,8 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
             mapping = config.get(url, {}).get('mapping', {})
             for item in reader:
                 raw_json = dict(item)
-                value = item.get(client.value_field)
+                fields_mapping = create_fields_mapping(raw_json, mapping)
+                value = item.get(client.value_field) or fields_mapping.get('Value')
                 if not value and len(item) > 1:
                     value = next(iter(item.values()))
                 if value:
@@ -275,7 +276,7 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                         'value': value,
                         'type': indicator_type,
                         'rawJSON': raw_json,
-                        'fields': create_fields_mapping(raw_json, mapping) if mapping else {}
+                        'fields': fields_mapping if mapping else {}
                     }
                     indicator['fields']['tags'] = client.tags
 

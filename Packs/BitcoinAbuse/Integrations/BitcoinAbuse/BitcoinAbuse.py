@@ -129,6 +129,27 @@ def _build_fetch_indicators_params(demisto_params: Dict) -> Dict:
     return params
 
 
+#
+# import csv
+#
+# #define the min and max value of angle
+# alpha_min = 110
+# alpha_max = 125
+#
+# #read csv file and loop through with a filter
+# with open('test_csv.csv', 'r') as input_file:
+#     csv_reader = csv.reader(input_file)#, delimiter=',')
+#     lines = [i for i in csv_reader]
+#     header = lines[0]
+#     results = filter(lambda row: alpha_min<int(row[1])<alpha_max, lines[1:])
+#
+# #create output file
+# with open('test_output_csv.csv', "w", newline='') as output_file:
+#     csv_writer = csv.writer(output_file, delimiter=',')
+#     csv_writer.writerow(header)
+#     csv_writer.writerows(results)
+
+
 def fetch_indicators(demisto_params: Dict) -> None:
     """
     Wrapper which calls to CSVFeedApiModule for fetching indicators from Bitcoin Abuse download csv feed.

@@ -65,26 +65,26 @@ failure_report_address_unknown_type = {
 #         a = 2
 #
 #
-def test_report_address_command_success_type_other(requests_mock):
-    requests_mock.get(
-        "https://test.com/api/v1/repositories/sandbox/queryjobs/testid",
-        json=success_mock_response,
-    )
-    # mocker.patch.object(client, 'report_address', return_value=success_mock_response)
-    assert report_address_command(client, success_report_address_other_type) == 'ok'
+# def test_report_address_command_success_type_other(requests_mock):
+#     requests_mock.get(
+#         "https://test.com/api/v1/repositories/sandbox/queryjobs/testid",
+#         json=success_mock_response,
+#     )
+#     # mocker.patch.object(client, 'report_address', return_value=success_mock_response)
+#     assert report_address_command(client, success_report_address_other_type) == 'ok'
 
 
-# def test_report_address_command_failure_type_other():
-#     try:
-#         report_address_command(client, failure_report_address_other_type_missing)
-#         raise AssertionError('report address command should fail when type is other and no abuse_type_other was given')
-#     except DemistoException as error:
-#         assert error.message == 'Bitcoin Abuse: abuse_type_other is mandatory when abuse type is other'
-#
-#
-# def test_report_address_command_failure_unknown_type():
-#     try:
-#         report_address_command(client, failure_report_address_unknown_type)
-#         raise AssertionError('report address command should fail when not given a known type')
-#     except DemistoException as error:
-#         assert error.message == 'Bitcoin Abuse: invalid type of abuse, please insert a correct abuse type'
+def test_report_address_command_failure_type_other():
+    try:
+        report_address_command(client, failure_report_address_other_type_missing)
+        raise AssertionError('report address command should fail when type is other and no abuse_type_other was given')
+    except DemistoException as error:
+        assert error.message == 'Bitcoin Abuse: abuse_type_other is mandatory when abuse type is other'
+
+
+def test_report_address_command_failure_unknown_type():
+    try:
+        report_address_command(client, failure_report_address_unknown_type)
+        raise AssertionError('report address command should fail when not given a known type')
+    except DemistoException as error:
+        assert error.message == 'Bitcoin Abuse: invalid type of abuse, please insert a correct abuse type'
