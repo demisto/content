@@ -47,7 +47,8 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-
+### fetch-indicators
+***
 
 ### bitcoin-report-address
 ***
@@ -73,8 +74,13 @@ Reports an abuser to Bitcoin Abuse API. abuse_type_other field is required when 
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!bitcoin-report-address address=1FTJfkSLXj3JoWpW2ZKjk7FdWcTepWGQUC abuser=abuser@abuse.net abuse_type="bitcoin tumbler" description="this is a description of the abuse"```
+
+#### Context Example
+```json
+{}
+```
 
 #### Human Readable Output
 
-
+>bitcoin address 1FTJfkSLXj3JoWpW2ZKjk7FdWcTepWGQUC by abuser abuser@abuse.net was reported to BitcoinAbuse API
