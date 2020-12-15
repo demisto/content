@@ -36,7 +36,7 @@ Note: This command does not create indicators within Cortex XSOAR.
 
 ##### Base Command
 
-`autofocus-get-indicators`
+`autofocus-daily-get-indicators`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -50,7 +50,7 @@ Note: This command does not create indicators within Cortex XSOAR.
 There is no context output for this command.
 
 ##### Command Example
-```!autofocus-get-indicators limit=4```
+```!autofocus-daily-get-indicators limit=4```
 
 
 ##### Human Readable Output
@@ -63,4 +63,4 @@ There is no context output for this command.
 | demsito\<Span\>.com/some/aditional/path | URL |
 
 To bring the next batch of indicators run:
-`!autofocus-get-indicators limit=4 offset=4`
+`!autofocus-daily-get-indicators limit=4 offset=4`

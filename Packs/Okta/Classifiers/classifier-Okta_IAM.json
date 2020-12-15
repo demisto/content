@@ -1,0 +1,17 @@
+{
+ "description": "",
+ "feed": false,
+ "id": "Okta IAM - App Sync (classifier)",
+ "keyTypeMap": {
+  "application.user_membership.add": "IAM - App Add",
+  "application.user_membership.remove": "IAM - App Remove"
+ },
+ "name": "Okta IAM - App Sync (classifier)",
+ "transformer": {
+  "complex": null,
+  "simple": "eventType"
+ },
+ "type": "classification",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

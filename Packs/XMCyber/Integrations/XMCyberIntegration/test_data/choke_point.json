@@ -1,0 +1,129 @@
+{
+    "data": {
+        "entities": [
+            {
+                "entityId": "15553084234424912589",
+                "name": "USERBB21",
+                "entityType": "node",
+                "entityTypeDisplayName": "Sensor",
+                "entitySubType": {
+                    "name": "osType",
+                    "displayName": "OS Type",
+                    "value": "windows",
+                    "displayValue": "Windows"
+                },
+                "displayName": "USERBB21",
+                "entityBasicData": {
+                    "entityFlavorProperties": [
+                        {
+                            "name": "osName",
+                            "displayName": "OS",
+                            "value": "Windows 7 SP 1.0",
+                            "displayValue": "Windows 7 SP 1.0"
+                        }
+                    ],
+                    "entityNetworkIdentifierProperties": [
+                        {
+                            "name": "ipv4",
+                            "displayName": "Private IP Address",
+                            "value": [
+                                192,
+                                168,
+                                170,
+                                133
+                            ],
+                            "displayValue": "192.168.170.133"
+                        }
+                    ]
+                },
+                "value": 40,
+                "score": 0.05,
+                "level": "low",
+                "trend": 20
+            },
+            {
+                "entityId": "872743867762485580",
+                "name": "USERBB02",
+                "entityType": "node",
+                "entityTypeDisplayName": "Sensor",
+                "entitySubType": {
+                    "name": "osType",
+                    "displayName": "OS Type",
+                    "value": "windows",
+                    "displayValue": "Windows"
+                },
+                "displayName": "USERBB02",
+                "entityBasicData": {
+                    "entityFlavorProperties": [
+                        {
+                            "name": "osName",
+                            "displayName": "OS",
+                            "value": "Windows 7 SP 1.0",
+                            "displayValue": "Windows 7 SP 1.0"
+                        }
+                    ],
+                    "entityNetworkIdentifierProperties": [
+                        {
+                            "name": "ipv4",
+                            "displayName": "Private IP Address",
+                            "value": [
+                                192,
+                                168,
+                                170,
+                                60
+                            ],
+                            "displayValue": "192.168.170.60"
+                        }
+                    ]
+                },
+                "value": 36,
+                "score": 0.05,
+                "level": "low",
+                "trend": 33
+            },
+            {
+                "entityId": "file-163b4ecf80b8429583007386c77cae39",
+                "name": "\\\\userbb40\\share\\script.bat",
+                "entityType": "file",
+                "entityTypeDisplayName": "File",
+                "entitySubType": {
+                    "name": "entitySubType",
+                    "displayName": "Entity Subtype",
+                    "value": "file",
+                    "displayValue": "File"
+                },
+                "displayName": "script.bat",
+                "fileHost": "USERBB40",
+                "entityBasicData": {
+                    "entityFlavorProperties": [
+                        {
+                            "name": "path",
+                            "displayName": "Path",
+                            "value": "\\\\userbb40\\share\\script.bat",
+                            "displayValue": "\\\\userbb40\\share\\script.bat"
+                        }
+                    ],
+                    "entityNetworkIdentifierProperties": [
+                        {
+                            "name": "pathHost",
+                            "displayName": "File Location",
+                            "value": "USERBB40",
+                            "displayValue": "USERBB40"
+                        }
+                    ]
+                },
+                "value": 36,
+                "score": 0.05,
+                "level": "low",
+                "trend": 33
+            }
+        ],
+        "stats": {
+            "totalAssets": 739,
+            "affectedAssets": 48
+        }
+    },
+    "scenarioId": null,
+    "timeId": "timeAgo_days_14",
+    "amountOfResults": 3
+}

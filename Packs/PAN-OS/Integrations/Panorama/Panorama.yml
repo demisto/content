@@ -30,7 +30,8 @@ configuration:
   name: template
   required: false
   type: 0
-- display: Use URL Filtering for auto enrichment
+- additionalinfo: If selected, when running the !url command, the command will execute using pan-os with PAN_DB (with applied filters). The URL filtering categories determine DBot score (malicious, suspicious, benign).
+  display: Use URL Filtering for auto enrichment
   name: use_url_filtering
   required: false
   type: 8
@@ -3210,6 +3211,9 @@ script:
       type: String
     - contextPath: Panorama.Monitor.Logs.BytesSent
       description: Log bytes sent.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.Vsys
+      description: Vsys on the firewall that generated the log.
       type: String
   - arguments:
     - default: false

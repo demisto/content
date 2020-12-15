@@ -11,6 +11,7 @@ import hashlib
 from typing import List
 from dateutil.parser import parse
 from typing import Dict, Tuple, Any, Optional, Union
+from threading import Timer
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -132,7 +133,7 @@ DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
 
 
 def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS, safe=False,
-                 get_token_flag=True, no_json=False, json=None):
+                 get_token_flag=True, no_json=False, json=None, status_code=None):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -161,7 +162,11 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         :param get_token_flag: If set to True will call get_token()
 
         :type no_json: ``bool``
-        :param no_json: If set to true will not parse the content and will return the raw response object for successful response
+        :param no_json: If set to true will not parse the content and will return the raw response object for successful
+        response
+
+        :type status_code: ``int``
+        :param: status_code: The request codes to accept as OK.
 
         :return: Returns the http request response json
         :rtype: ``dict``
@@ -184,7 +189,11 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
     except requests.exceptions.RequestException:
         return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
     try:
-        if res.status_code not in {200, 201, 202, 204}:
+        valid_status_codes = {200, 201, 202, 204}
+        # Handling a case when we want to return an entry for 404 status code.
+        if status_code:
+            valid_status_codes.add(status_code)
+        if res.status_code not in valid_status_codes:
             res_json = res.json()
             reason = res.reason
             resources = res_json.get('resources', {})
@@ -411,16 +420,32 @@ def refresh_session(host_id: str) -> Dict:
     return response
 
 
-def run_batch_read_cmd(host_ids: list, command_type: str, full_command: str) -> Dict:
+def batch_refresh_session(batch_id: str) -> None:
+    """
+        Batch refresh a RTR session on multiple hosts.
+        :param batch_id:  Batch ID to execute the command on.
+    """
+    demisto.debug('Starting session refresh')
+    endpoint_url = '/real-time-response/combined/batch-refresh-session/v1'
+
+    body = json.dumps({
+        'batch_id': batch_id
+    })
+    response = http_request('POST', endpoint_url, data=body)
+    demisto.debug(f'Refresh session response: {response}')
+    demisto.debug('Finished session refresh')
+
+
+def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str) -> Dict:
     """
         Sends RTR command scope with read access
-        :param host_ids: List of host agent ID’s to run RTR command on.
+        :param batch_id:  Batch ID to execute the command on.
         :param command_type: Read-only command type we are going to execute, for example: ls or cd.
         :param full_command: Full command string for the command.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-command/v1'
-    batch_id = init_rtr_batch_session(host_ids)
+
     body = json.dumps({
         'base_command': command_type,
         'batch_id': batch_id,
@@ -430,16 +455,16 @@ def run_batch_read_cmd(host_ids: list, command_type: str, full_command: str) -> 
     return response
 
 
-def run_batch_write_cmd(host_ids: list, command_type: str, full_command: str) -> Dict:
+def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str) -> Dict:
     """
         Sends RTR command scope with write access
-        :param host_ids: List of host agent ID’s to run RTR command on.
+        :param batch_id:  Batch ID to execute the command on.
         :param command_type: Read-only command type we are going to execute, for example: ls or cd.
         :param full_command: Full command string for the command.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-active-responder-command/v1'
-    batch_id = init_rtr_batch_session(host_ids)
+
     body = json.dumps({
         'base_command': command_type,
         'batch_id': batch_id,
@@ -449,23 +474,27 @@ def run_batch_write_cmd(host_ids: list, command_type: str, full_command: str) ->
     return response
 
 
-def run_batch_admin_cmd(host_ids: list, command_type: str, full_command: str) -> Dict:
+def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, timeout: int = 30) -> Dict:
     """
         Sends RTR command scope with write access
-        :param host_ids: List of host agent ID’s to run RTR command on.
+        :param batch_id:  Batch ID to execute the command on.
         :param command_type: Read-only command type we are going to execute, for example: ls or cd.
         :param full_command: Full command string for the command.
+        :param timeout: Timeout for how long to wait for the request in seconds.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-admin-command/v1'
-    batch_id = init_rtr_batch_session(host_ids)
+
+    params = {
+        'timeout': timeout
+    }
 
     body = json.dumps({
         'base_command': command_type,
         'batch_id': batch_id,
         'command_string': full_command
     })
-    response = http_request('POST', endpoint_url, data=body)
+    response = http_request('POST', endpoint_url, data=body, params=params)
     return response
 
 
@@ -1056,7 +1085,12 @@ def get_ioc_device_count(ioc_type, value):
         type=ioc_type,
         value=value
     )
-    return http_request('GET', '/indicators/aggregates/devices-count/v1', payload)
+    response = http_request('GET', '/indicators/aggregates/devices-count/v1', payload, status_code=404)
+    errors = response.get('errors', [])
+    for error in errors:
+        if error.get('code') == 404:
+            return f'No results found for {ioc_type} - {value}'
+    return response
 
 
 def get_process_details(ids):
@@ -1442,14 +1476,17 @@ def get_ioc_device_count_command(ioc_type: str, value: str):
     :param value: The IOC value
     """
     raw_res = get_ioc_device_count(ioc_type, value)
-    handle_response_errors(raw_res)
-    device_count_res = raw_res.get('resources')
-    ioc_id = f"{ioc_type}:{value}"
-    if not device_count_res:
-        return create_entry_object(raw_res, hr=f"Could not find any devices the IOC **{ioc_id}** was detected in.")
-    context = [get_trasnformed_dict(device_count, IOC_DEVICE_COUNT_MAP) for device_count in device_count_res]
-    hr = f'Indicator of Compromise **{ioc_id}** device count: **{device_count_res[0].get("device_count")}**'
-    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': context}, hr=hr)
+    if 'No results found for' in raw_res:
+        return raw_res
+    else:
+        handle_response_errors(raw_res)
+        device_count_res = raw_res.get('resources')
+        ioc_id = f"{ioc_type}:{value}"
+        if not device_count_res:
+            return create_entry_object(raw_res, hr=f"Could not find any devices the IOC **{ioc_id}** was detected in.")
+        context = [get_trasnformed_dict(device_count, IOC_DEVICE_COUNT_MAP) for device_count in device_count_res]
+        hr = f'Indicator of Compromise **{ioc_id}** device count: **{device_count_res[0].get("device_count")}**'
+        return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': context}, hr=hr)
 
 
 def get_process_details_command(ids: str):
@@ -1609,12 +1646,18 @@ def run_command():
     output = []
 
     if target == 'batch':
-        if scope == 'read':
-            response = run_batch_read_cmd(host_ids, command_type, full_command)
-        elif scope == 'write':
-            response = run_batch_write_cmd(host_ids, command_type, full_command)
-        else:  # scope = admin
-            response = run_batch_admin_cmd(host_ids, command_type, full_command)
+        batch_id = init_rtr_batch_session(host_ids)
+        timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
+        timer.start()
+        try:
+            if scope == 'read':
+                response = run_batch_read_cmd(batch_id, command_type, full_command)
+            elif scope == 'write':
+                response = run_batch_write_cmd(batch_id, command_type, full_command)
+            else:  # scope = admin
+                response = run_batch_admin_cmd(batch_id, command_type, full_command)
+        finally:
+            timer.cancel()
 
         resources: dict = response.get('combined', {}).get('resources', {})
 
@@ -1886,6 +1929,11 @@ def run_script_command():
     script_name = args.get('script_name')
     raw = args.get('raw')
     host_ids = argToList(args.get('host_ids'))
+    try:
+        timeout = int(args.get('timeout', 30))
+    except ValueError as e:
+        demisto.error(str(e))
+        raise ValueError('Timeout argument should be an integer, for example: 30')
 
     if script_name and raw:
         raise ValueError('Only one of the arguments script_name or raw should be provided, not both.')
@@ -1895,10 +1943,17 @@ def run_script_command():
         full_command = f'runscript -CloudFile={script_name}'
     elif raw:
         full_command = f'runscript -Raw=```{raw}```'
+    full_command += f' -Timeout={timeout}'
 
     command_type = 'runscript'
 
-    response = run_batch_admin_cmd(host_ids, command_type, full_command)
+    batch_id = init_rtr_batch_session(host_ids)
+    timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
+    timer.start()
+    try:
+        response = run_batch_admin_cmd(batch_id, command_type, full_command, timeout)
+    finally:
+        timer.cancel()
 
     resources: dict = response.get('combined', {}).get('resources', {})
 
@@ -2190,7 +2245,11 @@ def get_indicator_device_id():
         type=ioc_type,
         value=ioc_value
     )
-    raw_res = http_request('GET', '/indicators/queries/devices/v1', params=params)
+    raw_res = http_request('GET', '/indicators/queries/devices/v1', params=params, status_code=404)
+    errors = raw_res.get('errors', [])
+    for error in errors:
+        if error.get('code') == 404:
+            return f'No results found for {ioc_type} - {ioc_value}'
     context_output = ''
     if validate_response(raw_res):
         context_output = raw_res.get('resources')
