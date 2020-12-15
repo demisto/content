@@ -939,6 +939,15 @@ jobs:
             fi
             ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
       - run:
+          name: Validate Premium Packs
+          shell: /bin/bash
+          when: always
+          command: |
+            if [ -n "${NIGHTLY}" ] ;
+              then
+                  ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
+            fi
+      - run:
           name: Run Tests - Demisto Master
           shell: /bin/bash
           when: always
