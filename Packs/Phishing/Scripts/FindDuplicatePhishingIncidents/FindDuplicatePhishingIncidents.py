@@ -268,7 +268,6 @@ def format_similar_incident(duplicate_incidents_df):
     incidents_list = duplicate_incidents_df.to_dict('records')
     json_lists = []
     status_map = {'0': 'Pending', '1': 'Active', '2': 'Closed', '3': 'Archive'}
-    demisto.results(str(type(incidents_list[0]['status'])))
     for incident in incidents_list:
         json_lists.append({'Id': "[%s](#/Details/%s)" % (incident['id'], incident['id']),
                            'Name': incident['name'],

@@ -24,7 +24,8 @@ def create_incident(subject=None, body=None, html=None, emailfrom=None, created=
         "id": id_ if id_ is not None else str(IDS_COUNTER),
         "name": ' '.join(str(x) for x in [subject, body, html, emailfrom]),
         'created': created.strftime(dt_format) if created is not None else datetime.now().strftime(dt_format),
-        'type': 'Phishing'
+        'type': 'Phishing',
+        'status': '1'
     }
     IDS_COUNTER += 1
     if subject is not None:
