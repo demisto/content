@@ -1632,49 +1632,6 @@ class Pack(object):
         finally:
             return task_status, uploaded_integration_images
 
-    def copy_integration_images(self, production_bucket, build_bucket):
-        """ Copies all pack's integration images from the build bucket to the production bucket
-
-        Args:
-            production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
-            build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
-
-        Returns:
-            bool: Whether the operation succeeded.
-
-        """
-        task_status = True
-
-        build_integration_images_blobs = [f for f in
-                                          build_bucket.list_blobs(
-                                              prefix=os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name)
-                                          )
-                                          if is_integration_image(os.path.basename(f.name))]
-
-        for integration_image_blob in build_integration_images_blobs:
-            image_name = os.path.basename(integration_image_blob.name)
-            logging.info(f"Uploading {self._pack_name} pack integration image: {image_name}")
-            # We upload each image object taken from the build bucket into the production bucket
-            try:
-                copied_blob = build_bucket.copy_blob(
-                    blob=integration_image_blob, destination_bucket=production_bucket,
-                    new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, image_name)
-                )
-                task_status = task_status and copied_blob.exists()
-                if not task_status:
-                    logging.error(f"Upload {self._pack_name} integration image: {integration_image_blob.name} blob to "
-                                  f"{copied_blob.name} blob failed.")
-            except Exception as e:
-                logging.exception(f"Failed copying {image_name}. Additional Info: {str(e)}")
-                return False
-
-        if not task_status:
-            logging.error(f"Failed to upload {self._pack_name} pack integration images.")
-        else:
-            logging.success(f"Uploaded {len(build_integration_images_blobs)} images for {self._pack_name} pack.")
-
-        return task_status
-
     def upload_author_image(self, storage_bucket):
         """ Uploads pack author image to gcs.
 
@@ -1731,52 +1688,6 @@ class Pack(object):
             author_image_storage_path = ""
         finally:
             return task_status, author_image_storage_path
-
-    def copy_author_image(self, production_bucket, build_bucket):
-        """ Copies pack's author image from the build bucket to the production bucket
-
-        Searches for `Author_image.png`, In case no such image was found, default Base pack image path is used and
-        it's gcp path is returned.
-
-        Args:
-            production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
-            build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
-
-        Returns:
-            bool: Whether the operation succeeded.
-
-        """
-        task_status = True
-
-        build_author_image_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
-        build_author_image_blob = build_bucket.blob(build_author_image_path)
-
-        if build_author_image_blob.exists():
-            try:
-                copied_blob = build_bucket.copy_blob(
-                    blob=build_author_image_blob, destination_bucket=production_bucket,
-                    new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
-                )
-                task_status = task_status and copied_blob.exists()
-            except Exception as e:
-                logging.exception(f"Failed copying {Pack.AUTHOR_IMAGE_NAME}. Additional Info: {str(e)}")
-                return False
-
-        elif self.support_type == Metadata.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
-            logging.info((f"Skipping uploading of {self._pack_name} pack author image "
-                          f"and use default {GCPConfig.BASE_PACK} pack image"))
-            return task_status
-        else:
-            logging.info(f"Skipping uploading of {self._pack_name} pack author image. The pack is defined as "
-                         f"{self.support_type} support type")
-            return task_status
-
-        if not task_status:
-            logging.error(f"Failed uploading {self._pack_name} pack author image.")
-        else:
-            logging.success(f"Uploaded successfully {self._pack_name} pack author image")
-
-        return task_status
 
     def cleanup(self):
         """ Finalization action, removes extracted pack folder.

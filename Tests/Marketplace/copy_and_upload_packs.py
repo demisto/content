@@ -345,15 +345,21 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.copy_integration_images(production_bucket, build_bucket)
+        task_status, _ = pack.upload_integration_images(production_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status = pack.copy_author_image(production_bucket, build_bucket)
+        task_status, _ = pack.upload_author_image(production_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
+            pack.cleanup()
+            continue
+
+        task_status = pack.remove_unwanted_files()
+        if not task_status:
+            pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
             pack.cleanup()
             continue
 

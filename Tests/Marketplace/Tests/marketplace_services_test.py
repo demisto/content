@@ -688,42 +688,6 @@ class TestImagesUpload:
         assert len(expected_result) == len(integration_images)
         assert integration_images == expected_result
 
-    def test_copy_and_upload_integration_images(self, mocker, dummy_pack):
-        """
-           Given:
-               - Integration image.
-           When:
-               - Performing copy and upload of all the pack's integration images
-           Then:
-               - Validate that the image has been copied from build bucket to prod bucket
-       """
-        dummy_build_bucket = mocker.MagicMock()
-        dummy_prod_bucket = mocker.MagicMock()
-        blob_name = "content/packs/TestPack/IntegrationName_image.png"
-        dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
-        mocker.patch("Tests.Marketplace.marketplace_services.is_integration_image", return_value=True)
-        mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        dummy_build_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
-        task_status = dummy_pack.copy_integration_images(dummy_prod_bucket, dummy_build_bucket)
-        assert task_status
-
-    def test_copy_and_upload_author_image(self, mocker, dummy_pack):
-        """
-           Given:
-               - Author image.
-           When:
-               - Performing copy and upload of the pack's author image
-           Then:
-               - Validate that the image has been copied from build bucket to prod bucket
-       """
-        dummy_build_bucket = mocker.MagicMock()
-        dummy_prod_bucket = mocker.MagicMock()
-        mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        blob_name = "content/packs/TestPack/Author_image.png"
-        dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
-        task_status = dummy_pack.copy_author_image(dummy_prod_bucket, dummy_build_bucket)
-        assert task_status
-
 
 class TestCopyAndUploadToStorage:
     """ Test class for copying and uploading a pack to storage.
