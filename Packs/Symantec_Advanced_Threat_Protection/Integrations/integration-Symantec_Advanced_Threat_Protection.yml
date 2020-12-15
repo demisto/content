@@ -422,7 +422,7 @@ script:
             getAppliances();
             return 'ok';
         case 'fetch-incidents':
-            return fetchIncidents(params.fetch_incidents_type, params.fetch_incidents_query,
+            return fetchIncidents(params.fetch_incidents_type,
                 params.max_fetch, params.first_fetch);
         case 'satp-appliances':
             return getAppliances();
