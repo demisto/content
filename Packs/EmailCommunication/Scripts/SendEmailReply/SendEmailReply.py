@@ -17,7 +17,7 @@ def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, e
         reply_html_body: The email html body.
         entry_id_list: The files entry ids list.
         email_latest_message: The latest message ID in the email thread to reply to.
-          email_code: The random code that was generated when the incident was created.
+        email_code: The random code that was generated when the incident was created.
     """
     email_reply = send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc,
                                     reply_html_body, entry_id_list, email_latest_message, email_code)
@@ -212,7 +212,7 @@ def main():
     email_from = custom_fields.get('emailfrom')
     email_to = custom_fields.get('emailto')
     email_latest_message = custom_fields.get('emaillatestmessage')
-    email_code = custom_fields.get('emailcodegenerator')
+    email_code = custom_fields.get('emailgeneratedcode')
     email_to_str = get_email_recipients(email_to, email_from, service_mail)
     files = args.get('files', {})
     attachments = args.get('attachment', {})

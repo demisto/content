@@ -3,10 +3,14 @@ from CommonServerPython import *
 import json
 import re
 import random
+from datetime import timezone
 
 ERROR_TEMPLATE = 'ERROR: PreprocessEmail - {function_name}: {reason}'
 QUOTE_MARKERS = ['<div class="gmail_quote">',
                  '<hr tabindex="-1" style="display:inline-block; width:98%"><div id="divRplyFwdMsg"']
+
+# The time to query back for related incidents. Note that a large number might lead to performance issues.
+QUERY_TIME = '60 days'  # Input format: <number> <time unit>, e.g. 2 months, 45 days.
 
 
 def create_email_html(email_html='', entry_id_list=None):
@@ -95,16 +99,32 @@ def set_email_reply(email_from, email_to, email_cc, html_body, attachments):
     return email_reply
 
 
-def get_incident_by_query(query):
+def get_incident_by_query(query, query_time=''):
     """
     Get a query and return all incidents details matching the given query.
     Args:
         query: Query for the incidents that should be returned.
+        query_time: The fromTime to query the incident from.
     Returns:
         dict. The details of all incidents matching the query.
     """
-    res = demisto.executeCommand("GetIncidentsByQuery", {"query": query, "Contents": "id,status"})[0]
+    # todo: clean function
+    # In order to avoid performance issues, query only the incidents that were modified in the last `QUERY_TIME` days:
+    if query_time:
+        query_from_date = str(parse_date_range(query_time)[0])
+        # query_from_date = str(parse_date_range(demisto.args().get('query_time'), timezone=2, utc=False)[0])
+        demisto.debug(f'QUERY TIME COMES FROM IF')
+    else:
+        query_from_date = str(datetime.now() - timedelta(days=30))
+        # query_from_date = str(datetime.now(tz=timezone.utc) + timedelta(hours=2) - timedelta(minutes=1))#- timedelta(days=45))
+        demisto.debug(f'QUERY TIME COMES FROM ElSE')
+    query_from_date = str(parse_date_range(QUERY_TIME)[0])
+    # query_time = str(datetime.now(tz=timezone.utc) - timedelta(days=7))
 
+    demisto.debug(f'QUERY_TIME: {query_from_date}, QUERY_TIME_TYPE: {type(query_from_date)}')
+    res = demisto.executeCommand("GetIncidentsByQuery", {"query": query, "fromDate": query_from_date,
+                                                         "timeField": "modified", "Contents": "id,status"})[0]
+    demisto.debug(f'RES RETURNED: {res}')  # todo: delete
     if is_error(res):
         demisto.results(ERROR_TEMPLATE.format('GetIncidentsByQuery', res['Contents']))
         raise DemistoException(ERROR_TEMPLATE.format('GetIncidentsByQuery', res['Contents']))
@@ -191,14 +211,15 @@ def update_latest_message_field(incident_id, item_id):
                       f'"emaillatestmessage" field was not updated with {item_id} value for incident: {incident_id}')
 
 
-def get_email_related_incident_id(email_related_incident_code, email_original_subject):
+def get_email_related_incident_id(email_related_incident_code, email_original_subject, query_time):
     """
     Get the email generated code and the original text subject of an email and return the incident matching to the
     email code and original subject.
     """
 
-    query = f'emailcodegenerator: {email_related_incident_code}'
-    incidents_details = get_incident_by_query(query)
+    query = f'emailgeneratedcode: {email_related_incident_code}'
+    incidents_details = get_incident_by_query(query, query_time)
+    demisto.debug(f'QUERIED CODE: {email_related_incident_code}, ALL INCIDENTS DETAILS: {incidents_details}')  # todo: delete
     for incident in incidents_details:
         if email_original_subject in incident.get('emailsubject'):
             return incident.get('id')
@@ -211,8 +232,8 @@ def get_unique_code():
     code_is_unique = False
     while not code_is_unique:
         code = f'{random.randrange(1, 10 ** 8):08}'
-        query = f'emailcodegenerator: {code}'
-        incidents_details = get_incident_by_query(query)
+        query = f'emailgeneratedcode: {code}'
+        incidents_details = get_incident_by_query(query, query_time='1 year')
         if len(incidents_details) == 0:
             code_is_unique = True
     return code
@@ -228,14 +249,16 @@ def main():
     email_html = custom_fields.get('emailhtml')
     attachments = incident.get('attachment', [])
     email_latest_message = custom_fields.get('emaillatestmessage')
+    query_time = demisto.args().get('query_time', '60 days')
 
     try:
         email_related_incident_code = email_subject.split('<')[1].split('>')[0]
-        email_original_subject = email_subject.split('<')[1].split('>')[1]
-        email_related_incident = get_email_related_incident_id(email_related_incident_code, email_original_subject)
+        email_original_subject = email_subject.split('<')[-1].split('>')[1]
+        email_related_incident = get_email_related_incident_id(email_related_incident_code, email_original_subject,
+                                                               query_time)
         update_latest_message_field(email_related_incident, email_latest_message)
         query = f"id:{email_related_incident}"
-        incident_details = get_incident_by_query(query)[0]
+        incident_details = get_incident_by_query(query, query_time)[0]
         check_incident_status(incident_details, email_related_incident)
         get_attachments_using_instance(email_related_incident, incident.get('labels'))
 
@@ -251,12 +274,14 @@ def main():
         demisto.results(False)
 
     except (IndexError, ValueError, DemistoException) as e:
-        # True - For creating new incident
         demisto.executeCommand('setIncident', {'id': incident.get('id'),
-                                               'customFields': {'emailcodegenerator': get_unique_code()}})
-
+                                               'customFields': {'emailgeneratedcode': get_unique_code()}})
+        # True - For creating new incident
         demisto.results(True)
-        return_error(f"The PreprocessEmail script has encountered an error:\n {e} \nA new incidents was created.")
+        if type(e).__name__ == 'IndexError':
+            demisto.debug('No related incident was found. A new incident was created.')
+        else:
+            demisto.debug(f"A new incident was created. Reason: \n {e}")
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
