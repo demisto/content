@@ -194,7 +194,7 @@ def create_or_update_ep(mac, attr_map):
                 raise Exception(err_msg)
             else:
                 CISCO_ISE_ACTIVE_INSTANCE = new_active_instance
-                msg = "Found new active ISE instance %s" % CISCO_ISE_ACTIVE_INSTANCE
+                msg = f"Found new active ISE instance {CISCO_ISE_ACTIVE_INSTANCE}"
                 send_status_to_panw_iot_cloud("success", msg)
         else:
             raise Exception(resp[0].get("Contents"))
