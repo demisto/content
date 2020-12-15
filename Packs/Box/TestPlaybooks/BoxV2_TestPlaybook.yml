@@ -1,7 +1,7 @@
 id: BoxV2_TestPlaybook
 name: BoxV2_TestPlaybook
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 starttaskid: '0'
 tasks:
   '0':

@@ -1530,7 +1530,7 @@ def list_enterprise_events_command(client: Client, args: Dict[str, Any]) -> Comm
     """
     as_user: str = args.get('as_user')  # type:ignore
     limit: int = arg_to_int(arg_name='limit', arg=args.get('limit'), default=10)
-    created_after: str = arg_to_datetime(
+    created_after: str = arg_to_datetime(  # type:ignore
         arg=args.get('created_after'),
         arg_name='Created after',
         required=False
