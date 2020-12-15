@@ -21,39 +21,41 @@ def main():
     gh = Github(get_env_var('CONTENTBOT_GH_ADMIN_TOKEN'), verify=False)
     content_repo = gh.get_repo(f'{org_name}/{repo_name}')
     pr = content_repo.get_pull(pr_number)
+    files = pr.get_files().get_page(0)
+    print(files)
 
     slack_token = get_env_var('CORTEX_XSOAR_SLACK_TOKEN')
     client = WebClient(token=slack_token)
-    client.chat_postMessage(
-        channel="WHCL130LE",
-        blocks=[
-            {
-                "type": "section",
-                "fields": [
-                    {
-                        "type": "mrkdwn",
-                        "text": "*Title:* ```add aws network firewall integration ```"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": "*Pack Name:*```\nSubmitted Aut 10```"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": "*Test Update:*\nMar 10, 2015 (3 years, 5 months)"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": "*Reason:*\nAll vowel keys aren't working."
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": "*Specs:*\n\"Cheetah Pro 15\" - Fast, really fast\""
-                    }
-                ]
-            }
-        ]
-    )
+    # client.chat_postMessage(
+    #     channel="WHCL130LE",
+    #     blocks=[
+    #         {
+    #             "type": "section",
+    #             "fields": [
+    #                 {
+    #                     "type": "mrkdwn",
+    #                     "text": "*Title:* ```add aws network firewall integration ```"
+    #                 },
+    #                 {
+    #                     "type": "mrkdwn",
+    #                     "text": "*Pack Name:*```\nSubmitted Aut 10```"
+    #                 },
+    #                 {
+    #                     "type": "mrkdwn",
+    #                     "text": "*Test Update:*\nMar 10, 2015 (3 years, 5 months)"
+    #                 },
+    #                 {
+    #                     "type": "mrkdwn",
+    #                     "text": "*Reason:*\nAll vowel keys aren't working."
+    #                 },
+    #                 {
+    #                     "type": "mrkdwn",
+    #                     "text": "*Specs:*\n\"Cheetah Pro 15\" - Fast, really fast\""
+    #                 }
+    #             ]
+    #         }
+    #     ]
+    # )
 
 
 if __name__ == "__main__":

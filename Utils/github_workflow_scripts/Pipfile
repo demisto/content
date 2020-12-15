@@ -9,7 +9,7 @@ flake8 = "*"
 [packages]
 pygithub = "*"
 requests = "*"
-blessings = "*"
+po = "*"
 dateparser = "*"
 slackclient = "*"
 
