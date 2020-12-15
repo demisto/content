@@ -7,7 +7,7 @@ args:
   description: Name of the configured PANW Iot 3rd Party instance.
   name: panw_iot_3rd_party_instance
   required: true
-comment: This script gets all available devices from the IoT cloud and updates/creates
+comment: Gets all available devices from the IoT cloud and updates or creates them if necessary.
   new endpoint with custom attributes on Cisco ISE.
 commonfields:
   id: SendAllPANWIoTDevicesToCiscoISE
