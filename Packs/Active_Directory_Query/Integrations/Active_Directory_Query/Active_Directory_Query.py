@@ -804,7 +804,7 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
 
         if not user_exists and create_if_not_exists:
-            return create_user_iam(default_base_dn, args, mapper_out)
+            iam_user_profile = create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn)
 
         elif user_exists:
 
