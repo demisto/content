@@ -992,7 +992,6 @@ def main() -> None:
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-
         elif demisto.command() == "argus-add-case-tag":
             return_results(add_case_tag_command(demisto.args()))
 

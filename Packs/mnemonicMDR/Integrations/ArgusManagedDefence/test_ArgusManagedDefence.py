@@ -65,6 +65,7 @@ def test_build_argus_priority_from_min_severity():
 def test_date_time_to_epoch_milliseconds_datetime():
     from ArgusManagedDefence import date_time_to_epoch_milliseconds
     import datetime
+
     date = datetime.datetime(2000, 1, 1, 00, 00, 00)
     timestamp = date.timestamp() * 1000
     assert date_time_to_epoch_milliseconds(date) == timestamp
@@ -73,41 +74,48 @@ def test_date_time_to_epoch_milliseconds_datetime():
 def test_date_time_to_epoch_milliseconds_str():
     from ArgusManagedDefence import date_time_to_epoch_milliseconds
     import datetime
+
     timestamp = int(datetime.datetime(2000, 1, 1, 00, 00, 00).timestamp() * 1000)
     assert date_time_to_epoch_milliseconds("2000-01-01 00:00:00") == timestamp
 
 
 def test_date_time_to_epoch_milliseconds_malformed_str():
     from ArgusManagedDefence import date_time_to_epoch_milliseconds
+
     assert date_time_to_epoch_milliseconds("gibberish")
 
 
 def test_date_time_to_epoch_milliseconds_empty():
     from ArgusManagedDefence import date_time_to_epoch_milliseconds
+
     assert date_time_to_epoch_milliseconds()
 
 
 def test_pretty_print_date_datetime():
     from ArgusManagedDefence import pretty_print_date, PRETTY_DATE_FORMAT
     import datetime
+
     date = datetime.datetime(2000, 1, 1, 00, 00, 00)
     assert pretty_print_date(date) == date.strftime(PRETTY_DATE_FORMAT)
 
 
 def test_pretty_print_date_str():
     from ArgusManagedDefence import pretty_print_date
+
     date_string = "Jan 01, 2000, 00:00:00"
     assert pretty_print_date(date_string) == date_string
 
 
 def test_pretty_print_date_malformed_str():
     from ArgusManagedDefence import pretty_print_date
+
     date_string = "gibberish"
     assert pretty_print_date(date_string)
 
 
 def test_pretty_print_date_empty():
     from ArgusManagedDefence import pretty_print_date
+
     assert pretty_print_date()
 
 
@@ -118,17 +126,6 @@ def test_build_tags_from_list():
     assert build_tags_from_list([]) == []
     assert build_tags_from_list(["list must be divisible by two"]) == []
     assert build_tags_from_list(["foo", "bar"]) == [{"key": "foo", "value": "bar"}]
-
-
-def test_str_to_list():
-    from ArgusManagedDefence import str_to_list
-
-    assert str_to_list(None) == []
-    assert str_to_list("") == []
-    assert str_to_list("one_value") == ["one_value"]
-    assert str_to_list("one space sep value") == ["one space sep value"]
-    assert str_to_list("two,values") == ["two", "values"]
-    assert str_to_list("two, values") == ["two", "values"]
 
 
 def test_str_to_dict():
@@ -173,27 +170,6 @@ def test_fetch_incidents(requests_mock):
     assert len(incidents) == 1
     assert incidents[0]["name"] == "#0: string"
     assert next_run.get("start_time") == 1
-
-
-def test_get_remote_data_command(requests_mock):
-    from ArgusManagedDefence import get_remote_data_command
-
-    with open("argus_json/argus_case_metadata.json") as json_file:
-        data = json.load(json_file)
-    method_url = "/cases/v2/case/search"
-    raise NotImplementedError
-
-
-def test_get_modified_remote_data_command(requests_mock):
-    raise NotImplementedError
-
-
-def test_update_remote_system_command(requests_mock):
-    raise NotImplementedError
-
-
-def test_get_mapping_fields_command(requests_mock):
-    raise NotImplementedError
 
 
 def test_fetch_incidents_increment_timestamp(requests_mock):
