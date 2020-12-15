@@ -344,7 +344,7 @@ script:
     };
 
 
-    var fetchIncidents = function(type, query, limit, first_fetch_time) {
+    var fetchIncidents = function(type, limit, first_fetch_time) {
 
         if (type != 'incidents' && type != 'incidentevents' && type != 'events'){
             throw 'Unknown incident type.';
