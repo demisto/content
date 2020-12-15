@@ -1,0 +1,970 @@
+category: Messaging
+commonfields:
+  id: SecurityAndCompliance
+  version: -1
+configuration:
+- defaultvalue: https://ps.compliance.protection.outlook.com
+  display: Search and Compliance URL
+  name: url
+  required: true
+  type: 0
+- display: Email (Password for basic authentication only)
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: This integration allows you to manage and interact with Microsoft security and compliance content search.
+display: O365 - Security And Compliance - Content Search (beta)
+name: SecurityAndCompliance
+script:
+  commands:
+  - deprecated: false
+    description: OAuth2.0 - Start authorization.
+    execution: false
+    name: o365-sc-auth-start
+  - deprecated: false
+    description: OAuth2.0 - Complete authorization.
+    execution: false
+    name: o365-sc-auth-complete
+  - deprecated: false
+    description: OAuth2.0 - Test authorization.
+    execution: false
+    name: o365-sc-auth-test
+  - arguments:
+    - default: false
+      description: The name of the compliance search.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    - default: false
+      description: The name of a Core eDiscovery case to associate with the new compliance search.
+      isArray: false
+      name: case
+      required: false
+      secret: false
+    - default: false
+      description: Text search string or a query that is formatted using the Keyword Query Language (KQL).
+      isArray: false
+      name: kql
+      required: false
+      secret: false
+    - default: false
+      description: Description of the compliance search.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Whether to include mailboxes other than regular user mailboxes in the compliance search. Default is "false".
+      isArray: false
+      name: allow_not_found_exchange_locations
+      required: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+        - 'true'
+        - 'false'
+    - default: false
+      description: Comma-separated list of mailboxes/distribution groups to include, or you can use the value "All" to include all. 
+      isArray: true
+      name: exchange_location
+      defaultValue: 'All'
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter. 
+      isArray: true
+      name: exchange_location_exclusion
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of public folders to include, or you can use the value "All" to include all.
+      isArray: true
+      name: public_folder_location
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of SharePoint online sites to include. You can identify the sites by their URL value, or you can use the value "All" to include all sites.
+      isArray: true
+      name: share_point_location
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of SharePoint online sites to exclude when you use the value "All" for the share_point_location argument. You can identify the sites by their URL value. 
+      isArray: true
+      name: share_point_location_exclusion
+      required: false
+      secret: false
+    deprecated: false
+    description: Create compliance search in the Security & Compliance Center.
+    execution: false
+    name: o365-sc-new-search
+    outputs:
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AllowNotFoundExchangeLocationsEnabled
+      description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AzureBatchFrameworkEnabled
+      description: Whether the Azure Batch Framework is enabled for job processing.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CaseId
+      description: Identity of a Core eDiscovery case which is associated with the compliance search.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CaseName
+      description: Name of a Core eDiscovery case which is associated with the compliance search.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.ContentMatchQuery
+      description: Compliance text search string or a query that is formatted using the Keyword Query Language (KQL).
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CreatedBy
+      description: Security and compliance search creator.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CreatedTime
+      description: Security and compliance search creation time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Description
+      description: Security and compliance search description.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Errors
+      description: Security and compliance search errors.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.ExchangeLocation
+      description: Security and compliance search exchange locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Identity
+      description: Security and compliance search identity.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.IsValid
+      description: Whether the security and compliance search is valid.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Items
+      description: The number of security and compliance search scanned items.
+      type: Number
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.JobEndTime
+      description: Security and compliance search job end time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.JobId
+      description: Security and compliance search job ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.JobRunId
+      description: Security and compliance search job run ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.JobStartTime
+      description: Security and compliance search job run start time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.LastModifiedTime
+      description: Security and compliance search last modification time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.LogLevel
+      description: Security and compliance search Azure log level.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Name
+      description: Security and compliance search name.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.OneDriveLocation
+      description: Security and compliance search OneDrive locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.OneDriveLocationExclusion
+      description: Security and compliance search OneDrive locations to exclude.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.PublicFolderLocation
+      description: Security and compliance search public folder locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.PublicFolderLocationExclusion
+      description: Security and compliance search public folder locations to exclude.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.RunBy
+      description: Security and compliance search last run by UPN (Email representation).
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.RunspaceId
+      description: Security and compliance search run space ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.SharePointLocation
+      description: Security and compliance search SharePoint locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Size
+      description: Security and compliance search bytes results size.
+      type: Number
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Status
+      description: Security and compliance search status.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.TenantId
+      description: Security and compliance search Tenant ID.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the compliance search.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    - default: false
+      description: Modify the text search string or a query that is formatted using the Keyword Query Language (KQL).
+      isArray: false
+      name: kql
+      required: false
+      secret: false
+    - default: false
+      description: Modify the description for the compliance search.
+      isArray: false
+      name: description 
+      required: false
+      secret: false
+    - default: false
+      description: Whether to include mailboxes other than regular user mailboxes in the compliance search. 
+      isArray: false
+      name: allow_not_found_exchange_locations
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    - default: false
+      description: Comma-separated list of added mailboxes/distribution groups to include, or you can use the value "All" to include all mailboxes.
+      isArray: true
+      name: add_exchange_location
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of added mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location (used in create new compliance search) or the add_exchange_location argument. 
+      isArray: true
+      name: add_exchange_location_exclusion
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of added public folders to include, or you can use the value "All" to include all. 
+      isArray: true
+      name: add_public_folder_location
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of added SharePoint online sites to include. You identify the sites by their URL value, or you can use the value "All" to include all sites. 
+      isArray: true
+      name: add_share_point_location
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of added SharePoint online sites to exclude when you use the value "All" for the exchange_location (used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value. 
+      isArray: true
+      name: add_share_point_location_exclusion
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of removed mailboxes/distribution group to include.
+      isArray: true
+      name: remove_exchange_location
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of removed mailboxes/distribution group to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) or the add_exchange_location argument. 
+      isArray: true
+      name: remove_exchange_location_exclusion
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of removed public folders to include. 
+      isArray: true
+      name: remove_public_folder_location
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of removed SharePoint online sites to include. You can identify the sites by their URL value. 
+      isArray: true
+      name: remove_share_point_location
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of removed SharePoint online sites to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value. 
+      isArray: true
+      name: remove_share_point_location_exclusion
+      required: false
+      secret: false
+    deprecated: false
+    description: Modifies non-running compliance searches in the Security & Compliance Center.
+    execution: false
+    name: o365-sc-set-search
+  - arguments:
+    - default: false
+      description: The name of the compliance search.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove compliance search by name from the Security & Compliance Center.
+    execution: false
+    name: o365-sc-remove-search
+  - deprecated: false
+    description: List compliance searches in the Security & Compliance Center.
+    execution: false
+    name: o365-sc-list-search
+    outputs:
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AllowNotFoundExchangeLocationsEnabled
+      description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AzureBatchFrameworkEnabled
+      description: Whether the Azure Batch Framework is enabled for job processing.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CaseId
+      description: Identity of a Core eDiscovery case which is associated with the compliance search.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CaseName
+      description: Name of a Core eDiscovery case which is associated with the compliance search.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.ContentMatchQuery
+      description: Compliance text search string or a query that is formatted using the Keyword Query Language (KQL).
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CreatedBy
+      description: Security and compliance search creator.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CreatedTime
+      description: Security and compliance search creation time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Description
+      description: Security and compliance search description.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Errors
+      description: Security and compliance search errors.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.ExchangeLocation
+      description: Security and compliance search exchange locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Identity
+      description: Security and compliance search identity.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.IsValid
+      description: Whether the security and compliance search is valid.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Items
+      description: The number of security and compliance search scanned items.
+      type: Number
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.JobEndTime
+      description: Security and compliance search job end time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.JobId
+      description: Security and compliance search job ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.JobRunId
+      description: Security and compliance search job run ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.JobStartTime
+      description: Security and compliance search job run start time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.LastModifiedTime
+      description: Security and compliance search last modification time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.LogLevel
+      description: Security and compliance search Azure log level.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Name
+      description: Security and compliance search name.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.OneDriveLocation
+      description: Security and compliance search OneDrive locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.OneDriveLocationExclusion
+      description: Security and compliance search OneDrive locations to exclude.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.PublicFolderLocation
+      description: Security and compliance search public folder locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.PublicFolderLocationExclusion
+      description: Security and compliance search public folder locations to exclude.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.RunBy
+      description: Security and compliance search last run by UPN (Email representation).
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.RunspaceId
+      description: Security and compliance search run space ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.SharePointLocation
+      description: Security and compliance search SharePoint locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Size
+      description: Security and compliance search bytes results size.
+      type: Number
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Status
+      description: Security and compliance search status.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.TenantId
+      description: Security and compliance search Tenant ID.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the compliance search.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    - default: false
+      description:  The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+      defaultValue: 100
+    - default: false
+      description: Whether to include mailboxes which have no results in results entry context.
+      isArray: false
+      name: all_results
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+        - 'true'
+        - 'false'
+    - default: false
+      description: Whether to export search results as json file to war-room.
+      isArray: false
+      name: export
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+        - 'true'
+        - 'false'
+    - default: false
+      description: Show search statistics. Default is "false".
+      isArray: false
+      name: statistics
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+        - 'true'
+        - 'false'
+    deprecated: false
+    description: Gets compliance search by name from the Security & Compliance Center.
+    execution: false
+    name: o365-sc-get-search
+    outputs:
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AllowNotFoundExchangeLocationsEnabled
+      description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AzureBatchFrameworkEnabled
+      description: Whether the Azure Batch Framework is enabled for job processing.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CaseId
+      description: Identity of a Core eDiscovery case which is associated with the compliance search.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CaseName
+      description: Name of a Core eDiscovery case which is associated with the compliance search.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.ContentMatchQuery
+      description: Compliance text search string or a query that is formatted using the Keyword Query Language (KQL).
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CreatedBy
+      description: Security and compliance search creator.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CreatedTime
+      description: Security and compliance search creation time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Description
+      description: Security and compliance search description.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Errors
+      description: Security and compliance search errors.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.ExchangeLocation
+      description: Security and compliance search exchange locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Identity
+      description: Security and compliance search identity.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.IsValid
+      description: Whether the security and compliance search is valid.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Items
+      description: Number of security and compliance search scanned items.
+      type: Number
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.JobEndTime
+      description: Security and compliance search job end time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.JobId
+      description: Security and compliance search job ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.JobRunId
+      description: Security and compliance search job run ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.JobStartTime
+      description: Security and compliance search job run start time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.LastModifiedTime
+      description: Security and compliance search last modification time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.LogLevel
+      description: Security and compliance search the Azure log level.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Name
+      description: Security and compliance search name.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.OneDriveLocation
+      description: Security and compliance search OneDrive locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.OneDriveLocationExclusion
+      description: Security and compliance search OneDrive locations to exclude.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.PublicFolderLocation
+      description: Security and compliance search public folder locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.PublicFolderLocationExclusion
+      description: Security and compliance search public folder locations to exclude.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.RunBy
+      description: Security and compliance search last run by UPN (Email representation).
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.RunspaceId
+      description: Security and compliance search run space ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.SharePointLocation
+      description: Security and compliance search SharePoint locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Size
+      description: Security and compliance search bytes results size.
+      type: Number
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Status
+      description: Security and compliance search status.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.TenantId
+      description: Security and compliance search Tenant ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults.Location
+      description: Security and compliance search result location.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults.ItemsCount
+      description: The number of security and compliance search results in location.
+      type: Number
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults.Size
+      description: The byte size of the security and compliance search results in location.
+      type: Number
+  - arguments:
+    - default: false
+      description: The name of the compliance search.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Starts stopped, completed, or not started compliance search in the Security & Compliance Center.
+    execution: false
+    name: o365-sc-start-search
+  - arguments:
+    - default: false
+      description: The name of the compliance search.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Stop running compliance search in the Security & Compliance Center.
+    execution: false
+    name: o365-sc-stop-search
+  - arguments:
+    - default: false
+      description: The name of the compliance search.
+      isArray: false
+      name: search_name
+      required: true
+      secret: false
+    - default: false
+      description: 'Search action to perform. Possible values are: "Preview" and "Purge". Default is "Preview".'
+      isArray: false
+      name: action
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: "Preview"
+      predefined:
+        - "Preview"
+        - "Purge"
+    - default: false
+      description: 'Purge type. Possible values are: "Soft Delete" and "HardDelete". Default is "SoftDelete".'
+      isArray: false
+      name: purge_type
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: "SoftDelete"
+      predefined:
+        - SoftDelete
+        - HardDelete
+    deprecated: false
+    description: After you create a content search using the o365-sc-new-search command and run it using the o365-sc-start-search command, you assign a search action to the search using the o365-sc-new-search-action command.
+    execution: false
+    name: o365-sc-new-search-action
+    outputs:
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
+      description: Security and compliance search action type. Either "Purge" or "Preview".
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AllowNotFoundExchangeLocationsEnabled
+      description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AzureBatchFrameworkEnabled
+      description: Whether the Azure Batch Framework is enabled for job processing.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseId
+      description: Identity of a Core eDiscovery case which is associated with the compliance search.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseName
+      description: Name of a Core eDiscovery case which is associated with the compliance search.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CreatedBy
+      description: Security and compliance search action creator.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CreatedTime
+      description: Security and compliance search action creation time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Description
+      description: Security and compliance search action description.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Errors
+      description: Security and compliance search action errors.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.EstimateSearchJobId
+      description: Security and compliance search action job ID estimation.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.EstimateSearchRunId
+      description: Security and compliance search action run ID estimation.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.ExchangeLocation
+      description: Security and compliance search action exchange locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.ExchangeLocationExclusion
+      description: Security and compliance search action exchange locations to exclude.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Identity
+      description: Security and compliance search action identity.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.IsValid
+      description: Whether the security and compliance search action is valid.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobEndTime
+      description: Security and compliance search action job end time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobId
+      description: Security and compliance search action job ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobRunId
+      description: Security and compliance search action job run ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobStartTime
+      description: Security and compliance search action job start time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.LastModifiedTime
+      description: Security and compliance search action last modified time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Name
+      description: Security and compliance search action name.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocation
+      description: Security and compliance search action public folder locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocationExclusion
+      description: Security and compliance search action public folder locations to exclude.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Retry
+      description: Whether to retry if the search action failed.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.RunBy
+      description: Security and compliance search action run by UPN (email address).
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.RunspaceId
+      description: Security and compliance search action run space ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SearchName
+      description: Security and compliance search action search name.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocation
+      description: Security and compliance search action SharePoint locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocationExclusion
+      description: Security and compliance search action SharePoint locations to exclude.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Status
+      description: Security and compliance search action status. Either "Started" or "Completed".
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
+      description: Security and compliance search action Tenant ID.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the compliance search action.
+      isArray: false
+      name: search_action_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes a compliance search action by searching for the action name in the Security & Compliance Center.
+    execution: false
+    name: o365-sc-remove-search-action
+  - deprecated: false
+    description: Lists compliance search actions from the Security & Compliance Center.
+    execution: false
+    name: o365-sc-list-search-action
+    outputs:
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
+      description: Security and compliance search action type. Either "Purge or "Preview". 
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AllowNotFoundExchangeLocationsEnabled
+      description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AzureBatchFrameworkEnabled
+      description: Whether the Azure Batch Framework is enabled for job processing.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseId
+      description: Identity of a Core eDiscovery case which is associated with the compliance search.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseName
+      description: Name of a Core eDiscovery case which is associated with the compliance search.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CreatedBy
+      description: Security and compliance search action creator.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CreatedTime
+      description: Security and compliance search action creation time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Description
+      description: Security and compliance search action description.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Errors
+      description: Security and compliance search action errors.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.EstimateSearchJobId
+      description: Security and compliance search action job ID estimation.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.EstimateSearchRunId
+      description: Security and compliance search action run ID estimation.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.ExchangeLocation
+      description: Security and compliance search action exchange locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.ExchangeLocationExclusion
+      description: Security and compliance search action exchange locations to exclude.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Identity
+      description: Security and compliance search action identity.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.IsValid
+      description: Whether the security and compliance search action is valid.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobEndTime
+      description: Security and compliance search action job end time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobId
+      description: Security and compliance search action job ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobRunId
+      description: Security and compliance search action job run ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobStartTime
+      description: Security and compliance search action job start time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.LastModifiedTime
+      description: Security and compliance search action last modified time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Name
+      description: Security and compliance search action name.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocation
+      description: Security and compliance search action public folder locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocationExclusion
+      description: Security and compliance search action public folder locations to exclude.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Retry
+      description: Whether to retry if the search action failed.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.RunBy
+      description: Security and compliance search action run by UPN (email address).
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.RunspaceId
+      description: Security and compliance search action run space ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SearchName
+      description: Security and compliance search action search name.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocation
+      description: Security and compliance search action SharePoint locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocationExclusion
+      description: Security and compliance search action SharePoint locations to exclude.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Status
+      description: Security and compliance search action status (Started/Completed).
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
+      description: Security and compliance search action Tenant ID.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the compliance search action.
+      isArray: false
+      name: search_action_name
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+      defaultValue: 100
+    - default: false
+      description: Whether to export search results as json file to war-room.
+      isArray: false
+      name: export
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+        - 'true'
+        - 'false'
+    - default: false
+      description: Whether to print the results in the War Room. Default is "false".
+      isArray: false
+      name: results
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+        - 'true'
+        - 'false'
+    deprecated: false
+    description: Gets compliance search action from the Security & Compliance Center.
+    execution: false
+    name: o365-sc-get-search-action
+    outputs:
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
+      description: Security and compliance search action type. Either "Purge" or "Preview".
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AllowNotFoundExchangeLocationsEnabled
+      description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AzureBatchFrameworkEnabled
+      description: Whether the Azure Batch Framework is enabled for job processing.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseId
+      description: Identity of a Core eDiscovery case which is associated with the compliance search.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseName
+      description: Name of a Core eDiscovery case which is associated with the compliance search.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CreatedBy
+      description: Security and compliance search action creator.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CreatedTime
+      description: Security and compliance search action creation time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Description
+      description: Security and compliance search action description.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Errors
+      description: Security and compliance search action errors.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.EstimateSearchJobId
+      description: Security and compliance search action job ID estimation.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.EstimateSearchRunId
+      description: Security and compliance search action run ID estimation.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.ExchangeLocation
+      description: Security and compliance search action exchange locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.ExchangeLocationExclusion
+      description: Security and compliance search action exchange locations to exclude.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Identity
+      description: Security and compliance search action identity.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.IsValid
+      description: Whether the security and compliance search action is valid.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobEndTime
+      description: Security and compliance search action job end time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobId
+      description: Security and compliance search action job ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobRunId
+      description: Security and compliance search action job run ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobStartTime
+      description: Security and compliance search action job start time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.LastModifiedTime
+      description: Security and compliance search action last modified time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Name
+      description: Security and compliance search action name.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocation
+      description: Security and compliance search action public folder locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocationExclusion
+      description: Security and compliance search action public folder locations to exclude.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Location
+      description: Security and compliance search action result location.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Sender
+      description: Security and compliance search action result mail sender.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Subject
+      description: Security and compliance search action result subject.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Type
+      description: Security and compliance search action result type.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Size
+      description: Security and compliance search action result size.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.ReceivedTime
+      description: Security and compliance search action result received time.
+      type: Date
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.DataLink
+      description: Security and compliance search action data link.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Retry
+      description: Whether to retry if the search action failed.
+      type: Boolean
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.RunBy
+      description: Security and compliance search action run by UPN (email address).
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.RunspaceId
+      description: Security and compliance search action run space ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SearchName
+      description: Security and compliance search action search name.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocation
+      description: Security and compliance search action SharePoint locations to include.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocationExclusion
+      description: Security and compliance search action SharePoint locations to exclude.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Status
+      description: Security and compliance search action status. Either "Started" or "Completed".
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
+      description: Security and compliance search action Tenant ID.
+      type: String
+  dockerimage: demisto/powershell-ubuntu:7.0.3.12001
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: powershell
+fromversion: 5.5.0
+beta: true
+tests:
+- O365-SecurityAndCompliance-Test
