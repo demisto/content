@@ -406,7 +406,7 @@ script:
         next = 'next' in res.obj ? res.obj.next : null;
         
         if (next) {
-            setLastRun({ time: startTime, next: next, query: query, end_time: endTime });
+            setLastRun({ time: startTime, next: next, end_time: endTime });
         } else {
             setLastRun({ time: endTime });
         }
