@@ -365,7 +365,7 @@ def find_latest_event(events: Iterable[Dict[str, Any]]) -> Optional[Dict[str, An
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, api_key: str, first_fetch:str) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -378,15 +378,20 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-
     try:
-        client.ping()
-    except DemistoException as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return 'ok'
+        answer = ''
+        fetch_key_res = client.fetch_key(api_key)
+    except ValueError:
+        answer += 'The api key is invalid'
+    try:
+        datetime.datetime.strptime(first_fetch, '%Y-%m-%d')
+    except ValueError:
+        answer += 'Incorrect first fetch time format, should be YYYY-MM-DD'
+
+    if not answer:
+        return 'ok'
+    else:
+        return answer
 
 
 def fetch_incidents(client: Client, last_run: Dict[str, int],
@@ -588,53 +593,54 @@ def main() -> None:
             verify=verify_certificate,
             proxy=proxy)
 
-        fetch_key_res = client.fetch_key(api_key)
-        access_token = fetch_key_res['token']
-
-        headers = {
-            'Authorization': f'Bearer {access_token}',
-            'Content-Type': 'application/json',
-        }
-
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = test_module(client, api_key, first_fetch_time)
             return_results(result)
 
-        elif demisto.command() == 'fetch-incidents':
-            min_severity = demisto.params().get('min_severity', None)
+        else:
+            fetch_key_res = client.fetch_key(api_key)
+            access_token = fetch_key_res['token']
 
-            max_fetch = arg_to_int(
-                arg=demisto.params().get('max_fetch'),
-                arg_name='max_fetch',
-                required=False
-            )
-            if not max_fetch or max_fetch > MAX_EVENTS_TO_FETCH:
-                max_fetch = MAX_EVENTS_TO_FETCH
+            headers = {
+                'Authorization': f'Bearer {access_token}',
+                'Content-Type': 'application/json',
+            }
+            client = Client(
+                base_url=base_url,
+                verify=verify_certificate,
+                headers=headers,
+                proxy=proxy)
 
-            next_run, incidents = fetch_incidents(
-                client=client,
-                events_limit=max_fetch,
-                last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
-                first_fetch_time=first_fetch_time,
-                min_severity=convert_to_demisto_severity(min_severity)
-            )
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
+            if demisto.command() == 'fetch-incidents':
+                min_severity = demisto.params().get('min_severity', None)
 
-        elif demisto.command() == 'cognni-get-event':
-            return_results(get_event_command(client, demisto.args()))
+                max_fetch = arg_to_int(
+                    arg=demisto.params().get('max_fetch'),
+                    arg_name='max_fetch',
+                    required=False
+                )
+                if not max_fetch or max_fetch > MAX_EVENTS_TO_FETCH:
+                    max_fetch = MAX_EVENTS_TO_FETCH
 
-        elif demisto.command() == 'cognni-fetch-insights':
-            return_results(fetch_insights_command(client, demisto.args()))
+                next_run, incidents = fetch_incidents(
+                    client=client,
+                    events_limit=max_fetch,
+                    last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
+                    first_fetch_time=first_fetch_time,
+                    min_severity=convert_to_demisto_severity(min_severity)
+                )
+                demisto.setLastRun(next_run)
+                demisto.incidents(incidents)
 
-        elif demisto.command() == 'cognni-get-insight':
-            return_results(get_insight_command(client, demisto.args()))
+            elif demisto.command() == 'cognni-get-event':
+                return_results(get_event_command(client, demisto.args()))
+
+            elif demisto.command() == 'cognni-fetch-insights':
+                return_results(fetch_insights_command(client, demisto.args()))
+
+            elif demisto.command() == 'cognni-get-insight':
+                return_results(get_insight_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
