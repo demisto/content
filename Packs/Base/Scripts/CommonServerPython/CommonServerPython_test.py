@@ -472,8 +472,16 @@ def test_remove_empty_elements():
     ('Empty Results', {'key': []}, ' ###Empty Results \n**No entries.**\n')
 ])
 def test_aws_table_to_markdown(header, raw_input, expected_output):
-
-
+    """
+    Given
+        - A header and a dict with two levels
+        - A header and a dict with one key pointing to an empty list
+    When
+        - Creating a markdown table using the aws_table_to_markdown function
+    Ensure
+        - The header appears as a markdown header and the dictionary is translated to a markdown table
+        - The header appears as a markdown header and "No entries" text appears instead of a markdown table"
+    """
     assert aws_table_to_markdown(raw_input, header) == expected_output
 
 
