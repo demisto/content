@@ -1367,8 +1367,8 @@ def lock_expired(lock_file: storage.Blob, lock_timeout: str) -> bool:
 
 def main():
     global logging_manager
-    logging_manager = ParallelLoggingManager('Run_Tests.log')
     tests_settings = options_handler()
+    logging_manager = ParallelLoggingManager('Run_Tests.log', real_time_logs_only=not tests_settings.nightly)
     manage_tests(tests_settings)
 
 
