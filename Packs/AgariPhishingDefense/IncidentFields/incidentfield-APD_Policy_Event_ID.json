@@ -1,0 +1,30 @@
+{
+    "id": "incident_apdpolicyeventid",
+    "version": -1,
+    "modified": "2020-11-25T16:53:08.111077992+05:30",
+    "name": "APD Policy Event ID",
+    "ownerOnly": false,
+    "cliName": "apdpolicyeventid",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Agari Phishing Defense Policy Event"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

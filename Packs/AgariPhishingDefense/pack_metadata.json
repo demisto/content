@@ -1,0 +1,17 @@
+{
+    "name": "Agari Phishing Defense",
+    "description": "Use the Agari Phishing Defense integration to retrieve Policy Events as Incidents, retrieve messages and remediate suspected messages.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Agari",
+    "url": "",
+    "email": "support@agari.com",
+    "created": "2020-11-06T08:37:53Z",
+    "categories": [
+        "Email Gateway"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": ""
+}

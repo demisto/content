@@ -1,0 +1,456 @@
+category: Email Gateway
+commonfields:
+  id: Agari Phishing Defense
+  version: -1
+configuration:
+- defaultvalue: https://api.agari.com/v1/ep
+  display: URL to connect to Agari
+  name: url
+  required: true
+  type: 0
+- additionalinfo: API Client ID created in the User management UI.
+  display: API Key
+  name: apikey
+  required: true
+  type: 4
+- additionalinfo: API Client Secret created in the User management UI.
+  display: Secret Key
+  hidden: false
+  name: apisecret
+  required: true
+  type: 4
+- defaultvalue: '50'
+  display: Maximum number of incidents to fetch every time
+  hidden: false
+  name: max_fetch
+  required: true
+  type: 0
+- additionalinfo: The time range to consider for the initial data fetch. (<number>
+    <unit>, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years). Default is 3 days.
+  defaultvalue: 3 days
+  display: First fetch time interval
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: Fetches policy event actions such as "deliver", "mark-spam", "move",
+    "inbox", "delete", "none". Fetches all types of actions by default.
+  display: Policy Action
+  hidden: false
+  name: fetch_policy_actions
+  options:
+  - deliver
+  - mark-spam
+  - move
+  - inbox
+  - delete
+  - none
+  required: false
+  type: 15
+- additionalinfo: Exclude alerts while fetching policy events of type 'Message Alert'
+    or 'System Alert'.
+  defaultvalue: System Alert
+  display: Exclude alerts
+  hidden: false
+  name: exclude_alert_type
+  options:
+  - System Alert
+  - Message Alert
+  required: false
+  type: 15
+- additionalinfo: "Syntax: field.operator(operand) {and/or field.operator(operand)}.\
+    \ \n\nExample: created_at.after(2020-11-11T09:16:44Z) or id.eq(537557694)."
+  display: Fetches policy events to limit the amount of data. Can be applied to specific
+    fields
+  hidden: false
+  name: policy_filter
+  required: false
+  type: 12
+- defaultvalue: Agari Phishing Defense Policy Event
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  hidden: false
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  hidden: false
+  name: proxy
+  required: false
+  type: 8
+description: Agari Phishing Defense stops phishing, BEC, and other identity deception
+  attacks that trick employees into harming your business.
+display: Agari Phishing Defense
+name: Agari Phishing Defense
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '25'
+      description: The maximum number of items to be returned in the paged response.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The earliest date time (UTC) a search should target (ISO 8601 format).
+        Formats accepted: YYYY-MM-dd
+        YYYY-MM-ddTHH:mm:ss
+        N days
+        N hours
+        Example: 2020-05-01
+        2020-05-01T00:00:00
+        2 days
+        5 hours.
+      isArray: false
+      name: start_date
+      required: false
+      secret: false
+    - default: false
+      description: "The latest date time (UTC) a search should target (ISO 8601 format).\n\
+        Formats accepted: YYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days\nN hours\nExample:\
+        \ 2020-05-01 \n2020-05-01T00:00:00\n2 days\n5 hours."
+      isArray: false
+      name: end_date
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: To page through a collection of policy events.
+      isArray: false
+      name: page_id
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-delimited string that specifies the field ordering to
+        be applied to the response. Example: created_at DESC, id ASC.'
+      isArray: true
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: A comma-delimited list of optional fields to add to the default
+        payload. Additional fields would add data in the entry context.
+      isArray: true
+      name: add_fields
+      required: false
+      secret: false
+    - default: false
+      description: A comma-delimited list of fields to remove from the default payload.
+        Limited fields would return limited data in entry context.
+      isArray: true
+      name: rem_fields
+      required: false
+      secret: false
+    - default: false
+      description: A comma-delimited list of fields to include in the payload. Limited
+        fields would return limited data in entry context.
+      isArray: true
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: Search filters that can be applied to the response.
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: Exclude policy types such as 'MessageAlert' or 'SystemAlert'.
+      isArray: false
+      name: exclude_alert_types
+      required: false
+      secret: false
+    - default: false
+      description: Find by policy name.
+      isArray: false
+      name: policy_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Filter by policy action: ''deliver'', ''mark-spam'', ''move'',
+        ''inbox'', ''delete'' and ''none''.'
+      isArray: false
+      name: policy_action
+      predefined:
+      - deliver
+      - mark-spam
+      - move
+      - inbox
+      - delete
+      - none
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of policy events.
+    execution: false
+    name: apd-list-policy-events
+    outputs:
+    - contextPath: AgariPhishingDefense.Alert.alert_definition_name
+      description: Alert definition name.
+      type: String
+    - contextPath: AgariPhishingDefense.Alert.id
+      description: Unique alert id.
+      type: String
+    - contextPath: AgariPhishingDefense.Alert.summary
+      description: Summary of the alert.
+      type: String
+    - contextPath: AgariPhishingDefense.Alert.policy_action
+      description: Alert policy action.
+      type: String
+    - contextPath: AgariPhishingDefense.Alert.policy_enabled
+      description: Indicates if policy is enabled.
+      type: Boolean
+    - contextPath: AgariPhishingDefense.Alert.updated_at
+      description: Updated time of the alert. The format is ISO8601.
+      type: Date
+    - contextPath: AgariPhishingDefense.Alert.created_at
+      description: Created time of the alert. The format is ISO8601.
+      type: Date
+    - contextPath: AgariPhishingDefense.Alert.admin_recipients
+      description: List of notified admin recipients.
+      type: Unknown
+    - contextPath: AgariPhishingDefense.Alert.notified_original_recipients
+      description: Indicates whether the original recipient was notified.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: "The earliest date time (UTC) a search should target (ISO 8601\
+        \ format).\nFormats accepted: YYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days\nN hours\n\
+        Example: 2020-05-01 \n2020-05-01T00:00:00\n2 days\n5 hours."
+      isArray: false
+      name: start_date
+      required: false
+      secret: false
+    - default: false
+      description: "The latest date time (UTC) a search should target (ISO 8601 format).\n\
+        Formats accepted: YYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days\nN hours\nExample:\
+        \ 2020-05-01 \n2020-05-01T00:00:00\n2 days\n5 hours."
+      isArray: false
+      name: end_date
+      required: false
+      secret: false
+    - default: false
+      description: A comma-delimited list of optional fields to add to the default
+        payload. Additional fields would add data in the entry context.
+      isArray: true
+      name: add_fields
+      required: false
+      secret: false
+    - default: false
+      description: A comma-delimited list of fields to remove from the default payload.
+        Limited fields would return limited data in entry context.
+      isArray: true
+      name: rem_fields
+      required: false
+      secret: false
+    - default: false
+      description: A comma-delimited list of fields to include in the payload. Limited
+        fields would return limited data in entry context.
+      isArray: true
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '25'
+      description: The maximum number of items to be returned in the paged response.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: To page through a collection of message data.
+      isArray: false
+      name: page_id
+      required: false
+      secret: false
+    - default: false
+      description: A comma-delimited string that specifies the field ordering to be
+        applied to the response.
+      isArray: true
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Search using advanced search syntax.
+        Format: field operator operand {and/or field operator operand}
+        Example: has_attachment=true and ip='10.0.0.0'
+        sbrs in [3.5, 2.6]
+        domain_reputation is not null
+        sbrs gt 3
+        sbrs>=3 and domain_tags eq internal
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of messages.
+    execution: false
+    name: apd-list-message-data
+    outputs:
+    - contextPath: AgariPhishingDefense.Message.has_attachment
+      description: Has attachment.
+      type: Boolean
+    - contextPath: AgariPhishingDefense.Message.ip
+      description: IP address.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.message_id
+      description: The Global message ID.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.ptr_name
+      description: PTR name.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.sbrs
+      description: SBRS.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.id
+      description: The internal message ID.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.authenticity
+      description: Authenticity score.
+      type: Number
+    - contextPath: AgariPhishingDefense.Message.to
+      description: Message recipient.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.date
+      description: Date in ISO format.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.timestamp_ms
+      description: Timestamp in ms since epoch.
+      type: Number
+    - contextPath: AgariPhishingDefense.Message.from
+      description: Sender's email.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.from_domain
+      description: From domain.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.subject
+      description: Message subject.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.domain_reputation
+      description: Reputation of sender domain.
+      type: Number
+    - contextPath: AgariPhishingDefense.Message.message_trust_score
+      description: Risk score.
+      type: Number
+    - contextPath: AgariPhishingDefense.Message.message_details_link
+      description: Link to message details.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.domain_tags
+      description: List of domain tags.
+      type: Unknown
+    - contextPath: AgariPhishingDefense.Message.mail_from
+      description: Mail from domain.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.reply_to
+      description: Reply-to address.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.uris
+      description: List of URIs.
+      type: Unknown
+    - contextPath: AgariPhishingDefense.Message.attachment_extensions
+      description: List of message attachment extensions.
+      type: Unknown
+    - contextPath: AgariPhishingDefense.Message.attachment_filenames
+      description: List of message attachment filenames.
+      type: Unknown
+    - contextPath: AgariPhishingDefense.Message.attachment_sha256
+      description: List of message attachment SHA256 hashes.
+      type: Unknown
+    - contextPath: AgariPhishingDefense.Message.attachment_types
+      description: List of message attachment types.
+      type: Unknown
+    - contextPath: AgariPhishingDefense.Message.attack_types
+      description: List of attack type classifications.
+      type: Unknown
+    - contextPath: AgariPhishingDefense.Message.dkim_result
+      description: DKIM result.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.dmarc_result
+      description: DMARC result.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.domain_dmarc_policy
+      description: DMARC policy for domain.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.enforcement_action
+      description: Enforcement action.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.enforcement_folder
+      description: Enforcement folder.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.enforcement_result
+      description: Enforcement result.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.expanded_from
+      description: Expanded from.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.forwarded_from
+      description: Forwarded from.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.has_malicious_attachment
+      description: Has malicious attachment.
+      type: Boolean
+    - contextPath: AgariPhishingDefense.Message.message_read_status
+      description: Message read status.
+      type: Boolean
+    - contextPath: AgariPhishingDefense.Message.org_domain
+      description: Organization domain.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.policy_ids
+      description: List of triggered policy IDs.
+      type: Unknown
+    - contextPath: AgariPhishingDefense.Message.sender_approval_state
+      description: Sender approval state.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.sender_type
+      description: Sender type.
+      type: String
+    - contextPath: AgariPhishingDefense.Message.spf_result
+      description: SPF result.
+      type: String
+  - arguments:
+    - default: false
+      description: The primary identifier to remediate a message (UUID). To retrieve
+        the ID execute the apd-list-message-data command.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: An operation to remediate a message. Remediation operation is either
+        'delete' or 'move'.
+      isArray: false
+      name: operation
+      predefined:
+      - delete
+      - move
+      required: true
+      secret: false
+    deprecated: false
+    description: Remediate suspected message.
+    execution: false
+    name: apd-remediate-message
+  dockerimage: demisto/python3:3.8.6.13358
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- AgariPhishingDefense-Test
+fromversion: 5.0.0

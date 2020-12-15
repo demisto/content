@@ -1,0 +1,30 @@
+{
+    "id": "incident_apdmessagetrustscore",
+    "version": -1,
+    "modified": "2020-11-25T17:22:17.762618903+05:30",
+    "name": "APD Message Trust Score",
+    "ownerOnly": false,
+    "cliName": "apdmessagetrustscore",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Agari Phishing Defense Policy Event"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

@@ -26,6 +26,11 @@
             "playbookID": "FireEyeNX-Test"
         },
         {
+          "integrations": "Agari Phishing Defense",
+          "playbookID": "AgariPhishingDefense-Test",
+          "fromversion": "5.0.0"
+        },
+        {
             "integrations": "EmailRepIO",
             "playbookID": "TestEmailRepPlaybook",
             "fromversion": "5.0.0"

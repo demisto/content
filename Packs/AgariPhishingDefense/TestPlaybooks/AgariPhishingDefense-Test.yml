@@ -1,0 +1,388 @@
+id: AgariPhishingDefense-Test
+version: -1
+name: AgariPhishingDefense-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 54a0873a-099a-425a-8f57-7500efd26755
+    type: start
+    task:
+      id: 54a0873a-099a-425a-8f57-7500efd26755
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ff00df4e-ab52-41a1-896c-9398fe7c4533
+    type: regular
+    task:
+      id: ff00df4e-ab52-41a1-896c-9398fe7c4533
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 2731e577-04c2-4239-852d-4f2baba819f2
+    type: regular
+    task:
+      id: 2731e577-04c2-4239-852d-4f2baba819f2
+      version: -1
+      name: apd-list-policy-events
+      description: Retrieves a list of policy events.
+      script: Agari Phishing Defense|||apd-list-policy-events
+      type: regular
+      iscommand: true
+      brand: Agari Phishing Defense
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      add_fields: {}
+      end_date: {}
+      exclude_alert_types: {}
+      fields: {}
+      filter: {}
+      limit: {}
+      page_id: {}
+      policy_action: {}
+      policy_name: {}
+      rem_fields: {}
+      sort: {}
+      start_date: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 58d0cb00-a173-4180-806a-8ce14c0496cc
+    type: condition
+    task:
+      id: 58d0cb00-a173-4180-806a-8ce14c0496cc
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Alert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Alert.alert_definition_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Alert.policy_action
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              simple: AgariPhishingDefense.Alert.policy_enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Alert.updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Alert.created_at
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: eb267944-f56b-49d6-8568-37c2e7d7d45d
+    type: title
+    task:
+      id: eb267944-f56b-49d6-8568-37c2e7d7d45d
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: c5d85bc2-319d-4c98-8855-dc1662eb28ba
+    type: regular
+    task:
+      id: c5d85bc2-319d-4c98-8855-dc1662eb28ba
+      version: -1
+      name: apd-list-message-data
+      description: Retrieves a list of messages.
+      script: Agari Phishing Defense|||apd-list-message-data
+      type: regular
+      iscommand: true
+      brand: Agari Phishing Defense
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      add_fields: {}
+      end_date: {}
+      fields: {}
+      limit: {}
+      page_id: {}
+      rem_fields: {}
+      search: {}
+      sort: {}
+      start_date: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 2f212660-7b27-4d89-8164-76418430b5ce
+    type: condition
+    task:
+      id: 2f212660-7b27-4d89-8164-76418430b5ce
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Message.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Message.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Message.message_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Message.authenticity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Message.to
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Message.from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Message.from_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Message.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Message.domain_reputation
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Message.message_trust_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Message.message_details_link
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Message.date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Message.timestamp_ms
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AgariPhishingDefense.Message.ptr_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 002941b9-20af-4280-8fb3-869a4a4d9c54
+    type: regular
+    task:
+      id: 002941b9-20af-4280-8fb3-869a4a4d9c54
+      version: -1
+      name: apd-remediate-message
+      description: Remediate suspected message.
+      script: Agari Phishing Defense|||apd-remediate-message
+      type: regular
+      iscommand: true
+      brand: Agari Phishing Defense
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      id:
+        simple: ${AgariPhishingDefense.Message.id}
+      operation:
+        simple: move
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_5_yes": 0.57,
+      "6_7_yes": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1395,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: 'This playbook uses the Agari Phishing Defense integration and tests
+  all the commands of the integration.'

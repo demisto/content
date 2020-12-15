@@ -1,0 +1,16 @@
+{
+    "name": "Agari Phishing Defense - Classifier",
+    "type": "classification",
+    "id": "Agari Phishing Defense",
+    "description": "Classifies Agari Phishing Defense Incidents.",
+    "defaultIncidentType": "Agari Phishing Defense Policy Event",
+    "keyTypeMap": {
+        "Agari Phishing Defense Policy Event": "Agari Phishing Defense Policy Event"
+    },
+    "transformer": {
+        "complex": null,
+        "simple": ".=\"Agari Phishing Defense Policy Event\""
+    },
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

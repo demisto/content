@@ -1,0 +1,580 @@
+{
+    "brandName": "Agari Phishing Defense - Classifier",
+    "custom": true,
+    "id": "Agari Phishing Defense",
+    "feed": false,
+    "defaultIncidentType": "Agari Phishing Defense Policy Event",
+    "keyTypeMap": {
+        "Agari Phishing Defense Policy Event": "Agari Phishing Defense Policy Event"
+    },
+    "transformer": {
+        "complex": null,
+        "simple": ".=\"Agari Phishing Defense Policy Event\""
+    },
+    "mapping": {
+        "Agari Phishing Defense Policy Event": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "APD Admin Recipients": {
+                    "complex": {
+                        "accessor": "admin_recipients",
+                        "filters": [
+
+                        ],
+                        "root": "policy",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Alert Definition Name": {
+                    "complex": {
+                        "accessor": "alert_definition_name",
+                        "filters": [
+
+                        ],
+                        "root": "policy",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Attack Class": {
+                    "complex": {
+                        "accessor": "attack_class",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Attack Class  MD": {
+                    "complex": {
+                        "accessor": "attack_class",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+                            {
+                                "args": {
+
+                                },
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Attack Class MD": {
+                    "complex": {
+                        "accessor": "attack_class",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Attack Types": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "message.attack_class_types"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty",
+                                    "right": null
+                                }
+                            ]
+                        ],
+                        "root": "message.attack_class_types",
+                        "transformers": [
+                            {
+                                "args": {
+
+                                },
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Created At": {
+                    "complex": {
+                        "accessor": "created_at",
+                        "filters": [
+
+                        ],
+                        "root": "policy",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Enforcement Action": {
+                    "complex": {
+                        "accessor": "enforcement_action",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Global Message ID": {
+                    "complex": {
+                        "accessor": "message_id",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Internal Message ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Matched Policies": {
+                    "complex": {
+                        "accessor": "matched_policies",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message Authentication Results": {
+                    "complex": {
+                        "accessor": "authentication_results",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message Authenticity Score": {
+                    "complex": {
+                        "accessor": "authenticity_score",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message DKIM D Tag": {
+                    "complex": {
+                        "accessor": "dkim_d_tag",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message Date": {
+                    "complex": {
+                        "accessor": "date",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message Details Date": {
+                    "complex": {
+                        "accessor": "date",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message Details From": {
+                    "complex": {
+                        "accessor": "from",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message Details Subject": {
+                    "complex": {
+                        "accessor": "subject",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message Details To": {
+                    "complex": {
+                        "accessor": "to",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message Details Trust Score": {
+                    "complex": {
+                        "accessor": "message_trust_score",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message Domain Reputation": {
+                    "complex": {
+                        "accessor": "domain_reputation",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message From": {
+                    "complex": {
+                        "accessor": "from",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message From Domain": {
+                    "complex": {
+                        "accessor": "from_domain",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message Mail From": {
+                    "complex": {
+                        "accessor": "mail_from",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message PTR Name": {
+                    "complex": {
+                        "accessor": "ptr_name",
+                        "filters": [
+
+                        ],
+                        "root": "message.sending_ip_address",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message Reply To": {
+                    "complex": {
+                        "accessor": "reply_to",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message Reputation": {
+                    "complex": {
+                        "accessor": "sbrs",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message Risk Reason": {
+                    "complex": {
+                        "accessor": "risk_reason",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message SBRS": {
+                    "complex": {
+                        "accessor": "sbrs",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message Sender IP Address": {
+                    "complex": {
+                        "accessor": "ip",
+                        "filters": [
+
+                        ],
+                        "root": "message.sending_ip_address",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message Subject": {
+                    "complex": {
+                        "accessor": "subject",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message TimeStamp ms": {
+                    "complex": {
+                        "accessor": "timestamp_ms",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message To": {
+                    "complex": {
+                        "accessor": "to",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Message Trust Score": {
+                    "complex": {
+                        "accessor": "message_trust_score",
+                        "filters": [
+
+                        ],
+                        "root": "message",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Notified Original Recipients": {
+                    "complex": {
+                        "accessor": "notified_original_recipients",
+                        "filters": [
+
+                        ],
+                        "root": "policy",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Policy Action": {
+                    "complex": {
+                        "accessor": "policy_action",
+                        "filters": [
+
+                        ],
+                        "root": "policy",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Policy Enabled": {
+                    "complex": {
+                        "accessor": "policy_enabled",
+                        "filters": [
+
+                        ],
+                        "root": "policy",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Policy Event ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [
+
+                        ],
+                        "root": "policy",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Summary": {
+                    "complex": {
+                        "accessor": "summary",
+                        "filters": [
+
+                        ],
+                        "root": "policy",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "APD Updated At": {
+                    "complex": {
+                        "accessor": "updated_at",
+                        "filters": [
+
+                        ],
+                        "root": "policy",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "created_at",
+                        "filters": [
+
+                        ],
+                        "root": "policy",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "version": -1,
+    "fromVersion": "5.0.0",
+    "toVersion": "5.9.9"
+}

@@ -1,0 +1,30 @@
+{
+    "id": "incident_apdmessageto",
+    "version": -1,
+    "modified": "2020-11-26T14:35:39.54935608+05:30",
+    "name": "APD Message To",
+    "ownerOnly": false,
+    "cliName": "apdmessageto",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": true,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Agari Phishing Defense Policy Event"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

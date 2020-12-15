@@ -1,0 +1,375 @@
+{
+    "id": "Agari Phishing Defense",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 0,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "Agari Phishing Defense",
+    "layout": [
+        {
+            "id": "06b7ef90-240b-11eb-900f-110957a0b338",
+            "forceRange": false,
+            "x": 6,
+            "y": 0,
+            "i": "06b7ef90-240b-11eb-900f-110957a0b338",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2020-10-19T14:52:55.435177916+05:30",
+                "sortValues": null,
+                "packID": "CommonWidgets",
+                "itemVersion": "1.0.5",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Attack Types",
+                "prevName": "Active Incidents - Pie chart",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": " -status:Closed -category:job and type:\"Agari Phishing Defense Policy Event\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "apdattacktypes.types"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "20dda1f0-240e-11eb-900f-110957a0b338",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "20dda1f0-240e-11eb-900f-110957a0b338",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2020-10-19T14:52:55.435177916+05:30",
+                "sortValues": null,
+                "packID": "CommonWidgets",
+                "itemVersion": "1.0.5",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Policy Hit by Policy Name",
+                "prevName": "Active Incidents - Pie chart",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "-status:Closed -category:job and type:\"Agari Phishing Defense Policy Event\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 0,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "apdalertdefinitionname"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "0837c040-24a4-11eb-9c9e-cf3ece1eda3a",
+            "forceRange": false,
+            "x": 0,
+            "y": 2,
+            "i": "0837c040-24a4-11eb-9c9e-cf3ece1eda3a",
+            "w": 12,
+            "h": 2,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2020-10-19T14:52:55.434911275+05:30",
+                "sortValues": null,
+                "packID": "CommonWidgets",
+                "itemVersion": "1.0.5",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Targeted Users",
+                "prevName": "Active Incidents by Role",
+                "dataType": "incidents",
+                "widgetType": "column",
+                "query": "-status:Closed -category:job and type:\"Agari Phishing Defense Policy Event\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "apdmessageto"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 10,
+                "category": ""
+            }
+        }
+    ],
+    "fromVersion": "5.0.0",
+    "description": "",
+    "isPredefined": true
+}

@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "status": "ok",
+  "code": 200,
+  "enforcement": {
+    "enforce": "delete",
+    "success": true
+  }
+}

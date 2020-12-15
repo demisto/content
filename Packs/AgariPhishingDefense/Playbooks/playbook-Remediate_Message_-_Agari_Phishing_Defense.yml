@@ -1,0 +1,228 @@
+id: Remediate Message - Agari Phishing Defense
+version: -1
+name: Remediate Message - Agari Phishing Defense
+description: Remediates a given message id.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4ddd93ab-b35c-4c95-8bf0-e6d3a7504da8
+    type: start
+    task:
+      id: 4ddd93ab-b35c-4c95-8bf0-e6d3a7504da8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 960956f7-ab14-4452-8937-e03e47672037
+    type: regular
+    task:
+      id: 960956f7-ab14-4452-8937-e03e47672037
+      version: -1
+      name: Remediate message
+      description: Remediate suspected message.
+      script: '|||apd-remediate-message'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      id:
+        complex:
+          root: inputs.id
+      operation:
+        complex:
+          root: inputs.remediate_action
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 3fa2a144-69f3-482b-8959-9cb431a22c64
+    type: title
+    task:
+      id: 3fa2a144-69f3-482b-8959-9cb431a22c64
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 12c06e53-aceb-42ec-81e1-63bf5ea642f1
+    type: condition
+    task:
+      id: 12c06e53-aceb-42ec-81e1-63bf5ea642f1
+      version: -1
+      name: Is remediation auto?
+      description: Is remediation auto?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: inputs.auto_remediation
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 2e908c5f-95a9-40c7-83d1-4199aaf400c8
+    type: condition
+    task:
+      id: 2e908c5f-95a9-40c7-83d1-4199aaf400c8
+      version: -1
+      name: Is Agari Phishing Defense Integration Enable?
+      description: Is Agari Phishing Defense Integration Enable?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Agari Phishing Defense
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 785,
+        "width": 610,
+        "x": 220,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: id
+  value:
+    complex:
+      root: incident
+      accessor: apdinternalmessageid
+  required: true
+  description: Id of message to remediate.
+  playbookInputQuery:
+- key: auto_remediation
+  value:
+    simple: "true"
+  required: false
+  description: Flag for whether to automatically remediate or not.
+  playbookInputQuery:
+- key: remediate_action
+  value:
+    simple: delete
+  required: false
+  description: Action for remediation.
+  playbookInputQuery:
+outputs: []
+tests:
+- AgariPhishingDefense-Test
+fromversion: 5.0.0
