@@ -13,13 +13,11 @@
         "IT Services"
     ],
     "tags": [
-        "Alert",
-        "alert",
+        "Alerts",
         "Email",
-        "Push",
-        "SMS",
-        "Notifications",
-        "Incident Response"
+        "Incident Handling",
+        "Incident Response",
+        "IT"
     ],
     "useCases": [
         "Default",
