@@ -33,24 +33,6 @@ FIELD_TYPE_DICT = {
 ACCOUNT_STATUS_DICT = {1: 'Active', 2: 'Inactive', 3: 'Locked'}
 
 
-def parse_date_to_datetime(date: str, day_first: bool = False) -> datetime:
-    """Return a datetime object from given date.
-    Format of "1/1/2020 04:00 PM".
-
-    Arguments:
-        date: a date string
-        day_first: is the day first in the string (European)
-
-    Returns:
-        a datetime object
-    """
-    date_obj = parser(date)
-    if date_obj.tzinfo is None or date_obj.tzinfo.utcoffset(date_obj) is None:  # if no timezone provided
-        date_order = {'DATE_ORDER': 'DMY' if day_first else 'MDY'}
-        date_obj = parser(date, settings=date_order)  # Could throw `AssertionError` if could not parse the timestamp
-    return date_obj
-
-
 def parser(date_str, date_formats=None, languages=None, locales=None, region=None, settings=None) -> datetime:
     """Wrapper of dateparser.parse to support return type value
     """
@@ -442,8 +424,7 @@ class Client(BaseClient):
             'labels': labels,
             'rawJSON': json.dumps(raw_record)
         }
-        incident_created_date = parser(occurred_time)
-        return incident, incident_created_date
+        return incident, parser(occurred_time)
 
     def search_records(
             self, app_id, fields_to_display=None, field_to_search='', search_value='',
@@ -1151,6 +1132,9 @@ def fetch_incidents(
     next_fetch = from_time
     for record in records:
         incident, incident_created_time = client.record_to_incident(record, app_id, fetch_param_id)
+        # Encountered that sometimes, somehow, on of next_fetch/incident_created_time are not UTC.
+        next_fetch = next_fetch.replace(tzinfo=timezone.utc)
+        incident_created_time = incident_created_time.replace(tzinfo=timezone.utc)
         if incident_created_time > next_fetch:
             next_fetch = incident_created_time
         incidents.append(incident)
@@ -1173,7 +1157,7 @@ def get_fetch_time(last_fetch: dict, first_fetch_time: str) -> datetime:
         start_fetch = parser(next_run)
     else:
         start_fetch, _ = parse_date_range(first_fetch_time)
-        start_fetch.replace(tzinfo=timezone.utc)
+    start_fetch.replace(tzinfo=timezone.utc)
     return start_fetch
 
 
