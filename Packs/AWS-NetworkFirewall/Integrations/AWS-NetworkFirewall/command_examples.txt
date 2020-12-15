@@ -1,29 +1,29 @@
-!aws-network-firewall-associate-firewall-policy firewall_policy_arn=arn:aws:network-firewall:us-west-2:000000000000:firewall-policy/example-fw-policy firewall_arn=arn:aws:network-firewall:us-west-2:000000000000:firewall/myfirewall
-!aws-network-firewall-associate-subnets subnet_mappings_subnet_ids=subnet-abcdef12,subnet-abcdef12 firewall_arn=arn:aws:network-firewall:us-west-2:000000000000:firewall/myfirewall
-!aws-network-firewall-create-firewall firewall_name=myfirewall firewall_policy_arn=arn:aws:network-firewall:us-west-2:000000000000:firewall-policy/example-fw-policy subnet_mappings_subnet_ids=subnet-abcdef12,subnet-abcdef12 vpc_id=vpc-abcdef12
-!aws-network-firewall-create-firewall-policy firewall_policy_name=example-fw-policy2 firewall_policy_json="{\"StatelessRuleGroupReferences\":[{\"ResourceArn\":\"arn:aws:network-firewall:us-west-2:000000000000:stateless-rulegroup/example-group-stateless\",\"Priority\":100}],\"StatelessDefaultActions\":[\"aws:pass\"],\"StatelessFragmentDefaultActions\":[\"aws:pass\"]}"
-!aws-network-firewall-create-rule-group type=STATELESS rule_group_name=example-group-stateless2 capacity=10 rule_group_json="{\"RulesSource\":{\"StatelessRulesAndCustomActions\":{\"StatelessRules\":[{\"RuleDefinition\":{\"MatchAttributes\":{\"Sources\":[{\"AddressDefinition\":\"10.0.0.0/8\"},{\"AddressDefinition\":\"192.168.0.0/16\"},{\"AddressDefinition\":\"172.31.0.0/16\"}]},\"Actions\":[\"aws:pass\"]},\"Priority\":5}]}}}"
-!aws-network-firewall-delete-firewall firewall_name=myfirewall
-!aws-network-firewall-delete-firewall-policy firewall_policy_arn=arn:aws:network-firewall:us-west-2:000000000000:firewall-policy/example-fw-policy
-!aws-network-firewall-delete-resource-policy resource_arn=arn:aws:network-firewall:us-west-2:000000000000:firewall-policy/example-fw-policy
-!aws-network-firewall-delete-rule-group rule_group_arn=arn:aws:network-firewall:us-west-2:000000000000:stateless-rulegroup/example-group-stateless
-!aws-network-firewall-describe-firewall firewall_name=myfirewall
-!aws-network-firewall-describe-firewall-policy firewall_policy_arn=arn:aws:network-firewall:us-west-2:000000000000:firewall-policy/example-fw-policy
-!aws-network-firewall-describe-logging-configuration firewall_name=myfirewall
-!aws-network-firewall-describe-resource-policy resource_arn=arn:aws:network-firewall:us-west-2:000000000000:firewall-policy/example-fw-policy
-!aws-network-firewall-describe-rule-group rule_group_arn=arn:aws:network-firewall:us-west-2:000000000000:stateless-rulegroup/example-group-stateless
-!aws-network-firewall-disassociate-subnets firewall_name=myfirewall subnet_ids=subnet-abcdef12
+!aws-network-firewall-create-rule-group type=STATELESS rule_group_name=example-group-stateless capacity=10 rule_group_json="""{"RulesSource":{"StatelessRulesAndCustomActions":{"StatelessRules":[{"RuleDefinition":{"MatchAttributes":{"Sources":[{"AddressDefinition":"10.0.0.0/8"},{"AddressDefinition":"192.168.0.0/16"},{"AddressDefinition":"172.31.0.0/16"}]},"Actions":["aws:pass"]},"Priority":5}]}}}"""
+!aws-network-firewall-create-firewall-policy firewall_policy_name=example-fw-policy firewall_policy_json="""{"StatelessRuleGroupReferences":[{"ResourceArn":"arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless","Priority":100}],"StatelessDefaultActions":["aws:pass"],"StatelessFragmentDefaultActions":["aws:pass"]}"""
+!aws-network-firewall-create-firewall firewall_name=myfirewall firewall_policy_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy subnet_mappings_subnet_ids=subnet-1787526f,subnet-901becda vpc_id=vpc-a77d05df
+!aws-network-firewall-associate-firewall-policy firewall_policy_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall
+!aws-network-firewall-associate-subnets subnet_mappings_subnet_ids=subnet-1787526f,subnet-901becda firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2
+!aws-network-firewall-disassociate-subnets firewall_name=myfirewall2 subnet_ids=subnet-901becda
+!aws-network-firewall-describe-firewall firewall_name=myfirewall2
+!aws-network-firewall-describe-firewall-policy firewall_policy_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2
+!aws-network-firewall-describe-logging-configuration firewall_name=myfirewall2
+!aws-network-firewall-describe-rule-group rule_group_arn=arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2
 !aws-network-firewall-list-firewall-policies
 !aws-network-firewall-list-firewalls
 !aws-network-firewall-list-rule-groups
-!aws-network-firewall-list-tags-for-resource resource_arn=arn:aws:network-firewall:us-west-2:000000000000:firewall/myfirewall
-!aws-network-firewall-put-resource-policy
-!aws-network-firewall-tag-resource resource_arn=arn:aws:network-firewall:us-west-2:000000000000:firewall/myfirewall tags="key=testkey,value=testvalue"
-!aws-network-firewall-untag-resource resource_arn=arn:aws:network-firewall:us-west-2:000000000000:firewall/myfirewall tag_keys=testkey
-!aws-network-firewall-update-firewall-delete-protection delete_protection=False firewall_arn=arn:aws:network-firewall:us-west-2:000000000000:firewall/myfirewall
-!aws-network-firewall-update-firewall-description firewall_arn=arn:aws:network-firewall:us-west-2:000000000000:firewall/myfirewall description="some description"
-!aws-network-firewall-update-firewall-policy update_token=3c16ef79-3879-45c4-8167-eb5e4425c33d firewall_policy_json="{\"StatelessRuleGroupReferences\":[{\"ResourceArn\":\"arn:aws:network-firewall:us-west-2:000000000000:stateless-rulegroup/example-group-stateless\",\"Priority\":100}],\"StatelessDefaultActions\":[\"aws:pass\"],\"StatelessFragmentDefaultActions\":[\"aws:pass\"]}" firewall_policy_arn=arn:aws:network-firewall:us-west-2:000000000000:firewall-policy/example-fw-policy
-!aws-network-firewall-update-firewall-policy-change-protection firewall_policy_change_protection=False firewall_arn=arn:aws:network-firewall:us-west-2:000000000000:firewall/myfirewall
-!aws-network-firewall-update-logging-configuration firewall_arn=arn:aws:network-firewall:us-west-2:000000000000:firewall/myfirewall logging_configuration_json="{\"LogDestinationConfigs\":[{\"LogType\":\"ALERT\",\"LogDestinationType\":\"S3\",\"LogDestination\":{\"bucketName\":\"DOC-EXAMPLE-BUCKET\",\"prefix\":\"alerts\"}}]}"
-!aws-network-firewall-update-rule-group rule_group_arn=arn:aws:network-firewall:us-west-2:000000000000:stateless-rulegroup/example-group-stateless update_token=5c0b913e-a18a-4b29-befd-f1d585a7b61f rule_group_json="{\"RulesSource\":{\"StatelessRulesAndCustomActions\":{\"StatelessRules\":[{\"RuleDefinition\":{\"MatchAttributes\":{\"Sources\":[{\"AddressDefinition\":\"10.0.0.0/8\"},{\"AddressDefinition\":\"192.168.0.0/16\"},{\"AddressDefinition\":\"172.31.0.0/16\"}]},\"Actions\":[\"aws:pass\"]},\"Priority\":5}]}}}"
-!aws-network-firewall-update-subnet-change-protection subnet_change_protection=True firewall_arn=arn:aws:network-firewall:us-west-2:000000000000:firewall/myfirewall
+!aws-network-firewall-tag-resource resource_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 tags="key=testkey,value=testvalue"
+!aws-network-firewall-list-tags-for-resource resource_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2
+!aws-network-firewall-untag-resource resource_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 tag_keys=testkey
+!aws-network-firewall-update-firewall-delete-protection delete_protection=False firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2
+!aws-network-firewall-update-firewall-description firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 description="some description"
+!aws-network-firewall-update-firewall-policy-change-protection firewall_policy_change_protection=False firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2
+!aws-network-firewall-update-subnet-change-protection subnet_change_protection=False firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2
+!aws-network-firewall-update-firewall-policy update_token=4fa9513c-d33b-4980-8b6e-f00ef7a2af99 firewall_policy_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2  firewall_policy_json="""{"StatelessRuleGroupReferences":[{"ResourceArn":"arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless","Priority":100}],"StatelessDefaultActions":["aws:pass"],"StatelessFragmentDefaultActions":["aws:pass"]}"""
+!aws-network-firewall-update-rule-group rule_group_arn=arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2 update_token=049b2760-7b8d-4eb0-a2b1-89012f073da2 rule_group_json="""{"RulesSource":{"StatelessRulesAndCustomActions":{"StatelessRules":[{"RuleDefinition":{"MatchAttributes":{"Sources":[{"AddressDefinition":"10.0.0.0/8"},{"AddressDefinition":"192.168.0.0/16"},{"AddressDefinition":"172.31.0.0/16"}]},"Actions":["aws:pass"]},"Priority":5}]}}}"""
+!aws-network-firewall-update-logging-configuration firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 logging_configuration_json="{\"LogDestinationConfigs\":[{\"LogType\":\"ALERT\",\"LogDestinationType\":\"S3\",\"LogDestination\":{\"bucketName\":\"xsoar-demo-test-bucket-network-firewall\",\"prefix\":\"alerts\"}}]}"
+!aws-network-firewall-put-resource-policy resource_arn=arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2 policy="""{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":["632480965664"]},"Action":["network-firewall:CreateFirewallPolicy","network-firewall:UpdateFirewallPolicy","network-firewall:ListRuleGroups"],"Resource":"arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2"}]}"""
+!aws-network-firewall-describe-resource-policy resource_arn=arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2
+!aws-network-firewall-delete-resource-policy resource_arn=arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2
+!aws-network-firewall-delete-firewall firewall_name=myfirewall
+!aws-network-firewall-delete-firewall-policy firewall_policy_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2
+!aws-network-firewall-delete-rule-group rule_group_arn=arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless3

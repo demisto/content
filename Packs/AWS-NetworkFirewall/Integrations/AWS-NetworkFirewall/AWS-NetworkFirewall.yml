@@ -52,7 +52,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: AW Network Firewall is a stateful, managed, network firewall and intrusion
+description: AWS Network Firewall is a stateful, managed, network firewall and intrusion
   detection and prevention service for Amazon Virtual Private Cloud (Amazon VPC).
   With Network Firewall, you can filter traffic at the perimeter of your VPC. This
   includes filtering traffic going to and coming from an internet gateway, NAT gateway,

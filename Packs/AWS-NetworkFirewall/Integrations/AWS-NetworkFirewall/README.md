@@ -1,4 +1,4 @@
-AW Network Firewall is a stateful, managed, network firewall and intrusion detection and prevention service for Amazon Virtual Private Cloud (Amazon VPC). With Network Firewall, you can filter traffic at the perimeter of your VPC. This includes filtering traffic going to and coming from an internet gateway, NAT gateway, or over VPN or AWS Direct Connect. Network Firewall uses rules that are compatible with Suricata, a free, open source intrusion detection system (IDS) engine.
+AWS Network Firewall is a stateful, managed, network firewall and intrusion detection and prevention service for Amazon Virtual Private Cloud (Amazon VPC). With Network Firewall, you can filter traffic at the perimeter of your VPC. This includes filtering traffic going to and coming from an internet gateway, NAT gateway, or over VPN or AWS Direct Connect. Network Firewall uses rules that are compatible with Suricata, a free, open source intrusion detection system (IDS) engine.
 This integration was integrated and tested with version xx of AWS Network Firewall
 ## Configure AWS Network Firewall on Cortex XSOAR
 
@@ -55,10 +55,31 @@ Associates a FirewallPolicy to a Firewall.  A firewall policy defines how to mon
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-associate-firewall-policy firewall_policy_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall```
+
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "AssociationResults": {
+            "FirewallPolicy": {
+                "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall",
+                "FirewallName": "myfirewall",
+                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy",
+                "UpdateToken": "bfcd1bb0-05b4-4b68-9ded-715419ab31ab"
+            }
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall AssociateFirewallPolicy
+>|FirewallArn|FirewallName|FirewallPolicyArn|UpdateToken|
+>|---|---|---|---|
+>| arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall | myfirewall | arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy | bfcd1bb0-05b4-4b68-9ded-715419ab31ab |
 
 
 ### aws-network-firewall-associate-subnets
@@ -96,10 +117,37 @@ Associates the specified subnets in the Amazon VPC to the firewall. You can spec
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-associate-subnets subnet_mappings_subnet_ids=subnet-1787526f,subnet-901becda firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2```
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "AssociationResults": {
+            "Subnets": {
+                "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2",
+                "FirewallName": "myfirewall2",
+                "SubnetMappings": [
+                    {
+                        "SubnetId": "subnet-1787526f"
+                    },
+                    {
+                        "SubnetId": "subnet-901becda"
+                    }
+                ],
+                "UpdateToken": "33113709-ce96-4cbf-89db-149a8b400287"
+            }
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall AssociateSubnets
+>|FirewallArn|FirewallName|SubnetMappings|UpdateToken|
+>|---|---|---|---|
+>| arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 | myfirewall2 | {'SubnetId': 'subnet-1787526f'},<br/>{'SubnetId': 'subnet-901becda'} | 33113709-ce96-4cbf-89db-149a8b400287 |
 
 
 ### aws-network-firewall-create-firewall
@@ -158,10 +206,46 @@ Creates an AWS Network Firewall Firewall and accompanying FirewallStatus for a V
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-create-firewall firewall_name=myfirewall1 firewall_policy_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy subnet_mappings_subnet_ids=subnet-1787526f,subnet-901becda vpc_id=vpc-a77d05df```
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "Firewall": {
+            "Firewall": {
+                "DeleteProtection": false,
+                "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall1",
+                "FirewallId": "86418579-5031-42a0-a23f-bca0638383ac",
+                "FirewallName": "myfirewall1",
+                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy",
+                "FirewallPolicyChangeProtection": false,
+                "SubnetChangeProtection": false,
+                "SubnetMappings": [
+                    {
+                        "SubnetId": "subnet-1787526f"
+                    },
+                    {
+                        "SubnetId": "subnet-901becda"
+                    }
+                ],
+                "VpcId": "vpc-a77d05df"
+            },
+            "FirewallStatus": {
+                "ConfigurationSyncStateSummary": "PENDING",
+                "Status": "PROVISIONING"
+            }
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall CreateFirewall
+>|Firewall|FirewallStatus|
+>|---|---|
+>| FirewallName: myfirewall1<br/>FirewallArn: arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall1<br/>FirewallPolicyArn: arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy<br/>VpcId: vpc-a77d05df<br/>SubnetMappings: {'SubnetId': 'subnet-1787526f'},<br/>{'SubnetId': 'subnet-901becda'}<br/>DeleteProtection: false<br/>SubnetChangeProtection: false<br/>FirewallPolicyChangeProtection: false<br/>FirewallId: 86418579-5031-42a0-a23f-bca0638383ac | Status: PROVISIONING<br/>ConfigurationSyncStateSummary: PENDING |
 
 
 ### aws-network-firewall-create-firewall-policy
@@ -206,10 +290,31 @@ Creates the firewall policy for the firewall according to the specifications.  A
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-create-firewall-policy firewall_policy_name=example-fw-policy firewall_policy_json="""{"StatelessRuleGroupReferences":[{"ResourceArn":"arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless","Priority":100}],"StatelessDefaultActions":["aws:pass"],"StatelessFragmentDefaultActions":["aws:pass"]}"""```
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "FirewallPolicy": {
+            "FirewallPolicyResponse": {
+                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy",
+                "FirewallPolicyId": "ef867e5c-9bdc-49b3-91f8-e69c8658489f",
+                "FirewallPolicyName": "example-fw-policy",
+                "FirewallPolicyStatus": "ACTIVE"
+            },
+            "UpdateToken": "134d2405-4d98-425d-89b5-1dca72cf3c66"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall CreateFirewallPolicy
+>|FirewallPolicyResponse|UpdateToken|
+>|---|---|
+>| FirewallPolicyName: example-fw-policy<br/>FirewallPolicyArn: arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy<br/>FirewallPolicyId: ef867e5c-9bdc-49b3-91f8-e69c8658489f<br/>FirewallPolicyStatus: ACTIVE | 134d2405-4d98-425d-89b5-1dca72cf3c66 |
 
 
 ### aws-network-firewall-create-rule-group
@@ -259,10 +364,33 @@ Creates the specified stateless or stateful rule group, which includes the rules
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-create-rule-group type=STATELESS rule_group_name=example-group-stateless capacity=10 rule_group_json="""{"RulesSource":{"StatelessRulesAndCustomActions":{"StatelessRules":[{"RuleDefinition":{"MatchAttributes":{"Sources":[{"AddressDefinition":"10.0.0.0/8"},{"AddressDefinition":"192.168.0.0/16"},{"AddressDefinition":"172.31.0.0/16"}]},"Actions":["aws:pass"]},"Priority":5}]}}}"""```
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "RuleGroup": {
+            "RuleGroupResponse": {
+                "Capacity": 10,
+                "RuleGroupArn": "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless",
+                "RuleGroupId": "ee6230a2-99a4-400b-b1da-fdcc046860f3",
+                "RuleGroupName": "example-group-stateless",
+                "RuleGroupStatus": "ACTIVE",
+                "Type": "STATELESS"
+            },
+            "UpdateToken": "cb084f42-a286-4406-b3e2-7fce4e104a29"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall CreateRuleGroup
+>|RuleGroupResponse|UpdateToken|
+>|---|---|
+>| RuleGroupArn: arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless<br/>RuleGroupName: example-group-stateless<br/>RuleGroupId: ee6230a2-99a4-400b-b1da-fdcc046860f3<br/>Type: STATELESS<br/>Capacity: 10<br/>RuleGroupStatus: ACTIVE | cb084f42-a286-4406-b3e2-7fce4e104a29 |
 
 
 ### aws-network-firewall-delete-firewall
@@ -310,10 +438,81 @@ Deletes the specified Firewall and its FirewallStatus. This operation requires t
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-delete-firewall firewall_name=myfirewall```
+
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "Firewall": {
+            "Firewall": {
+                "DeleteProtection": false,
+                "Description": "some description",
+                "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall",
+                "FirewallId": "93498bf3-266d-42a1-94b6-4b0b30edbde8",
+                "FirewallName": "myfirewall",
+                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy",
+                "FirewallPolicyChangeProtection": false,
+                "SubnetChangeProtection": false,
+                "SubnetMappings": [
+                    {
+                        "SubnetId": "subnet-1787526f"
+                    },
+                    {
+                        "SubnetId": "subnet-901becda"
+                    }
+                ],
+                "Tags": [],
+                "VpcId": "vpc-a77d05df"
+            },
+            "FirewallStatus": {
+                "ConfigurationSyncStateSummary": "IN_SYNC",
+                "Status": "DELETING",
+                "SyncStates": {
+                    "us-west-2a": {
+                        "Attachment": {
+                            "EndpointId": "vpce-08e214d7a95518a88",
+                            "Status": "READY",
+                            "SubnetId": "subnet-901becda"
+                        },
+                        "Config": {
+                            "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy": {
+                                "SyncStatus": "IN_SYNC"
+                            },
+                            "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless": {
+                                "SyncStatus": "IN_SYNC"
+                            }
+                        }
+                    },
+                    "us-west-2b": {
+                        "Attachment": {
+                            "EndpointId": "vpce-0aec2d6914baa9a7a",
+                            "Status": "READY",
+                            "SubnetId": "subnet-1787526f"
+                        },
+                        "Config": {
+                            "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy": {
+                                "SyncStatus": "IN_SYNC"
+                            },
+                            "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless": {
+                                "SyncStatus": "IN_SYNC"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall DeleteFirewall
+>|Firewall|FirewallStatus|
+>|---|---|
+>| FirewallName: myfirewall<br/>FirewallArn: arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall<br/>FirewallPolicyArn: arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy<br/>VpcId: vpc-a77d05df<br/>SubnetMappings: {'SubnetId': 'subnet-1787526f'},<br/>{'SubnetId': 'subnet-901becda'}<br/>DeleteProtection: false<br/>SubnetChangeProtection: false<br/>FirewallPolicyChangeProtection: false<br/>Description: some description<br/>FirewallId: 93498bf3-266d-42a1-94b6-4b0b30edbde8<br/>Tags:  | Status: DELETING<br/>ConfigurationSyncStateSummary: IN_SYNC<br/>SyncStates: {"us-west-2a": {"Attachment": {"SubnetId": "subnet-901becda", "EndpointId": "vpce-08e214d7a95518a88", "Status": "READY"}, "Config": {"arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy": {"SyncStatus": "IN_SYNC"}, "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless": {"SyncStatus": "IN_SYNC"}}}, "us-west-2b": {"Attachment": {"SubnetId": "subnet-1787526f", "EndpointId": "vpce-0aec2d6914baa9a7a", "Status": "READY"}, "Config": {"arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy": {"SyncStatus": "IN_SYNC"}, "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless": {"SyncStatus": "IN_SYNC"}}}} |
 
 
 ### aws-network-firewall-delete-firewall-policy
@@ -353,10 +552,32 @@ Deletes the specified FirewallPolicy.
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-delete-firewall-policy firewall_policy_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2```
+
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "FirewallPolicy": {
+            "FirewallPolicyResponse": {
+                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2",
+                "FirewallPolicyId": "f9253d2f-acf7-465b-97f0-f8f52a7a756f",
+                "FirewallPolicyName": "example-fw-policy2",
+                "FirewallPolicyStatus": "DELETING",
+                "Tags": []
+            }
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall DeleteFirewallPolicy
+>|FirewallPolicyArn|FirewallPolicyId|FirewallPolicyName|FirewallPolicyStatus|Tags|
+>|---|---|---|---|---|
+>| arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2 | f9253d2f-acf7-465b-97f0-f8f52a7a756f | example-fw-policy2 | DELETING |  |
 
 
 ### aws-network-firewall-delete-resource-policy
@@ -384,10 +605,17 @@ Deletes a resource policy that you created in a PutResourcePolicy request.
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!aws-network-firewall-delete-resource-policy resource_arn=arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2```
+
+#### Context Example
+```json
+{}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall DeleteResourcePolicy
+>**No entries.**
 
 
 ### aws-network-firewall-delete-rule-group
@@ -430,10 +658,33 @@ Deletes the specified RuleGroup.
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-delete-rule-group rule_group_arn=arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless3```
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "RuleGroup": {
+            "RuleGroupResponse": {
+                "Capacity": 10,
+                "RuleGroupArn": "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless3",
+                "RuleGroupId": "43010e51-6c14-475a-9143-93db2dd5fbac",
+                "RuleGroupName": "example-group-stateless3",
+                "RuleGroupStatus": "DELETING",
+                "Tags": [],
+                "Type": "STATELESS"
+            }
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall DeleteRuleGroup
+>|Capacity|RuleGroupArn|RuleGroupId|RuleGroupName|RuleGroupStatus|Tags|Type|
+>|---|---|---|---|---|---|---|
+>| 10 | arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless3 | 43010e51-6c14-475a-9143-93db2dd5fbac | example-group-stateless3 | DELETING |  | STATELESS |
 
 
 ### aws-network-firewall-describe-firewall
@@ -484,10 +735,77 @@ Returns the data objects for the specified firewall.
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-describe-firewall firewall_name=myfirewall2```
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "Firewall": {
+            "Firewall": {
+                "DeleteProtection": false,
+                "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2",
+                "FirewallId": "9f7ce834-a43b-4bcc-8e54-a44dff6de461",
+                "FirewallName": "myfirewall2",
+                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2",
+                "FirewallPolicyChangeProtection": false,
+                "SubnetChangeProtection": false,
+                "SubnetMappings": [
+                    {
+                        "SubnetId": "subnet-1787526f"
+                    }
+                ],
+                "Tags": [],
+                "VpcId": "vpc-a77d05df"
+            },
+            "FirewallStatus": {
+                "ConfigurationSyncStateSummary": "IN_SYNC",
+                "Status": "PROVISIONING",
+                "SyncStates": {
+                    "us-west-2a": {
+                        "Attachment": {
+                            "EndpointId": "vpce-0a090583ec93fac13",
+                            "Status": "CREATING",
+                            "SubnetId": "subnet-901becda"
+                        },
+                        "Config": {
+                            "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2": {
+                                "SyncStatus": "IN_SYNC"
+                            },
+                            "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2": {
+                                "SyncStatus": "IN_SYNC"
+                            }
+                        }
+                    },
+                    "us-west-2b": {
+                        "Attachment": {
+                            "EndpointId": "vpce-000ca8246c0df412c",
+                            "Status": "READY",
+                            "SubnetId": "subnet-1787526f"
+                        },
+                        "Config": {
+                            "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2": {
+                                "SyncStatus": "IN_SYNC"
+                            },
+                            "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2": {
+                                "SyncStatus": "IN_SYNC"
+                            }
+                        }
+                    }
+                }
+            },
+            "UpdateToken": "3cd6d327-33d1-4c0e-8452-f61bdf9b218c"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall DescribeFirewall
+>|Firewall|FirewallStatus|UpdateToken|
+>|---|---|---|
+>| FirewallName: myfirewall2<br/>FirewallArn: arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2<br/>FirewallPolicyArn: arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2<br/>VpcId: vpc-a77d05df<br/>SubnetMappings: {'SubnetId': 'subnet-1787526f'}<br/>DeleteProtection: false<br/>SubnetChangeProtection: false<br/>FirewallPolicyChangeProtection: false<br/>FirewallId: 9f7ce834-a43b-4bcc-8e54-a44dff6de461<br/>Tags:  | Status: PROVISIONING<br/>ConfigurationSyncStateSummary: IN_SYNC<br/>SyncStates: {"us-west-2a": {"Attachment": {"SubnetId": "subnet-901becda", "EndpointId": "vpce-0a090583ec93fac13", "Status": "CREATING"}, "Config": {"arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2": {"SyncStatus": "IN_SYNC"}, "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2": {"SyncStatus": "IN_SYNC"}}}, "us-west-2b": {"Attachment": {"SubnetId": "subnet-1787526f", "EndpointId": "vpce-000ca8246c0df412c", "Status": "READY"}, "Config": {"arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2": {"SyncStatus": "IN_SYNC"}, "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2": {"SyncStatus": "IN_SYNC"}}}} | 3cd6d327-33d1-4c0e-8452-f61bdf9b218c |
 
 
 ### aws-network-firewall-describe-firewall-policy
@@ -534,10 +852,46 @@ Returns the data objects for the specified firewall policy.
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-describe-firewall-policy firewall_policy_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2```
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "FirewallPolicy": {
+            "FirewallPolicy": {
+                "StatelessDefaultActions": [
+                    "aws:pass"
+                ],
+                "StatelessFragmentDefaultActions": [
+                    "aws:pass"
+                ],
+                "StatelessRuleGroupReferences": [
+                    {
+                        "Priority": 100,
+                        "ResourceArn": "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2"
+                    }
+                ]
+            },
+            "FirewallPolicyResponse": {
+                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2",
+                "FirewallPolicyId": "f9253d2f-acf7-465b-97f0-f8f52a7a756f",
+                "FirewallPolicyName": "example-fw-policy2",
+                "FirewallPolicyStatus": "ACTIVE",
+                "Tags": []
+            },
+            "UpdateToken": "4fa9513c-d33b-4980-8b6e-f00ef7a2af99"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall DescribeFirewallPolicy
+>|FirewallPolicy|FirewallPolicyResponse|UpdateToken|
+>|---|---|---|
+>| StatelessRuleGroupReferences: {'ResourceArn': 'arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2', 'Priority': 100}<br/>StatelessDefaultActions: aws:pass<br/>StatelessFragmentDefaultActions: aws:pass | FirewallPolicyName: example-fw-policy2<br/>FirewallPolicyArn: arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2<br/>FirewallPolicyId: f9253d2f-acf7-465b-97f0-f8f52a7a756f<br/>FirewallPolicyStatus: ACTIVE<br/>Tags:  | 4fa9513c-d33b-4980-8b6e-f00ef7a2af99 |
 
 
 ### aws-network-firewall-describe-logging-configuration
@@ -576,10 +930,37 @@ Returns the logging configuration for the specified firewall.
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-describe-logging-configuration firewall_name=myfirewall2```
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "Logging": {
+            "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2",
+            "LoggingConfiguration": {
+                "LogDestinationConfigs": [
+                    {
+                        "LogDestination": {
+                            "bucketName": "xsoar-demo-test-bucket-network-firewall",
+                            "prefix": "alerts"
+                        },
+                        "LogDestinationType": "S3",
+                        "LogType": "ALERT"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall DescribeLoggingConfiguration
+>|FirewallArn|LoggingConfiguration|
+>|---|---|
+>| arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 | LogDestinationConfigs: {'LogType': 'ALERT', 'LogDestinationType': 'S3', 'LogDestination': {'bucketName': 'xsoar-demo-test-bucket-network-firewall', 'prefix': 'alerts'}} |
 
 
 ### aws-network-firewall-describe-resource-policy
@@ -610,10 +991,23 @@ Retrieves a resource policy that you created in a PutResourcePolicy request.
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-describe-resource-policy resource_arn=arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2```
+
+#### Context Example
+```json
+{
+    "AWS-Network Firewall": {
+        "Policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::632480965664:root\"},\"Action\":[\"network-firewall:CreateFirewallPolicy\",\"network-firewall:UpdateFirewallPolicy\",\"network-firewall:ListRuleGroups\"],\"Resource\":\"arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2\"}]}"
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall DescribeResourcePolicy
+>|Policy|
+>|---|
+>| {"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":"arn:aws:iam::632480965664:root"},"Action":["network-firewall:CreateFirewallPolicy","network-firewall:UpdateFirewallPolicy","network-firewall:ListRuleGroups"],"Resource":"arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2"}]} |
 
 
 ### aws-network-firewall-describe-rule-group
@@ -651,32 +1045,21 @@ Returns the data objects for the specified rule group.
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.RulesSourceList.TargetTypes | Unknown | TLS_SNI and HTTP_HOST | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.RulesSourceList.GeneratedRulesType | Unknown | Whether you want to allow or deny access to the domains in your target list. | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.RulesSourceList | Unknown | Stateful inspection criteria for a domain list rule group.  | 
-| AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatefulRules.Action | Unknown | Defines what Network Firewall should do with the packets in a traffic flow when the flow matches the stateful rule criteria. For all actions, Network Firewall performs the specified action and discontinues stateful inspection of the traffic flow.  The actions for a stateful rule are defined as follows:   \*   \*\*PASS\*\* - Permits the packets to go to the intended destination. 
- \*   \*\*DROP\*\* - Blocks the packets from going to the intended destination and sends an alert log message, if alert logging is configured in the Firewall LoggingConfiguration.  
- \*   \*\*ALERT\*\* - Permits the packets to go to the intended destination and sends an alert log message, if alert logging is configured in the Firewall LoggingConfiguration.  You can use this action to test a rule that you intend to use to drop traffic. You can enable the rule with ALERT action, verify in the logs that the rule is filtering as you want, then change the action to DROP. 
-  | 
+| AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatefulRules.Action | Unknown | Defines what Network Firewall should do with the packets in a traffic flow when the flow matches the stateful rule criteria. For all actions, Network Firewall performs the specified action and discontinues stateful inspection of the traffic flow.  The actions for a stateful rule are defined as follows:   \*   \*\*PASS\*\* - Permits the packets to go to the intended destination. <br /> \*   \*\*DROP\*\* - Blocks the packets from going to the intended destination and sends an alert log message, if alert logging is configured in the Firewall LoggingConfiguration. <br /> \*   \*\*ALERT\*\* - Permits the packets to go to the intended destination and sends an alert log message, if alert logging is configured in the Firewall LoggingConfiguration.  You can use this action to test a rule that you intend to use to drop traffic. You can enable the rule with ALERT action, verify in the logs that the rule is filtering as you want, then change the action to DROP. | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatefulRules.Header.Protocol | Unknown | The protocol to inspect for. To match with any protocol, specify ANY.  | 
-| AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatefulRules.Header.Source | Unknown | The source IP address or address range to inspect for, in CIDR notation. To match with any address, specify ANY.  Specify an IP address or a block of IP addresses in Classless Inter-Domain Routing \(CIDR\) notation. Network Firewall supports all address ranges for IPv4.  Examples:   \*  To configure Network Firewall to inspect for the IP address 192.0.2.44, specify 192.0.2.44/32. 
- \*  To configure Network Firewall to inspect for IP addresses from 192.0.2.0 to 192.0.2.255, specify 192.0.2.0/24. 
-  For more information about CIDR notation, see the Wikipedia entry Classless Inter-Domain Routing. | 
+| AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatefulRules.Header.Source | Unknown | The source IP address or address range to inspect for, in CIDR notation. To match with any address, specify ANY.  Specify an IP address or a block of IP addresses in Classless Inter-Domain Routing \(CIDR\) notation. Network Firewall supports all address ranges for IPv4.  Examples:   \*  To configure Network Firewall to inspect for the IP address 192.0.2.44, specify 192.0.2.44/32. <br />\*  To configure Network Firewall to inspect for IP addresses from 192.0.2.0 to 192.0.2.255, specify 192.0.2.0/24. For more information about CIDR notation, see the Wikipedia entry Classless Inter-Domain Routing. | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatefulRules.Header.SourcePort | Unknown | The source port to inspect for. You can specify an individual port, for example 1994 and you can specify a port range, for example 1990-1994. To match with any port, specify ANY.  | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatefulRules.Header.Direction | Unknown | The direction of traffic flow to inspect. If set to ANY, the inspection matches bidirectional traffic, both from the source to the destination and from the destination to the source. If set to FORWARD, the inspection only matches traffic going from the source to the destination.  | 
-| AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatefulRules.Header.Destination | Unknown | The destination IP address or address range to inspect for, in CIDR notation. To match with any address, specify ANY.  Specify an IP address or a block of IP addresses in Classless Inter-Domain Routing \(CIDR\) notation. Network Firewall supports all address ranges for IPv4.  Examples:   \*  To configure Network Firewall to inspect for the IP address 192.0.2.44, specify 192.0.2.44/32. 
- \*  To configure Network Firewall to inspect for IP addresses from 192.0.2.0 to 192.0.2.255, specify 192.0.2.0/24. 
-  For more information about CIDR notation, see the Wikipedia entry Classless Inter-Domain Routing. | 
+| AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatefulRules.Header.Destination | Unknown | The destination IP address or address range to inspect for, in CIDR notation. To match with any address, specify ANY.  Specify an IP address or a block of IP addresses in Classless Inter-Domain Routing \(CIDR\) notation. Network Firewall supports all address ranges for IPv4.  Examples:   \*  To configure Network Firewall to inspect for the IP address 192.0.2.44, specify 192.0.2.44/32. \*  To configure Network Firewall to inspect for IP addresses from 192.0.2.0 to 192.0.2.255, specify 192.0.2.0/24.  For more information about CIDR notation, see the Wikipedia entry Classless Inter-Domain Routing. | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatefulRules.Header.DestinationPort | Unknown | The destination port to inspect for. You can specify an individual port, for example 1994 and you can specify a port range, for example 1990-1994. To match with any port, specify ANY.  | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatefulRules.Header | Unknown | The stateful 5-tuple inspection criteria for this rule, used to inspect traffic flows.  | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatefulRules.RuleOptions.Keyword | Unknown | Rule options keyword. | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatefulRules.RuleOptions.Settings | Unknown | Rule option settings. | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatefulRules.RuleOptions | Unknown | Rule options. | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatefulRules | Unknown | The 5-tuple stateful inspection criteria. This contains an array of individual 5-tuple stateful rules to be used together in a stateful rule group.  | 
-| AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition.MatchAttributes.Sources.AddressDefinition | Unknown | Specify an IP address or a block of IP addresses in Classless Inter-Domain Routing \(CIDR\) notation. Network Firewall supports all address ranges for IPv4.  Examples:   \*  To configure Network Firewall to inspect for the IP address 192.0.2.44, specify 192.0.2.44/32. 
- \*  To configure Network Firewall to inspect for IP addresses from 192.0.2.0 to 192.0.2.255, specify 192.0.2.0/24. 
-  For more information about CIDR notation, see the Wikipedia entry Classless Inter-Domain Routing. | 
+| AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition.MatchAttributes.Sources.AddressDefinition | Unknown | Specify an IP address or a block of IP addresses in Classless Inter-Domain Routing \(CIDR\) notation. Network Firewall supports all address ranges for IPv4.  Examples:   \*  To configure Network Firewall to inspect for the IP address 192.0.2.44, specify 192.0.2.44/32.  \*  To configure Network Firewall to inspect for IP addresses from 192.0.2.0 to 192.0.2.255, specify 192.0.2.0/24.   For more information about CIDR notation, see the Wikipedia entry Classless Inter-Domain Routing. | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition.MatchAttributes.Sources | Unknown | The source IP addresses and address ranges to inspect for, in CIDR notation. If not specified, this matches with any source address.  | 
-| AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition.MatchAttributes.Destinations.AddressDefinition | Unknown | Specify an IP address or a block of IP addresses in Classless Inter-Domain Routing \(CIDR\) notation. Network Firewall supports all address ranges for IPv4.  Examples:   \*  To configure Network Firewall to inspect for the IP address 192.0.2.44, specify 192.0.2.44/32. 
- \*  To configure Network Firewall to inspect for IP addresses from 192.0.2.0 to 192.0.2.255, specify 192.0.2.0/24. 
-  For more information about CIDR notation, see the Wikipedia entry Classless Inter-Domain Routing. | 
+| AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition.MatchAttributes.Destinations.AddressDefinition | Unknown | Specify an IP address or a block of IP addresses in Classless Inter-Domain Routing \(CIDR\) notation. Network Firewall supports all address ranges for IPv4.  Examples:   \*  To configure Network Firewall to inspect for the IP address 192.0.2.44, specify 192.0.2.44/32.  \*  To configure Network Firewall to inspect for IP addresses from 192.0.2.0 to 192.0.2.255, specify 192.0.2.0/24.   For more information about CIDR notation, see the Wikipedia entry Classless Inter-Domain Routing. | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition.MatchAttributes.Destinations | Unknown | The destination IP addresses and address ranges to inspect for, in CIDR notation. If not specified, this matches with any destination address.  | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition.MatchAttributes.SourcePorts.FromPort | Unknown | The lower limit of the port range. This must be less than or equal to the ToPort specification.  | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition.MatchAttributes.SourcePorts.ToPort | Unknown | The upper limit of the port range. This must be greater than or equal to the FromPort specification.  | 
@@ -685,16 +1068,11 @@ Returns the data objects for the specified rule group.
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition.MatchAttributes.DestinationPorts.ToPort | Unknown | The upper limit of the port range. This must be greater than or equal to the FromPort specification.  | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition.MatchAttributes.DestinationPorts | Unknown | The destination ports to inspect for. If not specified, this matches with any destination port. This setting is only used for protocols 6 \(TCP\) and 17 \(UDP\).  You can specify individual ports, for example 1994 and you can specify port ranges, for example 1990-1994.  | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition.MatchAttributes.Protocols | Unknown | The protocols to inspect for, specified using each protocol's assigned internet protocol number \(IANA\). If not specified, this matches with any protocol.  | 
-| AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition.MatchAttributes.TCPFlags.Flags | Unknown | Used in conjunction with the Masks setting to define the flags that must be set and flags that must not be set in order for the packet to match. This setting can only specify values that are also specified in the Masks setting. For the flags that are specified in the masks setting, the following must be true for the packet to match:   \*  The ones that are set in this flags setting must be set in the packet.  
- \*  The ones that are not set in this flags setting must also not be set in the packet.  
-  | 
+| AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition.MatchAttributes.TCPFlags.Flags | Unknown | Used in conjunction with the Masks setting to define the flags that must be set and flags that must not be set in order for the packet to match. This setting can only specify values that are also specified in the Masks setting. For the flags that are specified in the masks setting, the following must be true for the packet to match:   \*  The ones that are set in this flags setting must be set in the packet.  \*  The ones that are not set in this flags setting must also not be set in the packet.  | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition.MatchAttributes.TCPFlags.Masks | Unknown | The set of flags to consider in the inspection. To inspect all flags in the valid values list, leave this with no setting. | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition.MatchAttributes.TCPFlags | Unknown | The TCP flags and masks to inspect for. If not specified, this matches with any settings. This setting is only used for protocol 6 \(TCP\). | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition.MatchAttributes | Unknown | Criteria for Network Firewall to use to inspect an individual packet in stateless rule inspection. Each match attributes set can include one or more items such as IP address, CIDR range, port number, protocol, and TCP flags.  | 
-| AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition.Actions | Unknown | The actions to take on a packet that matches one of the stateless rule definition's match attributes. You must specify a standard action and you can add custom actions.   Network Firewall only forwards a packet for stateful rule inspection if you specify aws:forward\\_to\\_sfe for a rule that the packet matches, or if the packet doesn't match any stateless rule and you specify aws:forward\\_to\\_sfe for the StatelessDefaultActions setting for the FirewallPolicy.  For every rule, you must specify exactly one of the following standard actions.   \*   \*\*aws:pass\*\* - Discontinues all inspection of the packet and permits it to go to its intended destination. 
- \*   \*\*aws:drop\*\* - Discontinues all inspection of the packet and blocks it from going to its intended destination. 
- \*   \*\*aws:forward\\_to\\_sfe\*\* - Discontinues stateless inspection of the packet and forwards it to the stateful rule engine for inspection.  
-  Additionally, you can specify a custom action. To do this, you define a custom action by name and type, then provide the name you've assigned to the action in this Actions setting. For information about the options, see CustomAction.  To provide more than one action in this setting, separate the settings with a comma. For example, if you have a custom PublishMetrics action that you've named MyMetricsAction, then you could specify the standard action aws:pass and the custom action with \[?aws:pass?, ?MyMetricsAction?\].  | 
+| AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition.Actions | Unknown | The actions to take on a packet that matches one of the stateless rule definition's match attributes. You must specify a standard action and you can add custom actions.   Network Firewall only forwards a packet for stateful rule inspection if you specify aws:forward\\_to\\_sfe for a rule that the packet matches, or if the packet doesn't match any stateless rule and you specify aws:forward\\_to\\_sfe for the StatelessDefaultActions setting for the FirewallPolicy.  For every rule, you must specify exactly one of the following standard actions.   \*   \*\*aws:pass\*\* - Discontinues all inspection of the packet and permits it to go to its intended destination.  \*   \*\*aws:drop\*\* - Discontinues all inspection of the packet and blocks it from going to its intended destination. \*   \*\*aws:forward\\_to\\_sfe\*\* - Discontinues stateless inspection of the packet and forwards it to the stateful rule engine for inspection.  Additionally, you can specify a custom action. To do this, you define a custom action by name and type, then provide the name you've assigned to the action in this Actions setting. For information about the options, see CustomAction.  To provide more than one action in this setting, separate the settings with a comma. For example, if you have a custom PublishMetrics action that you've named MyMetricsAction, then you could specify the standard action aws:pass and the custom action with \[?aws:pass?, ?MyMetricsAction?\].  | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.RuleDefinition | Unknown | Defines the stateless 5-tuple packet inspection criteria and the action to take on a packet that matches the criteria.  | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules.Priority | Unknown | A setting that indicates the order in which to run this rule relative to all of the rules that are defined for a stateless rule group. Network Firewall evaluates the rules in a rule group starting with the lowest priority setting. You must ensure that the priority settings are unique for the rule group.  Each stateless rule group uses exactly one StatelessRulesAndCustomActions object, and each StatelessRulesAndCustomActions contains exactly one StatelessRules object. To ensure unique priority settings for your rule groups, set unique priorities for the stateless rules that you define inside any single StatelessRules object. You can change the priority settings of your rules at any time. To make it easier to insert rules later, number them so there's a wide range in between, for example use 100, 200, and so on.  | 
 | AWS-NetworkFirewall.RuleGroup.RuleGroup.RulesSource.StatelessRulesAndCustomActions.StatelessRules | Unknown | Defines the set of stateless rules for use in a stateless rule group.  | 
@@ -721,10 +1099,63 @@ Returns the data objects for the specified rule group.
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-describe-rule-group rule_group_arn=arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2```
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "RuleGroup": {
+            "RuleGroup": {
+                "RulesSource": {
+                    "StatelessRulesAndCustomActions": {
+                        "StatelessRules": [
+                            {
+                                "Priority": 5,
+                                "RuleDefinition": {
+                                    "Actions": [
+                                        "aws:pass"
+                                    ],
+                                    "MatchAttributes": {
+                                        "Sources": [
+                                            {
+                                                "AddressDefinition": "10.0.0.0/8"
+                                            },
+                                            {
+                                                "AddressDefinition": "192.168.0.0/16"
+                                            },
+                                            {
+                                                "AddressDefinition": "172.31.0.0/16"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "RuleGroupResponse": {
+                "Capacity": 10,
+                "RuleGroupArn": "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2",
+                "RuleGroupId": "27409b82-b9de-456e-8e29-2a0e0776c548",
+                "RuleGroupName": "example-group-stateless2",
+                "RuleGroupStatus": "ACTIVE",
+                "Tags": [],
+                "Type": "STATELESS"
+            },
+            "UpdateToken": "049b2760-7b8d-4eb0-a2b1-89012f073da2"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall DescribeRuleGroup
+>|RuleGroup|RuleGroupResponse|UpdateToken|
+>|---|---|---|
+>| RulesSource: {"StatelessRulesAndCustomActions": {"StatelessRules": [{"RuleDefinition": {"MatchAttributes": {"Sources": [{"AddressDefinition": "10.0.0.0/8"}, {"AddressDefinition": "192.168.0.0/16"}, {"AddressDefinition": "172.31.0.0/16"}]}, "Actions": ["aws:pass"]}, "Priority": 5}]}} | RuleGroupArn: arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2<br/>RuleGroupName: example-group-stateless2<br/>RuleGroupId: 27409b82-b9de-456e-8e29-2a0e0776c548<br/>Type: STATELESS<br/>Capacity: 10<br/>RuleGroupStatus: ACTIVE<br/>Tags:  | 049b2760-7b8d-4eb0-a2b1-89012f073da2 |
 
 
 ### aws-network-firewall-disassociate-subnets
@@ -762,10 +1193,34 @@ Removes the specified subnet associations from the firewall. This removes the fi
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-disassociate-subnets firewall_name=myfirewall2 subnet_ids=subnet-901becda```
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "AssociationResults": {
+            "Subnets": {
+                "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2",
+                "FirewallName": "myfirewall2",
+                "SubnetMappings": [
+                    {
+                        "SubnetId": "subnet-1787526f"
+                    }
+                ],
+                "UpdateToken": "3cd6d327-33d1-4c0e-8452-f61bdf9b218c"
+            }
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall DisassociateSubnets
+>|FirewallArn|FirewallName|SubnetMappings|UpdateToken|
+>|---|---|---|---|
+>| arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 | myfirewall2 | {'SubnetId': 'subnet-1787526f'} | 3cd6d327-33d1-4c0e-8452-f61bdf9b218c |
 
 
 ### aws-network-firewall-list-firewall-policies
@@ -800,10 +1255,33 @@ Retrieves the metadata for the firewall policies that you have defined. Dependin
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-list-firewall-policies```
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "FirewallPolicies": [
+            {
+                "Arn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy",
+                "Name": "example-fw-policy"
+            },
+            {
+                "Arn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2",
+                "Name": "example-fw-policy2"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall ListFirewallPolicies
+>|Arn|Name|
+>|---|---|
+>| arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy | example-fw-policy |
+>| arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2 | example-fw-policy2 |
 
 
 ### aws-network-firewall-list-firewalls
@@ -838,10 +1316,33 @@ Retrieves the metadata for the firewalls that you have defined. If you provide V
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-list-firewalls```
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "Firewalls": [
+            {
+                "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall1",
+                "FirewallName": "myfirewall1"
+            },
+            {
+                "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2",
+                "FirewallName": "myfirewall2"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall ListFirewalls
+>|FirewallArn|FirewallName|
+>|---|---|
+>| arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall1 | myfirewall1 |
+>| arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 | myfirewall2 |
 
 
 ### aws-network-firewall-list-rule-groups
@@ -876,10 +1377,38 @@ Retrieves the metadata for the rule groups that you have defined. Depending on y
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-list-rule-groups```
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "RuleGroups": [
+            {
+                "Arn": "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless",
+                "Name": "example-group-stateless"
+            },
+            {
+                "Arn": "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2",
+                "Name": "example-group-stateless2"
+            },
+            {
+                "Arn": "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless3",
+                "Name": "example-group-stateless3"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall ListRuleGroups
+>|Arn|Name|
+>|---|---|
+>| arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless | example-group-stateless |
+>| arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2 | example-group-stateless2 |
+>| arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless3 | example-group-stateless3 |
 
 
 ### aws-network-firewall-list-tags-for-resource
@@ -914,10 +1443,28 @@ Retrieves the tags associated with the specified resource. Tags are key:value pa
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-list-tags-for-resource resource_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2```
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "Tags": [
+            {
+                "Key": "testkey",
+                "Value": "testvalue"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall ListTagsForResource
+>|Key|Value|
+>|---|---|
+>| testkey | testvalue |
 
 
 ### aws-network-firewall-put-resource-policy
@@ -948,10 +1495,17 @@ Creates or updates an AWS Identity and Access Management policy for your rule gr
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!aws-network-firewall-put-resource-policy resource_arn=arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2 policy="""{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":["632480965664"]},"Action":["network-firewall:CreateFirewallPolicy","network-firewall:UpdateFirewallPolicy","network-firewall:ListRuleGroups"],"Resource":"arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2"}]}"""```
+
+#### Context Example
+```json
+{}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall PutResourcePolicy
+>**No entries.**
 
 
 ### aws-network-firewall-tag-resource
@@ -980,10 +1534,17 @@ Adds the specified tags to the specified resource. Tags are key:value pairs that
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!aws-network-firewall-tag-resource resource_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 tags="key=testkey,value=testvalue"```
+
+#### Context Example
+```json
+{}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall TagResource
+>**No entries.**
 
 
 ### aws-network-firewall-untag-resource
@@ -1012,10 +1573,17 @@ Removes the tags with the specified keys from the specified resource. Tags are k
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!aws-network-firewall-untag-resource resource_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 tag_keys=testkey```
+
+#### Context Example
+```json
+{}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall UntagResource
+>**No entries.**
 
 
 ### aws-network-firewall-update-firewall-delete-protection
@@ -1052,10 +1620,29 @@ Modifies the flag, DeleteProtection, which indicates whether it is possible to d
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-update-firewall-delete-protection delete_protection=False firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall```
+
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "FirewallAttributes": {
+            "DeleteProtection": false,
+            "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall",
+            "FirewallName": "myfirewall",
+            "UpdateToken": "f0aafd55-1cec-42a5-981a-399ebbd7b00f"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall UpdateFirewallDeleteProtection
+>|DeleteProtection|FirewallArn|FirewallName|UpdateToken|
+>|---|---|---|---|
+>| false | arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall | myfirewall | f0aafd55-1cec-42a5-981a-399ebbd7b00f |
 
 
 ### aws-network-firewall-update-firewall-description
@@ -1092,10 +1679,29 @@ Modifies the description for the specified firewall. Use the description to help
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-update-firewall-description firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall description="some description"```
+
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "FirewallAttributes": {
+            "Description": "some description",
+            "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall",
+            "FirewallName": "myfirewall",
+            "UpdateToken": "c3b57ab4-8659-4c2d-8feb-dbc8d6aeaabf"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall UpdateFirewallDescription
+>|Description|FirewallArn|FirewallName|UpdateToken|
+>|---|---|---|---|
+>| some description | arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall | myfirewall | c3b57ab4-8659-4c2d-8feb-dbc8d6aeaabf |
 
 
 ### aws-network-firewall-update-firewall-policy
@@ -1140,10 +1746,32 @@ Updates the properties of the specified firewall policy.
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-update-firewall-policy update_token=4fa9513c-d33b-4980-8b6e-f00ef7a2af99 firewall_policy_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2  firewall_policy_json="""{"StatelessRuleGroupReferences":[{"ResourceArn":"arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless","Priority":100}],"StatelessDefaultActions":["aws:pass"],"StatelessFragmentDefaultActions":["aws:pass"]}"""```
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "FirewallPolicy": {
+            "FirewallPolicyResponse": {
+                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2",
+                "FirewallPolicyId": "f9253d2f-acf7-465b-97f0-f8f52a7a756f",
+                "FirewallPolicyName": "example-fw-policy2",
+                "FirewallPolicyStatus": "ACTIVE",
+                "Tags": []
+            },
+            "UpdateToken": "2648188a-c378-4244-9421-6f0d54bb206d"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall UpdateFirewallPolicy
+>|FirewallPolicyResponse|UpdateToken|
+>|---|---|
+>| FirewallPolicyName: example-fw-policy2<br/>FirewallPolicyArn: arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2<br/>FirewallPolicyId: f9253d2f-acf7-465b-97f0-f8f52a7a756f<br/>FirewallPolicyStatus: ACTIVE<br/>Tags:  | 2648188a-c378-4244-9421-6f0d54bb206d |
 
 
 ### aws-network-firewall-update-firewall-policy-change-protection
@@ -1180,10 +1808,28 @@ Update the firewall policy change protection
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-update-firewall-policy-change-protection firewall_policy_change_protection=False firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2```
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "FirewallAttributes": {
+            "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2",
+            "FirewallName": "myfirewall2",
+            "FirewallPolicyChangeProtection": false,
+            "UpdateToken": "0cecf634-8fa0-4716-825a-bb9d937e4d3c"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall UpdateFirewallPolicyChangeProtection
+>|FirewallArn|FirewallName|FirewallPolicyChangeProtection|UpdateToken|
+>|---|---|---|---|
+>| arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 | myfirewall2 | false | 0cecf634-8fa0-4716-825a-bb9d937e4d3c |
 
 
 ### aws-network-firewall-update-logging-configuration
@@ -1219,18 +1865,44 @@ Sets the logging configuration for the specified firewall.  To change the loggin
 | AWS-NetworkFirewall.Logging.FirewallName | Unknown | The descriptive name of the firewall. You can't change the name of a firewall after you create it. | 
 | AWS-NetworkFirewall.Logging.LoggingConfiguration.LogDestinationConfigs.LogType | Unknown | The type of log to send. Alert logs report traffic that matches a StatefulRule with an action setting that sends an alert log message. Flow logs are standard network traffic flow logs.  | 
 | AWS-NetworkFirewall.Logging.LoggingConfiguration.LogDestinationConfigs.LogDestinationType | Unknown | The type of storage destination to send these logs to. You can send logs to an Amazon S3 bucket, a CloudWatch log group, or a Kinesis Data Firehose delivery stream. | 
-| AWS-NetworkFirewall.Logging.LoggingConfiguration.LogDestinationConfigs.LogDestination | Unknown | The named location for the logs, provided in a key:value mapping that is specific to the chosen destination type.   \*  For an Amazon S3 bucket, provide the name of the bucket, with key bucketName, and optionally provide a prefix, with key prefix. The following example specifies an Amazon S3 bucket named DOC-EXAMPLE-BUCKET and the prefix alerts:   "LogDestination": \{ "bucketName": "DOC-EXAMPLE-BUCKET", "prefix": "alerts" \}  
- \*  For a CloudWatch log group, provide the name of the CloudWatch log group, with key logGroup. The following example specifies a log group named alert-log-group:   "LogDestination": \{ "logGroup": "alert-log-group" \}  
- \*  For a Kinesis Data Firehose delivery stream, provide the name of the delivery stream, with key deliveryStream. The following example specifies a delivery stream named alert-delivery-stream:   "LogDestination": \{ "deliveryStream": "alert-delivery-stream" \}  
-  | 
+| AWS-NetworkFirewall.Logging.LoggingConfiguration.LogDestinationConfigs.LogDestination | Unknown | The named location for the logs, provided in a key:value mapping that is specific to the chosen destination type.   \*  For an Amazon S3 bucket, provide the name of the bucket, with key bucketName, and optionally provide a prefix, with key prefix. The following example specifies an Amazon S3 bucket named DOC-EXAMPLE-BUCKET and the prefix alerts:   "LogDestination": \{ "bucketName": "DOC-EXAMPLE-BUCKET", "prefix": "alerts" \}   \*  For a CloudWatch log group, provide the name of the CloudWatch log group, with key logGroup. The following example specifies a log group named alert-log-group:   "LogDestination": \{ "logGroup": "alert-log-group" \} \*  For a Kinesis Data Firehose delivery stream, provide the name of the delivery stream, with key deliveryStream. The following example specifies a delivery stream named alert-delivery-stream:   "LogDestination": \{ "deliveryStream": "alert-delivery-stream" \}  | 
 | AWS-NetworkFirewall.Logging.LoggingConfiguration.LogDestinationConfigs | Unknown | Defines the logging destinations for the logs for a firewall. Network Firewall generates logs for stateful rule groups.  | 
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-update-logging-configuration firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 logging_configuration_json="{\"LogDestinationConfigs\":[{\"LogType\":\"ALERT\",\"LogDestinationType\":\"S3\",\"LogDestination\":{\"bucketName\":\"xsoar-demo-test-bucket-network-firewall\",\"prefix\":\"alerts\"}}]}"```
+
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "Logging": {
+            "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2",
+            "FirewallName": "myfirewall2",
+            "LoggingConfiguration": {
+                "LogDestinationConfigs": [
+                    {
+                        "LogDestination": {
+                            "bucketName": "xsoar-demo-test-bucket-network-firewall",
+                            "prefix": "alerts"
+                        },
+                        "LogDestinationType": "S3",
+                        "LogType": "ALERT"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall UpdateLoggingConfiguration
+>|FirewallArn|FirewallName|LoggingConfiguration|
+>|---|---|---|
+>| arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 | myfirewall2 | LogDestinationConfigs: {'LogType': 'ALERT', 'LogDestinationType': 'S3', 'LogDestination': {'bucketName': 'xsoar-demo-test-bucket-network-firewall', 'prefix': 'alerts'}} |
 
 
 ### aws-network-firewall-update-rule-group
@@ -1279,10 +1951,34 @@ Updates the rule settings for the specified rule group. You use a rule group by 
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-update-rule-group rule_group_arn=arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2 update_token=049b2760-7b8d-4eb0-a2b1-89012f073da2 rule_group_json="""{"RulesSource":{"StatelessRulesAndCustomActions":{"StatelessRules":[{"RuleDefinition":{"MatchAttributes":{"Sources":[{"AddressDefinition":"10.0.0.0/8"},{"AddressDefinition":"192.168.0.0/16"},{"AddressDefinition":"172.31.0.0/16"}]},"Actions":["aws:pass"]},"Priority":5}]}}}"""```
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "RuleGroup": {
+            "RuleGroupResponse": {
+                "Capacity": 10,
+                "RuleGroupArn": "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2",
+                "RuleGroupId": "27409b82-b9de-456e-8e29-2a0e0776c548",
+                "RuleGroupName": "example-group-stateless2",
+                "RuleGroupStatus": "ACTIVE",
+                "Tags": [],
+                "Type": "STATELESS"
+            },
+            "UpdateToken": "1ab2c7c4-df30-474b-9091-fe386f6bb41f"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall UpdateRuleGroup
+>|RuleGroupResponse|UpdateToken|
+>|---|---|
+>| RuleGroupArn: arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2<br/>RuleGroupName: example-group-stateless2<br/>RuleGroupId: 27409b82-b9de-456e-8e29-2a0e0776c548<br/>Type: STATELESS<br/>Capacity: 10<br/>RuleGroupStatus: ACTIVE<br/>Tags:  | 1ab2c7c4-df30-474b-9091-fe386f6bb41f |
 
 
 ### aws-network-firewall-update-subnet-change-protection
@@ -1319,8 +2015,26 @@ Update the firewall subnet change  protection
 
 
 #### Command Example
-``` ```
+```!aws-network-firewall-update-subnet-change-protection subnet_change_protection=False firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2```
+
+#### Context Example
+```json
+{
+    "AWS-NetworkFirewall": {
+        "FirewallAttributes": {
+            "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2",
+            "FirewallName": "myfirewall2",
+            "SubnetChangeProtection": false,
+            "UpdateToken": "57b15519-a812-4758-9b23-30301ef3705a"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### AWS Network Firewall UpdateSubnetChangeProtection
+>|FirewallArn|FirewallName|SubnetChangeProtection|UpdateToken|
+>|---|---|---|---|
+>| arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 | myfirewall2 | false | 57b15519-a812-4758-9b23-30301ef3705a |
 
