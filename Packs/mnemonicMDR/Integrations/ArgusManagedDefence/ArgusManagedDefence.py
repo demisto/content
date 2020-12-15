@@ -1014,17 +1014,17 @@ def main() -> None:
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif demisto.command() == "get-remote-data":
-            return_results(get_remote_data_command(demisto.args()))
-
-        elif demisto.command() == "get-modified-remote-data":
-            return_results(get_modified_remote_data_command(demisto.args()))
-
-        elif demisto.command() == "update-remote-system":
-            return_results(update_remote_system_command(demisto.args()))
-
-        elif demisto.command() == "get-mapping-fields":
-            return_results(get_mapping_fields_command(demisto.args()))
+        # elif demisto.command() == "get-remote-data":
+        #     return_results(get_remote_data_command(demisto.args()))
+        #
+        # elif demisto.command() == "get-modified-remote-data":
+        #     return_results(get_modified_remote_data_command(demisto.args()))
+        #
+        # elif demisto.command() == "update-remote-system":
+        #     return_results(update_remote_system_command(demisto.args()))
+        #
+        # elif demisto.command() == "get-mapping-fields":
+        #     return_results(get_mapping_fields_command(demisto.args()))
 
         elif demisto.command() == "argus-add-case-tag":
             return_results(add_case_tag_command(demisto.args()))
