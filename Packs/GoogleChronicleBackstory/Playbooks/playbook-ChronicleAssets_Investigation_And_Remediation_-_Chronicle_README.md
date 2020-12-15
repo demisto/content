@@ -4,7 +4,7 @@ Performs enrichment and investigation of the ChronicleAsset type of indicators, 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* ChronicleAsset Investigation And Remediation - Chronicle
+* ChronicleAsset Investigation - Chronicle
 
 ### Integrations
 This playbook does not use any integrations.
