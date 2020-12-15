@@ -1,5 +1,9 @@
 import pytest
-from CommonServerPython import parse_date_range
+import json
+import re
+from datetime import datetime, timedelta
+from CommonServerPython import parse_date_range, DemistoException
+from CortexDataLake import FIRST_FAILURE_TIME_CONST, LAST_FAILURE_TIME_CONST
 
 HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES = [(1582210145000000, False, '2020-02-20T14:49:05'),
                                                   (1582210145000000, True, '2020-02-20T14:49:05Z')]
@@ -23,6 +27,11 @@ QUERY_TIMESTAMPS_TEST_CASES = [
         'Both start/end time and time range'
     )
 ]
+
+
+def load_test_data(json_path):
+    with open(json_path) as f:
+        return json.load(f)
 
 
 @pytest.mark.parametrize('epoch_time, utc_time, expected_response', HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES)
@@ -98,7 +107,9 @@ def test_prepare_fetch_incidents_query():
     from CortexDataLake import prepare_fetch_incidents_query
     timestamp = '2020-02-20T16:49:05'
     firewall_subtype = ['attack', 'url']
+    fetch_fields = "*"
     firewall_severity = ['Critical', 'High']
+    table_name = "firewall.threat"
     fetch_limit = 10
     expected_response = 'SELECT * FROM `firewall.threat` WHERE ' \
                         'time_generated Between TIMESTAMP("2020-02-20T16:49:05") ' \
@@ -109,8 +120,20 @@ def test_prepare_fetch_incidents_query():
                         'LIMIT 10'
     assert expected_response == prepare_fetch_incidents_query(timestamp,
                                                               firewall_severity,
+                                                              table_name,
                                                               firewall_subtype,
+                                                              fetch_fields,
                                                               fetch_limit)
+
+
+MILLISECONDS_HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES = [(1582017903000000, '2020-02-18T09:25:03.001Z'),
+                                                               (1582027208002000, '2020-02-18T12:00:08.003Z')]
+
+
+@pytest.mark.parametrize('epoch_time, expected_response', MILLISECONDS_HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES)
+def test_epoch_to_timestamp_and_add_milli(epoch_time, expected_response):
+    from CortexDataLake import epoch_to_timestamp_and_add_milli
+    assert epoch_to_timestamp_and_add_milli(epoch_time) == expected_response
 
 
 def test_get_table_name():
@@ -119,3 +142,134 @@ def test_get_table_name():
     assert get_table_name(query) == 'firewall.threat'
     query = 'Wrongly formmated query'
     assert get_table_name(query) == 'Unrecognized table name'
+
+
+def test_query_logs_command_transform_results_1():
+    """
+    Given:
+        - a list of CDL query results
+    When
+        - running query_logs_command function
+    Then
+        - if transform_results is not specified, CDL query results are mapped into the CDL common context (test 1)
+        - if transform_results is set to false, CDL query results are returned unaltered (test 2)
+    """
+    from CortexDataLake import query_logs_command
+
+    cdl_records = load_test_data('./test_data/test_query_logs_command_transform_results_original.json')
+    cdl_records_xform = load_test_data('./test_data/test_query_logs_command_transform_results_xformed.json')
+
+    class MockClient():
+        def query_loggings(self, query):
+            return cdl_records, []
+
+    # test 1, with no transform_results options, should transform to common context
+    _, results_xform, _ = query_logs_command({'limit': '1', 'query': 'SELECT * FROM `firewall.traffic`'}, MockClient())
+    assert results_xform == {'CDL.Logging': cdl_records_xform}
+
+    # test 2, with transform_results options, should transform to common context
+    _, results_noxform, _ = query_logs_command(
+        {'limit': '1', 'query': 'SELECT * FROM `firewall.traffic`', 'transform_results': 'false'},
+        MockClient()
+    )
+    assert results_noxform == {'CDL.Logging': cdl_records}
+
+
+class TestBackoffStrategy:
+    """ A class to test the backoff strategy mechanism
+
+    """
+    @pytest.mark.parametrize('integration_context, exception', [
+        ({FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=30)).isoformat(),
+          LAST_FAILURE_TIME_CONST: datetime.utcnow().isoformat()}, True),
+        ({FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(hours=3)).isoformat(),
+          LAST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=3)).isoformat()}, True),
+        ({FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(hours=48)).isoformat(),
+          LAST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=30)).isoformat()}, True),
+        ({FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=30)).isoformat(),
+          LAST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=1)).isoformat()}, False),
+        ({FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(hours=3)).isoformat(),
+          LAST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=10)).isoformat()}, False),
+        ({FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(hours=48)).isoformat(),
+          LAST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=60)).isoformat()}, False),
+        ({}, False)
+    ])
+    def test_backoff_strategy(self, integration_context, exception):
+        """
+        Given:
+            - An integration context that represents a try to fetch in the 1st hour & 1st minute window
+            - An integration context that represents a try to fetch in the first 48 hours & 10 minutes window
+            - An integration context that represents a try to fetch after 48 hours & 60 minutes window
+            - An integration context that represents a try to fetch in the 1st hour & after 1st minute window
+            - An integration context that represents a try to fetch in the first 48 hours & after 10 minutes window
+            - An integration context that represents a try to fetch after 48 hours & after 60 minutes window
+            - An integration context that represents the first time the integration has failed to fetch the access token
+        When
+            - Checking whether to allow access token fetching or failing the integration
+        Then
+            - Validate that a DemistoException is being raised
+            - Validate that a DemistoException is being raised
+            - Validate that a DemistoException is being raised
+            - Validate that no DemistoException is being raised
+            - Validate that no DemistoException is being raised
+            - Validate that no DemistoException is being raised
+            - Validate that no DemistoException is being raised
+        """
+        from CortexDataLake import Client
+        if exception:
+            with pytest.raises(DemistoException):
+                Client._backoff_strategy(integration_context)
+        else:
+            Client._backoff_strategy(integration_context)
+
+    @pytest.mark.parametrize('integration_context', [
+        ({}),
+        ({
+            FIRST_FAILURE_TIME_CONST: datetime(2020, 12, 10, 11, 27, 55, 764401).isoformat(),
+            LAST_FAILURE_TIME_CONST: (datetime(2020, 12, 10, 11, 27, 55, 764401) + timedelta(minutes=1)).isoformat()
+        })
+    ])
+    def test_cache_failure_times(self, integration_context):
+        """
+        Given:
+            - An empty integration context
+            - An integration context with first failure data & last failure data
+        When
+            - Caching the failure times in the integration context
+        Then
+            - Validate that both first failure data & last failure data are in the integration context and have the
+            same data
+            - Validate that both first failure data & last failure data are in the integration context and have
+            different data
+
+        """
+        from CortexDataLake import Client
+        updated_ic = Client._cache_failure_times(integration_context.copy())
+        assert FIRST_FAILURE_TIME_CONST in updated_ic
+        assert LAST_FAILURE_TIME_CONST in updated_ic
+        if integration_context:
+            assert updated_ic[LAST_FAILURE_TIME_CONST] != updated_ic[FIRST_FAILURE_TIME_CONST]
+        else:
+            assert updated_ic[LAST_FAILURE_TIME_CONST] == updated_ic[FIRST_FAILURE_TIME_CONST]
+
+    @pytest.mark.parametrize('exc, res', [
+        ('Error in API call [400] - $REASON', True),
+        ('Error in API call [403] - $REASON', False)
+    ])
+    def test_is_bad_request_error(self, exc, res):
+        """
+        Given:
+            - An exception message of status 400
+            - An exception message of status 403
+        When
+            - Checking if the exception message is of status code 400
+        Then
+            - Validate that there's a match with the BAD_REQUEST_REGEX regex
+            - Validate that there's no match with the BAD_REQUEST_REGEX regex
+        """
+        from CortexDataLake import BAD_REQUEST_REGEX
+        ans = re.match(BAD_REQUEST_REGEX, exc)
+        if res:
+            assert ans is not None
+        else:
+            assert ans is None

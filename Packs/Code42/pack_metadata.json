@@ -2,7 +2,7 @@
     "name": "Code42",
     "description": "Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.",
     "support": "partner",
-    "currentVersion": "2.0.5",
+    "currentVersion": "2.0.8",
     "author": "Code42",
     "url": "https://support.code42.com/Administrator/Cloud/Monitoring_and_managing",
     "email": "",
@@ -11,9 +11,7 @@
     "categories": [
         "Endpoint"
     ],
-    "tags": [
-        "Recommended by Cortex XSOAR"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [

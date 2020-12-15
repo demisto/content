@@ -23,6 +23,7 @@ DEFAULT_HEADERS = {
 }
 EXCEEDED_RATE_LIMIT_STATUS_CODE = 429
 MAX_SECONDS_TO_WAIT = 30
+SESSION_ID_KEY = 'session_id'
 ERROR_CODES_DICT = {
     400: 'Invalid or bad request',
     401: 'Session is not authenticated or timed out',
@@ -38,6 +39,20 @@ ERROR_CODES_DICT = {
     500: 'Unexpected error',
     503: 'Service is temporarily unavailable'
 }
+AUTO_ACTIVATE_CHANGES_COMMANDS = (
+    'zscaler-blacklist-url',
+    'zscaler-undo-blacklist-url',
+    'zscaler-whitelist-url',
+    'zscaler-undo-whitelist-url',
+    'zscaler-blacklist-ip',
+    'zscaler-undo-blacklist-ip',
+    'zscaler-whitelist-ip',
+    'zscaler-undo-whitelist-ip',
+    'zscaler-category-add-url',
+    'zscaler-category-add-ip',
+    'zscaler-category-remove-url',
+    'zscaler-category-remove-ip'
+)
 
 ''' HANDLE PROXY '''
 if not PROXY:
@@ -45,6 +60,13 @@ if not PROXY:
     del os.environ['HTTPS_PROXY']
     del os.environ['http_proxy']
     del os.environ['https_proxy']
+
+''' HELPER CLASSES '''
+
+
+class AuthorizationError(DemistoException):
+    """Error to be raised when 401/403 headers are present in http response"""
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -67,6 +89,8 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
                 time.sleep(random_num_of_seconds)  # pylint: disable=sleep-exists
                 return http_request(method, url_suffix, data, headers=headers,
                                     num_of_seconds_to_wait=num_of_seconds_to_wait + 3)
+            elif res.status_code in (401, 403):
+                raise AuthorizationError(res.content)
             else:
                 raise Exception('Your request failed with the following error: ' + ERROR_CODES_DICT[res.status_code])
     except Exception as e:
@@ -88,6 +112,9 @@ def validate_urls(urls):
 
 
 def login():
+    """
+    Try to use integration context if available and valid, otherwise create new session
+    """
     cmd_url = '/authenticatedSession'
 
     def obfuscateApiKey(seed):
@@ -100,7 +127,14 @@ def login():
         for j in range(0, len(r), 1):
             key += seed[int(r[j]) + 2]
         return now, key
-
+    ctx = get_integration_context() or {}
+    session_id = ctx.get(SESSION_ID_KEY)
+    if session_id:
+        DEFAULT_HEADERS['cookie'] = session_id
+        try:
+            return test_module()
+        except AuthorizationError as e:
+            demisto.info('Zscaler encountered an authentication error.\nError: {}'.format(str(e)))
     ts, key = obfuscateApiKey(API_KEY)
     data = {
         'username': USERNAME,
@@ -110,17 +144,20 @@ def login():
     }
     json_data = json.dumps(data)
     result = http_request('POST', cmd_url, json_data, DEFAULT_HEADERS)
-    return result.headers['Set-Cookie']
+    auth = result.headers['Set-Cookie']
+    ctx[SESSION_ID_KEY] = DEFAULT_HEADERS['cookie'] = auth[:auth.index(';')]
+    set_integration_context(ctx)
+    return test_module()
 
 
 def activate_changes():
     cmd_url = '/status/activate'
-    http_request('POST', cmd_url, None, DEFAULT_HEADERS)
+    return http_request('POST', cmd_url, None, DEFAULT_HEADERS)
 
 
 def logout():
     cmd_url = '/authenticatedSession'
-    http_request('DELETE', cmd_url, None, DEFAULT_HEADERS)
+    return http_request('DELETE', cmd_url, None, DEFAULT_HEADERS)
 
 
 def blacklist_url(url):
@@ -338,9 +375,12 @@ def url_lookup(args):
     url = args.get('url', '')
     multiple = args.get('multiple', 'true').lower() == 'true'
     response = lookup_request(url, multiple)
-    hr = json.loads(response.content)
-    if hr:
-        data = hr[0]
+    raw_res = json.loads(response.content)
+    ec = dict()  # type: Dict[str, List]
+    ec[outputPaths['url']] = []
+    ec['DBotScore'] = []
+    pre_table_data = []
+    for data in raw_res:
         suspicious_categories = ['SUSPICIOUS_DESTINATION', 'SPYWARE_OR_ADWARE']
         ioc_context = {'Address': data['url'], 'Data': data['url']}
         score = 1
@@ -366,24 +406,24 @@ def url_lookup(args):
             }
             data['ip'] = data.pop('url')
         ioc_context = createContext(data=ioc_context, removeNull=True)
-        ec = {
-            outputPaths['url']: ioc_context,
-            'DBotScore': [
-                {
-                    "Indicator": url,
-                    "Score": score,
-                    "Type": "url",
-                    "Vendor": "Zscaler"
-                }
-            ]
-        }
+        ec[outputPaths['url']].append(ioc_context)
+        ec['DBotScore'].append(
+            {
+                "Indicator": data.get('url') or data.get('ip'),
+                "Score": score,
+                "Type": "url",
+                "Vendor": "Zscaler"
+            }
+        )
+        pre_table_data.append(data)
+    if ec[outputPaths['url']] or ec['DBotScore']:
         title = 'Zscaler URL Lookup'
         entry = {
             'Type': entryTypes['note'],
-            'Contents': hr,
+            'Contents': raw_res,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, data, removeNull=True),
+            'HumanReadable': tableToMarkdown(title, pre_table_data, removeNull=True),
             'EntryContext': ec
         }
     else:
@@ -392,7 +432,7 @@ def url_lookup(args):
 
 
 def ip_lookup(ip):
-    response = lookup_request(ip)
+    response = lookup_request(ip, multiple=True)
     hr = json.loads(response.content)
     if hr:
         ioc_context = [None] * len(hr)  # type: List[Any]
@@ -450,7 +490,7 @@ def ip_lookup(ip):
 def lookup_request(ioc, multiple=True):
     cmd_url = '/urlLookup'
     if multiple:
-        ioc_list = ioc.split(',')
+        ioc_list = argToList(ioc)
     else:
         ioc_list = [ioc]
     ioc_list = [url.replace('https://', '').replace('http://', '') for url in ioc_list]
@@ -592,7 +632,7 @@ def category_remove_ip(category_id, ip):
             found_category = True
             break
     if found_category:
-        ip_list = ip.split(',')
+        ip_list = argToList(ip)
         updated_ips = [ip for ip in category_data['urls'] if ip not in ip_list]  # noqa
         if updated_ips == category_data['urls']:
             return return_error('Could not find given IP in the category.')
@@ -732,68 +772,121 @@ def sandbox_report(md5, details):
     return response
 
 
+def login_command():
+    ctx = get_integration_context() or {}
+    session_id = ctx.get(SESSION_ID_KEY)
+    if session_id:
+        try:
+            DEFAULT_HEADERS['cookie'] = session_id
+            demisto.info('Zscaler logout active session triggered by zscaler-login command.')
+            logout()
+        except Exception as e:
+            demisto.info('Zscaler logout failed with: {}'.format(str(e)))
+    login()
+    return CommandResults(readable_output="Zscaler session created successfully.")
+
+
+def logout_command():
+    ctx = get_integration_context() or {}
+    session_id = ctx.get(SESSION_ID_KEY)
+    if not session_id:
+        return CommandResults(
+            readable_output="No API session was found. No action was performed."
+        )
+    try:
+        DEFAULT_HEADERS['cookie'] = session_id
+        raw_res = logout().json()
+    except AuthorizationError:
+        return CommandResults(
+            readable_output="API session is not authenticated. No action was performed."
+        )
+    return CommandResults(
+        readable_output="API session logged out of Zscaler successfully.",
+        raw_response=raw_res
+    )
+
+
+def activate_command():
+    raw_res = activate_changes().json()
+    return CommandResults(
+        readable_output="Changes have been activated successfully.",
+        raw_response=raw_res
+    )
+
+
+def test_module():
+    http_request('GET', '/status', None, DEFAULT_HEADERS)
+    return 'ok'
+
+
 ''' EXECUTION CODE '''
 
 
 def main():
-    auth = login()
-    jsession_id = auth[:auth.index(';')]
-    DEFAULT_HEADERS['cookie'] = jsession_id
-
     LOG('command is %s' % (demisto.command(),))
-    try:
-        if demisto.command() == 'test-module':
-            # Checks if there is an authenticated session
-            http_request('GET', '/authenticatedSession', None, DEFAULT_HEADERS)
-            demisto.results('ok')
-        elif demisto.command() == 'url':
-            demisto.results(url_lookup(demisto.args()))
-        elif demisto.command() == 'ip':
-            demisto.results(ip_lookup(demisto.args()['ip']))
-        elif demisto.command() == 'zscaler-blacklist-url':
-            demisto.results(blacklist_url(demisto.args()['url']))
-        elif demisto.command() == 'zscaler-undo-blacklist-url':
-            demisto.results(unblacklist_url(demisto.args()['url']))
-        elif demisto.command() == 'zscaler-whitelist-url':
-            demisto.results(whitelist_url(demisto.args()['url']))
-        elif demisto.command() == 'zscaler-undo-whitelist-url':
-            demisto.results(unwhitelist_url(demisto.args()['url']))
-        elif demisto.command() == 'zscaler-blacklist-ip':
-            demisto.results(blacklist_ip(demisto.args()['ip']))
-        elif demisto.command() == 'zscaler-undo-blacklist-ip':
-            demisto.results(unblacklist_ip(demisto.args()['ip']))
-        elif demisto.command() == 'zscaler-whitelist-ip':
-            demisto.results(whitelist_ip(demisto.args()['ip']))
-        elif demisto.command() == 'zscaler-undo-whitelist-ip':
-            demisto.results(unwhitelist_ip(demisto.args()['ip']))
-        elif demisto.command() == 'zscaler-category-add-url':
-            demisto.results(category_add_url(demisto.args()['category-id'], demisto.args()['url']))
-        elif demisto.command() == 'zscaler-category-add-ip':
-            demisto.results(category_add_ip(demisto.args()['category-id'], demisto.args()['ip']))
-        elif demisto.command() == 'zscaler-category-remove-url':
-            demisto.results(category_remove_url(demisto.args()['category-id'], demisto.args()['url']))
-        elif demisto.command() == 'zscaler-category-remove-ip':
-            demisto.results(category_remove_ip(demisto.args()['category-id'], demisto.args()['ip']))
-        elif demisto.command() == 'zscaler-get-categories':
-            demisto.results(get_categories_command(demisto.args()['displayURL']))
-        elif demisto.command() == 'zscaler-get-blacklist':
-            demisto.results(get_blacklist_command())
-        elif demisto.command() == 'zscaler-get-whitelist':
-            demisto.results(get_whitelist_command())
-        elif demisto.command() == 'zscaler-sandbox-report':
-            demisto.results(sandbox_report_command())
-    except Exception as e:
-        LOG(str(e))
-        LOG.print_log()
-        raise
-    finally:
+
+    if demisto.command() == 'zscaler-login':
+        return_results(login_command())
+    elif demisto.command() == 'zscaler-logout':
+        return_results(logout_command())
+    else:
+        login()
         try:
-            activate_changes()
-            logout()
-        except Exception as err:
-            demisto.info("Zscaler error: " + str(err))
+            if demisto.command() == 'test-module':
+                demisto.results(test_module())
+            elif demisto.command() == 'url':
+                demisto.results(url_lookup(demisto.args()))
+            elif demisto.command() == 'ip':
+                demisto.results(ip_lookup(demisto.args()['ip']))
+            elif demisto.command() == 'zscaler-blacklist-url':
+                demisto.results(blacklist_url(demisto.args()['url']))
+            elif demisto.command() == 'zscaler-undo-blacklist-url':
+                demisto.results(unblacklist_url(demisto.args()['url']))
+            elif demisto.command() == 'zscaler-whitelist-url':
+                demisto.results(whitelist_url(demisto.args()['url']))
+            elif demisto.command() == 'zscaler-undo-whitelist-url':
+                demisto.results(unwhitelist_url(demisto.args()['url']))
+            elif demisto.command() == 'zscaler-blacklist-ip':
+                demisto.results(blacklist_ip(demisto.args()['ip']))
+            elif demisto.command() == 'zscaler-undo-blacklist-ip':
+                demisto.results(unblacklist_ip(demisto.args()['ip']))
+            elif demisto.command() == 'zscaler-whitelist-ip':
+                demisto.results(whitelist_ip(demisto.args()['ip']))
+            elif demisto.command() == 'zscaler-undo-whitelist-ip':
+                demisto.results(unwhitelist_ip(demisto.args()['ip']))
+            elif demisto.command() == 'zscaler-category-add-url':
+                demisto.results(category_add_url(demisto.args()['category-id'], demisto.args()['url']))
+            elif demisto.command() == 'zscaler-category-add-ip':
+                demisto.results(category_add_ip(demisto.args()['category-id'], demisto.args()['ip']))
+            elif demisto.command() == 'zscaler-category-remove-url':
+                demisto.results(category_remove_url(demisto.args()['category-id'], demisto.args()['url']))
+            elif demisto.command() == 'zscaler-category-remove-ip':
+                demisto.results(category_remove_ip(demisto.args()['category-id'], demisto.args()['ip']))
+            elif demisto.command() == 'zscaler-get-categories':
+                demisto.results(get_categories_command(demisto.args()['displayURL']))
+            elif demisto.command() == 'zscaler-get-blacklist':
+                demisto.results(get_blacklist_command())
+            elif demisto.command() == 'zscaler-get-whitelist':
+                demisto.results(get_whitelist_command())
+            elif demisto.command() == 'zscaler-sandbox-report':
+                demisto.results(sandbox_report_command())
+            elif demisto.command() == 'zscaler-activate-changes':
+                return_results(activate_command())
+        except Exception as e:
+            LOG(str(e))
+            LOG.print_log()
+            raise
+        finally:
+            try:
+                # activate changes only when required
+                if demisto.params().get('auto_activate') and demisto.command() in AUTO_ACTIVATE_CHANGES_COMMANDS:
+                    activate_changes()
+                if demisto.params().get('auto_logout'):
+                    logout()
+            except Exception as err:
+                demisto.info("Zscaler error: " + str(err))
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()

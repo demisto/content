@@ -2,7 +2,7 @@
     "name": "Common Types",
     "description": "This Content Pack will get you up and running in no-time and provide you with the most commonly used incident & indicator fields and types.",
     "support": "xsoar",
-    "currentVersion": "2.0.1",
+    "currentVersion": "2.6.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -190,7 +190,7 @@
         },
         "illuminate": {
             "mandatory": false,
-            "display_name": "illuminate"
+            "display_name": "Analyst1"
         },
         "isight": {
             "mandatory": false,
@@ -382,6 +382,7 @@
         "DomainTools",
         "ThreatExchange",
         "Pwned",
-        "McAfee-TIE"
+        "McAfee-TIE",
+        "Analyst1"
     ]
 }

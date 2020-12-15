@@ -1,11 +1,13 @@
 import json
 import argparse
+import logging
 
 import demisto_client
 from slackclient import SlackClient
+
+from Tests.scripts.utils.log_util import install_simple_logging
 from Tests.test_integration import __create_integration_instance, __delete_integrations_instances
-from Tests.test_content import ParallelPrintsManager
-from demisto_sdk.commands.common.tools import str2bool, print_color, print_error, LOG_COLORS, print_warning
+from demisto_sdk.commands.common.tools import str2bool
 from Tests.configure_and_test_integration_instances import update_content_on_demisto_instance
 
 SERVER_URL = "https://{}"
@@ -26,9 +28,7 @@ def options_handler():
 
 
 def install_new_content(client, server):
-    prints_manager = ParallelPrintsManager(1)
-    update_content_on_demisto_instance(client, server, 'Demisto Marketplace', prints_manager, 0)
-    prints_manager.execute_thread_prints(0)
+    update_content_on_demisto_instance(client, server, 'Server Master')
 
 
 def get_integrations(secret_conf_path):
@@ -45,8 +45,6 @@ def test_instances(secret_conf_path, server, username, password):
     instance_ids = []
     failed_integrations = []
     integrations_counter = 0
-
-    prints_manager = ParallelPrintsManager(1)
 
     content_installation_client = demisto_client.configure(base_url=server, username=username, password=password,
                                                            verify_ssl=False)
@@ -65,25 +63,21 @@ def test_instances(secret_conf_path, server, username, password):
 
         if has_integration:
             instance_id, failure_message, _ = __create_integration_instance(
-                c, integration_name, integration_instance_name, integration_params, is_byoi, prints_manager,
-                validate_test=validate_test)
+                server, username, password, integration_name, integration_instance_name,
+                integration_params, is_byoi, validate_test=validate_test)
             if failure_message == 'No configuration':
-                prints_manager.add_print_job(
-                    "Warning: skipping {} as it exists in content-test-conf conf.json but not in content repo\n".format(
-                        integration_name), print_warning, 0)
+                logging.warning(
+                    f"skipping {integration_name} as it exists in content-test-conf conf.json but not in content repo")
                 continue
             if not instance_id:
-                prints_manager.add_print_job(
-                    'Failed to create instance of {} with message: {}\n'.format(integration_name, failure_message),
-                    print_error, 0)
+                logging.error(
+                    f'Failed to create instance of {integration_name} with message: {failure_message}')
                 failed_integrations.append("{} {} - devops comments: {}".format(
                     integration_name, product_description, devops_comments))
             else:
                 instance_ids.append(instance_id)
-                prints_manager.add_print_job('Create integration {} succeed\n'.format(integration_name), print_color, 0,
-                                             message_color=LOG_COLORS.GREEN)
-                __delete_integrations_instances(c, instance_ids, prints_manager)
-            prints_manager.execute_thread_prints(0)
+                logging.success(f'Create integration {integration_name} succeed')
+                __delete_integrations_instances(c, instance_ids)
 
     return failed_integrations, integrations_counter
 
@@ -121,7 +115,7 @@ def get_attachments(secret_conf_path, server, user, password, build_url):
 
 
 def slack_notifier(slack_token, secret_conf_path, server, user, password, build_url, build_number):
-    print_color("Starting Slack notifications about instances", LOG_COLORS.GREEN)
+    logging.info("Starting Slack notifications about instances")
     attachments, integrations_counter = get_attachments(secret_conf_path, server, user, password, build_url)
 
     sc = SlackClient(slack_token)
@@ -148,6 +142,7 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
 
 
 if __name__ == "__main__":
+    install_simple_logging()
     options = options_handler()
     if options.instance_tests:
         with open('./env_results.json', 'r') as json_file:
@@ -160,4 +155,4 @@ if __name__ == "__main__":
         with open("./Tests/is_build_passed_{}.txt".format(env_results[0]["Role"].replace(' ', '')), 'a'):
             pass
     else:
-        print_error("Not instance tests build, stopping Slack Notifications about instances")
+        logging.error("Not instance tests build, stopping Slack Notifications about instances")

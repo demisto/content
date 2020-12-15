@@ -2,21 +2,21 @@
     "name": "Polygon",
     "description": "TDS Polygon is a Malware Detonation & Research platform designed for deep dynamic analysis and enhanced indicators extraction. TDS Polygon analyzes submitted files and urls and extracts deep IOCs that appear when malicious code is triggered and executed. Polygon could be used either for application-level tasks (like smtp-based mail filtering) and analytical purposes (files/urls analysis for verdict, report and indicators).",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Group-IB",
-    "url": "https://group-ib.com",
+    "url": "https://tdswiki.group-ib.tech/about/summary/",
     "email": "tds@group-ib.com",
     "created": "2020-05-21T16:19:58Z",
     "categories": [
         "Forensics & Malware Analysis"
     ],
     "tags": [],
-    "useCases": [
-    ],
+    "useCases": [],
     "keywords": [
         "sandbox"
     ],
     "githubUser": [
         "gib-tds"
-    ]
+    ],
+    "certification": "certified"
 }

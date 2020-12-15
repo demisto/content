@@ -261,6 +261,10 @@ class Client(BaseClient):
                                       json_data={'limit': limit, 'offset': offset})
         return response.get('packages')
 
+    def list_package(self, identifier: str):
+        return self._http_request(method='POST', url_suffix='show-package',
+                                  headers=self.headers, json_data={'name': identifier})
+
     def list_gateways(self, limit: int, offset: int):
         response = self._http_request(method='POST', url_suffix='show-gateways-and-servers',
                                       headers=self.headers,
@@ -438,12 +442,12 @@ def checkpoint_delete_host_command(client: Client, identifier) -> CommandResults
         client (Client): CheckPoint client.
         identifier(str): uid or name.
     """
-    identifier = argToList(identifier)
+    identifiers_list = argToList(identifier)
     readable_output = ''
     printable_result = {}
     result = []
-    for index, item in enumerate(identifier):
-        current_result = client.delete_host(item[1])
+    for item in identifiers_list:
+        current_result = client.delete_host(item)
         result.append(current_result)
         printable_result = {'message': current_result.get('message')}
         current_readable_output = tableToMarkdown('CheckPoint data for deleting host:',
@@ -1435,6 +1439,39 @@ def checkpoint_list_packages_command(client: Client, limit: int, offset: int) ->
     return command_results
 
 
+def checkpoint_list_package_command(client: Client, identifier: str) -> CommandResults:
+    """
+    Show existing package object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid or name.
+    """
+    printable_result = []
+    readable_output = ''
+    headers = ['target-name', 'target-uid', 'revision']
+    result = client.list_package(identifier)
+    if result:
+
+        gwinfo = result.get('installation-targets-revision')
+        for element in gwinfo:
+            current_printable_result = {}
+            current_printable_result['name'] = result.get('name')
+            for endpoint in headers:
+                current_printable_result[endpoint] = element.get(endpoint)
+            printable_result.append(current_printable_result)
+        readable_output = tableToMarkdown('CheckPoint data for package:', printable_result,
+                                          headers, removeNull=True)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.Package',
+        outputs_key_field='target-uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
 def checkpoint_list_gateways_command(client: Client, limit: int, offset: int) -> CommandResults:
     """
     Retrieve all policy gateways.
@@ -1897,6 +1934,8 @@ def main():
         elif command == 'checkpoint-verify-policy':
             return_results(checkpoint_verify_policy_command(client, **demisto.args()))
 
+        elif command == 'checkpoint-package-list':
+            return_results(checkpoint_list_package_command(client, **demisto.args()))
         if not is_sid_provided:
             client.checkpoint_logout()
 

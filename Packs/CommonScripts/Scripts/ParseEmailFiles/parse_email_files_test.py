@@ -1,3 +1,4 @@
+# coding=utf-8
 from __future__ import print_function
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
     data_to_md, create_headers_map
@@ -319,6 +320,7 @@ def test_eml_utf_text_with_bom(mocker):
     Then
     - Ensure eml email file is properly parsed
     '''
+
     def executeCommand(name, args=None):
         if name == 'getFilePath':
             return [
@@ -429,6 +431,43 @@ def test_email_raw_headers(mocker):
     assert results[0]['EntryContext']['Email']['To'] == 'test@test.com, example1@example.com'
     assert results[0]['EntryContext']['Email']['CC'] == 'test@test.com, example1@example.com'
     assert results[0]['EntryContext']['Email']['HeadersMap']['From'] == 'Guy Test <test@test.com>'
+    assert results[0]['EntryContext']['Email']['HeadersMap']['To'] == 'Guy Test <test@test.com>' \
+                                                                      ', Guy Test1 <example1@example.com>'
+    assert results[0]['EntryContext']['Email']['HeadersMap']['CC'] == 'Guy Test <test@test.com>, ' \
+                                                                      'Guy Test1 <example1@example.com>'
+
+
+def test_email_raw_headers_from_is_cyrillic_characters(mocker):
+    """
+    Given:
+     - The email message the should pe parsed.
+     - Checking an email file that contains '\r\n' in it's 'From' header.
+
+    When:
+     - After parsed email file into Email object
+
+    Then:
+     - Validate that all raw headers are valid.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'max_depth': '1'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('multiple_to_cc_from_Cyrillic'
+                                                                                     '_characters.eml'))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+
+    main()
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['From'] == 'no-reply@google.com'
+    assert results[0]['EntryContext']['Email']['To'] == 'test@test.com, example1@example.com'
+    assert results[0]['EntryContext']['Email']['CC'] == 'test@test.com, example1@example.com'
+    assert results[0]['EntryContext']['Email']['HeadersMap']['From'] == u'"✅✅✅ ВА ! ' \
+                                                                        u'https://example.com  ." ' \
+                                                                        u'<no-reply@google.com>'
     assert results[0]['EntryContext']['Email']['HeadersMap']['To'] == 'Guy Test <test@test.com>' \
                                                                       ', Guy Test1 <example1@example.com>'
     assert results[0]['EntryContext']['Email']['HeadersMap']['CC'] == 'Guy Test <test@test.com>, ' \
@@ -559,7 +598,8 @@ def test_unknown_file_type(mocker):
 
 def test_no_content_type_file(mocker):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('no_content_type.eml', info="ascii text"))
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('no_content_type.eml', info="ascii text"))
     mocker.patch.object(demisto, 'results')
     main()
     results = demisto.results.call_args[0]
@@ -587,7 +627,8 @@ def test_get_msg_mail_format():
 
 def test_no_content_file(mocker):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('no_content.eml', info="ascii text"))
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('no_content.eml', info="ascii text"))
     mocker.patch.object(demisto, 'results')
     try:
         main()
@@ -789,7 +830,8 @@ def test_eml_contains_htm_attachment_empty_file(mocker):
           containing the empty file. The last contains the htm file.
     """
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('eml_contains_emptytxt_htm_file.eml'))
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('eml_contains_emptytxt_htm_file.eml'))
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
@@ -799,6 +841,25 @@ def test_eml_contains_htm_attachment_empty_file(mocker):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email'][0]['AttachmentNames'] == ['unknown_file_name0', 'SomeTest.HTM']
+
+
+def test_eml_contains_htm_attachment_empty_file_max_depth(mocker):
+    """
+    Given: An email containing both an empty text file and a base64 encoded htm file.
+    When: Parsing a valid email file with max_depth=1.
+    Then: One entry containing the command results will be returned to the war room.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'max_depth': 1})
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('eml_contains_emptytxt_htm_file.eml'))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
 
 
 def test_double_dots_removed(mocker):
@@ -815,3 +876,51 @@ def test_double_dots_removed(mocker):
     mocker.patch.object(pef, 'get_utf_string')
     main()
     assert 'http://schemas.microsoft.com/office/2004/12/omml' in pef.get_utf_string.mock_calls[0][1][0]
+
+
+def test_only_parts_of_object_email_saved(mocker):
+    """
+
+    Fixes: https://github.com/demisto/etc/issues/29476
+    Given:
+        an eml file with a line break (`\n`) in the payload that has failed due to wring type.
+    Then:
+        filter only parts that are of type email.message.Message.
+
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('new-line-in-parts.eml'))
+    mocker.patch.object(demisto, 'results')
+
+    main()
+
+    results = demisto.results.call_args[0]
+
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['AttachmentNames'] == ['logo5.png', 'logo2.png']
+
+
+def test_pkcs7_mime(mocker):
+    """
+    Given: An email file smime2.p7m of type application/pkcs7-mime and info -
+    MIME entity text, ISO-8859 text, with very long lines, with CRLF line terminators
+    When: Parsing the email.
+    Then: The email is parsed correctly.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('smime2.p7m',
+                                                          info='MIME entity text, ISO-8859 text, with very long lines,'
+                                                               ' with CRLF line terminators'))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['Subject'] == 'Testing signed multipart email'

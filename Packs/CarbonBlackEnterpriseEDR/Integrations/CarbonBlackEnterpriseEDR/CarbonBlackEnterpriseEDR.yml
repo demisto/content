@@ -3,1557 +3,1819 @@ commonfields:
   id: Carbon Black Enterprise EDR
   version: -1
 configuration:
-- display: Server URL (e.g. https://defense.conferdeploy.net)
-  name: url
-  required: true
-  type: 0
-- display: Organization Key
-  hidden: false
-  name: organization_key
-  required: true
-  type: 0
-- display: Custom Key
-  name: custom_key
-  required: true
-  type: 4
-- display: Custom ID
-  hidden: false
-  name: custom_id
-  required: true
-  type: 0
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
-    months, 1 year)
-  hidden: false
-  name: fetch_time
-  required: false
-  type: 0
-- defaultvalue: '50'
-  display: Fetch limit
-  hidden: false
-  name: fetch_limit
-  required: false
-  type: 0
-description: VMware Carbon Black Enterprise EDR (formerly known as Carbon Black ThreatHunter) is an advanced threat hunting and
-  incident response solution delivering continuous visibility for top security operations
-  centers (SOCs) and incident response (IR) teams. (formerly known as ThreatHunter)
+  - display: Server URL (e.g. https://defense.conferdeploy.net)
+    name: url
+    required: true
+    type: 0
+  - display: Organization Key
+    hidden: false
+    name: organization_key
+    required: true
+    type: 0
+  - display: Custom Key
+    name: custom_key
+    required: true
+    type: 4
+  - display: Custom ID
+    hidden: false
+    name: custom_id
+    required: true
+    type: 0
+  - display: Fetch incidents
+    name: isFetch
+    required: false
+    type: 8
+  - display: Incident type
+    name: incidentType
+    required: false
+    type: 13
+  - display: Trust any certificate (not secure)
+    name: insecure
+    required: false
+    type: 8
+  - display: Use system proxy settings
+    name: proxy
+    required: false
+    type: 8
+  - defaultvalue: 3 days
+    display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+      months, 1 year)
+    hidden: false
+    name: fetch_time
+    required: false
+    type: 0
+  - defaultvalue: '50'
+    display: Fetch limit
+    hidden: false
+    name: fetch_limit
+    required: false
+    type: 0
+description: VMware Carbon Black Enterprise EDR (formerly known as Carbon Black ThreatHunter)
+  is an advanced threat hunting and incident response solution delivering continuous
+  visibility for top security operations centers (SOCs) and incident response (IR)
+  teams. (formerly known as ThreatHunter)
 display: VMware Carbon Black Enterprise EDR
 name: Carbon Black Enterprise EDR
 script:
   commands:
-  - arguments:
-    - default: false
-      description: The ID of the alert to update. Get the ID from list-alerts command.
-      isArray: false
-      name: alert_id
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Workflow state to update.
-      isArray: false
-      name: state
-      predefined:
-      - dismissed
-      - open
-      required: false
-      secret: false
-    - default: false
-      description: Comment to include with the operation.
-      isArray: false
-      name: comment
-      required: false
-      secret: false
-    - default: false
-      description: Description of the changes done in the workflow state.
-      isArray: false
-      name: remediation_state
-      required: false
-      secret: false
-    deprecated: false
-    description: Updates the workflow of a single event.
-    execution: false
-    name: cb-eedr-alert-workflow-update
-    outputs:
-    - contextPath: CarbonBlackEEDR.Alert.AlertID
-      description: The alert ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.ChangedBy
-      description: User that changed the ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.Comment
-      description: Comment that was included with the operation.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.LastUpdateTime
-      description: Last time the alert was updated.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Alert.Remediation
-      description: Description or justification for the change.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.State
-      description: The alert state.
-      type: String
-  - arguments:
-    - default: false
-      description: The devices on which to perform the action. Get the ID from the
-        devices-list command. Supports comma-separated values.
-      isArray: false
-      name: device_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Quarantines a device.
-    execution: false
-    name: cb-eedr-device-quarantine
-  - arguments:
-    - default: false
-      description: The devices on which to perform the action. Get the ID from the
-        devices-list command. Supports comma-separated values.
-      isArray: true
-      name: device_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Removes a device from quarantine.
-    execution: false
-    name: cb-eedr-device-unquarantine
-  - arguments:
-    - default: false
-      description: The device ID. Get the ID from the devices-list command. Supports
-        comma-separated values.
-      isArray: false
-      name: device_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Stops a background scan on the specified devices.
-    execution: false
-    name: cb-eedr-device-background-scan-stop
-  - arguments:
-    - default: false
-      description: The device ID. Get the ID from the devices-list command. Supports
-        comma-separated values.
-      isArray: false
-      name: device_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Start a background scan on device.
-    execution: false
-    name: cb-eedr-device-background-scan
-  - arguments:
-    - default: false
-      description: The device ID. Get the ID from the devices-list command. Support
-        comma-separated values.
-      isArray: false
-      name: device_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Enable a bypass on device.
-    execution: false
-    name: cb-eedr-device-bypass
-  - arguments:
-    - default: false
-      description: The device ID. Get the ID from the devices-list command. Support
-        comma-separated values.
-      isArray: false
-      name: device_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Disable a bypass on device.
-    execution: false
-    name: cb-eedr-device-unbypass
-  - arguments:
-    - default: false
-      description: The device ID. Get the ID from the devices-list command. Support
-        comma-separated values.
-      isArray: false
-      name: device_id
-      required: true
-      secret: false
-    - default: false
-      description: The policy ID.
-      isArray: false
-      name: policy_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Update device policy.
-    execution: false
-    name: cb-eedr-device-policy-update
-  - arguments:
-    - default: false
-      description: The device ID. Supports comma-separated values.
-      isArray: false
-      name: device_id
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The device status. Supports comma-separated values.
-      isArray: false
-      name: status
-      predefined:
-      - PENDING
-      - REGISTERED
-      - UNINSTALLED
-      - DEREGISTERED
-      - ACTIVE
-      - INACTIVE
-      - ERROR
-      - ALL
-      - BYPASS_ON
-      - BYPASS
-      - QUARANTINE
-      - SENSOR_OUTOFDATE
-      - DELETED
-      - LIVE
-      required: false
-      secret: false
-    - default: false
-      description: Device operation system. Supports comma-separated values.
-      isArray: false
-      name: device_os
-      required: false
-      secret: false
-    - default: false
-      description: 'Device start last contact time. For example: 2019-01-01T11:00:00.157Z'
-      isArray: false
-      name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: 'Device end last contact time. For example: 2019-01-01T11:00:00.157Z'
-      isArray: false
-      name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: Active directory group ID. Supports comma-separated values
-      isArray: false
-      name: ad_group_id
-      required: false
-      secret: false
-    - default: false
-      description: The policy ID. Supports comma-separated values.
-      isArray: false
-      name: policy_id
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Device target priority. Supports comma-separated values
-      isArray: false
-      name: target_priority
-      predefined:
-      - LOW
-      - MEDIUM
-      - HIGH
-      - MISSION_CRITICAL
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
-      description: Maximum number of rows to return
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Sort Fields
-      isArray: false
-      name: sort_field
-      predefined:
-      - target_priority
-      - policy_name
-      - name
-      - last_contact_time
-      - av_pack_version
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: DESC
-      description: Sort Order for field.
-      isArray: false
-      name: sort_order
-      predefined:
-      - ASC
-      - DESC
-      required: false
-      secret: false
-    deprecated: false
-    description: List devices based on the search query.
-    execution: false
-    name: cb-eedr-devices-list
-    outputs:
-    - contextPath: CarbonBlackEEDR.Device.sensor_out_of_date
-      description: Is the device sensor out of date.
-      type: Boolean
-    - contextPath: CarbonBlackEEDR.Device.vdi_base_device
-      description: vdi base device.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.linux_kernel_version
-      description: Linux kernel version.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.mac_address
-      description: Device MAC address.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.os
-      description: Device operating system.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.last_device_policy_changed_time
-      description: Last device policy changed time.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Device.last_reset_time
-      description: Last reset time.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Device.sensor_states
-      description: Device sensor state.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.last_external_ip_address
-      description: Last external IP address.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.organization_id
-      description: Organization ID.
-      type: Number
-    - contextPath: CarbonBlackEEDR.Device.sensor_kit_type
-      description: Sensor kit type.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.policy_id
-      description: Device policy ID.
-      type: Number
-    - contextPath: CarbonBlackEEDR.Device.login_user_name
-      description: Login user name.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.deregistered_time
-      description: Deregistered time.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Device.registered_time
-      description: Registered time.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Device.name
-      description: Device name.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.last_device_policy_requested_time
-      description: Last device policy requested time.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Device.scan_last_complete_time
-      description: Scan last complete time.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Device.last_shutdown_time
-      description: Last shutdown time.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Device.scan_last_action_time
-      description: Device scan last action time.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.windows_platform
-      description: Windows platform.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.last_reported_time
-      description: Device last reported time.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Device.device_owner_id
-      description: Device owner ID.
-      type: Number
-    - contextPath: CarbonBlackEEDR.Device.target_priority
-      description: Target priority.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.status
-      description: Device status.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.sensor_version
-      description: Sensor version.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.virtual_machine
-      description: Is the device virtual machine
-      type: Boolean
-    - contextPath: CarbonBlackEEDR.Device.last_name
-      description: Last name.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.scan_status
-      description: Scan status.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.last_internal_ip_address
-      description: Last internal IP address.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.last_policy_updated_time
-      description: Last policy updated time.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Device.last_contact_time
-      description: Device last contact time.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Device.quarantined
-      description: Is the device quarantined.
-      type: Boolean
-    - contextPath: CarbonBlackEEDR.Device.virtualization_provider
-      description: Virtualization Provider.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.organization_name
-      description: Organization Name.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.ad_group_id
-      description: Active directory group ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.policy_name
-      description: Policy name.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.policy_override
-      description: Policy override.
-      type: Boolean
-    - contextPath: CarbonBlackEEDR.Device.first_name
-      description: First name.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.current_sensor_policy_name
-      description: Current sensor policy name.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.id
-      description: Device ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.av_status
-      description: av status.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.av_pack_version
-      description: av pack version.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.email
-      description: User email.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.os_version
-      description: Device OS version.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.av_product_version
-      description: AV product version.
-      type: String
-    - contextPath: CarbonBlackEEDR.Device.last_location
-      description: Device last location.
-      type: String
-    - contextPath: Endpoint.ID
-      description: The unique ID within the tool retrieving the endpoint.
-      type: String
-    - contextPath: Endpoint.OS
-      description: Endpoint OS.
-      type: String
-    - contextPath: Endpoint.OSVersion
-      description: OS version.
-      type: String
-    - contextPath: Endpoint.MACAddress
-      description: The MAC address of the endpoint.
-      type: String
-  - arguments:
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: Whether to group results.
-      isArray: false
-      name: group_results
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Alert minimum severity (In range of 1-10).
-      isArray: false
-      name: minimum_severity
-      required: false
-      secret: false
-    - default: false
-      description: Device OS version. Supports comma-separated values.
-      isArray: false
-      name: device_os_version
-      required: false
-      secret: false
-    - default: false
-      description: The policy ID. Supports comma-separated values.
-      isArray: false
-      name: policy_id
-      required: false
-      secret: false
-    - default: false
-      description: Alert tags. Supports comma-separated values.
-      isArray: false
-      name: alert_tag
-      required: false
-      secret: false
-    - default: false
-      description: Alert ID. Supports comma-separated values.
-      isArray: false
-      name: alert_id
-      required: false
-      secret: false
-    - default: false
-      description: Device username. Supports comma-separated values.
-      isArray: false
-      name: device_username
-      required: false
-      secret: false
-    - default: false
-      description: Device ID. Supports comma-separated values.
-      isArray: false
-      name: device_id
-      required: false
-      secret: false
-    - default: false
-      description: Device OS. Supports comma-separated values.
-      isArray: false
-      name: device_os
-      required: false
-      secret: false
-    - default: false
-      description: Process SHA256. Supports comma-separated values.
-      isArray: false
-      name: process_sha256
-      required: false
-      secret: false
-    - default: false
-      description: Policy name. Supports comma-separated values.
-      isArray: false
-      name: policy_name
-      required: false
-      secret: false
-    - default: false
-      description: Alert reputation. Supports comma-separated values.
-      isArray: false
-      name: reputation
-      required: false
-      secret: false
-    - default: false
-      description: Alert type. Supports comma-separated values.
-      isArray: false
-      name: alert_type
-      required: false
-      secret: false
-    - default: false
-      description: Alert category. Supports comma-separated values.
-      isArray: false
-      name: alert_category
-      required: false
-      secret: false
-    - default: false
-      description: Alert workflow. Supports comma-separated values.
-      isArray: false
-      name: workflow
-      required: false
-      secret: false
-    - default: false
-      description: Device name. Supports comma-separated values.
-      isArray: false
-      name: device_name
-      required: false
-      secret: false
-    - default: false
-      description: Process name. Supports comma-separated values.
-      isArray: false
-      name: process_name
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: severity
-      description: Field by which to sort the results. Can be "first_event_time",
-        "last_event_time", "severity", or "target_value".
-      isArray: false
-      name: sort_field
-      predefined:
-      - first_event_time
-      - last_event_time
-      - severity
-      - target_value
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: DESC
-      description: How to order the results. Can be "ASC" (ascending) or "DESC" (descending).
-      isArray: false
-      name: sort_order
-      predefined:
-      - ASC
-      - DESC
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
-      description: The maximum number of results to return.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Alert start time.
-      isArray: false
-      name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: Alert end time.
-      isArray: false
-      name: end_time
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns a list of alerts.
-    execution: false
-    name: cb-eedr-list-alerts
-    outputs:
-    - contextPath: CarbonBlackEEDR.Alert.threat_id
-      description: Threat ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.first_event_time
-      description: First event time.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Alert.target_value
-      description: Alert target value.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.reason
-      description: Alert reason.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.org_key
-      description: Organization key.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.device_id
-      description: Device ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.report_id
-      description: Report ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.watchlists.id
-      description: Watchlist ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.watchlists.name
-      description: Watchlist name.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.device_os_version
-      description: Device OS version.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.threat_cause_threat_category
-      description: Threat cause threat category.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.policy_id
-      description: Policy ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.threat_indicators.process_name
-      description: Threat indicator - process name.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.threat_indicators.sha256
-      description: Indicator SHA256 hash.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.threat_cause_actor_sha256
-      description: Threat cause actor SHA256.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.device_os
-      description: Device OS.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.document_guid
-      description: Document GUID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.create_time
-      description: Alert create time.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Alert.threat_cause_actor_name
-      description: Threat cause actor name.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.ioc_hit
-      description: IOC hit.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.threat_cause_reputation
-      description: Threat cause reputation.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.legacy_alert_id
-      description: Legacy alert ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.device_name
-      description: Device name.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.report_name
-      description: Report name.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.policy_name
-      description: Policy name.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.ioc_field
-      description: IOC field.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.tags
-      description: Alert tags.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.process_guid
-      description: Process GUID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.threat_cause_actor_md5
-      description: Threat cause actor MD5 hash.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.last_update_time
-      description: Alert last updated time.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Alert.type
-      description: Alert type.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.id
-      description: Alert ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.process_name
-      description: Process name.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.last_event_time
-      description: Alert last event time.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Alert.ioc_id
-      description: IOC ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.notes_present
-      description: Whether notes are present.
-      type: Boolean
-    - contextPath: CarbonBlackEEDR.Alert.run_state
-      description: Alert run state.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.severity
-      description: Alert severity.
-      type: Number
-    - contextPath: CarbonBlackEEDR.Alert.category
-      description: Alert category.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.threat_cause_vector
-      description: Threat cause vector.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.device_username
-      description: Device username.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.workflow.changed_by
-      description: Alert workflow - changed by.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.workflow.comment
-      description: Alert workflow - comment.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.workflow.last_update_time
-      description: Alert workflow - last updated time.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Alert.workflow.remediation
-      description: Alert workflow - remediation.
-      type: String
-    - contextPath: CarbonBlackEEDR.Alert.workflow.state
-      description: Alert workflow - state
-      type: String
-  - deprecated: false
-    description: Retrieves all watchlists.
-    execution: false
-    name: cb-eedr-watchlist-list
-    outputs:
-    - contextPath: CarbonBlackEEDR.Watchlist.classifier
-      description: Watchlist classifier.
-      type: String
-    - contextPath: CarbonBlackEEDR.Watchlist.last_update_timestamp
-      description: Watchlist last updated timestamp.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Watchlist.name
-      description: Watchlist name.
-      type: String
-    - contextPath: CarbonBlackEEDR.Watchlist.report_ids
-      description: Watchlist report IDs.
-      type: String
-    - contextPath: CarbonBlackEEDR.Watchlist.create_timestamp
-      description: Watchlist created timestamp.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Watchlist.id
-      description: Watchlist ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Watchlist.tags_enabled
-      description: Whether tags are enabled for the watchlist.
-      type: Boolean
-    - contextPath: CarbonBlackEEDR.Watchlist.description
-      description: Watchlist description.
-      type: String
-  - arguments:
-    - default: false
-      description: The watchlist ID. Get the ID from the watchlist-list command.
-      isArray: false
-      name: watchlist_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Gets watchlist information by  watchlist ID.
-    execution: false
-    name: cb-eedr-get-watchlist-by-id
-    outputs:
-    - contextPath: CarbonBlackEEDR.Watchlist.classifier
-      description: Watchlist classifier.
-      type: String
-    - contextPath: CarbonBlackEEDR.Watchlist.last_update_timestamp
-      description: Watchlist last updated timestamp.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Watchlist.name
-      description: Watchlist name.
-      type: String
-    - contextPath: CarbonBlackEEDR.Watchlist.report_ids
-      description: Watchlist report IDs.
-      type: String
-    - contextPath: CarbonBlackEEDR.Watchlist.create_timestamp
-      description: Watchlist created timestamp.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Watchlist.id
-      description: Watchlist ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Watchlist.tags_enabled
-      description: Whether tags are enabled for the watchlist.
-      type: Boolean
-    - contextPath: CarbonBlackEEDR.Watchlist.description
-      description: Watchlist description.
-      type: String
-    - contextPath: CarbonBlackEEDR.Watchlist.Aaerts_enabled
-      description: Whether alerts are enabled for the watchlists.
-      type: Boolean
-  - arguments:
-    - default: false
-      description: The watchlist ID. Get the ID from the watchlist-list command.
-      isArray: false
-      name: watchlist_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Retrieves the alert status for the watchlist with given watchlist
-      ID.
-    execution: false
-    name: cb-eedr-watchlist-alerts-status
-  - arguments:
-    - default: false
-      description: The watchlist ID. Get the ID from the watchlist-list command.
-      isArray: false
-      name: watchlist_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Turns on alerts for the watchlist with the specified watchlist ID.
-    execution: false
-    name: cb-eedr-watchlist-alerts-enable
-  - arguments:
-    - default: false
-      description: The watchlist ID. Get the ID from the watchlist-list command.
-      isArray: false
-      name: watchlist_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Turns off alerts for the watchlist with the specified watchlist ID.
-    execution: false
-    name: cb-eedr-watchlist-alerts-disable
-  - arguments:
-    - default: false
-      description: The name of the watchlist.
-      isArray: false
-      name: watchlist_name
-      required: true
-      secret: false
-    - default: false
-      description: The watchlist description.
-      isArray: false
-      name: description
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Whether to enable watchlist tags. Can be "true" or "false".
-      isArray: false
-      name: tags_enabled
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Enable watchlist alerts
-      isArray: false
-      name: alerts_enabled
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The report IDs for creating the watchlist. Supports comma-separated
-        values.
-      isArray: false
-      name: report_ids
-      required: false
-      secret: false
-    - default: false
-      description: The classifier key for creating the watchlist.
-      isArray: false
-      name: classifier_key
-      required: false
-      secret: false
-    - default: false
-      description: The classifier value for creating the watchlist.
-      isArray: false
-      name: classifier_value
-      required: false
-      secret: false
-    deprecated: false
-    description: Creates a new report or classifier watchlist.
-    execution: false
-    name: cb-eedr-watchlist-create
-    outputs:
-    - contextPath: CarbonBlackEEDR.Watchlist.Classifier
-      description: The watchlist classifier.
-      type: String
-    - contextPath: CarbonBlackEEDR.Watchlist.Last_update_timestamp
-      description: Watchlist last updated timestamp.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Watchlist.Name
-      description: Watchlist name.
-      type: String
-    - contextPath: CarbonBlackEEDR.Watchlist.Report_ids
-      description: Watchlist report ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Watchlist.Create_timestamp
-      description: Watchlist created timestamp.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Watchlist.Alerts_enabled
-      description: Whether alerts are enabled in the watchlist.
-      type: Boolean
-    - contextPath: CarbonBlackEEDR.Watchlist.ID
-      description: Watchlist ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Watchlist.Tags_enabled
-      description: Whether tags are enabled in the watchlist.
-      type: Boolean
-    - contextPath: CarbonBlackEEDR.Watchlist.Description
-      description: Watchlist description.
-      type: String
-  - arguments:
-    - default: false
-      description: The watchlist ID to remove. Get the ID from the watchlist-list
-        command.
-      isArray: false
-      name: watchlist_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Removes the specified watchlist.
-    execution: false
-    name: cb-eedr-watchlist-delete
-  - arguments:
-    - default: false
-      description: The watchlist ID to update.
-      isArray: false
-      name: watchlist_id
-      required: true
-      secret: false
-    - default: false
-      description: The watchlist name.
-      isArray: false
-      name: watchlist_name
-      required: true
-      secret: false
-    - default: false
-      description: Watchlist description.
-      isArray: false
-      name: description
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Whether to enable watchlist tags. Can be "true" or "false".
-      isArray: false
-      name: tags_enabled
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Enable watchlist alerts.
-      isArray: false
-      name: alerts_enabled
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Watchlist report ID. Supports comma-separated values.
-      isArray: false
-      name: report_ids
-      required: false
-      secret: false
-    - default: false
-      description: The classifier key to update.
-      isArray: false
-      name: classifier_key
-      required: false
-      secret: false
-    - default: false
-      description: The classifier value to update.
-      isArray: false
-      name: classifier_value
-      required: false
-      secret: false
-    deprecated: false
-    description: Updates the specified watchlist. This will update the tags and alert
-      status as well as any reports or classifiers attached to the watchlist.
-    execution: false
-    name: cb-eedr-watchlist-update
-    outputs:
-    - contextPath: CarbonBlackEEDR.Watchlist.Classifier
-      description: The watchlist classifier.
-      type: String
-    - contextPath: CarbonBlackEEDR.Watchlist.Last_update_timestamp
-      description: Watchlist last update timestamp.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Watchlist.Name
-      description: Watchlist name.
-      type: String
-    - contextPath: CarbonBlackEEDR.Watchlist.Report_ids
-      description: Watchlist report ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Watchlist.Create_timestamp
-      description: Watchlist created timestamp.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Watchlist.Alerts_enabled
-      description: Whether alerts are enabled in the watchlist.
-      type: Boolean
-    - contextPath: CarbonBlackEEDR.Watchlist.ID
-      description: Watchlist ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Watchlist.Tags_enabled
-      description: Whether tags are enabled in the watchlist.
-      type: Boolean
-    - contextPath: CarbonBlackEEDR.Watchlist.Description
-      description: Watchlist description.
-      type: String
-  - arguments:
-    - default: false
-      description: The report ID. Get the ID from the watchlist-list command.
-      isArray: false
-      name: report_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Retrieves the specified report.
-    execution: false
-    name: cb-eedr-report-get
-    outputs:
-    - contextPath: CarbonBlackEEDR.Report.Visibility
-      description: Report visibility.
-      type: String
-    - contextPath: CarbonBlackEEDR.Report.Title
-      description: Report title.
-      type: String
-    - contextPath: CarbonBlackEEDR.Report.Tags
-      description: Report tags.
-      type: String
-    - contextPath: CarbonBlackEEDR.Report.Link
-      description: Report link.
-      type: String
-    - contextPath: CarbonBlackEEDR.Report.ID
-      description: Report ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Report.Timestamp
-      description: Report timestamp.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Report.Description
-      description: Report description.
-      type: String
-    - contextPath: CarbonBlackEEDR.Report.Severity
-      description: Report severity.
-      type: Number
-    - contextPath: CarbonBlackEEDR.Report.IOCs
-      description: The report's IOCs.
-      type: String
-  - arguments:
-    - default: false
-      description: Report ID. Get the ID from the watchlist-list command.
-      isArray: false
-      name: report_id
-      required: true
-      secret: false
-    - default: false
-      description: IOC ID. Get the ID from get_report command
-      isArray: false
-      name: ioc_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Gets the current ignore status for IOC ioc_id in report report_id.
-    execution: false
-    name: cb-eedr-ioc-ignore-status
-  - arguments:
-    - default: false
-      description: Report ID. Get the ID from the watchlist-list command.
-      isArray: false
-      name: report_id
-      required: true
-      secret: false
-    - default: false
-      description: IOC ID. Get the ID from get_report command.
-      isArray: false
-      name: ioc_id
-      required: true
-      secret: false
-    deprecated: false
-    description: IOC ioc_id for report report_id will not match future events for
-      any watchlist.
-    execution: false
-    name: cb-eedr-ioc-ignore
-  - arguments:
-    - default: false
-      description: Report ID. Get the ID from the watchlist-list command.
-      isArray: false
-      name: report_id
-      required: true
-      secret: false
-    - default: false
-      description: IOC ID. Get the ID from get_report command
-      isArray: false
-      name: ioc_id
-      required: true
-      secret: false
-    deprecated: false
-    description: IOC ioc_id for report report_id will match future events for all
-      watchlists.
-    execution: false
-    name: cb-eedr-ioc-reactivate
-  - arguments:
-    - default: false
-      description: The report ID. Get the ID from the watchlist-list command.
-      isArray: false
-      name: report_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Report with report_id and all contained IOCs will not match future
-      events for any watchlist.
-    execution: false
-    name: cb-eedr-report-ignore
-  - arguments:
-    - default: false
-      description: The report ID. Get the ID from the watchlist-list command.
-      isArray: false
-      name: report_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Report with report_id and all contained IOCs will match future events
-      for all watchlists.
-    execution: false
-    name: cb-eedr-report-reactivate
-  - arguments:
-    - default: false
-      description: The report ID. Get the ID from the watchlist-list command.
-      isArray: false
-      name: report_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Get current ignore status for report with report_id.
-    execution: false
-    name: cb-eedr-report-ignore-status
-  - arguments:
-    - default: false
-      description: The report ID to remove. Get the ID from the watchlist-list command.
-      isArray: false
-      name: report_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Remove report with report_id.
-    execution: false
-    name: cb-eedr-report-remove
-  - arguments:
-    - default: false
-      description: The report title.
-      isArray: false
-      name: title
-      required: true
-      secret: false
-    - default: false
-      description: The report description.
-      isArray: false
-      name: description
-      required: true
-      secret: false
-    - default: false
-      description: The report tags. Supports comma-separated values.
-      isArray: false
-      name: tags
-      required: false
-      secret: false
-    - default: false
-      description: The report severity (In range of 1-10).
-      isArray: false
-      name: severity
-      required: true
-      secret: false
-    - default: false
-      description: IOCs of type IPv4. Supports comma-separated values.
-      isArray: false
-      name: ipv4
-      required: false
-      secret: false
-    - default: false
-      description: 'The IOC query for the report, for example: (netconn_ipv4:2.2.2.2).
+    - arguments:
+        - default: false
+          description: The ID of the alert to update. Get the ID from list-alerts command.
+          isArray: false
+          name: alert_id
+          required: true
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: Workflow state to update.
+          isArray: false
+          name: state
+          predefined:
+            - dismissed
+            - open
+          required: false
+          secret: false
+        - default: false
+          description: Comment to include with the operation.
+          isArray: false
+          name: comment
+          required: false
+          secret: false
+        - default: false
+          description: Description of the changes done in the workflow state.
+          isArray: false
+          name: remediation_state
+          required: false
+          secret: false
+      deprecated: false
+      description: Updates the workflow of a single event.
+      execution: false
+      name: cb-eedr-alert-workflow-update
+      outputs:
+        - contextPath: CarbonBlackEEDR.Alert.AlertID
+          description: The alert ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.ChangedBy
+          description: User that changed the ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.Comment
+          description: Comment that was included with the operation.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.LastUpdateTime
+          description: Last time the alert was updated.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Alert.Remediation
+          description: Description or justification for the change.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.State
+          description: The alert state.
+          type: String
+    - arguments:
+        - default: false
+          description: The devices on which to perform the action. Get the ID from the
+            devices-list command. Supports comma-separated values.
+          isArray: false
+          name: device_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Quarantines a device.
+      execution: false
+      name: cb-eedr-device-quarantine
+    - arguments:
+        - default: false
+          description: The devices on which to perform the action. Get the ID from the
+            devices-list command. Supports comma-separated values.
+          isArray: true
+          name: device_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Removes a device from quarantine.
+      execution: false
+      name: cb-eedr-device-unquarantine
+    - arguments:
+        - default: false
+          description: The device ID. Get the ID from the devices-list command. Supports
+            comma-separated values.
+          isArray: false
+          name: device_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Stops a background scan on the specified devices.
+      execution: false
+      name: cb-eedr-device-background-scan-stop
+    - arguments:
+        - default: false
+          description: The device ID. Get the ID from the devices-list command. Supports
+            comma-separated values.
+          isArray: false
+          name: device_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Start a background scan on device.
+      execution: false
+      name: cb-eedr-device-background-scan
+    - arguments:
+        - default: false
+          description: The device ID. Get the ID from the devices-list command. Support
+            comma-separated values.
+          isArray: false
+          name: device_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Enable a bypass on device.
+      execution: false
+      name: cb-eedr-device-bypass
+    - arguments:
+        - default: false
+          description: The device ID. Get the ID from the devices-list command. Support
+            comma-separated values.
+          isArray: false
+          name: device_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Disable a bypass on device.
+      execution: false
+      name: cb-eedr-device-unbypass
+    - arguments:
+        - default: false
+          description: The device ID. Get the ID from the devices-list command. Support
+            comma-separated values.
+          isArray: false
+          name: device_id
+          required: true
+          secret: false
+        - default: false
+          description: The policy ID.
+          isArray: false
+          name: policy_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Update device policy.
+      execution: false
+      name: cb-eedr-device-policy-update
+    - arguments:
+        - default: false
+          description: The device ID. Supports comma-separated values.
+          isArray: false
+          name: device_id
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: The device status. Supports comma-separated values.
+          isArray: false
+          name: status
+          predefined:
+            - PENDING
+            - REGISTERED
+            - UNINSTALLED
+            - DEREGISTERED
+            - ACTIVE
+            - INACTIVE
+            - ERROR
+            - ALL
+            - BYPASS_ON
+            - BYPASS
+            - QUARANTINE
+            - SENSOR_OUTOFDATE
+            - DELETED
+            - LIVE
+          required: false
+          secret: false
+        - default: false
+          description: Device operation system. Supports comma-separated values.
+          isArray: false
+          name: device_os
+          required: false
+          secret: false
+        - default: false
+          description: 'Device start last contact time. For example: 2019-01-01T11:00:00.157Z'
+          isArray: false
+          name: start_time
+          required: false
+          secret: false
+        - default: false
+          description: 'Device end last contact time. For example: 2019-01-01T11:00:00.157Z'
+          isArray: false
+          name: end_time
+          required: false
+          secret: false
+        - default: false
+          description: Active directory group ID. Supports comma-separated values
+          isArray: false
+          name: ad_group_id
+          required: false
+          secret: false
+        - default: false
+          description: The policy ID. Supports comma-separated values.
+          isArray: false
+          name: policy_id
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: Device target priority. Supports comma-separated values
+          isArray: false
+          name: target_priority
+          predefined:
+            - LOW
+            - MEDIUM
+            - HIGH
+            - MISSION_CRITICAL
+          required: false
+          secret: false
+        - default: false
+          defaultValue: '20'
+          description: Maximum number of rows to return.
+          isArray: false
+          name: limit
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: Sort Fields
+          isArray: false
+          name: sort_field
+          predefined:
+            - target_priority
+            - policy_name
+            - name
+            - last_contact_time
+            - av_pack_version
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          defaultValue: DESC
+          description: Sort Order for field.
+          isArray: false
+          name: sort_order
+          predefined:
+            - ASC
+            - DESC
+          required: false
+          secret: false
+      deprecated: false
+      description: List devices based on the search query.
+      execution: false
+      name: cb-eedr-devices-list
+      outputs:
+        - contextPath: CarbonBlackEEDR.Device.sensor_out_of_date
+          description: Is the device sensor out of date.
+          type: Boolean
+        - contextPath: CarbonBlackEEDR.Device.vdi_base_device
+          description: vdi base device.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.linux_kernel_version
+          description: Linux kernel version.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.mac_address
+          description: Device MAC address.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.os
+          description: Device operating system.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.last_device_policy_changed_time
+          description: Last device policy changed time.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Device.last_reset_time
+          description: Last reset time.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Device.sensor_states
+          description: Device sensor state.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.last_external_ip_address
+          description: Last external IP address.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.organization_id
+          description: Organization ID.
+          type: Number
+        - contextPath: CarbonBlackEEDR.Device.sensor_kit_type
+          description: Sensor kit type.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.policy_id
+          description: Device policy ID.
+          type: Number
+        - contextPath: CarbonBlackEEDR.Device.login_user_name
+          description: Login user name.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.deregistered_time
+          description: Deregistered time.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Device.registered_time
+          description: Registered time.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Device.name
+          description: Device name.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.last_device_policy_requested_time
+          description: Last device policy requested time.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Device.scan_last_complete_time
+          description: Scan last complete time.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Device.last_shutdown_time
+          description: Last shutdown time.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Device.scan_last_action_time
+          description: Device scan last action time.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.windows_platform
+          description: Windows platform.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.last_reported_time
+          description: Device last reported time.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Device.device_owner_id
+          description: Device owner ID.
+          type: Number
+        - contextPath: CarbonBlackEEDR.Device.target_priority
+          description: Target priority.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.status
+          description: Device status.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.sensor_version
+          description: Sensor version.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.virtual_machine
+          description: Is the device virtual machine
+          type: Boolean
+        - contextPath: CarbonBlackEEDR.Device.last_name
+          description: Last name.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.scan_status
+          description: Scan status.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.last_internal_ip_address
+          description: Last internal IP address.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.last_policy_updated_time
+          description: Last policy updated time.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Device.last_contact_time
+          description: Device last contact time.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Device.quarantined
+          description: Is the device quarantined.
+          type: Boolean
+        - contextPath: CarbonBlackEEDR.Device.virtualization_provider
+          description: Virtualization Provider.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.organization_name
+          description: Organization Name.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.ad_group_id
+          description: Active directory group ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.policy_name
+          description: Policy name.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.policy_override
+          description: Policy override.
+          type: Boolean
+        - contextPath: CarbonBlackEEDR.Device.first_name
+          description: First name.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.current_sensor_policy_name
+          description: Current sensor policy name.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.id
+          description: Device ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.av_status
+          description: av status.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.av_pack_version
+          description: av pack version.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.email
+          description: User email.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.os_version
+          description: Device OS version.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.av_product_version
+          description: AV product version.
+          type: String
+        - contextPath: CarbonBlackEEDR.Device.last_location
+          description: Device last location.
+          type: String
+        - contextPath: Endpoint.ID
+          description: The unique ID within the tool retrieving the endpoint.
+          type: String
+        - contextPath: Endpoint.OS
+          description: Endpoint OS.
+          type: String
+        - contextPath: Endpoint.OSVersion
+          description: OS version.
+          type: String
+        - contextPath: Endpoint.MACAddress
+          description: The MAC address of the endpoint.
+          type: String
+    - arguments:
+        - auto: PREDEFINED
+          default: false
+          defaultValue: 'true'
+          description: Whether to group results.
+          isArray: false
+          name: group_results
+          predefined:
+            - 'true'
+            - 'false'
+          required: false
+          secret: false
+        - default: false
+          description: Alert minimum severity (In range of 1-10).
+          isArray: false
+          name: minimum_severity
+          required: false
+          secret: false
+        - default: false
+          description: Device OS version. Supports comma-separated values.
+          isArray: false
+          name: device_os_version
+          required: false
+          secret: false
+        - default: false
+          description: The policy ID. Supports comma-separated values.
+          isArray: false
+          name: policy_id
+          required: false
+          secret: false
+        - default: false
+          description: Alert tags. Supports comma-separated values.
+          isArray: false
+          name: alert_tag
+          required: false
+          secret: false
+        - default: false
+          description: Alert ID. Supports comma-separated values.
+          isArray: false
+          name: alert_id
+          required: false
+          secret: false
+        - default: false
+          description: Device username. Supports comma-separated values.
+          isArray: false
+          name: device_username
+          required: false
+          secret: false
+        - default: false
+          description: Device ID. Supports comma-separated values.
+          isArray: false
+          name: device_id
+          required: false
+          secret: false
+        - default: false
+          description: Device OS. Supports comma-separated values.
+          isArray: false
+          name: device_os
+          required: false
+          secret: false
+        - default: false
+          description: Process SHA256. Supports comma-separated values.
+          isArray: false
+          name: process_sha256
+          required: false
+          secret: false
+        - default: false
+          description: Policy name. Supports comma-separated values.
+          isArray: false
+          name: policy_name
+          required: false
+          secret: false
+        - default: false
+          description: Alert reputation. Supports comma-separated values.
+          isArray: false
+          name: reputation
+          required: false
+          secret: false
+        - default: false
+          description: Alert type. Supports comma-separated values.
+          isArray: false
+          name: alert_type
+          required: false
+          secret: false
+        - default: false
+          description: Alert category. Supports comma-separated values.
+          isArray: false
+          name: alert_category
+          required: false
+          secret: false
+        - default: false
+          description: Alert workflow. Supports comma-separated values.
+          isArray: false
+          name: workflow
+          required: false
+          secret: false
+        - default: false
+          description: Device name. Supports comma-separated values.
+          isArray: false
+          name: device_name
+          required: false
+          secret: false
+        - default: false
+          description: Process name. Supports comma-separated values.
+          isArray: false
+          name: process_name
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          defaultValue: first_event_time
+          description: Field by which to sort the results. Can be "first_event_time",
+            or "last_event_time".
+          isArray: false
+          name: sort_field
+          predefined:
+            - first_event_time
+            - last_event_time
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          defaultValue: DESC
+          description: How to order the results. Can be "ASC" (ascending) or "DESC" (descending).
+          isArray: false
+          name: sort_order
+          predefined:
+            - ASC
+            - DESC
+          required: false
+          secret: false
+        - default: false
+          defaultValue: '10'
+          description: The maximum number of results to return.
+          isArray: false
+          name: limit
+          required: false
+          secret: false
+        - default: false
+          description: Alert start time.
+          isArray: false
+          name: start_time
+          required: false
+          secret: false
+        - default: false
+          description: Alert end time.
+          isArray: false
+          name: end_time
+          required: false
+          secret: false
+      deprecated: false
+      description: Returns a list of alerts.
+      execution: false
+      name: cb-eedr-list-alerts
+      outputs:
+        - contextPath: CarbonBlackEEDR.Alert.threat_id
+          description: Threat ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.first_event_time
+          description: First event time.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Alert.target_value
+          description: Alert target value.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.reason
+          description: Alert reason.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.org_key
+          description: Organization key.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.device_id
+          description: Device ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.report_id
+          description: Report ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.watchlists.id
+          description: Watchlist ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.watchlists.name
+          description: Watchlist name.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.device_os_version
+          description: Device OS version.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.threat_cause_threat_category
+          description: Threat cause threat category.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.policy_id
+          description: Policy ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.threat_indicators.process_name
+          description: Threat indicator - process name.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.threat_indicators.sha256
+          description: Indicator SHA256 hash.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.threat_cause_actor_sha256
+          description: Threat cause actor SHA256.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.device_os
+          description: Device OS.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.document_guid
+          description: Document GUID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.create_time
+          description: Alert create time.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Alert.threat_cause_actor_name
+          description: Threat cause actor name.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.ioc_hit
+          description: IOC hit.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.threat_cause_reputation
+          description: Threat cause reputation.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.legacy_alert_id
+          description: Legacy alert ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.device_name
+          description: Device name.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.report_name
+          description: Report name.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.policy_name
+          description: Policy name.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.ioc_field
+          description: IOC field.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.tags
+          description: Alert tags.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.process_guid
+          description: Process GUID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.threat_cause_actor_md5
+          description: Threat cause actor MD5 hash.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.last_update_time
+          description: Alert last updated time.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Alert.type
+          description: Alert type.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.id
+          description: Alert ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.process_name
+          description: Process name.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.last_event_time
+          description: Alert last event time.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Alert.ioc_id
+          description: IOC ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.notes_present
+          description: Whether notes are present.
+          type: Boolean
+        - contextPath: CarbonBlackEEDR.Alert.run_state
+          description: Alert run state.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.severity
+          description: Alert severity.
+          type: Number
+        - contextPath: CarbonBlackEEDR.Alert.category
+          description: Alert category.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.threat_cause_vector
+          description: Threat cause vector.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.device_username
+          description: Device username.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.workflow.changed_by
+          description: Alert workflow - changed by.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.workflow.comment
+          description: Alert workflow - comment.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.workflow.last_update_time
+          description: Alert workflow - last updated time.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Alert.workflow.remediation
+          description: Alert workflow - remediation.
+          type: String
+        - contextPath: CarbonBlackEEDR.Alert.workflow.state
+          description: Alert workflow - state
+          type: String
+    - deprecated: false
+      description: Retrieves all watchlists.
+      execution: false
+      name: cb-eedr-watchlist-list
+      outputs:
+        - contextPath: CarbonBlackEEDR.Watchlist.classifier
+          description: Watchlist classifier.
+          type: String
+        - contextPath: CarbonBlackEEDR.Watchlist.last_update_timestamp
+          description: Watchlist last updated timestamp.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Watchlist.name
+          description: Watchlist name.
+          type: String
+        - contextPath: CarbonBlackEEDR.Watchlist.report_ids
+          description: Watchlist report IDs.
+          type: String
+        - contextPath: CarbonBlackEEDR.Watchlist.create_timestamp
+          description: Watchlist created timestamp.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Watchlist.id
+          description: Watchlist ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Watchlist.tags_enabled
+          description: Whether tags are enabled for the watchlist.
+          type: Boolean
+        - contextPath: CarbonBlackEEDR.Watchlist.description
+          description: Watchlist description.
+          type: String
+    - arguments:
+        - default: false
+          description: The watchlist ID. Get the ID from the watchlist-list command.
+          isArray: false
+          name: watchlist_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Gets watchlist information by  watchlist ID.
+      execution: false
+      name: cb-eedr-get-watchlist-by-id
+      outputs:
+        - contextPath: CarbonBlackEEDR.Watchlist.classifier
+          description: Watchlist classifier.
+          type: String
+        - contextPath: CarbonBlackEEDR.Watchlist.last_update_timestamp
+          description: Watchlist last updated timestamp.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Watchlist.name
+          description: Watchlist name.
+          type: String
+        - contextPath: CarbonBlackEEDR.Watchlist.report_ids
+          description: Watchlist report IDs.
+          type: String
+        - contextPath: CarbonBlackEEDR.Watchlist.create_timestamp
+          description: Watchlist created timestamp.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Watchlist.id
+          description: Watchlist ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Watchlist.tags_enabled
+          description: Whether tags are enabled for the watchlist.
+          type: Boolean
+        - contextPath: CarbonBlackEEDR.Watchlist.description
+          description: Watchlist description.
+          type: String
+        - contextPath: CarbonBlackEEDR.Watchlist.Aaerts_enabled
+          description: Whether alerts are enabled for the watchlists.
+          type: Boolean
+    - arguments:
+        - default: false
+          description: The watchlist ID. Get the ID from the watchlist-list command.
+          isArray: false
+          name: watchlist_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Retrieves the alert status for the watchlist with given watchlist
+        ID.
+      execution: false
+      name: cb-eedr-watchlist-alerts-status
+    - arguments:
+        - default: false
+          description: The watchlist ID. Get the ID from the watchlist-list command.
+          isArray: false
+          name: watchlist_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Turns on alerts for the watchlist with the specified watchlist ID.
+      execution: false
+      name: cb-eedr-watchlist-alerts-enable
+    - arguments:
+        - default: false
+          description: The watchlist ID. Get the ID from the watchlist-list command.
+          isArray: false
+          name: watchlist_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Turns off alerts for the watchlist with the specified watchlist ID.
+      execution: false
+      name: cb-eedr-watchlist-alerts-disable
+    - arguments:
+        - default: false
+          description: The name of the watchlist.
+          isArray: false
+          name: watchlist_name
+          required: true
+          secret: false
+        - default: false
+          description: The watchlist description.
+          isArray: false
+          name: description
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: Whether to enable watchlist tags. Can be "true" or "false".
+          isArray: false
+          name: tags_enabled
+          predefined:
+            - 'true'
+            - 'false'
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: Enable watchlist alerts
+          isArray: false
+          name: alerts_enabled
+          predefined:
+            - 'true'
+            - 'false'
+          required: false
+          secret: false
+        - default: false
+          description: The report IDs for creating the watchlist. Supports comma-separated
+            values.
+          isArray: false
+          name: report_ids
+          required: false
+          secret: false
+        - default: false
+          description: The classifier key for creating the watchlist.
+          isArray: false
+          name: classifier_key
+          required: false
+          secret: false
+        - default: false
+          description: The classifier value for creating the watchlist.
+          isArray: false
+          name: classifier_value
+          required: false
+          secret: false
+      deprecated: false
+      description: Creates a new report or classifier watchlist.
+      execution: false
+      name: cb-eedr-watchlist-create
+      outputs:
+        - contextPath: CarbonBlackEEDR.Watchlist.Classifier
+          description: The watchlist classifier.
+          type: String
+        - contextPath: CarbonBlackEEDR.Watchlist.Last_update_timestamp
+          description: Watchlist last updated timestamp.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Watchlist.Name
+          description: Watchlist name.
+          type: String
+        - contextPath: CarbonBlackEEDR.Watchlist.Report_ids
+          description: Watchlist report ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Watchlist.Create_timestamp
+          description: Watchlist created timestamp.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Watchlist.Alerts_enabled
+          description: Whether alerts are enabled in the watchlist.
+          type: Boolean
+        - contextPath: CarbonBlackEEDR.Watchlist.ID
+          description: Watchlist ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Watchlist.Tags_enabled
+          description: Whether tags are enabled in the watchlist.
+          type: Boolean
+        - contextPath: CarbonBlackEEDR.Watchlist.Description
+          description: Watchlist description.
+          type: String
+    - arguments:
+        - default: false
+          description: The watchlist ID to remove. Get the ID from the watchlist-list
+            command.
+          isArray: false
+          name: watchlist_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Removes the specified watchlist.
+      execution: false
+      name: cb-eedr-watchlist-delete
+    - arguments:
+        - default: false
+          description: The watchlist ID to update.
+          isArray: false
+          name: watchlist_id
+          required: true
+          secret: false
+        - default: false
+          description: The watchlist name.
+          isArray: false
+          name: watchlist_name
+          required: true
+          secret: false
+        - default: false
+          description: Watchlist description.
+          isArray: false
+          name: description
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: Whether to enable watchlist tags. Can be "true" or "false".
+          isArray: false
+          name: tags_enabled
+          predefined:
+            - 'true'
+            - 'false'
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: Enable watchlist alerts.
+          isArray: false
+          name: alerts_enabled
+          predefined:
+            - 'true'
+            - 'false'
+          required: false
+          secret: false
+        - default: false
+          description: Watchlist report ID. Supports comma-separated values.
+          isArray: false
+          name: report_ids
+          required: false
+          secret: false
+        - default: false
+          description: The classifier key to update.
+          isArray: false
+          name: classifier_key
+          required: false
+          secret: false
+        - default: false
+          description: The classifier value to update.
+          isArray: false
+          name: classifier_value
+          required: false
+          secret: false
+      deprecated: false
+      description: Updates the specified watchlist. This will update the tags and alert
+        status as well as any reports or classifiers attached to the watchlist.
+      execution: false
+      name: cb-eedr-watchlist-update
+      outputs:
+        - contextPath: CarbonBlackEEDR.Watchlist.Classifier
+          description: The watchlist classifier.
+          type: String
+        - contextPath: CarbonBlackEEDR.Watchlist.Last_update_timestamp
+          description: Watchlist last update timestamp.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Watchlist.Name
+          description: Watchlist name.
+          type: String
+        - contextPath: CarbonBlackEEDR.Watchlist.Report_ids
+          description: Watchlist report ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Watchlist.Create_timestamp
+          description: Watchlist created timestamp.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Watchlist.Alerts_enabled
+          description: Whether alerts are enabled in the watchlist.
+          type: Boolean
+        - contextPath: CarbonBlackEEDR.Watchlist.ID
+          description: Watchlist ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Watchlist.Tags_enabled
+          description: Whether tags are enabled in the watchlist.
+          type: Boolean
+        - contextPath: CarbonBlackEEDR.Watchlist.Description
+          description: Watchlist description.
+          type: String
+    - arguments:
+        - default: false
+          description: The report ID. Get the ID from the watchlist-list command.
+          isArray: false
+          name: report_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Retrieves the specified report.
+      execution: false
+      name: cb-eedr-report-get
+      outputs:
+        - contextPath: CarbonBlackEEDR.Report.Visibility
+          description: Report visibility.
+          type: String
+        - contextPath: CarbonBlackEEDR.Report.Title
+          description: Report title.
+          type: String
+        - contextPath: CarbonBlackEEDR.Report.Tags
+          description: Report tags.
+          type: String
+        - contextPath: CarbonBlackEEDR.Report.Link
+          description: Report link.
+          type: String
+        - contextPath: CarbonBlackEEDR.Report.ID
+          description: Report ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Report.Timestamp
+          description: Report timestamp.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Report.Description
+          description: Report description.
+          type: String
+        - contextPath: CarbonBlackEEDR.Report.Severity
+          description: Report severity.
+          type: Number
+        - contextPath: CarbonBlackEEDR.Report.IOCs
+          description: The report's IOCs.
+          type: String
+    - arguments:
+        - default: false
+          description: Report ID. Get the ID from the watchlist-list command.
+          isArray: false
+          name: report_id
+          required: true
+          secret: false
+        - default: false
+          description: IOC ID. Get the ID from get_report command
+          isArray: false
+          name: ioc_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Gets the current ignore status for IOC ioc_id in report report_id.
+      execution: false
+      name: cb-eedr-ioc-ignore-status
+    - arguments:
+        - default: false
+          description: Report ID. Get the ID from the watchlist-list command.
+          isArray: false
+          name: report_id
+          required: true
+          secret: false
+        - default: false
+          description: IOC ID. Get the ID from get_report command.
+          isArray: false
+          name: ioc_id
+          required: true
+          secret: false
+      deprecated: false
+      description: IOC ioc_id for report report_id will not match future events for
+        any watchlist.
+      execution: false
+      name: cb-eedr-ioc-ignore
+    - arguments:
+        - default: false
+          description: Report ID. Get the ID from the watchlist-list command.
+          isArray: false
+          name: report_id
+          required: true
+          secret: false
+        - default: false
+          description: IOC ID. Get the ID from get_report command
+          isArray: false
+          name: ioc_id
+          required: true
+          secret: false
+      deprecated: false
+      description: IOC ioc_id for report report_id will match future events for all
+        watchlists.
+      execution: false
+      name: cb-eedr-ioc-reactivate
+    - arguments:
+        - default: false
+          description: The report ID. Get the ID from the watchlist-list command.
+          isArray: false
+          name: report_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Report with report_id and all contained IOCs will not match future
+        events for any watchlist.
+      execution: false
+      name: cb-eedr-report-ignore
+    - arguments:
+        - default: false
+          description: The report ID. Get the ID from the watchlist-list command.
+          isArray: false
+          name: report_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Report with report_id and all contained IOCs will match future events
+        for all watchlists.
+      execution: false
+      name: cb-eedr-report-reactivate
+    - arguments:
+        - default: false
+          description: The report ID. Get the ID from the watchlist-list command.
+          isArray: false
+          name: report_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Get current ignore status for report with report_id.
+      execution: false
+      name: cb-eedr-report-ignore-status
+    - arguments:
+        - default: false
+          description: The report ID to remove. Get the ID from the watchlist-list command.
+          isArray: false
+          name: report_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Remove report with report_id.
+      execution: false
+      name: cb-eedr-report-remove
+    - arguments:
+        - default: false
+          description: The report title.
+          isArray: false
+          name: title
+          required: true
+          secret: false
+        - default: false
+          description: The report description.
+          isArray: false
+          name: description
+          required: true
+          secret: false
+        - default: false
+          description: The report tags. Supports comma-separated values.
+          isArray: false
+          name: tags
+          required: false
+          secret: false
+        - default: false
+          description: The report severity (In range of 1-10).
+          isArray: false
+          name: severity
+          required: true
+          secret: false
+        - default: false
+          description: IOCs of type IPv4. Supports comma-separated values.
+          isArray: false
+          name: ipv4
+          required: false
+          secret: false
+        - default: false
+          description: 'The IOC query for the report, for example: (netconn_ipv4:2.2.2.2).
         Supports comma-separated values.'
-      isArray: false
-      name: ioc_query
-      required: false
-      secret: false
-    - default: false
-      description: 'The report timestamp. For example: 2020-01-19T09:16:16'
-      isArray: false
-      name: timestamp
-      required: true
-      secret: false
-    - default: false
-      description: IOCs of type IPv6. Supports comma-separated values.
-      isArray: false
-      name: ipv6
-      required: false
-      secret: false
-    - default: false
-      description: IOCs of type MD5. Supports comma-separated values.
-      isArray: false
-      name: md5
-      required: false
-      secret: false
-    - default: false
-      description: IOCs of type DNS. Supports comma-separated values.
-      isArray: false
-      name: dns
-      required: false
-      secret: false
-    deprecated: false
-    description: Adds a new watchlist report.
-    execution: false
-    name: cb-eedr-report-create
-    outputs:
-    - contextPath: CarbonBlackEEDR.Report.ID
-      description: The report ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Report.IOCs
-      description: The report IOCs
-      type: String
-    - contextPath: CarbonBlackEEDR.Report.Link
-      description: Report link.
-      type: String
-    - contextPath: CarbonBlackEEDR.Report.Severity
-      description: Report severity.
-      type: Number
-    - contextPath: CarbonBlackEEDR.Report.Timestamp
-      description: The report timestamp.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Report.Title
-      description: The report title.
-      type: String
-    - contextPath: CarbonBlackEEDR.Report.Tags
-      description: Report tags.
-      type: String
-    - contextPath: CarbonBlackEEDR.Report.Visibility
-      description: Report visibility.
-      type: String
-    - contextPath: CarbonBlackEEDR.Report.Description
-      description: The report description.
-      type: String
-  - arguments:
-    - default: false
-      description: The report ID to update.
-      isArray: false
-      name: report_id
-      required: true
-      secret: false
-    - default: false
-      description: The report title.
-      isArray: false
-      name: title
-      required: true
-      secret: false
-    - default: false
-      description: The report description.
-      isArray: false
-      name: description
-      required: true
-      secret: false
-    - default: false
-      description: The report tags. Supports comma-separated values.
-      isArray: false
-      name: tags
-      required: false
-      secret: false
-    - default: false
-      description: IOC of type IPv4. Supports comma-separated values.
-      isArray: false
-      name: ipv4
-      required: false
-      secret: false
-    - default: false
-      description: IOC of type IPv6. Supports comma-separated values.
-      isArray: false
-      name: ipv6
-      required: false
-      secret: false
-    - default: false
-      description: IOC of type DNS. Supports comma-separated values.
-      isArray: false
-      name: dns
-      required: false
-      secret: false
-    - default: false
-      description: IOC of type MD5. Supports comma-separated values.
-      isArray: false
-      name: md5
-      required: false
-      secret: false
-    - default: false
-      description: 'Query IOC. For example: (netconn_ipv4:2.2.2.2). Supports comma-separated
+          isArray: false
+          name: ioc_query
+          required: false
+          secret: false
+        - default: false
+          description: 'The report timestamp. For example: 2020-01-19T09:16:16'
+          isArray: false
+          name: timestamp
+          required: true
+          secret: false
+        - default: false
+          description: IOCs of type IPv6. Supports comma-separated values.
+          isArray: false
+          name: ipv6
+          required: false
+          secret: false
+        - default: false
+          description: IOCs of type MD5. Supports comma-separated values.
+          isArray: false
+          name: md5
+          required: false
+          secret: false
+        - default: false
+          description: IOCs of type DNS. Supports comma-separated values.
+          isArray: false
+          name: dns
+          required: false
+          secret: false
+      deprecated: false
+      description: Adds a new watchlist report.
+      execution: false
+      name: cb-eedr-report-create
+      outputs:
+        - contextPath: CarbonBlackEEDR.Report.ID
+          description: The report ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Report.IOCs
+          description: The report IOCs
+          type: String
+        - contextPath: CarbonBlackEEDR.Report.Link
+          description: Report link.
+          type: String
+        - contextPath: CarbonBlackEEDR.Report.Severity
+          description: Report severity.
+          type: Number
+        - contextPath: CarbonBlackEEDR.Report.Timestamp
+          description: The report timestamp.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Report.Title
+          description: The report title.
+          type: String
+        - contextPath: CarbonBlackEEDR.Report.Tags
+          description: Report tags.
+          type: String
+        - contextPath: CarbonBlackEEDR.Report.Visibility
+          description: Report visibility.
+          type: String
+        - contextPath: CarbonBlackEEDR.Report.Description
+          description: The report description.
+          type: String
+    - arguments:
+        - default: false
+          description: The report ID to update.
+          isArray: false
+          name: report_id
+          required: true
+          secret: false
+        - default: false
+          description: The report title.
+          isArray: false
+          name: title
+          required: true
+          secret: false
+        - default: false
+          description: The report description.
+          isArray: false
+          name: description
+          required: true
+          secret: false
+        - default: false
+          description: The report tags. Supports comma-separated values.
+          isArray: false
+          name: tags
+          required: false
+          secret: false
+        - default: false
+          description: IOC of type IPv4. Supports comma-separated values.
+          isArray: false
+          name: ipv4
+          required: false
+          secret: false
+        - default: false
+          description: IOC of type IPv6. Supports comma-separated values.
+          isArray: false
+          name: ipv6
+          required: false
+          secret: false
+        - default: false
+          description: IOC of type DNS. Supports comma-separated values.
+          isArray: false
+          name: dns
+          required: false
+          secret: false
+        - default: false
+          description: IOC of type MD5. Supports comma-separated values.
+          isArray: false
+          name: md5
+          required: false
+          secret: false
+        - default: false
+          description: 'Query IOC. For example: (netconn_ipv4:2.2.2.2). Supports comma-separated
         values.'
-      isArray: false
-      name: ioc_query
-      required: false
-      secret: false
-    - default: false
-      description: Report severity (In range of 1-10).
-      isArray: false
-      name: severity
-      required: true
-      secret: false
-    - default: false
-      description: The report timestamp.
-      isArray: false
-      name: timestamp
-      required: true
-      secret: false
-    deprecated: false
-    description: Updates the specified report.
-    execution: false
-    name: cb-eedr-report-update
-    outputs:
-    - contextPath: CarbonBlackEEDR.Report.ID
-      description: The report ID.
-      type: String
-    - contextPath: CarbonBlackEEDR.Report.IOCs
-      description: The report IOC's
-      type: String
-    - contextPath: CarbonBlackEEDR.Report.Link
-      description: Report link.
-      type: String
-    - contextPath: CarbonBlackEEDR.Report.Severity
-      description: Report severity.
-      type: Number
-    - contextPath: CarbonBlackEEDR.Report.Timestamp
-      description: The report timestamp.
-      type: Date
-    - contextPath: CarbonBlackEEDR.Report.Title
-      description: The report title.
-      type: String
-    - contextPath: CarbonBlackEEDR.Report.Tags
-      description: Report tags.
-      type: String
-    - contextPath: CarbonBlackEEDR.Report.Visibility
-      description: Report visibility.
-      type: String
-    - contextPath: CarbonBlackEEDR.Report.Description
-      description: The report description.
-      type: String
-  - arguments:
-    - default: false
-      description: The requested SHA256 hash to obtain information for.
-      isArray: false
-      name: sha256
-      required: true
-      secret: false
-    deprecated: false
-    description: Gets an overview of the devices that executed the file.
-    execution: false
-    name: cb-eedr-file-device-summary
-    outputs:
-    - contextPath: CarbonBlackEEDR.File.first_seen_device_id
-      description: The device ID of the device that first saw this file.
-      type: Number
-    - contextPath: CarbonBlackEEDR.File.first_seen_device_name
-      description: The name of the device that first saw this file.
-      type: String
-    - contextPath: CarbonBlackEEDR.File.first_seen_device_timestamp
-      description: The time that this file was first seen, for this organization.
-      type: Date
-    - contextPath: CarbonBlackEEDR.File.last_seen_device_id
-      description: The device ID of the device that most recently saw this file.
-      type: Number
-    - contextPath: CarbonBlackEEDR.File.last_seen_device_name
-      description: The name of the device that last saw this file.
-      type: String
-    - contextPath: CarbonBlackEEDR.File.last_seen_device_timestamp
-      description: The time that this file was most recently seen for this organization.
-      type: Date
-    - contextPath: CarbonBlackEEDR.File.num_devices
-      description: The total number of devices, for this organization, that have observed
-        this file.
-      type: Number
-    - contextPath: CarbonBlackEEDR.File.sha256
-      description: The SHA256 hash of the file.
-      type: String
-  - arguments:
-    - default: false
-      description: The requested SHA256 hash to obtain metadata information.
-      isArray: false
-      name: sha256
-      required: true
-      secret: false
-    deprecated: false
-    description: Returns all of the metadata for the specified binary identified by
-      the SHA256 hash.
-    execution: false
-    name: cb-eedr-get-file-metadata
-    outputs:
-    - contextPath: CarbonBlackEEDR.File.file_size
-      description: The size of the actual file. This is the size of the file represented
-        by this hash.
-      type: Number
-    - contextPath: CarbonBlackEEDR.File.file_available
-      description: If true, the file is available for download.
-      type: Boolean
-    - contextPath: CarbonBlackEEDR.File.sha256
-      description: The SHA256 hash of the file.
-      type: String
-    - contextPath: CarbonBlackEEDR.File.product_version
-      description: Product version from FileVersionInformation.
-      type: String
-    - contextPath: CarbonBlackEEDR.File.product_description
-      description: Product description from FileVersionInformation.
-      type: String
-    - contextPath: CarbonBlackEEDR.File.lang_id
-      description: The Language ID value from the Windows VERSIONINFO resource.
-      type: String
-    - contextPath: CarbonBlackEEDR.File.company_name
-      description: Company name from FileVersionInformation
-      type: String
-    - contextPath: CarbonBlackEEDR.File.internal_name
-      description: Internal name from FileVersionInformation.
-      type: String
-    - contextPath: CarbonBlackEEDR.File.charset_id
-      description: The Character set ID value from the Windows VERSIONINFO resource.
-      type: Number
-    - contextPath: CarbonBlackEEDR.File.available_file_size
-      description: The size of the file, that is available for download. If the file
-        is unavailable the size will be zero.
-      type: Number
-    - contextPath: CarbonBlackEEDR.File.architecture
-      description: 'The set of architectures that this file was compiled for. This
+          isArray: false
+          name: ioc_query
+          required: false
+          secret: false
+        - default: false
+          description: Report severity (In range of 1-10).
+          isArray: false
+          name: severity
+          required: true
+          secret: false
+        - default: false
+          description: The report timestamp.
+          isArray: false
+          name: timestamp
+          required: true
+          secret: false
+      deprecated: false
+      description: Updates the specified report.
+      execution: false
+      name: cb-eedr-report-update
+      outputs:
+        - contextPath: CarbonBlackEEDR.Report.ID
+          description: The report ID.
+          type: String
+        - contextPath: CarbonBlackEEDR.Report.IOCs
+          description: The report IOC's
+          type: String
+        - contextPath: CarbonBlackEEDR.Report.Link
+          description: Report link.
+          type: String
+        - contextPath: CarbonBlackEEDR.Report.Severity
+          description: Report severity.
+          type: Number
+        - contextPath: CarbonBlackEEDR.Report.Timestamp
+          description: The report timestamp.
+          type: Date
+        - contextPath: CarbonBlackEEDR.Report.Title
+          description: The report title.
+          type: String
+        - contextPath: CarbonBlackEEDR.Report.Tags
+          description: Report tags.
+          type: String
+        - contextPath: CarbonBlackEEDR.Report.Visibility
+          description: Report visibility.
+          type: String
+        - contextPath: CarbonBlackEEDR.Report.Description
+          description: The report description.
+          type: String
+    - arguments:
+        - default: false
+          description: The requested SHA256 hash to obtain information for.
+          isArray: false
+          name: sha256
+          required: true
+          secret: false
+      deprecated: false
+      description: Gets an overview of the devices that executed the file.
+      execution: false
+      name: cb-eedr-file-device-summary
+      outputs:
+        - contextPath: CarbonBlackEEDR.File.first_seen_device_id
+          description: The device ID of the device that first saw this file.
+          type: Number
+        - contextPath: CarbonBlackEEDR.File.first_seen_device_name
+          description: The name of the device that first saw this file.
+          type: String
+        - contextPath: CarbonBlackEEDR.File.first_seen_device_timestamp
+          description: The time that this file was first seen, for this organization.
+          type: Date
+        - contextPath: CarbonBlackEEDR.File.last_seen_device_id
+          description: The device ID of the device that most recently saw this file.
+          type: Number
+        - contextPath: CarbonBlackEEDR.File.last_seen_device_name
+          description: The name of the device that last saw this file.
+          type: String
+        - contextPath: CarbonBlackEEDR.File.last_seen_device_timestamp
+          description: The time that this file was most recently seen for this organization.
+          type: Date
+        - contextPath: CarbonBlackEEDR.File.num_devices
+          description: The total number of devices, for this organization, that have observed
+            this file.
+          type: Number
+        - contextPath: CarbonBlackEEDR.File.sha256
+          description: The SHA256 hash of the file.
+          type: String
+    - arguments:
+        - default: false
+          description: The requested SHA256 hash to obtain metadata information.
+          isArray: false
+          name: sha256
+          required: true
+          secret: false
+      deprecated: false
+      description: Returns all of the metadata for the specified binary identified by
+        the SHA256 hash.
+      execution: false
+      name: cb-eedr-get-file-metadata
+      outputs:
+        - contextPath: CarbonBlackEEDR.File.file_size
+          description: The size of the actual file. This is the size of the file represented
+            by this hash.
+          type: Number
+        - contextPath: CarbonBlackEEDR.File.file_available
+          description: If true, the file is available for download.
+          type: Boolean
+        - contextPath: CarbonBlackEEDR.File.sha256
+          description: The SHA256 hash of the file.
+          type: String
+        - contextPath: CarbonBlackEEDR.File.product_version
+          description: Product version from FileVersionInformation.
+          type: String
+        - contextPath: CarbonBlackEEDR.File.product_description
+          description: Product description from FileVersionInformation.
+          type: String
+        - contextPath: CarbonBlackEEDR.File.lang_id
+          description: The Language ID value from the Windows VERSIONINFO resource.
+          type: String
+        - contextPath: CarbonBlackEEDR.File.company_name
+          description: Company name from FileVersionInformation
+          type: String
+        - contextPath: CarbonBlackEEDR.File.internal_name
+          description: Internal name from FileVersionInformation.
+          type: String
+        - contextPath: CarbonBlackEEDR.File.charset_id
+          description: The Character set ID value from the Windows VERSIONINFO resource.
+          type: Number
+        - contextPath: CarbonBlackEEDR.File.available_file_size
+          description: The size of the file, that is available for download. If the file
+            is unavailable the size will be zero.
+          type: Number
+        - contextPath: CarbonBlackEEDR.File.architecture
+          description: 'The set of architectures that this file was compiled for. This
         may contain one or more of the following values: none, x86, amd64, and arm64.'
-      type: String
-    - contextPath: CarbonBlackEEDR.File.comments
-      description: Comments from FileVersionInformation.
-      type: String
-    - contextPath: CarbonBlackEEDR.File.os_type
-      description: 'The OS that this file is designed for. This may contain one or
+          type: String
+        - contextPath: CarbonBlackEEDR.File.comments
+          description: Comments from FileVersionInformation.
+          type: String
+        - contextPath: CarbonBlackEEDR.File.os_type
+          description: 'The OS that this file is designed for. This may contain one or
         more of the following values: WINDOWS, ANDROID, MAC, IOS, LINUX, and OTHER'
-      type: String
-    - contextPath: CarbonBlackEEDR.File.original_filename
-      description: Original filename from FileVersionInformation.
-      type: String
-    - contextPath: CarbonBlackEEDR.File.file_version
-      description: File version from FileVersionInformation.
-      type: String
-    - contextPath: CarbonBlackEEDR.File.file_description
-      description: File description from FileVersionInformation.
-      type: String
-    - contextPath: CarbonBlackEEDR.File.product_name
-      description: Product name from FileVersionInformation.
-      type: String
-    - contextPath: CarbonBlackEEDR.File.md5
-      description: The MD5 hash of the file.
-      type: String
-  - arguments:
-    - default: false
-      description: An array of SHA256 hashes (limit 100). Supports comma-separated
-        values.
-      isArray: false
-      name: sha256
-      required: true
-      secret: false
-    - default: false
-      defaultValue: '300'
-      description: The number of seconds to make the download URLs available for.
-      isArray: false
-      name: expiration_seconds
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: Download the file to XSOAR.
-      isArray: false
-      name: download_to_xsoar
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    deprecated: false
-    description: The files are able to be downloaded via AWS S3 pre-signed URLs.
-    execution: false
-    name: cb-eedr-files-download-link-get
-    outputs:
-    - contextPath: CarbonBlackEEDR.File.found.sha256
-      description: SHA256 hash of file that is available to be downloaded
-      type: String
-    - contextPath: CarbonBlackEEDR.File.found.url
-      description: An AWS S3 pre-signed URL for this file. Perform a GET on this URL
-        to download the file.
-      type: String
-    - contextPath: CarbonBlackEEDR.File.not_found
-      description: The SHA256 hashes that were not found.
-      type: String
-    - contextPath: CarbonBlackEEDR.File.error
-      description: The SHA256 hashes that had an intermittent error.
-      type: String
-  - arguments:
-    - default: false
-      description: The requested SHA256 hash to obtain information for. Supports comma-separated
-        values.
-      isArray: false
-      name: sha256
-      required: true
-      secret: false
-    deprecated: false
-    description: Return a summary of the observed file paths
-    execution: false
-    name: cb-eedr-file-paths
-    outputs:
-    - contextPath: CarbonBlackEEDR.File.file_path_count
-      description: The total number of unique file paths that have been observed,
-        by this organization, for this file.
-      type: Number
-    - contextPath: CarbonBlackEEDR.File.file_paths
-      description: The file path details.
-      type: String
-    - contextPath: CarbonBlackEEDR.File.sha256
-      description: The SHA256 hash of the file.
-      type: Unknown
-    - contextPath: CarbonBlackEEDR.File.total_file_path_count
-      description: The total number of file paths that have been observed, by this
-        organization, for this file.
-      type: Number
-  dockerimage: demisto/python3:3.8.3.9324
+          type: String
+        - contextPath: CarbonBlackEEDR.File.original_filename
+          description: Original filename from FileVersionInformation.
+          type: String
+        - contextPath: CarbonBlackEEDR.File.file_version
+          description: File version from FileVersionInformation.
+          type: String
+        - contextPath: CarbonBlackEEDR.File.file_description
+          description: File description from FileVersionInformation.
+          type: String
+        - contextPath: CarbonBlackEEDR.File.product_name
+          description: Product name from FileVersionInformation.
+          type: String
+        - contextPath: CarbonBlackEEDR.File.md5
+          description: The MD5 hash of the file.
+          type: String
+    - arguments:
+        - default: false
+          description: An array of SHA256 hashes (limit 100). Supports comma-separated
+            values.
+          isArray: false
+          name: sha256
+          required: true
+          secret: false
+        - default: false
+          defaultValue: '300'
+          description: The number of seconds to make the download URLs available for.
+          isArray: false
+          name: expiration_seconds
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          defaultValue: 'false'
+          description: Download the file to XSOAR.
+          isArray: false
+          name: download_to_xsoar
+          predefined:
+            - 'true'
+            - 'false'
+          required: false
+          secret: false
+      deprecated: false
+      description: The files are able to be downloaded via AWS S3 pre-signed URLs.
+      execution: false
+      name: cb-eedr-files-download-link-get
+      outputs:
+        - contextPath: CarbonBlackEEDR.File.found.sha256
+          description: SHA256 hash of file that is available to be downloaded
+          type: String
+        - contextPath: CarbonBlackEEDR.File.found.url
+          description: An AWS S3 pre-signed URL for this file. Perform a GET on this URL
+            to download the file.
+          type: String
+        - contextPath: CarbonBlackEEDR.File.not_found
+          description: The SHA256 hashes that were not found.
+          type: String
+        - contextPath: CarbonBlackEEDR.File.error
+          description: The SHA256 hashes that had an intermittent error.
+          type: String
+    - arguments:
+        - default: false
+          description: The requested SHA256 hash to obtain information for. Supports comma-separated
+            values.
+          isArray: false
+          name: sha256
+          required: true
+          secret: false
+      deprecated: false
+      description: Return a summary of the observed file paths
+      execution: false
+      name: cb-eedr-file-paths
+      outputs:
+        - contextPath: CarbonBlackEEDR.File.file_path_count
+          description: The total number of unique file paths that have been observed,
+            by this organization, for this file.
+          type: Number
+        - contextPath: CarbonBlackEEDR.File.file_paths
+          description: The file path details.
+          type: String
+        - contextPath: CarbonBlackEEDR.File.sha256
+          description: The SHA256 hash of the file.
+          type: Unknown
+        - contextPath: CarbonBlackEEDR.File.total_file_path_count
+          description: The total number of file paths that have been observed, by this
+            organization, for this file.
+          type: Number
+    - arguments:
+        - default: false
+          description: The process name to search.
+          isArray: true
+          name: process_name
+          required: false
+          secret: false
+        - default: false
+          description: The process hash to search.
+          isArray: true
+          name: process_hash
+          required: false
+          secret: false
+        - default: false
+          description: The event ID to search.
+          isArray: false
+          name: event_id
+          required: false
+          secret: false
+        - default: false
+          description: The maximum number of rows to return. Default is 20.
+          isArray: false
+          name: limit
+          required: false
+          secret: false
+        - default: false
+          description: A free-style query. For example, "process_name:svchost.exe".
+          isArray: false
+          name: query
+          required: false
+          secret: false
+        - default: false
+          description: First appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is 1 day ago.
+          isArray: false
+          name: start_time
+          required: false
+          secret: false
+        - default: false
+          description: Last appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is current time.
+          isArray: false
+          name: end_time
+          required: false
+          secret: false
+        - default: false
+          description: Index of first records to fetch. Default is 0.
+          isArray: false
+          name: start
+          required: false
+          secret: false
+      deprecated: false
+      description: Creates a process search job.
+      execution: false
+      name: cb-eedr-process-search
+      outputs:
+        - contextPath: CarbonBlackEEDR.SearchProcess.job_id
+          description: The ID of the job found by the search.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchProcess.status
+          description: The status of the job found by the search.
+          type: String
+    - arguments:
+        - default: false
+          description: The process GUID to search.
+          isArray: false
+          name: process_guid
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: The event type to search.
+          isArray: false
+          name: event_type
+          required: false
+          secret: false
+          predefined:
+            - filemod
+            - netconn
+            - regmod
+            - modload
+            - crossproc
+            - childproc
+        - default: false
+          description: The maximum number of rows to return. Default is 20.
+          isArray: false
+          name: limit
+          required: false
+          secret: false
+        - default: false
+          description: A free-style query. For example, "process_name:svchost.exe".
+          isArray: false
+          name: query
+          required: false
+          secret: false
+        - default: false
+          description: First appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is 1 day ago.
+          isArray: false
+          name: start_time
+          required: false
+          secret: false
+        - default: false
+          description: Last appearance time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is current time.
+          isArray: false
+          name: end_time
+          required: false
+          secret: false
+        - default: false
+          description: Index of first records to fetch. Default is 0.
+          isArray: false
+          name: start
+          required: false
+          secret: false
+      deprecated: false
+      description: Retrieves the events associated with a given process.
+      execution: false
+      name: cb-eedr-events-by-process-get
+      outputs:
+        - contextPath: CarbonBlackEEDR.SearchEvent.backend_timestamp
+          description: The timestamp of when the process was ingested by the backend.
+          type: Date
+        - contextPath: CarbonBlackEEDR.SearchEvent.created_timestamp
+          description: The timestamp of when the event document was created.
+          type: Date
+        - contextPath: CarbonBlackEEDR.SearchEvent.event_guid
+          description: A globally unique identifier for this event document.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.event_hash
+          description: ''
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.event_timestamp
+          description: The timestamp of the event on the device.
+          type: Date
+        - contextPath: CarbonBlackEEDR.SearchEvent.event_type
+          description: 'The event type. Possible values are: filemod, netconn, regmod, modload, crossproc, and childproc.'
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.legacy
+          description: True if this event comes from the CBD data stream.
+          type: Boolean
+        - contextPath: CarbonBlackEEDR.SearchEvent.modload_action
+          description: 'Action associated with the modload operation. The only possible value is: ACTION_LOAD_MODULE.'
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.modload_effective_reputation
+          description: ''
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.modload_md5
+          description: The MD5 hash for the modules loaded.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.modload_name
+          description: The modules loaded by this event.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.modload_publisher
+          description: The publisher that signed this module, if any.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.modload_publisher_state
+          description: 'The set of states associated with the publisher of the module. Can be a combination of: FILE_SIGNATURE_STATE_INVALID, FILE_SIGNATURE_STATE_SIGNED, FILE_SIGNATURE_STATE_VERIFIED, FILE_SIGNATURE_STATE_NOT_SIGNED, FILE_SIGNATURE_STATE_UNKNOWN, FILE_SIGNATURE_STATE_CHAINED, FILE_SIGNATURE_STATE_TRUSTED, FILE_SIGNATURE_STATE_OS, and FILE_SIGNATURE_STATE_CATALOG_SIGNED.'
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.modload_sha256
+          description: The SHA256 hash for the modules loaded.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.process_guid
+          description: The process GUID representing the process that this event belongs to.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchEvent.process_pid
+          description: The PID of the process.
+          type: Number
+    - arguments:
+        - default: false
+          description: The job ID to search.
+          isArray: true
+          name: job_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Retrieves the process search results for a given job ID.
+      execution: false
+      name: cb-eedr-process-search-results
+      outputs:
+        - contextPath: CarbonBlackEEDR.SearchProcess.job_id
+          description: The ID of the job found by the search.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchProcess.status
+          description: The status of the job found by the search.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.device_id
+          description: The device ID that is guaranteed to be unique within each PSC environment.
+          type: Number
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.process_username
+          description: The user names related to the process.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.backend_timestamp
+          description: A date/time field formatted as an ISO-8601 string based on the UTC timezone. For example, device_timestamp:2018-03-14T21:06:45.183Z.
+          type: Date
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.childproc_count
+          description: The cumulative count of child-process creations since process tracking started.
+          type: Number
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.crossproc_count
+          description: The cumulative count of cross-process events since process tracking started.
+          type: Number
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.device_group_id
+          description: The ID of the sensor group where the device belongs.
+          type: Number
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.device_name
+          description: The name of the device.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.device_policy_id
+          description: The ID of the policy applied to the device.
+          type: Number
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.device_timestamp
+          description: The time displayed on the sensor based on the sensor’s clock. The time is an ISO-8601 formatted time string based on the UTC timezone.
+          type: Date
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.enriched
+          description: True if the process document came from the CBD data stream.
+          type: Boolean
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.enriched_event_type
+          description: The CBD enriched event type.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.event_type
+          description: 'The CBD event type (valid only for events coming through analytics). Possible values are: CREATE_PROCESS, DATA_ACCESS, FILE_CREATE, INJECT_CODE, NETWORK, POLICY_ACTION, REGISTRY_ACCESS, and SYSTEM_API_CALL.'
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.filemod_count
+          description: The cumulative count of file modifications since process tracking started.
+          type: Number
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.ingress_time
+          description: Unknown
+          type: Date
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.legacy
+          description: True if the process document came from the legacy data stream (deprecated, use enriched).
+          type: Boolean
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.modload_count
+          description: The cumulative count of module loads since process tracking started.
+          type: Number
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.netconn_count
+          description: The cumulative count of network connections since process tracking started.
+          type: Number
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.org_id
+          description: The globally unique organization key. This will most likely be the PSC organization ID + PSC environment ID or some other unique token used across environments.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.parent_guid
+          description: The process GUID of the parent process.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.parent_pid
+          description: The PID of the parent process.
+          type: Number
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.process_guid
+          description: Unique ID of the solr document. Appears as process_guid + server-side timestamp in epoch ms (1/1/1970 based).
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.process_hash
+          description: The MD5 and SHA-256 hashes of the process’s main module in a multi-valued field.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.process_name
+          description: The tokenized file path of the process’s main module.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.process_pid
+          description: The PID of a process. Can be multi-valued in case of exec/fork on Linux/OSX.
+          type: Number
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.process_username
+          description: User names related to the process.
+          type: String
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.regmod_count
+          description: The cumulative count of registry modifications since process tracking started.
+          type: Number
+        - contextPath: CarbonBlackEEDR.SearchProcess.results.scriptload_count
+          description: The cumulative count of loaded scripts since process tracking started.
+          type: Number
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: true
   longRunning: false
@@ -1563,5 +1825,5 @@ script:
   subtype: python3
   type: python
 tests:
-- Carbon Black Enterprise EDR Test
+  - Carbon Black Enterprise EDR Test
 fromversion: 5.0.0

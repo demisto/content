@@ -465,7 +465,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsString
+      - - operator: notContainsString
           left:
             value:
               simple: EWS.Items.textBody

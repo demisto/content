@@ -3027,6 +3027,112 @@ IP_REP = {
                     },
                     "score": 99
                 }
+            },
+            {
+                "entity": {
+                    "id": "ip:8.8.8.8",
+                    "name": "8.8.8.8",
+                    "type": "IpAddress"
+                },
+                "risk": {
+                    "level": 4,
+                    "rule": {
+                        "count": 10,
+                        "evidence": {
+                            "honeypot": {
+                                "timestamp": "2016-10-13T10:34:01.000Z",
+                                "description": "23 sightings on 9 sources "
+                                               "including: @atma_es, @Webiron"
+                                               "Bots, @Chester250, @olaf_j, @E"
+                                               "IS_BFB. Most recent tweet: Sus"
+                                               "picious Activity Captured Fro"
+                                               "m: 8.8.8.8 on port 123 #"
+                                               "HITME. Most recent link (Oct 1"
+                                               "3, 2016): https://twitter.com/"
+                                               "HoneyPoint/statuses/7865153291"
+                                               "66020608",
+                                "rule": "Historical Honeypot Sighting",
+                                "mitigation": "",
+                                "level": 1
+                            },
+                            "linkedIntrusion": {
+                                "timestamp": "2016-08-26T19:06:14.000Z",
+                                "description": "12 sightings on 4 sources: Rev"
+                                               "ersingLabs, @olaf_j, @EIS_BFB,"
+                                               " @monitor1125. 3 related intru"
+                                               "sion methods: Brute Force Atta"
+                                               "ck, Brute Force Blocking (BFB"
+                                               "), Trojan.Gafgyt. Most recent "
+                                               "tweet: Masterdeb1 BFB-attack d"
+                                               "etected from 8.8.8.8 to "
+                                               "APACHE Accesslistscan on 26.08"
+                                               ".2016 21:06:12. Most recent l"
+                                               "ink (Aug 26, 2016): https://t"
+                                               "witter.com/olaf_j/statuses/76"
+                                               "9249615615000576",
+                                "rule": "Historically Linked to "
+                                        "Intrusion Method",
+                                "mitigation": "",
+                                "level": 1
+                            },
+                            "recentCncServer": {
+                                "timestamp": "2019-11-25T20:56:19.230Z",
+                                "description": "1 sighting on 1 source: Cobalt"
+                                               " Strike Default Certificate"
+                                               " Detected - Shodan / Record"
+                                               "ed Future.",
+                                "rule": "Current C&C Server",
+                                "mitigation": "",
+                                "level": 4
+                            },
+                            "recentDefanged": {
+                                "timestamp": "2019-11-21T15:58:45.000Z",
+                                "description": "1 sighting on 1 source: @Jas"
+                                               "onMilletary. Most recent twe"
+                                               "et: C2Server: 37.48.83[.]137"
+                                               ",/pixel.gif Path: /submit.ph"
+                                               "p User Agent: Mozilla/4.0 (c"
+                                               "ompatible; MSIE 8.0; Windows"
+                                               " NT 5.1; Trident/4.0). Most "
+                                               "recent link (Nov 21, 2019): "
+                                               "https://twitter.com/JasonMil"
+                                               "letary/statuses/119754489002"
+                                               "1928961",
+                                "rule": "Recently Reported as a Defanged IP",
+                                "mitigation": "",
+                                "level": 2
+                            },
+                            "recentActiveCnc": {
+                                "timestamp": "2019-11-25T20:56:19.234Z",
+                                "description": "1 sighting on 1 source: Recor"
+                                               "ded Future Network Traffic An"
+                                               "alysis. Communication observ"
+                                               "ed on TCP:443. Last observed"
+                                               " on Nov 22, 2019.",
+                                "rule": "Actively Communicating C&C Server",
+                                "mitigation": "",
+                                "level": 4
+                            },
+                            "linkedToCyberAttack": {
+                                "timestamp": "2016-10-13T10:34:01.000Z",
+                                "description": "7 sightings on 4 sources: @a"
+                                               "tma_es, @olaf_j, @EIS_BFB, @"
+                                               "HoneyPoint. Most recent twee"
+                                               "t: Suspicious Activity Captu"
+                                               "red From: 8.8.8.8 on po"
+                                               "rt 123 #HITME. Most recent li"
+                                               "nk (Oct 13, 2016): https://t"
+                                               "witter.com/HoneyPoint/status"
+                                               "es/786515329166020608",
+                                "rule": "Historically Linked to Cyber Attack",
+                                "mitigation": "",
+                                "level": 1
+                            }
+                        },
+                        "maxCount": 51
+                    },
+                    "score": 99
+                }
             }
         ]
     },

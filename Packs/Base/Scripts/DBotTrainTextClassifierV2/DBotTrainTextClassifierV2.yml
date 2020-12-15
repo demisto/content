@@ -25,7 +25,8 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: Whether to override the existing model if a model with the same name exists. Default is "false".
+  description: Whether to override the existing model if a model with the same name
+    exists. Default is "false".
   isArray: false
   name: overrideExistingModel
   predefined:
@@ -46,9 +47,9 @@ args:
   name: maxBelowThreshold
   required: false
   secret: false
-  deprecated: true
 - default: false
-  description: The field name with the label. Supports a comma-separated list, the first non-empty value will be taken.
+  description: The field name with the label. Supports a comma-separated list, the
+    first non-empty value will be taken.
   isArray: false
   name: tagField
   required: true
@@ -62,14 +63,23 @@ args:
   secret: false
 - default: false
   defaultValue: '*'
-  description: 'A comma-separated list of email tags values and mapping. The script considers only the tags specified in this field. You can map label to another value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in email tag: malicious, credentials harvesting, inner communitcation, external legit email, unclassified. While training, we want to ignore "unclassified" tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to     merge "inner communitcation" and "external legit email" to one tag called "non-malicious". The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious, external legit email:non-malicious'
+  description: 'A comma-separated list of email tags values and mapping. The script
+    considers only the tags specified in this field. You can map label to another
+    value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in email
+    tag: malicious, credentials harvesting, inner communitcation, external legit email,
+    unclassified. While training, we want to ignore "unclassified" tag, and refer
+    to "credentials harvesting" as "malicious" too. Also, we want to     merge "inner
+    communitcation" and "external legit email" to one tag called "non-malicious".
+    The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
+    external legit email:non-malicious'
   isArray: false
   name: phishingLabels
   required: false
   secret: false
 - default: false
   defaultValue: '0.8'
-  description: The ratio of the training set to the entire data set, which is used for model evaluation.
+  description: The ratio of the training set to the entire data set, which is used
+    for model evaluation.
   isArray: false
   name: trainSetRatio
   required: false
@@ -93,7 +103,8 @@ args:
   secret: false
 - default: false
   defaultValue: '0.05'
-  description: Minimum score for a word to be considered as a keyword between 0 and 1.
+  description: Minimum score for a word to be considered as a keyword between 0 and
+    1.
   isArray: false
   name: keywordMinScore
   required: false
@@ -110,10 +121,10 @@ args:
   - weighted avgm
   required: false
   secret: false
-  deprecated: true
 - default: false
   defaultValue: 'true'
-  description: Whether to extract keywords for the model. Can be "true" or "false". Default is "true".
+  description: Whether to extract keywords for the model. Can be "true" or "false".
+    Default is "true".
   isArray: false
   name: findKeywords
   predefined:
@@ -124,7 +135,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Whether to return a file that contains the model's predictions on the test set. Can be "true" or "false". Default is "false".
+  description: Whether to return a file that contains the model's predictions on the
+    test set. Can be "true" or "false". Default is "false".
   isArray: false
   name: returnPredictionsOnTestSet
   predefined:
@@ -143,6 +155,17 @@ args:
   - ''
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: nlp
+  description: Text pre-processing type. The default is "json".
+  isArray: false
+  name: preProcessType
+  predefined:
+  - nlp
+  - none
+  required: false
+  secret: false
 comment: Train a machine learning text classifier.
 commonfields:
   id: DBotTrainTextClassifierV2
@@ -154,25 +177,27 @@ outputs:
   description: The model name.
   type: String
 - contextPath: DBotPhishingClassifier.EvaluationScores
-  description: The model evaluation scores (precision, coverage, etc.) for the found threshold.
+  description: The model evaluation scores (precision, coverage, etc.) for the found
+    threshold.
   type: Unknown
 - contextPath: DBotPhishingClassifier.ConfusionMatrix
   description: The model evaluation confusion matrix for the found threshold.
   type: Unknown
 - contextPath: DBotPhishingClassifierNoThresh.EvaluationScores
-  description: The model evaluation scores (precision, coverage, etc.) for threshold = 0.
+  description: The model evaluation scores (precision, coverage, etc.) for threshold
+    = 0.
   type: Unknown
 - contextPath: DBotPhishingClassifierNoThresh.ConfusionMatrix
   description: The model evaluation confusion matrix for threshold = 0.
   type: Unknown
 script: '-'
+subtype: python3
 system: false
 tags:
 - ml
 timeout: 12µs
 type: python
-subtype: python2
-dockerimage: demisto/dl:1.4
+dockerimage: demisto/ml:1.0.0.13629
 runonce: true
 tests:
 - Create Phishing Classifier V2 ML Test

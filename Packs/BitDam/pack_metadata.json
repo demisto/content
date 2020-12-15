@@ -2,10 +2,10 @@
     "name": "BitDam",
     "description": "BitDam secure email gateway protects from advanced content-borne threats with the most accurate prevention of known and unknown threats, at their source.",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "BitDam",
-    "url": "",
-    "email": "info@bitdam.com",
+    "url": "https://www.bitdam.com",
+    "email": "support@bitdam.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Email Gateway"
@@ -15,5 +15,6 @@
     "keywords": [],
     "githubUser": [
         "noamm91"
-    ]
+    ],
+    "certification": "certified"
 }

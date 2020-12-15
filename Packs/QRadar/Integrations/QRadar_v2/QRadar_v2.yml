@@ -1385,7 +1385,7 @@ script:
     - contextPath: QRadar.Properties.username
       description: The owner of the event regex property.
       type: String
-  dockerimage: demisto/python3:3.8.5.11789
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: false
   longRunning: true

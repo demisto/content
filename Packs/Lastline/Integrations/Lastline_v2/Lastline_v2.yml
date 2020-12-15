@@ -10,12 +10,19 @@ configuration:
   type: 0
 - display: API Key for accessing Lastline APIs
   name: api_key
-  required: true
+  required: false
   type: 0
+  additionalinfo: Note that whe when credentials are filled with data, the integration use account-based authentication.
 - display: API Token for accessing Lastline APIs
   name: api_token
-  required: true
+  required: false
   type: 4
+  additionalinfo: Note that when credentials are filled with data, the integration use account-based authentication.
+- display: Email address
+  name: credentials
+  required: false
+  type: 9
+  additionalinfo: Note that when credentials are filled with data, the integration use account-based authentication.
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -571,7 +578,7 @@ script:
     - contextPath: Lastline.Submission.Process.process_id
       description: The process ID.
       type: string
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.6.13358
   isfetch: false
   longRunning: false
   longRunningPort: false

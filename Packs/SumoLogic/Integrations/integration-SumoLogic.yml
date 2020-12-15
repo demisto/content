@@ -217,10 +217,10 @@ script:
                 }
             }
 
-            var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), false,
+            var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), !params.fetchRecords,
                 a2i(params.sleepBetweenChecks, defaultSleep), params.fetchRecords);
             var incidents = [];
-
+            var currentFetch = lastRun.time;
             if (!params.fetchRecords && s.messages) {
                 for (var i=0; i<s.messages.length; i++) {
                     var incident = {name: 'Incident from SumoLogic' + s.messages[i]._messageid,
@@ -230,6 +230,9 @@ script:
                         if (props[j] !== '_raw') {
                             incident.labels.push({type: props[j], value: s.messages[i][props[j]]});
                         }
+                    }
+                    if (parseInt(s.messages[i]._receipttime) >= currentFetch){
+                        currentFetch = parseInt(s.messages[i]._receipttime) + 1
                     }
                     incidents.push(incident);
                 }
@@ -245,10 +248,15 @@ script:
                             incident.labels.push({type: props[j], value: s.records[i][props[j]]});
                         }
                     }
+                    var recordDate = new Date("{0}T{1}".format(s.records[i].date, s.records[i].time));
+                    var recordDateEpoch = Math.ceil(recordDate);
+                    if (recordDateEpoch >= currentFetch){
+                        currentFetch = recordDateEpoch + 1
+                    }
                     incidents.push(incident);
                 }
             }
-            setLastRun({time: now});
+            setLastRun({time: currentFetch});
             return JSON.stringify(incidents);
         case 'search':
             query = args.query

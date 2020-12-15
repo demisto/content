@@ -1,7 +1,7 @@
 Create ServiceNow Ticket allows you to open new tickets as a task from a parent playbook.
-It is an option to set sync with the ticket's state, which will wait for the ticket to resolve or close with StatePolling. 
+It is an option to set sync with the ticket's state, which will wait for the ticket to resolve or close with StatePolling.
 You can alternatively select to mirror the ServiceNow ticket and incident fields. Mirroring includes its equivalent for StatePolling -  FieldPolling.
-To apply either of these options, set the SyncTicket value in the playbook inputs to one of the following options: 
+To apply either of these options, set the SyncTicket value in the playbook inputs to one of the following options:
 1. StatePolling
 2. Mirror
 3. Leave Blank to use none.
@@ -49,4 +49,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Create ServiceNow Ticket](Insert the link to your image here)
+![Create ServiceNow Ticket](https://raw.githubusercontent.com/demisto/content/master/Packs/ServiceNow/doc_files/Create_ServiceNow_Ticket.png)

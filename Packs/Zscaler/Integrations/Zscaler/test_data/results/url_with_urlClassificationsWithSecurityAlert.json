@@ -1,34 +1,35 @@
 {
-  "Type": 1,
-  "Contents": [
-    {
-      "urlClassifications": "MISCELLANEOUS_OR_UNKNOWN",
-      "urlClassificationsWithSecurityAlert": "MALWARE_SITE",
-      "ip": "www.demisto22.com"
+    "Type": 1,
+    "Contents": [
+        {
+            "urlClassifications": "MISCELLANEOUS_OR_UNKNOWN",
+            "urlClassificationsWithSecurityAlert": "MALWARE_SITE",
+            "ip": "www.demisto22.com"
+        }
+    ],
+    "ContentsFormat": "json",
+    "ReadableContentsFormat": "markdown",
+    "HumanReadable": "### Zscaler URL Lookup\n|ip|urlClassifications|urlClassificationsWithSecurityAlert|\n|---|---|---|\n| www.demisto22.com | MISCELLANEOUS_OR_UNKNOWN | MALWARE_SITE |\n",
+    "EntryContext": {
+        "URL(val.Data && val.Data == obj.Data)": [
+            {
+                "Address": "www.demisto22.com",
+                "Data": "www.demisto22.com",
+                "urlClassifications": "MISCELLANEOUS_OR_UNKNOWN",
+                "urlClassificationsWithSecurityAlert": "MALWARE_SITE",
+                "Malicious": {
+                    "Vendor": "Zscaler",
+                    "Description": "MALWARE_SITE"
+                }
+            }
+        ],
+        "DBotScore": [
+            {
+                "Indicator": "www.demisto22.com",
+                "Score": 3,
+                "Type": "url",
+                "Vendor": "Zscaler"
+            }
+        ]
     }
-  ],
-  "ContentsFormat": "json",
-  "ReadableContentsFormat": "markdown",
-  "HumanReadable": "### Zscaler URL Lookup\n|ip|urlClassifications|urlClassificationsWithSecurityAlert|\n|---|---|---|\n| www.demisto22.com | MISCELLANEOUS_OR_UNKNOWN | MALWARE_SITE |\n",
-  "EntryContext": {
-    "URL(val.Data && val.Data == obj.Data)":
-    {
-      "Address": "www.demisto22.com",
-      "Data": "www.demisto22.com",
-      "urlClassifications": "MISCELLANEOUS_OR_UNKNOWN",
-      "urlClassificationsWithSecurityAlert": "MALWARE_SITE",
-      "Malicious": {
-        "Vendor": "Zscaler",
-        "Description": "MALWARE_SITE"
-      }
-    },
-    "DBotScore": [
-      {
-        "Indicator": "www.demisto22.com",
-        "Score": 3,
-        "Type": "url",
-        "Vendor": "Zscaler"
-      }
-    ]
-  }
 }

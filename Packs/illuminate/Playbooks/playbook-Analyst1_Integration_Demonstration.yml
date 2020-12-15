@@ -1,0 +1,496 @@
+id: Analyst1 Integration Demonstration
+version: -1
+name: Analyst1 Integration Demonstration
+description: A quick demonstration of the various Analyst1 enrichment commands.
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8b0bdd64-91d3-4b4c-8ef4-355d7ec2fb3e
+    type: start
+    task:
+      id: 8b0bdd64-91d3-4b4c-8ef4-355d7ec2fb3e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 11464b2f-f56f-426f-859d-a58a963eee92
+    type: regular
+    task:
+      id: 11464b2f-f56f-426f-859d-a58a963eee92
+      version: -1
+      name: Parse Incident Details
+      scriptName: ParseJSON
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      extend-context:
+        simple: IndicatorType=indicator_type
+      value:
+        simple: ${incident.details}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 600de374-b058-4f8f-8a22-3809b34e4c67
+    type: condition
+    task:
+      id: 600de374-b058-4f8f-8a22-3809b34e4c67
+      version: -1
+      name: Determine Indicator Type
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      HTTP Request:
+      - "7"
+      IPV4:
+      - "12"
+      IPV6:
+      - "9"
+      MUTEX:
+      - "10"
+      String:
+      - "11"
+      domain:
+      - "3"
+      email:
+      - "4"
+      file:
+      - "6"
+      url:
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: domain
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${IndicatorType}
+            iscontext: true
+          right:
+            value:
+              simple: Domain
+    - label: email
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${IndicatorType}
+            iscontext: true
+          right:
+            value:
+              simple: Email
+    - label: url
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${IndicatorType}
+            iscontext: true
+          right:
+            value:
+              simple: URL
+    - label: file
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: ${IndicatorType}
+            iscontext: true
+          right:
+            value:
+              simple: File MD5,File SHA-1,File SHA-256
+    - label: HTTP Request
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${IndicatorType}
+            iscontext: true
+          right:
+            value:
+              simple: HTTP Request
+    - label: IPV4
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${IndicatorType}
+            iscontext: true
+          right:
+            value:
+              simple: IP
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${incident.labels.Indicator}
+            iscontext: true
+          right:
+            value:
+              simple: .
+    - label: IPV6
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${IndicatorType}
+            iscontext: true
+          right:
+            value:
+              simple: IP
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${incident.labels.Indicator}
+            iscontext: true
+          right:
+            value:
+              simple: ':'
+    - label: MUTEX
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${IndicatorType}
+            iscontext: true
+          right:
+            value:
+              simple: File
+    - label: String
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${IndicatorType}
+            iscontext: true
+          right:
+            value:
+              simple: String
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d433f330-a2ff-49af-8828-5eca11a05aad
+    type: regular
+    task:
+      id: d433f330-a2ff-49af-8828-5eca11a05aad
+      version: -1
+      name: Enrich Domain with Analyst1 Data
+      script: Analyst1|||domain
+      type: regular
+      iscommand: true
+      brand: Analyst1
+      description: ''
+    scriptarguments:
+      domain:
+        simple: ${incident.labels.Indicator}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 3f2838b5-6b4f-4bd3-8dd0-a385d9cf7fa6
+    type: regular
+    task:
+      id: 3f2838b5-6b4f-4bd3-8dd0-a385d9cf7fa6
+      version: -1
+      name: Enrich Email with Analyst1 Data
+      script: Analyst1|||email
+      type: regular
+      iscommand: true
+      brand: Analyst1
+      description: ''
+    scriptarguments:
+      email:
+        simple: ${incident.labels.Indicator}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: cfe6df5f-b8d3-43e6-889d-71c16cbf4642
+    type: regular
+    task:
+      id: cfe6df5f-b8d3-43e6-889d-71c16cbf4642
+      version: -1
+      name: Enrich URL with Analyst1 Data
+      script: Analyst1|||url
+      type: regular
+      iscommand: true
+      brand: Analyst1
+      description: ''
+    scriptarguments:
+      url:
+        simple: ${incident.labels.Indicator}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 3f35ab7a-acaa-46f8-8df9-573c3313939e
+    type: regular
+    task:
+      id: 3f35ab7a-acaa-46f8-8df9-573c3313939e
+      version: -1
+      name: Enrich File with Analyst1 Data
+      script: Analyst1|||file
+      type: regular
+      iscommand: true
+      brand: Analyst1
+      description: ''
+    scriptarguments:
+      file:
+        simple: ${incident.labels.Indicator}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 1a12da4c-3f89-44a4-8d96-3be99d35ece8
+    type: regular
+    task:
+      id: 1a12da4c-3f89-44a4-8d96-3be99d35ece8
+      version: -1
+      name: Enrich HTTP Request with Analyst1 Data
+      script: Analyst1|||analyst1-enrich-http-request
+      type: regular
+      iscommand: true
+      brand: Analyst1
+      description: ''
+    scriptarguments:
+      http-request:
+        simple: ${incident.labels.Indicator}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: a2db7be6-9451-45c8-8ae7-231fbe9a6731
+    type: regular
+    task:
+      id: a2db7be6-9451-45c8-8ae7-231fbe9a6731
+      version: -1
+      name: Enrich IPV6 with Analyst1 Data
+      script: '|||analyst1-enrich-ipv6'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    scriptarguments:
+      ip:
+        simple: ${incident.labels.Indicator}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: f02c6099-e632-43b1-8c88-d440913865df
+    type: regular
+    task:
+      id: f02c6099-e632-43b1-8c88-d440913865df
+      version: -1
+      name: Enrich MUTEX with Analyst1 Data
+      script: Analyst1|||analyst1-enrich-mutex
+      type: regular
+      iscommand: true
+      brand: Analyst1
+      description: ''
+    scriptarguments:
+      mutex:
+        simple: ${incident.labels.Indicator}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3480,
+          "y": 465
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: d21e8959-8785-420f-8d60-f5d0a34af8ff
+    type: regular
+    task:
+      id: d21e8959-8785-420f-8d60-f5d0a34af8ff
+      version: -1
+      name: Enrich String with Analyst1 Data
+      script: Analyst1|||analyst1-enrich-string
+      type: regular
+      iscommand: true
+      brand: Analyst1
+      description: ''
+    scriptarguments:
+      string:
+        simple: ${incident.labels.Indicator}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: bc79e3f9-b069-49f8-84f1-114701110bfd
+    type: regular
+    task:
+      id: bc79e3f9-b069-49f8-84f1-114701110bfd
+      version: -1
+      name: Enrich IPV4 with Analyst1 Data
+      script: Analyst1|||ip
+      type: regular
+      iscommand: true
+      brand: Analyst1
+      description: ''
+    scriptarguments:
+      ip:
+        simple: ${incident.labels.Indicator}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 660,
+        "width": 3870,
+        "x": -10,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+ - Analyst1 Integration Demonstration - Test

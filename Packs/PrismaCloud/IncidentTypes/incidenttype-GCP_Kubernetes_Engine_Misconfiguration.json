@@ -1,0 +1,23 @@
+{
+    "autorun": false,
+    "color": "#2979FF",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "GCP Kubernetes Engine Misconfiguration",
+    "locked": false,
+    "name": "GCP Kubernetes Engine Misconfiguration",
+    "playbookId": "Prisma Cloud Remediation - GCP Kubernetes Engine Misconfiguration",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "fromVersion": "5.0.0",
+    "layout": "GCP Kubernetes Engine Misconfiguration",
+    "weeks": 0,
+    "weeksR": 0,
+    "preProcessingScript": ""
+}

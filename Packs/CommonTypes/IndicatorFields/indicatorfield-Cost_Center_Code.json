@@ -1,0 +1,29 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "User Profile"
+ ],
+ "caseInsensitive": true,
+ "cliName": "costcentercode",
+ "closeForm": false,
+ "content": true,
+ "editForm": true,
+ "group": 2,
+ "hidden": false,
+ "id": "indicator_costcentercode",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Cost Center Code",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "shortText",
+ "unmapped": false,
+ "unsearchable": true,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}

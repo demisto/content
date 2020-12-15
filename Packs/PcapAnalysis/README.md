@@ -13,4 +13,4 @@ Searching PCAP files for common objects such as IP addresses, ports, protocols, 
 - Decrypting various encrypted traffic such as SSL and WPA (provided decryption keys are provided).
 - Extracting indicators such as IP addresses, URLs, domain, files from the payload and performing enrichment on those indicators.
 
-_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks)_
+_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/pcap-analysis)_

@@ -24,5 +24,5 @@ tags:
 - widget
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.5.11789
+dockerimage: demisto/python3:3.8.6.12176
 fromversion: 6.0.0

@@ -68,10 +68,10 @@ tasks:
       id: ea981fa9-7255-4b58-867e-d350b97071ce
       version: -1
       name: ip
-      script: '|||ip'
+      script: 'Expanse|||ip'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "Expanse"
     nexttasks:
       '#none#':
       - "9"
@@ -149,10 +149,10 @@ tasks:
       id: ed5450ed-4522-4ffc-8b04-94a0b67b368d
       version: -1
       name: domain
-      script: '|||domain'
+      script: 'Expanse|||domain'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "Expanse"
     nexttasks:
       '#none#':
       - "10"

@@ -2,10 +2,10 @@
     "name": "Minerva Labs Anti-Evasion Platform",
     "description": "Minerva eliminates the endpoint security gap while empowering companies to embrace technology fearlessly.",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Minerva Labs",
-    "url": "https://minerva-labs.com/",
-    "email": "",
+    "url": "https://minerva-labs.com/support",
+    "email": "Support@minerva-labs.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Endpoint"
@@ -15,5 +15,6 @@
     "keywords": [],
     "githubUser": [
         "danikdanik"
-    ]
+    ],
+    "certification": "certified"
 }

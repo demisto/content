@@ -27,7 +27,7 @@ configuration:
   required: false
   type: 8
 description: Read information and to send commands to the Check Point Firewall server.
-display: CheckPointFirewall v2
+display: Check Point Firewall v2
 name: CheckPointFirewall_v2
 script:
   commands:
@@ -2088,7 +2088,41 @@ script:
     - contextPath: CheckPoint.Object.ipv4
       description: IPv4 address of the specified object.
       type: String
-  dockerimage: demisto/python3:3.8.5.11789
+  - name: checkpoint-package-list
+    arguments:
+    - name: identifier
+      description: The object unique identifier or name.
+      required: true
+    - name: session_id
+      description: The session ID used to execute the command.
+      defaultValue: None
+    outputs:
+    - contextPath: CheckPoint.Package.name
+      description: The name of the package.
+      type: String
+    - contextPath: CheckPoint.Package.target-name
+      description: The name of the target.
+      type: String
+    - contextPath: CheckPoint.Package.target-uid
+      description: The UID of the target.
+      type: String
+    - contextPath: CheckPoint.Package.revision.domain.domain-type
+      description: The type of the domain.
+      type: String
+    - contextPath: CheckPoint.Package.revision.domain.name
+      description: The name of the domain.
+      type: String
+    - contextPath: CheckPoint.Package.revision.domain.uid
+      description: The UID of the domain.
+      type: String
+    - contextPath: CheckPoint.Package.revision.type
+      description: The type of the revision.
+      type: String
+    - contextPath: CheckPoint.Package.revision.uid
+      description: The UID of the revision.
+      type: String
+    description: Retrieve the details of Checkpoint packages.
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: false
   longRunning: false
@@ -2100,4 +2134,3 @@ script:
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
-

@@ -1,0 +1,11 @@
+!aws-ec2-describe-instances
+!aws-ec2-describe-images
+!aws-ec2-describe-regions
+!aws-ec2-describe-addresses
+!aws-ec2-describe-snapshots
+!aws-ec2-describe-launch-templates
+!aws-ec2-describe-key-pairs
+!aws-ec2-describe-volumes
+!aws-ec2-describe-vpcs
+!aws-ec2-describe-subnets
+!aws-ec2-describe-security-groups

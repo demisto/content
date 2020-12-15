@@ -1,11 +1,11 @@
 # pylint: disable=no-member
-import demisto_ml
-import pandas as pd
-from collections import defaultdict, Counter
-from io import BytesIO, StringIO
-from sklearn.model_selection import StratifiedKFold
 
+import pandas as pd
+from typing import List, Dict
+from collections import defaultdict, Counter
+from sklearn.model_selection import StratifiedKFold
 from CommonServerPython import *
+import demisto_ml
 
 ALL_LABELS = "*"
 GENERAL_SCORES = {
@@ -17,7 +17,7 @@ GENERAL_SCORES = {
 }
 
 DBOT_TAG_FIELD = "dbot_internal_tag_field"
-MIN_INCIDENTS_THRESHOLD = 50
+MIN_INCIDENTS_THRESHOLD = 100
 PREDICTIONS_OUT_FILE_NAME = 'predictions_on_test_set.csv'
 
 
@@ -44,30 +44,32 @@ def get_phishing_map_labels(comma_values):
     return {k: canonize_label(v) for k, v in labels_dict.items()}
 
 
-def read_file(input_entry_or_string, file_type):
+def read_file(input_data, input_type):
     data = []  # type: List[Dict[str, str]]
-    if not input_entry_or_string:
+    if not input_data:
         return data
-    if file_type.endswith("string"):
-        if 'b64' in file_type:
-            input_entry_or_string = base64.b64decode(input_entry_or_string)
-        if isinstance(input_entry_or_string, str):
-            file_content = BytesIO(input_entry_or_string)
-        elif isinstance(input_entry_or_string, unicode):
-            file_content = StringIO(input_entry_or_string)  # type: ignore
+    if input_type.endswith("string"):
+        if 'b64' in input_type:
+            input_data = base64.b64decode(input_data)
+            file_content = input_data.decode("utf-8")
+        else:
+            file_content = input_data
     else:
-        res = demisto.getFilePath(input_entry_or_string)
+        res = demisto.getFilePath(input_data)
         if not res:
-            return_error("Entry {} not found".format(input_entry_or_string))
+            return_error("Entry {} not found".format(input_data))
         file_path = res['path']
-        with open(file_path, 'rb') as f:
-            file_content = BytesIO(f.read())
-    if file_type.startswith('json'):
-        return json.loads(file_content.getvalue())
-    elif file_type.startswith('pickle'):
-        return pd.read_pickle(file_content, compression=None)
+        if input_type.startswith('json'):
+            with open(file_path, 'r') as f:
+                file_content = f.read()
+    if input_type.startswith('csv'):
+        return pd.read_csv(file_path).fillna('').to_dict(orient='records')
+    elif input_type.startswith('json'):
+        return json.loads(file_content)
+    elif input_type.startswith('pickle'):
+        return pd.read_pickle(file_path, compression=None)
     else:
-        return_error("Unsupported file type %s" % file_type)
+        return_error("Unsupported file type %s" % input_type)
 
 
 def get_file_entry_id(file_name):
@@ -83,7 +85,7 @@ def get_file_entry_id(file_name):
 def read_files_by_name(file_names, input_type):
     file_names = file_names.split(",")
     file_names = [f for f in file_names if f]
-    data = []  # type: List[Dict[str, str]]
+    data = []
     for file_name in file_names:
         data += read_file(get_file_entry_id(file_name), input_type)
     return data
@@ -100,6 +102,9 @@ def get_data_with_mapped_label(data, labels_mapping, tag_field):
         else:
             if original_label in labels_mapping:
                 row[tag_field] = labels_mapping[original_label]
+            elif original_label.lower() in labels_mapping:
+                original_label = original_label.lower()
+                row[tag_field] = labels_mapping[original_label]
             else:
                 missing_labels_counter[original_label] += 1
                 continue
@@ -109,11 +114,13 @@ def get_data_with_mapped_label(data, labels_mapping, tag_field):
     return new_data, dict(exist_labels_counter), dict(missing_labels_counter)
 
 
-def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix, threshold, y_test_true, y_test_pred,
-                           y_test_pred_prob):
-    model = demisto_ml.train_text_classifier(X, y, True)
-    model_data = demisto_ml.encode_model(model)
-    model_labels = demisto_ml.get_model_labels(model)
+def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix, threshold, tokenizer, y_test_true,
+                           y_test_pred,
+                           y_test_pred_prob, target_accuracy):
+    PhishingModel = demisto_ml.PhishingModel(tokenizer)
+    PhishingModel.train(X, y, True)
+    model_labels = PhishingModel.get_model_labels()
+    model_data = demisto_ml.phishing_model_dumps(PhishingModel)
 
     res = demisto.executeCommand('createMLModel', {'modelData': model_data,
                                                    'modelName': model_name,
@@ -126,13 +133,18 @@ def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix, t
     confusion_matrix_no_all = {k: v for k, v in confusion_matrix.items() if k != 'All'}
     confusion_matrix_no_all = {k: {sub_k: sub_v for sub_k, sub_v in v.items() if sub_k != 'All'}
                                for k, v in confusion_matrix_no_all.items()}
+
+    y_test_pred_prob = [float(x) for x in y_test_pred_prob]
     res = demisto.executeCommand('evaluateMLModel',
                                  {'modelConfusionMatrix': confusion_matrix_no_all,
                                   'modelName': model_name,
                                   'modelEvaluationVectors': {'Ypred': y_test_pred,
                                                              'Ytrue': y_test_true,
                                                              'YpredProb': y_test_pred_prob
-                                                             }
+
+                                                             },
+                                  'modelConfidenceThreshold': threshold,
+                                  'modelTargetPrecision': target_accuracy
                                   })
     if is_error(res):
         return_error(get_error(res))
@@ -196,7 +208,7 @@ def output_model_evaluation(model_name, y_test, y_pred, res, context_field, huma
         }
     }
     demisto.results(result_entry)
-    return confusion_matrix_no_thresh
+    return confusion_matrix_at_thresh, metrics_df
 
 
 def get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=False):
@@ -204,11 +216,11 @@ def get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, deta
                                                           'yPred': json.dumps(y_pred),
                                                           'targetPrecision': str(target_accuracy),
                                                           'targetRecall': str(target_recall),
-                                                          'detailedOutput': 'true' if detailed else 'false'
+                                                          'detailedOutput': 'true' if detailed else 'false',
                                                           })
     if is_error(res):
         return_error(get_error(res))
-    return res
+    return res[0]
 
 
 def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing_labels_counter):
@@ -217,8 +229,8 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
     if len(labels_below_thresh) > 0:
         err = ['Minimum number of incidents per label required for training is {}.'.format(MIN_INCIDENTS_THRESHOLD)]
         err += ['The following labels have less than {} incidents: '.format(MIN_INCIDENTS_THRESHOLD)]
-        for label in labels_below_thresh:
-            err += ['- {}: {}'.format(label, str(labels_counter[label]))]
+        for x in labels_below_thresh:
+            err += ['- {}: {}'.format(x, str(labels_counter[x]))]
         err += ['Make sure that enough incidents exist in the environment per each of these labels.']
         missing_labels = ', '.join(missing_labels_counter.keys())
         err += ['The following labels were not mapped to any label in the labels mapping: {}.'.format(missing_labels)]
@@ -269,16 +281,17 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
             err += ['Please make sure that incidents of at least 2 labels exist in the environment.']
         else:
             err += ['The following labels were not mapped to any label in the labels mapping:']
-            err += [', '.join(missing_labels_counter)]
-            not_found_mapped_label = [label_map for label_map in labels_mapping if label_map not in exist_labels_counter
-                                      or exist_labels_counter[label_map] == 0]
+            err += [', '.join([x for x in missing_labels_counter])]
+            not_found_mapped_label = [x for x in labels_mapping if x not in exist_labels_counter
+                                      or exist_labels_counter[x] == 0]
             if len(not_found_mapped_label) > 0:
                 miss = ', '.join(not_found_mapped_label)
                 err += ['Notice that the following mapped labels were not found among all incidents: {}.'.format(miss)]
         return_error('\n'.join(err))
 
 
-def return_file_result_with_predictions_on_test_set(data, original_text_fields, test_index, text_field, y_test, y_pred_dict):
+def return_file_result_with_predictions_on_test_set(data, original_text_fields, test_index, text_field, y_test,
+                                                    y_pred_dict):
     if original_text_fields is None or original_text_fields.strip() == '':
         original_text_fields = [text_field]
     else:
@@ -322,6 +335,8 @@ def get_X_and_y_from_data(data, text_field):
 
 
 def main():
+    tokenizer_script = demisto.args().get('tokenizerScript', None)
+    phishing_model = demisto_ml.PhishingModel(tokenizer_script=tokenizer_script)
     input = demisto.args()['input']
     input_type = demisto.args()['inputType']
     model_name = demisto.args()['modelName']
@@ -339,7 +354,6 @@ def main():
     else:
         data = read_file(input, input_type)
 
-    demisto.results(len(data))
     if len(data) == 0:
         err = ['No incidents were received.']
         err += ['Make sure that all arguments are set correctly and that incidents exist in the environment.']
@@ -365,9 +379,10 @@ def main():
     test_index, train_index = get_train_and_test_sets_indices(X, y)
     X_train, X_test = [X[i] for i in train_index], [X[i] for i in test_index]
     y_train, y_test = [y[i] for i in train_index], [y[i] for i in test_index]
-    model = demisto_ml.train_text_classifier(X_train, y_train)
-    ft_test_predictions = demisto_ml.predict(model, X_test)
-    y_pred = [{y_tuple[0]: y_tuple[1]} for y_tuple in ft_test_predictions]
+
+    phishing_model.train(X_train, y_train, compress=False)
+    ft_test_predictions = phishing_model.predict(X_test)
+    y_pred = [{y_tuple[0]: float(y_tuple[1])} for y_tuple in ft_test_predictions]
     if return_predictions_on_test_set:
         return_file_result_with_predictions_on_test_set(data, original_text_fields, test_index, text_field, y_test,
                                                         y_pred)
@@ -375,22 +390,25 @@ def main():
         target_recall = 1 - float(demisto.args()['maxBelowThreshold'])
     else:
         target_recall = 0
-    [threshold_metrics_entry, per_class_entry] = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall,
-                                                                         detailed=True)
-    demisto.results(per_class_entry)
+    threshold_metrics_entry = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=True)
     # show results for the threshold found - last result so it will appear first
-    confusion_matrix = output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred,
-                                               res=threshold_metrics_entry, context_field='DBotPhishingClassifier')
+    confusion_matrix, metrics_json = output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred,
+                                                             res=threshold_metrics_entry,
+                                                             context_field='DBotPhishingClassifier')
+    actual_min_accuracy = min(v for k, v in metrics_json['Precision'].items() if k != 'All')
     if store_model:
         y_test_pred = [y_tuple[0] for y_tuple in ft_test_predictions]
         y_test_pred_prob = [y_tuple[1] for y_tuple in ft_test_predictions]
         threshold = float(threshold_metrics_entry['Contents']['threshold'])
-        store_model_in_demisto(model_name, model_override, X, y, confusion_matrix, threshold, y_test_true=y_test,
-                               y_test_pred=y_test_pred, y_test_pred_prob=y_test_pred_prob)
+        store_model_in_demisto(model_name=model_name, model_override=model_override, X=X, y=y,
+                               confusion_matrix=confusion_matrix, threshold=threshold, tokenizer=tokenizer_script,
+                               y_test_true=y_test,
+                               y_test_pred=y_test_pred, y_test_pred_prob=y_test_pred_prob,
+                               target_accuracy=actual_min_accuracy)
         demisto.results("Done training on {} samples model stored successfully".format(len(y)))
     else:
         demisto.results('Skip storing model')
 
 
-if __name__ in ['__builtin__', '__main__']:
+if __name__ in ['builtins', '__main__']:
     main()

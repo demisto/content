@@ -18,12 +18,14 @@ def oproxy_client():
     emails_fetch_limit = 50
     base_url = "https://graph.microsoft.com/v1.0/"
     ok_codes = (200, 201, 202)
+    auth_code = "auth_code"
+    redirect_uri = "redirect_uri"
 
     return MsGraphClient(self_deployed=False, tenant_id='', auth_and_token_url=auth_and_token_url,
                          enc_key=enc_key, app_name=app_name, base_url=base_url, use_ssl=True, proxy=False,
                          ok_codes=ok_codes, refresh_token=refresh_token, mailbox_to_fetch=mailbox_to_fetch,
                          folder_to_fetch=folder_to_fetch, first_fetch_interval=first_fetch_interval,
-                         emails_fetch_limit=emails_fetch_limit)
+                         emails_fetch_limit=emails_fetch_limit, auth_code=auth_code, redirect_uri=redirect_uri)
 
 
 def self_deployed_client():
@@ -36,11 +38,14 @@ def self_deployed_client():
     emails_fetch_limit = 50
     base_url = "https://graph.microsoft.com/v1.0/"
     ok_codes = (200, 201, 202)
+    auth_code = "auth_code"
+    redirect_uri = "redirect_uri"
 
     return MsGraphClient(self_deployed=True, tenant_id=tenant_id, auth_and_token_url=client_id, enc_key=client_secret,
                          base_url=base_url, use_ssl=True, proxy=False, ok_codes=ok_codes, app_name='',
                          refresh_token='', mailbox_to_fetch=mailbox_to_fetch, folder_to_fetch=folder_to_fetch,
-                         first_fetch_interval=first_fetch_interval, emails_fetch_limit=emails_fetch_limit)
+                         first_fetch_interval=first_fetch_interval, emails_fetch_limit=emails_fetch_limit,
+                         auth_code=auth_code, redirect_uri=redirect_uri)
 
 
 @pytest.fixture()

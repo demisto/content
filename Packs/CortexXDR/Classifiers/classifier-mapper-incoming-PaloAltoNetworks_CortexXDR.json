@@ -7,11 +7,39 @@
 	"defaultIncidentType": "",
 	"mapping": {
 		"Cortex XDR Incident": {
-			"dontMapEventToLabels": false,
+			"dontMapEventToLabels": true,
 			"internalMapping": {
 				"XDR Alert Count": {
 					"complex": null,
 					"simple": "alert_count"
+				},
+				"LastMirroredInTime": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "last_mirrored_in",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "TimeStampToDate"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"XDR Modification Time": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "modification_time",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "TimeStampToDate"
+							}
+						]
+					},
+					"simple": ""
 				},
 				"XDR Alerts": {
 					"complex": null,

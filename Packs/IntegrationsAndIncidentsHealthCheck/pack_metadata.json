@@ -2,16 +2,13 @@
     "name": "Integrations & Incidents Health Check",
     "description": "Do you know which of your integrations or open incidents failed? With this content, you can view your failed integrations and open incidents",
     "support": "xsoar",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-09-22T13:16:00Z",
     "categories": [],
-    "tags": [
-        "Failed Integrations",
-        "Failed Incidents"
-    ],
+    "tags": [],
     "useCases": [
         "Health Check"
     ],
@@ -44,6 +41,10 @@
         "MailSenderNew": {
             "mandatory": false,
             "display_name": "Mail Sender (New)"
+        },
+        "Demisto REST API": {
+            "mandatory": true,
+            "display_name": "Demisto REST API"
         }
     }
 }

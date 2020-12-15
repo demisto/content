@@ -2,9 +2,9 @@
     "name": "WootCloud",
     "description": "WootCloud HyperContext Powered Security",
     "support": "partner",
-    "currentVersion": "1.0.0",
-    "author": "Luis Torres, Mohan Ayalasomayajula",
-    "url": "https://wootcloud.com",
+    "currentVersion": "1.0.1",
+    "author": "WootCloud",
+    "url": "https://wootcloud.com/contact/",
     "email": "support@wootcloud.com",
     "created": "2020-06-25T20:34:32Z",
     "categories": [
@@ -13,5 +13,9 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": ["mayalaso", "lm-t"]
+    "githubUser": [
+        "mayalaso",
+        "lm-t"
+    ],
+    "certification": "certified"
 }

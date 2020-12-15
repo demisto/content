@@ -111,9 +111,9 @@ tasks:
     task:
       id: b24f8753-bb48-4a77-8b97-a33ed472cd05
       version: -1
-      name: ExtraHop - Ticket Tracking
+      name: ExtraHop - Ticket Tracking v2
       description: Links the Demisto incident back to the ExtraHop detection that created it for ticket tracking purposes.
-      playbookName: ExtraHop - Ticket Tracking
+      playbookName: ExtraHop - Ticket Tracking v2
       type: playbook
       iscommand: false
       brand: ""

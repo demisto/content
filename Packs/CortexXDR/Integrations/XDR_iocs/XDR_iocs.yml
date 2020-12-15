@@ -33,7 +33,7 @@ configuration:
   options:
   - info
   - low
-  - med
+  - medium
   - high
   required: true
   type: 15
@@ -180,7 +180,7 @@ script:
     description: Disables IOCs in the XDR server.
     execution: false
     name: xdr-iocs-disable
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.6.12176
   feed: true
   isfetch: false
   longRunning: false

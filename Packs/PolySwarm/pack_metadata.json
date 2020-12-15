@@ -2,10 +2,10 @@
     "name": "PolySwarm",
     "description": "Real-time threat intelligence from a crowdsourced network of security experts and antivirus companies.",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "PolySwarm",
     "url": "",
-    "email": "bill.fehr@polyswarm.io",
+    "email": "support@polyswarm.io",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
@@ -15,5 +15,6 @@
     "keywords": [],
     "githubUser": [
         "JavierBotella"
-    ]
+    ],
+    "certification": "certified"
 }

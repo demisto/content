@@ -4,7 +4,7 @@ Handles ticket tracking as well as triggeres specific playbooks based on the nam
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* ExtraHop - Ticket Tracking
+* ExtraHop - Ticket Tracking v2
 * ExtraHop - CVE-2019-0708 (BlueKeep)
 
 ### Integrations

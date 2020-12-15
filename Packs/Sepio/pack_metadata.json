@@ -2,15 +2,14 @@
     "name": "Sepio",
     "description": "Get Agent, Switches and Events from your Sepio Prime",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Sepio",
-    "url": "https://www.sepio.systems/",
-    "email": "info@sepio.systems",
+    "url": "https://sepio.systems/contact-us/",
+    "email": "support@sepio.systems",
     "categories": [
         "Network Security"
     ],
-    "tags": [
-    ],
+    "tags": [],
     "created": "2020-05-12T12:00:00Z",
     "updated": "2020-05-12T12:00:00Z",
     "beta": false,
@@ -20,5 +19,6 @@
     "dependencies": {},
     "githubUser": [
         "SepioSystems"
-    ]
+    ],
+    "certification": "certified"
 }

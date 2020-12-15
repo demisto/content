@@ -1,0 +1,16 @@
+{
+ "name": "FireEye NX - Classifier",
+ "type": "classification",
+ "id": "FireEye NX",
+ "description": "Classifies FireEye NX Incidents.",
+ "keyTypeMap": {
+  "FireEye NX Alert": "FireEye NX Alert",
+  "FireEye NX IPS Event": "FireEye NX IPS Event"
+ },
+ "transformer": {
+  "complex": null,
+  "simple": "incidentType"
+ },
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

@@ -1,29 +1,46 @@
 {
-  "Type": 1,
-  "Contents": [
-    {
-      "url": "www.demisto22.com",
-      "urlClassifications": "MISCELLANEOUS_OR_UNKNOWN",
-      "urlClassificationsWithSecurityAlert": ""
+    "Type": 1,
+    "Contents": [
+        {
+            "url": "www.demisto-news.com",
+            "urlClassifications": "NEWS_AND_MEDIA",
+            "urlClassificationsWithSecurityAlert": ""
+        },
+        {
+            "url": "www.demisto-search.com",
+            "urlClassifications": "WEB_SEARCH",
+            "urlClassificationsWithSecurityAlert": ""
+        }
+    ],
+    "ContentsFormat": "json",
+    "ReadableContentsFormat": "markdown",
+    "HumanReadable": "### Zscaler URL Lookup\n|url|urlClassifications|\n|---|---|\n| www.demisto-news.com | NEWS_AND_MEDIA |\n| www.demisto-search.com | WEB_SEARCH |\n",
+    "EntryContext": {
+        "URL(val.Data && val.Data == obj.Data)": [
+            {
+                "Address": "www.demisto-news.com",
+                "Data": "www.demisto-news.com",
+                "urlClassifications": "NEWS_AND_MEDIA"
+            },
+            {
+                "Address": "www.demisto-search.com",
+                "Data": "www.demisto-search.com",
+                "urlClassifications": "WEB_SEARCH"
+            }
+        ],
+        "DBotScore": [
+            {
+                "Indicator": "www.demisto-news.com",
+                "Score": 1,
+                "Type": "url",
+                "Vendor": "Zscaler"
+            },
+            {
+                "Indicator": "www.demisto-search.com",
+                "Score": 1,
+                "Type": "url",
+                "Vendor": "Zscaler"
+            }
+        ]
     }
-  ],
-  "ContentsFormat": "json",
-  "ReadableContentsFormat": "markdown",
-  "HumanReadable": "### Zscaler URL Lookup\n|url|urlClassifications|\n|---|---|\n| www.demisto22.com | MISCELLANEOUS_OR_UNKNOWN |\n",
-  "EntryContext": {
-    "URL(val.Data && val.Data == obj.Data)":
-      {
-        "Address": "www.demisto22.com",
-        "Data": "www.demisto22.com",
-        "urlClassifications": "MISCELLANEOUS_OR_UNKNOWN"
-      },
-    "DBotScore": [
-      {
-        "Indicator": "www.demisto22.com",
-        "Score": 0,
-        "Type": "url",
-        "Vendor": "Zscaler"
-      }
-    ]
-  }
 }

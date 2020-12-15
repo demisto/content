@@ -62,6 +62,7 @@ def test_checkpoint_delete_host_command(mocker):
     mocked_client.delete_host.return_value = util_load_json('test_data/delete_object.json')
     result = checkpoint_delete_host_command(mocked_client, 'host 1').outputs
     assert result.get('message') == 'OK'
+    assert mocked_client.delete_host.call_args[0][0] == 'host 1'
 
 
 def test_checkpoint_list_groups_command(mocker):

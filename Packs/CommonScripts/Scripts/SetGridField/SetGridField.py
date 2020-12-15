@@ -203,23 +203,26 @@ def build_grid(context_path: str, keys: List[str], columns: List[str], unpack_ne
         # Handle entry context as dict, with unpacking of nested elements
         table = pd.DataFrame(unpack_all_data_from_dict(entry_context_data, keys, columns))
         table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
-        table.columns = table.columns.sort_values()
     elif data_type == 'list':
         # Handle entry context as list of value
         table = pd.DataFrame(entry_context_data)
         table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
-        table.columns = table.columns.sort_values()
     elif isinstance(entry_context_data, list):
         # Handle entry context as list of dicts
         entry_context_data = [filter_dict(item, keys, len(columns)) for item in entry_context_data]
         table = pd.DataFrame(entry_context_data)
         table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
-        table.columns = table.columns.sort_values()
     elif isinstance(entry_context_data, dict):
         # Handle entry context key-value of primitive types option
-        entry_context_data = filter_dict(entry_context_data, keys).items()
-        table = pd.DataFrame(entry_context_data, columns=columns[:2])
-        table.columns = table.columns.sort_values()
+        # If the keys arg is * it means we don't know which keys we have in the context - Will create key-value table.
+        if keys == ['*']:
+            entry_context_data = filter_dict(entry_context_data, keys).items()
+            table = pd.DataFrame(entry_context_data, columns=columns[:2])
+        else:
+            entry_context_data = filter_dict(entry_context_data, keys)
+            table = pd.DataFrame([entry_context_data])
+            table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
+
     else:
         table = []
 
