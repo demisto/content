@@ -3,6 +3,10 @@ commonfields:
   id: MobileIronCLOUD
   version: -1
 configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
 - display: Server URL (ex. https://eu1.mobileiron.com )
   name: url
   required: true
@@ -22,26 +26,22 @@ configuration:
   name: partition_id
   required: false
   type: 0
+- defaultvalue: '30'
+  display: Fetch Interval (in minutes)
+  name: fetch_interval
+  required: true
+  type: 0
+- defaultvalue: '50'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
-  type: 8
-- defaultvalue: '30'
-  display: Fetch Interval (in minutes)
-  name: fetch_interval
-  required: true
-  type: 0
-- defaultvalue: '1000'
-  display: Maximum number of incidents per fetch
-  name: max_fetch
-  required: false
-  type: 0
-- display: Fetch incidents
-  name: isFetch
   required: false
   type: 8
 description: MobileIron CLOUD Integration

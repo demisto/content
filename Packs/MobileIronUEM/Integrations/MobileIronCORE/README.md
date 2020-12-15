@@ -40,17 +40,6 @@ This command is used to send a message to the particular device based on device 
 | message_type | Send Message Mode. Possible values are: pns, sms, email. | Required | 
 
 
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### mobileiron-core-update-os
 ***
 This command is used to update OS to the particular device based on device id
@@ -64,16 +53,6 @@ This command is used to update OS to the particular device based on device id
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_id | This argument fetch the device id for mobileiron update os command. | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -92,17 +71,6 @@ This command is used to unlock device to the particular device based on device i
 | device_id | This argument fetch the device id for mobileiron unlock device only command. | Required | 
 
 
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### mobileiron-core-enable-voice-roaming
 ***
 This command is used to enable voice roaming to the particular device based on device id
@@ -116,17 +84,6 @@ This command is used to enable voice roaming to the particular device based on d
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_id | This argument fetch the device id for mobileiron enable voice roaming command. | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### mobileiron-core-disable-voice-roaming
@@ -144,17 +101,6 @@ This command is used to disable voice roaming to the particular device based on 
 | device_id | This argument fetch the device id for mobileiron disable voice roaming command. | Required | 
 
 
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### mobileiron-core-enable-data-roaming
 ***
 This command is used to enable data roaming to the particular device based on device id
@@ -168,17 +114,6 @@ This command is used to enable data roaming to the particular device based on de
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_id | This argument fetch the device id for mobileiron enable data roaming command. | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### mobileiron-core-disable-data-roaming
@@ -196,17 +131,6 @@ This command is used to disable data roaming to the particular device based on d
 | device_id | This argument fetch the device id for mobileiron disable data roaming command. | Required | 
 
 
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### mobileiron-core-enable-personal-hotspot
 ***
 This command is used to enable personal hotspot to the particular device based on device id
@@ -220,17 +144,6 @@ This command is used to enable personal hotspot to the particular device based o
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_id | This argument fetch the device id for mobileiron enable personal hotspot command. | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### mobileiron-core-disable-personal-hotspot
@@ -248,17 +161,6 @@ This command is used to disable personal hotspot to the particular device based 
 | device_id | This argument fetch the device id for mobileiron disable personal hotspot command. | Required | 
 
 
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### mobileiron-core-unlock-app-connect-container
 ***
 This command is used to unlock app connect container to the particular device based on device id
@@ -272,17 +174,6 @@ This command is used to unlock app connect container to the particular device ba
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_id | This argument fetch the device id for mobileiron unlock app connect container command. | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### mobileiron-core-retire-device
@@ -300,17 +191,6 @@ This command is used to retire device to the particular device based on device i
 | device_id | This argument fetch the device id for mobileiron retire device command. | Required | 
 
 
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### mobileiron-core-wipe-device
 ***
 This command is used to wipe device to the particular device based on device id
@@ -324,17 +204,6 @@ This command is used to wipe device to the particular device based on device id
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_id | device id pointing to the device to execute the command on. | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### mobileiron-core-force-checkin
@@ -352,21 +221,9 @@ This command is used to force checkin to the particular device based on device i
 | device_id | This argument fetch the device id for mobileiron force checkin command. | Required | 
 
 
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### mobileiron-core-get-devices-data
 ***
 This command is used to get a list of devices matching the provided query
-
 
 #### Base Command
 
@@ -459,7 +316,6 @@ This command is used to get a list of devices matching the provided query
 }
 ```
 
-#### Human Readable Output
 
 ### mobileiron-core-get-device-by-uuid
 ***
@@ -554,12 +410,9 @@ This command is used to get a single device based on the device uuid
 }
 ```
 
-#### Human Readable Output
-
 ### mobileiron-core-get-device-by-serial
 ***
 This command is used to get a single device based on the device serial number
-
 
 #### Base Command
 
@@ -650,10 +503,6 @@ This command is used to get a single device based on the device serial number
 }
 ```
 
-#### Human Readable Output
-
-
-
 ### mobileiron-core-get-device-by-mac
 ***
 This command is used to get a single device based on the device wifi mac address
@@ -662,6 +511,7 @@ This command is used to get a single device based on the device wifi mac address
 #### Base Command
 
 `mobileiron-core-get-device-by-mac`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -748,14 +598,9 @@ This command is used to get a single device based on the device wifi mac address
 }
 ```
 
-#### Human Readable Output
-
-
-
 ### mobileiron-core-get-device-by-ip
 ***
 This command is used to get a single device based on the device ip
-
 
 #### Base Command
 

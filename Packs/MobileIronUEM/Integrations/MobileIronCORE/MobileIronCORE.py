@@ -281,7 +281,7 @@ def execute_test_module_command(client: MobileIronCoreClient):
         :rtype: string.
     """
     response = client.ping()
-    if response and (response["results"]):
+    if response and response.get('results'):
         return 'ok'
 
 
@@ -305,7 +305,7 @@ def execute_fetch_incidents_command(client):
     if should_run:
         admin_space_id = params.get('admin_space_id')
         incident_type = params.get('incidentType')
-        max_fetch = int(params.get('max_fetch'))
+        max_fetch = min(int(params.get('max_fetch')), 200)
         incidents = fetch_incidents(client=client, admin_space_id=admin_space_id, incident_type=incident_type,
                                     max_fetch=max_fetch)
         demisto.incidents(incidents)
@@ -442,7 +442,7 @@ def execute_get_devices_data_command(client: MobileIronCoreClient, query: str) -
     """
     params = demisto.params()
     args = demisto.args()
-    max_fetch = args.get('max_fetch')
+    max_fetch = min(int(params.get('max_fetch', 50)), 200)
     max_fetch = int(args.get('max_fetch')) if max_fetch else None
     additional_fields = args.get('additional_fields')
     if additional_fields:

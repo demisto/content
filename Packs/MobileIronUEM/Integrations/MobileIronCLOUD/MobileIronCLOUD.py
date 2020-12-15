@@ -236,12 +236,12 @@ def resolve_device_incident_severity(device: Dict[str, Any]) -> Tuple[str, int]:
 
     """
 
-    if device['jailbroken']:
+    if device.get('jailbroken'):
         return 'Jailbroken device', SEVERITY_CRITICAL
-    if not device['complianceState']:
+    if not device.get('complianceState'):
         message = compose_non_compliance_message(device)
         return message, SEVERITY_HIGH
-    if device['quarantined']:
+    if device.get('quarantined'):
         return 'Quarantined device', SEVERITY_LOW
 
     raise ValueError('Unable to determine severity. The device does not contain any fields which indicate an issue')
@@ -443,7 +443,7 @@ def execute_fetch_incidents_command(client):
 
     params = demisto.params()
     fetch_interval = int(params.get('fetch_interval'))
-    max_fetch = int(params.get('max_fetch'))
+    max_fetch = min(int(params.get('max_fetch')), 200)
 
     should_run = should_run_fetch_incidents(last_run, datetime_now, fetch_interval)
 
@@ -454,8 +454,6 @@ def execute_fetch_incidents_command(client):
                                     max_fetch=max_fetch)
         demisto.incidents(incidents)
         demisto.setLastRun({'time': datetime_now_iso})
-    else:
-        demisto.incidents([])
 
 
 '''MAIN FUNCTION'''

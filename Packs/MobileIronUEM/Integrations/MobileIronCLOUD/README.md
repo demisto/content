@@ -334,17 +334,8 @@ This command is used to send an unlock action to the device
 | device_id | The MobileIron Device Id. | Optional | 
 
 
-#### Context Output
-
-There is no context output for this command.
-
 #### Command Example
 ```!mobileiron-cloud-unlock-device device_id=1100646```
-
-#### Context Example
-```json
-{}
-```
 
 #### Human Readable Output
 
@@ -365,15 +356,6 @@ This command is used to send an retire action to the device
 | device_id | The MobileIron Device Id. | Optional | 
 
 
-#### Context Output
-
-There is no context output for this command.
-
-#### Context Example
-```json
-{}
-```
-
 #### Human Readable Output
 
 >Action was performed successfully
@@ -392,15 +374,6 @@ This command is used to send a wipe action to the device. This is a potentially 
 | --- | --- | --- |
 | device_id | The MobileIron Device Id. | Optional | 
 
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Context Example
-```json
-{}
-```
 
 #### Human Readable Output
 
@@ -421,15 +394,6 @@ This command is used to force checkin to the particular device based on device i
 | --- | --- | --- |
 | device_id | The MobileIron Device Id. | Optional | 
 
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Context Example
-```json
-{}
-```
 
 #### Human Readable Output
 
@@ -453,15 +417,6 @@ This command is used to send an message to the device
 | subject | Provide Subject for email (only used in case email should be sent). | Optional | 
 | message | Provide the message to be sent. | Required | 
 
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Context Example
-```json
-{}
-```
 
 #### Human Readable Output
 

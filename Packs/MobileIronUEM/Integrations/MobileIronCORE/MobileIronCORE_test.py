@@ -79,6 +79,16 @@ class TestClientGetDevicesData:
         assert len(response) == 3
 
 
+def test_execute_test_module_command(client, requests_mock):
+    from MobileIronCORE import execute_test_module_command
+
+    mock_response = util_load_json('test_data/ping.json')
+    requests_mock.get(f'{MOCK_URL}/api/v2/ping', json=mock_response)
+
+    result = execute_test_module_command(client)
+    assert result is 'ok'
+
+
 def test_execute_get_devices_data_command(mocker):
     """it will call the client with the correct attributes"""
 
