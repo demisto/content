@@ -2,7 +2,7 @@
     "name": "SafeBreach - Breach and Attack Simulation platform",
     "description": "SafeBreach automates validation and remediation of your security controls to ensure you detect and prevent known indicators of compromise (IOCs).",
     "support": "partner",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.1.3",
     "author": "SafeBreach",
     "url": "https://www.safebreach.com",
     "email": "support@safebreach.com",
