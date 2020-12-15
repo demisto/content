@@ -687,7 +687,7 @@ def url_quota_command():
 
     human_readable = {
         'Unique Provisioned URLs': response.get('uniqueUrlsProvisioned'),
-        'Remaining URLs Quota': response.get('remainingUrlsQuota')
+        'Remaining URLs Quota': response.get('remainingUrlsQuota'),
     }
     entry = {
         'Type': entryTypes['note'],
@@ -695,7 +695,7 @@ def url_quota_command():
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown("Quota Information", human_readable),
-        'EntryContext': {'Zscaler.Quota': response}
+        'EntryContext': {'Zscaler.Quota': response},
     }
     return entry
 
