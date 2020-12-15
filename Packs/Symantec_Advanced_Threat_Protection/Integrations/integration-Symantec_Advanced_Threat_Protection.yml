@@ -383,7 +383,6 @@ script:
             startTime = n.toISOString();
         }
         var p = {verb: 'query'};
-        add(p, 'where', query);
         addTime(p, 'start_time', startTime);
         addTime(p, 'end_time', endTime);
         add(p, 'next', next);
