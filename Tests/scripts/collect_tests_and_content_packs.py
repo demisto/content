@@ -123,13 +123,8 @@ sys.path.append(CONTENT_DIR)
 
 # Global used to indicate if failed during any of the validation states
 _FAILED = False
-AMI_BUILDS = {}
 ID_SET = {}
 CONF: Union[TestConf, dict] = {}
-if os.path.isfile('./Tests/ami_builds.json'):
-    with open('./Tests/ami_builds.json', 'r') as ami_builds_file:
-        # get versions to check if tests are runnable on those envs
-        AMI_BUILDS = json.load(ami_builds_file)
 
 if os.path.isfile('./Tests/id_set.json'):
     with open('./Tests/id_set.json', 'r') as conf_file:
@@ -1047,7 +1042,8 @@ def is_documentation_changes_only(files_string: str) -> bool:
         return False
 
 
-def get_test_list_and_content_packs_to_install(files_string, branch_name, minimum_server_version='0',
+def get_test_list_and_content_packs_to_install(files_string,
+                                               branch_name,
                                                conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
     """Create a test list that should run"""
@@ -1193,41 +1189,29 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
     return min_from_version.vstring, max_to_version.vstring
 
 
-def create_filter_envs_file(from_version: str, to_version: str, two_before_ga: str = None, one_before_ga: str = None,
-                            ga: str = None, documentation_changes_only: bool = False):
+def create_filter_envs_file(from_version: str, to_version: str, documentation_changes_only: bool = False):
     """
     Create a file containing all the envs we need to run for the CI
     Args:
         from_version: Server from_version
         to_version: Server to_version
-        two_before_ga: Server version two_before_ga
-        one_before_ga: Server version one_before_ga (5.0)
-        ga: Server Version ga (6.0)
         documentation_changes_only: If the build is for documentations changes only - no need to create instances.
 
     """
-    # always run master and PreGA
-    one_before_ga = one_before_ga or AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
-    ga = ga or AMI_BUILDS.get('GA', '0').split('-')[0]
-    """
-    The environment naming is being phased out due to it being difficult to follow. In this case,
-    Demisto 6.0 is the GA, Demisto PreGA is (5.5), Demisto GA is one before GA (5.0), Demisto one
-    before GA is two before GA (4.5)
-    """
     envs_to_test = {
-        'Demisto PreGA': True,
-        'Demisto Marketplace': True,
-        'Demisto GA': is_runnable_in_server_version(from_version, one_before_ga, to_version),
-        'Demisto 6.0': is_runnable_in_server_version(from_version, ga, to_version),
+        'Server 5.5': is_runnable_in_server_version(from_version, '5.5', to_version),
+        'Server Master': True,
+        'Server 5.0': is_runnable_in_server_version(from_version, '5.0', to_version),
+        'Server 6.0': is_runnable_in_server_version(from_version, '6.0', to_version),
     }
 
     if documentation_changes_only:
         # No need to create the instances.
         envs_to_test = {
-            'Demisto PreGA': False,
-            'Demisto Marketplace': False,
-            'Demisto GA': False,
-            'Demisto 6.0': False,
+            'Server 5.5': False,
+            'Server Master': False,
+            'Server 5.0': False,
+            'Server 6.0': False,
         }
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
     with open("./Tests/filter_envs.json", "w") as filter_envs_file:
@@ -1280,10 +1264,8 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
             last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
         logging.debug(f'Files string: {files_string}')
-        minimum_server_version = AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
 
-        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
-                                                                             minimum_server_version)
+        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name)
 
     tests_string = '\n'.join(tests)
     packs_to_install_string = '\n'.join(packs_to_install)
@@ -1297,8 +1279,10 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
         with open("./Tests/content_packs_to_install.txt", "w") as content_packs_to_install:
             content_packs_to_install.write(packs_to_install_string)
 
-    if not is_nightly:
-        # No need to print all content packs and all tests in nightly
+    if is_nightly:
+        logging.debug('Collected the following tests:\n{0}\n'.format(tests_string))
+
+    else:
         if tests_string:
             logging.success('Collected the following tests:\n{0}\n'.format(tests_string))
         else:
