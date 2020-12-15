@@ -119,8 +119,8 @@ args:
   name: threshold
   required: false
   secret: false
-comment: An out-of-the-box deduplication preprocessing script based on a machine learning
-  algorithm.
+deprecated: true
+comment: Deprecated. Use the FindDuplicatePhishingIncidents script instead.
 commonfields:
   id: PhishingDedupPreprocessingRule
   version: -1
