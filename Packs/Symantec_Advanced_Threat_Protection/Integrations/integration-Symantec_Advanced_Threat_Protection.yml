@@ -382,7 +382,6 @@ script:
             n.setTime(now.getTime() - 1 * DAY_IN_MILLIS);
             startTime = n.toISOString();
         }
-        var p = {verb: 'query'};
         addTime(p, 'start_time', startTime);
         addTime(p, 'end_time', endTime);
         add(p, 'next', next);
