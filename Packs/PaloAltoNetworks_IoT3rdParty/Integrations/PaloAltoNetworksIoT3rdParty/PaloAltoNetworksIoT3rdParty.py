@@ -299,7 +299,7 @@ def get_single_asset():
 
     data = http_request('GET', url, params)
 
-    if asset_type == 'alert' or asset_type == 'vulnerability':
+    if asset_type in ['alert', 'vulnerability']:
         data = data.get('items')
     msg = f'Successfully pulled {asset_type} ({asset_id}) from PANW IoT Cloud'
 
