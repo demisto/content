@@ -679,7 +679,7 @@ def list_firewalls_command(args):
         'AWS-NetworkFirewall.Firewalls(val.FirewallArn === obj.FirewallArn)': response.get('Firewalls')}
     del response['ResponseMetadata']
     table_header = 'AWS Network Firewall ListFirewalls'
-    human_readable = tableToMarkdown(table_header, response)
+    human_readable = aws_table_to_markdown(response, table_header)
     return human_readable, outputs, response
 
 
