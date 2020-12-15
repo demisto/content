@@ -469,7 +469,7 @@ def test_remove_empty_elements():
             "TestKey": "TestValue"
         }
     }, '''### AWS DynamoDB DescribeBackup\n|Baz|Foo|TestKey|\n|---|---|---|\n| Bang | Bar | TestValue |\n'''),
-    ('Empty Results', {'key': []}, ' ###Empty Results \n**No entries.**\n')
+    ('Empty Results', {'key': []}, ' ### Empty Results \n**No entries.**\n')
 ])
 def test_aws_table_to_markdown(header, raw_input, expected_output):
     """
