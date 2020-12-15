@@ -9,7 +9,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 SERVER_URL = 'https://www.bitcoinabuse.com/api/'
-FEED_ENDPOINT_PREFIX = 'download/1d'
+FEED_ENDPOINT_PREFIX = 'download/30d'
 abuse_type_name_to_id: Dict[str, int] = {
     'ransomware': 1,
     'darknet market': 2,
@@ -104,10 +104,9 @@ def _build_fetch_indicators_params(demisto_params: Dict) -> Dict:
     """
     params = {k: v for k, v in demisto_params.items() if v is not None}
 
-    fetch_interval = params.get('fetchInterval')
     api_key = demisto_params.get('api_key', '')
 
-    url = f'{SERVER_URL}{FEED_ENDPOINT_PREFIX}{fetch_interval}?api_token={api_key}'
+    url = f'{SERVER_URL}{FEED_ENDPOINT_PREFIX}?api_token={api_key}'
 
     feed_url_to_config = {
         url: {
@@ -115,11 +114,11 @@ def _build_fetch_indicators_params(demisto_params: Dict) -> Dict:
                            'description', 'from_country', 'from_country_code', 'created_at'],
             'indicator_type': 'Cryptocurrency Address',
             'mapping': {
-                'address': 'value',
-                'from_country': 'Country Name',
-                'created_at': 'Creation Date',
-                'description': 'Bitcoin Abuse Description',
-                'abuse_type': 'todo '  # TODO TOM
+                'Value': ('address', None, 'bitcoin-{}'),
+                'Country Name': 'from_country',
+                'Creation Date': 'created_at',
+                'Bitcoin Abuse Description': 'description',
+                'todo': 'abuse_type'  # TODO TOM
             }
         }
     }
