@@ -28,7 +28,7 @@ script:
     function setLock(guid, info) {
         var integrationContext = getIntegrationContext() || {};
         integrationContext[lockName] = {guid: guid, info: info};
-        setIntegrationContext(integrationContext);
+        setIntegrationContext(integrationContext, true);
     }
 
     function getLock() {
@@ -83,14 +83,14 @@ script:
         case 'demisto-lock-release':
             integrationContext = getIntegrationContext();
             integrationContext[lockName] = {};
-            setIntegrationContext(integrationContext);
+            setIntegrationContext(integrationContext, true);
 
             var md = '### Demisto Locking Mechanism\n';
             md += 'Lock released successfully';
             return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
 
         case 'demisto-lock-release-all':
-            setIntegrationContext({});
+            setIntegrationContext({}, true);
 
             var md = '### Demisto Locking Mechanism\n';
             md += 'All locks released successfully';
