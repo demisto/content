@@ -303,7 +303,7 @@ def postid_reputation_command(client: SixgillEnrichClient, args) -> List[Command
 def main():
     SESSION.proxies = handle_proxy()
 
-    enrich_client = SixgillEnrichClient(
+    client = SixgillEnrichClient(
         demisto.params()["client_id"], demisto.params()["client_secret"], CHANNEL_CODE, demisto, SESSION, VERIFY
     )
 
@@ -314,17 +314,17 @@ def main():
     }
     try:
         if demisto.command() == "ip":
-            return_results(ip_reputation_command(enrich_client, demisto.args()))
+            return_results(ip_reputation_command(client, demisto.args()))
         elif demisto.command() == "domain":
-            return_results(domain_reputation_command(enrich_client, demisto.args()))
+            return_results(domain_reputation_command(client, demisto.args()))
         elif demisto.command() == "url":
-            return_results(url_reputation_command(enrich_client, demisto.args()))
+            return_results(url_reputation_command(client, demisto.args()))
         elif demisto.command() == "file":
-            return_results(file_reputation_command(enrich_client, demisto.args()))
+            return_results(file_reputation_command(client, demisto.args()))
         elif demisto.command() == "actor":
-            return_results(actor_reputation_command(enrich_client, demisto.args()))
+            return_results(actor_reputation_command(client, demisto.args()))
         elif demisto.command() == "post_id":
-            return_results(postid_reputation_command(enrich_client, demisto.args()))
+            return_results(postid_reputation_command(client, demisto.args()))
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())
 
