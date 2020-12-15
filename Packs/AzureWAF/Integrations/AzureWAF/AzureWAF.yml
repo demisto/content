@@ -28,23 +28,22 @@ configuration:
   required: false
   type: 8
 description: The Azure WAF (Web Application Firewall) integration provides centralized
-  protection of your web applications from common exploits and vulnerabilities.
+protection of your web applications from common exploits and vulnerabilities. It enables you to control policies that are configured in the Azure Firewall management platform, and allows you to add, delete, or update policies, and also to get details of a specific policy or a list of policies.
 display: Azure Web Application Firewall
 name: Azure Web Application Firewall
 script:
   commands:
   - arguments:
     - default: false
-      description: A name of a policy. Use to retrieve protection policy with specified
-        name within a resource group.  If policy_name not provided, will retrieve
-        all.
+      description: The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve
+      all policies.
       isArray: false
       name: policy_name
       required: false
       secret: false
     - default: false
       description: The name of the resource group. If not provided, the instance's
-        default resource group name will be considered.
+      default resource group name will be used.
       isArray: false
       name: resource_group_name
       required: false
@@ -52,17 +51,17 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Retrieve policy full details.
+      description: 'Whether to retrieve full details of the policy. Possible values are: "true" and "false". Default is "false".'
       isArray: false
       name: verbose
       predefined:
       - 'true'
-      - ' false'
+      - 'false'
       required: false
       secret: false
     - default: false
       defaultValue: '10'
-      description: Number of policies to be fetched.
+      description: Maximum number of policies to fetch. Default is "10".
       isArray: false
       name: limit
       required: false
@@ -82,11 +81,10 @@ script:
       description: Resource type.
       type: String
     - contextPath: AzureWAF.Policy.etag
-      description: A unique read-only string that changes whenever the resource is
-        updated.
+      description: A unique read-only string that changes whenever the resource is updated.
       type: String
     - contextPath: AzureWAF.Policy.tags
-      description: Resource type.
+      description: Resource tag.
       type: String
     - contextPath: AzureWAF.Policy.location
       description: Resource location.
@@ -110,11 +108,10 @@ script:
       description: Maximum file upload size in Mb for WAF.
       type: Number
     - contextPath: AzureWAF.Policy.properties.policySettings.requestBodyCheck
-      description: Whether to allow WAF to check request Body.
+      description: Whether to allow WAF to check the request body.
       type: Boolean
     - contextPath: AzureWAF.Policy.properties.customRules.name
-      description: The name of the resource that is unique within a policy. This name
-        can be used to access the resource.
+      description: The name of the resource that is unique within a policy. This name can be used to access the resource.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.priority
       description: Priority of the rule. Rules with a lower value will be evaluated
@@ -124,28 +121,28 @@ script:
       description: The rule type.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.matchConditions.matchVariables.variableName
-      description: Match Variable.
+      description: Match variable.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.matchConditions.matchVariables.selector
-      description: The selector of match variable.
+      description: The selector of the match variable.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.matchConditions.operator
       description: The operator to be matched.
       type: String
-    - contextPath: AzureWAF.Policy.properties.customRules.matchConditions.negationConditon
-      description: Whether this is negate condition or not.
+    - contextPath: AzureWAF.Policy.properties.customRules.matchConditions.negationCondition
+      description: Whether this is a negate condition.
       type: Boolean
     - contextPath: AzureWAF.Policy.properties.customRules.matchConditions.matchValues
       description: Match value.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.action
-      description: Type of Actions.
+      description: Type of actions.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.managedRuleSets.ruleSetType
-      description: Defines the rule set type to use.
+      description: The rule set type to use.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.managedRuleSets.ruleSetVersion
-      description: Defines the version of the rule set to use.
+      description: The version of the rule set to use.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.managedRuleSets.ruleGroupOverrides.ruleGroupName
       description: The managed rule group to override.
@@ -154,7 +151,7 @@ script:
       description: Identifier for the managed rule.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.managedRuleSets.ruleGroupOverrides.rules.state
-      description: The state of the managed rule. Defaults to Disabled if not specified.
+      description: The state of the managed rule. Defaults to disabled if not specified.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.exclusions.matchVariable
       description: The variable to be excluded.
@@ -164,31 +161,30 @@ script:
         specify which elements in the collection this exclusion applies to.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.exclusions.selector
-      description: When matchVariable is a collection, operator used to specify which
-        elements in the collection this exclusion applies to.
+      description: When matchVariable is a collection, the operator used to specify which elements in the collection this exclusion applies to.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Retrieve policy full details.
+      description: Whether to retrieve the full details of the policy. Possible values are "true" and "false". Default is "false".
       isArray: false
       name: verbose
       predefined:
       - 'true'
-      - ' false'
+      - 'false'
       required: false
       secret: false
     - default: false
       defaultValue: '10'
-      description: Number of policies to be shown. (This will only affect visualised
-        data, not context).
+      description: Maximum number of policies to be shown. (This will only affect visualized
+        data, not context.)
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Retrieve all the WAF policies in a subscription.
+    description: Retrieves all the WAF policies in a subscription.
     execution: false
     name: azure-waf-policy-list-all-in-subscription
     outputs:
@@ -206,7 +202,7 @@ script:
         updated.
       type: String
     - contextPath: AzureWAF.Policy.tags
-      description: Resource type.
+      description: Resource tags.
       type: String
     - contextPath: AzureWAF.Policy.location
       description: Resource location.
@@ -230,11 +226,10 @@ script:
       description: Maximum file upload size in Mb for WAF.
       type: Number
     - contextPath: AzureWAF.Policy.properties.policySettings.requestBodyCheck
-      description: Whether to allow WAF to check request Body.
+      description: Whether to allow WAF to check the request body.
       type: Boolean
     - contextPath: AzureWAF.Policy.properties.customRules.name
-      description: The name of the resource that is unique within a policy. This name
-        can be used to access the resource.
+      description: The name of the resource that is unique within a policy. This name can be used to access the resource.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.priority
       description: Priority of the rule. Rules with a lower value will be evaluated
@@ -244,28 +239,28 @@ script:
       description: The rule type.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.matchConditions.matchVariables.variableName
-      description: Match Variable.
+      description: Match variable.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.matchConditions.matchVariables.selector
-      description: The selector of match variable.
+      description: The selector of the match variable.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.matchConditions.operator
       description: The operator to be matched.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.matchConditions.negationConditon
-      description: Whether this is negate condition or not.
+      description: Whether this is a negate condition.
       type: Boolean
     - contextPath: AzureWAF.Policy.properties.customRules.matchConditions.matchValues
       description: Match value.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.action
-      description: Type of Actions.
+      description: Type of actions.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.managedRuleSets.ruleSetType
-      description: Defines the rule set type to use.
+      description: The rule set type to use.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.managedRuleSets.ruleSetVersion
-      description: Defines the version of the rule set to use.
+      description: The version of the rule set to use.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.managedRuleSets.ruleGroupOverrides.ruleGroupName
       description: The managed rule group to override.
@@ -274,7 +269,7 @@ script:
       description: Identifier for the managed rule.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.managedRuleSets.ruleGroupOverrides.rules.state
-      description: The state of the managed rule. Defaults to Disabled if not specified.
+      description: The state of the managed rule. Defaults to disabled if not specified.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.exclusions.matchVariable
       description: The variable to be excluded.
@@ -284,20 +279,19 @@ script:
         specify which elements in the collection this exclusion applies to.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.exclusions.selector
-      description: When matchVariable is a collection, operator used to specify which
-        elements in the collection this exclusion applies to.
+      description: When matchVariable is a collection, the operator used to specify which elements in the collection this exclusion applies to.
       type: String
   - arguments:
     - default: false
-      description: A name of a policy. Use to retrieve protection policy with specified
-        name within a resource group.
+      description: The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve
+      all policies.
       isArray: false
       name: policy_name
       required: true
       secret: false
     - default: false
-      description: The name of the resource group. Default is same as instance's resource
-        group name.
+      description: The name of the resource group. If not provided, the instance's
+      default resource group name will be used.
       isArray: false
       name: resource_group_name
       required: false
@@ -315,7 +309,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Describes the Resource location.
+      description: Describes the resource location.
       isArray: false
       name: location
       required: false
@@ -327,7 +321,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The PolicySettings for policy.
+      description: The policy setting for the policy.
       isArray: false
       name: policy_settings
       required: false
@@ -335,17 +329,16 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Retrieve policy full details.
+      description: 'Whether to retrieve the full details of the policy. Possible values are: "true" and "false". Default is "false".'
       isArray: false
-      name: verbodse
+      name: verbose
       predefined:
       - 'true'
-      - ' false'
+      - 'false'
       required: false
       secret: false
     deprecated: false
-    description: Creates or update policy with specified rule set name within a resource
-      group.
+    description: Creates or updates a policy with a specified rule set name within a resource group.
     execution: false
     name: azure-waf-policy-upsert
     outputs:
@@ -359,8 +352,7 @@ script:
       description: Resource type.
       type: String
     - contextPath: AzureWAF.Policy.etag
-      description: A unique read-only string that changes whenever the resource is
-        updated.
+      description: A unique read-only string that changes whenever the resource is updated.
       type: String
     - contextPath: AzureWAF.Policy.tags
       description: Resource type.
@@ -387,36 +379,34 @@ script:
       description: Maximum file upload size in Mb for WAF.
       type: Number
     - contextPath: AzureWAF.Policy.properties.policySettings.requestBodyCheck
-      description: Whether to allow WAF to check request Body.
+      description: Whether to allow WAF to check the request body.
       type: Boolean
     - contextPath: AzureWAF.Policy.properties.customRules.name
-      description: The name of the resource that is unique within a policy. This name
-        can be used to access the resource.
+      description: The name of the resource that is unique within a policy. This name can be used to access the resource.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.priority
-      description: Priority of the rule. Rules with a lower value will be evaluated
-        before rules with a higher value.
+      description: Priority of the rule. Rules with a lower value will be evaluated before rules with a higher value.
       type: Number
     - contextPath: AzureWAF.Policy.properties.customRules.ruleType
       description: The rule type.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.matchConditions.matchVariables.variableName
-      description: Match Variable.
+      description: Match variable.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.matchConditions.matchVariables.selector
-      description: The selector of match variable.
+      description: The selector of the match variable.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.matchConditions.operator
       description: The operator to be matched.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.matchConditions.negationConditon
-      description: Whether this is negate condition or not.
+      description: Whether this is a negate condition.
       type: Boolean
     - contextPath: AzureWAF.Policy.properties.customRules.matchConditions.matchValues
       description: Match value.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.action
-      description: Type of Actions.
+      description: Type of actions.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.managedRuleSets.ruleSetType
       description: Defines the rule set type to use.
@@ -431,41 +421,39 @@ script:
       description: Identifier for the managed rule.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.managedRuleSets.ruleGroupOverrides.rules.state
-      description: The state of the managed rule. Defaults to Disabled if not specified.
+      description: The state of the managed rule. Defaults to disabled if not specified.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.exclusions.matchVariable
       description: The variable to be excluded.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.exclusions.selectorMatchOperator
-      description: When matchVariable is a collection, operate on the selector to
-        specify which elements in the collection this exclusion applies to.
+      description: When matchVariable is a collection, operate on the selector to specify which elements in the collection this exclusion applies to.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.exclusions.selector
-      description: When matchVariable is a collection, operator used to specify which
-        elements in the collection this exclusion applies to.
+      description: When matchVariable is a collection, the operator used to specify which elements in the collection this exclusion applies to.
       type: String
   - arguments:
     - default: false
-      description: A name of a policy.
+      description: The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve
+      all policies.
       isArray: false
       name: policy_name
       required: true
       secret: false
     - default: false
-      description: The name of the resource group. Default is same as instance's resource
-        group name.
+      description: The name of the resource group. If not provided, the instance's
+      default resource group name will be used.
       isArray: false
       name: resource_group_name
       required: false
       secret: false
     deprecated: false
-    description: Deletes Policy.
+    description: Deletes a policy.
     execution: false
     name: azure-waf-policy-delete
   - deprecated: false
     description: |-
-      Run this command to start the autorization process and follow the
-            instructions in the command results.
+      Run this command to start the authorization process and follow the instructions in the command results.
     execution: false
     name: azure-waf-auth-start
   - deprecated: false
@@ -475,7 +463,7 @@ script:
     execution: false
     name: azure-waf-auth-complete
   - deprecated: false
-    description: Tests connectivity to Azure Web Application Firewall.
+    description: Tests connectivity to the Azure Web Application Firewall.
     execution: false
     name: azure-waf-test
   dockerimage: demisto/crypto:1.0.0.14297
