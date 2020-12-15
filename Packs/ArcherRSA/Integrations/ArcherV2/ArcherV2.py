@@ -242,7 +242,7 @@ def get_occurred_time(fields: Union[List[dict], dict], field_id: str) -> str:
             for field in fields:
                 if str(field['@id']) == field_id:  # In a rare case @id is an integer
                     return str(field['@xmlConvertedValue'])
-        raise KeyError  # No xmlConvertedValue
+        raise KeyError('Could not find @xmlConvertedValue in record.')  # No xmlConvertedValue
     except KeyError as exc:
         raise DemistoException(
             f'Could not find the property @xmlConvertedValue in field id {field_id}. Is that a date field?'
@@ -400,8 +400,12 @@ class Client(BaseClient):
         labels = []
         raw_record = record_item['raw']
         record_item = record_item['record']
-        occurred_time = get_occurred_time(raw_record['Field'], fetch_param_id)
-
+        try:
+            occurred_time = get_occurred_time(raw_record['Field'], fetch_param_id)
+        except KeyError as exc:
+            raise DemistoException(
+                f'Could not find occurred time in record {record_item.get("Id")=}'
+            ) from exc
         # Will convert value to strs
         for k, v in record_item.items():
             if isinstance(v, str):
@@ -544,8 +548,11 @@ class Client(BaseClient):
         """
         fields, _ = self.get_application_fields(app_id)
         for field in fields:
-            if field_name == field['FieldName']:
-                return str(field['FieldId'])
+            if field_name == field.get('FieldName'):
+                try:
+                    return str(field['FieldId'])
+                except KeyError:
+                    raise DemistoException(f'Could not find FieldId for {field_name=}')
         raise DemistoException(f'Could not find field ID {field_name}')
 
     def get_application_fields(self, app_id: str) -> Tuple[list, list]:
@@ -1136,23 +1143,23 @@ def fetch_incidents(
         date_operator='GreaterThan',
         max_results=max_results
     )
-
+    demisto.debug(f'Found {len(records)=}.')
     # Build incidents
     incidents = list()
-    next_fetch = from_time
+    # Encountered that sometimes, somehow, on of next_fetch is not UTC.
+    next_fetch = from_time.replace(tzinfo=timezone.utc)
     for record in records:
         incident, incident_created_time = client.record_to_incident(record, app_id, fetch_param_id)
-        # Encountered that sometimes, somehow, on of next_fetch/incident_created_time are not UTC.
-        next_fetch = next_fetch.replace(tzinfo=timezone.utc)
+        # Encountered that sometimes, somehow, incident_created_time is not UTC.
         incident_created_time = incident_created_time.replace(tzinfo=timezone.utc)
-        if incident_created_time >= next_fetch:
+        if next_fetch <= incident_created_time:
             next_fetch = incident_created_time
         else:
             demisto.debug(
                 f'The newly fetched incident is older than last fetch. {incident_created_time=} {next_fetch=}'
             )
         incidents.append(incident)
-
+    demisto.debug(f'Going out fetch incidents with {next_fetch=}, {len(incidents)=}')
     return incidents, next_fetch
 
 
@@ -1185,11 +1192,12 @@ def get_fetch_param_id(client: Client, last_run: dict, app_id: str, app_date_fie
     Returns:
         ID of the field
     """
-    if last_run.get(FETCH_PARAM_ID_KEY):  # If exists
-        fetch_param_id = last_run.get(FETCH_PARAM_ID_KEY)
-    else:  # If not, search for it
+    try:  # If exists
+        fetch_param_id = last_run[FETCH_PARAM_ID_KEY]
+    except KeyError:  # If not, search for it
         fetch_param_id = client.get_field_id(app_id, app_date_field)
-    return str(fetch_param_id)
+    demisto.debug(f'Found a field ID {fetch_param_id=}')
+    return fetch_param_id
 
 
 def fetch_incidents_command(client: Client, params: dict, last_run: dict) -> Tuple[list, datetime]:
@@ -1203,6 +1211,7 @@ def fetch_incidents_command(client: Client, params: dict, last_run: dict) -> Tup
     """
     from_time = get_fetch_time(last_run, params.get('fetch_time', '3 days'))
     fetch_param_id = last_run[FETCH_PARAM_ID_KEY]
+    demisto.debug(f'Starting fetch incidents with {from_time=} and {fetch_param_id=}')
     return fetch_incidents(
         client=client,
         params=params,
