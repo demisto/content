@@ -1429,28 +1429,29 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], sync_owne
             #              f' on remote ID [{remote_incident_id}]')
 
             # handle ownership change
-            if 'owner' in delta:
+            if sync_owners and 'owner' in delta:
                 owner_email: Optional[str] = None
                 owner_user = delta.get('owner')
                 if owner_user:
                     user_info = demisto.findUser(username=owner_user)
                     if user_info and isinstance(user_info, dict) and 'email' in user_info:
                         owner_email = user_info.get('email')
-                if owner_email:
-                    client.update_issue(
-                        issue_id=remote_incident_id,
-                        update_type='Assignee',
-                        value=owner_email
-                    )
-                    # demisto.debug(f'DEBUGDEBUG update-remote-system set owner to {owner_email}'
-                    #               f' on remote ID [{remote_incident_id}]')
-                else:
-                    # demisto.debug(f'DEBUGDEBUG update-remote-system removing owner on remote ID [{remote_incident_id}]')
+                    if owner_email:  # change the owner in Expanse only if the XSOAR user has a valid email
+                        client.update_issue(
+                            issue_id=remote_incident_id,
+                            update_type='Assignee',
+                            value=owner_email
+                        )
+                        # demisto.debug(f'DEBUGDEBUG update-remote-system set owner to {owner_email}'
+                        #               f' on remote ID [{remote_incident_id}]')
+                else:  # change to unassigned
                     client.update_issue(
                         issue_id=remote_incident_id,
                         update_type='Assignee',
                         value='Unassigned'
                     )
+                    # demisto.debug(f'DEBUGDEBUG update-remote-system set owner to Unassigned'
+                    #               f' on remote ID [{remote_incident_id}]')
 
             # handle severity
             if 'severity' in delta and delta['severity'] in SEVERITY_PRIORITY_MAP:
@@ -1464,10 +1465,12 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], sync_owne
             if remote_args.inc_status == 2:
                 close_reason = remote_args.data.get('closeReason', None)
                 close_notes = remote_args.data.get('closeNotes', None)
+                close_reason_comment: str = f'XSOAR Incident Close Reason: {close_reason}\n' if close_reason else ''
+                close_notes_comment: str = f'XSOAR Incident Close Notes: {close_notes}\n' if close_notes else ''
                 client.update_issue(
                     issue_id=remote_incident_id,
                     update_type='Comment',
-                    value=f'Issue closed in XSOAR with reason: {close_reason}\nNotes: {close_notes}'
+                    value=f'Issue closed in Cortex XSOAR.\n{close_reason_comment}{close_notes_comment}'
                 )
                 client.update_issue(
                     issue_id=remote_incident_id,
@@ -1477,7 +1480,8 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], sync_owne
 
             #     demisto.debug(f'DEBUGDEBUG update-remote-system closing remote ID [{remote_incident_id}]'
             #                   f'with close reason {close_reason} and close_notes {close_notes}')
-            # # handle Progress Status change
+
+            # handle Progress Status change
             elif 'expanseprogressstatus' in delta and delta['expanseprogressstatus'] in ISSUE_PROGRESS_STATUS:
                 client.update_issue(
                     issue_id=remote_incident_id,
@@ -2199,9 +2203,13 @@ def main() -> None:
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
+        #  To be compatible with 6.1
+        elif demisto.command() == "get-modified-remote-data":
+            raise DemistoException('get-modified-remote-data not implemented')
+
         elif demisto.command() == "get-remote-data":
             sync_owners = argToBoolean(demisto.params().get('sync_owners'))
-            # XXX: forced to be disabled to reduce API calls in the backend.
+            # XXX: mirror_details forced to be disabled to reduce API calls in the backend.
             # Will be reviewed in next versions to use XSOAR 6.1 mirroring enhancements.
             mirror_details = False
             # mirror_details = argToBoolean(demisto.params().get('mirror_details'))
