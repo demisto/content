@@ -12,15 +12,6 @@ args:
   name: files
   required: false
   secret: false
-- default: true
-  defaultValue: 60 days
-  description: 'The time to query back for related incidents. Default is 60 days.
-    Note that a large number might lead to performance issues. Input format: <number>
-    <time unit>, e.g., 2 months, 45 days.'
-  isArray: false
-  name: query_time
-  required: false
-  secret: false
 comment: |-
   Preprocessing script for email communication layout.
   This script checks if the incoming email contains an Incident ID to link the mail to an existing incident, and tags the email as "email-thread".
