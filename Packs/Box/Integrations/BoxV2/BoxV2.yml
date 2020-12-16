@@ -12,7 +12,7 @@ configuration:
   name: credentials_json
   required: true
   type: 12
-- display: As User for Fetching Incidents
+- display: User ID for Fetching Incidents
   hidden: false
   name: as_user
   required: false
@@ -116,7 +116,7 @@ configuration:
   required: false
   type: 16
 - additionalinfo: When the as-user argument is not provided, the command will be executed
-    with this user.
+    using this user ID.
   display: Default User
   hidden: false
   name: default_user
@@ -124,6 +124,7 @@ configuration:
   type: 0
 - additionalinfo: Please note, if more than one user exists for the email address,
     this will cause commands to fail.
+  defaultvalue: 'true'
   display: Auto-detect user IDs based on their email address.
   hidden: false
   name: search_user_id
@@ -2742,14 +2743,14 @@ script:
     name: box-delete-user
   - arguments:
     - default: false
-      description: "The user who is performing the action."
+      description: The user who is performing the action.
       isArray: false
       name: as_user
       required: false
       secret: false
     - auto: PREDEFINED
-      description: "The type of stream to retrieve."
       default: false
+      description: The type of stream to retrieve.
       isArray: false
       name: stream_type
       predefined:
@@ -2759,7 +2760,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: "The maximum amount of events to return."
+      description: The maximum amount of events to return.
       isArray: false
       name: limit
       required: false
@@ -2770,50 +2771,52 @@ script:
     name: box-list-user-events
     outputs:
     - contextPath: Box.Events.type
-      description: 'The type of the event.'
+      description: The type of the event.
       type: String
     - contextPath: Box.Events.event_id
-      description: 'The ID of the event object. You can use this to detect duplicate events.'
+      description: The ID of the event object. You can use this to detect duplicate
+        events.
       type: String
     - contextPath: Box.Events.created_by.type
-      description: 'Value is always user.'
+      description: Value is always user.
       type: String
     - contextPath: Box.Events.created_by.id
-      description: 'The unique identifier for this user.'
+      description: The unique identifier for this user.
       type: Date
     - contextPath: Box.Events.created_by.name
-      description: 'The display name of this user.'
+      description: The display name of this user.
       type: String
     - contextPath: Box.Events.created_by.login
-      description: 'The primary email address of this user.'
+      description: The primary email address of this user.
       type: String
     - contextPath: Box.Events.created_at
-      description: 'Time which the event was created.'
+      description: Time which the event was created.
       type: Date
     - contextPath: Box.Events.recorded_at
-      description: 'Time which the event was recorded.'
+      description: Time which the event was recorded.
       type: Date
     - contextPath: Box.Events.event_type
-      description: 'The event type that triggered this event.'
+      description: The event type that triggered this event.
       type: String
     - contextPath: Box.Events.session_id
-      description: 'The session of the user that performed the action. Not all events will populate this attribute.'
+      description: The session of the user that performed the action. Not all events
+        will populate this attribute.
       type: String
   - arguments:
     - default: false
-      description: "The user who is performing the action."
+      description: The user who is performing the action.
       isArray: false
       name: as_user
       required: false
       secret: false
     - default: false
-      description: "The lower bound date and time to return events for."
+      description: The lower bound date and time to return events for.
       isArray: false
       name: created_after
       required: false
       secret: false
     - default: false
-      description: "The maximum amount of events to return."
+      description: The maximum amount of events to return.
       isArray: false
       name: limit
       required: false
@@ -2824,62 +2827,80 @@ script:
     name: box-list-enterprise-events
     outputs:
     - contextPath: Box.Events.source.item_type
-      description: 'The type of the item that the event represents.'
+      description: The type of the item that the event represents.
       type: String
     - contextPath: Box.Events.source.item_id
-      description: 'The unique identifier that represents the item.'
+      description: The unique identifier that represents the item.
       type: Date
     - contextPath: Box.Events.source.item_name
-      description: 'The name of the item.'
+      description: The name of the item.
       type: String
     - contextPath: Box.Events.source.parent.type
-      description: 'Value is always folder.'
+      description: Value is always folder.
       type: String
     - contextPath: Box.Events.source.parent.name
-      description: 'The name of the folder.'
+      description: The name of the folder.
       type: String
     - contextPath: Box.Events.source.parent.id
-      description: 'The unique identifier that represents a folder.'
+      description: The unique identifier that represents a folder.
       type: String
     - contextPath: Box.Events.source.owned_by.type
-      description: 'Value is always user.'
+      description: Value is always user.
       type: String
     - contextPath: Box.Events.source.owned_by.id
-      description: 'The unique identifier for this user.'
+      description: The unique identifier for this user.
       type: Date
     - contextPath: Box.Events.source.owned_by.name
-      description: 'The display name of this user.'
+      description: The display name of this user.
       type: String
     - contextPath: Box.Events.source.owned_by.login
-      description: 'The primary email address of this user.'
+      description: The primary email address of this user.
       type: String
     - contextPath: Box.Events.created_by.type
-      description: 'Value is always user.'
+      description: Value is always user.
       type: String
     - contextPath: Box.Events.created_by.id
-      description: 'The unique identifier for this user.'
+      description: The unique identifier for this user.
       type: Date
     - contextPath: Box.Events.created_by.name
-      description: 'The display name of this user.'
+      description: The display name of this user.
       type: String
     - contextPath: Box.Events.created_by.login
-      description: 'The primary email address of this user.'
+      description: The primary email address of this user.
       type: String
     - contextPath: Box.Events.created_at
-      description: 'Time which the event was created.'
+      description: Time which the event was created.
       type: Date
     - contextPath: Box.Events.event_id
-      description: 'The ID of the event object. You can use this to detect duplicate events.'
+      description: The ID of the event object. You can use this to detect duplicate
+        events.
       type: String
     - contextPath: Box.Events.event_type
-      description: 'The event type that triggered this event.'
+      description: The event type that triggered this event.
       type: String
     - contextPath: Box.Events.ip_address
-      description: 'IP address of the user which triggered the event.'
+      description: IP address of the user which triggered the event.
       type: String
     - contextPath: Box.Events.type
-      description: 'Always event.'
+      description: Always event.
       type: String
+  - arguments:
+    - default: false
+      description: The ID of the file to download.
+      isArray: false
+      name: file_id
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the user performing the action.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the contents of a file in binary format.
+    execution: false
+    name: box-download-file
   dockerimage: demisto/pyjwt3:1.0.0.13142
   feed: false
   isfetch: true

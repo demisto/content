@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 
 import json
 import urllib3
+import urllib
 import dateparser
 import traceback
 import time
@@ -162,7 +163,7 @@ class Client(BaseClient):
     """
     Client class to interact with the service API
     """
-    def __init__(self, base_url, verify, proxy, auth_params):
+    def __init__(self, base_url, verify, proxy, auth_params, as_user=None):
         try:
             self.credentials_dict = json.loads(auth_params.get('credentials_json', '{}'))
         except ValueError as e:
@@ -177,6 +178,7 @@ class Client(BaseClient):
         self.passphrase = self.app_auth.get('passphrase')
         self.enterprise_id = self.credentials_dict.get('enterpriseID')
         self.authentication_url = 'https://api.box.com/oauth2/token'
+        self.as_user = as_user
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self._headers = self._request_token()
@@ -204,14 +206,24 @@ class Client(BaseClient):
 
         :return: encoded jwt assertion object.
         """
-        claims = {
-            'iss': self.client_id,
-            'sub': self.enterprise_id,
-            'box_sub_type': 'enterprise',
-            'aud': self.authentication_url,
-            'jti': secrets.token_hex(64),
-            'exp': round(time.time()) + 45
-        }
+        if self.as_user:
+            claims = {
+                'iss': self.client_id,
+                'sub': self.as_user,
+                'box_sub_type': 'user',
+                'aud': self.authentication_url,
+                'jti': secrets.token_hex(64),
+                'exp': round(time.time()) + 45
+            }
+        else:
+            claims = {
+                'iss': self.client_id,
+                'sub': self.enterprise_id,
+                'box_sub_type': 'enterprise',
+                'aud': self.authentication_url,
+                'jti': secrets.token_hex(64),
+                'exp': round(time.time()) + 45
+            }
 
         assertion = jwt.encode(
             payload=claims,
@@ -841,8 +853,38 @@ class Client(BaseClient):
             return_empty_response=True
         )
 
+    def download_file(self, file_id: str):
+        """
+        Downloads a file with the given `file_id`.
+
+        :param file_id: str - The ID of the file to download.
+
+        :return: Status code indicating success or not.
+        """
+        url_suffix = f'/files/{file_id}/content/'
+        return self._http_request(
+            method='GET',
+            resp_type='response',
+            url_suffix=url_suffix,
+            return_empty_response=True
+        )
+
 
 ''' HELPER FUNCTIONS '''
+
+
+def get_filename(header_string: str):
+    """
+    Retrieves the file name from a header response.
+
+    :param header_string: String containing the header object.
+    :return: name of file if found, if not returns temp name.
+    """
+    try:
+        file_name = re.findall(r"filename\*?=([^;]+)", header_string, flags=re.IGNORECASE)
+        return file_name[0].strip().strip('"')
+    except ValueError:
+        return 'retrieved_file'
 
 
 def arg_to_int(arg: Any, arg_name: str, default: int = None) -> int:
@@ -1727,6 +1769,35 @@ def delete_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
+def download_file_command(auth_params, base_url, verify, proxy, args: Dict[str, Any]) -> dict:
+    """
+    Command executed when `box-download-file` is called. Will download a file based on the given
+    arguments.
+
+    :param client: Client - Initialized Client object.
+    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client
+    function.
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
+    """
+    file_id: str = args.get('file_id')
+    as_user: str = args.get('as_user')  # type:ignore
+
+    download_client = Client(
+        auth_params=auth_params,
+        base_url=base_url,
+        verify=verify,
+        proxy=proxy,
+        as_user=as_user
+    )
+
+    response = download_client.download_file(file_id=file_id)
+
+    d = response.headers['content-disposition']
+    file_name = get_filename(d)
+    return fileResult(filename=file_name, data=response.content)
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -1922,6 +1993,14 @@ def main() -> None:
 
         elif demisto.command() == 'box-search-content':
             return_results(search_content_command(client=client, args=demisto.args()))
+
+        elif demisto.command() == 'box-download-file':
+            return_results(download_file_command(
+                auth_params=demisto.params(),
+                base_url=base_url,
+                verify=verify_certificate,
+                proxy=proxy,
+                args=demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
