@@ -21,7 +21,6 @@ Listens to a mailbox and enables incident triggering via e-mail.
     * __permittedFromAdd__: Fetch mails from these senders addresses only (eg. admin@demo.com,test@demo.com)
     * __first_fetch__: First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year)
     * __limit__: The maximum number of incidents to fetch each time
-    * __utc_offset__: UTC offset of the mail server
     * __delete_processed__: Delete processed emails
     * __Include_raw_body__: Include raw body in incidents
     * __save_file__: Save the email .eml file
