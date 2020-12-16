@@ -55,7 +55,7 @@ Associates a FirewallPolicy to a Firewall.  A firewall policy defines how to mon
 
 
 #### Command Example
-```!aws-network-firewall-associate-firewall-policy firewall_policy_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall```
+```!aws-network-firewall-associate-firewall-policy firewall_policy_arn=arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy firewall_arn=arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall```
 
 
 #### Context Example
@@ -64,9 +64,9 @@ Associates a FirewallPolicy to a Firewall.  A firewall policy defines how to mon
     "AWS-NetworkFirewall": {
         "AssociationResults": {
             "FirewallPolicy": {
-                "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall",
+                "FirewallArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall",
                 "FirewallName": "myfirewall",
-                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy",
+                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy",
                 "UpdateToken": "bfcd1bb0-05b4-4b68-9ded-715419ab31ab"
             }
         }
@@ -79,7 +79,7 @@ Associates a FirewallPolicy to a Firewall.  A firewall policy defines how to mon
 >### AWS Network Firewall AssociateFirewallPolicy
 >|FirewallArn|FirewallName|FirewallPolicyArn|UpdateToken|
 >|---|---|---|---|
->| arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall | myfirewall | arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy | bfcd1bb0-05b4-4b68-9ded-715419ab31ab |
+>| arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall | myfirewall | arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy | bfcd1bb0-05b4-4b68-9ded-715419ab31ab |
 
 
 ### aws-network-firewall-associate-subnets
@@ -117,7 +117,7 @@ Associates the specified subnets in the Amazon VPC to the firewall. You can spec
 
 
 #### Command Example
-```!aws-network-firewall-associate-subnets subnet_mappings_subnet_ids=subnet-1787526f,subnet-901becda firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2```
+```!aws-network-firewall-associate-subnets subnet_mappings_subnet_ids=subnet-aaaaaaa,subnet-bbbbbbb firewall_arn=arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2```
 
 #### Context Example
 ```json
@@ -125,14 +125,14 @@ Associates the specified subnets in the Amazon VPC to the firewall. You can spec
     "AWS-NetworkFirewall": {
         "AssociationResults": {
             "Subnets": {
-                "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2",
+                "FirewallArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2",
                 "FirewallName": "myfirewall2",
                 "SubnetMappings": [
                     {
-                        "SubnetId": "subnet-1787526f"
+                        "SubnetId": "subnet-aaaaaaa"
                     },
                     {
-                        "SubnetId": "subnet-901becda"
+                        "SubnetId": "subnet-bbbbbbb"
                     }
                 ],
                 "UpdateToken": "33113709-ce96-4cbf-89db-149a8b400287"
@@ -147,7 +147,7 @@ Associates the specified subnets in the Amazon VPC to the firewall. You can spec
 >### AWS Network Firewall AssociateSubnets
 >|FirewallArn|FirewallName|SubnetMappings|UpdateToken|
 >|---|---|---|---|
->| arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 | myfirewall2 | {'SubnetId': 'subnet-1787526f'},<br/>{'SubnetId': 'subnet-901becda'} | 33113709-ce96-4cbf-89db-149a8b400287 |
+>| arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2 | myfirewall2 | {'SubnetId': 'subnet-aaaaaaa'},<br/>{'SubnetId': 'subnet-bbbbbbb'} | 33113709-ce96-4cbf-89db-149a8b400287 |
 
 
 ### aws-network-firewall-create-firewall
@@ -206,7 +206,7 @@ Creates an AWS Network Firewall Firewall and accompanying FirewallStatus for a V
 
 
 #### Command Example
-```!aws-network-firewall-create-firewall firewall_name=myfirewall1 firewall_policy_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy subnet_mappings_subnet_ids=subnet-1787526f,subnet-901becda vpc_id=vpc-a77d05df```
+```!aws-network-firewall-create-firewall firewall_name=myfirewall1 firewall_policy_arn=arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy subnet_mappings_subnet_ids=subnet-aaaaaaa,subnet-bbbbbbb vpc_id=vpc-abcdef```
 
 #### Context Example
 ```json
@@ -215,21 +215,21 @@ Creates an AWS Network Firewall Firewall and accompanying FirewallStatus for a V
         "Firewall": {
             "Firewall": {
                 "DeleteProtection": false,
-                "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall1",
+                "FirewallArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall1",
                 "FirewallId": "86418579-5031-42a0-a23f-bca0638383ac",
                 "FirewallName": "myfirewall1",
-                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy",
+                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy",
                 "FirewallPolicyChangeProtection": false,
                 "SubnetChangeProtection": false,
                 "SubnetMappings": [
                     {
-                        "SubnetId": "subnet-1787526f"
+                        "SubnetId": "subnet-aaaaaaa"
                     },
                     {
-                        "SubnetId": "subnet-901becda"
+                        "SubnetId": "subnet-bbbbbbb"
                     }
                 ],
-                "VpcId": "vpc-a77d05df"
+                "VpcId": "vpc-abcdef"
             },
             "FirewallStatus": {
                 "ConfigurationSyncStateSummary": "PENDING",
@@ -245,7 +245,7 @@ Creates an AWS Network Firewall Firewall and accompanying FirewallStatus for a V
 >### AWS Network Firewall CreateFirewall
 >|Firewall|FirewallStatus|
 >|---|---|
->| FirewallName: myfirewall1<br/>FirewallArn: arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall1<br/>FirewallPolicyArn: arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy<br/>VpcId: vpc-a77d05df<br/>SubnetMappings: {'SubnetId': 'subnet-1787526f'},<br/>{'SubnetId': 'subnet-901becda'}<br/>DeleteProtection: false<br/>SubnetChangeProtection: false<br/>FirewallPolicyChangeProtection: false<br/>FirewallId: 86418579-5031-42a0-a23f-bca0638383ac | Status: PROVISIONING<br/>ConfigurationSyncStateSummary: PENDING |
+>| FirewallName: myfirewall1<br/>FirewallArn: arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall1<br/>FirewallPolicyArn: arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy<br/>VpcId: vpc-abcdef<br/>SubnetMappings: {'SubnetId': 'subnet-aaaaaaa'},<br/>{'SubnetId': 'subnet-bbbbbbb'}<br/>DeleteProtection: false<br/>SubnetChangeProtection: false<br/>FirewallPolicyChangeProtection: false<br/>FirewallId: 86418579-5031-42a0-a23f-bca0638383ac | Status: PROVISIONING<br/>ConfigurationSyncStateSummary: PENDING |
 
 
 ### aws-network-firewall-create-firewall-policy
@@ -290,7 +290,7 @@ Creates the firewall policy for the firewall according to the specifications.  A
 
 
 #### Command Example
-```!aws-network-firewall-create-firewall-policy firewall_policy_name=example-fw-policy firewall_policy_json="""{"StatelessRuleGroupReferences":[{"ResourceArn":"arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless","Priority":100}],"StatelessDefaultActions":["aws:pass"],"StatelessFragmentDefaultActions":["aws:pass"]}"""```
+```!aws-network-firewall-create-firewall-policy firewall_policy_name=example-fw-policy firewall_policy_json="""{"StatelessRuleGroupReferences":[{"ResourceArn":"arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless","Priority":100}],"StatelessDefaultActions":["aws:pass"],"StatelessFragmentDefaultActions":["aws:pass"]}"""```
 
 #### Context Example
 ```json
@@ -298,7 +298,7 @@ Creates the firewall policy for the firewall according to the specifications.  A
     "AWS-NetworkFirewall": {
         "FirewallPolicy": {
             "FirewallPolicyResponse": {
-                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy",
+                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy",
                 "FirewallPolicyId": "ef867e5c-9bdc-49b3-91f8-e69c8658489f",
                 "FirewallPolicyName": "example-fw-policy",
                 "FirewallPolicyStatus": "ACTIVE"
@@ -314,7 +314,7 @@ Creates the firewall policy for the firewall according to the specifications.  A
 >### AWS Network Firewall CreateFirewallPolicy
 >|FirewallPolicyResponse|UpdateToken|
 >|---|---|
->| FirewallPolicyName: example-fw-policy<br/>FirewallPolicyArn: arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy<br/>FirewallPolicyId: ef867e5c-9bdc-49b3-91f8-e69c8658489f<br/>FirewallPolicyStatus: ACTIVE | 134d2405-4d98-425d-89b5-1dca72cf3c66 |
+>| FirewallPolicyName: example-fw-policy<br/>FirewallPolicyArn: arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy<br/>FirewallPolicyId: ef867e5c-9bdc-49b3-91f8-e69c8658489f<br/>FirewallPolicyStatus: ACTIVE | 134d2405-4d98-425d-89b5-1dca72cf3c66 |
 
 
 ### aws-network-firewall-create-rule-group
@@ -373,7 +373,7 @@ Creates the specified stateless or stateful rule group, which includes the rules
         "RuleGroup": {
             "RuleGroupResponse": {
                 "Capacity": 10,
-                "RuleGroupArn": "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless",
+                "RuleGroupArn": "arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless",
                 "RuleGroupId": "ee6230a2-99a4-400b-b1da-fdcc046860f3",
                 "RuleGroupName": "example-group-stateless",
                 "RuleGroupStatus": "ACTIVE",
@@ -390,7 +390,7 @@ Creates the specified stateless or stateful rule group, which includes the rules
 >### AWS Network Firewall CreateRuleGroup
 >|RuleGroupResponse|UpdateToken|
 >|---|---|
->| RuleGroupArn: arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless<br/>RuleGroupName: example-group-stateless<br/>RuleGroupId: ee6230a2-99a4-400b-b1da-fdcc046860f3<br/>Type: STATELESS<br/>Capacity: 10<br/>RuleGroupStatus: ACTIVE | cb084f42-a286-4406-b3e2-7fce4e104a29 |
+>| RuleGroupArn: arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless<br/>RuleGroupName: example-group-stateless<br/>RuleGroupId: ee6230a2-99a4-400b-b1da-fdcc046860f3<br/>Type: STATELESS<br/>Capacity: 10<br/>RuleGroupStatus: ACTIVE | cb084f42-a286-4406-b3e2-7fce4e104a29 |
 
 
 ### aws-network-firewall-delete-firewall
@@ -449,22 +449,22 @@ Deletes the specified Firewall and its FirewallStatus. This operation requires t
             "Firewall": {
                 "DeleteProtection": false,
                 "Description": "some description",
-                "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall",
+                "FirewallArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall",
                 "FirewallId": "93498bf3-266d-42a1-94b6-4b0b30edbde8",
                 "FirewallName": "myfirewall",
-                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy",
+                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy",
                 "FirewallPolicyChangeProtection": false,
                 "SubnetChangeProtection": false,
                 "SubnetMappings": [
                     {
-                        "SubnetId": "subnet-1787526f"
+                        "SubnetId": "subnet-aaaaaaa"
                     },
                     {
-                        "SubnetId": "subnet-901becda"
+                        "SubnetId": "subnet-bbbbbbb"
                     }
                 ],
                 "Tags": [],
-                "VpcId": "vpc-a77d05df"
+                "VpcId": "vpc-abcdef"
             },
             "FirewallStatus": {
                 "ConfigurationSyncStateSummary": "IN_SYNC",
@@ -472,30 +472,30 @@ Deletes the specified Firewall and its FirewallStatus. This operation requires t
                 "SyncStates": {
                     "us-west-2a": {
                         "Attachment": {
-                            "EndpointId": "vpce-08e214d7a95518a88",
+                            "EndpointId": "vpce-0000000000abcdef",
                             "Status": "READY",
-                            "SubnetId": "subnet-901becda"
+                            "SubnetId": "subnet-bbbbbbb"
                         },
                         "Config": {
-                            "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy": {
+                            "arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy": {
                                 "SyncStatus": "IN_SYNC"
                             },
-                            "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless": {
+                            "arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless": {
                                 "SyncStatus": "IN_SYNC"
                             }
                         }
                     },
                     "us-west-2b": {
                         "Attachment": {
-                            "EndpointId": "vpce-0aec2d6914baa9a7a",
+                            "EndpointId": "vpce-000000000aaaaaaa",
                             "Status": "READY",
-                            "SubnetId": "subnet-1787526f"
+                            "SubnetId": "subnet-aaaaaaa"
                         },
                         "Config": {
-                            "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy": {
+                            "arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy": {
                                 "SyncStatus": "IN_SYNC"
                             },
-                            "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless": {
+                            "arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless": {
                                 "SyncStatus": "IN_SYNC"
                             }
                         }
@@ -512,7 +512,7 @@ Deletes the specified Firewall and its FirewallStatus. This operation requires t
 >### AWS Network Firewall DeleteFirewall
 >|Firewall|FirewallStatus|
 >|---|---|
->| FirewallName: myfirewall<br/>FirewallArn: arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall<br/>FirewallPolicyArn: arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy<br/>VpcId: vpc-a77d05df<br/>SubnetMappings: {'SubnetId': 'subnet-1787526f'},<br/>{'SubnetId': 'subnet-901becda'}<br/>DeleteProtection: false<br/>SubnetChangeProtection: false<br/>FirewallPolicyChangeProtection: false<br/>Description: some description<br/>FirewallId: 93498bf3-266d-42a1-94b6-4b0b30edbde8<br/>Tags:  | Status: DELETING<br/>ConfigurationSyncStateSummary: IN_SYNC<br/>SyncStates: {"us-west-2a": {"Attachment": {"SubnetId": "subnet-901becda", "EndpointId": "vpce-08e214d7a95518a88", "Status": "READY"}, "Config": {"arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy": {"SyncStatus": "IN_SYNC"}, "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless": {"SyncStatus": "IN_SYNC"}}}, "us-west-2b": {"Attachment": {"SubnetId": "subnet-1787526f", "EndpointId": "vpce-0aec2d6914baa9a7a", "Status": "READY"}, "Config": {"arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy": {"SyncStatus": "IN_SYNC"}, "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless": {"SyncStatus": "IN_SYNC"}}}} |
+>| FirewallName: myfirewall<br/>FirewallArn: arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall<br/>FirewallPolicyArn: arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy<br/>VpcId: vpc-abcdef<br/>SubnetMappings: {'SubnetId': 'subnet-aaaaaaa'},<br/>{'SubnetId': 'subnet-bbbbbbb'}<br/>DeleteProtection: false<br/>SubnetChangeProtection: false<br/>FirewallPolicyChangeProtection: false<br/>Description: some description<br/>FirewallId: 93498bf3-266d-42a1-94b6-4b0b30edbde8<br/>Tags:  | Status: DELETING<br/>ConfigurationSyncStateSummary: IN_SYNC<br/>SyncStates: {"us-west-2a": {"Attachment": {"SubnetId": "subnet-bbbbbbb", "EndpointId": "vpce-0000000000abcdef", "Status": "READY"}, "Config": {"arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy": {"SyncStatus": "IN_SYNC"}, "arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless": {"SyncStatus": "IN_SYNC"}}}, "us-west-2b": {"Attachment": {"SubnetId": "subnet-aaaaaaa", "EndpointId": "vpce-000000000aaaaaaa", "Status": "READY"}, "Config": {"arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy": {"SyncStatus": "IN_SYNC"}, "arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless": {"SyncStatus": "IN_SYNC"}}}} |
 
 
 ### aws-network-firewall-delete-firewall-policy
@@ -552,7 +552,7 @@ Deletes the specified FirewallPolicy.
 
 
 #### Command Example
-```!aws-network-firewall-delete-firewall-policy firewall_policy_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2```
+```!aws-network-firewall-delete-firewall-policy firewall_policy_arn=arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy2```
 
 
 #### Context Example
@@ -561,7 +561,7 @@ Deletes the specified FirewallPolicy.
     "AWS-NetworkFirewall": {
         "FirewallPolicy": {
             "FirewallPolicyResponse": {
-                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2",
+                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy2",
                 "FirewallPolicyId": "f9253d2f-acf7-465b-97f0-f8f52a7a756f",
                 "FirewallPolicyName": "example-fw-policy2",
                 "FirewallPolicyStatus": "DELETING",
@@ -577,7 +577,7 @@ Deletes the specified FirewallPolicy.
 >### AWS Network Firewall DeleteFirewallPolicy
 >|FirewallPolicyArn|FirewallPolicyId|FirewallPolicyName|FirewallPolicyStatus|Tags|
 >|---|---|---|---|---|
->| arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2 | f9253d2f-acf7-465b-97f0-f8f52a7a756f | example-fw-policy2 | DELETING |  |
+>| arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy2 | f9253d2f-acf7-465b-97f0-f8f52a7a756f | example-fw-policy2 | DELETING |  |
 
 
 ### aws-network-firewall-delete-resource-policy
@@ -605,7 +605,7 @@ Deletes a resource policy that you created in a PutResourcePolicy request.
 There is no context output for this command.
 
 #### Command Example
-```!aws-network-firewall-delete-resource-policy resource_arn=arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2```
+```!aws-network-firewall-delete-resource-policy resource_arn=arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2```
 
 #### Context Example
 ```json
@@ -658,7 +658,7 @@ Deletes the specified RuleGroup.
 
 
 #### Command Example
-```!aws-network-firewall-delete-rule-group rule_group_arn=arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless3```
+```!aws-network-firewall-delete-rule-group rule_group_arn=arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless3```
 
 #### Context Example
 ```json
@@ -667,7 +667,7 @@ Deletes the specified RuleGroup.
         "RuleGroup": {
             "RuleGroupResponse": {
                 "Capacity": 10,
-                "RuleGroupArn": "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless3",
+                "RuleGroupArn": "arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless3",
                 "RuleGroupId": "43010e51-6c14-475a-9143-93db2dd5fbac",
                 "RuleGroupName": "example-group-stateless3",
                 "RuleGroupStatus": "DELETING",
@@ -684,7 +684,7 @@ Deletes the specified RuleGroup.
 >### AWS Network Firewall DeleteRuleGroup
 >|Capacity|RuleGroupArn|RuleGroupId|RuleGroupName|RuleGroupStatus|Tags|Type|
 >|---|---|---|---|---|---|---|
->| 10 | arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless3 | 43010e51-6c14-475a-9143-93db2dd5fbac | example-group-stateless3 | DELETING |  | STATELESS |
+>| 10 | arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless3 | 43010e51-6c14-475a-9143-93db2dd5fbac | example-group-stateless3 | DELETING |  | STATELESS |
 
 
 ### aws-network-firewall-describe-firewall
@@ -744,19 +744,19 @@ Returns the data objects for the specified firewall.
         "Firewall": {
             "Firewall": {
                 "DeleteProtection": false,
-                "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2",
+                "FirewallArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2",
                 "FirewallId": "9f7ce834-a43b-4bcc-8e54-a44dff6de461",
                 "FirewallName": "myfirewall2",
-                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2",
+                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy2",
                 "FirewallPolicyChangeProtection": false,
                 "SubnetChangeProtection": false,
                 "SubnetMappings": [
                     {
-                        "SubnetId": "subnet-1787526f"
+                        "SubnetId": "subnet-aaaaaaa"
                     }
                 ],
                 "Tags": [],
-                "VpcId": "vpc-a77d05df"
+                "VpcId": "vpc-abcdef"
             },
             "FirewallStatus": {
                 "ConfigurationSyncStateSummary": "IN_SYNC",
@@ -764,30 +764,30 @@ Returns the data objects for the specified firewall.
                 "SyncStates": {
                     "us-west-2a": {
                         "Attachment": {
-                            "EndpointId": "vpce-0a090583ec93fac13",
+                            "EndpointId": "vpce-0000000000abcdef",
                             "Status": "CREATING",
-                            "SubnetId": "subnet-901becda"
+                            "SubnetId": "subnet-bbbbbbb"
                         },
                         "Config": {
-                            "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2": {
+                            "arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy2": {
                                 "SyncStatus": "IN_SYNC"
                             },
-                            "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2": {
+                            "arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2": {
                                 "SyncStatus": "IN_SYNC"
                             }
                         }
                     },
                     "us-west-2b": {
                         "Attachment": {
-                            "EndpointId": "vpce-000ca8246c0df412c",
+                            "EndpointId": "vpce-000000000aaaaaaa",
                             "Status": "READY",
-                            "SubnetId": "subnet-1787526f"
+                            "SubnetId": "subnet-aaaaaaa"
                         },
                         "Config": {
-                            "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2": {
+                            "arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy2": {
                                 "SyncStatus": "IN_SYNC"
                             },
-                            "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2": {
+                            "arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2": {
                                 "SyncStatus": "IN_SYNC"
                             }
                         }
@@ -805,7 +805,7 @@ Returns the data objects for the specified firewall.
 >### AWS Network Firewall DescribeFirewall
 >|Firewall|FirewallStatus|UpdateToken|
 >|---|---|---|
->| FirewallName: myfirewall2<br/>FirewallArn: arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2<br/>FirewallPolicyArn: arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2<br/>VpcId: vpc-a77d05df<br/>SubnetMappings: {'SubnetId': 'subnet-1787526f'}<br/>DeleteProtection: false<br/>SubnetChangeProtection: false<br/>FirewallPolicyChangeProtection: false<br/>FirewallId: 9f7ce834-a43b-4bcc-8e54-a44dff6de461<br/>Tags:  | Status: PROVISIONING<br/>ConfigurationSyncStateSummary: IN_SYNC<br/>SyncStates: {"us-west-2a": {"Attachment": {"SubnetId": "subnet-901becda", "EndpointId": "vpce-0a090583ec93fac13", "Status": "CREATING"}, "Config": {"arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2": {"SyncStatus": "IN_SYNC"}, "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2": {"SyncStatus": "IN_SYNC"}}}, "us-west-2b": {"Attachment": {"SubnetId": "subnet-1787526f", "EndpointId": "vpce-000ca8246c0df412c", "Status": "READY"}, "Config": {"arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2": {"SyncStatus": "IN_SYNC"}, "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2": {"SyncStatus": "IN_SYNC"}}}} | 3cd6d327-33d1-4c0e-8452-f61bdf9b218c |
+>| FirewallName: myfirewall2<br/>FirewallArn: arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2<br/>FirewallPolicyArn: arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy2<br/>VpcId: vpc-abcdef<br/>SubnetMappings: {'SubnetId': 'subnet-aaaaaaa'}<br/>DeleteProtection: false<br/>SubnetChangeProtection: false<br/>FirewallPolicyChangeProtection: false<br/>FirewallId: 9f7ce834-a43b-4bcc-8e54-a44dff6de461<br/>Tags:  | Status: PROVISIONING<br/>ConfigurationSyncStateSummary: IN_SYNC<br/>SyncStates: {"us-west-2a": {"Attachment": {"SubnetId": "subnet-bbbbbbb", "EndpointId": "vpce-0000000000abcdef", "Status": "CREATING"}, "Config": {"arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy2": {"SyncStatus": "IN_SYNC"}, "arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2": {"SyncStatus": "IN_SYNC"}}}, "us-west-2b": {"Attachment": {"SubnetId": "subnet-aaaaaaa", "EndpointId": "vpce-000000000aaaaaaa", "Status": "READY"}, "Config": {"arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy2": {"SyncStatus": "IN_SYNC"}, "arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2": {"SyncStatus": "IN_SYNC"}}}} | 3cd6d327-33d1-4c0e-8452-f61bdf9b218c |
 
 
 ### aws-network-firewall-describe-firewall-policy
@@ -852,7 +852,7 @@ Returns the data objects for the specified firewall policy.
 
 
 #### Command Example
-```!aws-network-firewall-describe-firewall-policy firewall_policy_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2```
+```!aws-network-firewall-describe-firewall-policy firewall_policy_arn=arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy2```
 
 #### Context Example
 ```json
@@ -869,12 +869,12 @@ Returns the data objects for the specified firewall policy.
                 "StatelessRuleGroupReferences": [
                     {
                         "Priority": 100,
-                        "ResourceArn": "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2"
+                        "ResourceArn": "arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2"
                     }
                 ]
             },
             "FirewallPolicyResponse": {
-                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2",
+                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy2",
                 "FirewallPolicyId": "f9253d2f-acf7-465b-97f0-f8f52a7a756f",
                 "FirewallPolicyName": "example-fw-policy2",
                 "FirewallPolicyStatus": "ACTIVE",
@@ -891,7 +891,7 @@ Returns the data objects for the specified firewall policy.
 >### AWS Network Firewall DescribeFirewallPolicy
 >|FirewallPolicy|FirewallPolicyResponse|UpdateToken|
 >|---|---|---|
->| StatelessRuleGroupReferences: {'ResourceArn': 'arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2', 'Priority': 100}<br/>StatelessDefaultActions: aws:pass<br/>StatelessFragmentDefaultActions: aws:pass | FirewallPolicyName: example-fw-policy2<br/>FirewallPolicyArn: arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2<br/>FirewallPolicyId: f9253d2f-acf7-465b-97f0-f8f52a7a756f<br/>FirewallPolicyStatus: ACTIVE<br/>Tags:  | 4fa9513c-d33b-4980-8b6e-f00ef7a2af99 |
+>| StatelessRuleGroupReferences: {'ResourceArn': 'arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2', 'Priority': 100}<br/>StatelessDefaultActions: aws:pass<br/>StatelessFragmentDefaultActions: aws:pass | FirewallPolicyName: example-fw-policy2<br/>FirewallPolicyArn: arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy2<br/>FirewallPolicyId: f9253d2f-acf7-465b-97f0-f8f52a7a756f<br/>FirewallPolicyStatus: ACTIVE<br/>Tags:  | 4fa9513c-d33b-4980-8b6e-f00ef7a2af99 |
 
 
 ### aws-network-firewall-describe-logging-configuration
@@ -937,7 +937,7 @@ Returns the logging configuration for the specified firewall.
 {
     "AWS-NetworkFirewall": {
         "Logging": {
-            "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2",
+            "FirewallArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2",
             "LoggingConfiguration": {
                 "LogDestinationConfigs": [
                     {
@@ -960,7 +960,7 @@ Returns the logging configuration for the specified firewall.
 >### AWS Network Firewall DescribeLoggingConfiguration
 >|FirewallArn|LoggingConfiguration|
 >|---|---|
->| arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 | LogDestinationConfigs: {'LogType': 'ALERT', 'LogDestinationType': 'S3', 'LogDestination': {'bucketName': 'xsoar-demo-test-bucket-network-firewall', 'prefix': 'alerts'}} |
+>| arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2 | LogDestinationConfigs: {'LogType': 'ALERT', 'LogDestinationType': 'S3', 'LogDestination': {'bucketName': 'xsoar-demo-test-bucket-network-firewall', 'prefix': 'alerts'}} |
 
 
 ### aws-network-firewall-describe-resource-policy
@@ -991,13 +991,13 @@ Retrieves a resource policy that you created in a PutResourcePolicy request.
 
 
 #### Command Example
-```!aws-network-firewall-describe-resource-policy resource_arn=arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2```
+```!aws-network-firewall-describe-resource-policy resource_arn=arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2```
 
 #### Context Example
 ```json
 {
     "AWS-Network Firewall": {
-        "Policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::632480965664:root\"},\"Action\":[\"network-firewall:CreateFirewallPolicy\",\"network-firewall:UpdateFirewallPolicy\",\"network-firewall:ListRuleGroups\"],\"Resource\":\"arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2\"}]}"
+        "Policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::123456789012:root\"},\"Action\":[\"network-firewall:CreateFirewallPolicy\",\"network-firewall:UpdateFirewallPolicy\",\"network-firewall:ListRuleGroups\"],\"Resource\":\"arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2\"}]}"
     }
 }
 ```
@@ -1007,7 +1007,7 @@ Retrieves a resource policy that you created in a PutResourcePolicy request.
 >### AWS Network Firewall DescribeResourcePolicy
 >|Policy|
 >|---|
->| {"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":"arn:aws:iam::632480965664:root"},"Action":["network-firewall:CreateFirewallPolicy","network-firewall:UpdateFirewallPolicy","network-firewall:ListRuleGroups"],"Resource":"arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2"}]} |
+>| {"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":"arn:aws:iam::123456789012:root"},"Action":["network-firewall:CreateFirewallPolicy","network-firewall:UpdateFirewallPolicy","network-firewall:ListRuleGroups"],"Resource":"arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2"}]} |
 
 
 ### aws-network-firewall-describe-rule-group
@@ -1099,7 +1099,7 @@ Returns the data objects for the specified rule group.
 
 
 #### Command Example
-```!aws-network-firewall-describe-rule-group rule_group_arn=arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2```
+```!aws-network-firewall-describe-rule-group rule_group_arn=arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2```
 
 #### Context Example
 ```json
@@ -1137,7 +1137,7 @@ Returns the data objects for the specified rule group.
             },
             "RuleGroupResponse": {
                 "Capacity": 10,
-                "RuleGroupArn": "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2",
+                "RuleGroupArn": "arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2",
                 "RuleGroupId": "27409b82-b9de-456e-8e29-2a0e0776c548",
                 "RuleGroupName": "example-group-stateless2",
                 "RuleGroupStatus": "ACTIVE",
@@ -1155,7 +1155,7 @@ Returns the data objects for the specified rule group.
 >### AWS Network Firewall DescribeRuleGroup
 >|RuleGroup|RuleGroupResponse|UpdateToken|
 >|---|---|---|
->| RulesSource: {"StatelessRulesAndCustomActions": {"StatelessRules": [{"RuleDefinition": {"MatchAttributes": {"Sources": [{"AddressDefinition": "10.0.0.0/8"}, {"AddressDefinition": "192.168.0.0/16"}, {"AddressDefinition": "172.31.0.0/16"}]}, "Actions": ["aws:pass"]}, "Priority": 5}]}} | RuleGroupArn: arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2<br/>RuleGroupName: example-group-stateless2<br/>RuleGroupId: 27409b82-b9de-456e-8e29-2a0e0776c548<br/>Type: STATELESS<br/>Capacity: 10<br/>RuleGroupStatus: ACTIVE<br/>Tags:  | 049b2760-7b8d-4eb0-a2b1-89012f073da2 |
+>| RulesSource: {"StatelessRulesAndCustomActions": {"StatelessRules": [{"RuleDefinition": {"MatchAttributes": {"Sources": [{"AddressDefinition": "10.0.0.0/8"}, {"AddressDefinition": "192.168.0.0/16"}, {"AddressDefinition": "172.31.0.0/16"}]}, "Actions": ["aws:pass"]}, "Priority": 5}]}} | RuleGroupArn: arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2<br/>RuleGroupName: example-group-stateless2<br/>RuleGroupId: 27409b82-b9de-456e-8e29-2a0e0776c548<br/>Type: STATELESS<br/>Capacity: 10<br/>RuleGroupStatus: ACTIVE<br/>Tags:  | 049b2760-7b8d-4eb0-a2b1-89012f073da2 |
 
 
 ### aws-network-firewall-disassociate-subnets
@@ -1193,7 +1193,7 @@ Removes the specified subnet associations from the firewall. This removes the fi
 
 
 #### Command Example
-```!aws-network-firewall-disassociate-subnets firewall_name=myfirewall2 subnet_ids=subnet-901becda```
+```!aws-network-firewall-disassociate-subnets firewall_name=myfirewall2 subnet_ids=subnet-bbbbbbb```
 
 #### Context Example
 ```json
@@ -1201,11 +1201,11 @@ Removes the specified subnet associations from the firewall. This removes the fi
     "AWS-NetworkFirewall": {
         "AssociationResults": {
             "Subnets": {
-                "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2",
+                "FirewallArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2",
                 "FirewallName": "myfirewall2",
                 "SubnetMappings": [
                     {
-                        "SubnetId": "subnet-1787526f"
+                        "SubnetId": "subnet-aaaaaaa"
                     }
                 ],
                 "UpdateToken": "3cd6d327-33d1-4c0e-8452-f61bdf9b218c"
@@ -1220,7 +1220,7 @@ Removes the specified subnet associations from the firewall. This removes the fi
 >### AWS Network Firewall DisassociateSubnets
 >|FirewallArn|FirewallName|SubnetMappings|UpdateToken|
 >|---|---|---|---|
->| arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 | myfirewall2 | {'SubnetId': 'subnet-1787526f'} | 3cd6d327-33d1-4c0e-8452-f61bdf9b218c |
+>| arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2 | myfirewall2 | {'SubnetId': 'subnet-aaaaaaa'} | 3cd6d327-33d1-4c0e-8452-f61bdf9b218c |
 
 
 ### aws-network-firewall-list-firewall-policies
@@ -1263,11 +1263,11 @@ Retrieves the metadata for the firewall policies that you have defined. Dependin
     "AWS-NetworkFirewall": {
         "FirewallPolicies": [
             {
-                "Arn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy",
+                "Arn": "arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy",
                 "Name": "example-fw-policy"
             },
             {
-                "Arn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2",
+                "Arn": "arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy2",
                 "Name": "example-fw-policy2"
             }
         ]
@@ -1280,8 +1280,8 @@ Retrieves the metadata for the firewall policies that you have defined. Dependin
 >### AWS Network Firewall ListFirewallPolicies
 >|Arn|Name|
 >|---|---|
->| arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy | example-fw-policy |
->| arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2 | example-fw-policy2 |
+>| arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy | example-fw-policy |
+>| arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy2 | example-fw-policy2 |
 
 
 ### aws-network-firewall-list-firewalls
@@ -1324,11 +1324,11 @@ Retrieves the metadata for the firewalls that you have defined. If you provide V
     "AWS-NetworkFirewall": {
         "Firewalls": [
             {
-                "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall1",
+                "FirewallArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall1",
                 "FirewallName": "myfirewall1"
             },
             {
-                "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2",
+                "FirewallArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2",
                 "FirewallName": "myfirewall2"
             }
         ]
@@ -1341,8 +1341,8 @@ Retrieves the metadata for the firewalls that you have defined. If you provide V
 >### AWS Network Firewall ListFirewalls
 >|FirewallArn|FirewallName|
 >|---|---|
->| arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall1 | myfirewall1 |
->| arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 | myfirewall2 |
+>| arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall1 | myfirewall1 |
+>| arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2 | myfirewall2 |
 
 
 ### aws-network-firewall-list-rule-groups
@@ -1385,15 +1385,15 @@ Retrieves the metadata for the rule groups that you have defined. Depending on y
     "AWS-NetworkFirewall": {
         "RuleGroups": [
             {
-                "Arn": "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless",
+                "Arn": "arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless",
                 "Name": "example-group-stateless"
             },
             {
-                "Arn": "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2",
+                "Arn": "arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2",
                 "Name": "example-group-stateless2"
             },
             {
-                "Arn": "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless3",
+                "Arn": "arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless3",
                 "Name": "example-group-stateless3"
             }
         ]
@@ -1406,9 +1406,9 @@ Retrieves the metadata for the rule groups that you have defined. Depending on y
 >### AWS Network Firewall ListRuleGroups
 >|Arn|Name|
 >|---|---|
->| arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless | example-group-stateless |
->| arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2 | example-group-stateless2 |
->| arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless3 | example-group-stateless3 |
+>| arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless | example-group-stateless |
+>| arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2 | example-group-stateless2 |
+>| arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless3 | example-group-stateless3 |
 
 
 ### aws-network-firewall-list-tags-for-resource
@@ -1443,7 +1443,7 @@ Retrieves the tags associated with the specified resource. Tags are key:value pa
 
 
 #### Command Example
-```!aws-network-firewall-list-tags-for-resource resource_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2```
+```!aws-network-firewall-list-tags-for-resource resource_arn=arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2```
 
 #### Context Example
 ```json
@@ -1495,7 +1495,7 @@ Creates or updates an AWS Identity and Access Management policy for your rule gr
 There is no context output for this command.
 
 #### Command Example
-```!aws-network-firewall-put-resource-policy resource_arn=arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2 policy="""{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":["632480965664"]},"Action":["network-firewall:CreateFirewallPolicy","network-firewall:UpdateFirewallPolicy","network-firewall:ListRuleGroups"],"Resource":"arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2"}]}"""```
+```!aws-network-firewall-put-resource-policy resource_arn=arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2 policy="""{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":["123456789012"]},"Action":["network-firewall:CreateFirewallPolicy","network-firewall:UpdateFirewallPolicy","network-firewall:ListRuleGroups"],"Resource":"arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2"}]}"""```
 
 #### Context Example
 ```json
@@ -1534,7 +1534,7 @@ Adds the specified tags to the specified resource. Tags are key:value pairs that
 There is no context output for this command.
 
 #### Command Example
-```!aws-network-firewall-tag-resource resource_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 tags="key=testkey,value=testvalue"```
+```!aws-network-firewall-tag-resource resource_arn=arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2 tags="key=testkey,value=testvalue"```
 
 #### Context Example
 ```json
@@ -1573,7 +1573,7 @@ Removes the tags with the specified keys from the specified resource. Tags are k
 There is no context output for this command.
 
 #### Command Example
-```!aws-network-firewall-untag-resource resource_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 tag_keys=testkey```
+```!aws-network-firewall-untag-resource resource_arn=arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2 tag_keys=testkey```
 
 #### Context Example
 ```json
@@ -1620,7 +1620,7 @@ Modifies the flag, DeleteProtection, which indicates whether it is possible to d
 
 
 #### Command Example
-```!aws-network-firewall-update-firewall-delete-protection delete_protection=False firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall```
+```!aws-network-firewall-update-firewall-delete-protection delete_protection=False firewall_arn=arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall```
 
 
 #### Context Example
@@ -1629,7 +1629,7 @@ Modifies the flag, DeleteProtection, which indicates whether it is possible to d
     "AWS-NetworkFirewall": {
         "FirewallAttributes": {
             "DeleteProtection": false,
-            "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall",
+            "FirewallArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall",
             "FirewallName": "myfirewall",
             "UpdateToken": "f0aafd55-1cec-42a5-981a-399ebbd7b00f"
         }
@@ -1642,7 +1642,7 @@ Modifies the flag, DeleteProtection, which indicates whether it is possible to d
 >### AWS Network Firewall UpdateFirewallDeleteProtection
 >|DeleteProtection|FirewallArn|FirewallName|UpdateToken|
 >|---|---|---|---|
->| false | arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall | myfirewall | f0aafd55-1cec-42a5-981a-399ebbd7b00f |
+>| false | arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall | myfirewall | f0aafd55-1cec-42a5-981a-399ebbd7b00f |
 
 
 ### aws-network-firewall-update-firewall-description
@@ -1679,7 +1679,7 @@ Modifies the description for the specified firewall. Use the description to help
 
 
 #### Command Example
-```!aws-network-firewall-update-firewall-description firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall description="some description"```
+```!aws-network-firewall-update-firewall-description firewall_arn=arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall description="some description"```
 
 
 #### Context Example
@@ -1688,7 +1688,7 @@ Modifies the description for the specified firewall. Use the description to help
     "AWS-NetworkFirewall": {
         "FirewallAttributes": {
             "Description": "some description",
-            "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall",
+            "FirewallArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall",
             "FirewallName": "myfirewall",
             "UpdateToken": "c3b57ab4-8659-4c2d-8feb-dbc8d6aeaabf"
         }
@@ -1701,7 +1701,7 @@ Modifies the description for the specified firewall. Use the description to help
 >### AWS Network Firewall UpdateFirewallDescription
 >|Description|FirewallArn|FirewallName|UpdateToken|
 >|---|---|---|---|
->| some description | arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall | myfirewall | c3b57ab4-8659-4c2d-8feb-dbc8d6aeaabf |
+>| some description | arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall | myfirewall | c3b57ab4-8659-4c2d-8feb-dbc8d6aeaabf |
 
 
 ### aws-network-firewall-update-firewall-policy
@@ -1746,7 +1746,7 @@ Updates the properties of the specified firewall policy.
 
 
 #### Command Example
-```!aws-network-firewall-update-firewall-policy update_token=4fa9513c-d33b-4980-8b6e-f00ef7a2af99 firewall_policy_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2  firewall_policy_json="""{"StatelessRuleGroupReferences":[{"ResourceArn":"arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless","Priority":100}],"StatelessDefaultActions":["aws:pass"],"StatelessFragmentDefaultActions":["aws:pass"]}"""```
+```!aws-network-firewall-update-firewall-policy update_token=4fa9513c-d33b-4980-8b6e-f00ef7a2af99 firewall_policy_arn=arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy2  firewall_policy_json="""{"StatelessRuleGroupReferences":[{"ResourceArn":"arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless","Priority":100}],"StatelessDefaultActions":["aws:pass"],"StatelessFragmentDefaultActions":["aws:pass"]}"""```
 
 #### Context Example
 ```json
@@ -1754,7 +1754,7 @@ Updates the properties of the specified firewall policy.
     "AWS-NetworkFirewall": {
         "FirewallPolicy": {
             "FirewallPolicyResponse": {
-                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2",
+                "FirewallPolicyArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy2",
                 "FirewallPolicyId": "f9253d2f-acf7-465b-97f0-f8f52a7a756f",
                 "FirewallPolicyName": "example-fw-policy2",
                 "FirewallPolicyStatus": "ACTIVE",
@@ -1771,7 +1771,7 @@ Updates the properties of the specified firewall policy.
 >### AWS Network Firewall UpdateFirewallPolicy
 >|FirewallPolicyResponse|UpdateToken|
 >|---|---|
->| FirewallPolicyName: example-fw-policy2<br/>FirewallPolicyArn: arn:aws:network-firewall:us-west-2:632480965664:firewall-policy/example-fw-policy2<br/>FirewallPolicyId: f9253d2f-acf7-465b-97f0-f8f52a7a756f<br/>FirewallPolicyStatus: ACTIVE<br/>Tags:  | 2648188a-c378-4244-9421-6f0d54bb206d |
+>| FirewallPolicyName: example-fw-policy2<br/>FirewallPolicyArn: arn:aws:network-firewall:us-west-2:123456789012:firewall-policy/example-fw-policy2<br/>FirewallPolicyId: f9253d2f-acf7-465b-97f0-f8f52a7a756f<br/>FirewallPolicyStatus: ACTIVE<br/>Tags:  | 2648188a-c378-4244-9421-6f0d54bb206d |
 
 
 ### aws-network-firewall-update-firewall-policy-change-protection
@@ -1808,14 +1808,14 @@ Update the firewall policy change protection
 
 
 #### Command Example
-```!aws-network-firewall-update-firewall-policy-change-protection firewall_policy_change_protection=False firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2```
+```!aws-network-firewall-update-firewall-policy-change-protection firewall_policy_change_protection=False firewall_arn=arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2```
 
 #### Context Example
 ```json
 {
     "AWS-NetworkFirewall": {
         "FirewallAttributes": {
-            "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2",
+            "FirewallArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2",
             "FirewallName": "myfirewall2",
             "FirewallPolicyChangeProtection": false,
             "UpdateToken": "0cecf634-8fa0-4716-825a-bb9d937e4d3c"
@@ -1829,7 +1829,7 @@ Update the firewall policy change protection
 >### AWS Network Firewall UpdateFirewallPolicyChangeProtection
 >|FirewallArn|FirewallName|FirewallPolicyChangeProtection|UpdateToken|
 >|---|---|---|---|
->| arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 | myfirewall2 | false | 0cecf634-8fa0-4716-825a-bb9d937e4d3c |
+>| arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2 | myfirewall2 | false | 0cecf634-8fa0-4716-825a-bb9d937e4d3c |
 
 
 ### aws-network-firewall-update-logging-configuration
@@ -1870,7 +1870,7 @@ Sets the logging configuration for the specified firewall.  To change the loggin
 
 
 #### Command Example
-```!aws-network-firewall-update-logging-configuration firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 logging_configuration_json="{\"LogDestinationConfigs\":[{\"LogType\":\"ALERT\",\"LogDestinationType\":\"S3\",\"LogDestination\":{\"bucketName\":\"xsoar-demo-test-bucket-network-firewall\",\"prefix\":\"alerts\"}}]}"```
+```!aws-network-firewall-update-logging-configuration firewall_arn=arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2 logging_configuration_json="{\"LogDestinationConfigs\":[{\"LogType\":\"ALERT\",\"LogDestinationType\":\"S3\",\"LogDestination\":{\"bucketName\":\"xsoar-demo-test-bucket-network-firewall\",\"prefix\":\"alerts\"}}]}"```
 
 
 #### Context Example
@@ -1878,7 +1878,7 @@ Sets the logging configuration for the specified firewall.  To change the loggin
 {
     "AWS-NetworkFirewall": {
         "Logging": {
-            "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2",
+            "FirewallArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2",
             "FirewallName": "myfirewall2",
             "LoggingConfiguration": {
                 "LogDestinationConfigs": [
@@ -1902,7 +1902,7 @@ Sets the logging configuration for the specified firewall.  To change the loggin
 >### AWS Network Firewall UpdateLoggingConfiguration
 >|FirewallArn|FirewallName|LoggingConfiguration|
 >|---|---|---|
->| arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 | myfirewall2 | LogDestinationConfigs: {'LogType': 'ALERT', 'LogDestinationType': 'S3', 'LogDestination': {'bucketName': 'xsoar-demo-test-bucket-network-firewall', 'prefix': 'alerts'}} |
+>| arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2 | myfirewall2 | LogDestinationConfigs: {'LogType': 'ALERT', 'LogDestinationType': 'S3', 'LogDestination': {'bucketName': 'xsoar-demo-test-bucket-network-firewall', 'prefix': 'alerts'}} |
 
 
 ### aws-network-firewall-update-rule-group
@@ -1951,7 +1951,7 @@ Updates the rule settings for the specified rule group. You use a rule group by 
 
 
 #### Command Example
-```!aws-network-firewall-update-rule-group rule_group_arn=arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2 update_token=049b2760-7b8d-4eb0-a2b1-89012f073da2 rule_group_json="""{"RulesSource":{"StatelessRulesAndCustomActions":{"StatelessRules":[{"RuleDefinition":{"MatchAttributes":{"Sources":[{"AddressDefinition":"10.0.0.0/8"},{"AddressDefinition":"192.168.0.0/16"},{"AddressDefinition":"172.31.0.0/16"}]},"Actions":["aws:pass"]},"Priority":5}]}}}"""```
+```!aws-network-firewall-update-rule-group rule_group_arn=arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2 update_token=049b2760-7b8d-4eb0-a2b1-89012f073da2 rule_group_json="""{"RulesSource":{"StatelessRulesAndCustomActions":{"StatelessRules":[{"RuleDefinition":{"MatchAttributes":{"Sources":[{"AddressDefinition":"10.0.0.0/8"},{"AddressDefinition":"192.168.0.0/16"},{"AddressDefinition":"172.31.0.0/16"}]},"Actions":["aws:pass"]},"Priority":5}]}}}"""```
 
 #### Context Example
 ```json
@@ -1960,7 +1960,7 @@ Updates the rule settings for the specified rule group. You use a rule group by 
         "RuleGroup": {
             "RuleGroupResponse": {
                 "Capacity": 10,
-                "RuleGroupArn": "arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2",
+                "RuleGroupArn": "arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2",
                 "RuleGroupId": "27409b82-b9de-456e-8e29-2a0e0776c548",
                 "RuleGroupName": "example-group-stateless2",
                 "RuleGroupStatus": "ACTIVE",
@@ -1978,7 +1978,7 @@ Updates the rule settings for the specified rule group. You use a rule group by 
 >### AWS Network Firewall UpdateRuleGroup
 >|RuleGroupResponse|UpdateToken|
 >|---|---|
->| RuleGroupArn: arn:aws:network-firewall:us-west-2:632480965664:stateless-rulegroup/example-group-stateless2<br/>RuleGroupName: example-group-stateless2<br/>RuleGroupId: 27409b82-b9de-456e-8e29-2a0e0776c548<br/>Type: STATELESS<br/>Capacity: 10<br/>RuleGroupStatus: ACTIVE<br/>Tags:  | 1ab2c7c4-df30-474b-9091-fe386f6bb41f |
+>| RuleGroupArn: arn:aws:network-firewall:us-west-2:123456789012:stateless-rulegroup/example-group-stateless2<br/>RuleGroupName: example-group-stateless2<br/>RuleGroupId: 27409b82-b9de-456e-8e29-2a0e0776c548<br/>Type: STATELESS<br/>Capacity: 10<br/>RuleGroupStatus: ACTIVE<br/>Tags:  | 1ab2c7c4-df30-474b-9091-fe386f6bb41f |
 
 
 ### aws-network-firewall-update-subnet-change-protection
@@ -2015,14 +2015,14 @@ Update the firewall subnet change  protection
 
 
 #### Command Example
-```!aws-network-firewall-update-subnet-change-protection subnet_change_protection=False firewall_arn=arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2```
+```!aws-network-firewall-update-subnet-change-protection subnet_change_protection=False firewall_arn=arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2```
 
 #### Context Example
 ```json
 {
     "AWS-NetworkFirewall": {
         "FirewallAttributes": {
-            "FirewallArn": "arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2",
+            "FirewallArn": "arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2",
             "FirewallName": "myfirewall2",
             "SubnetChangeProtection": false,
             "UpdateToken": "57b15519-a812-4758-9b23-30301ef3705a"
@@ -2036,5 +2036,5 @@ Update the firewall subnet change  protection
 >### AWS Network Firewall UpdateSubnetChangeProtection
 >|FirewallArn|FirewallName|SubnetChangeProtection|UpdateToken|
 >|---|---|---|---|
->| arn:aws:network-firewall:us-west-2:632480965664:firewall/myfirewall2 | myfirewall2 | false | 57b15519-a812-4758-9b23-30301ef3705a |
+>| arn:aws:network-firewall:us-west-2:123456789012:firewall/myfirewall2 | myfirewall2 | false | 57b15519-a812-4758-9b23-30301ef3705a |
 
