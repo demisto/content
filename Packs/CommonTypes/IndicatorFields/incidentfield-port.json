@@ -2,13 +2,8 @@
     "id": "indicator_port",
     "version": -1,
     "modified": "2019-12-29T12:32:09.901697254Z",
-    "sortValues": null,
     "propagationLabels": null,
-    "vcShouldIgnore": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "name": "Port",
-    "prevName": "Port",
     "ownerOnly": false,
     "placeholder": "",
     "description": "",
@@ -28,7 +23,6 @@
     "system": false,
     "content": true,
     "group": 2,
-    "mergeStrategy": "",
     "hidden": false,
     "associatedTypes": [
         "IP",
@@ -46,6 +40,5 @@
     "sla": 0,
     "threshold": 72,
     "breachScript": "",
-    "validatedError": "",
     "fromVersion": "5.5.0"
 }
