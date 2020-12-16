@@ -1,8 +1,10 @@
-from CommonServerPython import *
 import os
+
+from CommonServerPython import *
 
 
 def parse_attachment_entries(entries):
+    # list -> list
     """Parse the attachments entries.
 
     Args:
@@ -37,8 +39,11 @@ def main():
         Demisto entry.
     """
     entries = demisto.executeCommand('getEntries', {'filter': {'categories': ['attachments']}})
-    entry_context = parse_attachment_entries(entries)
-    return_outputs('Done', {outputPaths['file']: entry_context}, entry_context)
+    if isinstance(entries, list):
+        entry_context = parse_attachment_entries(entries)
+        return_outputs('Done', {outputPaths['file']: entry_context}, entry_context)
+    else:
+        return_outputs('No attachments were found.')
 
 
 if __name__ in ["__builtin__", "builtins"]:
