@@ -31,7 +31,7 @@ configuration:
   options:
   - 30d
   - forever
-  required: false
+  required: true
   type: 15
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
@@ -68,7 +68,7 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-- defaultvalue: '60'
+- defaultvalue: '1440'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
