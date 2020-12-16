@@ -33,6 +33,7 @@ class RegistryKey(Common.Indicator):
     """
     Registry Key indicator class
     """
+
     def __init__(self, path, value, name=None):
         self.path = path
         self.name = name
@@ -51,6 +52,7 @@ class Process(Common.Indicator):
     """
     Process indicator class
     """
+
     def __init__(self, name, pid, hostname=None, md5=None, sha1=None,
                  command_line=None, path=None, start_time=None, end_time=None,
                  parent=None, sibling=None, child=None):
@@ -304,7 +306,7 @@ def get_main_indicator(report, analysis_type):
         )
 
 
-def get_packages_indicators(res, analysis_info):
+def get_packages_indicators(res):
     report = res['report']
     command_results = []
     for package in report.get("packages", []):
@@ -323,10 +325,7 @@ def get_packages_indicators(res, analysis_info):
             )
         )
         command_results.append(CommandResults(
-            readable_output=get_human_readable_analysis_info(analysis_info),
-            outputs_prefix="Polygon.Analysis",
-            outputs_key_field="ID",
-            outputs=analysis_info,
+            readable_output=tableToMarkdown(f"New File indicator was created {file.name}"),
             indicator=file,
             raw_response=res
             )
@@ -334,7 +333,7 @@ def get_packages_indicators(res, analysis_info):
     return command_results
 
 
-def get_network_indicators(res, analysis_info):
+def get_network_indicators(res):
     report = res['report']
     command_results = []
     network = report.get('network', {})
@@ -350,10 +349,7 @@ def get_network_indicators(res, analysis_info):
             )
         )
         command_results.append(CommandResults(
-            readable_output=get_human_readable_analysis_info(analysis_info),
-            outputs_prefix="Polygon.Analysis",
-            outputs_key_field="ID",
-            outputs=analysis_info,
+            readable_output=tableToMarkdown(f"New Domain indicator was created {domain.domain}"),
             indicator=domain,
             raw_response=res
             )
@@ -369,10 +365,7 @@ def get_network_indicators(res, analysis_info):
             )
         )
         command_results.append(CommandResults(
-            readable_output=get_human_readable_analysis_info(analysis_info),
-            outputs_prefix="Polygon.Analysis",
-            outputs_key_field="ID",
-            outputs=analysis_info,
+            readable_output=tableToMarkdown(f"New IP indicator was created {ip.ip}"),
             indicator=ip,
             raw_response=res
             )
@@ -388,10 +381,7 @@ def get_network_indicators(res, analysis_info):
             )
         )
         command_results.append(CommandResults(
-            readable_output=get_human_readable_analysis_info(analysis_info),
-            outputs_prefix="Polygon.Analysis",
-            outputs_key_field="ID",
-            outputs=analysis_info,
+            readable_output=tableToMarkdown(f"New URL indicator was created {url.url}"),
             indicator=url,
             raw_response=res
             )
@@ -399,7 +389,7 @@ def get_network_indicators(res, analysis_info):
     return command_results
 
 
-def get_monitor_indicators(res, analysis_info):
+def get_monitor_indicators(res):
     report = res['report']
     command_results = []
     for p in report.get('goo_monitor', {}).get('processes', []):
@@ -412,10 +402,7 @@ def get_monitor_indicators(res, analysis_info):
             path=p.get('filename'),
         )
         command_results.append(CommandResults(
-            readable_output=get_human_readable_analysis_info(analysis_info),
-            outputs_prefix="Polygon.Analysis",
-            outputs_key_field="ID",
-            outputs=analysis_info,
+            human_readable=tableToMarkdown(f"New Process indicator was created {process.name}"),
             indicator=process,
             raw_response=res
             )
@@ -427,33 +414,32 @@ def get_monitor_indicators(res, analysis_info):
                     value=str(regkey.get('value'))
                 )
                 command_results.append(CommandResults(
-                    readable_output=get_human_readable_analysis_info(analysis_info),
-                    outputs_prefix="Polygon.Analysis",
-                    outputs_key_field="ID",
-                    outputs=analysis_info,
+                    human_readable=tableToMarkdown(f"New RegistryKey indicator was created {reg.value}"),
                     indicator=reg,
                     raw_response=res
-                )
+                    )
                 )
     return command_results
 
 
-def get_report_indicators(res, analysis_type, analysis_info):
+def get_report_indicators(res, analysis_type):
     report = res['report']
     command_results = []
+    human_readable = ''
     indicator = get_main_indicator(report, analysis_type)
+    if isinstance(indicator, Common.File):
+        human_readable = tableToMarkdown(f"New File indicator was created {indicator.name}")
+    elif isinstance(indicator, Common.url):
+        human_readable = tableToMarkdown(f"New URL indicator was created {indicator.url}")
     command_results.append(CommandResults(
-        readable_output=get_human_readable_analysis_info(analysis_info),
-        outputs_prefix="Polygon.Analysis",
-        outputs_key_field="ID",
-        outputs=analysis_info,
+        readable_output=human_readable,
         indicator=indicator,
         raw_response=res
         )
     )
-    command_results.extend(get_packages_indicators(res, analysis_info))
-    command_results.extend(get_network_indicators(res, analysis_info))
-    command_results.extend(get_monitor_indicators(res, analysis_info))
+    command_results.extend(get_packages_indicators(res))
+    command_results.extend(get_network_indicators(res))
+    command_results.extend(get_monitor_indicators(res))
 
     return command_results
 
