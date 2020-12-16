@@ -31,12 +31,12 @@ configuration:
   type: 8
 - defaultvalue: '20000'
   display: The maximum number of indicators to fetch.
-  name: maxIndicators
+  name: max_fetch
   required: false
   type: 0
 - defaultvalue: '7'
   display: Retrieve indicators observed in the last specified number of days
-  name: minLastObserved
+  name: min_last_observed
   required: false
   type: 0
 - defaultvalue: suddenDeath

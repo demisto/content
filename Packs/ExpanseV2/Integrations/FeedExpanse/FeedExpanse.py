@@ -22,9 +22,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 """ CONSTANTS """
 
-SERVER = "https://expander.expanse.co"
 TOKEN_DURATION = 7200
-PREFIX = SERVER + "/api"
 DEFAULT_MAX_INDICATORS = 10  # used in expanse-get-indicators
 DEFAULT_FETCH_MAX_INDICATORS = 1000  # used in fetch-indicators
 DEFAULT_FETCH_MIN_LAST_OBSERVED = 7  # used in fetch-indicators
@@ -54,7 +52,6 @@ class Client(BaseClient):
         retrieves new token when expired
         """
         current_utc_timestamp = int(datetime.utcnow().timestamp())
-        token_expiration = current_utc_timestamp + TOKEN_DURATION
 
         stored_token = demisto.getIntegrationContext()
         if (
@@ -95,8 +92,7 @@ class Client(BaseClient):
 
             data = result.get('data', [])
             if data is not None:
-                for a in data:
-                    yield a
+                yield from data
 
             pagination = result.get('pagination', None)
             if pagination is None:
@@ -108,7 +104,7 @@ class Client(BaseClient):
             params = None
 
     def get_iprange_by_id(self, iprange_id: str) -> Dict[str, Any]:
-        result: Dict = self._http_request(
+        result = self._http_request(
             method="GET",
             url_suffix=f"/v2/ip-range/{iprange_id}",
             raise_on_status=True,
@@ -266,10 +262,8 @@ def ip_to_demisto_indicator(ip_indicator: Dict[str, Any]) -> Optional[Dict[str, 
     if value is None:
         return None
 
-    provider_name: Optional[str] = None
-    provider = ip_indicator.get('provider', None)
-    if provider is not None:
-        provider_name = provider.get('name', None)
+    provider = ip_indicator.get('provider', {})
+    provider_name = provider.get('name', None)
 
     tenant_name: Optional[str] = None
     tenant = ip_indicator.get('tenant', None)
@@ -420,12 +414,8 @@ def domain_to_demisto_indicator(domain_indicator: Dict[str, Any]) -> Optional[Di
     if tenant is not None:
         tenant_name = tenant.get('name', None)
 
-    business_unit_names: List[str] = []
     business_units = domain_indicator.get("businessUnits", [])
-    for bu in business_units:
-        if 'name' not in bu:
-            continue
-        business_unit_names.append(bu['name'])
+    business_unit_names = [bu['name'] for bu in business_units if bu.get('name')]
 
     # to faciliate classifiers
     domain_indicator['expanseType'] = 'domain'
@@ -695,8 +685,8 @@ def main() -> None:
     base_url = urljoin(params["url"], "/api")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    max_indicators_param = params.get('maxIndicators')
-    min_last_observed_param = params.get('minLastObserved')
+    max_indicators_param = params.get('max_fetch')
+    min_last_observed_param = params.get('min_last_observed')
     tlp_color = params.get('tlp_color')
     feed_tags = params.get('feedTags', '')
 
