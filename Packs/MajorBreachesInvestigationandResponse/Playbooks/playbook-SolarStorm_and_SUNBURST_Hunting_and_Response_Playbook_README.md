@@ -2,6 +2,8 @@ This playbook collects IOCs from known sources that relate to SolarStorm and SUN
 The playbook will hunt the IOCs across the organization using EDR platforms for endpoints and Panorama for network activity.
 Lastly, the playbook will mitigate the threat by isolating the compromised hosts and blocking the indicators across the organization network.
 
+Note: This is a beta pack, which lets you implement and test pre-release software. Since the pack is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
+
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
