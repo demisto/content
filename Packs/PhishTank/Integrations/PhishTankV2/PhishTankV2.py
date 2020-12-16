@@ -322,7 +322,7 @@ def main() -> None:
 
         elif demisto.command() == 'url':
             url = argToList(demisto.args().get("url"))
-            url_command(client, url)
+            return_results(url_command(client, url))
 
         elif demisto.command() == 'phishtank-reload':
             return_results(phishtank_reload_command(client))
