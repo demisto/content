@@ -51,9 +51,9 @@ tasks:
       name: Select method to identify duplicates
       description: |-
         Select one of the following methods to identify duplicate incidents in Cortex XSOAR.
-        - ml: Machine learning model, which is trained mostly on phishing incidents.
-        -rules: Rules help identify duplicate incidents when the logic is well defined, for example, same label or custom fields.
-        -text: Statistics algorithm that compares text, which is generally useful for phishing incidents.
+        - ml: Machine learning model that is trained mostly on phishing incidents.
+        - rules: Rules help identify duplicate incidents when the logic is well defined, for example, same label or custom fields.
+        - text: Statistics algorithm that compares text, which is generally useful for phishing incidents.
       type: condition
       iscommand: false
       brand: ""
@@ -128,7 +128,7 @@ tasks:
       version: -1
       name: Identify duplicates by text
       description: |
-        Statistics algorithm that compares text, which is generally useful for phishing incidents.
+        Finds similar incidents using a statistics algorithm that compares text, which is generally useful for phishing incidents.
       scriptName: FindSimilarIncidentsByText
       type: regular
       iscommand: false
@@ -271,7 +271,7 @@ tasks:
       id: 821fea71-8442-4647-8281-52c916a04b43
       version: -1
       name: Close investigation as duplicate
-      description: Closes the investigation as a duplicate to one of the incidents
+      description: Closes the investigation as a duplicate to one of the incidents.
         identified.
       scriptName: CloseInvestigationAsDuplicate
       type: regular
@@ -551,7 +551,7 @@ tasks:
       id: e69901e9-ee05-4b11-8b09-2db95aba308e
       version: -1
       name: Identify Phishing duplicates using ML
-      description: An out-of-the-box deduplication preprocessing script based on a
+      description: Finds similar incidents using an out-of-the-box deduplication preprocessing script that is based on a
         machine learning algorithm.
       scriptName: PhishingDedupPreprocessingRule
       type: regular
