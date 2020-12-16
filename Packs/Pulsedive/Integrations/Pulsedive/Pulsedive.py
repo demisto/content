@@ -238,8 +238,8 @@ def url_reputation_command(client: Client, args: Dict[str, Any], api_key) -> Lis
             dbot_score=dbot_score
         )
 
-        url_data.pop('objects')
-        url_data.pop('nir')
+        url_data.pop('objects', None)
+        url_data.pop('nir', None)
         command_results.append(CommandResults(
             readable_output=tableToMarkdown('URL:', url_data),
             outputs_prefix='Pulsedive.URL',
