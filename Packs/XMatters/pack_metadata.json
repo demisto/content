@@ -3,9 +3,9 @@
     "description": "Use the xMatters pack to trigger events to on-call groups or users and wait for their response. Use their response to branch and take action in XSOAR.",
     "support": "partner",
     "currentVersion": "1.0.0",
-    "author": "Travis DePuy",
+    "author": "xMatters",
     "url": "https://support.xmatters.com/hc/en-us/requests/new",
-    "email": "",
+    "email": "support@xmatters.com",
     "created": "2020-10-06T22:06:34Z",
     "categories": [
         "Messaging",
@@ -34,5 +34,6 @@
         "on-call",
         "schedule"
     ],
-    "githubUser": [ "xmtinkerer" ]
+    "githubUser": [ "xmtinkerer" ],
+    "certification": "certified"
 }
