@@ -62,7 +62,7 @@ configuration:
   - xgEmail
   required: false
   type: 16
-- additionalinfo: Maximum number of alerts per fetch. Defaults to 50. Maximum is 100.
+- additionalinfo: Maximum number of alerts per fetch. Default is 50. Maximum is 100.
   defaultvalue: '50'
   display: Fetch Limit
   name: max_fetch
@@ -277,8 +277,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The date range in which to search from the current time instead of a start/end time.
-        (<number> <time unit>, e.g., 12 hours, 7 days). date_range will overwrite the start and end arguments if defined.
+      description: The date range in which to search from the current time instead of a start/end time in the format (<number> <time unit>, e.g., 12 hours, 7 days). date_range will overwrite the start and end arguments if defined.
       isArray: false
       name: date_range
       required: false
@@ -473,7 +472,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The datetime on which or after the endpoints were last seen (UTC).
+      description: The datetime on or after which the endpoints were last seen (UTC).
       isArray: false
       name: last_seen_after
       required: false
@@ -604,13 +603,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get tamper protection information for one or more endpoints. Potentially
-      harmful because of the password.
+    description: Get tamper protection information for one or more endpoints. Potentially harmful because of the password.
     execution: true
     name: sophos-central-endpoint-tamper-get
     outputs:
     - contextPath: SophosCentral.EndpointTamper.endpointId
-      description: ID of the endpoint regarding the tamper settings.
+      description: ID of the endpoint in regards to the tamper settings.
       type: String
     - contextPath: SophosCentral.EndpointTamper.enabled
       description: Whether tamper protection should be turned on for the endpoint.
@@ -647,13 +645,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update tamper protection information for one or more endpoints. Potentially
-      harmful because of the password.
+    description: Update tamper protection information for one or more endpoints. Potentially harmful because of the password.
     execution: true
     name: sophos-central-endpoint-tamper-update
     outputs:
     - contextPath: SophosCentral.EndpointTamper.endpointId
-      description: ID of the endpoint regarding the tamper settings.
+      description: ID of the endpoint in regards to the tamper settings.
       type: String
     - contextPath: SophosCentral.EndpointTamper.enabled
       description: Whether tamper protection should be turned on for the endpoint.
@@ -1212,10 +1209,7 @@ script:
       description: The unique ID for the scanning exclusion setting.
       type: String
     - contextPath: SophosCentral.ScanExclusion.scanMode
-      description: The scan mode. Default is "onDemandAndOnAccess" for exclusions
-        of type path, posixPath, and virtualPath and "onAccess" for process, web, pua,
-        amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions
-        do not support a scan mode.
+      description: The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode.
       type: String
     - contextPath: SophosCentral.ScanExclusion.type
       description: The scanning exclusion type.
@@ -1245,10 +1239,7 @@ script:
       description: The unique ID for the scanning exclusion setting.
       type: String
     - contextPath: SophosCentral.ScanExclusion.scanMode
-      description: The default value of scan mode is "onDemandAndOnAccess" for exclusions
-        of type path, posixPath, and virtualPath, "onAccess" for process, web, pua,
-        amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions
-        do not support a scan mode.
+      description: The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode.
       type: String
     - contextPath: SophosCentral.ScanExclusion.type
       description: The scanning exclusion type.
@@ -1312,7 +1303,7 @@ script:
       description: The unique ID for the scanning exclusion setting.
       type: String
     - contextPath: SophosCentral.ScanExclusion.scanMode
-      description: The default value of scan mode is "onDemandAndOnAccess" for exclusions of type path, posixPathm and virtualPath, "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode.
+      description: The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode.
       type: String
     - contextPath: SophosCentral.ScanExclusion.type
       description: The scanning exclusion type.
@@ -1365,10 +1356,7 @@ script:
       description: The unique ID for the scanning exclusion setting.
       type: String
     - contextPath: SophosCentral.ScanExclusion.scanMode
-      description: The default value of scan mode is "onDemandAndOnAccess" for exclusions
-        of type path, posixPath and virtualPath, "onAccess" for process, web, pua,
-        amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions
-        do not support a scan mode.
+      description: The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode.
       type: String
     - contextPath: SophosCentral.ScanExclusion.type
       description: The scanning exclusion type.
@@ -1432,7 +1420,7 @@ script:
     name: sophos-central-exploit-mitigation-list
     outputs:
     - contextPath: SophosCentral.ExploitMitigation.category
-      description: The Exploit Mitigation category ID.
+      description: The exploit mitigation category ID.
       type: String
     - contextPath: SophosCentral.ExploitMitigation.name
       description: The name given to this Exploit Mitigation application.
@@ -1444,8 +1432,7 @@ script:
       description: Paths included in this Exploit Mitigation application.
       type: String
     - contextPath: SophosCentral.ExploitMitigation.type
-      description: Whether the application was detected by the system or created by
-        the user.
+      description: Whether the application was detected by the system or created by the user.
       type: String
   - arguments:
     - default: false
@@ -1477,8 +1464,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: An absolute path to an application file to exclude. You may use
-        HitmanPro.Alert expansion variables (e.g., $desktop, $programfiles).
+      description: An absolute path to an application file to exclude. You may use HitmanPro.Alert expansion variables (e.g., $desktop, $programfiles).
       isArray: false
       name: path
       required: true
@@ -1512,8 +1498,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: An absolute path to an application file to exclude. You may use
-        HitmanPro.Alert expansion variables (e.g., $desktop, $programfiles).
+      description: An absolute path to an application file to exclude. You may use HitmanPro.Alert expansion variables (e.g., $desktop, $programfiles).
       isArray: false
       name: path
       required: true
@@ -1582,8 +1567,7 @@ script:
     name: sophos-central-detected-exploit-list
     outputs:
     - contextPath: SophosCentral.DetectedExploit.count
-      description: The number of times the same exploit has been detected, potentially
-        across multiple endpoints.
+      description: The number of times the same exploit has been detected, potentially across multiple endpoints.
       type: Number
     - contextPath: SophosCentral.DetectedExploit.description
       description: The English description of the exploit detected event.
@@ -1625,8 +1609,7 @@ script:
     name: sophos-central-detected-exploit-get
     outputs:
     - contextPath: SophosCentral.DetectedExploit.count
-      description: The number of times the same exploit has been detected, potentially
-        across multiple endpoints.
+      description: The number of times the same exploit has been detected, potentially across multiple endpoints.
       type: Number
     - contextPath: SophosCentral.DetectedExploit.description
       description: The English description of the exploit detected event.
