@@ -966,7 +966,7 @@ def aws_table_to_markdown(response, table_header):
                 if isinstance(response[list(response.keys())[0]], list):
                     list_response = response[list(response.keys())[0]]
                     if not list_response:
-                        human_readable = tableToMarkdown(table_header , list_response)
+                        human_readable = tableToMarkdown(table_header, list_response)
                     elif isinstance(list_response[0], str):
                         human_readable = tableToMarkdown(
                             table_header, response)
