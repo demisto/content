@@ -1,6 +1,6 @@
 # O365 - EWS - Extension
 
-This integration enables you to manage and interact with Microsoft O365 - Exchange Online from XSOAR.
+This integration enables you to run message traces and manage junk mail rules in Microsoft O365 - Exchange Online.
 
 Supported authentication methods:
 
