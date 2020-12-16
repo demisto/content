@@ -6,52 +6,53 @@ display: SecurityAdvisor
 category: Messaging
 description: Contextual coaching and awareness for end users
 configuration:
-  - display: Use system proxy settings
-    name: proxy
-    defaultvalue: ""
-    type: 8
-    required: false
-  - display: Trust any certificate (not secure)
-    name: insecure
-    defaultvalue: ""
-    type: 8
-    required: false
-  - display: API Endpoint URL
-    name: url
-    defaultvalue: https://www.securityadvisor.io/
-    type: 0
-    required: true
-  - display: API Key
-    name: apikey
-    defaultvalue: ""
-    type: 4
-    required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: API Endpoint URL
+  name: url
+  defaultvalue: https://www.securityadvisor.io/
+  type: 0
+  required: true
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: false
 script:
   script: ""
   type: python
   subtype: python3
+  dockerimage: demisto/python3:3.8.6.14516
   commands:
-    - name: coach-end-user
-      arguments:
-        - name: user
-          required: true
-          description: user email address
-        - name: context
-          default: true
-          auto: PREDEFINED
-          predefined:
-            - phishing
-            - spam
-            - malware
-            - ransomware
-          description: coaching context
-          defaultValue: phishing
-      outputs:
-        - contextPath: SecurityAdvisor.CoachUser.Message
-          description: Response for single user coaching
-          type: string
-      description: sends contextual message to single user
+  - name: coach-end-user
+    arguments:
+    - name: user
+      required: true
+      description: user email address
+    - name: context
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - phishing
+      - spam
+      - malware
+      - ransomware
+      description: coaching context
+      defaultValue: phishing
+    outputs:
+    - contextPath: SecurityAdvisor.CoachUser.Message
+      description: Response for single user coaching
+      type: string
+    description: sends contextual message to single user
   runonce: false
 fromversion: 5.0.0
 tests:
-  - SecurityAdvisor-Test
+- SecurityAdvisor-Test

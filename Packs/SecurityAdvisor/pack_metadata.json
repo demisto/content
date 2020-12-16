@@ -1,8 +1,8 @@
 {
-    "name": "SecurityAdvisor",
-    "description": "Contextual security awareness coaching for endusers",
+    "name": "SecurityAdvisor(v1.2)",
+    "description": "Use SecurityAdvisor integration to coach your end users on cyber security threats they face. SecurityAdvisor's contextual coaching platform allows you to perform targeted coaching to users therefore making them more likely to change their behavior and reduce the number of incidents.",
     "support": "partner",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.2.0",
     "author": "SecurityAdvisor",
     "url": "http://www.securityadvisor.io",
     "email": "support@securityadvisor.io",
@@ -11,14 +11,27 @@
         "Messaging"
     ],
     "tags": [
-        "Security Awareness",
-        "Phishing Training",
-        "Human risk",
-        "Contextual Coaching"
+        "Compliance",
+        "Security",
+        "Simulation",
+        "Email"
     ],
-    "useCases": [],
-    "keywords": [],
+    "useCases": [
+        "Compliance",
+        "Email Communication",
+        "Phishing",
+        "Malware",
+        "Ransomware"
+    ],
+    "keywords": [
+        "Security Awareness",
+        "Training",
+        "Conextual Coaching"
+    ],
     "githubUser": [
         "r-puri"
-    ]
+    ],
+    "installMessage": "Transaction processed. You will receive an email with instructions on obtaining your API key within 24 hours. See pack readme for more information.",
+    "dependencies": {},
+    "displayedImages": []
 }
