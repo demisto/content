@@ -23,7 +23,7 @@
 
         ]
     },
-    "query": "ExpanseGenerateIssueMap",
+    "query": "ExpanseGenerateIssueMapWidgetScript",
     "size": 0,
     "version": -1,
     "widgetType": "text",
