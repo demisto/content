@@ -635,14 +635,16 @@ def is_xm_version_supported_command(xm: XM, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def ip_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+def ip_command(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
 
     # Context standard for IP class
-    indicators_list: Any = []
+    command_results: List[CommandResults] = []
     xm_data_list = []  #: List[Dict[str, Any]] = []
+    readable_output = ''
+    entity_ids = None
 
     for ip in ips:
         entity_ids: List[Any]
@@ -665,7 +667,10 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
                 ip=ip,
                 dbot_score=dbot_score
             )
-            indicators_list.append(ip_standard_context)
+            command_results.append(CommandResults(
+                indicator=ip_standard_context,
+                readable_output=f'Fetched IP {ip} info'
+            ))
         for entity in entity_ids:
             score, reputation = entity_score(entity)
             entity_data = entity_obj_to_data(xm, entity)
@@ -686,7 +691,10 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
                 ip=ip,
                 dbot_score=dbot_score
             )
-            indicators_list.append(ip_standard_context)
+            command_results.append(CommandResults(
+                indicator=ip_standard_context,
+                readable_output=f'Fetched IP {ip} info'
+            ))
 
             # TODO return also endpoint
             if entity_data['type'] == SENSOR_TYPE:
@@ -696,25 +704,29 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
                     hostname=entity_data['name'],
                     os=entity_data['OS']
                 )
-                indicators_list.append(endpoint_standard_context)
+                command_results.append(CommandResults(
+                    indicator=endpoint_standard_context,
+                    readable_output=f'Fetched Endpoint for {ip} info'
+                ))
 
-    return CommandResults(
+    command_results.insert(0, CommandResults(
         readable_output=readable_output,
         outputs_prefix='XMCyber.Entity',
         outputs_key_field='id',
         outputs=xm_data_list,
-        indicators=indicators_list,
         raw_response=entity_ids
-    )
+    ))
+
+    return command_results
 
 
-def hostname_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
+def hostname_command(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
     hostnames = argToList(args.get('hostname'))
     if len(hostnames) == 0:
         raise ValueError('Endpoint(s) not specified')
 
     # Context standard for IP class
-    endpoint_standard_list: List[Common.Endpoint] = []
+    command_results: List[CommandResults] = []
     xm_data_list: List[Dict[str, Any]] = []
 
     for hostname in hostnames:
@@ -739,18 +751,22 @@ def hostname_command(xm: XM, args: Dict[str, Any]) -> CommandResults:
                                                             )
             except (TypeError, AttributeError, KeyError):
                 endpoint_standard_context = Common.Endpoint(ID, hostname=hostname)
-            endpoint_standard_list.append(endpoint_standard_context)
+            command_results.append(CommandResults(
+                indicator=endpoint_standard_context,
+                readable_output=f'Fetched Endpoint {hostname} info'
+            ))
             entity_data = entity_obj_to_data(xm, entity)
             readable_output += pretty_print_entity(entity_data)
             xm_data_list.append(entity_data)
 
-    return CommandResults(
+    command_results.insert(0, CommandResults(
         readable_output=readable_output,
         outputs_prefix='XMCyber.Entity',
         outputs_key_field='id',
         outputs=xm_data_list,
-        indicators=endpoint_standard_list
-    )
+    ))
+
+    return command_results
 
 
 def test_module_command_internal(xm: XM, args: Dict[str, Any]) -> CommandResults:
