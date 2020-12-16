@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://s-platform.api.opendns.com
-  display: Server URL (e.g. https://example.net)
+  display: Server URL (e.g., https://example.net)
   name: url
   required: true
   type: 0
@@ -27,7 +27,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Alert time of the new event. Should be date time format, e.g. 2013-02-08T09:30:26.0Z
+      description: Alert time of the new event in datetime format, e.g., 2013-02-08T09:30:26.0Z.
       isArray: false
       name: alert_time
       required: true
@@ -45,7 +45,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Destination url of the new event.
+      description: Destination URL of the new event.
       isArray: false
       name: destination_url
       required: true
@@ -57,39 +57,39 @@ script:
       required: true
       secret: false
     - default: false
-      description: The destination IP of the domain, specified in IPv4 dotted-decimal
-        notation. An example would be '8.8.8.8'
+      description: The destination IP address of the domain, specified in IPv4 dotted-decimal
+        notation e.g., '8.8.8.8'.
       isArray: false
       name: destination_ip
       required: false
       secret: false
     - default: false
-      description: 'The parter threat level or rating, eg: severe, bad, high, and
+      description: 'The partner threat level or rating, e.g., severe, bad, high, and
         so on.'
       isArray: false
       name: event_severity
       required: false
       secret: false
     - default: false
-      description: Common name or classification of threat.
+      description: Common name or classification of the threat.
       isArray: false
       name: event_type
       required: false
       secret: false
     - default: false
-      description: Variant or other descriptor of event type.
+      description: Variant or other descriptor of the event type.
       isArray: false
       name: event_description
       required: false
       secret: false
     - default: false
-      description: Path to file exhibiting malicious behavior.
+      description: Path to the file exhibiting malicious behavior.
       isArray: false
       name: file_name
       required: false
       secret: false
     - default: false
-      description: SHA-1 of file reported by appliance.
+      description: SHA-1 of file reported by the appliance.
       isArray: false
       name: file_hash
       required: false
@@ -102,21 +102,20 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Posts a Malware event to the API for processing and optionally adding
+    description: Posts a malware event to the API for processing and optionally adding
       to a customer's domain lists.
     execution: false
     name: umbrella-domain-event-add
   - arguments:
     - default: false
-      description: Number of page which should be returned, if non selected the default
-        is 1.
+      description: Number of page to return. Default is "1".
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: The limit of queries per page.
+      description: The maximum number of queries per page. Default is "50".
       isArray: false
       name: limit
       required: false
@@ -127,13 +126,13 @@ script:
     name: umbrella-domains-list
     outputs:
     - contextPath: UmbrellaEnforcement.Domains.name
-      description: Domains name
+      description: Name of the domains.
       type: String
     - contextPath: UmbrellaEnforcement.Domains.id
-      description: Domains id.
+      description: ID of the domains.
       type: Number
     - contextPath: UmbrellaEnforcement.Domains.IsDeleted
-      description: IsDeleted set true if the domain has been deleted from list.
+      description: True if the domain has been deleted from list.
       type: Boolean
   - arguments:
     - default: false
