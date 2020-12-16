@@ -410,7 +410,7 @@ def ip_reputation_command(client, args, good_tag, bad_tag) -> List[CommandResult
         )
 
         command_results.append(CommandResults(
-            readable_output=tableToMarkdown('IP List', ip_data),
+            readable_output=tableToMarkdown('IP Details', ip_data),
             outputs_prefix='Synapse.IP',
             outputs_key_field='ip',
             outputs=ip_data,
@@ -465,7 +465,7 @@ def domain_reputation_command(client, args, good_tag, bad_tag) -> List[CommandRe
         )
 
         command_results.append(CommandResults(
-            readable_output=tableToMarkdown('Domain List', domain_data),
+            readable_output=tableToMarkdown('Domain Details', domain_data),
             outputs_prefix='Synapse.Domain',
             outputs_key_field='domain',
             outputs=domain_data,
@@ -524,7 +524,7 @@ def url_reputation_command(client, args, good_tag, bad_tag) -> List[CommandResul
         )
 
         command_results.append(CommandResults(
-            readable_output=tableToMarkdown('URL List', url_data),
+            readable_output=tableToMarkdown('URL Details', url_data),
             outputs_prefix='Synapse.URL',
             outputs_key_field='url',
             outputs=url_data,
@@ -580,7 +580,7 @@ def file_reputation_command(client, args, good_tag, bad_tag) -> List[CommandResu
         )
 
         command_results.append(CommandResults(
-            readable_output=tableToMarkdown('File List', file_data),
+            readable_output=tableToMarkdown('File Details', file_data),
             outputs_prefix='Synapse.File',
             outputs_key_field='hash',
             outputs=file_data,
