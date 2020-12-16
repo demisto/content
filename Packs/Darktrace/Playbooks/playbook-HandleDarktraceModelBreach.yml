@@ -74,7 +74,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: Conditional
+      description: "Conditional"
     nexttasks:
       "No":
       - "7"
@@ -231,10 +231,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: d8c64900-4c4c-48fb-84bc-7112504cbad0
+    taskid: 7f4322cf-46ff-406d-85af-ca4022c43c3e
     type: playbook
     task:
-      id: d8c64900-4c4c-48fb-84bc-7112504cbad0
+      id: 7f4322cf-46ff-406d-85af-ca4022c43c3e
       version: -1
       name: Entity Enrichment - Generic v3
       description: Enrich entities using one or more integrations.
@@ -246,16 +246,8 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      CVE:
-        complex:
-          root: CVE
-          accessor: ID
-      Domain:
-        complex:
-          root: Domain
-          accessor: Name
-          transformers:
-          - operator: uniq
+      CVE: {}
+      Domain: {}
       Email:
         complex:
           root: Account
@@ -264,8 +256,8 @@ tasks:
           - operator: uniq
       Hostname:
         complex:
-          root: Endpoint
-          accessor: Hostname
+          root: Darktrace.ModelBreach.device
+          accessor: hostname
           transformers:
           - operator: uniq
       IP:
@@ -274,38 +266,18 @@ tasks:
           accessor: ip
       InternalDomains: {}
       InternalRange: {}
-      MD5:
-        complex:
-          root: File
-          accessor: MD5
-          transformers:
-          - operator: uniq
+      MD5: {}
       ResolveIP:
         simple: "False"
-      SHA1:
-        complex:
-          root: File
-          accessor: SHA1
-          transformers:
-          - operator: uniq
-      SHA256:
-        complex:
-          root: File
-          accessor: SHA256
-          transformers:
-          - operator: uniq
+      SHA1: {}
+      SHA256: {}
       URL:
         complex:
           root: URL
           accessor: Data
           transformers:
           - operator: uniq
-      Username:
-        complex:
-          root: Account
-          accessor: Username
-          transformers:
-          - operator: uniq
+      Username: {}
     separatecontext: true
     loop:
       iscommand: false
@@ -534,7 +506,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: Conditional
+      description: "Conditional"
     nexttasks:
       '#default#':
       - "15"
@@ -709,10 +681,10 @@ tasks:
       id: 46e1f2e4-12bc-40df-8e6d-2b446d26928d
       version: -1
       name: Does device exist?
-      description: Conditional
       type: condition
       iscommand: false
       brand: ""
+      description: "Conditional"
     nexttasks:
       '#default#':
       - "12"
