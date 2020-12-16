@@ -74,6 +74,11 @@ configuration:
   name: fetchByCreated
   required: false
   type: 8
+- display: Mirror outgoing incidents
+  hidden: false
+  name: outgoing_mirror
+  required: false
+  type: 8
 description: Use the Jira integration to manage issues and create Demisto incidents
   from projects, From version XSOAR 6.0 and above mirror issues to existing issue
   incidents in demisto.
@@ -546,6 +551,9 @@ script:
   dockerimage: demisto/oauthlib:1.0.0.14319
   feed: false
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false
