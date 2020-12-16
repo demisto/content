@@ -8,7 +8,7 @@
         "DevelopmentEnvironment": "Expanse Issue",
         "NetworkingAndSecurityInfrastructure": "Expanse Issue"
     },
-    "name": "ExpanseV2",
+    "name": "ExpanseV2 - Classifier",
 	"transformer": {
 		"complex": null,
 		"simple": "issueType.id"
