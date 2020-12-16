@@ -1,8 +1,8 @@
 This playbook identifies duplicate incidents using one of the supported methods.
 Select one of the following methods to identify duplicate incidents in Cortex XSOAR.
-- ml: Machine learning model, which is trained mostly on phishing incidents.
--rules: Rules help identify duplicate incidents when the logic is well defined, for example, the same label or custom fields.
--text: Statistics algorithm that compares text, which is generally useful for phishing incidents.
+- **ml**: Machine learning model, which is trained mostly on phishing incidents.
+- **rules**: Rules help identify duplicate incidents when the logic is well defined, for example, the same label or custom fields.
+- **text**: Statistics algorithm that compares text, which is generally useful for phishing incidents.
 For each method, the playbook will search for the oldest similar incident. when there is a match for a similar incident the playbook will close the current incident and will link it to the older incident. 
 
 ## Dependencies
