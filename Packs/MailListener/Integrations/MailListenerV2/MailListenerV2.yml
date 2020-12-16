@@ -37,7 +37,7 @@ configuration:
   name: permittedFromDomain
   required: false
   type: 0
-- defaultvalue: 1 day
+- defaultvalue: 1 hour
   display: First fetch time
   name: first_fetch
   required: false
@@ -47,38 +47,6 @@ configuration:
   name: limit
   required: false
   type: 0
-- defaultvalue: UTC±00:00
-  display: UTC offset of the mail server
-  hidden: false
-  name: utc_offset
-  options:
-  - UTC-12:00
-  - UTC-11:00
-  - UTC-10:00
-  - UTC-09:00
-  - UTC-08:00
-  - UTC-07:00
-  - UTC-06:00
-  - UTC-05:00
-  - UTC-04:00
-  - UTC-03:00
-  - UTC-02:00
-  - UTC-01:00
-  - UTC±00:00
-  - UTC+01:00
-  - UTC+02:00
-  - UTC+03:00
-  - UTC+04:00
-  - UTC+05:00
-  - UTC+06:00
-  - UTC+07:00
-  - UTC+08:00
-  - UTC+09:00
-  - UTC+10:00
-  - UTC+11:00
-  - UTC+12:00
-  required: false
-  type: 15
 - display: Delete processed emails
   name: delete_processed
   required: false
