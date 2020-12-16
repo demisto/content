@@ -1,0 +1,17 @@
+{
+    "name": "Test Pack from Curl",
+    "description": "This is a test pack from curl",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "testing",
+    "url": "",
+    "email": "",
+    "created": "2020-12-16T09:42:10Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "content-bot"
+    ]
+}
