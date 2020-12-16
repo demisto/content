@@ -59,7 +59,7 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
-  display: ""
+  display: ''
   name: feedExpirationPolicy
   options:
   - never

@@ -241,7 +241,7 @@ def main() -> None:
             download_params = _DownloadParams(client.api_key)
             client.download_csv(download_params)
 
-            return_results("ok")
+            return_results('ok')
 
         elif command == 'fetch-indicators':
             fetch_indicators(params)
