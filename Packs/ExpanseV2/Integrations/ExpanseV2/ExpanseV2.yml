@@ -3956,7 +3956,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.6.14516
 defaultclassifier: ExpanseV2
 defaultmapperin: ExpanseV2-mapper
 fromversion: 6.0.0

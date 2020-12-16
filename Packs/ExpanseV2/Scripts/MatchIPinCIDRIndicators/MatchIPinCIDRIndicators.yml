@@ -9,7 +9,7 @@ comment: Match provided IP address in all the Indicators of type CIDR with the p
 commonfields:
   id: MatchIPinCIDRIndicators
   version: -1
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/python3:3.8.6.14516
 enabled: true
 name: MatchIPinCIDRIndicators
 outputs:
