@@ -516,6 +516,7 @@ def fetch_incidents(service):
     demisto.debug('\n\nEntering fetch incidents\n\n')
     opt_in_log('\n\n Entering fetch\n\n')
     last_run = demisto.getLastRun() and demisto.getLastRun()['time']
+    opt_in_log('\n\n last run is: {} \n\n'.format(last_run))
     search_offset = demisto.getLastRun().get('offset', 0)
 
     incidents = []
@@ -567,6 +568,8 @@ def fetch_incidents(service):
         fetched_incidents_custom_ids[incident_id] = 'dummy'
         if incident_id not in last_run_fetched_ids:
             incidents.append(inc)
+        else:
+            opt_in_log('\n\nDropped incident due to duplication.\n\n')
 
     debug_message = '\n\n total number of incidents found: from {}\n to {}\n with the ' \
                     'query: {} is: {}.\n\n incidents found: {} \n\n'.format(last_run, now, searchquery_oneshot,
