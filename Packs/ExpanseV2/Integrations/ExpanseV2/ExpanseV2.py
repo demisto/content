@@ -2322,7 +2322,7 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         #  To be compatible with 6.1
-        if 'not-implemented' in str(e):
+        if 'not implemented' in str(e):
             raise e
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(
