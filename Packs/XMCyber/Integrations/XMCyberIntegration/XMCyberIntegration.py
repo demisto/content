@@ -709,6 +709,7 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
                     readable_output=f'Fetched Endpoint for {ip} info'
                 ))
 
+    # add general hr and output to the begining of result
     command_results.insert(0, CommandResults(
         readable_output=readable_output,
         outputs_prefix='XMCyber.Entity',
@@ -759,6 +760,7 @@ def hostname_command(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
             readable_output += pretty_print_entity(entity_data)
             xm_data_list.append(entity_data)
 
+    # add general hr and output to the begining of result
     command_results.insert(0, CommandResults(
         readable_output=readable_output,
         outputs_prefix='XMCyber.Entity',
