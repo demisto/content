@@ -221,10 +221,20 @@ def test_url_command(mocker, data, url, expected_score, expected_table):
         - After asked fot url command
 
     Then:
-        - Returns markdown table and outputs
+        - validating that the IOC score is as expected
+        - validating the returned human readable
     """
     client = create_client(False, False, "1")
     mocker.patch.object(demisto, "results")
     mocker.patch('PhishTankV2.get_url_data', return_value=(data, url[0]))
-    url_command(client, url)
-    assert len(url) == demisto.results.call_count
+    command_results = url_command(client, url)
+
+    # validate score
+    output = command_results[0].to_context().get('EntryContext', {})
+    dbot_key = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&' \
+               ' val.Vendor == obj.Vendor && val.Type == obj.Type)'
+    assert output.get(dbot_key, []).get('Score') == expected_score
+
+    # validate human readable
+    hr_ = command_results[0].to_context().get('HumanReadable', {})
+    assert hr_ == expected_table
