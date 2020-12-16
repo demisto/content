@@ -79,7 +79,7 @@ List alerts.
                 "raisedAt": "2020-11-25T09:19:18.936Z",
                 "severity": "high",
                 "tenantId": "11f104c5-cc4a-4a9f-bb9c-632c936dfb9f",
-                "tenantName": "Qnasters",
+                "tenantName": "Cortex XSOAR",
                 "type": "Event::Endpoint::Threat::CleanupFailed"
             },
             {
@@ -97,7 +97,7 @@ List alerts.
                 "raisedAt": "2020-11-25T10:36:31.603Z",
                 "severity": "high",
                 "tenantId": "11f104c5-cc4a-4a9f-bb9c-632c936dfb9f",
-                "tenantName": "Qnasters",
+                "tenantName": "Cortex XSOAR",
                 "type": "Event::Endpoint::Threat::CommandAndControlDetected"
             },
             {
@@ -115,7 +115,7 @@ List alerts.
                 "raisedAt": "2020-11-25T10:42:09.083Z",
                 "severity": "medium",
                 "tenantId": "11f104c5-cc4a-4a9f-bb9c-632c936dfb9f",
-                "tenantName": "Qnasters",
+                "tenantName": "Cortex XSOAR",
                 "type": "Event::Endpoint::OutOfDate"
             }
         ]
@@ -190,7 +190,7 @@ Get a single alert by ID.
             "raisedAt": "2020-11-25T09:19:18.936Z",
             "severity": "high",
             "tenantId": "11f104c5-cc4a-4a9f-bb9c-632c936dfb9f",
-            "tenantName": "Qnasters",
+            "tenantName": "Cortex XSOAR",
             "type": "Event::Endpoint::Threat::CleanupFailed"
         }
     }
@@ -280,7 +280,7 @@ Get alerts matching request.
 | group_key | Alert group key. | Optional | 
 | start | Time on which or after the alerts were raised. Use ISO time format (YYYY-MM-DDTHH:MM:SSZ). | Optional | 
 | end | Time before which alerts were raised. Use ISO time format (YYYY-MM-DDTHH:MM:SSZ). | Optional | 
-| date_range | The date range in which to search from the current time instead of a start/end time in the format (<number> <time unit>, e.g., 12 hours, 7 days). date_range will overwrite the start and end arguments if defined. | Optional | 
+| date_range | The date range in which to search from the current time instead of a start/end time in the format (`<number> <time unit>`, e.g., 12 hours, 7 days). date_range will overwrite the start and end arguments if defined. | Optional | 
 | product | Alerts for a product(s). Possible values are: "other", "endpoint", "server", "mobile", "encryption", "emailGateway", "webGateway", "phishThreat", "wireless", "iaas", and "firewall". | Optional | 
 | category | Alert category(s). | Optional | 
 | severity | Alerts for a specific severity level(s). Possible values are: "high", "medium", and "low". | Optional | 
