@@ -335,12 +335,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f1136477-89fe-45ee-888c-f0caa88c0c2e
+      id: ef7e1399-a640-41f6-8274-f64397d3696c
       iscommand: false
       name: Validate !o365-sc-new-search-action (Generic polling playbook) and !o365-sc-get-search-action
       type: condition
       version: -1
-    taskid: f1136477-89fe-45ee-888c-f0caa88c0c2e
+    taskid: ef7e1399-a640-41f6-8274-f64397d3696c
     timertriggers: []
     type: condition
     view: |-
@@ -368,19 +368,19 @@ tasks:
       search_action_name:
         complex:
           accessor: Name
-          root: O365.SecurityAndCompliance.ContentSearch.Search
+          root: O365.SecurityAndCompliance.ContentSearch.SearchAction
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Get compliance search action from the Security & Compliance Center.
-      id: fe0c02d0-e69b-42b5-872e-6a0eeac48c4f
+      id: 633678fe-b4f9-4668-8ee9-58e2584638aa
       iscommand: true
       name: Get search action
       script: '|||o365-sc-get-search-action'
       type: regular
       version: -1
-    taskid: fe0c02d0-e69b-42b5-872e-6a0eeac48c4f
+    taskid: 633678fe-b4f9-4668-8ee9-58e2584638aa
     timertriggers: []
     type: regular
     view: |-
