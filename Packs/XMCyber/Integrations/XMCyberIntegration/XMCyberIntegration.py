@@ -669,7 +669,7 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
             )
             command_results.append(CommandResults(
                 indicator=ip_standard_context,
-                readable_output=f'Fetched IP {ip} info'
+                readable_output=f'No entity found for {ip}'
             ))
         for entity in entity_ids:
             score, reputation = entity_score(entity)
@@ -693,7 +693,8 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
             )
             command_results.append(CommandResults(
                 indicator=ip_standard_context,
-                readable_output=f'Fetched IP {ip} info'
+                readable_output=f'Fetched IP {ip} info',
+                raw_response=entity_data
             ))
 
             # TODO return also endpoint
@@ -706,7 +707,8 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
                 )
                 command_results.append(CommandResults(
                     indicator=endpoint_standard_context,
-                    readable_output=f'Fetched Endpoint for {ip} info'
+                    readable_output=f'Fetched Endpoint for {ip} info',
+                    raw_response=entity_data
                 ))
 
     # add general hr and output to the begining of result
@@ -754,7 +756,8 @@ def hostname_command(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
                 endpoint_standard_context = Common.Endpoint(ID, hostname=hostname)
             command_results.append(CommandResults(
                 indicator=endpoint_standard_context,
-                readable_output=f'Fetched Endpoint {hostname} info'
+                readable_output=f'Fetched Endpoint {hostname} info',
+                raw_response=entity
             ))
             entity_data = entity_obj_to_data(xm, entity)
             readable_output += pretty_print_entity(entity_data)
