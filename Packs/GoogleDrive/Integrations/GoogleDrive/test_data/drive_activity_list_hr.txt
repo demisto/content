@@ -1,0 +1,17 @@
+### Next Page Token: string nextPageToken
+### Total Retrieved Drive Activity(s): 13
+|Activity Time|Primary Action|Object|
+|---|---|---|
+| 2020-09-19T18:07:00.406Z | Create New | Target: 'Copy of conf.json'<br>Target: 'string'<br>Commented on file 'Copy of conf.json'<br> |
+| 2020-09-19T18:07:00.406Z | Create Upload | Target: 'Copy of conf.json'<br> |
+| 2020-09-19T18:07:00.406Z | Create Copy | Target: 'Copy of conf.json'<br> |
+| 2020-09-19T18:07:00.406Z | Edit | Target: 'Copy of conf.json'<br> |
+| 2020-09-19T18:07:00.406Z | Move | Target: 'Copy of conf.json'<br> |
+| 2020-09-19T18:07:00.406Z | Rename | Old Title: 'OLD TITLE RENAMED'<br>New Title: 'NEW TITLE RENAMED'<br> |
+| 2020-09-19T18:07:00.406Z | Delete | Delete Type: DELETE TYPE<br>Target: 'Copy of conf.json'<br> |
+| 2020-09-19T18:07:00.406Z | Restore | Restore Type: RESTORE TYPE<br>Target: 'Copy of conf.json'<br> |
+| 2020-09-19T18:07:00.406Z | PermissionChange | Target: 'Copy of conf.json'<br> |
+| 2020-09-19T18:07:00.406Z | Comment | Target: 'Copy of conf.json'<br> |
+| 2020-09-19T18:07:00.406Z | DataLeakPreventionChange | DataLeakPreventionChange Type: dlpChange TYPE_UNSPECIFIED<br>Target: 'Copy of conf.json'<br> |
+| 2020-09-19T18:07:00.406Z | Reference | Reference Type: reference LINK<br>Target: 'Copy of conf.json'<br> |
+| 2020-09-19T18:07:00.406Z | SettingsChange | Feature: feature enum (Feature)<br>New Restriction: newRestriction enum (Restriction)<br>Target: 'Copy of conf.json'<br> |

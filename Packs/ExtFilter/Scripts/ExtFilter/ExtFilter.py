@@ -13,6 +13,10 @@ PATALG_BINARY = 0
 PATALG_WILDCARD: int = 1
 PATALG_REGEX = 2
 
+ITERATE_NODE = 0
+ITERATE_VALUE = 1
+ITERATE_KEY = 2
+
 
 class Value:
     def __init__(self, value: Any):
@@ -157,6 +161,36 @@ def marshal(value: Any) -> Any:
         return value
 
 
+def iterate_value(
+        value: Any,
+        type: int = ITERATE_NODE,
+        recursive: bool = False):
+    if isinstance(value, list):
+        for v in value:
+            if recursive:
+                yield from iterate_value(v, type, recursive)
+            elif type != ITERATE_KEY:
+                yield v
+
+    elif isinstance(value, dict):
+        if type == ITERATE_NODE:
+            yield value
+        else:
+            for k, v in value.items():
+                if type == ITERATE_KEY:
+                    yield k
+                    if recursive:
+                        yield from iterate_value(v, type, recursive)
+                else:  # ITERATE_VALUE
+                    if recursive:
+                        yield from iterate_value(v, type, recursive)
+                    else:
+                        yield v
+    else:
+        if type != ITERATE_KEY:
+            yield value
+
+
 def hashdigest(value: str, algorithm: str) -> str:
     h = hashlib.new(algorithm)
     h.update(value.encode('utf-8'))
@@ -201,7 +235,8 @@ def match_pattern(
                 return next(
                     filter(
                         lambda v:
-                            isinstance(v, str) and fnmatch.fnmatchcase(v.lower(), pattern),
+                            isinstance(v, str)
+                            and fnmatch.fnmatchcase(v.lower(), pattern),
                         value),
                     None) is not None
             elif isinstance(value, str):
@@ -211,7 +246,8 @@ def match_pattern(
                 return next(
                     filter(
                         lambda v:
-                        isinstance(v, str) and fnmatch.fnmatchcase(v, pattern),
+                        isinstance(v, str)
+                        and fnmatch.fnmatchcase(v, pattern),
                         value),
                     None) is not None
             elif isinstance(value, str):
@@ -225,7 +261,8 @@ def match_pattern(
             return next(
                 filter(
                     lambda v:
-                        isinstance(v, str) and re.fullmatch(pattern, v, flags),
+                        isinstance(v, str)
+                        and re.fullmatch(pattern, v, flags),
                     value),
                 None) is not None
         elif isinstance(value, str):
@@ -612,7 +649,8 @@ class ExtFilter:
             return next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and match_pattern(r, lhs, True, PATALG_BINARY),
+                        isinstance(r, str)
+                        and match_pattern(r, lhs, True, PATALG_BINARY),
                     rhs),
                 None) is not None
 
@@ -632,7 +670,8 @@ class ExtFilter:
             return next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and match_pattern(r, lhs, False, PATALG_WILDCARD),
+                        isinstance(r, str)
+                        and match_pattern(r, lhs, False, PATALG_WILDCARD),
                     rhs),
                 None) is not None
 
@@ -645,7 +684,8 @@ class ExtFilter:
             return next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and match_pattern(r, lhs, True, PATALG_WILDCARD),
+                        isinstance(r, str)
+                        and match_pattern(r, lhs, True, PATALG_WILDCARD),
                     rhs),
                 None) is not None
 
@@ -666,7 +706,8 @@ class ExtFilter:
             return next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and match_pattern(r, lhs, False, PATALG_REGEX),
+                        isinstance(r, str)
+                        and match_pattern(r, lhs, False, PATALG_REGEX),
                     rhs),
                 None) is not None
 
@@ -679,7 +720,8 @@ class ExtFilter:
             return next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and match_pattern(r, lhs, True, PATALG_REGEX),
+                        isinstance(r, str)
+                        and match_pattern(r, lhs, True, PATALG_REGEX),
                     rhs),
                 None) is not None
 
@@ -737,7 +779,10 @@ class ExtFilter:
             parent = None
             child = root
             if path:
-                if not isinstance(root, dict):
+                if isinstance(root, list):
+                    return Value([v.value for v in [self.filter_with_expressions(
+                        r, conds, path, True) for r in root] if v])
+                elif not isinstance(root, dict):
                     return None
                 (parent, parent_path),\
                     (child, child_name) = get_parent_child(root, path)
@@ -1037,6 +1082,42 @@ class ExtFilter:
             else:
                 return Value(root)
 
+        elif optype == "switch-case":
+            if not inlist and isinstance(root, list):
+                return self.filter_values(root, optype, conds, path)
+
+            conds = self.parse_conds_json(conds)
+            if not isinstance(conds, dict):
+                exit_error(f"Invalid conditions: {conds}")
+
+            label = "default"
+            lconds = conds.get("switch")
+            if lconds:
+                for lexps in iterate_value(self.parse_conds_json(lconds)):
+                    if not isinstance(lexps, dict):
+                        exit_error(f"Invalid conditions: {lexps}")
+
+                    for k, v in lexps.items():
+                        if not isinstance(v, dict):
+                            exit_error(f"Invalid conditions: {lconds}")
+
+                        if self.filter_with_expressions(root, v, path, inlist):
+                            label = k
+                            break
+                    else:
+                        continue
+                    break
+
+            lconds = conds.get(label)
+            if lconds:
+                lconds = self.parse_conds_json(lconds)
+                if not isinstance(lconds, (dict, list)):
+                    exit_error(f"Invalid conditions: {lconds}")
+
+                return self.filter_with_expressions(root, lconds, path, inlist)
+            else:
+                return Value(root)
+
         elif optype == "keeps":
             if not inlist and isinstance(root, list):
                 return self.filter_values(root, optype, conds, path)
@@ -1100,6 +1181,36 @@ class ExtFilter:
                 return Value(v) if v else None
             else:
                 return self.filter_with_conditions(root, conds)
+
+        elif optype == "collects values":
+            if not inlist and isinstance(root, list):
+                return self.filter_values(root, optype, conds, path)
+
+            if isinstance(root, (list, dict)):
+                return Value([v for v in iterate_value(root, ITERATE_VALUE)])
+            else:
+                return Value(root)
+
+        elif optype == "collects keys":
+            if not inlist and isinstance(root, list):
+                return self.filter_values(root, optype, conds, path)
+
+            if isinstance(root, (list, dict)):
+                return Value([v for v in iterate_value(root, ITERATE_KEY)])
+            else:
+                return None
+
+        elif optype == "flattens with values":
+            if isinstance(root, (list, dict)):
+                return Value([v for v in iterate_value(root, ITERATE_VALUE, True)])
+            else:
+                return Value(root)
+
+        elif optype == "flattens with keys":
+            if isinstance(root, (list, dict)):
+                return Value([v for v in iterate_value(root, ITERATE_KEY, True)])
+            else:
+                return None
 
         """
         Filter for an entire value
@@ -1271,7 +1382,8 @@ class ExtFilter:
             if next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and match_pattern(r, lhs, True, PATALG_BINARY),
+                        isinstance(r, str)
+                        and match_pattern(r, lhs, True, PATALG_BINARY),
                     rval),
                     None):
                 return Value(lhs)
@@ -1292,7 +1404,8 @@ class ExtFilter:
             if next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and match_pattern(r, lhs, False, PATALG_WILDCARD),
+                        isinstance(r, str)
+                        and match_pattern(r, lhs, False, PATALG_WILDCARD),
                     rval),
                     None):
                 return Value(lhs)
@@ -1305,7 +1418,8 @@ class ExtFilter:
             if next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and match_pattern(r, lhs, True, PATALG_WILDCARD),
+                        isinstance(r, str)
+                        and match_pattern(r, lhs, True, PATALG_WILDCARD),
                     rval),
                     None):
                 return Value(lhs)
@@ -1326,7 +1440,8 @@ class ExtFilter:
             if next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and match_pattern(r, lhs, False, PATALG_REGEX),
+                        isinstance(r, str)
+                        and match_pattern(r, lhs, False, PATALG_REGEX),
                     rval),
                     None):
                 return Value(lhs)
@@ -1339,7 +1454,8 @@ class ExtFilter:
             if next(
                 filter(
                     lambda r:
-                        isinstance(r, str) and match_pattern(r, lhs, True, PATALG_REGEX),
+                        isinstance(r, str)
+                        and match_pattern(r, lhs, True, PATALG_REGEX),
                     rval),
                     None):
                 return Value(lhs)

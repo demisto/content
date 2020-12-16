@@ -195,8 +195,16 @@ def get_pack_metadata(pack_path):
     return pack_metadata
 
 
+def is_support_type_in_metadata(metadata, support_type):
+    return metadata and metadata.get('support') == support_type
+
+
 def is_partner_supported_in_metadata(metadata):
-    return metadata and metadata.get('support') == 'partner'
+    return is_support_type_in_metadata(metadata, 'partner')
+
+
+def is_community_supported_in_metadata(metadata):
+    return is_support_type_in_metadata(metadata, 'community')
 
 
 def get_pack_path_from_release_note(file_path):
@@ -283,8 +291,12 @@ def aggregate_release_notes(pack_name: str, pack_versions_dict: dict, pack_metad
 
     """
     pack_release_notes, latest_version = merge_version_blocks(pack_versions_dict)
-    partner = ' (Partner Supported)' if is_partner_supported_in_metadata(pack_metadata) else ''
-    return (f'### {pack_name} Pack v{latest_version}{partner}\n'
+    pack_version_title = latest_version
+    if is_partner_supported_in_metadata(pack_metadata):
+        pack_version_title += ' (Partner Supported)'
+    elif is_community_supported_in_metadata(pack_metadata):
+        pack_version_title += ' (Community Contributed)'
+    return (f'### {pack_name} Pack v{pack_version_title}\n'
             f'{pack_release_notes}')
 
 
@@ -444,7 +456,7 @@ def create_content_descriptor(release_notes, version, asset_id, github_token):
 
 
 def main():
-    install_logging('Build Content Descriptor.log')
+    install_logging('Build_Content_Descriptor.log')
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('version', help='Release version')
     arg_parser.add_argument('git_sha1', help='commit sha1 to compare changes with')

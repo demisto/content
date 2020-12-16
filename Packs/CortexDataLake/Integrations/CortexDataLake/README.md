@@ -43,6 +43,21 @@ In order for the integration to work, the following URLs need to be accessible:
 ## Fetched Incidents Data
 Fetches Firewall threat logs as incidents
 
+## CDL Server - API Calls Caching Mechanism
+The integration implements a caching mechanism for repetitive error when requesting access token from CDL server.
+When the intgeration reaches the limit of allowed calls, the following error will be shown:
+
+```We have found out that your recent attempts to authenticate against the CDL server have failed. Therefore we have limited the number of calls that the CDL integration performs.```
+
+The integration will re-attempt authentication if the command was called under the following cases:
+
+1. First hour - once every minute.
+2. First 48 hours - once in 10 minutes.
+3. After that every 60 minutes.
+
+If you wish to try authenticating again, run the 'cdl-reset-authentication-timeout' command and retry.
+
+
 ---
 ## Commands
 
@@ -70,7 +85,8 @@ Runs a query on the Cortex logging service.
 | --- | --- | --- |
 | query | A free-text SQL query. For example, query="SELECT * FROM \`firewall.traffic\` limit 10". There are multiple tables in Loggings, for example: threat, traffic, and so on. Refer to the Cortex Logging service schema reference for the full list. | Optional |
 | limit | The number of logs to return. Default is 10 | Optional | 
- 
+| transform_results | If set to false, query results are not mapped into the standard command context. Default is "true". | Optional | 
+
 
 
 ##### Context Output
@@ -1238,6 +1254,21 @@ its standard port. |
 >| alert | web-browsing | 2.2.2.2 | 52270 | ANindV94kHC673w9zWXj8TY | Google Chrome Extension File | INTERNET | 10.10.10.101 | 2020-04-21T18:47:12 |
 
 
+### cdl-reset-authentication-timeout
+***
+Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
+
+
+#### Base Command
+
+`cdl-reset-authentication-timeout`
+
+#### Command Example
+```!cdl-reset-authentication-timeout```
+
+#### Human Readable Output
+```Caching mechanism failure time counters have been successfully reset.```
+
 ## Additional Information
 
 ---
@@ -1246,4 +1277,3 @@ against. That is, log types must be fully qualified and the instance ID is a par
 `<instanceID>.firewall.traffic`
 However in this integration the instance ID is added automatically to the query so the name `firewall.traffic` is a valid table name
 * The SQL syntex supported for queries is `csql`
-

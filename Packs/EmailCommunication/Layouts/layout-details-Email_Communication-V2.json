@@ -1,11 +1,13 @@
 {
+ "typeId": "Email Communication",
+ "version": -1,
  "TypeName": "Email Communication",
  "kind": "details",
+ "fromVersion": "5.5.0",
  "layout": {
   "TypeName": "",
   "id": "Email Communication",
   "kind": "details",
-  "modified": "2020-08-06T13:32:43.382534677Z",
   "name": "",
   "system": false,
   "tabs": [
@@ -158,71 +160,6 @@
       "y": 1
      },
      {
-      "displayType": "CARD",
-      "h": 4,
-      "hideItemTitleOnlyOne": true,
-      "hideName": false,
-      "i": "tijq1dxhfm-5fff13d0-d01e-11ea-835d-95924e6ac7f8",
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "emailfrom",
-        "height": 53,
-        "id": "908abec0-d0a3-11ea-bab2-3f873704d332",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "emailto",
-        "height": 53,
-        "id": "bf2cdf10-d0ad-11ea-bab2-3f873704d332",
-        "index": 1,
-        "listId": "tijq1dxhfm-5fff13d0-d01e-11ea-835d-95924e6ac7f8",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "emailcc",
-        "height": 53,
-        "id": "c66beec0-d1a6-11ea-89f3-a500ca34441a",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "emailsubject",
-        "height": 53,
-        "id": "c366b830-d0ad-11ea-bab2-3f873704d332",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "details",
-        "height": 106,
-        "id": "7c2335a0-d01e-11ea-835d-95924e6ac7f8",
-        "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxW": 3,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Original email details",
-      "static": false,
-      "w": 1,
-      "x": 2,
-      "y": 3
-     },
-     {
       "h": 2,
       "i": "tijq1dxhfm-0eabe800-eac7-11ea-82f0-a71e1dc4d599",
       "items": [
@@ -252,6 +189,25 @@
       "w": 3,
       "x": 0,
       "y": 7
+     },
+     {
+      "h": 4,
+      "i": "tijq1dxhfm-81db6ea0-1dc0-11eb-a581-957ece1848cd",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Original email details",
+      "query": "DisplayEmailHtml",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamic",
+      "w": 1,
+      "x": 2,
+      "y": 3
      }
     ],
     "type": "custom"
@@ -609,9 +565,6 @@
   "typeId": "Email Communication",
   "version": -1
  },
- "typeId": "Email Communication",
- "version": -1,
- "fromVersion": "5.5.0",
  "toVersion": "5.9.9",
  "description": ""
 }

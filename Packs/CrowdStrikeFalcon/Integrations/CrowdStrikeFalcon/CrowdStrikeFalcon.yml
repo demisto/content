@@ -60,40 +60,71 @@ configuration:
   - Incidents
   required: false
   type: 16
-description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
-  getting behaviors by ID, containing hosts, and lifting host containment.
+description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API),
+  enables fetching and resolving detections, searching devices, getting behaviors
+  by ID, containing hosts, and lifting host containment. getting behaviors by ID,
+  containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
 script:
   commands:
-  - name: cs-falcon-search-device
-    arguments:
-    - name: filter
+  - arguments:
+    - default: false
       description: The query by which to filter the device.
-    - name: ids
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
       description: A comma-separated list of device IDs by which to limit the results.
-    - name: status
-      auto: PREDEFINED
+      isArray: false
+      name: ids
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The status of the device. Possible values are: "Normal", "containment_pending",
+        "contained", and "lift_containment_pending".'
+      isArray: false
+      name: status
       predefined:
       - Normal
       - containment_pending
       - contained
       - lift_containment_pending
-      description: 'The status of the device. Possible values are: "Normal", "containment_pending", "contained", and "lift_containment_pending".'
-    - name: hostname
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The host name of the device.
+      isArray: false
+      name: hostname
       predefined:
-      - ""
-      description: The host name of the device. 
-    - name: platform_name
-      auto: PREDEFINED
+      - ''
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The platform name of the device. Possible values are: "Windows","Mac",
+        and "Linux".'
+      isArray: false
+      name: platform_name
       predefined:
       - Windows
       - Mac
       - Linux
-      description: 'The platform name of the device. Possible values are: "Windows","Mac", and "Linux".'
-    - name: site_name
+      required: false
+      secret: false
+    - default: false
       description: The site name of the device.
+      isArray: false
+      name: site_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches for a device that matches the query.
+    execution: false
+    name: cs-falcon-search-device
     outputs:
     - contextPath: CrowdStrike.Device.ID
       description: The ID of the device.
@@ -122,12 +153,17 @@ script:
     - contextPath: CrowdStrike.Device.PolicyType
       description: The policy type of the device.
       type: String
-    description: Searches for a device that matches the query.
-  - name: cs-falcon-get-behavior
-    arguments:
-    - name: behavior_id
-      required: true
+  - arguments:
+    - default: false
       description: The ID of the behavior.
+      isArray: false
+      name: behavior_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Searches for and fetches the behavior that matches the query.
+    execution: false
+    name: cs-falcon-get-behavior
     outputs:
     - contextPath: CrowdStrike.Behavior.FileName
       description: The file name of the behavior.
@@ -165,17 +201,28 @@ script:
     - contextPath: CrowdStrike.Behavior.ID
       description: The ID of the behavior.
       type: String
-    description: Searches for and fetches the behavior that matches the query.
-  - name: cs-falcon-search-detection
-    arguments:
-    - name: ids
-      description: The IDs of the detections to search. If provided, will override other arguments.
+  - arguments:
+    - default: false
+      description: The IDs of the detections to search. If provided, will override
+        other arguments.
       isArray: true
-    - name: filter
+      name: ids
+      required: false
+      secret: false
+    - default: false
       description: |-
         Filter detections using a query in Falcon Query Language (FQL).
         e.g., filter="device.hostname:'CS-SE-TG-W7-01'"
         For a full list of valid filter options, see: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for details of specific detections, either using a filter
+      query, or by providing the IDs of the detections.
+    execution: false
+    name: cs-falcon-search-detection
     outputs:
     - contextPath: CrowdStrike.Detection.Behavior.FileName
       description: The file name of the behavior.
@@ -228,75 +275,140 @@ script:
     - contextPath: CrowdStrike.Detection.ProcessStartTime
       description: The start time of the process that generated the detection.
       type: Date
-    description: Search for details of specific detections, either using a filter query, or by providing the IDs of the detections.
-  - name: cs-falcon-resolve-detection
-    arguments:
-    - name: ids
+  - arguments:
+    - default: false
       description: A comma-separated list of one or more IDs to resolve.
+      isArray: false
+      name: ids
       required: true
-    - name: status
-      auto: PREDEFINED
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The status to which to transition a detection. Possible values
+        are: "new", "in_progress", "true_positive", "false_positive", and "ignored".'
+      isArray: false
+      name: status
       predefined:
       - new
       - in_progress
       - true_positive
       - false_positive
       - ignored
-      description: 'The status to which to transition a detection. Possible values are: "new", "in_progress", "true_positive", "false_positive", and "ignored".'
-    - name: assigned_to_uuid
-      description: 'A user ID, for example: 1234567891234567891. username and assigned_to_uuid are mutually exclusive.'
-    - name: comment
-      description: Optional comment to add to the detection. Comments are displayed with the detection in Falcon and are usually used to provide context or notes for other Falcon users.
-    - name: show_in_ui
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      required: false
+      secret: false
+    - default: false
+      description: 'A user ID, for example: 1234567891234567891. username and assigned_to_uuid
+        are mutually exclusive.'
+      isArray: false
+      name: assigned_to_uuid
+      required: false
+      secret: false
+    - default: false
+      description: Optional comment to add to the detection. Comments are displayed
+        with the detection in Falcon and are usually used to provide context or notes
+        for other Falcon users.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: If true, displays the detection in the UI.
-    - name: username
-      description: Username to assign the detections to. (This is usually the
-        user’s email address, but may vary based on your configuration). username and assigned_to_uuid are mutually exclusive.
+      isArray: false
+      name: show_in_ui
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Username to assign the detections to. (This is usually the user’s
+        email address, but may vary based on your configuration). username and assigned_to_uuid
+        are mutually exclusive.
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    deprecated: false
     description: Resolves and updates a detection.
-  - name: cs-falcon-contain-host
-    arguments:
-    - name: ids
-      required: true
-      description: The host agent ID (AID) of the host to contain. Get an agent ID from a detection.
+    execution: false
+    name: cs-falcon-resolve-detection
+  - arguments:
+    - default: false
+      description: The host agent ID (AID) of the host to contain. Get an agent ID
+        from a detection.
       isArray: true
-    description: Contains containment for a specified host. When contained, a host can only communicate with the CrowdStrike cloud and any IPs specified in your containment policy.
-  - name: cs-falcon-lift-host-containment
-    arguments:
-    - name: ids
+      name: ids
       required: true
-      description: The host agent ID (AID) of the host you want to contain. Get an agent ID from a detection
+      secret: false
+    deprecated: false
+    description: Contains containment for a specified host. When contained, a host
+      can only communicate with the CrowdStrike cloud and any IPs specified in your
+      containment policy.
+    execution: false
+    name: cs-falcon-contain-host
+  - arguments:
+    - default: false
+      description: The host agent ID (AID) of the host you want to contain. Get an
+        agent ID from a detection
       isArray: true
-    description: Lifts containment on the host, which returns its network communications to normal.
-  - name: cs-falcon-run-command
-    arguments:
-    - name: host_ids
+      name: ids
       required: true
-      description: A comma-separated list of host agent IDs for which to run commands. (Can be retrieved by running the 'cs-falcon-search-device' command.)
-    - name: command_type
+      secret: false
+    deprecated: false
+    description: Lifts containment on the host, which returns its network communications
+      to normal.
+    execution: false
+    name: cs-falcon-lift-host-containment
+  - arguments:
+    - default: false
+      description: A comma-separated list of host agent IDs for which to run commands.
+        (Can be retrieved by running the 'cs-falcon-search-device' command.)
+      isArray: false
+      name: host_ids
       required: true
+      secret: false
+    - default: false
       description: The type of command to run.
-    - name: full_command
+      isArray: false
+      name: command_type
       required: true
+      secret: false
+    - default: false
       description: The full command to run.
-    - name: scope
-      auto: PREDEFINED
+      isArray: false
+      name: full_command
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: read
+      description: 'The scope for which to run the command. Possible values are: "read",
+        "write", and "admin". Default is "read".'
+      isArray: false
+      name: scope
       predefined:
       - read
       - write
       - admin
-      description: 'The scope for which to run the command. Possible values are: "read", "write", and "admin". Default is "read".'
-      defaultValue: read
-    - name: target
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: batch
+      description: 'The target for which to run the command. Possible values are:
+        "single" and "batch". Default is "batch".'
+      isArray: false
+      name: target
       predefined:
       - batch
       - single
-      description: 'The target for which to run the command. Possible values are: "single" and "batch". Default is "batch".'
-      defaultValue: batch
+      required: false
+      secret: false
+    deprecated: false
+    description: Sends commands to hosts.
+    execution: false
+    name: cs-falcon-run-command
     outputs:
     - contextPath: CrowdStrike.Command.HostID
       description: The ID of the host for which the command was running.
@@ -317,7 +429,8 @@ script:
       description: The full command.
       type: String
     - contextPath: CrowdStrike.Command.TaskID
-      description: (For single host) The ID of the command request which has been accepted.
+      description: (For single host) The ID of the command request which has been
+        accepted.
       type: string
     - contextPath: CrowdStrike.Command.Complete
       description: (For single host) True if the command completed.
@@ -325,41 +438,76 @@ script:
     - contextPath: CrowdStrike.Command.NextSequenceID
       description: (For single host) The next sequence ID.
       type: number
-    description: Sends commands to hosts.
-  - name: cs-falcon-upload-script
-    arguments:
-    - name: name
-      required: true
+  - arguments:
+    - default: false
       description: The script name to upload.
-    - name: permission_type
-      auto: PREDEFINED
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: private
+      description: 'The permission type for the custom script. Possible values are:
+        "private", which is used only by the user who uploaded it, "group", which
+        is used by all RTR Admins, and "public", which is used by all active-responders
+        and RTR admins. Default is "private".'
+      isArray: false
+      name: permission_type
       predefined:
       - private
       - group
       - public
-      description: 'The permission type for the custom script. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins. Default is "private".'
-      defaultValue: private
-    - name: content
-      required: true
+      required: false
+      secret: false
+    - default: false
       description: The content of the PowerShell script.
+      isArray: false
+      name: content
+      required: true
+      secret: false
+    deprecated: false
     description: Uploads a script to Falcon.
-  - name: cs-falcon-upload-file
-    arguments:
-    - name: entry_id
-      required: true
+    execution: false
+    name: cs-falcon-upload-script
+  - arguments:
+    - default: false
       description: The file entry ID to upload.
-    description: Uploads a file to the CrowdStrike cloud. (Can be used for the RTR 'put' command.)
-  - name: cs-falcon-delete-file
-    arguments:
-    - name: file_id
+      isArray: false
+      name: entry_id
       required: true
-      description: The ID of the file to delete. (The ID of the file can be retrieved by running the 'cs-falcon-list-files' command).
-    description: Deletes a file based on the provided ID. Can delete only one file at a time.
-  - name: cs-falcon-get-file
-    arguments:
-    - name: file_id
+      secret: false
+    deprecated: false
+    description: Uploads a file to the CrowdStrike cloud. (Can be used for the RTR
+      'put' command.)
+    execution: false
+    name: cs-falcon-upload-file
+  - arguments:
+    - default: false
+      description: The ID of the file to delete. (The ID of the file can be retrieved
+        by running the 'cs-falcon-list-files' command).
+      isArray: false
+      name: file_id
       required: true
-      description: A comma-separated list of file IDs to get. (The list of file IDs can be retrieved by running the 'cs-falcon-list-files' command.)
+      secret: false
+    deprecated: false
+    description: Deletes a file based on the provided ID. Can delete only one file
+      at a time.
+    execution: false
+    name: cs-falcon-delete-file
+  - arguments:
+    - default: false
+      description: A comma-separated list of file IDs to get. (The list of file IDs
+        can be retrieved by running the 'cs-falcon-list-files' command.)
+      isArray: false
+      name: file_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns files based on the provided IDs. These files are used for
+      the RTR 'put' command.
+    execution: false
+    name: cs-falcon-get-file
     outputs:
     - contextPath: CrowdStrike.File.ID
       description: The ID of the file.
@@ -386,7 +534,10 @@ script:
       description: The full name of the file.
       type: String
     - contextPath: CrowdStrike.File.Permission
-      description: 'The permission type of the file. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins'
+      description: 'The permission type of the file. Possible values are: "private",
+        which is used only by the user who uploaded it, "group", which is used by
+        all RTR Admins, and "public", which is used by all active-responders and RTR
+        admins'
       type: String
     - contextPath: CrowdStrike.File.SHA256
       description: The SHA-256 hash of the file.
@@ -403,9 +554,11 @@ script:
     - contextPath: File.Size
       description: The size of the file in bytes.
       type: Number
-    description: Returns files based on the provided IDs. These files are used for the RTR 'put' command.
-  - name: cs-falcon-list-files
-    arguments: []
+  - deprecated: false
+    description: Returns a list of put-file IDs that are available for the user in
+      the 'put' command.
+    execution: false
+    name: cs-falcon-list-files
     outputs:
     - contextPath: CrowdStrike.File.ID
       description: The ID of the file.
@@ -432,7 +585,10 @@ script:
       description: The full name of the file.
       type: String
     - contextPath: CrowdStrike.File.Permission
-      description: 'The permission type of the file. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins.'
+      description: 'The permission type of the file. Possible values are: "private",
+        which is used only by the user who uploaded it, "group", which is used by
+        all RTR Admins, and "public", which is used by all active-responders and RTR
+        admins.'
       type: String
     - contextPath: CrowdStrike.File.SHA256
       description: The SHA-256 hash of the file.
@@ -449,12 +605,19 @@ script:
     - contextPath: File.Size
       description: The size of the file in bytes.
       type: Number
-    description: Returns a list of put-file IDs that are available for the user in the 'put' command.
-  - name: cs-falcon-get-script
-    arguments:
-    - name: script_id
+  - arguments:
+    - default: false
+      description: A comma-separated list of script IDs to return. (The script IDs
+        can be retrieved by running the 'cs-falcon-list-scripts' command.)
+      isArray: false
+      name: script_id
       required: true
-      description: A comma-separated list of script IDs to return. (The script IDs can be retrieved by running the 'cs-falcon-list-scripts' command.)
+      secret: false
+    deprecated: false
+    description: Returns custom scripts based on the provided ID. Used for the RTR
+      'runscript' command.
+    execution: false
+    name: cs-falcon-get-script
     outputs:
     - contextPath: CrowdStrike.Script.ID
       description: The ID of the script.
@@ -478,7 +641,10 @@ script:
       description: The script name.
       type: String
     - contextPath: CrowdStrike.Script.Permission
-      description: 'Permission type of the script. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins.'
+      description: 'Permission type of the script. Possible values are: "private",
+        which is used only by the user who uploaded it, "group", which is used by
+        all RTR Admins, and "public", which is used by all active-responders and RTR
+        admins.'
       type: String
     - contextPath: CrowdStrike.Script.SHA256
       description: The SHA-256 hash of the script file.
@@ -490,20 +656,30 @@ script:
       description: The number of times the script ran successfully.
       type: Number
     - contextPath: CrowdStrike.Script.Platform
-      description: The list of operating system platforms on which the script can run. For example, Windows.
+      description: The list of operating system platforms on which the script can
+        run. For example, Windows.
       type: String
     - contextPath: CrowdStrike.Script.WriteAccess
       description: Whether the user has write access to the script.
       type: Boolean
-    description: Returns custom scripts based on the provided ID. Used for the RTR 'runscript' command.
-  - name: cs-falcon-delete-script
-    arguments:
-    - name: script_id
+  - arguments:
+    - default: false
+      description: Script ID to delete. (Script IDs can be retrieved by running the
+        'cs-falcon-list-scripts' command.)
+      isArray: false
+      name: script_id
       required: true
-      description: Script ID to delete. (Script IDs can be retrieved by running the 'cs-falcon-list-scripts' command.)
-    description: Deletes a custom-script based on the provided ID. Can delete only one script at a time.
-  - name: cs-falcon-list-scripts
-    arguments: []
+      secret: false
+    deprecated: false
+    description: Deletes a custom-script based on the provided ID. Can delete only
+      one script at a time.
+    execution: false
+    name: cs-falcon-delete-script
+  - deprecated: false
+    description: Returns a list of custom script IDs that are available for the user
+      in the 'runscript' command.
+    execution: false
+    name: cs-falcon-list-scripts
     outputs:
     - contextPath: CrowdStrike.Script.ID
       description: The ID of the script.
@@ -527,7 +703,10 @@ script:
       description: The script name.
       type: String
     - contextPath: CrowdStrike.Script.Permission
-      description: 'Permission type of the script. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins.'
+      description: 'Permission type of the script. Possible values are: "private",
+        which is used only by the user who uploaded it, "group", which is used by
+        all RTR Admins, and "public", which is used by all active-responders and RTR
+        admins.'
       type: String
     - contextPath: CrowdStrike.Script.SHA256
       description: The SHA-256 hash of the script file.
@@ -539,21 +718,45 @@ script:
       description: The number of times the script ran successfully.
       type: Number
     - contextPath: CrowdStrike.Script.Platform
-      description: The list of operating system platforms on which the script can run. For example, Windows.
+      description: The list of operating system platforms on which the script can
+        run. For example, Windows.
       type: String
     - contextPath: CrowdStrike.Script.WriteAccess
       description: Whether the user has write access to the script.
       type: Boolean
-    description: Returns a list of custom script IDs that are available for the user in the 'runscript' command.
-  - name: cs-falcon-run-script
-    arguments:
-    - name: script_name
+  - arguments:
+    - default: false
       description: The name of the script to run.
-    - name: host_ids
+      isArray: false
+      name: script_name
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of host agent IDs to run commands. (The
+        list of host agent IDs can be retrieved by running the 'cs-falcon-search-device'
+        command.)
+      isArray: false
+      name: host_ids
       required: true
-      description: A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.)
-    - name: raw
+      secret: false
+    - default: false
       description: The PowerShell script code to run.
+      isArray: false
+      name: raw
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: Timeout for how long to wait for the request in seconds. Maximum
+        is 600 (10 minutes).
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    deprecated: false
+    description: Runs a script on the agent host.
+    execution: false
+    name: cs-falcon-run-script
     outputs:
     - contextPath: CrowdStrike.Command.HostID
       description: The ID of the host for which the command was running.
@@ -573,22 +776,45 @@ script:
     - contextPath: CrowdStrike.Command.FullCommand
       description: The full command.
       type: String
-    description: Runs a script on the agent host.
-  - name: cs-falcon-run-get-command
-    arguments:
-    - name: host_ids
-      required: true
+  - arguments:
+    - default: false
       description: List of host agent IDs on which to run the RTR command.
       isArray: true
-    - name: file_path
+      name: host_ids
       required: true
-      description: Full path to the file that will be retrieved from each host in the batch.
-    - name: optional_hosts
+      secret: false
+    - default: false
+      description: Full path to the file that will be retrieved from each host in
+        the batch.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - default: false
       description: List of a subset of hosts on which to run the command.
-    - name: timeout
-      description: 'The number of seconds to wait for the request before it times out. In ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
-    - name: timeout_duration
-      description: 'The amount of time to wait for the request before it times out. In duration syntax. For example: 10s. Valid units are: ns, us, ms, s, m, h. Maximum value is 10 minutes.'
+      isArray: false
+      name: optional_hosts
+      required: false
+      secret: false
+    - default: false
+      description: 'The number of seconds to wait for the request before it times
+        out. In ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      description: 'The amount of time to wait for the request before it times out.
+        In duration syntax. For example: 10s. Valid units are: ns, us, ms, s, m, h.
+        Maximum value is 10 minutes.'
+      isArray: false
+      name: timeout_duration
+      required: false
+      secret: false
+    deprecated: false
+    description: Batch executes 'get' command across hosts to retrieve files.
+    execution: false
+    name: cs-falcon-run-get-command
     outputs:
     - contextPath: CrowdStrike.Command.HostID
       description: The ID of the host on which the command was running.
@@ -614,17 +840,32 @@ script:
     - contextPath: CrowdStrike.Command.FilePath
       description: The file path.
       type: string
-    description: Batch executes 'get' command across hosts to retrieve files.
-  - name: cs-falcon-status-get-command
-    arguments:
-    - name: request_ids
-      required: true
+  - arguments:
+    - default: false
       description: The list of IDs of the command requested.
       isArray: true
-    - name: timeout
-      description: 'The number of seconds to wait for the request before it times out. In ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
-    - name: timeout_duration
-      description: 'The amount of time to wait for the request before it times out. In duration syntax. For example: 10s. Valid units are: ns, us, ms, s, m, h. Maximum value is 10 minutes.'
+      name: request_ids
+      required: true
+      secret: false
+    - default: false
+      description: 'The number of seconds to wait for the request before it times
+        out. In ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      description: 'The amount of time to wait for the request before it times out.
+        In duration syntax. For example: 10s. Valid units are: ns, us, ms, s, m, h.
+        Maximum value is 10 minutes.'
+      isArray: false
+      name: timeout_duration
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the status of the specified batch 'get' command.
+    execution: false
+    name: cs-falcon-status-get-command
     outputs:
     - contextPath: CrowdStrike.File.ID
       description: The ID of the file.
@@ -659,22 +900,36 @@ script:
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
       type: string
-    description: Retrieves the status of the specified batch 'get' command.
-  - name: cs-falcon-status-command
-    arguments:
-    - name: request_id
-      required: true
+  - arguments:
+    - default: false
       description: The ID of the command requested.
-    - name: sequence_id
+      isArray: false
+      name: request_id
+      required: true
+      secret: false
+    - default: false
       description: The sequence ID in chunk requests.
-    - name: scope
-      auto: PREDEFINED
+      isArray: false
+      name: sequence_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: read
+      description: 'The scope for which to run the command. Possible values are: "read",
+        "write", or "admin". Default is "read".'
+      isArray: false
+      name: scope
       predefined:
       - read
       - write
       - admin
-      description: 'The scope for which to run the command. Possible values are: "read", "write", or "admin". Default is "read".'
-      defaultValue: read
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the status of a command executed on a host.
+    execution: false
+    name: cs-falcon-status-command
     outputs:
     - contextPath: CrowdStrike.Command.TaskID
       description: The ID of the command request that was accepted.
@@ -697,23 +952,42 @@ script:
     - contextPath: CrowdStrike.Command.NextSequenceID
       description: The sequence ID for the next request in the chunk request.
       type: number
-    description: Gets the status of a command executed on a host.
-  - name: cs-falcon-get-extracted-file
-    arguments:
-    - name: host_id
-      required: true
+  - arguments:
+    - default: false
       description: The host agent ID.
-    - name: sha256
+      isArray: false
+      name: host_id
       required: true
+      secret: false
+    - default: false
       description: The SHA256 hash of the file.
-    - name: filename
-      description: The filename to use for the archive name and the file within the archive.
-    description: Gets the RTR extracted file contents for the specified session and SHA256 hash.
-  - name: cs-falcon-list-host-files
-    arguments:
-    - name: host_id
+      isArray: false
+      name: sha256
       required: true
+      secret: false
+    - default: false
+      description: The filename to use for the archive name and the file within the
+        archive.
+      isArray: false
+      name: filename
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the RTR extracted file contents for the specified session and
+      SHA256 hash.
+    execution: false
+    name: cs-falcon-get-extracted-file
+  - arguments:
+    - default: false
       description: The ID of the host agent that lists files in the session.
+      isArray: false
+      name: host_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a list of files for the specified RTR session on a host.
+    execution: false
+    name: cs-falcon-list-host-files
     outputs:
     - contextPath: CrowdStrike.Command.HostID
       description: The ID of the host for which the command was running.
@@ -754,52 +1028,101 @@ script:
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
       type: string
-    description: Gets a list of files for the specified RTR session on a host.
-  - name: cs-falcon-refresh-session
-    arguments:
-    - name: host_id
-      required: true
+  - arguments:
+    - default: false
       description: The ID of the host for which to extend the session.
+      isArray: false
+      name: host_id
+      required: true
+      secret: false
+    deprecated: false
     description: Refresh a session timeout on a single host.
-  - name: cs-falcon-search-iocs
-    arguments:
-    - name: types
-      description: 'A comma-separated list of indicator types. Valid types are: "sha256", "sha1", "md5", "domain", "ipv4", "ipv6".'
+    execution: false
+    name: cs-falcon-refresh-session
+  - arguments:
+    - default: false
+      description: 'A comma-separated list of indicator types. Valid types are: "sha256",
+        "sha1", "md5", "domain", "ipv4", "ipv6".'
       isArray: true
-    - name: values
+      name: types
+      required: false
+      secret: false
+    - default: false
       description: A comma-separated list of indicator values.
       isArray: true
-    - name: policies
+      name: values
+      required: false
+      secret: false
+    - default: false
       description: A comma-separated list of indicator policies.
       isArray: true
-    - name: share_levels
-      description: The level at which the indicator will be shared. Only "red" share level (not shared) is supported, which indicates that the IOC is not shared with other Falcon Host customers.
+      name: policies
+      required: false
+      secret: false
+    - default: false
+      description: The level at which the indicator will be shared. Only "red" share
+        level (not shared) is supported, which indicates that the IOC is not shared
+        with other Falcon Host customers.
       isArray: true
-    - name: sources
+      name: share_levels
+      required: false
+      secret: false
+    - default: false
       description: A comma-separated list of IOC sources.
       isArray: true
-    - name: from_expiration_date
+      name: sources
+      required: false
+      secret: false
+    - default: false
       description: Start of date range in which to search (YYYY-MM-DD format).
-    - name: to_expiration_date
+      isArray: false
+      name: from_expiration_date
+      required: false
+      secret: false
+    - default: false
       description: End of date range in which to search (YYYY-MM-DD format).
-    - name: limit
-      description: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
-    - name: sort
-      auto: PREDEFINED
+      isArray: false
+      name: to_expiration_date
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of records to return. The minimum is 1 and the
+        maximum is 500. Default is 100.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The order in which the results are returned. Possible values are:
+        "type.asc", "type.desc", "value.asc", "value.desc", "policy.asc", "policy.desc",
+        "share_level.asc", "share_level.desc", "expiration_timestamp.asc", and "expiration_timestamp.desc".'
+      isArray: false
+      name: sort
       predefined:
-        - type.asc
-        - type.desc
-        - value.asc
-        - value.desc
-        - policy.asc
-        - policy.desc
-        - share_level.asc
-        - share_level.desc
-        - expiration_timestamp.asc
-        - expiration_timestamp.desc
-      description: 'The order in which the results are returned. Possible values are: "type.asc", "type.desc", "value.asc", "value.desc", "policy.asc", "policy.desc", "share_level.asc", "share_level.desc", "expiration_timestamp.asc", and "expiration_timestamp.desc".'
-    - name: offset
-      description: The offset to begin the list from. For example, start from the 10th record and return the list. Default is 0.
+      - type.asc
+      - type.desc
+      - value.asc
+      - value.desc
+      - policy.asc
+      - policy.desc
+      - share_level.asc
+      - share_level.desc
+      - expiration_timestamp.asc
+      - expiration_timestamp.desc
+      required: false
+      secret: false
+    - default: false
+      description: The offset to begin the list from. For example, start from the
+        10th record and return the list. Default is 0.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of your uploaded IOCs that match the search criteria.
+    execution: false
+    name: cs-falcon-search-iocs
     outputs:
     - contextPath: CrowdStrike.IOC.Type
       description: The type of the IOC.
@@ -837,23 +1160,32 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
-    description: Returns a list of your uploaded IOCs that match the search criteria.
-  - name: cs-falcon-get-ioc
-    arguments:
-    - name: type
-      required: true
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'The IOC type to retrieve. Possible values are: "sha256", "sha1",
+        "md5", "domain", "ipv4", and "ipv6".'
+      isArray: false
+      name: type
       predefined:
-        - sha256
-        - sha1
-        - md5
-        - domain
-        - ipv4
-        - ipv6
-      description: 'The IOC type to retrieve. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6".'
-    - name: value
+      - sha256
+      - sha1
+      - md5
+      - domain
+      - ipv4
+      - ipv6
       required: true
+      secret: false
+    - default: false
       description: The IOC value to retrieve.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the full definition of one or more indicators that you are watching.
+    execution: false
+    name: cs-falcon-get-ioc
     outputs:
     - contextPath: CrowdStrike.IOC.Type
       description: The type of the IOC.
@@ -891,112 +1223,75 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
-    description: Gets the full definition of one or more indicators that you are watching.
-  - name: cs-falcon-upload-ioc
-    arguments:
-    - name: ioc_type
-      required: true
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of the indicator. Possible values are: "sha256", "md5",
+        "domain", "ipv4", and "ipv6".'
+      isArray: false
+      name: ioc_type
       predefined:
-        - sha256
-        - md5
-        - domain
-        - ipv4
-        - ipv6
-      description: 'The type of the indicator. Possible values are: "sha256", "md5", "domain", "ipv4", and "ipv6".'
-    - name: value
+      - sha256
+      - md5
+      - domain
+      - ipv4
+      - ipv6
       required: true
+      secret: false
+    - default: false
       description: The string representation of the indicator.
-    - name: policy
-      auto: PREDEFINED
-      predefined:
-        - detect
-        - none
-      description: 'The policy to enact when the value is detected on a host. Possible values are: "detect" and "none". A value of "none" is equivalent to turning the indicator off. Default is "detect".'
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: detect
-    - name: share_level
-      auto: PREDEFINED
+      description: 'The policy to enact when the value is detected on a host. Possible
+        values are: "detect" and "none". A value of "none" is equivalent to turning
+        the indicator off. Default is "detect".'
+      isArray: false
+      name: policy
       predefined:
-        - red
-      description: The level at which the indicator will be shared. Only "red" share level (not shared) is supported, which indicates that the IOC is not shared with other Falcon Host customers.
-    - name: expiration_days
-      description: The number of days for which the indicator should be valid. This only applies to domain, ipv4, and ipv6 types. Default is 30.
-    - name: source
-      description: The source where this indicator originated. This can be used for tracking where this indicator was defined. Limited to 200 characters.
-    - name: description
+      - detect
+      - none
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The level at which the indicator will be shared. Only "red" share
+        level (not shared) is supported, which indicates that the IOC is not shared
+        with other Falcon Host customers.
+      isArray: false
+      name: share_level
+      predefined:
+      - red
+      required: false
+      secret: false
+    - default: false
+      description: The number of days for which the indicator should be valid. This
+        only applies to domain, ipv4, and ipv6 types. Default is 30.
+      isArray: false
+      name: expiration_days
+      required: false
+      secret: false
+    - default: false
+      description: The source where this indicator originated. This can be used for
+        tracking where this indicator was defined. Limited to 200 characters.
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    - default: false
       description: A meaningful description of the indicator. Limited to 200 characters.
-    outputs:
-    - contextPath: CrowdStrike.IOC.Type
-      description: The type of the IOC.
-      type: string
-    - contextPath: CrowdStrike.IOC.Value
-      description: The string representation of the indicator.
-      type: string
-    - contextPath: CrowdStrike.IOC.ID
-      description: The full ID of the indicator (type:value).
-      type: string
-    - contextPath: CrowdStrike.IOC.Policy
-      description: The policy of the indicator.
-      type: string
-    - contextPath: CrowdStrike.IOC.Source
-      description: The source of the IOC.
-      type: string
-    - contextPath: CrowdStrike.IOC.ShareLevel
-      description: The level at which the indicator will be shared.
-      type: string
-    - contextPath: CrowdStrike.IOC.Expiration
-      description: The datetime when the indicator will expire.
-      type: string
-    - contextPath: CrowdStrike.IOC.Description
-      description: The description of the IOC.
-      type: string
-    - contextPath: CrowdStrike.IOC.CreatedTime
-      description: The datetime the IOC was created.
-      type: string
-    - contextPath: CrowdStrike.IOC.CreatedBy
-      description: The identity of the user/process who created the IOC.
-      type: string
-    - contextPath: CrowdStrike.IOC.ModifiedTime
-      description: The date and time the indicator was last modified.
-      type: string
-    - contextPath: CrowdStrike.IOC.ModifiedBy
-      description: The identity of the user/process who last updated the IOC.
-      type: string
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
     description: Uploads an indicator for CrowdStrike to monitor.
-  - name: cs-falcon-update-ioc
-    arguments:
-    - name: ioc_type
-      required: true
-      auto: PREDEFINED
-      predefined:
-        - sha256
-        - md5
-        - sha1
-        - domain
-        - ipv4
-        - ipv6
-      description: 'The type of the indicator. Possible values are: "sha256", "md5", "sha1", "domain", "ipv4", and "ipv6".'
-    - name: value
-      required: true
-      description: The string representation of the indicator.
-    - name: policy
-      auto: PREDEFINED
-      predefined:
-        - detect
-        - none
-      description: 'The policy to enact when the value is detected on a host. Possible values are: "detect" and "none". A value of "none" is equivalent to turning the indicator off. Default is "detect".'
-      defaultValue: detect
-    - name: share_level
-      auto: PREDEFINED
-      predefined:
-        - red
-      description: The level at which the indicator will be shared. Only "red" share level (not shared) is supported, which indicates that the IOC is not shared with other Falcon Host customers.
-    - name: expiration_days
-      description: The number of days for which the indicator should be valid. This only applies to domain, ipv4, and ipv6 types. Default is 30.
-    - name: source
-      description: The source where this indicator originated. This can be used for tracking where this indicator was defined. Limited to 200 characters.
-    - name: description
-      description: A meaningful description of the indicator. Limited to 200 characters.
+    execution: false
+    name: cs-falcon-upload-ioc
     outputs:
     - contextPath: CrowdStrike.IOC.Type
       description: The type of the IOC.
@@ -1034,12 +1329,120 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
-    description: Updates an indicator for CrowdStrike to monitor.
-  - name: cs-falcon-delete-ioc
-    arguments:
-    - name: type
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of the indicator. Possible values are: "sha256", "md5",
+        "sha1", "domain", "ipv4", and "ipv6".'
+      isArray: false
+      name: ioc_type
+      predefined:
+      - sha256
+      - md5
+      - sha1
+      - domain
+      - ipv4
+      - ipv6
       required: true
-      auto: PREDEFINED
+      secret: false
+    - default: false
+      description: The string representation of the indicator.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: detect
+      description: 'The policy to enact when the value is detected on a host. Possible
+        values are: "detect" and "none". A value of "none" is equivalent to turning
+        the indicator off. Default is "detect".'
+      isArray: false
+      name: policy
+      predefined:
+      - detect
+      - none
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The level at which the indicator will be shared. Only "red" share
+        level (not shared) is supported, which indicates that the IOC is not shared
+        with other Falcon Host customers.
+      isArray: false
+      name: share_level
+      predefined:
+      - red
+      required: false
+      secret: false
+    - default: false
+      description: The number of days for which the indicator should be valid. This
+        only applies to domain, ipv4, and ipv6 types. Default is 30.
+      isArray: false
+      name: expiration_days
+      required: false
+      secret: false
+    - default: false
+      description: The source where this indicator originated. This can be used for
+        tracking where this indicator was defined. Limited to 200 characters.
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    - default: false
+      description: A meaningful description of the indicator. Limited to 200 characters.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates an indicator for CrowdStrike to monitor.
+    execution: false
+    name: cs-falcon-update-ioc
+    outputs:
+    - contextPath: CrowdStrike.IOC.Type
+      description: The type of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.Value
+      description: The string representation of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.ID
+      description: The full ID of the indicator (type:value).
+      type: string
+    - contextPath: CrowdStrike.IOC.Policy
+      description: The policy of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.Source
+      description: The source of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.ShareLevel
+      description: The level at which the indicator will be shared.
+      type: string
+    - contextPath: CrowdStrike.IOC.Expiration
+      description: The datetime when the indicator will expire.
+      type: string
+    - contextPath: CrowdStrike.IOC.Description
+      description: The description of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.CreatedTime
+      description: The datetime the IOC was created.
+      type: string
+    - contextPath: CrowdStrike.IOC.CreatedBy
+      description: The identity of the user/process who created the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.ModifiedTime
+      description: The date and time the indicator was last modified.
+      type: string
+    - contextPath: CrowdStrike.IOC.ModifiedBy
+      description: The identity of the user/process who last updated the IOC.
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'The IOC type to delete. Possible values are: "sha256", "sha1",
+        "md5", "domain", "ipv4", and "ipv6".'
+      isArray: false
+      name: type
       predefined:
       - sha256
       - sha1
@@ -1047,27 +1450,44 @@ script:
       - domain
       - ipv4
       - ipv6
-      description: 'The IOC type to delete. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6".'
-    - name: value
+      required: true
+      secret: false
+    - default: false
       description: The IOC value to delete.
+      isArray: false
+      name: value
       required: true
+      secret: false
+    deprecated: false
     description: Deletes a monitored indicator.
-  - name: cs-falcon-device-count-ioc
-    arguments:
-    - name: type
-      required: true
-      auto: PREDEFINED
+    execution: false
+    name: cs-falcon-delete-ioc
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'The IOC type. Possible values are: "sha256", "sha1", "md5", "domain",
+        "ipv4", and "ipv6".'
+      isArray: false
+      name: type
       predefined:
-        - sha256
-        - sha1
-        - md5
-        - domain
-        - ipv4
-        - ipv6
-      description: 'The IOC type. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6".'
-    - name: value
+      - sha256
+      - sha1
+      - md5
+      - domain
+      - ipv4
+      - ipv6
       required: true
+      secret: false
+    - default: false
       description: The IOC value.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: The number of hosts that observed the provided IOC.
+    execution: false
+    name: cs-falcon-device-count-ioc
     outputs:
     - contextPath: CrowdStrike.IOC.Type
       description: The type of the IOC.
@@ -1081,26 +1501,38 @@ script:
     - contextPath: CrowdStrike.IOC.DeviceCount
       description: The number of devices the IOC ran on.
       type: number
-    description: The number of hosts that observed the provided IOC.
-  - name: cs-falcon-processes-ran-on
-    arguments:
-    - name: type
-      required: true
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'The IOC type. Possible values are: "sha256", "sha1", "md5", "domain",
+        "ipv4", and "ipv6".'
+      isArray: false
+      name: type
       predefined:
-        - sha256
-        - sha1
-        - md5
-        - domain
-        - ipv4
-        - ipv6
-      description: 'The IOC type. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6".'
-    - name: value
+      - sha256
+      - sha1
+      - md5
+      - domain
+      - ipv4
+      - ipv6
       required: true
+      secret: false
+    - default: false
       description: The IOC value.
-    - name: device_id
+      isArray: false
+      name: value
       required: true
+      secret: false
+    - default: false
       description: The device ID to check against.
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get processes associated with a given IOC.
+    execution: false
+    name: cs-falcon-processes-ran-on
     outputs:
     - contextPath: CrowdStrike.IOC.Type
       description: The type of the IOC.
@@ -1117,14 +1549,18 @@ script:
     - contextPath: CrowdStrike.IOC.Process.DeviceID
       description: The device the process ran on.
       type: number
-    description: Get processes associated with a given IOC.
-  - name: cs-falcon-process-details
-    arguments:
-    - name: ids
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: A comma-separated list of process IDs.
       isArray: true
+      name: ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the details of a process, according to the process ID,
+      that is running or that previously ran.
+    execution: false
+    name: cs-falcon-process-details
     outputs:
     - contextPath: CrowdStrike.Process.process_id
       description: The process ID.
@@ -1142,31 +1578,35 @@ script:
       description: The command line command execution.
       type: String
     - contextPath: CrowdStrike.Process.start_timestamp_raw
-      description: 'The start datetime of the process in Unix epoch time format. For example: 132460167512852140.'
+      description: 'The start datetime of the process in Unix epoch time format. For
+        example: 132460167512852140.'
       type: String
     - contextPath: CrowdStrike.Process.start_timestamp
-      description: 'The start datetime of the process in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
+      description: 'The start datetime of the process in ISO time format. For example:
+        2019-10-17T13:41:48.487520845Z.'
       type: String
     - contextPath: CrowdStrike.Process.stop_timestamp_raw
-      description: 'The stop datetime of the process in Unix epoch time format. For example: 132460167512852140.'
+      description: 'The stop datetime of the process in Unix epoch time format. For
+        example: 132460167512852140.'
       type: Date
     - contextPath: CrowdStrike.Process.stop_timestamp
-      description: 'The stop datetime of the process in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
+      description: 'The stop datetime of the process in ISO time format. For example:
+        2019-10-17T13:41:48.487520845Z.'
       type: Date
-    description: Retrieves the details of a process, according to the process ID, that is running or that previously ran.
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The type of indicator. Possible values are: "domain", "ipv4", "ipv6", "md5", "sha1", or "sha256".'
+      description: 'The type of indicator. Possible values are: "domain", "ipv4",
+        "ipv6", "md5", "sha1", or "sha256".'
       isArray: false
       name: type
       predefined:
-        - domain
-        - ipv4
-        - ipv6
-        - md5
-        - sha1
-        - sha256
+      - domain
+      - ipv4
+      - ipv6
+      - md5
+      - sha1
+      - sha256
       required: true
       secret: false
     - default: false
@@ -1178,24 +1618,25 @@ script:
     deprecated: true
     description: Returns a list of device IDs on which an indicator ran.
     execution: false
+    name: cs-device-ran-on
     outputs:
     - contextPath: CrowdStrike.DeviceID
       description: Device IDs on which an indicator ran.
       type: string
-    name: cs-device-ran-on
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The type of indicator. Possible values are: "domain", "ipv4", "ipv6", "md5", "sha1", or "sha256".'
+      description: 'The type of indicator. Possible values are: "domain", "ipv4",
+        "ipv6", "md5", "sha1", or "sha256".'
       isArray: false
       name: type
       predefined:
-        - domain
-        - ipv4
-        - ipv6
-        - md5
-        - sha1
-        - sha256
+      - domain
+      - ipv4
+      - ipv6
+      - md5
+      - sha1
+      - sha256
       required: true
       secret: false
     - default: false
@@ -1207,11 +1648,11 @@ script:
     deprecated: false
     description: Returns a list of device IDs on which an indicator ran.
     execution: false
+    name: cs-falcon-device-ran-on
     outputs:
     - contextPath: CrowdStrike.DeviceID
       description: Device IDs on which an indicator ran.
       type: string
-    name: cs-falcon-device-ran-on
   - arguments:
     - default: false
       description: The query used to filter the results.
@@ -1228,7 +1669,8 @@ script:
       description: The organization's customer ID (CID).
       type: String
     - contextPath: CrowdStrike.Detections.created_timestamp
-      description: 'The datetime when the detection occurred in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
+      description: 'The datetime when the detection occurred in ISO time format. For
+        example: 2019-10-17T13:41:48.487520845Z.'
       type: Date
     - contextPath: CrowdStrike.Detections.detection_id
       description: The ID of the detection.
@@ -1246,7 +1688,8 @@ script:
       description: The local time of the sensor.
       type: Date
     - contextPath: CrowdStrike.Detections.device.agent_version
-      description: 'The version of the agent that the device is running. For example: 5.32.11406.0.'
+      description: 'The version of the agent that the device is running. For example:
+        5.32.11406.0.'
       type: String
     - contextPath: CrowdStrike.Detections.device.bios_manufacturer
       description: The BIOS manufacturer.
@@ -1258,7 +1701,8 @@ script:
       description: The base of the sensor that the device is running.
       type: String
     - contextPath: CrowdStrike.Detections.device.config_id_build
-      description: 'The version of the sensor that the device is running. For example: 11406.'
+      description: 'The version of the sensor that the device is running. For example:
+        11406.'
       type: String
     - contextPath: CrowdStrike.Detections.device.config_id_platform
       description: The platform ID of the sensor that the device is running.
@@ -1297,12 +1741,12 @@ script:
       description: The platform name of the device.
       type: String
     - contextPath: CrowdStrike.Detections.device.product_type_desc
-      description: The value indicating the product type. For example, 1 = Workstation, 2
-        = Domain Controller, 3 = Server.
+      description: The value indicating the product type. For example, 1 = Workstation,
+        2 = Domain Controller, 3 = Server.
       type: String
     - contextPath: CrowdStrike.Detections.device.status
-      description: 'The containment status of the machine. Possible values are: "normal", "containment_pending",
-        "contained", and "lift_containment_pending".'
+      description: 'The containment status of the machine. Possible values are: "normal",
+        "containment_pending", "contained", and "lift_containment_pending".'
       type: String
     - contextPath: CrowdStrike.Detections.device.system_manufacturer
       description: The system manufacturer of the device.
@@ -1311,13 +1755,15 @@ script:
       description: The product name of the system.
       type: String
     - contextPath: CrowdStrike.Detections.device.modified_timestamp
-      description: 'The datetime the device was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
+      description: 'The datetime the device was last modified in ISO time format.
+        For example: 2019-10-17T13:41:48.487520845Z.'
       type: Date
     - contextPath: CrowdStrike.Detections.behaviors.device_id
       description: The ID of the device associated with the behavior.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.timestamp
-      description: 'The datetime the behavior detection occurred in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
+      description: 'The datetime the behavior detection occurred in ISO time format.
+        For example: 2019-10-17T13:41:48.487520845Z.'
       type: Date
     - contextPath: CrowdStrike.Detections.behaviors.behavior_id
       description: The ID of the behavior.
@@ -1344,21 +1790,23 @@ script:
       description: The name of the technique associated with the behavior.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.severity
-      description: The severity rating for the behavior. The value can be any integer between
-        1-100.
+      description: The severity rating for the behavior. The value can be any integer
+        between 1-100.
       type: Number
     - contextPath: CrowdStrike.Detections.behaviors.confidence
-      description: The true positive confidence rating for the behavior. The value can be
-        any integer between 1-100.
+      description: The true positive confidence rating for the behavior. The value
+        can be any integer between 1-100.
       type: Number
     - contextPath: CrowdStrike.Detections.behaviors.ioc_type
-      description: 'The type of the triggering IOC. Possible values are: "hash_sha256", "hash_md5", "domain", "filename", "registry_key", "command_line", and "behavior".'
+      description: 'The type of the triggering IOC. Possible values are: "hash_sha256",
+        "hash_md5", "domain", "filename", "registry_key", "command_line", and "behavior".'
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.ioc_value
       description: The IOC value.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.ioc_source
-      description: 'The source that triggered an IOC detection. Possible values are: "library_load", "primary_module", "file_read", and "file_write".'
+      description: 'The source that triggered an IOC detection. Possible values are:
+        "library_load", "primary_module", "file_read", and "file_write".'
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.ioc_description
       description: The IOC description.
@@ -1448,8 +1896,8 @@ script:
       description: The datetime of the last behavior.
       type: Date
     - contextPath: CrowdStrike.Detections.max_confidence
-      description: The highest confidence value of all behaviors. The value can be any
-        integer between 1-100.
+      description: The highest confidence value of all behaviors. The value can be
+        any integer between 1-100.
       type: Number
     - contextPath: CrowdStrike.Detections.max_severity
       description: The highest severity value of all behaviors. Value can be any integer
@@ -1457,7 +1905,7 @@ script:
       type: Number
     - contextPath: CrowdStrike.Detections.max_severity_displayname
       description: 'The name used in the UI to determine the severity of the detection.
-       Possible values are: "Critical", "High", "Medium", and "Low".'
+        Possible values are: "Critical", "High", "Medium", and "Low".'
       type: String
     - contextPath: CrowdStrike.Detections.show_in_ui
       description: Whether the detection displays in the UI.
@@ -1516,7 +1964,8 @@ script:
       description: The local time of the sensor.
       type: Date
     - contextPath: CrowdStrike.Incidents.hosts.agent_version
-      description: 'The version of the agent that the device is running. For example: 5.32.11406.0.'
+      description: 'The version of the agent that the device is running. For example:
+        5.32.11406.0.'
       type: String
     - contextPath: CrowdStrike.Incidents.hosts.bios_manufacturer
       description: The BIOS manufacturer.
@@ -1528,7 +1977,8 @@ script:
       description: The base of the sensor that the device is running.
       type: String
     - contextPath: CrowdStrike.Incidents.hosts.config_id_build
-      description: 'The version of the sensor that the device is running. For example: 11406.'
+      description: 'The version of the sensor that the device is running. For example:
+        11406.'
       type: String
     - contextPath: CrowdStrike.Incidents.hosts.config_id_platform
       description: The platform ID of the sensor that the device is running.
@@ -1567,12 +2017,12 @@ script:
       description: The platform name of the host.
       type: String
     - contextPath: CrowdStrike.Incidents.hosts.product_type_desc
-      description: The value indicating the product type. For example, 1 = Workstation, 2 = Domain
-        Controller, 3 = Server.
+      description: The value indicating the product type. For example, 1 = Workstation,
+        2 = Domain Controller, 3 = Server.
       type: String
     - contextPath: CrowdStrike.Incidents.hosts.status
-      description: The incident status as a number. For example, 20 = New, 25 = Reopened, 30 = In
-        Progress, 40 = Closed.
+      description: The incident status as a number. For example, 20 = New, 25 = Reopened,
+        30 = In Progress, 40 = Closed.
       type: String
     - contextPath: CrowdStrike.Incidents.hosts.system_manufacturer
       description: The system manufacturer of the device.
@@ -1581,7 +2031,8 @@ script:
       description: The product name of the system.
       type: String
     - contextPath: CrowdStrike.Incidents.hosts.modified_timestamp
-      description: 'The datetime when a user modified the incident in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
+      description: 'The datetime when a user modified the incident in ISO time format.
+        For example: 2019-10-17T13:41:48.487520845Z.'
       type: Date
     - contextPath: CrowdStrike.Incidents.created
       description: The time that the incident was created.
@@ -1610,7 +2061,7 @@ script:
     - contextPath: CrowdStrike.Incidents.fine_score
       description: The incident score.
       type: Number
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: true
   longRunning: false

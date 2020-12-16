@@ -7,6 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+* QRadar_v2
 * QRadar
 
 ### Scripts

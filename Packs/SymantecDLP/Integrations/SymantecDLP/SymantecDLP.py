@@ -643,10 +643,11 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
     time indicates from what time to start fetching existing incidents in Symantec DLP system.
     :param fetch_limit: Indicates how many incidents to fetch every minute
     :param last_run: Demisto last run object
-    :param saved_report_id: The report ID to retrive the incidents from
+    :param saved_report_id: The report ID to retrieve the incidents from
     :return: A list of Demisto incidents
     """
     # We use parse to get out time in datetime format and not iso, that's what Symantec DLP is expecting to get
+    last_id_fetched = last_run.get('last_incident_id')
     if last_run and last_run.get('last_fetched_event_iso'):
         last_update_time = parse(last_run['last_fetched_event_iso'])
     else:
@@ -661,7 +662,12 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
 
     if incidents_ids:
         last_incident_time: str = ''
+        last_incident_id: str = ''
         for incident_id in incidents_ids:
+            if last_id_fetched and last_id_fetched == incident_id:
+                # Skipping last incident from last cycle if fetched again
+                continue
+
             if fetch_limit == 0:
                 break
             fetch_limit -= 1
@@ -688,8 +694,14 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
             incidents.append(incident)
             if incident_id == incidents_ids[-1]:
                 last_incident_time = incident_creation_time
+                last_incident_id = incident_id
 
-        demisto.setLastRun({'last_fetched_event_iso': last_incident_time})
+        demisto.setLastRun(
+            {
+                'last_fetched_event_iso': last_incident_time,
+                'last_incident_id': last_incident_id
+            }
+        )
 
     demisto.incidents(incidents)
 

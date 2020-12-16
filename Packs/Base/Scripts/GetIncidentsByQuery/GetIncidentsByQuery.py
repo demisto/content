@@ -50,7 +50,9 @@ def build_incidents_query(extra_query, incident_types, time_field, from_date, to
     if extra_query:
         query_parts.append(extra_query)
     if incident_types:
-        types_part = "type:({})".format(' '.join('"{}"'.format(x.strip()) for x in incident_types.split(",")))
+        types = ['"{}"'.format(x.strip()) if '*' not in x else '{}'.format(x.strip())
+                 for x in incident_types.split(",")]
+        types_part = "type:({})".format(' '.join(types))
         query_parts.append(types_part)
     if from_date:
         from_part = '%s:>="%s"' % (time_field, parse_datetime(from_date))

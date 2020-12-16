@@ -20,7 +20,8 @@ configuration:
   required: true
   type: 4
 - additionalinfo: Allows running multiple clients (stream consumers) simultaneously,
-    as each integration instance needs a unique application ID.
+    as each integration instance needs a unique application ID. Must be a max. of
+    32 alphanumeric characters (a-z, A-Z, 0-9).
   defaultvalue: Demisto
   display: Application ID
   hidden: false
@@ -62,7 +63,8 @@ configuration:
   type: 0
 - additionalinfo: Because this is a push-based streaming integration, it cannot fetch sample events in
     the mapping wizard. In order to view sample events, you need to enable events storage and
-    run the crowdstrike-falcon-streaming-get-sample-events command.
+    run the crowdstrike-falcon-streaming-get-sample-events command. After you finish mapping, it is
+    recommended to turn off the sample events storage to reduce performance overhead.
   display: Store sample events for mapping
   hidden: false
   name: store_samples
@@ -85,7 +87,7 @@ script:
     description: Returns a list of sample events fetched from the stream.
     execution: false
     name: crowdstrike-falcon-streaming-get-sample-events
-  dockerimage: demisto/aiohttp:1.0.0.12815
+  dockerimage: demisto/aiohttp:1.0.0.13810
   feed: false
   isfetch: false
   longRunning: true

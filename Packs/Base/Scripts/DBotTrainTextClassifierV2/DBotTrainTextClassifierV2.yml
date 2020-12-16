@@ -30,8 +30,8 @@ args:
   isArray: false
   name: overrideExistingModel
   predefined:
-    - 'true'
-    - 'false'
+  - 'true'
+  - 'false'
   required: false
   secret: false
 - default: false
@@ -128,8 +128,8 @@ args:
   isArray: false
   name: findKeywords
   predefined:
-    - 'true'
-    - 'false'
+  - 'true'
+  - 'false'
   required: false
   secret: false
 - auto: PREDEFINED
@@ -140,8 +140,8 @@ args:
   isArray: false
   name: returnPredictionsOnTestSet
   predefined:
-    - 'true'
-    - 'false'
+  - 'true'
+  - 'false'
   required: false
   secret: false
 - default: false
@@ -152,7 +152,7 @@ args:
   isArray: false
   name: originalTextFields
   predefined:
-    - ''
+  - ''
   required: false
   secret: false
 - auto: PREDEFINED
@@ -162,8 +162,8 @@ args:
   isArray: false
   name: preProcessType
   predefined:
-    - nlp
-    - none
+  - nlp
+  - none
   required: false
   secret: false
 comment: Train a machine learning text classifier.
@@ -173,23 +173,23 @@ commonfields:
 enabled: false
 name: DBotTrainTextClassifierV2
 outputs:
-  - contextPath: DBotPhishingClassifier.ModelName
-    description: The model name.
-    type: String
-  - contextPath: DBotPhishingClassifier.EvaluationScores
-    description: The model evaluation scores (precision, coverage, etc.) for the found
-      threshold.
-    type: Unknown
-  - contextPath: DBotPhishingClassifier.ConfusionMatrix
-    description: The model evaluation confusion matrix for the found threshold.
-    type: Unknown
-  - contextPath: DBotPhishingClassifierNoThresh.EvaluationScores
-    description: The model evaluation scores (precision, coverage, etc.) for threshold
-      = 0.
-    type: Unknown
-  - contextPath: DBotPhishingClassifierNoThresh.ConfusionMatrix
-    description: The model evaluation confusion matrix for threshold = 0.
-    type: Unknown
+- contextPath: DBotPhishingClassifier.ModelName
+  description: The model name.
+  type: String
+- contextPath: DBotPhishingClassifier.EvaluationScores
+  description: The model evaluation scores (precision, coverage, etc.) for the found
+    threshold.
+  type: Unknown
+- contextPath: DBotPhishingClassifier.ConfusionMatrix
+  description: The model evaluation confusion matrix for the found threshold.
+  type: Unknown
+- contextPath: DBotPhishingClassifierNoThresh.EvaluationScores
+  description: The model evaluation scores (precision, coverage, etc.) for threshold
+    = 0.
+  type: Unknown
+- contextPath: DBotPhishingClassifierNoThresh.ConfusionMatrix
+  description: The model evaluation confusion matrix for threshold = 0.
+  type: Unknown
 script: '-'
 subtype: python3
 system: false
@@ -197,7 +197,7 @@ tags:
 - ml
 timeout: 12µs
 type: python
-dockerimage: demisto/ml:1.0.0.12701
+dockerimage: demisto/ml:1.0.0.13629
 runonce: true
 tests:
 - Create Phishing Classifier V2 ML Test
