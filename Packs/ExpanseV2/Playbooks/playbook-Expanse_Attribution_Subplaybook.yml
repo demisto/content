@@ -3,12 +3,6 @@ description: "Given an Expanse Asset, Issue IP, Issue Provider, Issue Domain, Is
   Returns a list of potential owner BUs, owner Users, Device and Notes"
 id: Expanse Attribution Subplaybook
 inputs:
-- description: Expanse Asset.
-  key: Asset
-  playbookInputQuery:
-  required: false
-  value:
-    simple: ${incident.expanseasset[0]}
 - description: Expanse Issue IP.
   key: IP
   playbookInputQuery:
