@@ -38,7 +38,16 @@ def main():
     Returns:
         Demisto entry.
     """
-    entries = demisto.executeCommand('getEntries', {'filter': {'categories': ['attachments']}})
+    entries = demisto.executeCommand(
+        'getEntries',
+        {
+            'filter': {
+                'categories': ['attachments']
+            }
+        }
+    )
+    if is_error(entries):
+        return_error(get_error(entries))
     if isinstance(entries, list):
         entry_context = parse_attachment_entries(entries)
         return_outputs('Done', {outputPaths['file']: entry_context}, entry_context)
