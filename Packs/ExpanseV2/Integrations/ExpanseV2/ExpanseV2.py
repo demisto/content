@@ -29,16 +29,13 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 """ CONSTANTS """
 
-SERVER = "https://expander.expanse.co"
 TOKEN_DURATION = 7200
 DEFAULT_RESULTS = 20  # default results per search
 MAX_RESULTS = 5000  # max results per search
 MAX_PAGE_SIZE = 1000  # max results per page
 MAX_INCIDENTS = 100  # max incidents per fetch
 MAX_UPDATES = 100  # max updates received
-PREFIX = SERVER + "/api"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-PAGE_SIZE = 200
 
 ISSUE_PROGRESS_STATUS = ['New', 'Investigating', 'InProgress', 'AcceptableRisk', 'Resolved']
 ISSUE_PROGRESS_STATUS_CLOSED = ['AcceptableRisk', 'Resolved']
@@ -159,7 +156,6 @@ class Client(BaseClient):
         retrieves new token when expired
         """
         current_utc_timestamp = int(self._get_utcnow().timestamp())
-        token_expiration = current_utc_timestamp + TOKEN_DURATION
 
         stored_token = demisto.getIntegrationContext()
         if (
@@ -190,7 +186,7 @@ class Client(BaseClient):
             method='GET', url_suffix='/v1/issues/issues/count',
         )
         if not isinstance(r, dict) or 'count' not in r:
-            raise RuntimeError('Error determining issue count')
+            raise DemistoException(f'Error determining issue count. Response from server: {str(r)}')
         return int(r['count'])
 
     def get_issues(self,
@@ -231,7 +227,7 @@ class Client(BaseClient):
             'createdBefore': created_before,
             'createdAfter': created_after,
             'modifiedBefore': modified_before,
-            'modifiedAfter': modified_before,
+            'modifiedAfter': modified_after,
             'sort': sort
         }
 
@@ -1613,10 +1609,10 @@ def get_iprange_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             "limit": max_page_size
         }
 
-        business_units = argToList(args.get('businessunits'))
+        business_units = argToList(args.get('business_units'))
         if len(business_units) != 0:
             params['business-units'] = ','.join(business_units)
-        business_unit_names = argToList(args.get('businessunit_names'))
+        business_unit_names = argToList(args.get('business_unit_names'))
         if len(business_unit_names) != 0:
             params['business-unit-names'] = ','.join(business_unit_names)
         inet = args.get('inet')
@@ -1670,11 +1666,11 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if len(provider_name) > 0:
         params['providerName'] = ','.join(provider_name)
 
-    business_unit_id = argToList(args.get('businessunits'))
+    business_unit_id = argToList(args.get('business_units'))
     if len(business_unit_id) > 0:
         params['businessUnitId'] = ','.join(business_unit_id)
 
-    business_unit_name = argToList(args.get('businessunit_names'))
+    business_unit_name = argToList(args.get('business_unit_names'))
     if len(business_unit_name) > 0:
         params['businessUnitName'] = ','.join(business_unit_name)
 
@@ -1749,11 +1745,11 @@ def get_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResu
     if len(provider_name) > 0:
         params['providerName'] = ','.join(provider_name)
 
-    business_unit_id = argToList(args.get('businessunits'))
+    business_unit_id = argToList(args.get('business_units'))
     if len(business_unit_id) > 0:
         params['businessUnitId'] = ','.join(business_unit_id)
 
-    business_unit_name = argToList(args.get('businessunit_names'))
+    business_unit_name = argToList(args.get('business_unit_names'))
     if len(business_unit_name) > 0:
         params['businessUnitName'] = ','.join(business_unit_name)
 
@@ -2325,6 +2321,9 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
+        #  To be compatible with 6.1
+        if 'not-implemented' in str(e):
+            raise e
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(
             f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"

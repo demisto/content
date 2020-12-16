@@ -53,7 +53,7 @@ def test_authentication_notcached(mocker, requests_mock):
     assert client._headers["Authorization"] == f"JWT {MOCK_JWT}"
 
 
-def test_authentication_invalid_token(mocker, requests_mock):
+def test_authentication_invalid_token(requests_mock):
     """
     Given:
         - an Expanse client
@@ -163,7 +163,7 @@ def test_authentication_cached_expired(mocker, requests_mock):
     assert mock_set_ic.call_args_list[0][0][0]["expires"] == MOCK_EXP_TS
 
 
-def test_fetch_incidents(requests_mock, mocker):
+def test_fetch_incidents(requests_mock):
     """
     Given:
         - an Expanse client
@@ -257,8 +257,6 @@ def test_get_remote_data_command_should_update(requests_mock):
     """
     from ExpanseV2 import Client, get_remote_data_command
 
-    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
-
     MOCK_ISSUE_ID = "a827f1a5-f223-4bf6-80e0-e8481bce8e2c"
     MOCK_LIMIT = "5"
 
@@ -298,8 +296,6 @@ def test_get_remote_data_command_no_update(requests_mock):
         - the entries in the GetRemoteDataResponse contain expected entries
     """
     from ExpanseV2 import Client, get_remote_data_command
-
-    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
     MOCK_ISSUE_ID = "a827f1a5-f223-4bf6-80e0-e8481bce8e2c"
 
@@ -462,7 +458,7 @@ def test_expanse_get_issues(requests_mock):
     """
     Given:
         - an Expanse client
-        - arguments (businessunit, limit, sort)
+        - arguments (business_unit, limit, sort)
     When
         - running !expanse-get-issues
     Then
@@ -622,7 +618,7 @@ def test_expanse_get_iprange(requests_mock):
     """
     Given:
         - an Expanse client
-        - arguments (businessunit names, limit)
+        - arguments (business unit names, limit)
     When
         - running !expanse-get-ip-range
     Then
@@ -647,7 +643,7 @@ def test_expanse_get_iprange(requests_mock):
         f"https://example.com/api/v2/ip-range?include=&limit={MOCK_LIMIT}&business-unit-names={MOCK_BU}", json=mock_ipranges_input
     )
 
-    result = get_iprange_command(client, {"businessunit_names": MOCK_BU, "limit": MOCK_LIMIT})
+    result = get_iprange_command(client, {"business_unit_names": MOCK_BU, "limit": MOCK_LIMIT})
 
     assert result.outputs_prefix == "Expanse.IPRange"
     assert result.outputs_key_field == "id"
@@ -1357,7 +1353,7 @@ def test_expanse_get_certificate_by_query(requests_mock):
     """
     Given:
         - an Expanse client
-        - arguments (businessunits, limit)
+        - arguments (business unit names, limit)
     When
         - running !expanse-get-certificate with a query
     Then
@@ -1380,7 +1376,7 @@ def test_expanse_get_certificate_by_query(requests_mock):
         f"https://example.com/api/v2/assets/certificates?limit={MOCK_LIMIT}&businessUnitName={MOCK_BU}", json=mock_certs
     )
 
-    result = get_certificate_command(client, {"businessunit_names": MOCK_BU, "limit": MOCK_LIMIT})
+    result = get_certificate_command(client, {"business_unit_names": MOCK_BU, "limit": MOCK_LIMIT})
 
     assert result.outputs_prefix == "Expanse.Certificate"
     assert result.outputs_key_field == "id"
@@ -1437,7 +1433,7 @@ def test_expanse_get_domain(requests_mock):
     """
     Given:
         - an Expanse client
-        - arguments (businessunit names, limit)
+        - arguments (business unit names, limit)
     When
         - running !expanse-get-domain
     Then
@@ -1458,7 +1454,7 @@ def test_expanse_get_domain(requests_mock):
         f"https://example.com/api/v2/assets/domains?limit={MOCK_LIMIT}&businessUnitName={MOCK_BU}", json=mock_domain_data
     )
 
-    result = get_domain_command(client, {"businessunit_names": MOCK_BU, "limit": MOCK_LIMIT})
+    result = get_domain_command(client, {"business_unit_names": MOCK_BU, "limit": MOCK_LIMIT})
     assert result.outputs_prefix == "Expanse.Domain"
     assert result.outputs_key_field == "domain"
     assert result.outputs == mock_domain_data["data"][: int(MOCK_LIMIT)]
