@@ -73,6 +73,11 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
+- name: limit
+  description: The maximum number of results to return. The default value is 50.
+  isArray: false
+  required: false
+  secret: false
 description: This is integration for Bitcoin Abuse API. contains 2 commands, bitcoin-report-address
   and fetch-indicators
 display: BitcoinAbuse

@@ -70,7 +70,7 @@ def test_report_address_command_success(requests_mock):
         json=success_mock_response
     )
     assert report_address_command(client,
-                                  success_report_address) == 'bitcoin address 12xfas41 by abuser ' \
+                                  success_report_address) == 'Bitcoin address 12xfas41 by abuse bitcoin user ' \
                                                              'blabla@blabla.net was reported to ' \
                                                              'BitcoinAbuse API'
 
@@ -115,8 +115,8 @@ def test_report_address_command_success_type_other(requests_mock):
         json=success_mock_response
     )
     assert report_address_command(client,
-                                  success_report_address_other_type) == 'bitcoin address 12xfas41 by abuser ' \
-                                                                        'blabla@blabla.net was reported to ' \
+                                  success_report_address_other_type) == 'Bitcoin address 12xfas41 by abuse bitcoin ' \
+                                                                        'user blabla@blabla.net was reported to ' \
                                                                         'BitcoinAbuse API'
 
 
@@ -169,11 +169,7 @@ def test_first_fetch_url():
     Then:
      - Ensure the url returned is according to initial_fetch_interval param
     """
-    params = {
-        'initial_fetch_interval': '30d'
-    }
-    demisto.setIntegrationContext({})
-    assert build_fetch_indicators_url_prefix(params) == 'download/30d'
+    assert build_fetch_indicators_url_prefix(False, '30d') == 'download/30d'
 
 
 def test_fetch_url_after_first_fetch():
@@ -187,8 +183,4 @@ def test_fetch_url_after_first_fetch():
     Then:
      - Ensure the url returned is 'download/1d' because first fetch was already made
     """
-    params = {
-        'initial_fetch_interval': '30d'
-    }
-    demisto.setIntegrationContext({'have_fetched_first_time': True})
-    assert build_fetch_indicators_url_prefix(params) == 'download/1d'
+    assert build_fetch_indicators_url_prefix(True, '30d') == 'download/1d'
