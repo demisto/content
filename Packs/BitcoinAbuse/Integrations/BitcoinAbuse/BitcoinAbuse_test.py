@@ -156,3 +156,39 @@ def test_report_address_command_failure_unknown_type():
         raise AssertionError('report address command should fail when not given a known type')
     except DemistoException as error:
         assert error.message == 'Bitcoin Abuse: invalid type of abuse, please insert a correct abuse type'
+
+
+def test_first_fetch_url():
+    """
+    Given:
+     - Request for url to fetch indicators
+
+    When:
+     - Trying to fetch indicators for first time
+
+    Then:
+     - Ensure the url returned is according to initial_fetch_interval param
+    """
+    params = {
+        'initial_fetch_interval': '30d'
+    }
+    demisto.setIntegrationContext({})
+    assert build_fetch_indicators_url_prefix(params) == 'download/30d'
+
+
+def test_fetch_url_after_first_fetch():
+    """
+    Given:
+     - Request for url to fetch indicators
+
+    When:
+     - Trying to fetch indicators again after first fetch
+
+    Then:
+     - Ensure the url returned is 'download/1d' because first fetch was already made
+    """
+    params = {
+        'initial_fetch_interval': '30d'
+    }
+    demisto.setIntegrationContext({'have_fetched_first_time': True})
+    assert build_fetch_indicators_url_prefix(params) == 'download/1d'

@@ -8,7 +8,8 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 SERVER_URL = 'https://www.bitcoinabuse.com/api/'
-FEED_ENDPOINT_PREFIX = 'download/1d'
+FEED_ENDPOINT_PREFIX = 'download/'
+FEED_ENDPOINT_DAILY = 'download/1d'
 abuse_type_name_to_id: Dict[str, int] = {
     'ransomware': 1,
     'darknet market': 2,
@@ -84,10 +85,28 @@ class BitcoinAbuseClient(BaseClient):
         """
         return self._http_request(
             method='GET',
-            url_suffix=FEED_ENDPOINT_PREFIX,
+            url_suffix=FEED_ENDPOINT_DAILY,
             params=vars(download_params),
             resp_type='text'
         )
+
+
+def build_fetch_indicators_url_prefix(params: Dict) -> str:
+    """
+
+    Args:
+        params: demisto params given for the command
+
+    Returns:
+        - if first fetch - returns the feed endpoint prefix concatenated with the first_fetch_interval requested
+        - if first fetch was already done - returns the feed endpoint prefix concatenated with 1d fetch prefix
+    """
+    if demisto.getIntegrationContext().get('have_fetched_first_time'):
+        return FEED_ENDPOINT_DAILY
+    else:
+        feed_interval_prefix = params.get('initial_fetch_interval', '30d')
+        demisto.setIntegrationContext({'have_fetched_first_time': True})
+        return FEED_ENDPOINT_PREFIX + feed_interval_prefix
 
 
 def _build_fetch_indicators_params(demisto_params: Dict) -> Dict:
@@ -104,8 +123,8 @@ def _build_fetch_indicators_params(demisto_params: Dict) -> Dict:
     params = {k: v for k, v in demisto_params.items() if v is not None}
 
     api_key = demisto_params.get('api_key', '')
-
-    url = f'{SERVER_URL}{FEED_ENDPOINT_PREFIX}?api_token={api_key}'
+    feed_url_prefix = build_fetch_indicators_url_prefix(params)
+    url = f'{SERVER_URL}{feed_url_prefix}?api_token={api_key}'
 
     feed_url_to_config = {
         url: {

@@ -27,7 +27,7 @@ configuration:
 - additionalinfo: The time interval for the first fetch (retroactive).
   defaultvalue: 30d
   display: First Fetch Time
-  name: initial_interval
+  name: initial_fetch_interval
   options:
   - 30d
   - forever
