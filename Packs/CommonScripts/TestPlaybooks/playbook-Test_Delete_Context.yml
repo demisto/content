@@ -1227,7 +1227,7 @@ tasks:
     task:
       id: 9982db2d-5110-4b17-83e3-eb860737e46b
       version: -1
-      name: Ensure D.E.d2 doesn't exists and D.E.d1 equals e1
+      name: Ensure the array contains duplicates
       type: condition
       iscommand: false
       brand: ""
