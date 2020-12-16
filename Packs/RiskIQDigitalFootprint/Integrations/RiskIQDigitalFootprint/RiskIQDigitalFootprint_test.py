@@ -315,11 +315,15 @@ def test_asset_connections_success(mocker_http_request, client):
     result = asset_connections_command(client, args={'name': 'dummy', 'type': 'ASN', 'global': 'true',
                                                      'size': 2})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[1].raw_response == expected_res
+    assert result[1].outputs == expected_custom_ec[0]
+    assert result[2].outputs == expected_custom_ec[1]
+    assert result[3].outputs == expected_custom_ec[2]
+    assert result[4].outputs == expected_custom_ec[3]
+    for res in result:
+        assert res.readable_output in expected_hr
+    assert result[1].outputs_key_field == 'uuid'
+    assert result[1].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -543,11 +547,11 @@ def test_asset_changes_success_asset_type(mocker_http_request, client):
     result = asset_changes_command(client, args={'range': '30', 'type': 'DOMAIN', 'organization': 'dummy',
                                                  'measure': 'Added', 'size': 1})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == ['name', 'type']
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.AssetChanges'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == ['name', 'type']
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.AssetChanges'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -575,11 +579,11 @@ def test_asset_changes_success_asset_detail_type(mocker_http_request, client):
     result = asset_changes_command(client, args={'type': 'SELF_HOSTED_RESOURCE', 'range': '1', 'measure': 'Added',
                                                  'size': 200})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == ['id', 'resource']
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.AssetChanges'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == ['id', 'resource']
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.AssetChanges'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -796,11 +800,11 @@ def test_get_asset_success_for_domain(mocker_http_request, client):
     result = get_asset_command(client, args={'uuid': '42696470-7b2a-617b-2f5e-ab674438e4f5', 'global': 'true',
                                              'recent': 'true'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -825,11 +829,11 @@ def test_get_asset_success_for_host(mocker_http_request, client):
 
     result = get_asset_command(client, args={'uuid': 'dffa643e-7d39-4687-d35d-f37a217f339c', 'global': 'true'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -854,11 +858,11 @@ def test_get_asset_success_for_ip_address(mocker_http_request, client):
 
     result = get_asset_command(client, args={'uuid': '72ca2677-2276-90cc-048a-546ebed63e2f'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -883,11 +887,11 @@ def test_get_asset_success_for_ip_block(mocker_http_request, client):
 
     result = get_asset_command(client, args={'uuid': '92b3f425-d5ba-385a-f10c-6c6678d6369f'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -912,11 +916,11 @@ def test_get_asset_success_for_as(mocker_http_request, client):
 
     result = get_asset_command(client, args={'uuid': '9ca2cd53-af69-cbca-f398-e891ecf413d3'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -941,11 +945,11 @@ def test_get_asset_success_for_page(mocker_http_request, client):
 
     result = get_asset_command(client, args={'uuid': '8dfdd21e-5012-3bd6-f9a5-c3151f1b9e40'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -970,11 +974,11 @@ def test_get_asset_success_for_ssl_cert(mocker_http_request, client):
 
     result = get_asset_command(client, args={'uuid': 'd02ea1d1-7129-094a-50b0-3b285798d28d'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -999,11 +1003,11 @@ def test_get_asset_success_for_contact(mocker_http_request, client):
 
     result = get_asset_command(client, args={'uuid': 'd02ea1d1-7129-094a-50b0-3b285798d28d'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -1029,11 +1033,11 @@ def test_get_asset_by_name_and_type_success_for_host(mocker_http_request, client
     result = get_asset_command(client, args={'name': 'www.dummy.com', 'type': 'HOST', 'global': 'true',
                                              'recent': 'true'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -1059,11 +1063,11 @@ def test_get_asset_by_name_and_type_success_for_ip_address(mocker_http_request, 
     result = get_asset_command(client, args={'name': 'dummy.ip', 'type': 'IP_ADDRESS',
                                              'recent': 'true'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -1089,11 +1093,11 @@ def test_get_asset_by_name_and_type_success_for_as(mocker_http_request, client):
     result = get_asset_command(client, args={'name': '63245', 'type': 'ASN',
                                              'recent': 'true'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 def test_get_asset_invalid_global(client):
