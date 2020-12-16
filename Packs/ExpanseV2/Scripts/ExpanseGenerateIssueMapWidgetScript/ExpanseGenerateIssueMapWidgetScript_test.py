@@ -4,7 +4,7 @@ from typing import Tuple, List
 from math import floor
 from functools import reduce
 
-import ExpanseGenerateIssueMap
+import ExpanseGenerateIssueMapWidgetScript
 
 
 # taken from demistomock with only the relevant
@@ -150,20 +150,22 @@ def test_latlon_to_yx():
     Then
         - x/y coordinates are calculated
     """
-    assert ExpanseGenerateIssueMap.lat_to_y(90) is None
-    assert ExpanseGenerateIssueMap.lat_to_y(-90) is None
+    from ExpanseGenerateIssueMapWidgetScript import lat_to_y, lon_to_x, RESULT_IMAGE_X, RESULT_IMAGE_Y
+
+    assert lat_to_y(90) is None
+    assert lat_to_y(-90) is None
 
     tests: List[Tuple[Tuple[int, int], Tuple[int, int]]] = [
         ((85, -180), (0, 0)),
-        ((85, 180), (0, ExpanseGenerateIssueMap.RESULT_IMAGE_X)),
-        ((-85, -180), (ExpanseGenerateIssueMap.RESULT_IMAGE_Y, 0)),
-        ((-85, 180), (ExpanseGenerateIssueMap.RESULT_IMAGE_Y, ExpanseGenerateIssueMap.RESULT_IMAGE_X)),
-        ((0, 0), (floor(ExpanseGenerateIssueMap.RESULT_IMAGE_Y / 2), floor(ExpanseGenerateIssueMap.RESULT_IMAGE_X / 2)))
+        ((85, 180), (0, RESULT_IMAGE_X)),
+        ((-85, -180), (RESULT_IMAGE_Y, 0)),
+        ((-85, 180), (RESULT_IMAGE_Y, RESULT_IMAGE_X)),
+        ((0, 0), (floor(RESULT_IMAGE_Y / 2), floor(RESULT_IMAGE_X / 2)))
     ]
 
     for (lat, lon), (y, x) in tests:
-        ry = ExpanseGenerateIssueMap.lat_to_y(lat)
-        rx = ExpanseGenerateIssueMap.lon_to_x(lon)
+        ry = lat_to_y(lat)
+        rx = lon_to_x(lon)
 
         assert rx >= x - 1
         assert rx <= x + 1
@@ -180,11 +182,11 @@ def test_calc_clusters(mocker):
     Then
         - points are grouped in clusters
     """
-    mocker.patch('ExpanseGenerateIssueMap.lat_to_y', side_effect=lambda y: y)
-    mocker.patch('ExpanseGenerateIssueMap.lon_to_x', side_effect=lambda x: x)
+    mocker.patch('ExpanseGenerateIssueMapWidgetScript.lat_to_y', side_effect=lambda y: y)
+    mocker.patch('ExpanseGenerateIssueMapWidgetScript.lon_to_x', side_effect=lambda x: x)
 
     points = [(0, 0), (4, 4), (300, 300), (320, 320), (280, 280)]
-    clusters = reduce(ExpanseGenerateIssueMap.calc_clusters, points, [])
+    clusters = reduce(ExpanseGenerateIssueMapWidgetScript.calc_clusters, points, [])
 
     assert clusters == [[(0, 0), (4, 4)], [(300, 300), (320, 320), (280, 280)]]
 
@@ -214,11 +216,11 @@ def test_extract_geolocation(mocker):
 
         return EXAMPLE_INCIDENT
 
-    mocker.patch('ExpanseGenerateIssueMap.lat_to_y', side_effect=lambda y: y)
-    mocker.patch('ExpanseGenerateIssueMap.lon_to_x', side_effect=lambda x: x)
+    mocker.patch('ExpanseGenerateIssueMapWidgetScript.lat_to_y', side_effect=lambda y: y)
+    mocker.patch('ExpanseGenerateIssueMapWidgetScript.lon_to_x', side_effect=lambda x: x)
 
     ec_mock = mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)  # this keeps mypy happy
-    result = ExpanseGenerateIssueMap.extract_geolocation("from-date", "to-date")
+    result = ExpanseGenerateIssueMapWidgetScript.extract_geolocation("from-date", "to-date")
 
     assert result == [(3.14, 14.3)]
     assert ec_mock.call_args[0][0] == "getIncidents"
@@ -236,9 +238,9 @@ def test_generate_map_command(mocker):
         - commands returns with no errors
         - markdown document is generated
     """
-    eg_mock = mocker.patch('ExpanseGenerateIssueMap.extract_geolocation', return_value=[])
+    eg_mock = mocker.patch('ExpanseGenerateIssueMapWidgetScript.extract_geolocation', return_value=[])
 
-    result = ExpanseGenerateIssueMap.generate_map_command({'from': "fake-from", "to": "fake-to"})
+    result = ExpanseGenerateIssueMapWidgetScript.generate_map_command({'from': "fake-from", "to": "fake-to"})
 
     assert eg_mock.call_args[0][0] == "fake-from"
     assert eg_mock.call_args[0][1] == "fake-to"
