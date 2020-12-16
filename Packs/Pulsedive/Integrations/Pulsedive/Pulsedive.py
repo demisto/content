@@ -151,7 +151,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], api_key) -> List
         ip_data.pop('objects', None)
         ip_data.pop('nir', None)
         command_results.append(CommandResults(
-            readable_output=tableToMarkdown('IP:', ip_data),
+            readable_output=tableToMarkdown('IP Details:', ip_data),
             outputs_prefix='Pulsedive.IP',
             outputs_key_field='indicator',
             outputs=ip_data,
@@ -202,7 +202,7 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], api_key) -> 
         )
 
         command_results.append(CommandResults(
-            readable_output=tableToMarkdown('Domain:', domain_data),
+            readable_output=tableToMarkdown('Domain Details:', domain_data),
             outputs_prefix='Pulsedive.Domain',
             outputs_key_field='indicator',
             outputs=domain_data,
@@ -241,7 +241,7 @@ def url_reputation_command(client: Client, args: Dict[str, Any], api_key) -> Lis
         url_data.pop('objects', None)
         url_data.pop('nir', None)
         command_results.append(CommandResults(
-            readable_output=tableToMarkdown('URL:', url_data),
+            readable_output=tableToMarkdown('URL Details:', url_data),
             outputs_prefix='Pulsedive.URL',
             outputs_key_field='indicator',
             outputs=url_data,
