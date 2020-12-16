@@ -211,8 +211,8 @@ def options_handler():
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
     parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
-                                          '"Server Master", "Demisto GA", "Demisto one before GA", "Demisto two before '
-                                          'GA". The server url is determined by the AMI environment.')
+                                          '"Server Master", "Server 5.0". '
+                                          'The server url is determined by the AMI environment.')
     parser.add_argument('-g', '--git_sha1', help='commit sha1 to compare changes with')
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
@@ -823,12 +823,12 @@ def get_env_conf():
         # START CHANGE ON LOCAL RUN #
         return [{
             "InstanceDNS": "http://localhost:8080",
-            "Role": "Demisto Marketplace"  # e.g. 'Demisto Marketplace'
+            "Role": "Server Master"  # e.g. 'Server Master'
         }]
     elif Build.run_environment == Running.WITH_OTHER_SERVER:
         return [{
             "InstanceDNS": "DNS NANE",  # without http prefix
-            "Role": "DEMISTO EVN"  # e.g. 'Demisto Marketplace'
+            "Role": "DEMISTO EVN"  # e.g. 'Server Master'
         }]
     #  END CHANGE ON LOCAL RUN  #
 

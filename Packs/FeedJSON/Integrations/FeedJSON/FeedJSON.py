@@ -4,11 +4,6 @@ from CommonServerPython import *
 from JSONFeedApiModule import *  # noqa: E402
 
 
-def test_module(client, params) -> str:  # type: ignore  # pylint: disable=function-redefined
-    client.build_iterator()
-    return 'ok'
-
-
 def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
 
