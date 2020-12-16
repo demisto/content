@@ -17,7 +17,16 @@ COMMAND_NOT_IMPELEMENTED_MSG = 'Command not implemented'
 HEADERS = {
     'Content-Type': 'application/json',
 }
-
+JIRA_INCIDENT_TYPE_NAME = 'Jira Incident'
+ISSUE_INCIDENT_FIELDS = {'issueId': 'The ID of the issue to edit',
+                         'summary': 'The summary of the issue.',
+                         'description': 'The description of the issue.',
+                         'labels': 'A CSV list of labels.',
+                         'priority': 'A priority name, for example "High" or "Medium".',
+                         'dueDate': 'The due date for the issue (in the format 2018-03-11).',
+                         'assignee': 'The name of the assignee.',
+                         'status': 'The name of the status.'
+                         }
 BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication with passwords for Jira is no" \
                        " longer supported, please use an API Token or OAuth 1.0"
 USE_SSL = not demisto.params().get('insecure', False)
@@ -728,6 +737,17 @@ def get_incident_entries(issue, incident_modified_date):
     return entries
 
 
+def get_mapping_fields_command():
+    jira_incident_type_scheme = SchemeTypeMapping(type_name=JIRA_INCIDENT_TYPE_NAME)
+    for argument, description in ISSUE_INCIDENT_FIELDS.items():
+        jira_incident_type_scheme.add_field(name=argument, description=description)
+
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(jira_incident_type_scheme)
+
+    return mapping_response
+
+
 
 def get_remote_data_command(args) -> GetRemoteDataResponse:
     """ Mirror-in data to incident from Jira into demisto 'jira issue' incident.
@@ -829,6 +849,9 @@ def main():
 
         elif demisto.command() == 'jira-get-id-offset':
             get_id_offset()
+
+        elif demisto.command() == 'get-mapping-fields':
+            get_mapping_fields_command()
 
         elif demisto.command() == 'get-remote-data':
             return_results(get_remote_data_command(demisto.args()))
