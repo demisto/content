@@ -402,7 +402,6 @@ def get_network_indicators(res, analysis_info):
 def get_monitor_indicators(res, analysis_info):
     report = res['report']
     command_results = []
-    ids: List[Common.Indicator] = []
     for p in report.get('goo_monitor', {}).get('processes', []):
         process = Process(
             name=p.get('basename'),

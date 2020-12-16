@@ -30,7 +30,12 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: TDS Polygon is a Malware Detonation & Research platform designed for deep dynamic analysis and enhanced indicators extraction. TDS Polygon analyzes submitted files and urls and extracts deep IOCs that appear when malicious code is triggered and executed. Polygon could be used either for application-level tasks (like smtp-based mail filtering) and analytical purposes (files/urls analysis for verdict, report and indicators).
+description: TDS Polygon is a Malware Detonation & Research platform designed for
+  deep dynamic analysis and enhanced indicators extraction. TDS Polygon analyzes submitted
+  files and urls and extracts deep IOCs that appear when malicious code is triggered
+  and executed. Polygon could be used either for application-level tasks (like smtp-based
+  mail filtering) and analytical purposes (files/urls analysis for verdict, report
+  and indicators).
 display: Group-IB TDS Polygon
 name: Group-IB TDS Polygon
 script:
@@ -214,7 +219,8 @@ script:
     - contextPath: Polygon.Analysis.Domain
       description: The information about Domain indicators
     - contextPath: Polygon.Analysis.RegistryKey
-      description: The information about registry keys which were modified during the analysis
+      description: The information about registry keys which were modified during
+        the analysis
     - contextPath: Polygon.Analysis.Process
       description: The information about processes started during the analysis
     description: Get TDS Polygon analysis info
@@ -260,7 +266,8 @@ script:
       type: string
     - contextPath: File.Info
       description: The dump file info
-    description: The command allows you to download a network activity dump in case the file/link is malicious.
+    description: The command allows you to download a network activity dump in case
+      the file/link is malicious.
   - name: polygon-export-video
     arguments:
     - name: tds_analysis_id
@@ -282,13 +289,15 @@ script:
     - contextPath: File.Info
       description: The video file info
       type: string
-    description: The command allows you to download a screen activity video in case the file/link is malicious.
+    description: The command allows you to download a screen activity video in case
+      the file/link is malicious.
   - name: file
     arguments:
     - name: file
       required: true
       description: File hash (MD5, SHA1, SHA256)
       isArray: true
+      default: true
     outputs:
     - contextPath: File.MD5
       description: The MD5 hash of the file
@@ -339,7 +348,7 @@ script:
       description: Malware families
       type: string
     description: Check file reputation
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: false
   longRunning: false
@@ -349,3 +358,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
