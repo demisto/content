@@ -7,6 +7,11 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+  defaultvalue: 'true'
 - display: API Key
   name: api_key
   required: true
@@ -63,15 +68,11 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-- defaultvalue: "true"
-  display: Fetch indicators
-  name: feed
-  required: false
-  type: 8
-- display: Feed Fetch Interval
+- defaultvalue: '60'
+  display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
-  type: 0
+  type: 19
 description: This is integration for Bitcoin Abuse API. contains 2 commands, bitcoin-report-address
   and fetch-indicators
 display: BitcoinAbuse
