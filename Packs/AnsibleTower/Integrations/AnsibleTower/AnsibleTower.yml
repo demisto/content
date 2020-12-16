@@ -1,0 +1,69 @@
+category: IT Services
+commonfields:
+  id: AnsibleTower
+  version: -1
+configuration:
+- display: Ansible URL
+  name: url
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Username
+  hidden: false
+  name: username
+  required: true
+  type: 0
+- hidden: false
+  name: password
+  required: true
+  type: 0
+description: n Scale IT automation, manage complex deployments and speed productivity
+display: AnsibleTower
+name: AnsibleTower
+script:
+  commands:
+  - arguments:
+    - default: false
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '1'
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: ansible-awx-inventories-list
+  dockerimage: demisto/python3:3.8.6.13358
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultmapperin: HelloWorld-mapper
+defaultclassifier: HelloWorld
+fromversion: 5.0.0
