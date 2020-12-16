@@ -1736,15 +1736,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'businessunit_names' argument.
+      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_unit_names' argument.
       isArray: true
-      name: businessunits
+      name: business_units
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'businessunits' argument.
+      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_units' argument.
       isArray: true
-      name: businessunit_names
+      name: business_unit_names
       required: false
       secret: false
     - default: false
@@ -2012,14 +2012,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'businessunit_names' argument.
+      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_unit_names' argument.
       isArray: false
-      name: businessunits
+      name: business_units
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's name falls in the provided list. (comma separated string). Cannot be used with the 'businessunits' argument.
-      name: businessunit_names
+      description: Returns only results whose Business Unit's name falls in the provided list. (comma separated string). Cannot be used with the 'business_units' argument.
+      name: business_unit_names
       required: false
       secret: false
     - default: false
@@ -2311,13 +2311,13 @@ script:
       description: The status of the domain.
       type: Date
     - contextPath: Domain.NameServers
-      description: (List<String>) Name servers of the domain.  
+      description: Name servers of the domain.  
       type: String
     - contextPath: Domain.Organization
       description: The organization of the domain.
       type: String
     - contextPath: Domain.Subdomains
-      description: (List<String>) Subdomains of the domain.
+      description: Subdomains of the domain.
       type: String
     - contextPath: Domain.Admin.Country
       description: The country of the domain administrator.
@@ -2347,7 +2347,7 @@ script:
       description: The status of the domain.
       type: String
     - contextPath: Domain.WHOIS.NameServers
-      description: (List<String>) Name servers of the domain.
+      description: Name servers of the domain.
       type: String
     - contextPath: Domain.WHOIS.CreationDate
       description: The date that the domain was created.
@@ -2385,7 +2385,7 @@ script:
     - contextPath: Domain.WHOIS.Admin.Phone
       description: The phone number of the domain administrator.
       type: String
-    - contextPath: Domain.WHOIS/History
+    - contextPath: Domain.WHOIS.History
       description: List of Whois objects
       type: String
     - contextPath: Domain.Malicious.Vendor
@@ -2530,14 +2530,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'businessunit_names' argument.
+      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_unit_names' argument.
       isArray: false
-      name: businessunits
+      name: business_units
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's name falls in the provided list. (comma separated string). Cannot be used with the 'businessunits' argument.
-      name: businessunit_names
+      description: Returns only results whose Business Unit's name falls in the provided list. (comma separated string). Cannot be used with the 'business_units' argument.
+      name: business_unit_names
       required: false
       secret: false
     - default: false
@@ -3578,13 +3578,13 @@ script:
       description: The status of the domain.
       type: Date
     - contextPath: Domain.NameServers
-      description: (List<String>) Name servers of the domain.  
+      description: Name servers of the domain.  
       type: String
     - contextPath: Domain.Organization
       description: The organization of the domain.
       type: String
     - contextPath: Domain.Subdomains
-      description: (List<String>) Subdomains of the domain.
+      description: Subdomains of the domain.
       type: String
     - contextPath: Domain.Admin.Country
       description: The country of the domain administrator.
@@ -3614,7 +3614,7 @@ script:
       description: The status of the domain.
       type: String
     - contextPath: Domain.WHOIS.NameServers
-      description: (List<String>) Name servers of the domain.
+      description: Name servers of the domain.
       type: String
     - contextPath: Domain.WHOIS.CreationDate
       description: The date that the domain was created.
@@ -3652,7 +3652,7 @@ script:
     - contextPath: Domain.WHOIS.Admin.Phone
       description: The phone number of the domain administrator.
       type: String
-    - contextPath: Domain.WHOIS/History
+    - contextPath: Domain.WHOIS.History
       description: List of Whois objects
       type: String
     - contextPath: Domain.Malicious.Vendor
