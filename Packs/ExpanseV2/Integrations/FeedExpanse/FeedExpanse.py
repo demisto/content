@@ -119,7 +119,7 @@ class Client(BaseClient):
         if last_observed_date is not None:
             params['minRecentIpLastObservedDate'] = last_observed_date
 
-        result: Dict = self._http_request(
+        result = self._http_request(
             method="GET",
             url_suffix=f"/v2/assets/domains/{domain}",
             raise_on_status=True,
@@ -133,7 +133,7 @@ class Client(BaseClient):
         if last_observed_date is not None:
             params['minRecentIpLastObservedDate'] = last_observed_date
 
-        result: Dict = self._http_request(
+        result = self._http_request(
             method="GET",
             url_suffix=f"/v2/assets/certificates/{pem_md5_hash}",
             raise_on_status=True,
@@ -262,20 +262,12 @@ def ip_to_demisto_indicator(ip_indicator: Dict[str, Any]) -> Optional[Dict[str, 
     if value is None:
         return None
 
-    provider = ip_indicator.get('provider', {})
-    provider_name = provider.get('name', None)
+    provider_name = ip_indicator.get('provider', {}).get('name')
 
-    tenant_name: Optional[str] = None
-    tenant = ip_indicator.get('tenant', None)
-    if tenant is not None:
-        tenant_name = tenant.get('name', None)
+    tenant_name = ip_indicator.get('tenant', {}).get('name')
 
-    business_unit_names: List[str] = []
     business_units = ip_indicator.get("businessUnits", [])
-    for bu in business_units:
-        if 'name' not in bu:
-            continue
-        business_unit_names.append(bu['name'])
+    business_unit_names = [bu['name'] for bu in business_units if bu.get('name')]
 
     # to faciliate classifiers
     ip_indicator['expanseType'] = 'ip'
@@ -329,26 +321,15 @@ def certificate_to_demisto_indicator(certificate: Dict[str, Any]) -> Optional[Di
         ec_names.add(ec_subject_name)
 
     annotations = certificate.get('annotations', {})
-    tags = []
-    if 'tags' in annotations:
-        tags = [tag['name'] for tag in annotations['tags']]
+    tags = [tag['name'] for tag in annotations.get('tags', [])]
 
-    provider_name: Optional[str] = None
-    providers = certificate.get('providers', None)
-    if isinstance(providers, list) and len(providers) > 0:
-        provider_name = providers[0].get('name', None)
+    providers = certificate.get('providers', [])
+    provider_name = None if len(providers) == 0 else providers[0].get('name')
 
-    tenant_name: Optional[str] = None
-    tenant = certificate.get('tenant', None)
-    if tenant is not None:
-        tenant_name = tenant.get('name', None)
+    tenant_name = certificate.get('tenant', {}).get('name')
 
-    business_unit_names: List[str] = []
     business_units = certificate.get("businessUnits", [])
-    for bu in business_units:
-        if 'name' not in bu:
-            continue
-        business_unit_names.append(bu['name'])
+    business_unit_names = [bu['name'] for bu in business_units if bu.get('name')]
 
     return {
         'type': 'Certificate',
@@ -400,19 +381,12 @@ def domain_to_demisto_indicator(domain_indicator: Dict[str, Any]) -> Optional[Di
         return None
 
     annotations = domain_indicator.get('annotations', {})
-    tags = []
-    if 'tags' in annotations:
-        tags = [tag['name'] for tag in annotations['tags']]
+    tags = [tag['name'] for tag in annotations.get('tags', [])]
 
-    provider_name: Optional[str] = None
-    provider = domain_indicator.get('provider', None)
-    if provider is not None:
-        provider_name = provider.get('name', None)
+    providers = domain_indicator.get('providers', [])
+    provider_name = None if len(providers) == 0 else providers[0].get('name')
 
-    tenant_name: Optional[str] = None
-    tenant = domain_indicator.get('tenant', None)
-    if tenant is not None:
-        tenant_name = tenant.get('name', None)
+    tenant_name = domain_indicator.get('tenant', {}).get('name')
 
     business_units = domain_indicator.get("businessUnits", [])
     business_unit_names = [bu['name'] for bu in business_units if bu.get('name')]
@@ -470,23 +444,12 @@ def iprange_to_demisto_indicator(iprange_indicator: Dict[str, Any]) -> Iterable[
         return []
 
     annotations = iprange_indicator.get('annotations', {})
-    tags = []
-    if 'tags' in annotations:
-        tags = [tag['name'] for tag in annotations['tags']]
+    tags = [tag['name'] for tag in annotations.get('tags', []) if tag.get('name')]
 
-    business_unit_names: List[str] = []
     business_units = iprange_indicator.get("businessUnits", [])
-    for bu in business_units:
-        demisto.debug(f"{bu!r}")
-        if 'name' not in bu:
-            continue
-        business_unit_names.append(bu['name'])
+    business_unit_names = [bu['name'] for bu in business_units if bu.get('name')]
 
-    attribution_reasons: List[str] = []
-    for ar in iprange_indicator.get('attributionReason', []):
-        if 'reason' not in ar:
-            continue
-        attribution_reasons.append(ar['reason'])
+    attribution_reasons: List[str] = [ar['reason'] for ar in iprange_indicator.get('attributionReason', []) if ar.get('reason')]
 
     # to faciliate classifiers
     iprange_indicator['expanseType'] = 'iprange'
