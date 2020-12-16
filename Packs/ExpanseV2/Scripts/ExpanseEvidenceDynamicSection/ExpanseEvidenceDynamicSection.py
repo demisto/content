@@ -10,7 +10,7 @@ from typing import Dict, Any, Tuple, List, Optional
 ''' STANDALONE FUNCTION '''
 
 
-def valueToMarkdown(v: Any) -> Optional[str]:
+def value_to_markdown(v: Any) -> Optional[str]:
     if v is None:
         return "*empty*"
 
@@ -23,7 +23,7 @@ def valueToMarkdown(v: Any) -> Optional[str]:
     return None
 
 
-def dsToFieldList(name: str, d: Dict[str, Any], dict_stack: List[Tuple[str, Dict[str, Any]]]) -> List[str]:
+def ds_to_field_list(name: str, d: Dict[str, Any], dict_stack: List[Tuple[str, Dict[str, Any]]]) -> List[str]:
     if isinstance(d, dict):
         fields = d.items()
     elif isinstance(d, list):
@@ -54,7 +54,7 @@ def dsToFieldList(name: str, d: Dict[str, Any], dict_stack: List[Tuple[str, Dict
             except JSONDecodeError:
                 pass
 
-        formatted_value = valueToMarkdown(value)
+        formatted_value = value_to_markdown(value)
         if formatted_value is None:
             subsect_name = f"{name} / {field_name}"
             dict_stack.insert(0, (
@@ -73,13 +73,11 @@ def dsToFieldList(name: str, d: Dict[str, Any], dict_stack: List[Tuple[str, Dict
 
 def convert_to_markdown(evidence: Dict[str, Any]) -> str:
     md_result = []
-    dict_stack: List[Tuple[str, Dict[str, Any]]] = []
-
-    dict_stack.append(("Evidence", evidence))
+    dict_stack: List[Tuple[str, Dict[str, Any]]] = [("Evidence", evidence)]
 
     while len(dict_stack) > 0:
         next_dict = dict_stack.pop()
-        md_result.extend(dsToFieldList(next_dict[0], next_dict[1], dict_stack))
+        md_result.extend(ds_to_field_list(next_dict[0], next_dict[1], dict_stack))
 
     return '\n'.join(md_result)
 
@@ -88,8 +86,8 @@ def convert_to_markdown(evidence: Dict[str, Any]) -> str:
 
 
 def evidence_dynamic_section(args: Dict[str, Any]) -> CommandResults:
-    incident = demisto.incidents()[0]
-    custom_fields = incident.get('CustomFields')
+    incident = demisto.incident()
+    custom_fields = incident.get('CustomFields', {})
 
     latest_evidence = custom_fields.get('expanselatestevidence', None)
     if latest_evidence is None:

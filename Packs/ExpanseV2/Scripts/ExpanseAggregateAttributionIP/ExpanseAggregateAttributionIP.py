@@ -6,7 +6,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any, Tuple, Optional
 from ipaddress import IPv4Address, IPv4Network
 import traceback
 
@@ -15,6 +15,20 @@ import traceback
 
 
 def is_internal(net_list: List[IPv4Network], ip: IPv4Address) -> bool:
+    """
+    is_internal
+    Checks if an IP address is a "internal".
+
+    :type net_list: ``List[IPv4Network]``
+    :param net_list: List of networks to be considered internal. If empty or None, the Python is_private
+        method is used.
+
+    :type ip: ``IPv4Address``
+    :param ip: The IP Address to be checked.
+
+    :return: True if ip is internal, False otherwise.
+    :rtype: ``bool``
+    """
     if net_list is None or len(net_list) == 0:
         return ip.is_private
 
@@ -26,6 +40,23 @@ def deconstruct_entry(entry: Dict[str, str],
                       source_ip_fields: List[str],
                       sightings_fields: List[str]) -> Tuple[Optional[str],
                                                             Optional[int]]:
+    """
+    deconstruct_entry
+    Extracts device relevant fields from a log entry.
+
+    :type entry: ``Dict[str, str]``
+    :param entry: Log entry as dictionary of fields.
+
+    :type sightings_fields: ``List[str]``
+    :param sightings_fields: List of possible field names in log entry to be considered as number of occurences.
+
+    :type source_ip_fields: ``List[str]``
+    :param source_ip_fields: List of possible field names in log entry to be considered as source IPs.
+
+    :return: Tuple where the first element is the source IP or None and the second element is the number of
+        occurences of the event.
+    :rtype: ``Tuple[Optional[str], Optional[int]]``
+    """
     sightings = next((int(entry[field]) for field in sightings_fields if field in entry), 1)
     source_ip = next((entry[field] for field in source_ip_fields if field in entry), None)
 
@@ -82,7 +113,7 @@ def aggregate_command(args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=markdown,
-        outputs=outputs if len(outputs) > 0 else None,
+        outputs=outputs or None,
         outputs_prefix="Expanse.AttributionIP",
         outputs_key_field="ip"
     )

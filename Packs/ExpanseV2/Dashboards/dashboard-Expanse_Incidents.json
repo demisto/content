@@ -1225,7 +1225,7 @@
                 "prevName": "Map",
                 "dataType": "scripts",
                 "widgetType": "text",
-                "query": "ExpanseGenerateIssueMap",
+                "query": "ExpanseGenerateIssueMapWidgetScript",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {

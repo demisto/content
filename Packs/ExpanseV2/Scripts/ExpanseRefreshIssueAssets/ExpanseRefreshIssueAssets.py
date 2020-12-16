@@ -11,7 +11,7 @@ from typing import Dict, Any
 def refresh_issue_assets_command(args: Dict[str, Any]) -> CommandResults:
     incident = demisto.incident()
     custom_fields = incident.get('CustomFields', {})
-    assets = custom_fields.get('expanseasset')
+    assets = custom_fields.get('expanseasset', [])
 
     for asset in assets:
         asset_type = asset.get('assettype')
@@ -20,11 +20,11 @@ def refresh_issue_assets_command(args: Dict[str, Any]) -> CommandResults:
         if asset_type == 'Domain':
             new_asset = demisto.executeCommand('expanse-get-domain', {"domain": asset_key})
         elif asset_type == 'IpRange':
-            new_asset = demisto.executeCommand('expanse-get-iprange', {"id": asset_key})
+            new_asset = demisto.executeCommand('expanse-get-iprange', {"id": asset_key, "include": "annotations"})
         elif asset_type == 'Certificate':
-            new_asset = demisto.executeCommand('expanse-get-certificate', {"hash": asset_key})
+            new_asset = demisto.executeCommand('expanse-get-certificate', {"md5_hash": asset_key})
         else:
-            # ???
+            # Unknown asset type, ignore.
             continue
 
         if isinstance(new_asset, list):
