@@ -304,8 +304,9 @@ def get_main_indicator(report, analysis_type):
         )
 
 
-def get_packages_indicators(report):
-    ids = []
+def get_packages_indicators(res, analysis_info):
+    report = res['report']
+    command_results = []
     for package in report.get("packages", []):
         info = package.get('file_info', {})
         file = Common.File(
@@ -321,12 +322,21 @@ def get_packages_indicators(report):
                 score=0
             )
         )
-        ids.append(file)
-    return ids
+        command_results.append(CommandResults(
+            readable_output=get_human_readable_analysis_info(analysis_info),
+            outputs_prefix="Polygon.Analysis",
+            outputs_key_field="ID",
+            outputs=analysis_info,
+            indicator=file,
+            raw_response=res
+            )
+        )
+    return command_results
 
 
-def get_network_indicators(report):
-    ids: List[Common.Indicator] = []
+def get_network_indicators(res, analysis_info):
+    report = res['report']
+    command_results = []
     network = report.get('network', {})
     for dns in network.get('dns', []):
         domain = Common.Domain(
@@ -339,7 +349,15 @@ def get_network_indicators(report):
                 score=0
             )
         )
-        ids.append(domain)
+        command_results.append(CommandResults(
+            readable_output=get_human_readable_analysis_info(analysis_info),
+            outputs_prefix="Polygon.Analysis",
+            outputs_key_field="ID",
+            outputs=analysis_info,
+            indicator=domain,
+            raw_response=res
+            )
+        )
     for host in network.get('hosts', []) + [h[0] for h in network.get('dead_hosts', [])]:
         ip = Common.IP(
             ip=host,
@@ -350,7 +368,15 @@ def get_network_indicators(report):
                 score=0
             )
         )
-        ids.append(ip)
+        command_results.append(CommandResults(
+            readable_output=get_human_readable_analysis_info(analysis_info),
+            outputs_prefix="Polygon.Analysis",
+            outputs_key_field="ID",
+            outputs=analysis_info,
+            indicator=ip,
+            raw_response=res
+            )
+        )
     for http in network.get('http', []):
         url = Common.URL(
             url=http.get('uri'),
@@ -361,12 +387,21 @@ def get_network_indicators(report):
                 score=0
             )
         )
-        ids.append(url)
+        command_results.append(CommandResults(
+            readable_output=get_human_readable_analysis_info(analysis_info),
+            outputs_prefix="Polygon.Analysis",
+            outputs_key_field="ID",
+            outputs=analysis_info,
+            indicator=url,
+            raw_response=res
+            )
+        )
+    return command_results
 
-    return ids
 
-
-def get_monitor_indicators(report):
+def get_monitor_indicators(res, analysis_info):
+    report = res['report']
+    command_results = []
     ids: List[Common.Indicator] = []
     for p in report.get('goo_monitor', {}).get('processes', []):
         process = Process(
@@ -377,25 +412,51 @@ def get_monitor_indicators(report):
             end_time=p.get('exited_at'),
             path=p.get('filename'),
         )
-        ids.append(process)
+        command_results.append(CommandResults(
+            readable_output=get_human_readable_analysis_info(analysis_info),
+            outputs_prefix="Polygon.Analysis",
+            outputs_key_field="ID",
+            outputs=analysis_info,
+            indicator=process,
+            raw_response=res
+            )
+        )
         for regkey in p.get('regkeys', []):
             if regkey.get('action') == 'regkey_written':
                 reg = RegistryKey(
                     path=regkey.get('ioc'),
                     value=str(regkey.get('value'))
                 )
-                ids.append(reg)
+                command_results.append(CommandResults(
+                    readable_output=get_human_readable_analysis_info(analysis_info),
+                    outputs_prefix="Polygon.Analysis",
+                    outputs_key_field="ID",
+                    outputs=analysis_info,
+                    indicator=reg,
+                    raw_response=res
+                )
+                )
+    return command_results
 
-    return ids
 
+def get_report_indicators(res, analysis_type, analysis_info):
+    report = res['report']
+    command_results = []
+    indicator = get_main_indicator(report, analysis_type)
+    command_results.append(CommandResults(
+        readable_output=get_human_readable_analysis_info(analysis_info),
+        outputs_prefix="Polygon.Analysis",
+        outputs_key_field="ID",
+        outputs=analysis_info,
+        indicator=indicator,
+        raw_response=res
+        )
+    )
+    command_results.extend(get_packages_indicators(res, analysis_info))
+    command_results.extend(get_network_indicators(res, analysis_info))
+    command_results.extend(get_monitor_indicators(res, analysis_info))
 
-def get_report_indicators(report, analysis_type):
-    indicators = [get_main_indicator(report, analysis_type)]
-    indicators += get_packages_indicators(report)
-    indicators += get_network_indicators(report)
-    indicators += get_monitor_indicators(report)
-
-    return indicators
+    return command_results
 
 
 def analysis_info_command(client, args):
@@ -405,22 +466,13 @@ def analysis_info_command(client, args):
         analysis_type = tds_analysis_id[0]
         res = client.get_analysis_info(drop_prefix(tds_analysis_id))
         analysis_info = serialize_analysis_info(res.get('file'), analysis_type, report='report' in res)
-        indicators = []
+        command_results = []
         if 'report' in res:
             if analysis_type == URL_TYPE:
                 res['report']['target']['url'] = client.get_url(res.get('file'))
             analysis_info.update(serialize_report_info(res['report'], analysis_type))
-            indicators = get_report_indicators(res["report"], analysis_type)
-        human_readable = get_human_readable_analysis_info(analysis_info)
-        results = CommandResults(
-            readable_output=human_readable,
-            outputs_prefix="Polygon.Analysis",
-            outputs_key_field="ID",
-            outputs=analysis_info,
-            indicators=indicators,
-            raw_response=res
-        )
-        all_results.append(results)
+            command_results = get_report_indicators(res, analysis_type, analysis_info)
+        all_results.extend(command_results)
     return all_results
 
 
@@ -534,7 +586,7 @@ def file_command(client, args):
                 outputs_prefix="Polygon.Analysis",
                 outputs_key_field=hash_type.upper(),
                 outputs=analysis_info,
-                indicators=[indicator],
+                indicator=indicator,
                 raw_response=res
             )
             all_results.append(result)
