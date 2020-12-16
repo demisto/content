@@ -328,7 +328,7 @@ def get_packages_indicators(res):
             readable_output=tableToMarkdown(f"New File indicator was created {file.name}"),
             indicator=file,
             raw_response=res
-            )
+        )
         )
     return command_results
 
@@ -352,7 +352,7 @@ def get_network_indicators(res):
             readable_output=tableToMarkdown(f"New Domain indicator was created {domain.domain}"),
             indicator=domain,
             raw_response=res
-            )
+        )
         )
     for host in network.get('hosts', []) + [h[0] for h in network.get('dead_hosts', [])]:
         ip = Common.IP(
@@ -368,7 +368,7 @@ def get_network_indicators(res):
             readable_output=tableToMarkdown(f"New IP indicator was created {ip.ip}"),
             indicator=ip,
             raw_response=res
-            )
+        )
         )
     for http in network.get('http', []):
         url = Common.URL(
@@ -384,7 +384,7 @@ def get_network_indicators(res):
             readable_output=tableToMarkdown(f"New URL indicator was created {url.url}"),
             indicator=url,
             raw_response=res
-            )
+        )
         )
     return command_results
 
@@ -405,7 +405,7 @@ def get_monitor_indicators(res):
             human_readable=tableToMarkdown(f"New Process indicator was created {process.name}"),
             indicator=process,
             raw_response=res
-            )
+        )
         )
         for regkey in p.get('regkeys', []):
             if regkey.get('action') == 'regkey_written':
@@ -417,7 +417,7 @@ def get_monitor_indicators(res):
                     human_readable=tableToMarkdown(f"New RegistryKey indicator was created {reg.value}"),
                     indicator=reg,
                     raw_response=res
-                    )
+                )
                 )
     return command_results
 
@@ -435,7 +435,7 @@ def get_report_indicators(res, analysis_type):
         readable_output=human_readable,
         indicator=indicator,
         raw_response=res
-        )
+    )
     )
     command_results.extend(get_packages_indicators(res))
     command_results.extend(get_network_indicators(res))
