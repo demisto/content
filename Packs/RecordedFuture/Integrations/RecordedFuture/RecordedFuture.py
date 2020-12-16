@@ -328,7 +328,7 @@ def build_rep_context(entity_data: Dict[str, Any],
 
 def triage_command(client: Client,
                    entities: Dict[str, List[str]],
-                   context: str) -> CommandResults:
+                   context: str) -> List[CommandResults]:
     """Do Auto Triage."""
     context_data = client.get_triage(entities, context)
     command_results = build_triage_context(context_data, context)

@@ -61,7 +61,7 @@ class RFTest(unittest.TestCase):
                     'url': ['https://sites.google.com/site/unblockingnotice/'],
                     'vulnerability': ['CVE-2020-8813', 'CVE-2011-3874']}
         resp = triage_command(self.client, entities, context)
-        self.assertIsInstance(resp, CommandResults)
+        self.assertIsInstance(resp, List[CommandResults])
         self.assertFalse(resp.to_context()['Contents']['verdict'])
         self.assertEqual('phishing', resp.to_context()['Contents']['context'])
 
