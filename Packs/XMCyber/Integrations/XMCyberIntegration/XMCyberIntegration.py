@@ -709,7 +709,7 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
                     readable_output=f'Fetched Endpoint for {ip} info'
                 ))
 
-    # add general hr and output to the begining of result
+    # add general hr and output to the beginning of result
     command_results.insert(0, CommandResults(
         readable_output=readable_output,
         outputs_prefix='XMCyber.Entity',
