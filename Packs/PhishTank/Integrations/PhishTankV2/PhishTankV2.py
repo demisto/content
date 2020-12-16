@@ -159,9 +159,9 @@ def url_command(client: Client, url_list: list) -> List[CommandResults]:
             markdown += f'#### No matches for URL {url} \n'
             dbot = Common.DBotScore(url, DBotScoreType.URL, "PhishTankV2", 0)
         command_results.append(CommandResults(
-            indicator=Common.URL(url, dbot)),
+            indicator=Common.URL(url, dbot),
             readable_output=markdown,
-        )
+        ))
 
     return command_results
 
