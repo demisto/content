@@ -4,12 +4,12 @@ import demistomock as demisto  # noqa: F401
 from CSVFeedApiModule import *
 from CommonServerPython import *  # noqa: F401
 
-# disable insecure warningsø
+# disable insecure warnings
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 SERVER_URL = 'https://www.bitcoinabuse.com/api/'
-FEED_ENDPOINT_PREFIX = 'download/30d'
+FEED_ENDPOINT_PREFIX = 'download/1d'
 abuse_type_name_to_id: Dict[str, int] = {
     'ransomware': 1,
     'darknet market': 2,
@@ -17,14 +17,6 @@ abuse_type_name_to_id: Dict[str, int] = {
     'blackmail scam': 4,
     'sextortio': 5,
     'other': 99
-}
-abuse_type_id_to_name: Dict[str, str] = {
-    '1': 'ransomware',
-    '2': 'darknet market',
-    '3': 'bitcoin tumbler',
-    '4': 'blackmail scam',
-    '5': 'sextortio',
-    '99': 'other'
 }
 OTHER_ABUSE_TYPE_ID = 99
 REPORT_ADDRESS_PREFIX = '/reports/create'
@@ -38,7 +30,7 @@ class _ReportAddressParams:
         api_token: the api token to connect to Bitcoin Abuse API
         address: the address of the abuser
         abuse_type_id: an id which indicates which type of abuse was made
-        abuse_type_other: incase abuse_type_id was other, holds information describing the abuse type
+        abuse_type_other: in case abuse_type_id was other, holds information describing the abuse type
         abuser: information about the abuser (email, name, ...)
         description: description of the abuse (may include email sent, etc)
     """
@@ -135,8 +127,7 @@ def _build_fetch_indicators_params(demisto_params: Dict) -> Dict:
     params['feed_url_to_config'] = feed_url_to_config
     params['delimiter'] = ','
 
-
-return params
+    return params
 
 
 def fetch_indicators(demisto_params: Dict) -> None:
@@ -229,7 +220,6 @@ def main() -> None:
     try:
 
         if command == 'test-module':
-
             download_params = _DownloadParams(client.api_key)
             client.download_csv(download_params)
 
