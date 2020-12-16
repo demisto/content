@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Dict
 
 import urllib3
 from CommonServerPython import *
@@ -31,6 +31,7 @@ SCROLL_ID_INCIDENT: str
 SCROLL_ID_FILE: str
 SCROLL_ID_USER_DETAIL: str
 MAX_INCIDENTS_TO_FETCH: int
+URL: str
 
 
 def encoding(username, password):
@@ -76,12 +77,13 @@ def initialise_scrolls_and_rules():
 
 def initialize_global_values():
 
-    global MAX_INCIDENTS_TO_FETCH, COOKIE, AUTH_HEADERS, QUERY_HEADERS,\
+    global URL, MAX_INCIDENTS_TO_FETCH, COOKIE, AUTH_HEADERS, QUERY_HEADERS,\
         CLIENT_ID, CLIENT_SECRET, AUTH_HEADERS, DOMAIN, AUTHORIZATION
 
     CLIENT_ID = demisto.getParam('client_id')
     CLIENT_SECRET = demisto.getParam('client_secret')
     DOMAIN = demisto.getParam('domain')
+    URL = urljoin(demisto.getParam('url'))
     AUTHORIZATION = "Basic " + encoding(CLIENT_ID, CLIENT_SECRET)
     AUTH_HEADERS = get_headers_for_login()
     initialise_scrolls_and_rules()
@@ -157,7 +159,7 @@ class QueryClient(BaseClient):
         payload = {
             "query": "{ allContents(filter: \"{\\\"and\\\": [{\\\"in\\\": [ { \\\"var\\\": \\\"path\\\"},"
             " [\\\"" + path + "\\\"]] }]}\" pagination: { currentPage: 1 pageSize: 500 } "
-            "_scroll_id: \"" + SCROLL_ID_FILE + "\") { allContents {rows { retrieved_class  ccc_class  name "
+            "_scroll_id: \"" + SCROLL_ID_FILE + "\") { allContents {rows { cid retrieved_class  ccc_class  name "
             "ownerDetails { name} category subcategory service type dropped dropped_reason created_at "
             "modified_at duplicate near_duplicate misclass size  path  url  entity_person entity_org  "
             "entity_email entity_bank_account  entity_credit_card  entity_date_of_birth entity_driving_license "
@@ -173,6 +175,21 @@ class QueryClient(BaseClient):
                 res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull file-information', e)
+        return res
+
+    def get_file_sharing_details(self, loginClient: LoginClient, cid: str):
+        payload = {
+            "query": "{\n  allContents(filter: \"{\\\"and\\\": [{\\\"in\\\": [ { \\\"var\\\": \\\"cid\\\"},"
+            " [\\\"" + cid + "\\\"]]}]}\", augment: {tables: [\"entitlement\"]}) {\n  augment\n  } \n}\n"
+        }
+        try:
+            res = callAPI(self, payload, loginClient)
+        except Exception as e:
+            if str(e) == 'Error in API call [401] - Unauthorized\n':
+                fetch_token(loginClient)
+                res = callAPI(self, payload, loginClient)
+            else:
+                raise Exception('Failed to pull file sharing details', e)
         return res
 
     def get_users_overview(self, loginClient: LoginClient, max_users: str):
@@ -341,6 +358,20 @@ def transform_user_details(answer):
     return target
 
 
+def get_file_360_link(cid: str):
+    global URL
+    url = URL
+    p1 = url.find("api")
+    p2 = url.find("-")
+    length = len(url)
+    if(p1 < 0 or p2 < 0):
+        return None
+    else:
+        link = url[0:p1] + url[p2 + 1:length]
+        link = link + "file360?cid=" + cid
+        return link
+
+
 def transform_file_information(target: dict, risk_dict: dict, queryClient: QueryClient, loginClient: LoginClient):
 
     if target['risk_id'] is not None:
@@ -358,6 +389,9 @@ def transform_file_information(target: dict, risk_dict: dict, queryClient: Query
     if 'ownerDetails' in target:
         if target['ownerDetails'] is not None:
             target['ownerDetails'] = target['ownerDetails']['name']
+    if 'cid' in target:
+        if target['cid'] is not None:
+            target['file360-link'] = get_file_360_link(target['cid'])
     if 'near_duplicate_contrib_cids' in target:
         if target['near_duplicate_contrib_cids'] is not None:
             file_names: list = []
@@ -369,6 +403,17 @@ def transform_file_information(target: dict, risk_dict: dict, queryClient: Query
                     file_names.append(path + " --> " + name)
             target['near_duplicate_files'] = file_names
             target.pop('near_duplicate_contrib_cids')
+    return target
+
+
+def transform_file_permissions(answer):
+    target = {}
+    if 'type' in answer and answer['type'] is not None:
+        target['type'] = answer['type']
+    if 'user_name' in answer and answer['user_name'] is not None:
+        target['user_name'] = answer['user_name']
+    if 'user_id' in answer and answer['user_id'] is not None:
+        target['user_id'] = answer['user_id']
     return target
 
 
@@ -488,8 +533,24 @@ def fetch_file_information(loginClient: LoginClient, queryClient: QueryClient, p
     )
 
 
-def get_users_overview(loginClient: LoginClient, queryClient: QueryClient, max_users: int):
+def get_file_sharing_details(loginClient: LoginClient, queryClient: QueryClient, cid: str):
+    res = queryClient.get_file_sharing_details(loginClient, cid)
+    answers = res['data']['allContents']['augment']['entitlement']
+    results = []
+    for answer in answers:
+        target = transform_file_permissions(answer)
+        results.append(target)
 
+    readable_output = tableToMarkdown('File Sharing', results)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='ConcentricAI.FileSharingInfo',
+        outputs_key_field='info',
+        outputs=results
+    )
+
+
+def get_users_overview(loginClient: LoginClient, queryClient: QueryClient, max_users: int):
     res = queryClient.get_users_overview(loginClient, str(max_users))
     answers = res['data']['allContents']['aggregations']
     result = filter_user_information(answers)
@@ -529,7 +590,6 @@ def get_user_details(loginClient: LoginClient, queryClient: QueryClient, user: s
         target = transform_user_details(answer)
         results.append(target)
 
-    # do some error handling here.
     if results == []:
         return_error(f'No Results found for this user while executing {demisto.command()} command')
 
@@ -591,6 +651,12 @@ def main() -> None:
             path = demisto.getArg('path')
             name = demisto.getArg('file-name')
             result = fetch_file_information(loginClient, queryClient, path, name)
+            return_results(result)
+
+        # this will get file sharing details based on cid.
+        elif demisto.command() == 'concentricai-get-file-sharing-details':
+            cid = demisto.getArg('cid')
+            result = get_file_sharing_details(loginClient, queryClient, cid)
             return_results(result)
 
         # this will fetch all information about users-overview.

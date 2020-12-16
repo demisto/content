@@ -2,7 +2,7 @@
     "name": "Carbon Black Enterprise Response",
     "description": "Query and response with Carbon Black endpoint detection and response.",
     "support": "xsoar",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

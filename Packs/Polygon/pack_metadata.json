@@ -11,12 +11,12 @@
         "Forensics & Malware Analysis"
     ],
     "tags": [],
-    "useCases": [
-    ],
+    "useCases": [],
     "keywords": [
         "sandbox"
     ],
     "githubUser": [
         "gib-tds"
-    ]
+    ],
+    "certification": "certified"
 }

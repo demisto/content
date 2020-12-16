@@ -2,7 +2,7 @@
     "name": "Microsoft Graph Security",
     "description": "Unified gateway to security insights - all from a unified Microsoft Graph\n  Security API.",
     "support": "xsoar",
-    "currentVersion": "2.0.4",
+    "currentVersion": "2.0.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
