@@ -5,6 +5,7 @@ args:
 - defaultValue: id,cloudType,resourceName,resourceType,regionId,accountId,accountName,hasAlert,service,ip,fqdn
   description: Fields to be returned (comma separated string).
   name: fields
+  isArray: true
 comment: Recursively extracts specified fields from provided list of assets for Prisma Cloud attribution use case.
 commonfields:
   id: PrismaCloudAttribution
