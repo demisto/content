@@ -68,6 +68,42 @@ configuration:
   - suddenDeath
   required: false
   type: 17
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  type: 8
+  required: false
+- display: ''
+  name: feedExpirationInterval
+  type: 1
+  required: false
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  type: 19
+  required: false
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 description: This is integration for Bitcoin Abuse API. contains 2 commands, bitcoin-report-address
   and fetch-indicators
 display: BitcoinAbuse
@@ -76,6 +112,7 @@ script:
   commands:
   - arguments: []
     name: fetch-indicators
+    description: fetches indicators from BitcoinAbuse API
   - arguments:
     - description: address of the abuser
       name: address
@@ -110,4 +147,6 @@ script:
   script: ''
   subtype: python3
   type: python
-fromversion: 5.0.0
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
