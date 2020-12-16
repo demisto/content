@@ -135,7 +135,7 @@ def incident_data_to_demisto_format(inc_data):
 
 
 def get_update_incident_request_data(client, args):
-    # Get Etag and other mandatory properties (title, severity, status) for update_incident command
+    # Get Etag and other mandatory properties (title, severity, status, classification, classificationcomment) for update_incident command
     _, _, result = get_incident_by_id_command(client, args)
 
     title = args.get('title')
@@ -144,10 +144,6 @@ def get_update_incident_request_data(client, args):
     status = args.get('status')
     classification = args.get('classification')
     classificationcomment = args.get('classificationcomment')
-    
-    
-    
-    
 
     if not title:
         title = result.get('properties', {}).get('title')
@@ -160,7 +156,7 @@ def get_update_incident_request_data(client, args):
     if not classification:
         classification = result.get('properties', {}).get('classification')
     if not classificationcomment:
-        classificationcomment = result.get('properties', {}).get('classificationcomment')        
+        classificationcomment = result.get('properties', {}).get('classificationcomment')
 
     inc_data = {
         'etag': result.get('etag'),
