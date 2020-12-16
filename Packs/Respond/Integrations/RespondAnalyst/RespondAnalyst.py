@@ -885,8 +885,10 @@ def get_escalations_command(rest_client, args):
 
 
 def get_remote_data_command(rest_client, args):
-    args['tenant_id'] = args.get('id').split(':')[0]
-    args['incident_id'] = args.get('id').split(':')[1]
+    full_id = args.get('id')
+    last_index = full_id.rfind(':')
+    args['respond_tenant_id'] = id[0:last_index]
+    args['incident_id'] = id[last_index + 1:]
     entries = []
     try:
         updated_incident = get_formatted_incident(rest_client, args)
@@ -926,7 +928,9 @@ def update_remote_system_command(rest_client, args):
     try:
         if remote_args.delta:
             # get incident id and tenant id from remote_system_id
-            tenant_id = remote_args.remote_incident_id.split(':')[0]
+            remote_incident_id = remote_args.remote_incident_id
+            last_index = remote_incident_id.rfind(':')
+            tenant_id = remote_incident_id[0:last_index]
             incident_id = remote_args.remote_incident_id.split(':')[1]
             user_tenant_mappings = rest_client.get_tenant_mappings()
             internal_tenant_id = get_internal_tenant_from_mapping_with_external(
