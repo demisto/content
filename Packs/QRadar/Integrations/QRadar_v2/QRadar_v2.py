@@ -180,6 +180,11 @@ class QRadarClient:
     def __init__(
         self, server: str, proxies, credentials, offenses_per_fetch=50, insecure=False,
     ):
+        """
+
+        Returns:
+            object:
+        """
         self._server = server[:-1] if server.endswith("/") else server
         self._proxies = proxies
         self._auth_headers = {"Content-Type": "application/json"}
@@ -727,13 +732,23 @@ def test_module(client: QRadarClient):
     test_res = client.test_connection()
 
     params = demisto.params()
-    is_long_running = params.get('longRunning')
+    is_long_running = params.get("longRunning")
     if is_long_running:
         # check fetch incidents can fetch and search events
         raw_offenses = client.get_offenses(_range="0-0")
         fetch_mode = params.get("fetch_mode")
         if raw_offenses and fetch_mode != FetchMode.no_events:
             events_columns = params.get("events_columns")
+            if not events_columns:
+                raise DemistoException(
+                    f"Fetch mode is set to {fetch_mode} no Event fields provided.\n"
+                    f"Add Event fields to the integration parameters to fix it. \n"
+                    f"You can find all available fields by enabling this integration and clicking on:\n"
+                    f"Classification & Mapping -> New -> Incident Mapper (Incoming).\n"
+                    f"Then click on Get Data -> \"Select schema\"\n"
+                    f"Select Instance -> pick this QRadar instance\n. "
+                    f"Any field under Events: Builtin Fields or Events: Custom Fields is avaliable to use."
+                )
             events_limit = params.get("events_limit")
             offense = raw_offenses[0]
             offense_start_time = offense["start_time"]
