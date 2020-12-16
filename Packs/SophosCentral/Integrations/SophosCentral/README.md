@@ -1,9 +1,9 @@
-The unified console for managing Sophos products
-This integration was integrated and tested with version xx of sophos_central
-## Configure sophos_central on Cortex XSOAR
+The unified console for managing Sophos products.
+
+## Configure Sophos Central on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for sophos_central.
+2. Search for Sophos Central.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
@@ -69,7 +69,7 @@ List alerts.
                     "clearThreat"
                 ],
                 "category": "malware",
-                "description": "Manual cleanup required: 'EICAR-AV-Test' at 'C:\\Users\\Lior\\Downloads\\eicarcom2.zip'",
+                "description": "Manual cleanup required: 'EICAR-AV-Test' at 'C:\\Users\\JonDoe\\Downloads\\eicarcom2.zip'",
                 "groupKey": "MSxFdmVudDo6RW5kcG9pbnQ6OlRocmVhdDo6Q2xlYW51cEZhaWxlZCwxNixFSUNBUi1BVi1UZXN0",
                 "id": "8e879165-81cb-4747-8608-1cc4e630a017",
                 "managedAgentId": "6e9567ea-bb50-40c5-9f12-42eb308e4c9b",
@@ -128,7 +128,7 @@ List alerts.
 >### Listed Alerts:
 >|id|description|severity|raisedAt|allowedActions|managedAgentId|category|type|
 >|---|---|---|---|---|---|---|---|
->| 8e879165-81cb-4747-8608-1cc4e630a017 | Manual cleanup required: 'EICAR-AV-Test' at 'C:\Users\Lior\Downloads\eicarcom2.zip' | high | 2020-11-25T09:19:18.936Z | clearThreat | 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | malware | Event::Endpoint::Threat::CleanupFailed |
+>| 8e879165-81cb-4747-8608-1cc4e630a017 | Manual cleanup required: 'EICAR-AV-Test' at 'C:\Users\JonDoe\Downloads\eicarcom2.zip' | high | 2020-11-25T09:19:18.936Z | clearThreat | 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | malware | Event::Endpoint::Threat::CleanupFailed |
 >| 9641ba6e-3254-4726-962d-b2bc11e04131 | Malicious connection detected: 'C2/Generic-B' at 'C:\Windows\System32\wscript.exe' (Technical Support reference: 277413403) | high | 2020-11-25T10:36:31.603Z | clearThreat | 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | runtimeDetections | Event::Endpoint::Threat::CommandAndControlDetected |
 >| ee527ca8-cb54-4e11-b59f-2197910176f3 | Thunderbox is out of date. | medium | 2020-11-25T10:42:09.083Z | acknowledge | 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | updating | Event::Endpoint::OutOfDate |
 >Results on this page: 3.Maximum number of results allowed in a page: 100
@@ -180,7 +180,7 @@ Get a single alert by ID.
                 "clearThreat"
             ],
             "category": "malware",
-            "description": "Manual cleanup required: 'EICAR-AV-Test' at 'C:\\Users\\Lior\\Downloads\\eicarcom2.zip'",
+            "description": "Manual cleanup required: 'EICAR-AV-Test' at 'C:\\Users\\JonDoe\\Downloads\\eicarcom2.zip'",
             "groupKey": "MSxFdmVudDo6RW5kcG9pbnQ6OlRocmVhdDo6Q2xlYW51cEZhaWxlZCwxNixFSUNBUi1BVi1UZXN0",
             "id": "8e879165-81cb-4747-8608-1cc4e630a017",
             "managedAgentId": "6e9567ea-bb50-40c5-9f12-42eb308e4c9b",
@@ -202,7 +202,7 @@ Get a single alert by ID.
 >### Found Alert:
 >|id|description|severity|raisedAt|allowedActions|managedAgentId|category|type|
 >|---|---|---|---|---|---|---|---|
->| 8e879165-81cb-4747-8608-1cc4e630a017 | Manual cleanup required: 'EICAR-AV-Test' at 'C:\Users\Lior\Downloads\eicarcom2.zip' | high | 2020-11-25T09:19:18.936Z | clearThreat | 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | malware | Event::Endpoint::Threat::CleanupFailed |
+>| 8e879165-81cb-4747-8608-1cc4e630a017 | Manual cleanup required: 'EICAR-AV-Test' at 'C:\Users\JonDoe\Downloads\eicarcom2.zip' | high | 2020-11-25T09:19:18.936Z | clearThreat | 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | malware | Event::Endpoint::Threat::CleanupFailed |
 
 
 ### sophos-central-alert-action
@@ -389,7 +389,7 @@ List all endpoints for a tenant.
                 ],
                 "associatedPersonId": null,
                 "associatedPersonName": null,
-                "associatedPersonViaLogin": "THUNDERBOX\\Lior",
+                "associatedPersonViaLogin": "THUNDERBOX\\JonDoe",
                 "health": "bad",
                 "hostname": "Thunderbox",
                 "id": "6e9567ea-bb50-40c5-9f12-42eb308e4c9b",
