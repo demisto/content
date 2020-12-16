@@ -1,6 +1,6 @@
 from requests_oauthlib import OAuth1
 from dateparser import parse
-from pytz import UTC
+import pytz
 
 from CommonServerPython import *
 
@@ -23,16 +23,25 @@ BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication w
 USE_SSL = not demisto.params().get('insecure', False)
 
 
-def jira_req(method: str, resource_url: str, body: str = '', link: bool = False, resp_type: str = 'text'):
+def jira_req(
+        method: str,
+        resource_url: str,
+        body: str = '',
+        link: bool = False,
+        resp_type: str = 'text',
+        headers: Optional[dict] = None,
+        files: Optional[dict] = None
+):
     url = resource_url if link else (BASE_URL + resource_url)
     try:
         result = requests.request(
             method=method,
             url=url,
             data=body,
-            headers=HEADERS,
+            headers=headers or HEADERS,
             verify=USE_SSL,
             auth=get_auth(),
+            files=files
         )
     except ValueError:
         raise ValueError("Could not deserialize privateKey")
@@ -54,6 +63,9 @@ def jira_req(method: str, resource_url: str, body: str = '', link: bool = False,
                              f'{BASIC_AUTH_ERROR_MSG}')
             elif result.status_code == 404:
                 return_error("Could not connect to the Jira server. Verify that the server URL is correct.")
+            elif result.status_code == 500 and files:
+                return_error(f"Failed to execute request, status code: 500\nBody: {result.text}"
+                             f"\nMake sure file name doesn't contain any special characters")
             else:
                 return_error(
                     f"Failed reaching the server. status code: {result.status_code}")
@@ -554,23 +566,16 @@ def issue_upload_command(issue_id, upload, attachment_name=None):
 
 
 def upload_file(entry_id, issue_id, attachment_name=None):
-    headers = {
-        'X-Atlassian-Token': 'no-check'
-    }
     file_name, file_bytes = get_file(entry_id)
-    res = requests.post(
-        url=BASE_URL + f'rest/api/latest/issue/{issue_id}/attachments',
-        headers=headers,
+    return jira_req(
+        method='POST',
+        resource_url=f'rest/api/latest/issue/{issue_id}/attachments',
+        headers={
+            'X-Atlassian-Token': 'no-check'
+        },
         files={'file': (attachment_name or file_name, file_bytes)},
-        auth=(USERNAME, API_TOKEN or PASSWORD),
-        verify=USE_SSL
+        resp_type='json'
     )
-
-    if not res.ok:
-        return_error(f'Failed to execute request, status code:{res.status_code}\nBody: {res.text}'
-                     + "\nMake sure file name doesn't contain any special characters" if res.status_code == 500 else "")
-
-    return res.json()
 
 
 def get_file(entry_id):
@@ -696,9 +701,9 @@ def get_remote_data_command(id: str, lastUpdate: str) -> GetRemoteDataResponse:
     # Timestamp - Issue last modified in jira server side
     jira_modified_date: datetime = parse(
         str(dict_safe_get(issue_raw_response, ['fields', 'updated'], "", str))
-    ).replace(tzinfo=UTC)
+    ).replace(tzinfo=pytz.UTC)
     # Timestamp - Issue last sync in demisto server side
-    incident_modified_date: datetime = parse(lastUpdate).replace(tzinfo=UTC)
+    incident_modified_date: datetime = parse(lastUpdate).replace(tzinfo=pytz.UTC)
 
     # Update incident only if issue modified in Jira server-side after the last sync
     if jira_modified_date > incident_modified_date:

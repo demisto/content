@@ -21,8 +21,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use Anomali Enterprise to search indicators and enrich domains.
-display: Anomali Enterprise
+description: Use Anomali Match to search indicators and enrich domains.
+display: Anomali Match
 name: Anomali Enterprise
 script:
   commands:
@@ -176,7 +176,7 @@ script:
     - contextPath: Domain.Malicious.Description
       description: A description of the malicious domain.
       type: String
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: false
   longRunning: false
@@ -187,4 +187,4 @@ script:
   type: python
 fromversion: 5.0.0
 tests:
-- Anomali Enterprise Forensic Search - Test
+- Anomali Match Forensic Search - Test

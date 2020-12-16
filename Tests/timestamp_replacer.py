@@ -204,7 +204,11 @@ class TimestampReplacer:
         if req.method == 'POST':
             raw_content = req.raw_content
             if raw_content is not None:
-                content = req.raw_content.decode()
+                try:
+                    content = raw_content.decode()
+                except UnicodeDecodeError:
+                    logging.error('Failed to decode request content')
+                    content = ''
             else:
                 content = ''
             logging.info(f'cleaning json body: content={content}')
@@ -324,7 +328,11 @@ class TimestampReplacer:
         if req.method == 'POST':
             raw_content = req.raw_content
             if raw_content is not None:
-                content = req.raw_content.decode()
+                try:
+                    content = raw_content.decode()
+                except UnicodeDecodeError:
+                    logging.error('Failed to decode request content')
+                    content = ''
             else:
                 content = ''
             logging.info(f'handling json body: content={content}')

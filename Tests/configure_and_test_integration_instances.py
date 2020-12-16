@@ -25,8 +25,7 @@ from ruamel import yaml
 from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml,\
     str2bool, format_version, find_type
 from demisto_sdk.commands.common.constants import FileType
-from Tests.test_integration import __get_integration_config, __test_integration_instance, \
-    __disable_integrations_instances
+from Tests.test_integration import __get_integration_config, __test_integration_instance, disable_all_integrations
 from Tests.test_content import extract_filtered_tests, get_server_numeric_version
 from Tests.update_content_data import update_content
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
@@ -212,8 +211,8 @@ def options_handler():
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
     parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
-                                          '"Server Master", "Demisto GA", "Demisto one before GA", "Demisto two before '
-                                          'GA". The server url is determined by the AMI environment.')
+                                          '"Server Master", "Server 5.0". '
+                                          'The server url is determined by the AMI environment.')
     parser.add_argument('-g', '--git_sha1', help='commit sha1 to compare changes with')
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
@@ -824,12 +823,12 @@ def get_env_conf():
         # START CHANGE ON LOCAL RUN #
         return [{
             "InstanceDNS": "http://localhost:8080",
-            "Role": "Demisto Marketplace"  # e.g. 'Demisto Marketplace'
+            "Role": "Server Master"  # e.g. 'Server Master'
         }]
     elif Build.run_environment == Running.WITH_OTHER_SERVER:
         return [{
             "InstanceDNS": "DNS NANE",  # without http prefix
-            "Role": "DEMISTO EVN"  # e.g. 'Demisto Marketplace'
+            "Role": "DEMISTO EVN"  # e.g. 'Server Master'
         }]
     #  END CHANGE ON LOCAL RUN  #
 
@@ -1021,7 +1020,7 @@ def install_packs(build, pack_ids=None):
 
 
 def configure_server_instances(build: Build, tests_for_iteration, all_new_integrations, modified_integrations):
-    old_module_instances = []
+    modified_module_instances = []
     new_module_instances = []
     testing_client = build.servers[0].client
     for test in tests_for_iteration:
@@ -1058,47 +1057,47 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
         if not (new_ints_params_set and ints_to_configure_params_set):
             continue
 
-        old_module_instances_for_test, new_module_instances_for_test = configure_old_and_new_integrations(
+        modified_module_instances_for_test, new_module_instances_for_test = configure_modified_and_new_integrations(
             build,
             integrations_to_configure,
             new_integrations,
             testing_client)
 
-        old_module_instances.extend(old_module_instances_for_test)
+        modified_module_instances.extend(modified_module_instances_for_test)
         new_module_instances.extend(new_module_instances_for_test)
-    return old_module_instances, new_module_instances
+    return modified_module_instances, new_module_instances
 
 
-def configure_old_and_new_integrations(build: Build,
-                                       old_integrations_to_configure: list,
-                                       new_integrations_to_configure: list,
-                                       demisto_client: demisto_client) -> tuple:
+def configure_modified_and_new_integrations(build: Build,
+                                            modified_integrations_to_configure: list,
+                                            new_integrations_to_configure: list,
+                                            demisto_client: demisto_client) -> tuple:
     """
     Configures old and new integrations in the server configured in the demisto_client.
     Args:
         build: The build object
-        old_integrations_to_configure: Integrations to configure that are already exists
+        modified_integrations_to_configure: Integrations to configure that are already exists
         new_integrations_to_configure: Integrations to configure that were created in this build
         demisto_client: A demisto client
 
     Returns:
         A tuple with two lists:
-        1. List of configured instances of old integrations
+        1. List of configured instances of modified integrations
         2. List of configured instances of new integrations
     """
-    old_modules_instances = []
+    modified_modules_instances = []
     new_modules_instances = []
-    for integration in old_integrations_to_configure:
+    for integration in modified_integrations_to_configure:
         placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
         module_instance = configure_integration_instance(integration, demisto_client, placeholders_map)
         if module_instance:
-            old_modules_instances.append(module_instance)
+            modified_modules_instances.append(module_instance)
     for integration in new_integrations_to_configure:
         placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
         module_instance = configure_integration_instance(integration, demisto_client, placeholders_map)
         if module_instance:
             new_modules_instances.append(module_instance)
-    return old_modules_instances, new_modules_instances
+    return modified_modules_instances, new_modules_instances
 
 
 def instance_testing(build: Build, all_module_instances, pre_update):
@@ -1137,8 +1136,9 @@ def update_content_till_v6(build: Build):
     run_threads_list(threads_list)
 
 
-def disable_instances(build: Build, all_module_instances):
-    __disable_integrations_instances(build.servers[0].client, all_module_instances)
+def disable_instances(build: Build):
+    for server in build.servers:
+        disable_all_integrations(server.client)
 
 
 def create_nightly_test_pack():
@@ -1241,13 +1241,79 @@ def set_marketplace_url(servers, branch_name, ci_build_number):
     sleep(60)
 
 
-def main():
-    install_logging('Install_Content_And_Configure_Integrations_On_Server.log')
-    build = Build(options_handler())
+def test_integrations_post_update(build: Build, new_module_instances: list, modified_module_instances: list) -> tuple:
+    """
+    Runs 'test-module on all integrations for post-update check
+    Args:
+        build: A build object
+        new_module_instances: A list containing new integrations instances to run test-module on
+        modified_module_instances: A list containing old (existing) integrations instances to run test-module on
 
-    configure_servers_and_restart(build)
+    Returns:
+        * A list of integration names that have failed the 'test-module' execution post update
+        * A list of integration names that have succeeded the 'test-module' execution post update
+    """
+    modified_module_instances.extend(new_module_instances)
+    successful_tests_post, failed_tests_post = instance_testing(build, modified_module_instances, pre_update=False)
+    return successful_tests_post, failed_tests_post
+
+
+def update_content_on_servers(build: Build) -> bool:
+    """
+    Updates content on the build's server according to the server version
+    Args:
+        build: Build object
+
+    Returns:
+        A boolean that indicates whether the content installation was successful.
+        If the server version is lower then 5.9.9 will return the 'installed_content_packs_successfully' parameter as is
+        If the server version is higher or equal to 6.0 - will return True if the packs installation was successful
+        both before that update and after the update.
+    """
+    installed_content_packs_successfully = True
+    if LooseVersion(build.server_numeric_version) < LooseVersion('6.0.0'):
+        update_content_till_v6(build)
+    elif not build.is_nightly:
+        set_marketplace_url(build.servers, build.branch_name, build.ci_build_number)
+        installed_content_packs_successfully = install_packs(build)
+    return installed_content_packs_successfully
+
+
+def configure_and_test_integrations_pre_update(build: Build, new_integrations, modified_integrations) -> tuple:
+    """
+    Configures integration instances that exist in the current version and for each integration runs 'test-module'.
+    Args:
+        build: Build object
+        new_integrations: A list containing new integrations names
+        modified_integrations: A list containing modified integrations names
+
+    Returns:
+        A tuple consists of:
+        * A list of modified module instances configured
+        * A list of new module instances configured
+        * A list of integrations that have failed the 'test-module' command execution
+        * A list of integrations that have succeeded the 'test-module' command execution
+        * A list of new integrations names
+    """
+    tests_for_iteration = get_tests(build)
+    modified_module_instances, new_module_instances = configure_server_instances(build,
+                                                                                 tests_for_iteration,
+                                                                                 new_integrations,
+                                                                                 modified_integrations)
+    successful_tests_pre, failed_tests_pre = instance_testing(build, modified_module_instances, pre_update=True)
+    return modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre
+
+
+def install_packs_pre_update(build: Build) -> bool:
+    """
+    Install packs on server according to server version
+    Args:
+        build: A build object
+
+    Returns:
+        A boolean that indicates whether the installation was successful or not
+    """
     installed_content_packs_successfully = False
-
     if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
         if build.is_nightly:
             install_nightly_pack(build)
@@ -1258,23 +1324,28 @@ def main():
                 installed_content_packs_successfully = install_packs(build, pack_ids=pack_ids)
     else:
         installed_content_packs_successfully = True
+    return installed_content_packs_successfully
 
-    tests_for_iteration = get_tests(build)
+
+def main():
+    install_logging('Install Content And Configure Integrations On Server.log')
+    build = Build(options_handler())
+
+    configure_servers_and_restart(build)
+    installed_content_packs_successfully = install_packs_pre_update(build)
+
     new_integrations, modified_integrations = get_changed_integrations(build)
-    all_module_instances, brand_new_integrations = configure_server_instances(build,
-                                                                              tests_for_iteration,
-                                                                              new_integrations,
-                                                                              modified_integrations)
-    successful_tests_pre, failed_tests_pre = instance_testing(build, all_module_instances, pre_update=True)
-    if LooseVersion(build.server_numeric_version) < LooseVersion('6.0.0'):
-        update_content_till_v6(build)
-    elif not build.is_nightly:
-        set_marketplace_url(build.servers, build.branch_name, build.ci_build_number)
-        installed_content_packs_successfully = install_packs(build) and installed_content_packs_successfully
 
-    all_module_instances.extend(brand_new_integrations)
-    successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances, pre_update=False)
-    disable_instances(build, all_module_instances)
+    pre_update_configuration_results = configure_and_test_integrations_pre_update(build,
+                                                                                  new_integrations,
+                                                                                  modified_integrations)
+    modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
+    installed_content_packs_successfully = update_content_on_servers(build) and installed_content_packs_successfully
+
+    successful_tests_post, failed_tests_post = test_integrations_post_update(build,
+                                                                             new_module_instances,
+                                                                             modified_module_instances)
+    disable_instances(build)
 
     success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
                                   new_integrations)
