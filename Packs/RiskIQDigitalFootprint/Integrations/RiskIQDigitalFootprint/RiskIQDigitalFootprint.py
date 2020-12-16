@@ -2207,7 +2207,7 @@ def asset_connections_command(client: Client, args: Dict[str, Any]) -> Union[str
                f' try decreasing its value.'
 
     hr, command_results = get_asset_connections_outputs(resp, total_elements)
-    # add hr to the begining of result
+    # add general hr to the begining of result
     command_results.insert(0, CommandResults(readable_output=hr))
     return command_results
 
@@ -2294,6 +2294,7 @@ def asset_changes_command(client: Client, args: Dict[str, Any]) -> Union[str, Li
          f'### Total: {resp.get("totalElements")}\n'
     hr += get_asset_changes_hr(asset_changes_records, asset_type, measure)
 
+    # add general hr and output to the begining of result
     ioc_command_results.insert(0, CommandResults(
         outputs_prefix="RiskIQDigitalFootprint.AssetChanges",
         outputs_key_field=output_key_fields,
