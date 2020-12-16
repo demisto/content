@@ -14,6 +14,9 @@ with open("test_data/args.json", "r") as f:
 with open("test_data/get_report.json", "r") as f:
     MOCKED_REPORT = json.load(f)
 
+with open("test_data/get_result.json", "r") as f:
+    MOCKED_REPORT_RESULT = json.load(f)
+
 with open("test_data/get_file_reputation.json", "r") as f:
     MOCKED_FILE_REPUTATION_DATA = json.load(f)
 
@@ -92,22 +95,34 @@ def test_serialize_report_info(mocker):
 def test_get_main_indicator(mocker):
     from Polygon import get_main_indicator
     results = get_main_indicator(MOCKED_REPORT, FILE_TYPE)
+    indicators_list = []
+    for command_result in results:
+        indicators_list.append(command_result.get('indicator'))
     assert results.to_context() == MOCKED_MAIN_INDICATOR
 
 
 def test_get_packages_indicators(mocker):
     from Polygon import get_packages_indicators
-    results = get_packages_indicators(MOCKED_REPORT)
+    results = get_packages_indicators(MOCKED_REPORT_RESULT)
+    indicators_list = []
+    for command_result in results:
+        indicators_list.append(command_result.get('indicator'))
     assert MOCKED_PACKAGES_INDICATORS == [r.to_context() for r in results]
 
 
 def test_get_network_indicators(mocker):
     from Polygon import get_network_indicators
-    results = get_network_indicators(MOCKED_REPORT)
+    results = get_network_indicators(MOCKED_REPORT_RESULT)
+    indicators_list = []
+    for command_result in results:
+        indicators_list.append(command_result.get('indicator'))
     assert MOCKED_NETWORK_INDICATORS == [r.to_context() for r in results]
 
 
-def test_get_monitor_indicators(mocker):
+def test_get_monitor_indicators():
     from Polygon import get_monitor_indicators
-    results = get_monitor_indicators(MOCKED_REPORT)
-    assert MOCKED_MONITOR_INDICATORS == [r.to_context() for r in results]
+    results = get_monitor_indicators(MOCKED_REPORT_RESULT)
+    indicators_list = []
+    for command_result in results:
+        indicators_list.append(command_result.to_context())
+    assert MOCKED_MONITOR_INDICATORS == [r.to_context() for r in indicators_list]

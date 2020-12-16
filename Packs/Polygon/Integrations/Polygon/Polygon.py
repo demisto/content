@@ -4,7 +4,6 @@ from CommonServerPython import *
 ''' IMPORTS '''
 import requests
 from io import StringIO
-from typing import List
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -429,7 +428,7 @@ def get_report_indicators(res, analysis_type):
     indicator = get_main_indicator(report, analysis_type)
     if isinstance(indicator, Common.File):
         human_readable = tableToMarkdown(f"New File indicator was created {indicator.name}", {})
-    elif isinstance(indicator, Common.url):
+    elif isinstance(indicator, Common.URL):
         human_readable = tableToMarkdown(f"New URL indicator was created {indicator.url}", {})
     command_results.append(CommandResults(
         readable_output=human_readable,

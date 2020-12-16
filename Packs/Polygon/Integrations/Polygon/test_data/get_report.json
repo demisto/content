@@ -1,4 +1,4 @@
-{"report":{
+{
     "goo_monitor": {
         "processes": [
             {
@@ -294,4 +294,4 @@
         }
     },
     "mitre": {}
-}}
+}
