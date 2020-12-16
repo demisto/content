@@ -1875,15 +1875,6 @@ def get_asset_outputs(resp: Dict[str, Any]) -> List[CommandResults]:
         ))
     if standard_ec:
         for indicator in standard_ec:
-            title = ''
-            if isinstance(indicator, Common.Domain):
-                title = 'Domain Details'
-            elif isinstance(indicator, Common.CVE):
-                title = 'CVE Details'
-            elif isinstance(indicator, Common.IP):
-                title = 'IP Details'
-            elif isinstance(indicator, Common.URL):
-                title = 'URL Details'
             command_results.append(CommandResults(
                 indicator=indicator
             ))
