@@ -50,11 +50,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 0f1f7051-81d0-4868-8f33-a3e636ca2bc5
+      id: a1a49226-b388-42f6-8fde-4e114a181ed7
       iscommand: false
       name: ""
       version: -1
-    taskid: 0f1f7051-81d0-4868-8f33-a3e636ca2bc5
+    taskid: a1a49226-b388-42f6-8fde-4e114a181ed7
     timertriggers: []
     type: start
     view: |-
@@ -106,7 +106,7 @@ tasks:
       '#default#':
       - "10"
       "yes":
-      - "4"
+      - "25"
     note: false
     quietmode: 0
     separatecontext: false
@@ -114,12 +114,12 @@ tasks:
     task:
       brand: ""
       description: 'Validate compliance search creation with all additional arguments. '
-      id: 3b27fd01-8337-420e-8cf1-4e98b1954724
+      id: 6fe9d1c9-219e-4989-8ef8-defdecf1d9dc
       iscommand: false
       name: Validate compliance search created
       type: condition
       version: -1
-    taskid: 3b27fd01-8337-420e-8cf1-4e98b1954724
+    taskid: 6fe9d1c9-219e-4989-8ef8-defdecf1d9dc
     timertriggers: []
     type: condition
     view: |-
@@ -141,63 +141,29 @@ tasks:
       retry-count:
         simple: "10"
       search_name:
-        simple: ${inputs.search_name}
+        complex:
+          accessor: Name
+          root: O365.SecurityAndCompliance.ContentSearch.Search
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Remove compliance search by name from the Security & Compliance
         Center.
-      id: 2b5be80a-e454-4048-8d2e-167ba9be5a68
+      id: 5d12d6bf-c2e6-4fc7-8ebf-7722f4cab6cc
       iscommand: true
       name: Remove search
       script: '|||o365-sc-remove-search'
       type: regular
       version: -1
-    taskid: 2b5be80a-e454-4048-8d2e-167ba9be5a68
+    taskid: 5d12d6bf-c2e6-4fc7-8ebf-7722f4cab6cc
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 612.5,
-          "y": 3345
-        }
-      }
-  "4":
-    id: "4"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "25"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Delete field from context
-      id: b38e833a-8c58-4aa4-896d-f92aae987e8d
-      iscommand: false
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: b38e833a-8c58-4aa4-896d-f92aae987e8d
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
+          "x": 480,
+          "y": 1945
         }
       }
   "5":
@@ -215,27 +181,29 @@ tasks:
       retry-count:
         simple: "10"
       search_name:
-        simple: ${inputs.search_name}
+        complex:
+          accessor: Name
+          root: O365.SecurityAndCompliance.ContentSearch.Search
       statistics: {}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Get compliance search from the Security & Compliance Center.
-      id: da016ca8-d295-4321-80e0-600878729044
+      id: da481e48-ed7f-497b-80eb-3985afc19910
       iscommand: true
       name: Get search
       script: '|||o365-sc-get-search'
       type: regular
       version: -1
-    taskid: da016ca8-d295-4321-80e0-600878729044
+    taskid: da481e48-ed7f-497b-80eb-3985afc19910
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 895
+          "x": 357.5,
+          "y": 720
         }
       }
   "6":
@@ -256,7 +224,7 @@ tasks:
       '#default#':
       - "10"
       "yes":
-      - "7"
+      - "31"
     note: false
     quietmode: 0
     separatecontext: false
@@ -264,125 +232,19 @@ tasks:
     task:
       brand: ""
       description: 'Validate compliance search modified with all additional arguments. '
-      id: 92310529-6825-47f0-8d6b-8943c216b6b6
+      id: 83141543-2346-49b1-8520-f64fa8835782
       iscommand: false
       name: Validate !o365-sc-get-search and !o365-sc-set-search commands
       type: condition
       version: -1
-    taskid: 92310529-6825-47f0-8d6b-8943c216b6b6
+    taskid: 83141543-2346-49b1-8520-f64fa8835782
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1070
-        }
-      }
-  "7":
-    id: "7"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "8"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Delete field from context
-      id: b2ab8192-5636-4e96-8fdf-d6d43ea77850
-      iscommand: false
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: b2ab8192-5636-4e96-8fdf-d6d43ea77850
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 1245
-        }
-      }
-  "8":
-    id: "8"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "9"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      retry-count:
-        simple: "10"
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: List compliance searches in the Security & Compliance Center.
-      id: d0542cb3-bec4-4cce-8aec-8f08e05e01c0
-      iscommand: true
-      name: List search
-      script: '|||o365-sc-list-search'
-      type: regular
-      version: -1
-    taskid: d0542cb3-bec4-4cce-8aec-8f08e05e01c0
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 1420
-        }
-      }
-  "9":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: O365.SecurityAndCompliance.ContentSearch.Search.Name
-          operator: isNotEmpty
-      label: "yes"
-    id: "9"
-    ignoreworker: false
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "12"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: 'Validate compliance search list. '
-      id: be794c4c-4cf3-459c-859e-004d5932b43e
-      iscommand: false
-      name: Validate !o365-sc-list-search command
-      type: condition
-      version: -1
-    taskid: be794c4c-4cf3-459c-859e-004d5932b43e
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 1595
+          "x": 357.5,
+          "y": 895
         }
       }
   "10":
@@ -397,63 +259,29 @@ tasks:
       retry-count:
         simple: "10"
       search_name:
-        simple: ${inputs.search_name}
+        complex:
+          accessor: Name
+          root: O365.SecurityAndCompliance.ContentSearch.Search
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Remove compliance search by name from the Security & Compliance
         Center.
-      id: 37335942-6f32-49c4-8214-6377cb85af18
+      id: b5b386be-e048-4247-8295-81998904c260
       iscommand: true
       name: Remove search
       script: '|||o365-sc-remove-search'
       type: regular
       version: -1
-    taskid: 37335942-6f32-49c4-8214-6377cb85af18
+    taskid: b5b386be-e048-4247-8295-81998904c260
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2995
-        }
-      }
-  "12":
-    id: "12"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "21"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Delete field from context
-      id: 57537fe1-05b6-47d3-8058-8c9f094e672a
-      iscommand: false
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: 57537fe1-05b6-47d3-8058-8c9f094e672a
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 1770
+          "y": 1595
         }
       }
   "16":
@@ -469,20 +297,20 @@ tasks:
     task:
       brand: ""
       description: Prints an error entry with a given message
-      id: 5d5d6f10-09fb-4498-85e7-b56239db5e56
+      id: f1f17b57-1b1d-4f18-8ae3-1bd2dab1aa50
       iscommand: false
       name: PrintErrorEntry
       script: PrintErrorEntry
       type: regular
       version: -1
-    taskid: 5d5d6f10-09fb-4498-85e7-b56239db5e56
+    taskid: f1f17b57-1b1d-4f18-8ae3-1bd2dab1aa50
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 2120
         }
       }
   "18":
@@ -507,19 +335,19 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 5721f3ac-1911-4537-8507-53bda907359d
+      id: f1136477-89fe-45ee-888c-f0caa88c0c2e
       iscommand: false
       name: Validate !o365-sc-new-search-action (Generic polling playbook) and !o365-sc-get-search-action
       type: condition
       version: -1
-    taskid: 5721f3ac-1911-4537-8507-53bda907359d
+    taskid: f1136477-89fe-45ee-888c-f0caa88c0c2e
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 602.5,
-          "y": 2820
+          "x": 480,
+          "y": 1420
         }
       }
   "19":
@@ -538,132 +366,28 @@ tasks:
       retry-count:
         simple: "10"
       search_action_name:
-        simple: ${O365.SecurityAndCompliance.ContentSearch.SearchAction.Name}
+        complex:
+          accessor: Name
+          root: O365.SecurityAndCompliance.ContentSearch.Search
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Get compliance search action from the Security & Compliance Center.
-      id: 5768a9b0-aa04-4872-85aa-c5b45af7dfac
+      id: fe0c02d0-e69b-42b5-872e-6a0eeac48c4f
       iscommand: true
       name: Get search action
       script: '|||o365-sc-get-search-action'
       type: regular
       version: -1
-    taskid: 5768a9b0-aa04-4872-85aa-c5b45af7dfac
+    taskid: fe0c02d0-e69b-42b5-872e-6a0eeac48c4f
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 602.5,
-          "y": 2645
-        }
-      }
-  "20":
-    id: "20"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "31"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Delete field from context
-      id: ad6f88f4-68ba-4abd-85f5-cb1de86fd830
-      iscommand: false
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: ad6f88f4-68ba-4abd-85f5-cb1de86fd830
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 602.5,
-          "y": 2295
-        }
-      }
-  "21":
-    id: "21"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "22"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      retry-count:
-        simple: "10"
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: List compliance search actions from the Security & Compliance Center.
-      id: ef2b40e9-5921-40b7-8f1a-46c12df69beb
-      iscommand: true
-      name: List search actions
-      script: '|||o365-sc-list-search-action'
-      type: regular
-      version: -1
-    taskid: ef2b40e9-5921-40b7-8f1a-46c12df69beb
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 1945
-        }
-      }
-  "22":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: O365.SecurityAndCompliance.ContentSearch.SearchAction
-          operator: isNotEmpty
-      label: "yes"
-    id: "22"
-    ignoreworker: false
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "20"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: 'Validate compliance search actions list. '
-      id: a23f2320-1455-459d-859c-5e7814f7f083
-      iscommand: false
-      name: Validate !o365-sc-list-search-action command
-      type: condition
-      version: -1
-    taskid: a23f2320-1455-459d-859c-5e7814f7f083
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 2120
+          "x": 480,
+          "y": 1245
         }
       }
   "23":
@@ -678,27 +402,29 @@ tasks:
       retry-count:
         simple: "10"
       search_action_name:
-        simple: ${O365.SecurityAndCompliance.ContentSearch.SearchAction.Name}
+        complex:
+          accessor: Name
+          root: O365.SecurityAndCompliance.ContentSearch.SearchAction
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Remove compliance search action by search action name from the
         Security & Compliance Center.
-      id: afe230a8-8629-4f5a-83a4-5ae245707417
+      id: 6d8082b0-6b11-462a-89fd-bb68bb057505
       iscommand: true
       name: Remove search action
       script: '|||o365-sc-remove-search-action'
       type: regular
       version: -1
-    taskid: afe230a8-8629-4f5a-83a4-5ae245707417
+    taskid: 6d8082b0-6b11-462a-89fd-bb68bb057505
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 612.5,
-          "y": 2995
+          "x": 480,
+          "y": 1595
         }
       }
   "24":
@@ -713,26 +439,28 @@ tasks:
       retry-count:
         simple: "10"
       search_name:
-        simple: ${inputs.search_name}
+        complex:
+          accessor: Name
+          root: O365.SecurityAndCompliance.ContentSearch.Search
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Stop running compliance search in the Security & Compliance Center.
-      id: 936e864b-649b-4a26-87bc-9e38e5411b75
+      id: 4f86e121-ed74-456e-8680-b73cb930e076
       iscommand: true
       name: Stop search
       script: '|||o365-sc-stop-search'
       type: regular
       version: -1
-    taskid: 936e864b-649b-4a26-87bc-9e38e5411b75
+    taskid: 4f86e121-ed74-456e-8680-b73cb930e076
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 612.5,
-          "y": 3170
+          "x": 480,
+          "y": 1770
         }
       }
   "25":
@@ -762,27 +490,28 @@ tasks:
       retry-count:
         simple: "10"
       search_name:
-        simple: ${inputs.search_name}
+        complex:
+          root: O365.SecurityAndCompliance.ContentSearch.Search.Name
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Modify non-running compliance search in the Security & Compliance
         Center.
-      id: e32eee51-4965-4434-8c5e-3f2e8e60ab97
+      id: d8c03d01-a7cf-4514-828d-e83a47628e22
       iscommand: true
       name: Set search
       script: '|||o365-sc-set-search'
       type: regular
       version: -1
-    taskid: e32eee51-4965-4434-8c5e-3f2e8e60ab97
+    taskid: d8c03d01-a7cf-4514-828d-e83a47628e22
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 720
+          "x": 357.5,
+          "y": 545
         }
       }
   "26":
@@ -807,19 +536,19 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: cc4286a5-b64d-4a12-8bc4-26149e176348
+      id: 8a6baae4-89a8-40b4-8d7b-dc6fd7675453
       iscommand: false
       name: Check if search action created
       type: condition
       version: -1
-    taskid: cc4286a5-b64d-4a12-8bc4-26149e176348
+    taskid: 8a6baae4-89a8-40b4-8d7b-dc6fd7675453
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 1770
         }
       }
   "27":
@@ -834,27 +563,29 @@ tasks:
       retry-count:
         simple: "10"
       search_action_name:
-        simple: ${O365.SecurityAndCompliance.ContentSearch.SearchAction.Name}
+        complex:
+          accessor: Name
+          root: O365.SecurityAndCompliance.ContentSearch.SearchAction
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Remove compliance search action by search action name from the
         Security & Compliance Center.
-      id: 9ac72d56-036e-4179-8fa0-ad963faccb25
+      id: e1f53d0b-3263-4f0e-8ca7-a8420a73ff93
       iscommand: true
       name: Remove search action
       script: '|||o365-sc-remove-search-action'
       type: regular
       version: -1
-    taskid: 9ac72d56-036e-4179-8fa0-ad963faccb25
+    taskid: e1f53d0b-3263-4f0e-8ca7-a8420a73ff93
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 182.5,
-          "y": 3345
+          "x": 50,
+          "y": 1945
         }
       }
   "29":
@@ -866,19 +597,19 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: c798d10b-805e-4c3c-864a-f2ab9f4c8557
+      id: 98554d50-d872-4788-8f74-3cbe55e1741c
       iscommand: false
       name: Test playbook finished successfully
       type: title
       version: -1
-    taskid: c798d10b-805e-4c3c-864a-f2ab9f4c8557
+    taskid: 98554d50-d872-4788-8f74-3cbe55e1741c
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 612.5,
-          "y": 3535
+          "x": 480,
+          "y": 2135
         }
       }
   "30":
@@ -914,22 +645,27 @@ tasks:
       preview:
         simple: "false"
       public_folder_location: {}
-      search_name:
-        complex:
-          root: inputs.search_name
+      search_name: {}
       share_point_location: {}
       share_point_location_exclusion: {}
     separatecontext: true
     skipunavailable: false
     task:
       brand: ""
-      id: 751821ef-2a31-4985-8844-ad637e8c97cb
+      description: |-
+        This playbook performs the following steps:
+        1. Creates a compliance search.
+        2. Starts a compliance search.
+        3. Waits for the compliance search to complete.
+        4. Gets the results of the compliance search as an output.
+        5. Gets the preview results, if specified.
+      id: 27849b73-bd1e-4b7a-818b-0cc261571952
       iscommand: false
       name: O365 - Security And Compliance - Search
-      playbookId: 02ba1f15-f35e-472e-8db9-de255a556400
+      playbookId: O365 - Security And Compliance - Search
       type: playbook
       version: -1
-    taskid: 751821ef-2a31-4985-8844-ad637e8c97cb
+    taskid: 27849b73-bd1e-4b7a-818b-0cc261571952
     timertriggers: []
     type: playbook
     view: |-
@@ -955,25 +691,31 @@ tasks:
     scriptarguments:
       search_name:
         complex:
-          root: inputs.search_name
+          accessor: Name
+          root: O365.SecurityAndCompliance.ContentSearch.Search
     separatecontext: true
     skipunavailable: false
     task:
       brand: ""
-      id: b7a522ee-947b-4152-8ea1-20fe84fa1883
+      description: |-
+        This playbook perform:
+        1. Creates a new compliance search action - Preview (Base on created compliance search).
+        2. Waits for the preview action to complete.
+        3. Retrieves the preview results.
+      id: d648d711-e19a-47d3-8aaf-426c04f6518e
       iscommand: false
       name: O365 - Security And Compliance - Search Action - Preview
-      playbookId: 07b3dea6-6818-4e61-879f-1859f09a5ca3
+      playbookId: O365 - Security And Compliance - Search Action - Preview
       type: playbook
       version: -1
-    taskid: b7a522ee-947b-4152-8ea1-20fe84fa1883
+    taskid: d648d711-e19a-47d3-8aaf-426c04f6518e
     timertriggers: []
     type: playbook
     view: |-
       {
         "position": {
-          "x": 602.5,
-          "y": 2480
+          "x": 480,
+          "y": 1070
         }
       }
 version: -1
@@ -982,8 +724,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3565,
-        "width": 942.5,
+        "height": 2165,
+        "width": 810,
         "x": 50,
         "y": 50
       }
