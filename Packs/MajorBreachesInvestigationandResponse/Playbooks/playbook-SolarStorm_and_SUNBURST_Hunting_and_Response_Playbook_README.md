@@ -1,5 +1,6 @@
-This playbook collects IOCs related to SolarStorm and SUNBURST. The playbook will also hunt the IOCs across the organization network and block the relevant IOC's and Isolate the compromised hosts.
-Supported Cortex XSOAR versions: 6.0.0 and later.
+This playbook collects IOCs from known sources that relate to SolarStorm and SUNBURST. 
+The playbook will hunt the IOCs across the organization using EDR platforms for endpoints and Panorama for network activity.
+Lastly, the playbook will mitigate the threat by isolating the compromised hosts and blocking the indicators across the organization network.
 
 
 ## Dependencies
