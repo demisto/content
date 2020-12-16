@@ -148,8 +148,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], api_key) -> List
             dbot_score=dbot_score
         )
 
-        ip_data.pop('objects')
-        ip_data.pop('nir')
+        ip_data.pop('objects', None)
+        ip_data.pop('nir', None)
         command_results.append(CommandResults(
             readable_output=tableToMarkdown('IP:', ip_data),
             outputs_prefix='Pulsedive.IP',
