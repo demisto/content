@@ -632,10 +632,19 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "expansepriority",
+                                "height": 22,
+                                "id": "bf1d5d2f-ffee-48ae-bf8b-6ab33d8efe45",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "expansecreated",
                                 "height": 22,
                                 "id": "5650fec0-1849-11eb-b178-fd90d0bace84",
-                                "index": 4,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -644,7 +653,7 @@
                                 "fieldId": "expansemodified",
                                 "height": 22,
                                 "id": "5812fa10-1849-11eb-b178-fd90d0bace84",
-                                "index": 5,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -654,7 +663,7 @@
                                 "fieldId": "expansecategory",
                                 "height": 22,
                                 "id": "7b81de80-1849-11eb-b178-fd90d0bace84",
-                                "index": 6,
+                                "index": 7,
                                 "listId": "caseinfoid-7083df40-1846-11eb-b178-fd90d0bace84",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -664,7 +673,7 @@
                                 "fieldId": "expanseactivitystatus",
                                 "height": 22,
                                 "id": "3a4e6eb0-1849-11eb-b178-fd90d0bace84",
-                                "index": 7,
+                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
