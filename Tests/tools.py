@@ -1,6 +1,7 @@
 import ast
 import logging
 from pprint import pformat
+from functools import wraps
 
 import demisto_client
 
@@ -61,3 +62,17 @@ def update_server_configuration(client, server_configuration, error_msg, logging
         else:
             logging.error(f'{error_msg} {status_code}\n{message}')
     return response_data, status_code
+
+
+def run_with_proxy_configured(function):
+    @wraps(function)
+    def decorated(build, all_module_instances, pre_update):
+        build.proxy.configure_proxy_in_demisto(proxy=build.proxy.ami.docker_ip + ':' + build.proxy.PROXY_PORT,
+                                               username=build.username, password=build.password,
+                                               server=build.servers[0].host)
+        result = function(build, all_module_instances, pre_update)
+        build.proxy.configure_proxy_in_demisto(proxy='',
+                                               username=build.username, password=build.password,
+                                               server=build.servers[0].host)
+        return result
+    return decorated

@@ -31,7 +31,7 @@ from Tests.test_content import extract_filtered_tests, get_server_numeric_versio
 from Tests.update_content_data import update_content
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     install_all_content_packs, upload_zipped_packs, install_all_content_packs_for_nightly
-from Tests.tools import update_server_configuration
+from Tests.tools import update_server_configuration, run_with_proxy_configured
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 
 MARKET_PLACE_MACHINES = ('master',)
@@ -170,9 +170,6 @@ class Build:
     def proxy(self):
         if not self._proxy:
             self._proxy = MITMProxy(self.servers[0].host.replace('https://', ''), logging_module=logging)
-            self._proxy.configure_proxy_in_demisto(proxy=self._proxy.ami.docker_ip + ':' + self._proxy.PROXY_PORT,
-                                                   username=self.username, password=self.password,
-                                                   server=self.servers[0].host)
         return self._proxy
 
     @staticmethod
@@ -1112,6 +1109,7 @@ def configure_modified_and_new_integrations(build: Build,
     return modified_modules_instances, new_modules_instances
 
 
+@run_with_proxy_configured
 def instance_testing(build: Build, all_module_instances, pre_update):
     update_status = 'Pre' if pre_update else 'Post'
     failed_tests = set()

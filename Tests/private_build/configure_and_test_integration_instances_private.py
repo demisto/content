@@ -132,7 +132,6 @@ def main():
     #  Adding the new integrations to the instance test list and testing them.
     all_module_instances.extend(brand_new_integrations)
     successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances, pre_update=False)
-    #  Done running tests so we are disabling the instances.
     #  Gather tests to add to test pack
     test_playbooks_from_id_set = build.id_set.get('TestPlaybooks', [])
     tests_to_add_to_test_pack = find_needed_test_playbook_paths(test_playbooks=test_playbooks_from_id_set,
