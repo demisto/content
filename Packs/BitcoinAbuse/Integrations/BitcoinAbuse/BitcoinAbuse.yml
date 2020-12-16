@@ -19,24 +19,15 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Incremental feeds pull only new or modified indicators that have
-    been sent from the integration. As the determination if the indicator is new or
-    modified happens on the 3rd-party vendor's side, and only indicators that are
-    new or modified are sent to Cortex XSOAR, all indicators coming from these feeds
-    are labeled new or modified.
-  defaultvalue: "true"
-  display: Incremental Feed
-  name: feedIncremental
-  required: false
-  type: 8
-- additionalinfo: The time interval for the first fetch (retroactive). <number> <time
-    unit> of type minute/hour/day. For example, 1 minute, 12 hours, 7 days.
-  defaultvalue: 1 day
+- additionalinfo: The time interval for the first fetch (retroactive).
+  defaultvalue: 30d
   display: First Fetch Time
-  hidden: false
   name: initial_interval
+  options:
+  - 30d
+  - forever
   required: false
-  type: 0
+  type: 15
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: Bad
@@ -50,7 +41,7 @@ configuration:
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: F - Reliability cannot be judged
+  defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -72,29 +63,13 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-- defaultvalue: 'true'
+- defaultvalue: "true"
   display: Fetch indicators
   name: feed
+  required: false
   type: 8
-  required: false
-- display: ''
-  name: feedExpirationInterval
-  type: 1
-  required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
-  type: 19
-  required: false
-- display: Bypass exclusion list
-  name: feedBypassExclusionList
-  type: 8
-  required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
-- additionalinfo: Supports CSV values.
-  display: Tags
-  name: feedTags
   required: false
   type: 0
 description: This is integration for Bitcoin Abuse API. contains 2 commands, bitcoin-report-address
@@ -104,8 +79,8 @@ name: BitcoinAbuse
 script:
   commands:
   - arguments: []
-    name: fetch-indicators
     description: fetches indicators from BitcoinAbuse API
+    name: fetch-indicators
   - arguments:
     - description: address of the abuser
       name: address
