@@ -48,10 +48,8 @@ def handle_data(data: Dict[str, Any], fields: List[str]) -> Dict[str, Any]:
 def attribution_command(args: Dict[str, Any]) -> CommandResults:
 
     assets = argToList(args.get('assets', []))
-    # demisto.debug(f"Assets: {assets!r}")
     fields = argToList(
         args.get('fields', 'id,cloudType,resourceName,resourceType,regionId,accountId,accountName,hasAlert,service,ip,fqdn'))
-    # demisto.debug(f"Fields: {fields!r}")
 
     asset_dict: Dict[str, Dict[str, Any]] = {}
 
