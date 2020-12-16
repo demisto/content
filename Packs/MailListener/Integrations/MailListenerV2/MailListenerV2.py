@@ -1,5 +1,5 @@
 import ssl
-from datetime import timezone, timedelta
+from datetime import timezone
 from typing import Any, Dict, Tuple, List, Optional
 
 from dateparser import parse
