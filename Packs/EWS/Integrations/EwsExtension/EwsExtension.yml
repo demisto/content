@@ -4,7 +4,7 @@ commonfields:
 name: EwsExtension
 display: O365 - EWS - Extension
 category: Messaging
-description: This integration allows you to manage and interact with Microsoft O365 - Exchange Online.
+description: This integration enables you to manage and interact with Microsoft O365 - Exchange Online from within XSOAR.
 configuration:
 - display: Exchange Online URL
   name: url
@@ -25,116 +25,116 @@ script:
   commands:
   - name: ews-auth-start
     arguments: []
-    description: OAuth2.0 - Start authorization.
+    description:  Starts the OAuth2.0 authorization process.
   - name: ews-auth-complete
     arguments: []
-    description: OAuth2.0 - Complete authorization.
+    description: Completes the OAuth2.0 authorization process.
   - name: ews-auth-test
     arguments: []
-    description: OAuth2.0 - Test authorization.
+    description: Tests the OAuth2.0 authorization process.
   - name: ews-junk-rules-get
     arguments:
     - name: mailbox
       required: true
-      description: Mailbox ID.
-    description: Get junk rules in mailbox.
+      description: ID of the mailbox for which to get junk rules. Junk rules are rules .
+    description: Gets junk rules for the specified mailbox.
     outputs:
       - contextPath: EWS.Rule.Junk.BlockedSendersAndDomains
         description: 'Blocked senders and domains list.'
         type: String
       - contextPath: EWS.Rule.Junk.ContactsTrusted
-        description: 'Whether contacts trusted by default.'
+        description: 'If true, contacts are trusted by default.'
         type: Boolean
       - contextPath: EWS.Rule.Junk.Email
         description: 'Junk rule mailbox.'
         type: String
       - contextPath: EWS.Rule.Junk.Enabled
-        description: 'Whether junk rule is enabled.'
+        description: 'If true, junk rule is enabled.'
         type: Boolean
       - contextPath: EWS.Rule.Junk.Identity
-        description: 'Junk rule identity'
+        description: 'Junk rule identity.'
         type: String
       - contextPath: EWS.Rule.Junk.MailboxOwnerId
         description: 'Mail box owner ID.'
         type: String
       - contextPath: EWS.Rule.Junk.TrustedListsOnly
-        description: 'Whether to trust only list of defined in trusted lists.'
+        description: 'If true, only a list defined in the  trusted lists are trusted.'
         type: Boolean
       - contextPath: EWS.Rule.Junk.TrustedRecipientsAndDomains
-        description: 'Trusted recipients and domains list.'
+        description: 'List of trusted recipients and domains.'
         type: String
       - contextPath: EWS.Rule.Junk.TrustedSendersAndDomains
-        description: 'Trusted senders and domains list.'
+        description: 'List of trusted senders and domains.'
         type: String
   - name: ews-junk-rules-set
     arguments:
     - name: mailbox
       required: true
-      description: Mailbox ID.
+      description: ID of the mailbox for which to set junk rules.
     - name: add_blocked_senders_and_domains
-      description: Blocked senders and domains (Comma seprated).
+      description: Comma-separated list of blocked senders and domains to add to the mailbox.
       isArray: true
     - name: remove_blocked_senders_and_domains
-      description: Blocked senders and domains (Comma seprated) to remove.
+      description: Comma-separated list of blocked senders and domains to remove from the mailbox.
       isArray: true
     - name: add_trusted_senders_and_domains
-      description: Trusted senders and domains (Comma seprated).
+      description: Comma-separated list of trusted senders and domains to add to the mailbox.
       isArray: true
     - name: remove_trusted_senders_and_domains
-      description: Trusted senders and domains (Comma seprated) to remove.
+      description: Comma-separated list of trusted senders and domains to remove from the mailbox.
       isArray: true
     - name: trusted_lists_only
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Whether to trust only list of defined in trusted lists.
+      description: If true, trust only lists defined in the trusted lists. Can be "true" or "false".
     - name: contacts_trusted
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Whether contacts trusted by default.
+      description: If true, contacts are trusted by default. Can be "true" or "false".
     - name: enabled
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Whether junk rule is enabled.
-    description: Set junk rules in mailbox.
+      description: If true, the junk rule is enabled. Can be "true" or "false".
+    description: Sets junk rules for the specified mailbox.
   - name: ews-global-junk-rules-set
     arguments:
     - name: add_blocked_senders_and_domains
-      description: Blocked senders and domains (Comma seprated).
+      description: Comma-separated list of blocked senders and domains to add to the mailbox.
       isArray: true
     - name: remove_blocked_senders_and_domains
-      description: Blocked senders and domains (Comma seprated).
+      description: Comma-separated list of blocked senders and domains to remove from the mailbox.
       isArray: true
     - name: add_trusted_senders_and_domains
-      description: Trusted senders and domains (Comma seprated).
+      description: Comma-separated list of trusted senders and domains to add to the mailbox.
       isArray: true
     - name: remove_trusted_senders_and_domains
-      description: Trusted senders and domains (Comma seprated).
+      description: Comma-separated list of trusted senders and domains to remove from the mailbox.
       isArray: true
     - name: trusted_lists_only
       auto: PREDEFINED
       predefined:
         - "true"
         - "false"
-      description: Whether to trust only list of defined in trusted lists.
+      description: If true, trust only lists defined in the trusted lists. Can be "true" or "false".
     - name: contacts_trusted
       auto: PREDEFINED
       predefined:
         - "true"
         - "false"
-      description: Whether contacts trusted by default.
+      description: If true, contacts are trusted by default. Can be "true" or "false".
     - name: enabled
       auto: PREDEFINED
       predefined:
         - "true"
         - "false"
-      description: Whether junk rule is enabled.
-    description: Set junk rules in all managed accounts.
+      description: If true, the junk rule is enabled. Can be "true" or "false".
+    description: Sets junk rules in all managed accounts.
   - name: ews-message-trace-get
     arguments:
     - name: sender_address
@@ -178,21 +178,21 @@ script:
     - name: page
       required: false
       description: |
-        The page parameter specifies the page number of the results you want to view.
-        Valid input for this parameter is an integer between 1 and 1000. The default value is 1.
+        The page number of the results you want to view.
+        Can be an integer between 1 and 1000. The default value is 1.
       isArray: false
       defaultValue: 1
     - name: page_size
       required: false
       description: |
-        The page_size parameter specifies the maximum number of entries per page.
-        Valid input for this parameter is an integer between 1 and 5000. The default value is 100.
+        The maximum number of entries per page.
+        Can be an integer between 1 and 5000. The default value is 100.
       isArray: false
       defaultValue: 1000
     - name: start_date
       required: false
       description: |
-        The start_date parameter specifies the start date of the date range.
+        The start date of the date range.
         Use the short date format that's defined in the Regional Options settings on the computer where you're running the command. For example, if the computer is configured to use the short date format mm/dd/yyyy,
         enter 09/01/2018 to specify September 1, 2018. You can enter the date only, or you can enter the date and time of day.
         If you enter the date and time of day, enclose the value in quotation marks ("), for example, "09/01/2018 5:00 PM".
@@ -201,7 +201,7 @@ script:
     - name: end_date
       required: false
       description: |
-        The end_date parameter specifies the end date of the date range.
+        The end date of the date range.
         Use the short date format that's defined in the Regional Options settings on the computer where you're running the command.
         For example, if the computer is configured to use the short date format mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018.
         You can enter the date only, or you can enter the date and time of day.
@@ -210,13 +210,14 @@ script:
       isArray: false
     - name: status
       description: |
-        * GettingStatus: The message is waiting for status update.
-        * Failed: Message delivery was attempted and it failed or the message was filtered as spam or malware, or by transport rules.
-        * Pending: Message delivery is underway or was deferred and is being retried.
-        * Delivered: The message was delivered to its destination.
-        * Expanded: There was no message delivery because the message was addressed to a distribution group and the membership of the distribution was expanded.
-        * Quarantined: The message was quarantined.
-        * FilteredAsSpam: The message was marked as spam.
+        The status of the message. Can be one of the following:
+          * GettingStatus: The message is waiting for status update.
+          * Failed: Message delivery was attempted and it failed or the message was filtered as spam or malware, or by transport rules.
+          * Pending: Message delivery is underway or was deferred and is being retried.
+          * Delivered: The message was delivered to its destination.
+          * Expanded: There was no message delivery because the message was addressed to a distribution group and the membership of the distribution was expanded.
+          * Quarantined: The message was quarantined.
+          * FilteredAsSpam: The message was marked as spam.
       auto: PREDEFINED
       predefined:
         - "GettingStatus"
@@ -227,9 +228,9 @@ script:
         - "Quarantined"
         - "FilteredAsSpam"
     description: |
-      You can use this cmdlet to search message data for the last 10 days. If you run this cmdlet without any parameters, only data from the last 48 hours is returned.
+      Searches message data for the last 10 days. If you run this command without any arguments, only data from the last 48 hours is returned.
       If you enter a start date that is older than 10 days, you will receive an error and the command will return no results.
-      This cmdlet returns a maximum of 1000000 results, and will timeout on very large queries. If your query returns too many results, consider splitting it up using smaller start_date and end_date intervals.
+      This command returns a maximum of 1,000,000 results, and will timeout on very large queries. If your query returns too many results, consider splitting it up using shorter start_date and end_date intervals.
     outputs:
     - contextPath: EWS.MessageTrace.FromIP
       description: 'The public IP address of the SMTP email server that sent the message.'
@@ -238,13 +239,13 @@ script:
       description: 'The public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, the value is blank.'
       type: String
     - contextPath: EWS.MessageTrace.Index
-      description: 'Message index in pagination. (Index start from 0)'
+      description: 'Message index in pagination. (Index starts from 0)'
       type: Number
     - contextPath: EWS.MessageTrace.MessageId
       description: 'Message-ID header field of the message.'
       type: String
     - contextPath: EWS.MessageTrace.MessageTraceId
-      description: 'message trace ID of the message.'
+      description: 'Message trace ID of the message.'
       type: String
     - contextPath: EWS.MessageTrace.Organization
       description: 'Message trace organization source.'
