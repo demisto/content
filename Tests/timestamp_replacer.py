@@ -153,7 +153,7 @@ class TimestampReplacer:
         Args:
             req (HTTPRequest): The request to modify
         """
-        query_data = req._get_query()
+        query_data = sorted(req._get_query())
         logging.info('fetched query_data: {}'.format(query_data))
         updated_query_data = []
         if query_data and self.query_keys:
@@ -162,8 +162,8 @@ class TimestampReplacer:
                     updated_query_data.append((key, self.constant))
                 else:
                     updated_query_data.append((key, val))
-            req._set_query(updated_query_data)
             logging.info(f'updated query_data: {req._get_query()}')
+        req._set_query(updated_query_data or query_data)
 
     def clean_urlencoded_form(self, req: HTTPRequest) -> None:
         """Replace any problematic values of urlencoded form keys with constant data
