@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 
 import json
 import urllib3
-import urllib
 import dateparser
 import traceback
 import time
@@ -1769,18 +1768,26 @@ def delete_user_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def download_file_command(auth_params, base_url, verify, proxy, args: Dict[str, Any]) -> dict:
+def download_file_command(auth_params: dict, base_url: str, verify: bool, proxy: bool,
+                          args: Dict[str, Any]) -> dict:
     """
     Command executed when `box-download-file` is called. Will download a file based on the given
     arguments.
 
-    :param client: Client - Initialized Client object.
+    This function requires a new JWT grant to be created with the explicit permissions of the user
+    who is downloading the file. This is why we are throwing away the main client and building a new
+    one here.
+
+    :param proxy: Indicates if using a proxy.
+    :param verify: Indicates if the client will verify self signed certs
+    :param base_url: Base URL for the service
+    :param auth_params: Args used for the authentication
     :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client
     function.
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
-    file_id: str = args.get('file_id')
+    file_id: str = args.get('file_id')  # type:ignore
     as_user: str = args.get('as_user')  # type:ignore
 
     download_client = Client(
@@ -2001,6 +2008,9 @@ def main() -> None:
                 verify=verify_certificate,
                 proxy=proxy,
                 args=demisto.args()))
+
+        else:
+            raise NotImplementedError
 
     # Log exceptions and return errors
     except Exception as e:

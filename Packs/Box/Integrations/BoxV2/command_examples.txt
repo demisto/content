@@ -24,3 +24,4 @@
 !box-list-user-events stream_type="all" limit="1"
 !box-list-users fields=name filter_term="Andrew"
 !box-upload-file entry_id="364@c9316be6-93dc-440a-8c68-c68912590052" folder_id="0" file_name="changelog.json" as_user="14342567114"
+!box-download-file file_id="745898898314" as_user="14342567114"

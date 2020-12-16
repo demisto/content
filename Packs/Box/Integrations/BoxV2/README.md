@@ -3678,3 +3678,33 @@ Returns up to a year of past events for the entire enterprise.
 >| service_id: 1403892<br/>service_name: XSOAR_TESTING | 2020-12-15T03:11:52-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | b6b320af-5a8a-4352-9d78-44620ccbc2f7 | UNSHARE | 176.34.214.130 | item_type: folder<br/>item_id: 125959916474<br/>item_name: My Box Notes<br/>parent: {"type": "folder", "name": "All Files", "id": "0"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"} | event |
 >| size: 1135<br/>version_id: 801011020694<br/>service_id: 1403892<br/>service_name: XSOAR_TESTING | 2020-12-15T03:11:59-08:00 | type: user<br/>id: 14342567114<br/>name: Andrew Shamah<br/>login: ashamah@paloaltonetworks.com | cdc29617-5e30-477f-8a56-0497457c61fb | UNDELETE | 176.34.214.130 | item_type: file<br/>item_id: 751526132294<br/>item_name: list.json<br/>parent: {"type": "folder", "name": "All Files", "id": "0"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Andrew Shamah", "login": "ashamah@paloaltonetworks.com"} | event |
 
+### box-download-file
+***
+Returns the contents of a file in binary format.
+
+#### Base Command
+
+`box-download-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_id | The ID of the file. | Required | 
+| as_user | The user ID of the account making the request. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` !box-download-file file_id="745898898314" as_user="14342567114"```
+
+#### Context Example
+```json
+{}
+```
+
+#### Human Readable Output
+
+>Uploaded file: TestFile.gif
