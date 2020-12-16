@@ -15,9 +15,11 @@ args:
 - name: username_fields
   description: Comma separated list of fields to treat as serial number.
   defaultValue: source_user,srcuser,user
+  isArray: true
 - name: sightings_fields
   description: Comma separated list of field names to be considered sighting counts.
   defaultValue: count
+  isArray: true
 outputs:
 - contextPath: Expanse.AttributionUser.username
   description: Username of the user

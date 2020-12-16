@@ -15,12 +15,15 @@ args:
 - name: source_ip_fields
   description: Comma separated list of fields to treat as source IPs.
   defaultValue: src,src_ip
+  isArray: true
 - name: internal_ip_networks
   description: Comma separated list of IPv4 Networks to be considered internal (default to RFC private networks).
   defaultValue: ""
+  isArray: true
 - name: sightings_fields
   description: Comma separated list of field names to be considered sighting counts.
   defaultValue: count
+  isArray: true
 outputs:
 - contextPath: Expanse.AttributionIP.ip
   description: IP address
