@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 
 import pytest
 
@@ -64,41 +64,43 @@ def test_convert_to_incident():
     'time_to_fetch_from, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query',
     [
         (
+            datetime(year=2020, month=10, day=1),
+            ['test1@mail.com', 'test2@mail.com'],
+            ['test1.com', 'domain2.com'],
+            4,
+            [
+                'OR',
+                'OR',
+                'OR',
+                'FROM',
+                'test1@mail.com',
+                'FROM',
+                'test2@mail.com',
+                'FROM',
+                'test1.com',
+                'FROM',
+                'domain2.com',
+                'SINCE',
                 datetime(year=2020, month=10, day=1),
-                ['test1@mail.com', 'test2@mail.com'],
-                ['test1.com', 'domain2.com'],
-                4,
-                [
-                    'OR',
-                    'OR',
-                    'OR',
-                    'FROM',
-                    'test1@mail.com',
-                    'FROM',
-                    'test2@mail.com',
-                    'FROM',
-                    'test1.com',
-                    'FROM',
-                    'domain2.com',
-                    'SINCE',
-                    datetime(year=2020, month=10, day=1),
-                    'UID',
-                    '4:*'
-                 ]
+                'UID',
+                '4:*'
+            ]
         ),
         (
-                None,
-                [],
-                [],
-                1,
-                [
-                    'UID',
-                    '1:*'
-                ]
+            None,
+            [],
+            [],
+            1,
+            [
+                'UID',
+                '1:*'
+            ]
         )
     ]
 )
-def test_generate_search_query(time_to_fetch_from, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query):
+def test_generate_search_query(
+        time_to_fetch_from, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query
+):
     """
     Given:
         - The date from which mails should be queried
@@ -109,12 +111,14 @@ def test_generate_search_query(time_to_fetch_from, permitted_from_addresses, per
         - Generating search query from these arguments
 
         Then:
-        - Validate the search query as enough 'OR's in the beginning (Σ(from n=0 to (len(addresses) + len(domains))) s^(n-1))
+        - Validate the search query as enough 'OR's in the beginning (Σ(from n=0to(len(addresses)+len(domains)))s^(n-1))
         - Validate the search query has FROM before each address or domain
         - Validate query has SINCE before the datetime object
     """
     from MailListenerV2 import generate_search_query
-    assert generate_search_query(time_to_fetch_from, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from) == expected_query
+    assert generate_search_query(
+        time_to_fetch_from, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from
+    ) == expected_query
 
 
 def test_generate_labels():

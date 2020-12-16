@@ -189,13 +189,13 @@ def fetch_incidents(client: IMAPClient,
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
     """
-    # latest_created_time is required only for the first fetch, as after that we will use UID to fetch from
-    latest_created_time = parse(f'{first_fetch_time} UTC') if not last_run else None
+    # time_to_fetch_from is required only for the first fetch, as after that we will use UID to fetch from
+    time_to_fetch_from = parse(f'{first_fetch_time} UTC') if not last_run else None
     uid_to_fetch_from = last_run.get('last_uid', 1)
     mails_fetched, messages, uid_to_fetch_from = fetch_mails(
         client=client,
         include_raw_body=include_raw_body,
-        first_fetch_time=latest_created_time,
+        time_to_fetch_from=time_to_fetch_from,
         limit=limit,
         permitted_from_addresses=permitted_from_addresses,
         permitted_from_domains=permitted_from_domains,
@@ -213,7 +213,7 @@ def fetch_incidents(client: IMAPClient,
 
 
 def fetch_mails(client: IMAPClient,
-                first_fetch_time: datetime = None,
+                time_to_fetch_from: datetime = None,
                 permitted_from_addresses: str = '',
                 permitted_from_domains: str = '',
                 include_raw_body: bool = False,
@@ -226,7 +226,7 @@ def fetch_mails(client: IMAPClient,
 
     Args:
         client: IMAP client
-        first_fetch_time: Fetch all incidents since first_fetch_time
+        time_to_fetch_from: Fetch all incidents since first_fetch_time
         include_raw_body: Whether to include the raw body of the mail in the incident's body
         permitted_from_addresses: A string representation of list of mail addresses to fetch from
         permitted_from_domains: A string representation list of domains to fetch from
@@ -244,7 +244,7 @@ def fetch_mails(client: IMAPClient,
     if message_id:
         messages_uids = [message_id]
     else:
-        messages_query = generate_search_query(first_fetch_time,
+        messages_query = generate_search_query(time_to_fetch_from,
                                                permitted_from_addresses,
                                                permitted_from_domains,
                                                uid_to_fetch_from)
@@ -258,13 +258,13 @@ def fetch_mails(client: IMAPClient,
         if not message_bytes:
             continue
         email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
-        if (first_fetch_time and first_fetch_time < email_message_object.date) or \
+        if (time_to_fetch_from and time_to_fetch_from < email_message_object.date) or \
                 int(email_message_object.id) > int(uid_to_fetch_from):
             mails_fetched.append(email_message_object)
             messages_fetched.append(email_message_object.id)
         else:
             demisto.debug(f'Skipping {email_message_object.id} with date {email_message_object.date}. '
-                          f'uid_to_fetch_from: {uid_to_fetch_from}, first_fetch_time: {first_fetch_time}')
+                          f'uid_to_fetch_from: {uid_to_fetch_from}, first_fetch_time: {time_to_fetch_from}')
     last_message_in_current_batch = uid_to_fetch_from
     if messages_uids:
         last_message_in_current_batch = messages_uids[-1]
@@ -272,7 +272,7 @@ def fetch_mails(client: IMAPClient,
     return mails_fetched, messages_fetched, last_message_in_current_batch
 
 
-def generate_search_query(latest_created_time: Optional[datetime],
+def generate_search_query(time_to_fetch_from: Optional[datetime],
                           permitted_from_addresses: str,
                           permitted_from_domains: str,
                           uid_to_fetch_from: int) -> list:
@@ -280,7 +280,7 @@ def generate_search_query(latest_created_time: Optional[datetime],
     Generates a search query for the IMAP client 'search' method. with the permitted domains, email addresses and the
     starting date from which mail should be fetched.
     Input example:
-    latest_created_time: datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)
+    time_to_fetch_from: datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)
     permitted_from_addresses: ['test1@mail.com', 'test2@mail.com']
     permitted_from_domains: ['test1.com', 'domain2.com']
     output example:
@@ -298,7 +298,7 @@ def generate_search_query(latest_created_time: Optional[datetime],
      'SINCE',
      datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)]
     Args:
-        latest_created_time: The greatest incident created_time we fetched from last fetch
+        time_to_fetch_from: The greatest incident created_time we fetched from last fetch
         permitted_from_addresses: A string representation of list of mail addresses to fetch from
         permitted_from_domains: A string representation list of domains to fetch from
         uid_to_fetch_from: The email message UID to start the fetch from as offset
@@ -315,8 +315,8 @@ def generate_search_query(latest_created_time: Optional[datetime],
         messages_query = messages_query.strip('()').replace('"', '')
     # Creating a list of the OR query words
     messages_query_list = messages_query.split()
-    if latest_created_time:
-        messages_query_list += ['SINCE', latest_created_time]  # type: ignore[list-item]
+    if time_to_fetch_from:
+        messages_query_list += ['SINCE', time_to_fetch_from]  # type: ignore[list-item]
     if uid_to_fetch_from:
         messages_query_list += ['UID', f'{uid_to_fetch_from}:*']
     return messages_query_list
@@ -346,7 +346,7 @@ def list_emails(client: IMAPClient,
     fetch_time = parse(f'{first_fetch_time} UTC')
 
     mails_fetched, _, _ = fetch_mails(client=client,
-                                      first_fetch_time=fetch_time,
+                                      time_to_fetch_from=fetch_time,
                                       permitted_from_addresses=permitted_from_addresses,
                                       permitted_from_domains=permitted_from_domains)
     results = [{'Subject': email.subject,
