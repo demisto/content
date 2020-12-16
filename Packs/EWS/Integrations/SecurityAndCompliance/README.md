@@ -180,7 +180,7 @@ Create compliance search in the Security & Compliance Center.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search_name | The name of the compliance search. | Required |
+| search_name | The name of the compliance search. If not specified will have prefix of "XSOAR-" and GUID e.g. XSOAR-d6228fd0-756b-4e4b-8721-76776df91526. | Required |
 | case | The name of a Core eDiscovery case to associate with the new compliance search. | Optional |
 | kql | Text search string or a query that is formatted using the Keyword Query Language (KQL). | Optional |
 | description | Description of the compliance search. | Optional |
