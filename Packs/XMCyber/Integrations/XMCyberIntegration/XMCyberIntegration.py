@@ -644,10 +644,9 @@ def ip_command(xm: XM, args: Dict[str, Any]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     xm_data_list = []  #: List[Dict[str, Any]] = []
     readable_output = ''
-    entity_ids = None
+    entity_ids: List[Any] = []
 
     for ip in ips:
-        entity_ids: List[Any]
         try:
             entity_ids = xm.search_entities(ip['Address'])
         except (AttributeError, TypeError):
