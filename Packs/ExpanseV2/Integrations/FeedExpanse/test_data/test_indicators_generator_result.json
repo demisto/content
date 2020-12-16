@@ -353,7 +353,7 @@
                 "NO_ACTIVE_CLOUD_SERVICE"
             ],
             "expansesourcedomain": "example.com",
-            "expanseprovidername": null,
+            "expanseprovidername": "On Prem",
             "expansetenantname": "Example.com Ltd",
             "expansebusinessunits": [
                 "BU1"

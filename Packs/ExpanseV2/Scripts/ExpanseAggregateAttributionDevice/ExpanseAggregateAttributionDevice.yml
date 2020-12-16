@@ -15,18 +15,23 @@ args:
 - name: serial_fields
   description: Comma separated list of fields to treat as serial number.
   defaultValue: serial_number,serial,log_source_id
+  isArray: true
 - name: vsys_fields
   description: Comma separate list of field names to be used as vsys.
   defaultValue: vsys
+  isArray: true
 - name: sightings_fields
   description: Comma separated list of field names to be considered sighting counts.
   defaultValue: count
+  isArray: true
 - name: source_ip_fields
   description: Comma separated list of field names to be considered as source IPs.
   defaultValue: src,src_ip
+  isArray: true
 - name: internal_ip_networks
   description: Comma separated list of IPv4 Networks to be considered internal (default to RFC private networks).
   defaultValue: ""
+  isArray: true
 outputs:
 - contextPath: Expanse.AttributionDevice.serial
   description: Serial Number of the device
