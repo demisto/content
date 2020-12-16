@@ -29,10 +29,14 @@ configuration:
   name: feedIncremental
   required: false
   type: 8
-- display: Fetch indicators
-  name: feed
+- additionalinfo: The time interval for the first fetch (retroactive). <number> <time
+    unit> of type minute/hour/day. For example, 1 minute, 12 hours, 7 days.
+  defaultvalue: 1 day
+  display: First Fetch Time
+  hidden: false
+  name: initial_interval
   required: false
-  type: 8
+  type: 0
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: Bad
@@ -93,17 +97,6 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
-  display: Traffic Light Protocol Color
-  name: tlp_color
-  options:
-  - RED
-  - AMBER
-  - GREEN
-  - WHITE
-  required: false
-  type: 15
 description: This is integration for Bitcoin Abuse API. contains 2 commands, bitcoin-report-address
   and fetch-indicators
 display: BitcoinAbuse
