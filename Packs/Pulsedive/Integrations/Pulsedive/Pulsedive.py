@@ -119,16 +119,12 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def ip_reputation_command(client: Client, args: Dict[str, Any], api_key) -> CommandResults:
-
+def ip_reputation_command(client: Client, args: Dict[str, Any], api_key) -> List[CommandResults]:
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
 
-    # Context standard for IP class
-    ip_standard_list: List[Common.IP] = []
-    ip_data_list: List[Dict[str, Any]] = []
-
+    command_results: List[CommandResults] = []
     for ip in ips:
         ip_data = client.get_ip_reputation(ip, api_key)
         # remove the array
@@ -152,32 +148,25 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], api_key) -> Comm
             dbot_score=dbot_score
         )
 
-        ip_standard_list.append(ip_standard_context)
+        ip_data.pop('objects')
+        ip_data.pop('nir')
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown('IP List', ip_data),
+            outputs_prefix='Pulsedive.IP',
+            outputs_key_field='indicator',
+            outputs=ip_data,
+            indicator=ip_standard_context
+        ))
 
-        ip_context_excluded_fields = ['objects', 'nir']
-        ip_data_list.append({k: ip_data[k] for k in ip_data if k not in ip_context_excluded_fields})
-
-    readable_output = tableToMarkdown('IP List', ip_data_list)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Pulsedive.IP',
-        outputs_key_field='indicator',
-        outputs=ip_data_list,
-        indicators=ip_standard_list
-    )
+    return command_results
 
 
-def domain_reputation_command(client: Client, args: Dict[str, Any], api_key) -> CommandResults:
+def domain_reputation_command(client: Client, args: Dict[str, Any], api_key) -> List[CommandResults]:
     domains = argToList(args.get('domain'))
     if len(domains) == 0:
         raise ValueError('domain(s) not specified')
 
-    # Context standard for Domain class
-    domain_standard_list: List[Common.Domain] = []
-
-    domain_data_list: List[Dict[str, Any]] = []
-
+    command_results: List[CommandResults] = []
     for domain in domains:
         domain_data = client.get_domain_reputation(domain, api_key)
         indicator_domain = domain_data['indicator']
@@ -212,32 +201,24 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], api_key) -> 
             dbot_score=dbot_score
         )
 
-        domain_standard_list.append(domain_standard_context)
-        domain_data_list.append(domain_data)
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown('Domain List', domain_data),
+            outputs_prefix='Pulsedive.Domain',
+            outputs_key_field='indicator',
+            outputs=domain_data,
+            indicator=domain_standard_context
+        ))
 
-    # In this case we want to use an custom markdown to specify the table title,
-    # but otherwise ``CommandResults()`` will call ``tableToMarkdown()``
-    #  automatically
-    readable_output = tableToMarkdown('Domain List', domain_data_list)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Pulsedive.Domain',
-        outputs_key_field='indicator',
-        outputs=domain_data_list,
-        indicators=domain_standard_list
-    )
+    return command_results
 
 
-def url_reputation_command(client: Client, args: Dict[str, Any], api_key) -> CommandResults:
+def url_reputation_command(client: Client, args: Dict[str, Any], api_key) -> List[CommandResults]:
 
     urls = argToList(args.get('url'))
     if len(urls) == 0:
         raise ValueError('URL(s) not specified')
 
-    url_standard_list: List[Common.URL] = []
-    url_data_list: List[Dict[str, Any]] = []
-
+    command_results: List[CommandResults] = []
     for url in urls:
         url_data = client.get_url_reputation(url, api_key)
         indicator_url = url_data['indicator']
@@ -257,20 +238,17 @@ def url_reputation_command(client: Client, args: Dict[str, Any], api_key) -> Com
             dbot_score=dbot_score
         )
 
-        url_standard_list.append(url_standard_context)
+        url_data.pop('objects')
+        url_data.pop('nir')
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown('URL List', url_data),
+            outputs_prefix='Pulsedive.URL',
+            outputs_key_field='indicator',
+            outputs=url_data,
+            indicator=url_standard_context
+        ))
 
-        url_context_excluded_fields = ['objects', 'nir']
-        url_data_list.append({k: url_data[k] for k in url_data if k not in url_context_excluded_fields})
-
-    readable_output = tableToMarkdown('URL List', url_data_list)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Pulsedive.URL',
-        outputs_key_field='indicator',
-        outputs=url_data_list,
-        indicators=url_standard_list,
-    )
+    return command_results
 
 
 ''' MAIN FUNCTION '''
