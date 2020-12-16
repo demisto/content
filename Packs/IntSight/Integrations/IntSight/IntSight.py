@@ -742,8 +742,8 @@ def fetch_incidents():
     alert_type = demisto.getParam('type')
     min_severity_level = demisto.params().get('severity_level', 'All')
     if min_severity_level not in SEVERITY_LEVEL:
-        raise Exception("Minimum Alert severity level to fetch incidents incidents from, allowed values are: ''All'',"
-                        " ''Low'', ''Medium'',''High''(Setting to All will fetch all incidents)")
+        raise Exception("Minimum Alert severity level to fetch incidents incidents from, allowed values are: All,"
+                        " Low, Medium, High. (Setting to All will fetch all incidents)")
 
     _, alerts_context = get_alerts_helper(handle_filters(fetch_delta))
     incidents = []
@@ -929,7 +929,7 @@ def test_module():
         min_severity_level = demisto.params().get('severity_level', 'All')
         if min_severity_level not in SEVERITY_LEVEL:
             return_error("Minimum Alert severity level to fetch incidents incidents from, allowed values are: "
-                         "''All'', ''Low'', ''Medium'',''High''(Setting to All will fetch all incidents)")
+                         "All, Low, Medium, High. (Setting to All will fetch all incidents)")
 
     demisto.results('ok')
 

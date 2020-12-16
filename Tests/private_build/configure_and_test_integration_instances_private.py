@@ -6,10 +6,10 @@ import zipfile
 from time import sleep
 from ruamel import yaml
 from typing import List
+import logging
 
 from Tests.scripts.utils.log_util import install_simple_logging
-from demisto_sdk.commands.common.tools import print_error, find_type
-from Tests.test_content import ParallelPrintsManager
+from demisto_sdk.commands.common.tools import find_type
 from Tests.configure_and_test_integration_instances import Build, configure_servers_and_restart, \
     get_tests, \
     get_changed_integrations, configure_server_instances, instance_testing, disable_instances, \
@@ -32,12 +32,11 @@ def install_private_testing_pack(build: Build, test_pack_zip_path: str):
                           pack_path=test_pack_zip_path)
 
 
-def install_packs_private(build: Build, prints_manager: ParallelPrintsManager, pack_ids: list = None) -> bool:
+def install_packs_private(build: Build, pack_ids: list = None) -> bool:
     """
     Wrapper for the search and install packs function.
 
     :param build: Build object containing the build settings.
-    :param prints_manager: PrintsManager object used for reporting status. Will be deprecated.
     :param pack_ids: Optional, list of packs to install. List contains pack id and version requested.
     :return: Boolean indicating if the installation was successful.
     """
@@ -49,9 +48,8 @@ def install_packs_private(build: Build, prints_manager: ParallelPrintsManager, p
                                                                            pack_ids, server.client)
             if not flag:
                 raise Exception('Failed to search and install packs.')
-        except Exception as exc:
-            prints_manager.add_print_job(str(exc), print_error, 0)
-            prints_manager.execute_thread_prints(0)
+        except Exception:
+            logging.exception('Failed to search and install packs.')
             installed_content_packs_successfully = False
 
     return installed_content_packs_successfully
@@ -115,13 +113,12 @@ def write_test_pack_zip(tests_file_paths: set, path_to_content: str,
 def main():
     install_simple_logging()
     build = Build(options_handler())
-    prints_manager = ParallelPrintsManager(1)
 
-    configure_servers_and_restart(build, prints_manager)
+    configure_servers_and_restart(build)
     #  Get a list of the test we need to run.
     tests_for_iteration = get_tests(build)
     #  Installing the packs.
-    installed_content_packs_successfully = install_packs_private(build, prints_manager)
+    installed_content_packs_successfully = install_packs_private(build)
     #  Get a list of the integrations that have changed.
     new_integrations, modified_integrations = get_changed_integrations(build)
     #  Configuring the instances which are used in testing.
@@ -134,7 +131,7 @@ def main():
     all_module_instances.extend(brand_new_integrations)
     successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances, pre_update=False)
     #  Done running tests so we are disabling the instances.
-    disable_instances(build, all_module_instances)
+    disable_instances(build)
     #  Gather tests to add to test pack
     test_playbooks_from_id_set = build.id_set.get('TestPlaybooks', [])
     tests_to_add_to_test_pack = find_needed_test_playbook_paths(test_playbooks=test_playbooks_from_id_set,

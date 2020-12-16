@@ -43,6 +43,8 @@ The (!) `Earliest time to fetch` and `Latest time to fetch` are search parameter
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+**Note:** To use a Splunk Cloud instance, contact Splunk support to request API access. Use a non-SAML account to access the API.
+
 ### Configure Splunk to Produce Alerts for SplunkPy
 It is recommended that Splunk is configured to produce basic alerts that the SplunkPy integration can ingest, by creating a summary index in which alerts are stored. The SplunkPy integration can then query that index for incident ingestion. It is not recommended to use the Cortex XSOAR application with Splunk for routine event consumption because this method is not able to be monitored and is not scalable.
 

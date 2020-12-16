@@ -2754,14 +2754,14 @@ Get checkpoint-packages details.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Packages.name | String | The name of the package. |
-| CheckPoint.Packages.target-name | String | The name of the targe. |
-| CheckPoint.Packages.target-uid | String | The UID of the target. |
-| CheckPoint.Packages.revision.domain.domain-type | String | The type of the domain. |
-| CheckPoint.Packages.revision.domain.name | String | The name of the domain. |
-| CheckPoint.Packages.revision.domain.uid | String | The UID of the domain. |
-| CheckPoint.Packages.revision.type | String | The type of the revision. |
-| CheckPoint.Packages.revision.uid | String | The UID of the revision. |
+| CheckPoint.Package.name | String | The name of the package. |
+| CheckPoint.Package.target-name | String | The name of the targe. |
+| CheckPoint.Package.target-uid | String | The UID of the target. |
+| CheckPoint.Package.revision.domain.domain-type | String | The type of the domain. |
+| CheckPoint.Package.revision.domain.name | String | The name of the domain. |
+| CheckPoint.Package.revision.domain.uid | String | The UID of the domain. |
+| CheckPoint.Package.revision.type | String | The type of the revision. |
+| CheckPoint.Package.revision.uid | String | The UID of the revision. |
 
 
 #### Command Example
@@ -2772,7 +2772,7 @@ Get checkpoint-packages details.
 ```
 {
     "CheckPoint": {
-        "Packages": {
+        "Package": {
             "name": "Standard",
             "target-name": "Host1",
             "target-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"

@@ -1,0 +1,152 @@
+{
+    "paging": {
+        "page": 1,
+        "pageSize": 3,
+        "total": 114,
+        "totalPages": 38,
+        "nextLink": "/api/systemReport/techniques?timeId=timeAgo_days_14&pageSize=3&sort=-criticalAssets&page=2"
+    },
+    "extraData": {
+        "time": {
+            "year": 2020,
+            "month": 10
+        },
+        "totalEntities": 1666,
+        "totalAssets": 739
+    },
+    "data": [
+        {
+            "description": "Using credentials for privileged domain accounts (passwords, tokens or kerberos tickets), an attacker can move laterally within the network.\nAn authenticated administrator account can create a scheduled task, a new service, use WMI or RDP to execute code remotely.\n",
+            "severity": {
+                "level": "high"
+            },
+            "category": "User Access Management / Network Segmentation / Configuration Management",
+            "mitre": [
+                {
+                    "name": "T1021",
+                    "link": "https://attack.mitre.org/wiki/Technique/T1021"
+                },
+                {
+                    "name": "T1075",
+                    "link": "https://attack.mitre.org/wiki/Technique/T1075"
+                },
+                {
+                    "name": "T1097",
+                    "link": "https://attack.mitre.org/wiki/Technique/T1097"
+                },
+                {
+                    "name": "T1175",
+                    "link": "https://attack.mitre.org/wiki/Technique/T1175"
+                },
+                {
+                    "name": "T1053",
+                    "link": "https://attack.mitre.org/wiki/Technique/T1053"
+                },
+                {
+                    "name": "T1035",
+                    "link": "https://attack.mitre.org/wiki/Technique/T1035"
+                },
+                {
+                    "name": "T1047",
+                    "link": "https://attack.mitre.org/wiki/Technique/T1047"
+                }
+            ],
+            "bestPractice": [
+                "Implement a password management/password vault solution",
+                "Use RDP's restrictedAdmin feature when connecting from trusted machines to untrusted machines. Avoid using it on untrusted machines",
+                "Enforce max password age and password complexity policy",
+                "Avoid using privileged domain accounts to execute services on domain devices",
+                "Add privileged domain accounts to the Protected Users group",
+                "Use Microsoft Protected Process Light to protect critical processes",
+                "Use Microsoft Windows Defender Credential Guard when possible"
+            ],
+            "techniqueType": "hackingTechnique",
+            "blockingParameters": [],
+            "riskCategories": [
+                "User Access Management",
+                "Network Segmentation",
+                "Configuration Management"
+            ],
+            "version": 1,
+            "technique": "Exploit::DomainCredentials",
+            "criticalAssets": 63,
+            "entities": 563,
+            "displayName": "Domain Credentials",
+            "complexity": {
+                "level": "low",
+                "value": 2
+            },
+            "chokePoints": 116,
+            "ratio": 0.0007349167094395969
+        },
+        {
+            "description": "Content stored on network drives or in other shared locations may be tainted by adding malicious programs, scripts, or exploit code to otherwise valid files. Once a user opens the shared tainted content, the malicious portion can be executed to run the adversary's code on a remote system. Adversaries may use tainted shared content to move laterally.",
+            "severity": {
+                "level": "low"
+            },
+            "category": "User Access Management",
+            "mitre": [
+                {
+                    "name": "T1221",
+                    "link": "https://attack.mitre.org/wiki/Technique/T1221"
+                }
+            ],
+            "bestPractice": [
+                "Protect shared folders by minimizing users who have write access.",
+                "Use utilities that detect or mitigate common features used in exploitation, such as the Microsoft Enhanced Mitigation Experience Toolkit (EMET)."
+            ],
+            "blockingParameters": [
+                "endpoint",
+                "path"
+            ],
+            "techniqueType": "hackingTechnique",
+            "riskCategories": [
+                "User Access Management"
+            ],
+            "version": 1,
+            "technique": "taintSharedContent",
+            "criticalAssets": 46,
+            "entities": 360,
+            "displayName": "Taint Shared Content",
+            "complexity": {
+                "level": "low",
+                "value": 2
+            },
+            "chokePoints": 35,
+            "ratio": 0.0017784651072878406
+        },
+        {
+            "description": "EternalBlue is a SMB Server vulnerability allowing remote code execution on a target server by sending a specially crafted SMB packet.\nThe vulnerability became public as a part of the \"Equation Group\" tools leak and used in the notorious WannaCry attack of May 2017.\n",
+            "severity": {
+                "level": "critical"
+            },
+            "category": "Vulnerability Management",
+            "mitre": [
+                {
+                    "name": "T1210",
+                    "link": "https://attack.mitre.org/wiki/Technique/T1210"
+                }
+            ],
+            "bestPractice": [
+                "Apply appropriate patches from Microsoft",
+                "Disable the outdated SMBv1 protocol (requires restart)"
+            ],
+            "techniqueType": "hackingTechnique",
+            "blockingParameters": [],
+            "riskCategories": [
+                "Vulnerability Management"
+            ],
+            "version": 1,
+            "technique": "Exploit::Ms17010",
+            "criticalAssets": 43,
+            "entities": 513,
+            "displayName": "EternalBlue (CVE-2017-0144)",
+            "complexity": {
+                "level": "low",
+                "value": 2
+            },
+            "chokePoints": 74,
+            "ratio": 0.0007863072815711517
+        }
+    ]
+}

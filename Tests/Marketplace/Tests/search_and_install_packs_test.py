@@ -1,8 +1,9 @@
 import demisto_client
 import pytest
 import timeout_decorator
-
 import Tests.Marketplace.search_and_install_packs as script
+from Tests.Marketplace.marketplace_services import GCPConfig
+from google.cloud.storage import Blob
 
 BASE_URL = 'http://123-fake-api.com'
 API_KEY = 'test-api-key'
@@ -280,3 +281,35 @@ def test_install_nightly_packs_endless_loop(mocker):
         {'id': 'bad_integration2'},
     ]
     script.install_nightly_packs(client, 'my_host', packs_to_install)
+
+
+@pytest.mark.parametrize('path, latest_version', [
+    (f'{GCPConfig.STORAGE_BASE_PATH}/TestPack/1.0.1/TestPack.zip', '1.0.1'),
+    (f'{GCPConfig.STORAGE_BASE_PATH}/Blockade.io/1.0.1/Blockade.io.zip', '1.0.1')
+])
+def test_pack_path_version_regex(path, latest_version):
+    """
+       Given:
+           - A path in GCS of a zipped pack.
+       When:
+           - Extracting the version from the path.
+       Then:
+           - Validate that the extracted version is the expected version.
+   """
+    assert script.PACK_PATH_VERSION_REGEX.findall(path)[0] == latest_version
+
+
+def test_get_latest_version_from_bucket(mocker):
+    """
+       Given:
+           - An id of a pack and the bucket.
+       When:
+           - Getting the latest version of the pack in the bucket.
+       Then:
+           - Validate that the version is the one we expect for.
+   """
+    dummy_prod_bucket = mocker.MagicMock()
+    first_blob = Blob(f'{GCPConfig.STORAGE_BASE_PATH}/TestPack/1.0.0/TestPack.zip', dummy_prod_bucket)
+    second_blob = Blob(f'{GCPConfig.STORAGE_BASE_PATH}/TestPack/1.0.1/TestPack.zip', dummy_prod_bucket)
+    dummy_prod_bucket.list_blobs.return_value = [first_blob, second_blob]
+    assert script.get_latest_version_from_bucket('TestPack', dummy_prod_bucket) == '1.0.1'

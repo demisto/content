@@ -20,7 +20,8 @@ configuration:
   required: true
   type: 4
 - additionalinfo: Allows running multiple clients (stream consumers) simultaneously,
-    as each integration instance needs a unique application ID.
+    as each integration instance needs a unique application ID. Must be a max. of
+    32 alphanumeric characters (a-z, A-Z, 0-9).
   defaultvalue: Demisto
   display: Application ID
   hidden: false
@@ -86,7 +87,7 @@ script:
     description: Returns a list of sample events fetched from the stream.
     execution: false
     name: crowdstrike-falcon-streaming-get-sample-events
-  dockerimage: demisto/aiohttp:1.0.0.12815
+  dockerimage: demisto/aiohttp:1.0.0.13810
   feed: false
   isfetch: false
   longRunning: true

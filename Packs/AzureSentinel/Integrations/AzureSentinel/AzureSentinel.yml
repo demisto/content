@@ -522,6 +522,17 @@ script:
       name: entity_id
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether or not to retrieve additional information about the entity.
+      isArray: false
+      name: expand_entity_information
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
     deprecated: false
     description: Gets a single entity from Azure Sentinel. Use the azure-sentinel-list-incident-relations command, and get an entity ID to apply this command on. In the current Azure Sentinel API version the retention period for GetEntityByID is 30 days.
     execution: false
@@ -587,6 +598,7 @@ script:
     execution: false
     name: azure-sentinel-test
   dockerimage: demisto/crypto:1.0.0.11287
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -594,7 +606,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-beta: true
 tests:
 - No test - manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests folder
 fromversion: 5.0.0
+beta: true
