@@ -2007,7 +2007,8 @@ def main() -> None:
                 base_url=base_url,
                 verify=verify_certificate,
                 proxy=proxy,
-                args=demisto.args()))
+                args=demisto.args()
+            ))
 
         else:
             raise NotImplementedError
