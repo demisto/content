@@ -396,7 +396,7 @@ def test_update_remote_system_command(mocker, requests_mock):
     MOCK_DELTA = {
         "owner": "testuser",
         "severity": 4,
-        "expanseprogressstatus": "InProgress"
+        "expanseprogressstatus": "InProgress",
     }
 
     args = {
@@ -412,7 +412,7 @@ def test_update_remote_system_command(mocker, requests_mock):
 
     requests_mock.post(f"/v1/issues/issues/{MOCK_ISSUE_ID}/updates", json={})
 
-    result = update_remote_system_command(client, args)
+    result = update_remote_system_command(client, args, True)
 
     assert result == MOCK_ISSUE_ID
     assert mock_upd.call_count == 4
@@ -425,6 +425,9 @@ def test_update_remote_system_command(mocker, requests_mock):
     assert mock_upd.call_args_list[2][1]["issue_id"] == MOCK_ISSUE_ID
     assert mock_upd.call_args_list[2][1]["update_type"] == 'Priority'
     assert mock_upd.call_args_list[2][1]["value"] == 'Critical'
+    assert mock_upd.call_args_list[3][1]["issue_id"] == MOCK_ISSUE_ID
+    assert mock_upd.call_args_list[3][1]["update_type"] == 'ProgressStatus'
+    assert mock_upd.call_args_list[3][1]["value"] == 'InProgress'
     assert mock_upd.call_args_list[3][1]["issue_id"] == MOCK_ISSUE_ID
     assert mock_upd.call_args_list[3][1]["update_type"] == 'ProgressStatus'
     assert mock_upd.call_args_list[3][1]["value"] == 'InProgress'
