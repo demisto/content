@@ -2,11 +2,6 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
-	{
-            "integrations": "sophos_central",
-            "playbookID": "playbook-SophosCentral_Test",
-            "fromversion": "5.0.0"
-        },
         {
             "integrations": "Tripwire",
             "playbookID": "TestplaybookTripwire",
