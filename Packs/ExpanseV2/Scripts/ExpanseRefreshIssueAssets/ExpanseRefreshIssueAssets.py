@@ -10,7 +10,7 @@ from typing import Dict, Any
 
 def refresh_issue_assets_command(args: Dict[str, Any]) -> CommandResults:
     incident = demisto.incident()
-    custom_fields = incident.get('CustomFields')
+    custom_fields = incident.get('CustomFields', {})
     assets = custom_fields.get('expanseasset')
 
     for asset in assets:
