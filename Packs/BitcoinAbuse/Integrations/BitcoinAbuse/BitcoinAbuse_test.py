@@ -1,4 +1,5 @@
-""" Bitcoin Abuse Integration for Cortex XSOAR - Unit Tests file
+"""
+Bitcoin Abuse Integration for Cortex XSOAR - Unit Tests file
 """
 
 from BitcoinAbuse import *
