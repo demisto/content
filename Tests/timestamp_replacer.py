@@ -162,8 +162,8 @@ class TimestampReplacer:
                     updated_query_data.append((key, self.constant))
                 else:
                     updated_query_data.append((key, val))
-            logging.info(f'updated query_data: {req._get_query()}')
         req._set_query(updated_query_data or query_data)
+        logging.info(f'updated query_data: {req._get_query()}')
 
     def clean_urlencoded_form(self, req: HTTPRequest) -> None:
         """Replace any problematic values of urlencoded form keys with constant data
