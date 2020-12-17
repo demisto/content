@@ -38,7 +38,7 @@ script:
     - default: false
       description: |
         The name of the compliance search.
-        If not specified will have prefix of "XSOAR-" and GUID e.g. XSOAR-d6228fd0-756b-4e4b-8721-76776df91526.
+        If not specified, will have the prefix "XSOAR-" followed by the GUID e.g., XSOAR-d6228fd0-756b-4e4b-8721-76776df91526.
       isArray: false
       name: search_name
       required: false
