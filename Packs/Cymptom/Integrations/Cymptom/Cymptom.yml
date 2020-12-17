@@ -14,7 +14,7 @@ configuration:
   display: API key
   name: api_key
   required: true
-  type: 12
+  type: 4
 - defaultvalue: ""
   display: Fetch incidents
   name: is_fetch
