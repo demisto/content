@@ -68,7 +68,7 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
 
         response_json = r.json()
         error_description = response_json.get('description')
-        should_continue_on_blacklisted_urls = argToBoolean(demisto.args().get('continue_on_blacklisted_urls'))
+        should_continue_on_blacklisted_urls = argToBoolean(demisto.args().get('continue_on_blacklisted_urls', False))
         if should_continue_on_blacklisted_urls and error_description == BLACKLISTED_URL_ERROR_MESSAGE:
             response_json['url_is_blacklisted'] = True
             requested_url = JSON.loads(json)['url']
