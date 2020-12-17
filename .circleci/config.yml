@@ -68,7 +68,7 @@ references:
 
   container_config: &container_config
     docker:
-      - image: devdemisto/content-build:3.0.0.12681  # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.14560  # disable-secrets-detection
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
