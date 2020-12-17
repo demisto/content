@@ -1,0 +1,17 @@
+{
+    "name": "Test Pack",
+    "description": "",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "DeanArbel",
+    "url": "",
+    "email": "",
+    "created": "2020-12-17T12:02:13Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "DeanArbel"
+    ]
+}
