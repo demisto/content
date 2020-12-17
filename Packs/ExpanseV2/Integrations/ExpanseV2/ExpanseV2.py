@@ -36,6 +36,7 @@ MAX_PAGE_SIZE = 1000  # max results per page
 MAX_INCIDENTS = 100  # max incidents per fetch
 MAX_UPDATES = 100  # max updates received
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+DEFAULT_FIRST_FETCH = "3 days"  # default parameter for first fetch
 
 ISSUE_PROGRESS_STATUS = ['New', 'Investigating', 'InProgress', 'AcceptableRisk', 'Resolved']
 ISSUE_PROGRESS_STATUS_CLOSED = ['AcceptableRisk', 'Resolved']
@@ -115,9 +116,6 @@ class Client(BaseClient):
         next_url: Optional[str] = None
 
         while True:
-            if '/issues' in url_suffix and 'updates' not in url_suffix:
-                pass
-                # demisto.debug(f'DEBUGDEBUG Client._paginate: calling {url_suffix} with {params}')
             result = self._http_request(
                 method=method,
                 url_suffix=url_suffix,
@@ -128,11 +126,7 @@ class Client(BaseClient):
 
             data = result.get('data', [])
             if data is not None:
-                if '/issues' in url_suffix and 'updates' not in url_suffix:
-                    pass
-                    # demisto.debug(f'DEBUGDEBUG Client._paginate: returning {len(data)} results')
-                for a in data:
-                    yield a
+                yield from data
 
             pagination = result.get('pagination', None)
             if pagination is None:
@@ -292,7 +286,6 @@ class Client(BaseClient):
     def get_asset_details(self, asset_type: str, asset_id: str,
                           include: str = 'annotations,attributionReasons') -> Dict[str, Any]:
         data: Dict = {}
-        # demisto.debug(f'DEBUGDEBUG get_asset_details: retrieving details for asset {asset_id} of type {asset_type}')
         if asset_type == 'IpRange':
             data = self.get_iprange_by_id(
                 iprange_id=asset_id,
@@ -322,7 +315,6 @@ class Client(BaseClient):
         )
 
     def update_issue(self, issue_id: str, update_type: str, value: str) -> Dict[str, Any]:
-        # demisto.debug(f'DEBUGDEBUG update_issue: {issue_id}, {update_type}, {value}')
         data: Dict = {
             'updateType': update_type,
             'value': value
@@ -355,7 +347,7 @@ class Client(BaseClient):
             params['minRecentIpLastObservedDate'] = last_observed_date
 
         try:
-            result: Dict = self._http_request(
+            result = self._http_request(
                 method='GET',
                 url_suffix=f'/v2/assets/domains/{domain}',
                 raise_on_status=True,
@@ -443,7 +435,7 @@ class Client(BaseClient):
         assets: List[Dict[str, Any]] = []
         changed = False
         ml_feature_list: List[str] = []
-        if 'assets' in issue and isinstance(issue['assets'], list) and len(issue['assets']) > 0:
+        if issue.get('assets') and isinstance(issue['assets'], list):
             assets = copy.deepcopy(issue['assets'])
             for n, a in enumerate(assets):
                 if not isinstance(a, dict) or 'assetType' not in a:
@@ -473,79 +465,70 @@ class Client(BaseClient):
                     changed = True
 
                 # Handle Tags
-                if (annotations := details.get('annotations', None)) and isinstance(annotations, dict):
-                    if (tags := annotations.get('tags', None)) and isinstance(tags, list) and len(tags) > 0:
-                        assets[n]['tags'] = '\n'.join(sorted(t['name'] for t in tags if 'name' in t))
-                        changed = True
+                if (tags := details.get('annotations', {}).get('tags')) and isinstance(tags, list):
+                    assets[n]['tags'] = '\n'.join(sorted(t['name'] for t in tags if 'name' in t))
+                    changed = True
 
                 # Handle Attribution reasons
-                if (ar := details.get('attributionReasons', None)) and isinstance(ar, list) and len(ar) > 0:
-                    assets[n]['attributionReasons'] = '\n'.join(sorted(a['reason'] for a in ar if 'reason' in a))
+                if (ar := details.get('attributionReasons')) and isinstance(ar, list):
+                    assets[n]['attributionReasons'] = '\n'.join(
+                        sorted(
+                            str(a.get('reason')) for a in ar if isinstance(a, dict) and a.get('reason')
+                        )
+                    )
                     changed = True
 
                 # Handle ML fields
 
-                # assets[n]['moredetails'] = details
-                if a['assetType'] == 'IpRange':
+                if a.get('assetType') == 'IpRange':
                     # for IP Range collect relatedRegistrarInformation.registryEntities.formattedName
                     if (
-                        (rri := details.get('relatedRegistrationInformation', None))
+                        (rri := details.get('relatedRegistrationInformation'))
                         and isinstance(rri, list)
-                        and len(rri) > 0
                         and isinstance(rri[0], dict)
-                        and (re := rri[0].get('registryEntities', None))
+                        and (re := rri[0].get('registryEntities'))
                         and isinstance(re, list)
-                        and len(re) > 0
                     ):
                         ml_feature_list.extend(set(r['formattedName'] for r in re if 'formattedName' in r))
 
-                elif a['assetType'] == "Certificate":
+                elif a.get('assetType') == "Certificate":
                     # for Certificate collect issuerOrg, issuerName,
                     # subjectName, subjectAlternativeNames, subjectOrg, subjectOrgUnit
-                    if (
-                        (cert := details.get('certificate', None))
-                        and isinstance(cert, dict)
-                    ):
+                    if (cert := details.get('certificate')) and isinstance(cert, dict):
                         for f in ['issuerOrg', 'issuerName', 'subjectOrg', 'subjectName', 'subjectOrgUnit']:
-                            if (x := cert.get(f, None)):
+                            if (x := cert.get(f)):
                                 ml_feature_list.append(x)
-                        if (
-                                (san := cert.get('subjectAlternativeNames', None))
-                                and isinstance(san, str)
-                        ):
+                        if (san := cert.get('subjectAlternativeNames')) and isinstance(san, str):
                             ml_feature_list.extend(san.split(' '))
 
-                elif a['assetType'] == "Domain":
+                elif a.get('assetType') == "Domain":
                     # for Domain collect domain, name servers, registrant and admin name/organization
                     if (
-                        (whois := details.get('whois', None))
+                        (whois := details.get('whois'))
                         and isinstance(whois, list)
-                        and len(whois) > 0
                         and isinstance(whois[0], dict)
                     ):
-                        if (x := whois[0].get('domain', None)):
+                        if (x := whois[0].get('domain')):
                             ml_feature_list.append(x)
 
                         # nameServers
                         if (
-                            (ns := whois[0].get('nameServers', None))
+                            (ns := whois[0].get('nameServers'))
                             and isinstance(ns, list)
-                            and len(ns) > 0
                         ):
                             ml_feature_list.extend(ns)
 
                         # admin
-                        if (admin := whois[0].get('admin', None)):
+                        if (admin := whois[0].get('admin')):
                             for f in ['name', 'organization']:
-                                if (x := admin.get(f, None)):
+                                if (x := admin.get(f)):
                                     ml_feature_list.append(x)
                         # registrant
-                        if (reg := whois[0].get('registrant', None)):
+                        if (reg := whois[0].get('registrant')):
                             for f in ['name', 'organization']:
-                                if (x := reg.get(f, None)):
+                                if (x := reg.get(f)):
                                     ml_feature_list.append(x)
 
-        # demisto.debug(f'DEBUGDEBUG parse_asset_data: fetch_details is {fetch_details}, ml_features_list is {ml_feature_list!r}')
         if len(ml_feature_list) > 0:
             changed = True
         return assets, ml_feature_list, changed
@@ -565,7 +548,7 @@ class DBotScoreOnlyIndicator(Common.Indicator):
         return self.dbot_score.to_context()
 
 
-def calculate_limits(limit: str) -> Tuple[int, int]:
+def calculate_limits(limit: Any) -> Tuple[int, int]:
     total_results = check_int(limit, 'limit', None, None, False)
     if not total_results:
         total_results = DEFAULT_RESULTS
@@ -648,14 +631,12 @@ def convert_priority_to_xsoar_severity(priority: str) -> int:
 def datestring_to_timestamp_us(ds: str) -> int:
     dt = parse(ds)
     ts = int(dt.timestamp()) * 1000000 + dt.microsecond
-    # demisto.debug(f'DEBUGDEBUG datestring_to_timestamp_us source: {ds}, dt: {dt}, ts: {ts}')
     return ts
 
 
 def timestamp_us_to_datestring_utc(ts: int, date_format: str = DATE_FORMAT) -> str:
     dt = datetime.fromtimestamp(ts // 1000000, timezone.utc).replace(microsecond=ts % 1000000)
     ds = dt.strftime(date_format)
-    # demisto.debug(f'DEBUGDEBUG timestamp_us_to_datestring_utc source: {ts}, dt: {dt}, ts: {ds}')
     return ds
 
 
@@ -733,32 +714,36 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> CommandResults:
         domain = domain_data['domain']
 
         whois_args = {}
-        whois = domain_data.get('whois', None)
-        if whois is not None and len(whois) > 0:
-            whois = whois[0]
-            admin = whois.get('admin', None)
-            registrar = whois.get('registrar', None)
-            registrant = whois.get('registrant', None)
-            domain_statutes = whois.get('domainStatuses', None)
+        if (w := domain_data.get('whois')) and isinstance(w, list):
+            whois = w[0]
+            admin = whois.get('admin', {})
+            registrar = whois.get('registrar', {})
+            if not isinstance(registrar, dict):
+                registrar = {}
+            registrant = whois.get('registrant', {})
+            if not isinstance(registrant, dict):
+                registrant = {}
+            domain_statuses = whois.get('domainStatuses', [])
+            if not isinstance(domain_statuses, list):
+                domain_statuses = []
 
-            whois_args['creation_date'] = whois.get('creationDate', None)
-            whois_args['updated_date'] = whois.get('updatedDate', None)
-            whois_args['expiration_date'] = whois.get('registryExpiryDate', None)
-            whois_args['name_servers'] = whois.get('nameServers', None)
-            whois_args['domain_status'] = domain_statutes[0] if domain_statutes is not None and len(domain_statutes) > 0 else None
-
-            whois_args['organization'] = admin.get('organization', None) if admin is not None else None
-            whois_args['admin_name'] = admin.get('name', None) if admin is not None else None
-            whois_args['admin_email'] = admin.get('emailAddress', None) if admin is not None else None
-            whois_args['admin_phone'] = admin.get('phoneNumber', None) if admin is not None else None
-            whois_args['admin_country'] = admin.get('country', None) if admin is not None else None
-
-            whois_args['registrar_name'] = registrar.get('name', None) if registrar is not None else None
-
-            whois_args['registrant_email'] = registrant.get('emailAddress', None) if registrar is not None else None
-            whois_args['registrant_name'] = registrant.get('name', None) if registrar is not None else None
-            whois_args['registrant_phone'] = registrant.get('phoneNumber', None) if registrar is not None else None
-            whois_args['registrant_country'] = registrant.get('country', None) if registrar is not None else None
+            whois_args = assign_params(
+                creation_date=whois.get('creationDate'),
+                updated_date=whois.get('updatedDate'),
+                expiration_date=whois.get('registryExpiryDate'),
+                name_servers=whois.get('nameServers'),
+                domain_status=domain_statuses[0],
+                organization=admin.get('organization'),
+                admin_name=admin.get('name'),
+                admin_email=admin.get('emailAddress'),
+                admin_phone=admin.get('phoneNumber'),
+                admin_country=admin.get('country'),
+                registrar_name=registrar.get('name'),
+                registrant_email=registrant.get('emailAddress'),
+                registrant_name=registrant.get('name'),
+                registrant_phone=registrant.get('phoneNumber'),
+                registrant_country=registrant.get('country')
+            )
 
         domain_standard_context: Common.Domain
         if domain.startswith('*.'):
@@ -986,8 +971,7 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def get_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    issue_id = args.get('issue_id', None)
-    if not issue_id:
+    if not (issue_id := args.get('issue_id')):
         raise ValueError('issue_id not specified')
 
     issue = client.get_issue_by_id(issue_id=issue_id)
@@ -1007,15 +991,14 @@ def get_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def get_issue_updates_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     total_results, max_page_size = calculate_limits(args.get('limit', None))
 
-    issue_id = args.get('issue_id', None)
-    if not issue_id:
+    if not (issue_id := args.get('issue_id')):
         raise ValueError('issue_id not specified')
 
     update_types = argToList(args.get('update_types'))
     if update_types and not all(i in ISSUE_UPDATE_TYPES.keys() for i in update_types):
         raise ValueError(f'Invalid update_type: {update_types}. Must include: {",".join(ISSUE_UPDATE_TYPES.keys())}')
 
-    d = args.get('created_after', None)
+    d = args.get('created_after')
     created_after = parse(d).strftime(DATE_FORMAT) if d else None
 
     issue_updates = [
@@ -1034,7 +1017,6 @@ def get_issue_updates_command(client: Client, args: Dict[str, Any]) -> CommandRe
         )
     ]
 
-    # demisto.debug(f'DEBUGDEBUG issue_updates is {json.dumps(issue_updates)}')
     return CommandResults(
         outputs_prefix="Expanse.IssueUpdate", outputs_key_field="id", outputs=issue_updates
     )
@@ -1043,11 +1025,10 @@ def get_issue_updates_command(client: Client, args: Dict[str, Any]) -> CommandRe
 def get_issue_comments_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     total_results, max_page_size = calculate_limits(args.get('limit', None))
 
-    issue_id = args.get('issue_id', None)
-    if not issue_id:
+    if not (issue_id := args.get('issue_id')):
         raise ValueError('issue_id not specified')
 
-    d = args.get('created_after', None)
+    d = args.get('created_after')
     created_after = parse(d).strftime(DATE_FORMAT) if d else None
 
     issue_comments = [
@@ -1067,7 +1048,7 @@ def get_issue_comments_command(client: Client, args: Dict[str, Any]) -> CommandR
     ]
 
     for n, c in enumerate(issue_comments):
-        if (u := c.get('user'), None) and isinstance(u, dict) and 'username' in u:
+        if (u := c.get('user')) and isinstance(u, dict) and 'username' in u:
             issue_comments[n]['user'] = u['username']
 
     md = tableToMarkdown(
@@ -1088,16 +1069,14 @@ def get_issue_comments_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 def update_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    issue_id = args.get('issue_id', None)
-    if not issue_id:
+    if not (issue_id := args.get('issue_id')):
         raise ValueError('issue_id not specified')
 
-    update_type = args.get("update_type", None)
+    update_type = args.get("update_type")
     if not update_type or update_type not in ISSUE_UPDATE_TYPES:
         raise ValueError(f'update_type must be one of: {",".join(ISSUE_UPDATE_TYPES.keys())}')
 
-    value = args.get('value', None)
-    if not value:
+    if not (value := args.get('value')):
         raise ValueError('value must be specified')
 
     issue_update = client.update_issue(issue_id, update_type, value)
@@ -1132,19 +1111,15 @@ def fetch_incidents(client: Client, max_incidents: int,
     :rtype: ``Tuple[Dict[str, Union[Optional[int], Optional[str]]], List[dict]]``
     """
 
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch')
     if last_fetch is None:
         last_fetch = cast(int, first_fetch)
     else:
         last_fetch = cast(int, last_fetch)
 
     latest_created_time = last_fetch
-    # demisto.debug(
-    # f'DEBUGDEBUG fetch_incidents: last_fetch is {last_fetch}'
-    # f' [{timestamp_us_to_datestring_utc(latest_created_time, DATE_FORMAT)}]')
 
-    last_issue_id = last_run.get('last_issue_id', None)
-    # demisto.debug(f'DEBUGDEBUG fetch_incidents: last_issue_id is {last_issue_id}')
+    last_issue_id = last_run.get('last_issue_id')
     latest_issue_id: Optional[str] = None
 
     incidents: List[Dict[str, Any]] = []
@@ -1179,55 +1154,37 @@ def fetch_incidents(client: Client, max_incidents: int,
     for i in r:
         if skip and not broken:
             if 'id' not in i or 'created' not in i:
-                # demisto.debug('DEBUGDEBUG get_issues: skipping an incident that does not have id or created')
                 continue
 
             # fix created time to make sure precision is the same to microsecond with no rounding
             i['created'] = timestamp_us_to_datestring_utc(datestring_to_timestamp_us(i['created']), DATE_FORMAT)
 
-            # demisto.debug(f'DEBUGDEBUG get_issues: skip check is on loop: processing issue {i["id"]}')
             if i['created'] != created_after:
-                # demisto.debug(f'DEBUGDEBUG get_issues: breaking as {i["id"]}  time different than created_after '
-                #               f'[{i["created"]} vs {created_after}]')
                 issues.append(i)
                 broken = True
             elif i['id'] == skip:
-                # demisto.debug(f'DEBUGDEBUG get_issues: breaking as found id {skip} (skipping this one)')
                 broken = True
-            else:
-                pass
-                # demisto.debug(f'DEBUGDEBUG get_issues: skipping possible dup incident {i["id"]}')
         else:
-            # demisto.debug(f'DEBUGDEBUG get_issues: adding incident {i["id"]}')
             issues.append(i)
         if len(issues) == max_incidents:
-            # demisto.debug(f'DEBUGDEBUG get_issues: got enough incidents ({max_issues}), exiting for cycle')
             break
-
-    # demisto.debug(f'DEBUGDEBUG get_issues: returning IDs: [{str([i["id"] for i in ret])}]')
-    # demisto.debug(f'DEBUGDEBUG fetch_incidents: created_after is {created_after}')
 
     for issue in issues:
         ml_feature_list: List[str] = []
 
         if 'created' not in issue or 'id' not in issue:
             continue
-        incident_created_time = datestring_to_timestamp_us(issue['created'])
+        incident_created_time = datestring_to_timestamp_us(issue.get('created'))
 
-        # demisto.debug(
-        #     f'DEBUGDEBUG fetch_incidents: loop: issue id is {issue["id"]} created at '
-        #     f'{issue["created"]} and incident_created_time is {incident_created_time} '
-        #     f'[{timestamp_us_to_datestring_utc(incident_created_time, DATE_FORMAT)}]')
         if last_fetch:
             if incident_created_time < last_fetch:
-                # demisto.debug(f'DEBUGDEBUG fetch_incidents loop: skipping issue id {issue["id"]}')
                 continue
-        incident_name = issue['headline'] if 'headline' in issue else issue['id']
+        incident_name = issue.get('headline') if 'headline' in issue else issue.get('id')
 
         # Mirroring
         issue['xsoar_mirroring'] = {
             'mirror_direction': mirror_direction,
-            'mirror_id': issue['id'],
+            'mirror_id': issue.get('id'),
             'mirror_instance': demisto.integrationInstance(),
             'sync_tags': sync_tags
         }
@@ -1238,55 +1195,46 @@ def fetch_incidents(client: Client, max_incidents: int,
 
         # add issue specific information to ml key
         if (
-            (provider := issue.get('providers', None))
+            (provider := issue.get('providers'))
             and isinstance(provider, list)
-            and len(provider) > 0
             and 'name' in provider[0]
         ):
-            ml_feature_list.append(provider[0]['name'])
+            ml_feature_list.append(provider[0].get('name'))
         if (
-            (latest_evidence := issue.get('latestEvidence', None))
+            (latest_evidence := issue.get('latestEvidence'))
             and isinstance(latest_evidence, dict)
         ):
             if (
-                (geolocation := latest_evidence.get('geolocation', None))
+                (geolocation := latest_evidence.get('geolocation'))
                 and isinstance(geolocation, dict)
             ):
                 for f in ['countryCode', 'city']:
-                    if (x := geolocation.get(f, None)):
+                    if (x := geolocation.get(f)):
                         ml_feature_list.append(x)
 
-        # demisto.debug(f'DEBUGDEBUG fetch_incidents: ml_features_list is {ml_feature_list!r}')
         # dedup, sort and join ml feature list
         issue['ml_features'] = ' '.join(sorted(list(set(ml_feature_list))))
         incident = {
             'name': incident_name,
-            'details': issue['helpText'] if 'helpText' in issue else None,
-            'occurred': issue['created'],
+            'details': issue.get('helpText'),
+            'occurred': issue.get('created'),
             'rawJSON': json.dumps(issue),
-            'severity': issue['xsoar_severity']
+            'severity': issue.get('xsoar_severity')
         }
-        latest_issue_id = issue['id']
+        latest_issue_id = issue.get('id')
         incidents.append(incident)
         if incident_created_time > latest_created_time:
             latest_created_time = incident_created_time
-            # demisto.debug(
-            #     f'DEBUGDEBUG fetch_incidents loop: issue id is {issue["id"]} and '
-            #     f' updating latest_created_time to {latest_created_time} '
-            #     f'[{timestamp_us_to_datestring_utc(latest_created_time, DATE_FORMAT)}]')
 
     next_run = {
         'last_fetch': latest_created_time,
         'last_issue_id': latest_issue_id if latest_issue_id else last_issue_id}
-    # demisto.debug(f'DEBUGDEBUG fetch_incidents: next_run is {next_run} ({timestamp_us_to_datestring_utc(latest_created_time)}')
     return next_run, incidents
 
 
 def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: bool = False,
                             incoming_tags: Optional[List[str]] = [], mirror_details: bool = False) -> GetRemoteDataResponse:
     parsed_args = GetRemoteDataArgs(args)
-    # demisto.debug(f'DEBUGDEBUG get_remote_data_command invoked on incident {parsed_args.remote_incident_id} '
-    #               f'with last_update: {parsed_args.last_update}')
     issue_updates: List[Dict[str, Any]] = sorted(
         islice(
             client.get_issue_updates(
@@ -1297,25 +1245,28 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
             ),
             MAX_UPDATES
         ),
-        key=lambda k: k['created']
+        key=lambda k: k.get('created')
     )
 
     new_entries: List = []
     incident_updates: Dict[str, Any] = {}
     latest_comment: Dict[str, Any] = {}  # used for closing comment
     for update in issue_updates:
-        update_type = update['updateType']
+        update_type = update.get('updateType')
         if not update_type or update_type not in ISSUE_UPDATE_TYPES:
             demisto.debug('Skipping unknown Expanse incoming update type: {update_type}')
             continue
 
-        new_value = update['value']
-        if not new_value:
+        if not (new_value := update.get('value')):
             continue
 
         updated_field = ISSUE_UPDATE_TYPES[update_type]
-        previous_value = update['previousValue'] if 'previousValue' in update else None
-        update_user = update['user']['username'] if 'user' in update and 'username' in update['user'] else 'Unknown user'
+        previous_value = update.get('previousValue')
+        update_user = update['user']['username'] if (
+            'user' in update
+            and isinstance(update['user'], dict)
+            and 'username' in update['user']
+        ) else 'Unknown user'
 
         # handle incoming comment
         if update_type == 'Comment':
@@ -1393,115 +1344,83 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
     if len(incident_updates) > 0 or len(new_entries) > 0:
         incident_updates['id'] = parsed_args.remote_incident_id
 
-    # demisto.debug(f'DEBUGDEBUG get-remote-data returning {json.dumps(incident_updates)} and {json.dumps(new_entries)}')
     return GetRemoteDataResponse(incident_updates, new_entries)
 
 
 def update_remote_system_command(client: Client, args: Dict[str, Any], sync_owners: bool = False) -> str:
     remote_args = UpdateRemoteSystemArgs(args)
-    # demisto.debug(f'DEBUGDEBUG update-remote-system: remote args is {json.dumps(args)}')
     remote_incident_id = remote_args.remote_incident_id
-    # demisto.debug(f'DEBUGDEBUG update-remote-system remote ID is: [{remote_incident_id}]')
-    try:
-        # demisto.debug(f'DEBUGDEBUG update-remote-system entries {json.dumps(remote_args.entries)}')
-        changed: bool = False
-        entries: List = remote_args.entries if remote_args.entries else []
-        for e in entries:
-            # demisto.debug(f'DEBUGDEBUG update-remote-system entry is: {json.dumps(e)}')
-            if 'contents' in e and 'category' in e and e['category'] == 'chat':
-                # demisto.debug(f'DEBUGDEBUG update-remote-system sending comment {e["contents"]}')
-                client.update_issue(
-                    issue_id=remote_incident_id,
-                    update_type='Comment',
-                    value=e['contents']
-                )
-                changed = True
+    entries: List = remote_args.entries if remote_args.entries else []
+    for e in entries:
+        if 'contents' in e and 'category' in e and e.get('category') == 'chat':
+            client.update_issue(
+                issue_id=remote_incident_id,
+                update_type='Comment',
+                value=e.get('contents')
+            )
 
-        if remote_args.delta and remote_args.incident_changed:
-            delta = remote_args.delta
-            # demisto.debug(f'DEBUGDEBUG update-remote-system delta keys {str(list(remote_args.delta.keys()))}'
-            #              f' on remote ID [{remote_incident_id}]')
-            # demisto.debug(f'DEBUGDEBUG update-remote-system deltas {json.dumps(remote_args.delta)}'
-            #              f' on remote ID [{remote_incident_id}]')
+    if remote_args.delta and remote_args.incident_changed:
+        delta = remote_args.delta
 
-            # handle ownership change
-            if sync_owners and 'owner' in delta:
-                owner_email: Optional[str] = None
-                owner_user = delta.get('owner')
-                if owner_user:
-                    user_info = demisto.findUser(username=owner_user)
-                    if user_info and isinstance(user_info, dict) and 'email' in user_info:
-                        owner_email = user_info.get('email')
-                    if owner_email:  # change the owner in Expanse only if the XSOAR user has a valid email
-                        client.update_issue(
-                            issue_id=remote_incident_id,
-                            update_type='Assignee',
-                            value=owner_email
-                        )
-                        # demisto.debug(f'DEBUGDEBUG update-remote-system set owner to {owner_email}'
-                        #               f' on remote ID [{remote_incident_id}]')
-                else:  # change to unassigned
+        # handle ownership change
+        if sync_owners and 'owner' in delta:
+            owner_email: Optional[str] = None
+            owner_user = delta.get('owner')
+            if owner_user:
+                user_info = demisto.findUser(username=owner_user)
+                if user_info and isinstance(user_info, dict) and 'email' in user_info:
+                    owner_email = user_info.get('email')
+                if owner_email:  # change the owner in Expanse only if the XSOAR user has a valid email
                     client.update_issue(
                         issue_id=remote_incident_id,
                         update_type='Assignee',
-                        value='Unassigned'
+                        value=owner_email
                     )
-                    # demisto.debug(f'DEBUGDEBUG update-remote-system set owner to Unassigned'
-                    #               f' on remote ID [{remote_incident_id}]')
-
-            # handle severity
-            if 'severity' in delta and delta['severity'] in SEVERITY_PRIORITY_MAP:
+            else:  # change to unassigned
                 client.update_issue(
                     issue_id=remote_incident_id,
-                    update_type='Priority',
-                    value=SEVERITY_PRIORITY_MAP[delta['severity']]
+                    update_type='Assignee',
+                    value='Unassigned'
                 )
 
-            # handle issue closing
-            if remote_args.inc_status == 2:
-                close_reason = remote_args.data.get('closeReason', None)
-                close_notes = remote_args.data.get('closeNotes', None)
-                close_reason_comment: str = f'XSOAR Incident Close Reason: {close_reason}\n' if close_reason else ''
-                close_notes_comment: str = f'XSOAR Incident Close Notes: {close_notes}\n' if close_notes else ''
-                client.update_issue(
-                    issue_id=remote_incident_id,
-                    update_type='Comment',
-                    value=f'Issue closed in Cortex XSOAR.\n{close_reason_comment}{close_notes_comment}'
-                )
-                client.update_issue(
-                    issue_id=remote_incident_id,
-                    update_type='ProgressStatus',
-                    value='Resolved'
-                )
+        # handle severity
+        if 'severity' in delta and delta.get('severity') in SEVERITY_PRIORITY_MAP:
+            client.update_issue(
+                issue_id=remote_incident_id,
+                update_type='Priority',
+                value=SEVERITY_PRIORITY_MAP[delta.get('severity')]
+            )
 
-            #     demisto.debug(f'DEBUGDEBUG update-remote-system closing remote ID [{remote_incident_id}]'
-            #                   f'with close reason {close_reason} and close_notes {close_notes}')
+        # handle issue closing
+        if remote_args.inc_status == 2:
+            close_reason = remote_args.data.get('closeReason', None)
+            close_notes = remote_args.data.get('closeNotes', None)
+            close_reason_comment: str = f'XSOAR Incident Close Reason: {close_reason}\n' if close_reason else ''
+            close_notes_comment: str = f'XSOAR Incident Close Notes: {close_notes}\n' if close_notes else ''
+            client.update_issue(
+                issue_id=remote_incident_id,
+                update_type='Comment',
+                value=f'Issue closed in Cortex XSOAR.\n{close_reason_comment}{close_notes_comment}'
+            )
+            client.update_issue(
+                issue_id=remote_incident_id,
+                update_type='ProgressStatus',
+                value='Resolved'
+            )
 
-            # handle Progress Status change
-            elif 'expanseprogressstatus' in delta and delta['expanseprogressstatus'] in ISSUE_PROGRESS_STATUS:
-                client.update_issue(
-                    issue_id=remote_incident_id,
-                    update_type='ProgressStatus',
-                    value=delta['expanseprogressstatus']
-                )
-
-        if changed:
-            pass
-            # demisto.debug(f'DEBUGDEBUG update-remote-system Updating on remote ID [{remote_incident_id}]')
-        else:
-            pass
-            # demisto.debug(f'DEBUGDEBUG update-remote-system Skipping update on remote ID [{remote_incident_id}] [no changes]')
-
-    except Exception as e:
-        # demisto.debug(f"DEBUGDEBUG update-remote-system Error in Expanse outgoing mirror for incident {remote_incident_id} \n"
-        #               f"Error message: {str(e)}")
-        raise e
+        # handle Progress Status change
+        elif 'expanseprogressstatus' in delta and delta.get('expanseprogressstatus') in ISSUE_PROGRESS_STATUS:
+            client.update_issue(
+                issue_id=remote_incident_id,
+                update_type='ProgressStatus',
+                value=delta.get('expanseprogressstatus')
+            )
 
     return remote_incident_id
 
 
 def list_businessunits_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
+    total_results, max_page_size = calculate_limits(args.get('limit'))
     outputs = list(
         islice(client.list_businessunits(limit=max_page_size), total_results)
     )
@@ -1515,7 +1434,7 @@ def list_businessunits_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 
 def list_providers_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
+    total_results, max_page_size = calculate_limits(args.get('limit'))
     outputs = list(
         islice(client.list_providers(limit=max_page_size), total_results)
     )
@@ -1528,7 +1447,7 @@ def list_providers_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
 
 def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
+    total_results, max_page_size = calculate_limits(args.get('limit'))
     outputs = list(
         islice(client.list_tags(limit=max_page_size), total_results)
     )
@@ -1564,16 +1483,16 @@ def create_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def manage_asset_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    operation_type = args.get('operation_type', None)
+    operation_type = args.get('operation_type')
     if operation_type not in ASSET_TAG_OPERATIONS:
         raise ValueError(f'Operation type must be one of {",".join(ASSET_TAG_OPERATIONS)}')
 
-    asset_type = args.get('asset_type', None)
+    asset_type = args.get('asset_type')
     if not asset_type or asset_type not in TAGGABLE_ASSET_TYPE_MAP:
         raise ValueError(f'Asset type must be one of {",".join(TAGGABLE_ASSET_TYPE_MAP.keys())}')
     mapped_asset_type = TAGGABLE_ASSET_TYPE_MAP[asset_type]
 
-    asset_id = args.get('asset_id', None)
+    asset_id = args.get('asset_id')
     if not asset_id:
         raise ValueError('Asset id must be provided')
 
@@ -1598,7 +1517,7 @@ def get_iprange_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if id_ is not None and len(args) != 0:
         raise ValueError("You can only use [id] only with [include] parameter")
 
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
+    total_results, max_page_size = calculate_limits(args.get('limit'))
 
     outputs: List[Dict[str, Any]]
     if id_ is not None:
@@ -1642,7 +1561,7 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if domain is not None and len(args) != 0:
         raise ValueError("The only argument allowed with domain is last_observed_date")
 
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
+    total_results, max_page_size = calculate_limits(args.get('limit'))
 
     if domain is not None:
         output = client.get_domain_by_domain(domain=domain, last_observed_date=last_observed_date)
@@ -1654,7 +1573,7 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         "limit": max_page_size
     }
 
-    domain_search: Optional[str] = args.get('search', None)
+    domain_search: Optional[str] = args.get('search')
     if domain_search is not None:
         params['domainSearch'] = domain_search
 
@@ -1713,7 +1632,7 @@ def get_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResu
     if md5_hash is not None and len(args) != 0:
         raise ValueError("The only argument allowed with md5_hash is last_observed_date")
 
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
+    total_results, max_page_size = calculate_limits(args.get('limit'))
 
     if md5_hash is not None:
         # we try to convert it as hex, and if we fail we trust it's a base64 encoded
@@ -1733,7 +1652,7 @@ def get_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResu
     params: Dict[str, Any] = {
         "limit": max_page_size
     }
-    cn_search: Optional[str] = args.get('search', None)
+    cn_search: Optional[str] = args.get('search')
     if cn_search is not None:
         params['commonNameSearch'] = cn_search
 
@@ -1799,8 +1718,8 @@ def get_associated_domains_command(client: Client, args: Dict[str, Any]) -> Comm
     if cn_search is None and ip_search is None:
         raise ValueError("one of common_name or ip arguments should be specified")
 
-    max_certificates, certificates_max_page_size = calculate_limits(args.get('limit', None))
-    max_domains, domains_max_page_size = calculate_limits(args.get('domains_limit', None))
+    max_certificates, certificates_max_page_size = calculate_limits(args.get('limit'))
+    max_domains, domains_max_page_size = calculate_limits(args.get('domains_limit'))
     ips_base_params: Dict[str, Any] = {
         "limit": domains_max_page_size
     }
@@ -1941,14 +1860,14 @@ def certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             tags = [tag['name'] for tag in annotations['tags']]
 
         provider_name: Optional[str] = None
-        providers = certificate.get('providers', None)
+        providers = certificate.get('providers')
         if isinstance(providers, list) and len(providers) > 0:
-            provider_name = providers[0].get('name', None)
+            provider_name = providers[0].get('name')
 
         tenant_name: Optional[str] = None
-        tenant = certificate.get('tenant', None)
+        tenant = certificate.get('tenant')
         if tenant is not None:
-            tenant_name = tenant.get('name', None)
+            tenant_name = tenant.get('name')
 
         business_unit_names: List[str] = []
         business_units = certificate.get("businessUnits", [])
@@ -2080,7 +1999,7 @@ def cidr_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def list_risk_rules_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
+    total_results, max_page_size = calculate_limits(args.get('limit'))
 
     params = {
         "page[limit]": max_page_size
@@ -2101,15 +2020,15 @@ def list_risk_rules_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 
 def get_risky_flows_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    total_results, max_page_size = calculate_limits(args.get('limit', None))
+    total_results, max_page_size = calculate_limits(args.get('limit'))
 
-    d = args.get('created_before', None)
+    d = args.get('created_before')
     created_before = parse(d).strftime(DATE_FORMAT) if d else None
 
-    d = args.get('created_after', None)
+    d = args.get('created_after')
     created_after = parse(d).strftime(DATE_FORMAT) if d else None
 
-    internal_ip_range = args.get('internal_ip_range', None)
+    internal_ip_range = args.get('internal_ip_range')
     risk_rule = args.get('risk_rule', None)
 
     tags = argToList(args.get('tag_names'))
@@ -2136,15 +2055,13 @@ def get_risky_flows_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 def main() -> None:
     """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
     """
 
-    api_key = demisto.params().get("apikey")
-    base_url = urljoin(demisto.params()["url"], "/api")
-    verify_certificate = not demisto.params().get("insecure", False)
-    proxy = demisto.params().get("proxy", False)
+    params = demisto.params()
+    api_key = params.get("apikey")
+    base_url = urljoin(params.get("url", "").rstrip("/"), "/api")
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
     try:
         client = Client(
@@ -2158,28 +2075,28 @@ def main() -> None:
             return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
-            max_incidents = check_int(arg=demisto.params().get('max_fetch'), arg_name='max_fetch',
+            max_incidents = check_int(arg=params.get('max_fetch'), arg_name='max_fetch',
                                       min_val=None, max_val=None, required=False)
             if not max_incidents or max_incidents > MAX_INCIDENTS:
                 max_incidents = MAX_INCIDENTS
 
-            ff = demisto.params().get('first_fetch', None)
+            ff = params.get('first_fetch', DEFAULT_FIRST_FETCH)
             if not ff:
                 raise ValueError('firstFetch not specified')
             first_fetch = datestring_to_timestamp_us(ff)
 
-            priority = demisto.params().get('priority', None)
-            activity_status = demisto.params().get('activity_status', None)
-            progress_status = demisto.params().get('progress_status', None)
-            business_units = argToList(demisto.params().get('business_unit', None))
-            issue_types = argToList(demisto.params().get('issue_type', None))
-            tags = argToList(demisto.params().get('tags', None))
+            priority = params.get('priority')
+            activity_status = params.get('activity_status')
+            progress_status = params.get('progress_status')
+            business_units = argToList(params.get('business_unit'))
+            issue_types = argToList(params.get('issue_type'))
+            tags = argToList(params.get('tags'))
 
-            sync_tags = argToList(demisto.params().get('sync_tags', None))
+            sync_tags = argToList(params.get('sync_tags'))
 
             fetch_details: bool = True  # forced to True to retrieve the proper asset IDs
 
-            mirror_direction = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'), None)
+            mirror_direction = MIRROR_DIRECTION.get(params.get('mirror_direction', 'None'))
             next_run, incidents = fetch_incidents(
                 client=client,
                 max_incidents=max_incidents,
@@ -2204,16 +2121,16 @@ def main() -> None:
             raise DemistoException('get-modified-remote-data not implemented')
 
         elif demisto.command() == "get-remote-data":
-            sync_owners = argToBoolean(demisto.params().get('sync_owners'))
+            sync_owners = argToBoolean(params.get('sync_owners'))
             # XXX: mirror_details forced to be disabled to reduce API calls in the backend.
             # Will be reviewed in next versions to use XSOAR 6.1 mirroring enhancements.
             mirror_details = False
-            # mirror_details = argToBoolean(demisto.params().get('mirror_details'))
-            incoming_tags = argToList(demisto.params().get('incoming_tags', None))
+            # mirror_details = argToBoolean(params.get('mirror_details'))
+            incoming_tags = argToList(params.get('incoming_tags'))
             return_results(get_remote_data_command(client, demisto.args(), sync_owners, incoming_tags, mirror_details))
 
         elif demisto.command() == "update-remote-system":
-            sync_owners = argToBoolean(demisto.params().get('sync_owners'))
+            sync_owners = argToBoolean(params.get('sync_owners'))
             return_results(update_remote_system_command(client, demisto.args(), sync_owners))
 
         elif demisto.command() == "expanse-get-issues":
