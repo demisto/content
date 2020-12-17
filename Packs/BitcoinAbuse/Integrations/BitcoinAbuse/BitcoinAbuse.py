@@ -138,13 +138,14 @@ def _build_fetch_indicators_params(demisto_params: Dict, feed_url_prefix: str) -
         url: {
             'fieldnames': ['id', 'address', 'abuse_type_id', 'abuse_type_other', 'abuser',
                            'description', 'from_country', 'from_country_code', 'created_at'],
+            'skip_first_line': True,
             'indicator_type': 'Cryptocurrency Address',
             'mapping': {
                 'Value': ('address', None, 'bitcoin-{}'),
                 'Country Name': 'from_country',
                 'Creation Date': 'created_at',
                 'Bitcoin Abuse Description': 'description',
-                'Abuse Type': ('abuse_type_id', None,)
+                'Abuse Type': ('abuse_type_id', lambda abuse_type_id: abuse_type_id_to_name.get(abuse_type_id))
             }
         }
     }

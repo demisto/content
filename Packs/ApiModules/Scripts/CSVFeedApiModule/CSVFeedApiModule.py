@@ -7,10 +7,11 @@ import csv
 import gzip
 import urllib3
 from dateutil.parser import parse
-from typing import Optional, Pattern, Dict, Any, Tuple, Union, List
+from typing import Optional, Pattern, Dict, Any, Tuple, Union, List, Callable
 
 # disable insecure warnings
 urllib3.disable_warnings()
+
 
 # Globals
 
@@ -42,6 +43,9 @@ class Client(BaseClient):
                 * regex_string_extractor will extract the first match from the value_from_feed,
                 Use None to get the full value of the field.
                 * string_formatter will format the data in your preferred way, Use None to get the extracted field.
+            3. 'indicator_field': ('value_from_feed', 'field_mapper_function')
+                * field_mapper_function will accept as an argument 'value_from_feed' and return the data
+                in your preferred way.
         :param fieldnames: list of field names in the file. If *null* the values in the first row of the file are
             used as names. Default: *null*
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
@@ -151,6 +155,7 @@ class Client(BaseClient):
             response = self.get_feed_content_divided_to_lines(url, r)
             if self.feed_url_to_config:
                 fieldnames = self.feed_url_to_config.get(url, {}).get('fieldnames', [])
+                skip_first_line = self.feed_url_to_config.get(url, {}).get('skip_first_line', False)
             else:
                 fieldnames = self.fieldnames
             if self.ignore_regex is not None:
@@ -164,6 +169,9 @@ class Client(BaseClient):
                 fieldnames=fieldnames,
                 **self.dialect
             )
+
+            if skip_first_line:
+                next(csvreader)
 
             results.append({url: csvreader})
 
@@ -224,15 +232,20 @@ def date_format_parsing(date_string):
     return formatted_date
 
 
-def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tuple, str]]):
+def create_fields_mapping(raw_json: Dict[str, Any]
+                          , mapping: Dict[str, Union[Tuple[str, Any, Any], Union[str, Callable[[str], str]]]]):
     fields_mapping = {}  # type: dict
 
     for key, field in mapping.items():
         regex_extractor = None
         formatter_string = None
+        field_mapper_function = None
 
         if isinstance(field, tuple):
-            field, regex_extractor, formatter_string = field
+            if len(field) == 3:
+                field, regex_extractor, formatter_string = field
+            elif len(field) == 2:
+                field, field_mapper_function = field
 
         if not raw_json.get(field):  # type: ignore
             continue
@@ -245,6 +258,7 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
             except Exception:
                 field_value = raw_json[field]  # type: ignore
 
+        field_value = field_mapper_function(field_value) if field_mapper_function else field_value
         fields_mapping[key] = formatter_string.format(field_value) if formatter_string else field_value
 
         if key in ['firstseenbysource', 'lastseenbysource']:

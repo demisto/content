@@ -3,10 +3,6 @@ commonfields:
   id: BitcoinAbuse
   version: -1
 configuration:
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
 - display: Fetch indicators
   name: feed
   required: false
@@ -73,11 +69,6 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- name: limit
-  description: The maximum number of results to return. The default value is 50.
-  isArray: false
-  required: false
-  secret: false
 description: BitcoinAbuse.com is a public database of bitcoin addresses used by hackers and criminals.
 display: BitcoinAbuse
 name: BitcoinAbuse
