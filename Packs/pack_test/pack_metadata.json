@@ -1,0 +1,16 @@
+{
+    "name": "pack_test",
+    "description": "testing",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-12-17T12:45:53Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

@@ -1,0 +1,600 @@
+category: Utilities
+commonfields:
+  id: pack_test
+  version: -1
+configuration:
+- defaultvalue: https://soar.monstersofhack.com
+  display: Server URL (e.g. https://soar.monstersofhack.com)
+  name: url
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: '65'
+  display: Score threshold for IP reputation command
+  additionalinfo: Set this to determine the HelloWorld score that will determine if
+    an IP is malicious (0-100)
+  name: threshold_ip
+  required: false
+  type: 0
+- defaultvalue: '65'
+  display: Score threshold for domain reputation command
+  additionalinfo: Set this to determine the HelloWorld score that will determine if
+    a domain is malicious (0-100)
+  name: threshold_domain
+  required: false
+  type: 0
+- defaultvalue: ACTIVE
+  display: Fetch alerts with status (ACTIVE, CLOSED)
+  name: alert_status
+  options:
+  - ACTIVE
+  - CLOSED
+  required: false
+  type: 15
+- display: Fetch alerts with type
+  additionalinfo: Comma-separated list of types of alerts to fetch. Types might change
+    over time. Some examples are 'Bug' and 'Vulnerability'
+  name: alert_type
+  required: false
+  type: 0
+- defaultvalue: Low
+  display: Minimum severity of alerts to fetch
+  name: min_severity
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: true
+  type: 15
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: This is the Hello World integration for getting started.
+display: pack_test
+name: pack_test
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The name of whom you want to say hello to.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Hello command - prints hello to anyone.
+    execution: false
+    name: helloworld-say-hello
+    outputs:
+    - contextPath: hello
+      description: Should be Hello **something** here.
+      type: String
+  - arguments:
+    - default: false
+      description: Filter by alert severity. Comma-separated value (Low,Medium,High,Critical)
+      isArray: false
+      name: severity
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter by alert status.
+      isArray: false
+      name: status
+      predefined:
+      - ACTIVE
+      - CLOSED
+      required: false
+      secret: false
+    - default: false
+      description: Filter by alert type
+      isArray: false
+      name: alert_type
+      required: false
+      secret: false
+    - default: false
+      description: Maximum results to return.
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    - default: false
+      description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\
+        \n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\""
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    deprecated: false
+    description: Search HelloWorld Alerts.
+    execution: false
+    name: helloworld-search-alerts
+    outputs:
+    - contextPath: HelloWorld.Alert.alert_id
+      description: Alert ID.
+      type: String
+    - contextPath: HelloWorld.Alert.alert_status
+      description: Alert status. Can be 'ACTIVE' or 'CLOSED'.
+      type: String
+    - contextPath: HelloWorld.Alert.alert_type
+      description: Alert type. For example 'Bug' or 'Vulnerability'.
+      type: String
+    - contextPath: HelloWorld.Alert.created
+      description: Alert created time. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: HelloWorld.Alert.name
+      description: Alert name.
+      type: String
+    - contextPath: HelloWorld.Alert.severity
+      description: Alert severity. Can be 'Low', 'Medium', 'High' or 'Critical'.
+      type: String
+  - arguments:
+    - default: false
+      description: Alert ID.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve alert extra data by ID.
+    execution: false
+    name: helloworld-get-alert
+    outputs:
+    - contextPath: HelloWorld.Alert.alert_id
+      description: Alert ID.
+      type: String
+    - contextPath: HelloWorld.Alert.created
+      description: Alert created time. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: HelloWorld.Alert.description
+      description: Alert description.
+      type: String
+    - contextPath: HelloWorld.Alert.device_id
+      description: ID of the device involved in the alert.
+      type: String
+    - contextPath: HelloWorld.Alert.device_ip
+      description: IP Address of the device involved in the alert.
+      type: String
+    - contextPath: HelloWorld.Alert.location
+      description: Location of the device involved in the alert.
+      type: String
+    - contextPath: HelloWorld.Alert.user
+      description: User involved in the alert.
+      type: String
+  - arguments:
+    - default: false
+      description: Alert ID to update.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: New status of the alert.
+      isArray: false
+      name: status
+      predefined:
+      - ACTIVE
+      - CLOSED
+      required: true
+      secret: false
+    deprecated: false
+    description: Update the status for an alert.
+    execution: false
+    name: helloworld-update-alert-status
+    outputs:
+    - contextPath: HelloWorld.Alert.alert_id
+      description: Alert ID.
+      type: String
+    - contextPath: HelloWorld.Alert.updated
+      description: Alert update time. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: HelloWorld.Alert.alert_status
+      description: Alert status. Can be 'ACTIVE' or 'CLOSED'.
+      type: String
+  - name: ip
+    arguments:
+    - name: ip
+      default: true
+      description: List of IPs.
+      isArray: true
+    - name: threshold
+      description: If the IP has reputation above the threshold then the IP defined
+        as malicious. If threshold not set, then threshold from instance configuration
+        is used.
+      defaultValue: 65
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: HelloWorld.IP.asn
+      description: The autonomous system name for the IP address.
+      type: String
+    - contextPath: HelloWorld.IP.asn_cidr
+      description: The ASN CIDR.
+      type: String
+    - contextPath: HelloWorld.IP.asn_country_code
+      description: The ASN country code.
+      type: String
+    - contextPath: HelloWorld.IP.asn_date
+      description: The date on which the ASN was assigned.
+      type: Date
+    - contextPath: HelloWorld.IP.asn_description
+      description: The ASN description.
+      type: String
+    - contextPath: HelloWorld.IP.asn_registry
+      description: The registry the ASN belongs to.
+      type: String
+    - contextPath: HelloWorld.IP.entities
+      description: Entities associated to the IP.
+      type: String
+    - contextPath: HelloWorld.IP.ip
+      description: The actual IP address.
+      type: String
+    - contextPath: HelloWorld.IP.network.cidr
+      description: Network CIDR for the IP address.
+      type: String
+    - contextPath: HelloWorld.IP.network.country
+      description: The country of the IP address.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.end_address
+      description: The last IP address of the CIDR.
+      type: String
+    - contextPath: HelloWorld.IP.network.events.action
+      description: The action that happened on the event.
+      type: String
+    - contextPath: HelloWorld.IP.network.events.actor
+      description: The actor that performed the action on the event.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.events.timestamp
+      description: The timestamp when the event occurred.
+      type: String
+    - contextPath: HelloWorld.IP.network.handle
+      description: The handle of the network.
+      type: String
+    - contextPath: HelloWorld.IP.network.ip_version
+      description: The IP address version.
+      type: String
+    - contextPath: HelloWorld.IP.network.links
+      description: Links associated to the IP address.
+      type: String
+    - contextPath: HelloWorld.IP.network.name
+      description: The name of the network.
+      type: String
+    - contextPath: HelloWorld.IP.network.notices.description
+      description: The description of the notice.
+      type: String
+    - contextPath: HelloWorld.IP.network.notices.links
+      description: Links associated with the notice.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.notices.title
+      description: Title of the notice.
+      type: String
+    - contextPath: HelloWorld.IP.network.parent_handle
+      description: Handle of the parent network.
+      type: String
+    - contextPath: HelloWorld.IP.network.raw
+      description: Additional raw data for the network.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.remarks
+      description: Additional remarks for the network.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.start_address
+      description: The first IP address of the CIDR.
+      type: String
+    - contextPath: HelloWorld.IP.network.status
+      description: Status of the network.
+      type: String
+    - contextPath: HelloWorld.IP.network.type
+      description: The type of the network.
+      type: String
+    - contextPath: HelloWorld.IP.query
+      description: IP address that was queried.
+      type: String
+    - contextPath: HelloWorld.IP.raw
+      description: Additional raw data for the IP address.
+      type: Unknown
+    - contextPath: HelloWorld.IP.score
+      description: Reputation score from HelloWorld for this IP (0 to 100, where higher
+        is worse).
+      type: Number
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
+    - contextPath: IP.ASN
+      description: The autonomous system name for the IP address.
+      type: String
+    description: Return IP information and reputation
+  - name: domain
+    arguments:
+    - name: domain
+      default: true
+      description: List of Domains.
+      isArray: true
+    - name: threshold
+      description: If the domain has reputation above the threshold then the domain
+        defined as malicious. If threshold not set, then threshold from instance configuration
+        is used.
+      defaultValue: 65
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor reporting the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description explaining why the domain was reported as malicious.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.Organization
+      description: The organization of the domain.
+      type: String
+    - contextPath: Domain.CreationDate
+      description: The creation date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: Domain.ExpirationDate
+      description: The expiration date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: Domain.UpdatedDate
+      description: The date when the domain was last updated. Format is ISO8601 (i.e.
+        '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: Domain.NameServers
+      description: Name servers of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.NameServers
+      description: A CSV string of name servers, for example 'ns1.bla.com, ns2.bla.com'.
+      type: String
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The creation date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The date when the domain was last updated. Format is ISO8601 (i.e.
+        '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: The name of the registrar, for example 'GoDaddy'
+      type: String
+    - contextPath: IP.ASN
+      description: The autonomous system name for the IP address.
+      type: String
+    - contextPath: HelloWorld.Domain.address
+      description: Domain admin address.
+      type: String
+    - contextPath: HelloWorld.Domain.city
+      description: Domain admin city.
+      type: String
+    - contextPath: HelloWorld.Domain.country
+      description: Domain admin country.
+      type: String
+    - contextPath: HelloWorld.Domain.creation_date
+      description: Domain creation date. Format is ISO8601.
+      type: Date
+    - contextPath: HelloWorld.Domain.dnssec
+      description: DNSSEC status.
+      type: String
+    - contextPath: HelloWorld.Domain.domain
+      description: The domain name.
+      type: String
+    - contextPath: HelloWorld.Domain.domain_name
+      description: Domain name options.
+      type: String
+    - contextPath: HelloWorld.Domain.emails
+      description: Contact emails.
+      type: String
+    - contextPath: HelloWorld.Domain.expiration_date
+      description: Expiration date. Format is ISO8601.
+      type: Date
+    - contextPath: HelloWorld.Domain.name
+      description: Domain admin name.
+      type: String
+    - contextPath: HelloWorld.Domain.name_servers
+      description: Name server.
+      type: String
+    - contextPath: HelloWorld.Domain.org
+      description: Domain organization.
+      type: String
+    - contextPath: HelloWorld.Domain.referral_url
+      description: Referral URL.
+      type: Unknown
+    - contextPath: HelloWorld.Domain.registrar
+      description: Domain registrar.
+      type: String
+    - contextPath: HelloWorld.Domain.score
+      description: Reputation score from HelloWorld for this domain (0 to 100, where
+        higher is worse).
+      type: Number
+    - contextPath: HelloWorld.Domain.state
+      description: Domain admin state.
+      type: String
+    - contextPath: HelloWorld.Domain.status
+      description: Domain status.
+      type: String
+    - contextPath: HelloWorld.Domain.updated_date
+      description: Updated date. Format is ISO8601.
+      type: Date
+    - contextPath: HelloWorld.Domain.whois_server
+      description: WHOIS server.
+      type: String
+    - contextPath: HelloWorld.Domain.zipcode
+      description: Domain admin zipcode.
+      type: Unknown
+    description: Returns Domain information and reputation.
+  - arguments:
+    - default: false
+      description: Asset to start the scan against.
+      isArray: false
+      name: hostname
+      required: true
+      secret: false
+    deprecated: false
+    description: Start scan on an asset.
+    execution: false
+    name: helloworld-scan-start
+    outputs:
+    - contextPath: HelloWorld.Scan.scan_id
+      description: Unique ID of the scan.
+      type: string
+    - contextPath: HelloWorld.Scan.status
+      description: Status of the scan ('RUNNING' or 'COMPLETE').
+      type: string
+    - contextPath: HelloWorld.Scan.hostname
+      description: The hostname the scan is run against.
+      type: string
+  - arguments:
+    - default: false
+      description: List of Scan IDs. helloworld-scan-start returns "scan_id".
+      isArray: true
+      name: scan_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve scan status for one or more scan IDs.
+    execution: false
+    name: helloworld-scan-status
+    outputs:
+    - contextPath: HelloWorld.Scan.scan_id
+      description: Unique ID of the scan.
+      type: string
+    - contextPath: HelloWorld.Scan.status
+      description: Status of the scan ('RUNNING' or 'COMPLETE').
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: file
+      description: Results format (file or JSON).
+      isArray: false
+      name: format
+      predefined:
+      - json
+      - file
+      required: true
+      secret: false
+    - default: false
+      description: Unique ID of the scan.
+      isArray: false
+      name: scan_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve scan status in Context or as a File (default) for a Scan.
+    execution: false
+    name: helloworld-scan-results
+    outputs:
+    - contextPath: HelloWorld.Scan.entities.entity-id
+      description: Scanned entity ID.
+      type: String
+    - contextPath: HelloWorld.Scan.entities.ip_address
+      description: Scanned entity IP address.
+      type: String
+    - contextPath: HelloWorld.Scan.entities.type
+      description: Scanned entity type.
+      type: String
+    - contextPath: HelloWorld.Scan.entities.vulnerability_status
+      description: Scanned entity vulnerability status.
+      type: String
+    - contextPath: HelloWorld.Scan.entities.vulns
+      description: Scanned entity CVE.
+      type: String
+    - contextPath: HelloWorld.Scan.scan_id
+      description: Unique ID of the scan.
+      type: String
+    - contextPath: HelloWorld.Scan.status
+      description: Status of the scan ('RUNNING' or 'COMPLETE').
+      type: String
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report file.
+      type: Unknown
+    - contextPath: InfoFile.Extension
+      description: The extension of the report file.
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the report file.
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the report file.
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the report file.
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the report file.
+      type: string
+    - contextPath: CVE.ID
+      description: The ID of the CVE.
+      type: string
+  dockerimage: demisto/python3:3.8.6.13358
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultclassifier: HelloWorld
+defaultmapperin: HelloWorld-mapper
+fromversion: 5.0.0
