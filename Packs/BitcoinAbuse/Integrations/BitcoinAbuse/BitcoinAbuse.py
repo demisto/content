@@ -19,6 +19,14 @@ abuse_type_name_to_id: Dict[str, int] = {
     'sextortio': 5,
     'other': 99
 }
+abuse_type_id_to_name: Dict[str, str] = {
+    '1': 'ransomware',
+    '2': 'darknet market',
+    '3': 'bitcoin tumbler',
+    '4': 'blackmail scam',
+    '5': 'sextortio',
+    '99': 'other'
+}
 OTHER_ABUSE_TYPE_ID = 99
 REPORT_ADDRESS_PREFIX = '/reports/create'
 
@@ -135,8 +143,8 @@ def _build_fetch_indicators_params(demisto_params: Dict, feed_url_prefix: str) -
                 'Value': ('address', None, 'bitcoin-{}'),
                 'Country Name': 'from_country',
                 'Creation Date': 'created_at',
-                'description': 'description',
-                'abuse_type_id': 'abuse_type'
+                'Bitcoin Abuse Description': 'description',
+                'Abuse Type': ('abuse_type_id', None,)
             }
         }
     }
