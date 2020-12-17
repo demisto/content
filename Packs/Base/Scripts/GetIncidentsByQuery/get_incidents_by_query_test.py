@@ -78,10 +78,7 @@ def test_get_incidents(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=validate_args_without_from)
 
     get_incidents(query, "created", size, None, None, None, False)
-
-    with pytest.raises(SystemExit) as e:
-        get_incidents(query, "created", size, "3 min ago", None, None, False)
-        assert e
+    get_incidents(query, "created", size, "3 min ago", None, None, False)
 
 
 def test_parse_relative_time():
