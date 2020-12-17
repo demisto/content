@@ -378,3 +378,19 @@ def test_similar_incidents_2_word_difference(mocker):
     mocker.patch.object(demisto, 'results', side_effect=results)
     main()
     assert not duplicated_incidents_found(existing_incident)
+
+
+def test_multiple_incidents_word_difference(mocker):
+    global RESULTS, EXISTING_INCIDENT_ID, DUP_INCIDENT_ID
+    EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
+    email_body = 'Hi Bob' + text
+    existing_incidents_list = [create_incident(body=email_body, emailfrom='mt.kb.user@gmail.com') for _ in range(10)]
+    set_existing_incidents_list(existing_incidents_list)
+    mocker.patch.object(demisto, 'args', return_value={'fromPolicy': 'TextOnly', })
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    new_incident = create_incident(body='Hi John' + text, emailfrom='mt.kb.user@gmail.com')
+    mocker.patch.object(demisto, 'incidents', return_value=[new_incident])
+    mocker.patch.object(demisto, 'results', side_effect=results)
+    main()
+    assert duplicated_incidents_found(existing_incidents_list[0])
+    assert all(inc['id'] in RESULTS['Contents']['allSimilarIncidentsIds'] for inc in existing_incidents_list)
