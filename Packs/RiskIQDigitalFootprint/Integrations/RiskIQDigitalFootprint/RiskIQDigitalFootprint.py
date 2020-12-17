@@ -430,7 +430,7 @@ def get_asset_connections_outputs(resp: Dict[str, Any],
                     outputs=custom_ec,
                     indicator=asset_connections_standard_context,
                     readable_output=asset_connections_hr,
-                    raw_response=asset_details
+                    raw_response=resp
                 ))
             hr += f'### Total {ASSET_TYPE_PLURAL_HR.get(asset_type)}:' \
                   f' {resp.get(asset_type, {}).get("totalElements")}\n'

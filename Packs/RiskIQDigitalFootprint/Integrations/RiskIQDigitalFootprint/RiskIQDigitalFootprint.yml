@@ -3738,7 +3738,7 @@ script:
     - contextPath: RiskIQDigitalFootprint.Task.totalUpdates
       description: Number of total asset(s) that have been updated.
       type: Number
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: false
   longRunning: false
