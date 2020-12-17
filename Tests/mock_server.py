@@ -85,9 +85,10 @@ class AMIConnection:
     CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
     UPLOAD_MOCKS_SCRIPT = 'upload_mocks.sh'
 
-    def __init__(self, public_ip):
+    def __init__(self, public_ip, build_number=''):
         self.public_ip = public_ip
         self.docker_ip = self._get_docker_ip()
+        self.build_number = build_number
 
     def _get_docker_ip(self):
         """Get the IP of the AMI on the docker bridge.
@@ -149,8 +150,22 @@ class AMIConnection:
         silence_output(self.check_call, ['chmod', '+x', remote_script_path], stdout='null')
         silence_output(self.check_call, [remote_script_path] + list(args), stdout='null')
 
-    def upload_mock_files(self, build_name, build_number):
-        self.run_script(self.UPLOAD_MOCKS_SCRIPT, build_name, build_number)
+    def commit_mock_file(self):
+        silence_output(self.check_call,
+                       'cd content-test-data && '
+                       'git add * && '
+                       f'git commit -m "Updated mock files from build number - {self.build_number}'.split(),
+                       stdout='null')
+
+    def reset_mock_files(self):
+        silence_output(self.check_call,
+                       'cd content-test-data && git reset --hard'.split(),
+                       stdout='null')
+
+    def push_mock_files(self):
+        silence_output(self.check_call,
+                       'cd content-test-data && git pull -r -Xtheirs && git push --f || :'.split(),
+                       stdout='null')
 
     def clone_mock_data(self):
         self.run_script(self.CLONE_MOCKS_SCRIPT)
@@ -168,6 +183,8 @@ class MITMProxy:
         ami (AMIConnection): Wrapper for AMI communication.
         empty_files (list): List of playbooks that have empty mock files (indicating no usage of mock mechanism).
         rerecorded_tests (list): List of playbook ids that failed on mock playback but succeeded on new recording.
+        build_number (str): The number of the circleci build.
+        branch_name (str): The name of the content branch in which the current job works on.
     """
 
     PROXY_PORT = '9997'
@@ -178,13 +195,17 @@ class MITMProxy:
     def __init__(self,
                  public_ip,
                  logging_module,
-                 repo_folder=MOCKS_GIT_PATH, tmp_folder=MOCKS_TMP_PATH):
+                 build_number,
+                 branch_name,
+                 repo_folder=MOCKS_GIT_PATH,
+                 tmp_folder=MOCKS_TMP_PATH,
+                 ):
         self.public_ip = public_ip
         self.current_folder = self.repo_folder = repo_folder
         self.tmp_folder = tmp_folder
         self.logging_module = logging_module
-        self.ami = AMIConnection(self.public_ip)
-
+        self.ami = AMIConnection(self.public_ip, build_number)
+        self.should_update = branch_name == 'master'
         self.empty_files = []
         self.failed_tests_count = 0
         self.successful_tests_count = 0
@@ -493,7 +514,9 @@ class MITMProxy:
 
 
 @contextmanager
-def run_with_mock(proxy_instance: MITMProxy, playbook_or_integration_id: str, record: bool = False) -> None:
+def run_with_mock(proxy_instance: MITMProxy,
+                  playbook_or_integration_id: str,
+                  record: bool = False) -> None:
     """
     Runs proxy in a context
     If it's a record mode:
@@ -513,6 +536,10 @@ def run_with_mock(proxy_instance: MITMProxy, playbook_or_integration_id: str, re
     """
     if record:
         proxy_instance.set_tmp_folder()
+        # If the record files should be commited - let's clean the content-test-data repo first
+        if proxy_instance.should_update:
+            proxy_instance.logging_module.debug('Cleaning content-test-data repo')
+            proxy_instance.ami.reset_mock_files()
     proxy_instance.start(playbook_or_integration_id, record=record)
     result_holder = {}
     try:
@@ -527,6 +554,9 @@ def run_with_mock(proxy_instance: MITMProxy, playbook_or_integration_id: str, re
                 proxy_instance.move_mock_file_to_repo(playbook_or_integration_id)
                 proxy_instance.successful_rerecord_count += 1
                 proxy_instance.rerecorded_tests.append(playbook_or_integration_id)
+                if proxy_instance.should_update:
+                    proxy_instance.logging_module.debug("committing new/updated mock files to mock git repo.")
+                    proxy_instance.ami.commit_mock_file()
             else:
                 proxy_instance.failed_rerecord_count += 1
                 proxy_instance.failed_rerecord_tests.append(playbook_or_integration_id)
