@@ -7,7 +7,7 @@
     "cliName": "cyrenobjecttype",
     "closeForm": false,
     "content": true,
-    "description": "Cyren threat intelligence object type",
+    "description": "IP version identified by Cyren Threat Intelligence",
     "editForm": true,
     "group": 2,
     "hidden": false,
@@ -26,5 +26,5 @@
     "unsearchable": false,
     "useAsKpi": true,
     "version": -1,
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.5.0"
 }

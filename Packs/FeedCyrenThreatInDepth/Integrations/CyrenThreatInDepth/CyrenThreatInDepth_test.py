@@ -2,7 +2,9 @@ import pytest
 import pathlib
 import os
 
-from CommonServerPython import FeedIndicatorType, DemistoException
+from CommonServerPython import (
+    FeedIndicatorType, DemistoException, Common
+)
 import demistomock as demisto
 
 from CyrenThreatInDepth import (
@@ -71,40 +73,134 @@ def _create_instance(requests_mock, feed, feed_data, offset_data, offset=0, coun
 
 @pytest.mark.parametrize(
     "context_data, offsets, initial_count, max_indicators, expected_offset, expected_count", [
-        # first run, no previous offset stored, don't want to have initial
-        # import, trying to get 2 in total
+        # Given:
+        #   - first run
+        #   - no previous offset stored
+        #   - an end offset of 10000
+
+        # When:
+        #   - running fetch-indicators with no initial import wanted and wanting 2
+
+        # Then:
+        #   - the API is asked for 2 from offset 10000
         (dict(), dict(startOffset=1, endOffset=10000), 0, 2, 10000, 2),
-        # first run, no previous offset stored, want 1000 as initial
-        # import, trying to get 1002 in total
+        # Given:
+        #   - first run
+        #   - no previous offset stored
+        #   - an end offset of 10000
+
+        # When:
+        #   - running fetch-indicators with initial import of 1000 and wanting 2
+
+        # Then:
+        #   - the API is asked for 1002 from offset 9001
         (dict(), dict(startOffset=1, endOffset=10000), 1000, 2, 9001, 1002),
-        # not the first run, next accepted offset is 9001, initial import
-        # ignored, getting just the maximum of 2
+        # Given:
+        #   - not the first run
+        #   - previous offset of 9001
+        #   - an end offset of 10000
+
+        # When:
+        #   - running fetch-indicators with no initial import wanted and wanting 2
+
+        # Then:
+        #   - the API is asked for 2 from offset 9001
         (dict(offset=9001), dict(startOffset=1, endOffset=10000), 0, 2, 9001, 2),
+        # Given:
+        #   - not the first run
+        #   - previous offset of 9001
+        #   - an end offset of 10000
+
+        # When:
+        #   - running fetch-indicators with initial import of 10000 and wanting 2
+
+        # Then:
+        #   - the API is asked for 2 from offset 9001
         (dict(offset=9001), dict(startOffset=1, endOffset=10000), 10000, 2, 9001, 2),
-        # not the first run, next accepted offset is 9001, initial import
-        # ignored, getting a maximum of 2000, even though more would be
-        # available
+        # Given:
+        #   - not the first run
+        #   - previous offset of 9001
+        #   - an end offset of 10000
+
+        # When:
+        #   - running fetch-indicators with no initial import wanted and wanting 2000
+
+        # Then:
+        #   - the API is asked for 2000 from offset 9001
         (dict(offset=9001), dict(startOffset=1, endOffset=10000), 0, 2000, 9001, 2000),
+        # Given:
+        #   - not the first run
+        #   - previous offset of 9001
+        #   - an end offset of 10000
+
+        # When:
+        #   - running fetch-indicators with initial import of 10000 and wanting 2000
+
+        # Then:
+        #   - the API is asked for 2000 from offset 9001
         (dict(offset=9001), dict(startOffset=1, endOffset=10000), 10000, 2000, 9001, 2000),
-        # count is capped at 100000
+        # Given:
+        #   - first run
+        #   - no previous offset stored
+        #   - an end offset of 10000
+
+        # When:
+        #   - running fetch-indicators with no initial import wanted and wanting 100001
+
+        # Then:
+        #   - the API is asked for a max of 100000 from offset 10000
         (dict(), dict(startOffset=1, endOffset=10000), 0, 100001, 10000, 100000),
+        # Given:
+        #   - not the first run
+        #   - previous offset of 9001
+        #   - an end offset of 10000
+
+        # When:
+        #   - running fetch-indicators with no initial import wanted and wanting 100001
+
+        # Then:
+        #   - the API is asked for a max of 100000 from offset 9001
         (dict(offset=9001), dict(startOffset=1, endOffset=10000), 0, 100001, 9001, 100000),
     ]
 )
 def test_fetch_indicators_offsets(requests_mock, ip_reputation, context_data, offsets,
                                   initial_count, max_indicators, expected_offset, expected_count):
+    """
+    Given:
+        - the IP reputation feed
+
+    When:
+        - running fetch-indicators
+
+    Then:
+        - the new offset in the integration context is the max offset from the
+          entries + 1
+        - the number of imported indicators is the number of IP's in the feed
+
+    """
+
     demisto.setIntegrationContext(context_data)
     fetch, _ = _create_instance(requests_mock, "ip_reputation", ip_reputation, offsets, expected_offset, expected_count)
     created = fetch(initial_count, max_indicators, True)
 
     assert len(created) == 5
-
-    # regardless of the counts from the API, the next offset is determined by
-    # the entries themselves
     assert demisto.getIntegrationContext() == dict(offset=50005)
 
 
 def test_fetch_indicators_parsing_errors(requests_mock, ip_reputation):
+    """
+    Given:
+        - the IP reputation feed
+
+    When:
+        - running fetch-indicators
+        - some non-JSON lines in the response
+
+    Then:
+        - still imported the number of good JSON lines in the response
+
+    """
+
     ip_reputation_with_errors = f"\nbla\n{ip_reputation}\n\nno json, too\n"
     fetch, _ = _create_instance(requests_mock, "ip_reputation", ip_reputation_with_errors, dict(startOffset=0, endOffset=0))
     created = fetch()
@@ -113,6 +209,19 @@ def test_fetch_indicators_parsing_errors(requests_mock, ip_reputation):
 
 
 def test_fetch_indicators_rate_limiting(requests_mock, response_429):
+    """
+    Given:
+        - the IP reputation feed
+
+    When:
+        - running fetch-indicators
+        - a 429 Rate Limited response from the API
+
+    Then:
+        - a DemistoException is raised
+
+    """
+
     base_url = "https://cyren.feed/"
     requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10",
                       text=response_429, status_code=429)
@@ -124,6 +233,25 @@ def test_fetch_indicators_rate_limiting(requests_mock, response_429):
 
 
 def test_fetch_indicators_output_ip_reputation(requests_mock, ip_reputation):
+    """
+    Given:
+        - the IP reputation feed
+        - no relationship information in the feed
+
+    When:
+        - running fetch-indicators
+
+    Then:
+        - the indicator type and value are being set
+        - the DBot score is set to
+          - BAD on spam category
+          - SUSPICIOUS on malware, phishing category
+          - NONE on feed removal and confirmed clean category
+        - basic indicator fields are filled from the feed meta data
+        - Cyren-specific indicator fields are filled
+
+    """
+
     fetch, _ = _create_instance(requests_mock, "ip_reputation", ip_reputation, dict(startOffset=0, endOffset=0))
     created = fetch()
 
@@ -145,7 +273,7 @@ def test_fetch_indicators_output_ip_reputation(requests_mock, ip_reputation):
                                         cyrenport=25,
                                         cyrenprotocol="smtp",
                                         cyrencountrycode="HK")
-    assert created[0]["score"] == 3
+    assert created[0]["score"] == Common.DBotScore.BAD
     assert created[0]["type"] == FeedIndicatorType.IP
     assert created[0]["value"] == "45.193.212.54"
 
@@ -165,7 +293,7 @@ def test_fetch_indicators_output_ip_reputation(requests_mock, ip_reputation):
                                         cyrenport=25,
                                         cyrenprotocol="smtp",
                                         cyrencountrycode="HK")
-    assert created[1]["score"] == 2
+    assert created[1]["score"] == Common.DBotScore.SUSPICIOUS
     assert created[1]["type"] == FeedIndicatorType.IP
     assert created[1]["value"] == "45.193.216.182"
 
@@ -186,7 +314,7 @@ def test_fetch_indicators_output_ip_reputation(requests_mock, ip_reputation):
                                         cyrenport=25,
                                         cyrenprotocol="smtp",
                                         cyrencountrycode="HK")
-    assert created[2]["score"] == 2
+    assert created[2]["score"] == Common.DBotScore.SUSPICIOUS
     assert created[2]["type"] == FeedIndicatorType.IP
     assert created[2]["value"] == "45.193.216.183"
 
@@ -205,7 +333,7 @@ def test_fetch_indicators_output_ip_reputation(requests_mock, ip_reputation):
                                         cyrenport=25,
                                         cyrenprotocol="smtp",
                                         cyrencountrycode="HK")
-    assert created[3]["score"] == 0
+    assert created[3]["score"] == Common.DBotScore.NONE
     assert created[3]["type"] == FeedIndicatorType.IP
     assert created[3]["value"] == "45.193.216.184"
 
@@ -225,12 +353,31 @@ def test_fetch_indicators_output_ip_reputation(requests_mock, ip_reputation):
                                         cyrenport=25,
                                         cyrenprotocol="smtp",
                                         cyrencountrycode="HK")
-    assert created[4]["score"] == 0
+    assert created[4]["score"] == Common.DBotScore.NONE
     assert created[4]["type"] == FeedIndicatorType.IP
     assert created[4]["value"] == "45.193.216.185"
 
 
 def test_fetch_indicators_output_malware_files(requests_mock, malware_files):
+    """
+    Given:
+        - the malware file feed
+        - some relationship information in the feed
+
+    When:
+        - running fetch-indicators
+
+    Then:
+        - the indicator type and value are being set
+        - the DBot score is set to
+          - BAD on non confirmed-clean category
+          - NONE on feed removal and confirmed clean category
+        - basic indicator fields are filled from the feed meta data
+        - Cyren-specific indicator fields are filled
+        - feed related indicator field is filled with IP and SHA-256 relationships
+
+    """
+
     fetch, _ = _create_instance(requests_mock, "malware_files", malware_files, dict(startOffset=0, endOffset=0))
     created = fetch()
 
@@ -252,7 +399,7 @@ def test_fetch_indicators_output_malware_files(requests_mock, malware_files):
                                             dict(type="Indicator",
                                                  value="172.217.4.65",
                                                  description="downloaded from malware ip")])
-    assert created[0]["score"] == 3
+    assert created[0]["score"] == Common.DBotScore.BAD
     assert created[0]["type"] == FeedIndicatorType.File
     assert created[0]["value"] == "0f6dbfb291ba1b84601b0372f70db3430df636c631d074c1c2463f9e5a033f21"
 
@@ -272,7 +419,7 @@ def test_fetch_indicators_output_malware_files(requests_mock, malware_files):
                                             dict(type="Indicator",
                                                  value="62.149.142.116",
                                                  description="downloaded from malware ip")])
-    assert created[1]["score"] == 3
+    assert created[1]["score"] == Common.DBotScore.BAD
     assert created[1]["type"] == FeedIndicatorType.File
     assert created[1]["value"] == "243f68c5fffe1e868c012b7fcf20bd8c9025ec199b18d569a497a2e3f1aaca0a"
 
@@ -291,7 +438,7 @@ def test_fetch_indicators_output_malware_files(requests_mock, malware_files):
                                             dict(type="Indicator",
                                                  value="62.149.142.116",
                                                  description="downloaded from malware ip")])
-    assert created[2]["score"] == 0
+    assert created[2]["score"] == Common.DBotScore.NONE
     assert created[2]["type"] == FeedIndicatorType.File
     assert created[2]["value"] == "243f68c5fffe1e868c012b7fcf20bd8c9025ec199b18d569a497a2e3f1aaca0b"
 
@@ -309,12 +456,31 @@ def test_fetch_indicators_output_malware_files(requests_mock, malware_files):
                                             dict(type="Indicator",
                                                  value="62.149.142.116",
                                                  description="downloaded from malware ip")])
-    assert created[3]["score"] == 0
+    assert created[3]["score"] == Common.DBotScore.NONE
     assert created[3]["type"] == FeedIndicatorType.File
     assert created[3]["value"] == "243f68c5fffe1e868c012b7fcf20bd8c9025ec199b18d569a497a2e3f1aaca0c"
 
 
 def test_fetch_indicators_output_malware_urls(requests_mock, malware_urls):
+    """
+    Given:
+        - the malware URL feed
+        - some relationship information in the feed
+
+    When:
+        - running fetch-indicators
+
+    Then:
+        - the indicator type and value are being set
+        - the DBot score is set to
+          - BAD on non confirmed-clean category
+          - NONE on feed removal and confirmed clean category
+        - basic indicator fields are filled from the feed meta data
+        - Cyren-specific indicator fields are filled
+        - feed related indicator field is filled with IP and SHA-256 relationships
+
+    """
+
     fetch, _ = _create_instance(requests_mock, "malware_urls", malware_urls, dict(startOffset=0, endOffset=0))
     created = fetch()
 
@@ -326,7 +492,7 @@ def test_fetch_indicators_output_malware_urls(requests_mock, malware_urls):
                  description="served by malware URL")
         ]
     )
-    assert created[0]["score"] == 3
+    assert created[0]["score"] == Common.DBotScore.BAD
     assert created[0]["type"] == FeedIndicatorType.File
     assert created[0]["value"] == "a18c43948195abd429ba42ef66b26483a097d987e55289010bc8f935fc950515"
 
@@ -352,7 +518,7 @@ def test_fetch_indicators_output_malware_urls(requests_mock, malware_urls):
                                             dict(type="Indicator",
                                                  value="a18c43948195abd429ba42ef66b26483a097d987e55289010bc8f935fc950515",
                                                  description="serves malware file")])
-    assert created[1]["score"] == 3
+    assert created[1]["score"] == Common.DBotScore.BAD
     assert created[1]["type"] == FeedIndicatorType.URL
     assert created[1]["value"] == "http://radiobarreradigitall.blogspot.com"
 
@@ -362,7 +528,7 @@ def test_fetch_indicators_output_malware_urls(requests_mock, malware_urls):
                  description="served by malware URL")
         ]
     )
-    assert created[2]["score"] == 3
+    assert created[2]["score"] == Common.DBotScore.BAD
     assert created[2]["type"] == FeedIndicatorType.File
     assert created[2]["value"] == "2bbeeaa4139b8e033fc1e114f55917e7180b305e75ac56701a0b6dcda4495494"
 
@@ -388,7 +554,7 @@ def test_fetch_indicators_output_malware_urls(requests_mock, malware_urls):
                                             dict(type="Indicator",
                                                  value="2bbeeaa4139b8e033fc1e114f55917e7180b305e75ac56701a0b6dcda4495494",
                                                  description="serves malware file")])
-    assert created[3]["score"] == 3
+    assert created[3]["score"] == Common.DBotScore.BAD
     assert created[3]["type"] == FeedIndicatorType.URL
     assert created[3]["value"] == "https://wizkhalifanoticias.blogspot.com/2014/01/wiz-khalifa-adormece-durante.html"
 
@@ -413,7 +579,7 @@ def test_fetch_indicators_output_malware_urls(requests_mock, malware_urls):
                                             dict(type="Indicator",
                                                  value="2bbeeaa4139b8e033fc1e114f55917e7180b305e75ac56701a0b6dcda4495494",
                                                  description="serves malware file")])
-    assert created[4]["score"] == 0
+    assert created[4]["score"] == Common.DBotScore.NONE
     assert created[4]["type"] == FeedIndicatorType.URL
     assert created[4]["value"] == "https://wizkhalifanoticias.blogspot.com/2014/01/wiz-khalifa-adormece-durante-2.html"
 
@@ -437,12 +603,31 @@ def test_fetch_indicators_output_malware_urls(requests_mock, malware_urls):
                                             dict(type="Indicator",
                                                  value="2bbeeaa4139b8e033fc1e114f55917e7180b305e75ac56701a0b6dcda4495494",
                                                  description="serves malware file")])
-    assert created[5]["score"] == 0
+    assert created[5]["score"] == Common.DBotScore.NONE
     assert created[5]["type"] == FeedIndicatorType.URL
     assert created[5]["value"] == "https://wizkhalifanoticias.blogspot.com/2014/01/wiz-khalifa-adormece-durante-3.html"
 
 
 def test_fetch_indicators_output_phishing_urls(requests_mock, phishing_urls):
+    """
+    Given:
+        - the phishing URL feed
+        - some relationship information in the feed
+
+    When:
+        - running fetch-indicators
+
+    Then:
+        - the indicator type and value are being set
+        - the DBot score is set to
+          - BAD on non confirmed-clean category
+          - NONE on feed removal and confirmed clean category
+        - basic indicator fields are filled from the feed meta data
+        - Cyren-specific indicator fields are filled
+        - feed related indicator field is filled with IP and SHA-256 relationships
+
+    """
+
     fetch, _ = _create_instance(requests_mock, "phishing_urls", phishing_urls, dict(startOffset=0, endOffset=0))
     created = fetch()
 
@@ -466,7 +651,7 @@ def test_fetch_indicators_output_phishing_urls(requests_mock, phishing_urls):
                                             dict(type="Indicator",
                                                  value="195.201.98.73",
                                                  description="resolves to phishing ip")])
-    assert created[0]["score"] == 3
+    assert created[0]["score"] == Common.DBotScore.BAD
     assert created[0]["type"] == FeedIndicatorType.URL
     assert created[0]["value"] == "https://verify.paypalc.o.m.accoun.t-updates.info"
 
@@ -489,7 +674,7 @@ def test_fetch_indicators_output_phishing_urls(requests_mock, phishing_urls):
                                             dict(type="Indicator",
                                                  value="192.163.194.76",
                                                  description="resolves to phishing ip")])
-    assert created[1]["score"] == 3
+    assert created[1]["score"] == Common.DBotScore.BAD
     assert created[1]["type"] == FeedIndicatorType.URL
     assert created[1]["value"] == "http://secureapplelock.servebeer.com/manage"
 
@@ -511,7 +696,7 @@ def test_fetch_indicators_output_phishing_urls(requests_mock, phishing_urls):
                                             dict(type="Indicator",
                                                  value="192.163.194.76",
                                                  description="resolves to phishing ip")])
-    assert created[2]["score"] == 0
+    assert created[2]["score"] == Common.DBotScore.NONE
     assert created[2]["type"] == FeedIndicatorType.URL
     assert created[2]["value"] == "http://secureapplelock.servebeer.com/manage-2"
 
@@ -532,27 +717,73 @@ def test_fetch_indicators_output_phishing_urls(requests_mock, phishing_urls):
                                             dict(type="Indicator",
                                                  value="192.163.194.76",
                                                  description="resolves to phishing ip")])
-    assert created[3]["score"] == 0
+    assert created[3]["score"] == Common.DBotScore.NONE
     assert created[3]["type"] == FeedIndicatorType.URL
     assert created[3]["value"] == "http://secureapplelock.servebeer.com/manage-3"
 
 
 @pytest.mark.parametrize(
     "context_data, offsets, max_indicators, expected_offset, expected_count", [
+        # Given:
+        #   - first run
+        #   - no previous offset stored
+        #   - an end offset of 1000
+
+        # When:
+        #   - running get-indicators with count 10
+
+        # Then:
+        #   - the API is asked for 10 from offset 991
         (dict(), dict(startOffset=1, endOffset=1000), 10, 991, 10),
+        # Given:
+        #   - not the first run
+        #   - previous offset is 900
+        #   - an end offset of 1000
+
+        # When:
+        #   - running get-indicators with count 20
+
+        # Then:
+        #   - the API is asked for 20 from offset 981
         (dict(offset=900), dict(startOffset=1, endOffset=1000), 20, 981, 20)
     ]
 )
 def test_get_indicators(requests_mock, phishing_urls, context_data, offsets,
                         max_indicators, expected_offset, expected_count):
+    """
+    Given:
+        - the phishing URL feed
+
+    When:
+        - running get-indicators
+
+    Then:
+        - no adjustments made to the integration context
+        - the number of indicators is taken from the response, meaning 4 entries
+
+    """
+
     demisto.setIntegrationContext(context_data)
     _, get = _create_instance(requests_mock, "phishing_urls", phishing_urls, offsets, expected_offset, expected_count)
-    get(max_indicators)
+    result = get(max_indicators)
 
+    assert len(result.raw_response) == 4
     assert demisto.getIntegrationContext() == context_data
 
 
 def test_test_module_server_error(requests_mock):
+    """
+    Given:
+        - the IP reputation feed
+
+    When:
+        - running test-module with a 500 Server Error
+
+    Then:
+        - it tells you the test failed
+
+    """
+
     base_url = "https://cyren.feed/"
     requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=500)
     client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
@@ -561,6 +792,18 @@ def test_test_module_server_error(requests_mock):
 
 
 def test_test_module_no_entries(requests_mock):
+    """
+    Given:
+        - the IP reputation feed
+
+    When:
+        - running test-module with no entries being returned
+
+    Then:
+        - it tells you the test failed
+
+    """
+
     base_url = "https://cyren.feed/"
     requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10", text="")
     client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
@@ -569,6 +812,18 @@ def test_test_module_no_entries(requests_mock):
 
 
 def test_test_module_ok(requests_mock, ip_reputation):
+    """
+    Given:
+        - the IP reputation feed
+
+    When:
+        - running test-module with good result
+
+    Then:
+        - it tells you the test did not fail
+
+    """
+
     base_url = "https://cyren.feed/"
     requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10", text=ip_reputation)
     client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)

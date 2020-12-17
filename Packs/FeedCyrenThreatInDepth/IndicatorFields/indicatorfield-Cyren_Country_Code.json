@@ -7,7 +7,7 @@
     "cliName": "cyrencountrycode",
     "closeForm": false,
     "content": true,
-    "description": "Country code associated with in Cyren threat intelligence",
+    "description": "Associated country code by Cyren Threat Intelligence",
     "editForm": true,
     "group": 2,
     "hidden": false,
@@ -26,5 +26,5 @@
     "unsearchable": false,
     "useAsKpi": true,
     "version": -1,
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.5.0"
 }

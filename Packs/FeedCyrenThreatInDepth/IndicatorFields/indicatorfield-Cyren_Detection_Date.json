@@ -9,7 +9,7 @@
     "cliName": "cyrendetectiondate",
     "closeForm": false,
     "content": true,
-    "description": "Time of detection at Cyren threat intelligence",
+    "description": "Time when the threat has been identified by Cyren Threat Intelligence",
     "editForm": true,
     "group": 2,
     "hidden": false,
@@ -28,5 +28,5 @@
     "unsearchable": false,
     "useAsKpi": true,
     "version": -1,
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.5.0"
 }

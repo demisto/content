@@ -9,7 +9,7 @@
     "cliName": "cyrendetectionmethods",
     "closeForm": false,
     "content": true,
-    "description": "Methods used in Cyren threat intelligence",
+    "description": "Methods used by Cyren Threat Intelligence to detect the threat",
     "editForm": true,
     "group": 2,
     "hidden": false,
@@ -28,5 +28,5 @@
     "unsearchable": false,
     "useAsKpi": true,
     "version": -1,
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.5.0"
 }

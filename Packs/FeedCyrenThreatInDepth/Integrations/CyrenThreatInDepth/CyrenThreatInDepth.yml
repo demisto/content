@@ -128,7 +128,7 @@ script:
     description: Fetching Cyren Threat InDepth indicators
     execution: true
     name: cyren-threat-indepth-get-indicators
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.6.14516
   feed: true
   isfetch: false
   longRunning: false

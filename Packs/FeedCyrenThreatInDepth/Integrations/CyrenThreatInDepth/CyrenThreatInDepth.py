@@ -87,14 +87,14 @@ class FeedEntryBase(object):
     def get_score(self) -> int:
         if self.action in [FeedAction.ADD, FeedAction.UPDATE]:
             if FeedCategory.CONFIRMED_CLEAN in self.categories:
-                return 0
+                return Common.DBotScore.NONE
             else:
-                return 3
+                return Common.DBotScore.BAD
 
         if self.action == FeedAction.REMOVE:
-            return 0
+            return Common.DBotScore.NONE
 
-        return 3
+        return Common.DBotScore.BAD
 
     def get_fields(self) -> Dict:
         detection_methods = self.payload.get("detection_methods", [])
@@ -182,16 +182,16 @@ class IpReputationFeedEntry(FeedEntryBase):
     def get_score(self) -> int:
         if self.action in [FeedAction.ADD, FeedAction.UPDATE]:
             if FeedCategory.SPAM in self.categories:
-                return 3
+                return Common.DBotScore.BAD
             if FeedCategory.PHISHING in self.categories or FeedCategory.MALWARE in self.categories:
-                return 2
+                return Common.DBotScore.SUSPICIOUS
             if FeedCategory.CONFIRMED_CLEAN in self.categories:
-                return 0
+                return Common.DBotScore.NONE
 
         if self.action == FeedAction.REMOVE:
-            return 0
+            return Common.DBotScore.NONE
 
-        return 3
+        return Common.DBotScore.BAD
 
     def get_fields(self) -> Dict:
         port = self.meta.get("port")
@@ -246,7 +246,7 @@ class Client(BaseClient):
         if count > 0:
             params["count"] = str(count)
 
-        demisto.info(f"using path {path}, params {params} for request")
+        demisto.debug(f"using path {path}, params {params} for request")
 
         try:
             response = self._http_request(method="GET", url_suffix=path,
@@ -294,13 +294,13 @@ def test_module_command(client: Client) -> str:
     return "ok"
 
 
-def get_indicators_command(client: Client, args: Dict) -> Tuple[str, Dict, List]:
+def get_indicators_command(client: Client, args: Dict) -> CommandResults:
     max_indicators = int(args.get("max_indicators", 50))
 
     count = max_indicators
     end_offset = client.get_offsets().get("endOffset")
     if end_offset:
-        offset = end_offset - max_indicators + 1
+        offset = max(end_offset - max_indicators + 1, 0)
     else:
         offset = 0
 
@@ -309,7 +309,9 @@ def get_indicators_command(client: Client, args: Dict) -> Tuple[str, Dict, List]
 
     human_readable = tableToMarkdown("Indicators from Cyren Threat InDepth:", indicators,
                                      headers=["value", "type", "rawJSON", "score"])
-    return human_readable, dict(), indicators
+    return CommandResults(readable_output=human_readable,
+                          outputs=dict(),
+                          raw_response=indicators)
 
 
 def feed_entries_to_indicator(entries: List[Dict], feed_name: str) -> Tuple[List[Dict], int]:
@@ -336,9 +338,9 @@ def fetch_indicators_command(client: Client, initial_count: int, max_indicators:
     count = min(MAX_API_COUNT, count)
 
     entries = client.fetch_entries(offset, count)
-    demisto.info(f"pulled {len(entries)} for {client.feed_name}")
+    demisto.debug(f"pulled {len(entries)} for {client.feed_name}")
     indicators, max_offset = feed_entries_to_indicator(entries, client.feed_name)
-    demisto.info(f"about to ingest {len(indicators)} for {client.feed_name}")
+    demisto.debug(f"about to ingest {len(indicators)} for {client.feed_name}")
 
     if update_context:
         integration_context["offset"] = max_offset
@@ -385,8 +387,7 @@ def main():
         elif command == "test-module":
             return_outputs(test_module_command(client))
         else:
-            readable_output, outputs, raw_response = commands[command](client, demisto.args())
-            return_outputs(readable_output, outputs, raw_response)
+            return_results(commands[command](client, demisto.args()))
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f"Error failed to execute {command}, error: [{e}]")

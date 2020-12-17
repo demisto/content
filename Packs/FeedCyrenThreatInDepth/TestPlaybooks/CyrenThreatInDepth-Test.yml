@@ -1,5 +1,5 @@
 id: CyrenThreatInDepth-Test
-version: 4
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: CyrenThreatInDepth-Test
 starttaskid: "0"
@@ -138,4 +138,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
+fromversion: 5.5.0
