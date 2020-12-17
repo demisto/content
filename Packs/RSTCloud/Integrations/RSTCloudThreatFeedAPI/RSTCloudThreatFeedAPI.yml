@@ -309,7 +309,7 @@ script:
   - arguments:
     - default: true
       description: List of URLs
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -405,13 +405,13 @@ script:
   - arguments:
     - default: true
       description: List of IOCs (URLs, domains or IPs)
-      isArray: false
+      isArray: true
       name: ioc
       required: true
       secret: false
     - default: false
       description: Any context to pass to RST Cloud
-      isArray: false
+      isArray: true
       name: description
       required: false
       secret: false
@@ -422,13 +422,13 @@ script:
   - arguments:
     - default: true
       description: List of IOCs (URLs, domains or IPs)
-      isArray: false
+      isArray: true
       name: ioc
       required: true
       secret: false
     - default: false
       description: Any context to pass to RST Cloud
-      isArray: false
+      isArray: true
       name: description
       required: false
       secret: false

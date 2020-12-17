@@ -30,7 +30,6 @@ def test_ip_command(requests_mock):
     """
 
     from RSTCloudThreatFeedAPI import Client, ip_command
-    from CommonServerPython import outputPaths
 
     value_to_check = '118.243.83.70'
     mock_response = util_load_json('test_data/ip_reputation.json')
@@ -38,10 +37,13 @@ def test_ip_command(requests_mock):
 
     client = Client(verify=False, apikey='test')
     args = {'ip': value_to_check}
-    _, response, _ = ip_command(client, args)
+    markdown, raw_results, indicators = ip_command(client, args)
 
-    assert isinstance(response, dict)
-    assert response[outputPaths['ip']][0]['Address'] == value_to_check
+    assert isinstance(markdown, list)
+    assert isinstance(raw_results, list)
+    assert isinstance(indicators, list)
+    assert isinstance(markdown[0], str)
+    assert indicators[0].ip == value_to_check
 
 
 def test_domain_command(requests_mock):
@@ -52,7 +54,6 @@ def test_domain_command(requests_mock):
     the output of the command function with the expected output.
     """
     from RSTCloudThreatFeedAPI import Client, domain_command
-    from CommonServerPython import outputPaths
 
     value_to_check = 'thec0de-22249.portmap.io'
     mock_response = util_load_json('test_data/domain_reputation.json')
@@ -60,10 +61,13 @@ def test_domain_command(requests_mock):
 
     client = Client(verify=False, apikey='test')
     args = {'domain': value_to_check}
-    _, response, _ = domain_command(client, args)
+    markdown, raw_results, indicators = domain_command(client, args)
 
-    assert isinstance(response, dict)
-    assert response[outputPaths['domain']][0]['Name'] == value_to_check
+    assert isinstance(markdown, list)
+    assert isinstance(raw_results, list)
+    assert isinstance(indicators, list)
+    assert isinstance(markdown[0], str)
+    assert indicators[0].domain == value_to_check
 
 
 def test_url_command(requests_mock):
@@ -74,7 +78,6 @@ def test_url_command(requests_mock):
     the output of the command function with the expected output.
     """
     from RSTCloudThreatFeedAPI import Client, url_command
-    from CommonServerPython import outputPaths
 
     value_to_check = 'http://zpmagura.com/wp-content/nux5wem-08'
     mock_response = util_load_json('test_data/url_reputation.json')
@@ -82,10 +85,13 @@ def test_url_command(requests_mock):
 
     client = Client(verify=False, apikey='test')
     args = {'url': value_to_check}
-    _, response, _ = url_command(client, args)
+    markdown, raw_results, indicators = url_command(client, args)
 
-    assert isinstance(response, dict)
-    assert response[outputPaths['url']][0]['Data'] == value_to_check
+    assert isinstance(markdown, list)
+    assert isinstance(raw_results, list)
+    assert isinstance(indicators, list)
+    assert isinstance(markdown[0], str)
+    assert indicators[0].url == value_to_check
 
 
 def test_submit_command(requests_mock):
@@ -104,10 +110,10 @@ def test_submit_command(requests_mock):
 
     client = Client(verify=False, apikey='test')
     args = {'ioc': value_to_check}
-    markdown, _, _ = submit_command(client, args)
+    markdown = submit_command(client, args)
 
-    assert isinstance(markdown, str)
-    assert markdown == f'Indicator: {value_to_check} was submitted as a potential threat indicator to RST Cloud\n'
+    assert isinstance(markdown, list)
+    assert markdown[0] == f'Indicator: {value_to_check} was submitted as a potential threat indicator to RST Cloud\n'
 
 
 def test_submitfp_command(requests_mock):
@@ -126,7 +132,7 @@ def test_submitfp_command(requests_mock):
 
     client = Client(verify=False, apikey='test')
     args = {'ioc': value_to_check}
-    markdown, _, _ = submitfp_command(client, args)
+    markdown = submitfp_command(client, args)
 
-    assert isinstance(markdown, str)
-    assert markdown == f'Indicator: {value_to_check} was submitted as False Positive to RST Cloud\n'
+    assert isinstance(markdown, list)
+    assert markdown[0] == f'Indicator: {value_to_check} was submitted as False Positive to RST Cloud\n'

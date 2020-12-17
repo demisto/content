@@ -1,6 +1,6 @@
 id: Domain Enrichment - RST Threat Feed
 version: -1
-fromversion: 5.5.0
+fromversion: 5.0.0
 contentitemexportablefields:
   contentitemfields: {}
 name: Domain Enrichment - RST Threat Feed
