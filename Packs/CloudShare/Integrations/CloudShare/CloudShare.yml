@@ -2681,3 +2681,4 @@ script:
   dockerimage: cloudshare:latest
   runonce: false
   subtype: python3
+  beta: true
