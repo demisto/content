@@ -148,7 +148,7 @@ def get_mitigations(client: Client) -> CommandResults:
 
     command_results = CommandResults(
         outputs_prefix="Cymptom.Mitigations",
-        outputs_key_field="id",
+        outputs_key_field="ID",
         readable_output=readable_output,
         outputs=mitigations_formatted,
     )
