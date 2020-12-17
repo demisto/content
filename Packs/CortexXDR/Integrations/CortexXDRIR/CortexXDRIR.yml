@@ -246,6 +246,15 @@ script:
       name: alerts_limit
       required: false
       secret: false
+    - default: false
+      defaultValue: 'False'
+      description: Return data only if the incident was changed since the last time
+        it was mirrored in to XSOAR.  This flag should be used only from within a
+        XDR incident.
+      isArray: false
+      name: return_only_updated_incident
+      required: false
+      secret: false
     deprecated: false
     description: Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
     execution: false
