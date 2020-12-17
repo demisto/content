@@ -99,10 +99,24 @@ def install_logging(log_file_name: str, include_process_name=False) -> str:
     fh.setFormatter(formatter)
     ch.setLevel(logging.INFO)
     fh.setLevel(logging.DEBUG)
-    logging.basicConfig(level=logging.DEBUG,
-                        handlers=[ch, fh],
-                        force=True)
+    configure_root_logger(ch, fh)
     return log_file_path
+
+
+def configure_root_logger(ch: logging.StreamHandler, fh: logging.FileHandler) -> None:
+    """
+    - Configures the root logger with DEBUG level
+    - Removes existing handlers from the root logger and adds the console handler and the file handler.
+    Args:
+        ch: StreamHandler to add to the root logger
+        fh: FileHandler to add to the root logger
+    """
+    logging.root.setLevel(logging.DEBUG)
+    for h in logging.root.handlers[:]:
+        logging.root.removeHandler(h)
+        h.close()
+    logging.root.addHandler(ch)
+    logging.root.addHandler(fh)
 
 
 def install_simple_logging():

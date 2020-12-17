@@ -185,15 +185,15 @@ def print_test_summary(tests_data_keeper: DataKeeperTester,
     if failed_count:
         logging_module.error(f'Number of failed tests - {failed_count}:')
         logging_module.error('Failed Tests: {}'.format(
-                             ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id}' for playbook_id in failed_playbooks])))
+            ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id}' for playbook_id in failed_playbooks])))
     if succeed_count:
         logging_module.success(f'Number of succeeded tests - {succeed_count}')
         logging_module.success('Successful Tests: {}'.format(
-                               ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id}' for playbook_id in succeed_playbooks])))
+            ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id}' for playbook_id in succeed_playbooks])))
     if rerecorded_count > 0:
         logging_module.warning(f'Number of tests with failed playback and successful re-recording - {rerecorded_count}')
         logging_module.warning('Tests with failed playback and successful re-recording: {}'.format(
-                               ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id}' for playbook_id in rerecorded_tests])))
+            ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id}' for playbook_id in rerecorded_tests])))
 
     if empty_mocks_count > 0:
         logging_module.info(f'Successful tests with empty mock files count- {empty_mocks_count}:\n')
@@ -203,23 +203,23 @@ def print_test_summary(tests_data_keeper: DataKeeperTester,
             '\t\t\t\t\t\t\t If the integration has no http traffic, add to unmockable_integrations in conf.json)'
         logging_module.info(proxy_explanation)
         logging_module.info('Successful tests with empty mock files: {}'.format(
-                            ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id}' for playbook_id in empty_files])))
+            ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id}' for playbook_id in empty_files])))
 
     if len(skipped_integration) > 0:
         logging_module.warning(f'Number of skipped integration - {len(skipped_integration):}')
         logging_module.warning('Skipped integration: {}'.format(
-                               ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id}' for playbook_id in skipped_integration])))
+            ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id}' for playbook_id in skipped_integration])))
 
     if skipped_count > 0:
         logging_module.warning(f'Number of skipped tests - {skipped_count}:')
         logging_module.warning('Skipped tests: {}'.format(
-                               ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id}' for playbook_id in skipped_tests])))
+            ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id}' for playbook_id in skipped_tests])))
 
     if unmocklable_integrations_count > 0:
         logging_module.warning(f'Number of unmockable integrations - {unmocklable_integrations_count}:')
         logging_module.warning('Unmockable integrations: {}'.format(
-                               ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id} - {reason}' for playbook_id, reason in
-                                        unmocklable_integrations.items()])))
+            ''.join([f'\n\t\t\t\t\t\t\t - {playbook_id} - {reason}' for playbook_id, reason in
+                     unmocklable_integrations.items()])))
 
 
 def update_test_msg(integrations, test_message):
@@ -1009,6 +1009,11 @@ def manage_tests(tests_settings):
             current_thread_index = 0
             all_unmockable_tests_list = get_unmockable_tests(tests_settings)
             threads_array = []
+
+            for test_batch, (_, ami_instance_ip) in zip(test_allocation, instances_ips):
+                string_tests = '\n'.join(test_batch)
+                logging_manager.debug(
+                    f'The tests collected for server https://{ami_instance_ip} are: {string_tests}')
 
             for ami_instance_name, ami_instance_ip in instances_ips:
                 if ami_instance_name == tests_settings.serverVersion:  # Only run tests for given AMI Role

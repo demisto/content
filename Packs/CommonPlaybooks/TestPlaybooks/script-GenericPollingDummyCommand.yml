@@ -1,0 +1,75 @@
+commonfields:
+  id: generic-polling-dummy-command
+  version: 53
+vcShouldKeepItemLegacyProdMachine: false
+name: generic-polling-dummy-command
+script: |-
+  def get_new_context(lst, ids):
+      # We search for the first id that is status is still saved as 'pending'
+      # and change it to 'success' if none was found it means all are success and we return the list as is
+      context = lst
+      for _id in ids:
+          for i, item in enumerate(lst):
+              if item.get('ID') == _id:
+                  status = item.get('Status')
+                  if status == 'Pending':
+                      new_status = {'ID': _id, 'Status': 'Success'}
+                      context[i] = new_status
+                      return context
+      return context
+
+
+  args = demisto.args()
+  ids = argToList(args.get('ids'))
+  additional_arg1 = args.get('arg1')
+  additional_arg2 = args.get('arg2')
+  res = []
+
+
+  if not additional_arg1 or not additional_arg2:
+      return_error('arg1 or arg2 was not passed correctly')
+
+  res = demisto.executeCommand("getList", {"listName":"pending_ids"})
+  lst = argToList(res[0]['Contents'].strip())
+
+  # list does not exist - first run of task
+  if isError(res) or len(lst) == 0:
+      context = [{'ID': _id, 'Status': 'Pending'} for _id in ids]
+      demisto.executeCommand("createList", {"listName":"pending_ids","listData":context})
+
+  # list exists
+  else:
+      # If the number of ids is smaller than the number of pending ids we are in the run polling command task
+      # in the GP playbook (we don't want to change the status in this case)
+      if len(ids) < len([item for item in lst if item.get('Status') == 'Pending']):
+          context = [{'ID': _id, 'Status': 'Pending'} for _id in ids]
+
+      else:
+          context = get_new_context(lst, ids)
+          demisto.executeCommand("setList", {"listName":"pending_ids","listData":context})
+
+
+  print(f"New context: {context}")
+  return_results(CommandResults(
+          outputs_prefix='GP.Dummy',
+          outputs_key_field='ID',
+          outputs=context,
+          readable_output=tableToMarkdown(f'IDs status with args "{additional_arg1}" and "{additional_arg2}" is: ', context),
+          raw_response=context
+      ))
+type: python
+tags: []
+enabled: true
+args:
+- name: ids
+  required: true
+  isArray: true
+- name: arg1
+- name: arg2
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.8.6.13358
+runas: DBotWeakRole
+fromversion: 5.0.0

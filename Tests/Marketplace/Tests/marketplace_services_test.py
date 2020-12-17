@@ -9,7 +9,8 @@ from google.cloud.storage.blob import Blob
 from distutils.version import LooseVersion
 
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
-    get_higher_server_version, GCPConfig
+    get_higher_server_version, GCPConfig, BucketUploadFlow, PackStatus, load_json, \
+    store_successful_and_failed_packs_in_ci_artifacts
 
 
 @pytest.fixture(scope="module")
@@ -1220,3 +1221,182 @@ class TestReleaseNotes:
         task_stat, pack_stat = dummy_pack.is_failed_to_upload(failed_packs_dict)
         assert task_stat == task_status
         assert pack_stat == status
+
+
+class TestStoreInCircleCIArtifacts:
+    """ Test the store_successful_and_failed_packs_in_ci_artifacts function
+
+    """
+    FAILED_PACK_DICT = {
+        f'{BucketUploadFlow.STATUS}': PackStatus.FAILED_UPLOADING_PACK.name,
+        f'{BucketUploadFlow.AGGREGATED}': 'False'
+    }
+    SUCCESSFUL_PACK_DICT = {
+        f'{BucketUploadFlow.STATUS}': PackStatus.SUCCESS.name,
+        f'{BucketUploadFlow.AGGREGATED}': '[1.0.0, 1.0.1] => 1.0.1'
+    }
+
+    @staticmethod
+    def get_successful_packs():
+        successful_packs = [Pack(pack_name='A', pack_path='.'), Pack(pack_name='B', pack_path='.')]
+        for pack in successful_packs:
+            pack._status = PackStatus.SUCCESS.name
+            pack._aggregated = True
+            pack._aggregation_str = '[1.0.0, 1.0.1] => 1.0.1'
+        return successful_packs
+
+    @staticmethod
+    def get_failed_packs():
+        failed_packs = [Pack(pack_name='C', pack_path='.'), Pack(pack_name='D', pack_path='.')]
+        for pack in failed_packs:
+            pack._status = PackStatus.FAILED_UPLOADING_PACK.name
+            pack._aggregated = False
+        return failed_packs
+
+    def test_store_successful_and_failed_packs_in_ci_artifacts_both(self, tmp_path):
+        """
+           Given:
+               - Successful packs list - A,B
+               - Failed packs list - C,D
+               - A path to the circle ci artifacts dir
+           When:
+               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+           Then:
+               - Verify that the file content contains the successful and failed packs A, B & C, D respectively.
+       """
+        successful_packs = self.get_successful_packs()
+        failed_packs = self.get_failed_packs()
+        packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
+        store_successful_and_failed_packs_in_ci_artifacts(
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs
+        )
+        packs_results_file = load_json(packs_results_file_path)
+        assert packs_results_file == {
+            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}': {
+                f'{BucketUploadFlow.FAILED_PACKS}': {
+                    'C': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT,
+                    'D': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT
+                },
+                f'{BucketUploadFlow.SUCCESSFUL_PACKS}': {
+                    'A': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT,
+                    'B': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT
+                }
+            }
+        }
+
+    def test_store_successful_and_failed_packs_in_ci_artifacts_successful_only(self, tmp_path):
+        """
+           Given:
+               - Successful packs list - A,B
+               - A path to the circle ci artifacts dir
+           When:
+               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+           Then:
+               - Verify that the file content contains the successful packs A & B.
+       """
+        successful_packs = self.get_successful_packs()
+        packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
+        store_successful_and_failed_packs_in_ci_artifacts(
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, list()
+        )
+        packs_results_file = load_json(packs_results_file_path)
+        assert packs_results_file == {
+            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}': {
+                f'{BucketUploadFlow.SUCCESSFUL_PACKS}': {
+                    'A': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT,
+                    'B': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT
+                }
+            }
+        }
+
+    def test_store_successful_and_failed_packs_in_ci_artifacts_failed_only(self, tmp_path):
+        """
+           Given:
+               - Failed packs list - C,D
+               - A path to the circle ci artifacts dir
+           When:
+               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+           Then:
+               - Verify that the file content contains the failed packs C & D.
+       """
+        failed_packs = self.get_failed_packs()
+        packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
+        store_successful_and_failed_packs_in_ci_artifacts(
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, list(), failed_packs
+        )
+        packs_results_file = load_json(packs_results_file_path)
+        assert packs_results_file == {
+            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}': {
+                f'{BucketUploadFlow.FAILED_PACKS}': {
+                    'C': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT,
+                    'D': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT
+                }
+            }
+        }
+
+
+class TestGetSuccessfulAndFailedPacks:
+    """ Test the get_successful_and_failed_packs function
+
+    """
+    def test_get_successful_and_failed_packs(self, tmp_path):
+        """
+           Given:
+               - File that doesn't exist
+               - Empty JSON file
+               - Valid JSON file
+           When:
+               - Loading the file of all failed packs from Prepare Content step in Create Instances job
+           Then:
+               - Verify that we get an empty dictionary
+               - Verify that we get an empty dictionary
+               - Verify that we get the expected dictionary
+       """
+        from Tests.Marketplace.marketplace_services import get_successful_and_failed_packs
+        file = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
+
+        # Case 1: assert file does not exist
+        successful, failed = get_successful_and_failed_packs(file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+        assert successful == {}
+        assert failed == {}
+
+        # Case 2: assert empty file
+        with open(file, "w") as f:
+            f.write('')
+        successful, failed = get_successful_and_failed_packs(file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+        assert successful == {}
+        assert failed == {}
+
+        # Case 3: assert valid file
+        with open(file, "w") as f:
+            f.write(json.dumps({
+                f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}": {
+                    f"{BucketUploadFlow.FAILED_PACKS}": {
+                        "TestPack2": {
+                            f"{BucketUploadFlow.STATUS}": "status2",
+                            f"{BucketUploadFlow.AGGREGATED}": False
+                        }
+                    },
+                    f"{BucketUploadFlow.SUCCESSFUL_PACKS}": {
+                        "TestPack1": {
+                            f"{BucketUploadFlow.STATUS}": "status1",
+                            f"{BucketUploadFlow.AGGREGATED}": True
+                        }
+                    }
+                }
+            }))
+        successful, failed = get_successful_and_failed_packs(file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+        assert successful == {"TestPack1": {
+            f"{BucketUploadFlow.STATUS}": "status1",
+            f"{BucketUploadFlow.AGGREGATED}": True
+        }}
+        successful_list = [*successful]
+        ans = 'TestPack1' in successful_list
+        assert ans
+        assert failed == {"TestPack2": {
+            f"{BucketUploadFlow.STATUS}": "status2",
+            f"{BucketUploadFlow.AGGREGATED}": False}
+        }
+        failed_list = [*failed]
+        ans = 'TestPack2' in failed_list
+        assert ans
