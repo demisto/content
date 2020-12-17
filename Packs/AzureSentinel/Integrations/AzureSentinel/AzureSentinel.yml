@@ -305,7 +305,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The reason the incident was closed. Required when updating status
+      description: The reason the incident was closed. Required when updating the status
         to Closed.
       isArray: false
       name: classification
@@ -319,7 +319,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: The classification reason the incident was closed with. Required
-        when updating status to Closed and the classification is determiined.
+        when updating the status to Closed and the classification is determined.
       isArray: false
       name: classification_reason
       predefined:
