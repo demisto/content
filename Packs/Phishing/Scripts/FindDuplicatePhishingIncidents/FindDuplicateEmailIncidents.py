@@ -229,7 +229,7 @@ def return_entry(message, duplicate_incidents_df=None, similarity=0):
     outputs = {
         'similarIncident': similar_incident,
         'isSimilarIncidentFound': duplicate_incidents_df is not None,
-        'allSimilarIncidentsIds': duplicate_incidents_df['id'].tolist()
+        'allDuplicateIncidentsIds': duplicate_incidents_df['id'].tolist() if duplicate_incidents_df is not None else []
     }
     return_outputs(message, outputs)
 
