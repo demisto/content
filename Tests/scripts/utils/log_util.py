@@ -160,7 +160,7 @@ class ParallelLoggingManager:
     >>> logging_manager.success('success message', real_time=True)
     """
 
-    def __init__(self, log_file_name):
+    def __init__(self, log_file_name: str, real_time_logs_only: bool = False):
         """
         Initializes the logging manager:
         - Uses a different colored format for each log level (see LEVEL_STYLES)
@@ -168,10 +168,12 @@ class ParallelLoggingManager:
         - Defines a SteamHandler for stdout.
         - Defines a logger for real time logs with those handlers
         Args:
+            real_time_logs_only: When True - all logs will be handled in real time
             log_file_name: The path to where the log file will be saved
         """
         if not hasattr(logging, 'success'):
             _add_logging_level('SUCCESS', 25)
+        self.real_time_logs_only = real_time_logs_only
         self.log_file_name = log_file_name
         formatter = coloredlogs.ColoredFormatter(fmt=LOGGING_FORMAT,
                                                  level_styles=LEVEL_STYLES)
@@ -224,7 +226,8 @@ class ParallelLoggingManager:
         thread_name = currentThread().getName()
         if thread_name not in self.thread_names:
             self._add_logger(thread_name)
-        log_method = self.real_time_logger.debug if real_time else self.loggers[thread_name].debug
+        log_method = self.real_time_logger.debug if real_time or self.real_time_logs_only else self.loggers[
+            thread_name].debug
         log_method(message)
 
     def info(self, message: str, real_time: bool = False) -> None:
@@ -239,7 +242,8 @@ class ParallelLoggingManager:
         thread_name = currentThread().getName()
         if thread_name not in self.thread_names:
             self._add_logger(thread_name)
-        log_method = self.real_time_logger.info if real_time else self.loggers[thread_name].info
+        log_method = self.real_time_logger.info if real_time or self.real_time_logs_only else self.loggers[
+            thread_name].info
         log_method(message)
 
     def warning(self, message: str, real_time: bool = False) -> None:
@@ -254,7 +258,8 @@ class ParallelLoggingManager:
         thread_name = currentThread().getName()
         if thread_name not in self.thread_names:
             self._add_logger(thread_name)
-        log_method = self.real_time_logger.warning if real_time else self.loggers[thread_name].warning
+        log_method = self.real_time_logger.warning if real_time or self.real_time_logs_only else self.loggers[
+            thread_name].warning
         log_method(message)
 
     def error(self, message: str, real_time: bool = False) -> None:
@@ -269,7 +274,8 @@ class ParallelLoggingManager:
         thread_name = currentThread().getName()
         if thread_name not in self.thread_names:
             self._add_logger(thread_name)
-        log_method = self.real_time_logger.error if real_time else self.loggers[thread_name].error
+        log_method = self.real_time_logger.error if real_time or self.real_time_logs_only else self.loggers[
+            thread_name].error
         log_method(message)
 
     def critical(self, message: str, real_time: bool = False) -> None:
@@ -284,7 +290,8 @@ class ParallelLoggingManager:
         thread_name = currentThread().getName()
         if thread_name not in self.thread_names:
             self._add_logger(thread_name)
-        log_method = self.real_time_logger.critical if real_time else self.loggers[thread_name].critical
+        log_method = self.real_time_logger.critical if real_time or self.real_time_logs_only else self.loggers[
+            thread_name].critical
         log_method(message)
 
     def exception(self, message: str, real_time: bool = False) -> None:
@@ -299,7 +306,8 @@ class ParallelLoggingManager:
         thread_name = currentThread().getName()
         if thread_name not in self.thread_names:
             self._add_logger(thread_name)
-        log_method = self.real_time_logger.exception if real_time else self.loggers[thread_name].exception
+        log_method = self.real_time_logger.exception if real_time or self.real_time_logs_only else self.loggers[
+            thread_name].exception
         log_method(message)
 
     def success(self, message: str, real_time: bool = False) -> None:
@@ -314,7 +322,8 @@ class ParallelLoggingManager:
         thread_name = currentThread().getName()
         if thread_name not in self.thread_names:
             self._add_logger(thread_name)
-        log_method = self.real_time_logger.success if real_time else self.loggers[thread_name].success
+        log_method = self.real_time_logger.success if real_time or self.real_time_logs_only else self.loggers[
+            thread_name].success
         log_method(message)
 
     def execute_logs(self) -> None:
