@@ -1,4 +1,3 @@
-import pytest
 from GetIncidentsByQuery import build_incidents_query, get_incidents, parse_relative_time, main, \
     preprocess_incidents_fields_list, PYTHON_MAGIC
 
