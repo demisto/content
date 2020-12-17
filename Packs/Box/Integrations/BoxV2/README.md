@@ -2255,7 +2255,7 @@ Updates a managed user in an enterprise. This endpoint is only available to user
 | is_external_collab_restricted | Whether the user is allowed to collaborate with users outside their enterprise. Possible values are: true, false. | Optional | 
 | is_exempt_from_login_verification | Whether the user must use two-factor authentication. Possible values are: true, false. | Optional | 
 | can_see_managed_users | Whether the user can see other enterprise users in their contact list. Possible values are: true, false. | Optional | 
-| tracking_codes | Tracking codes allow an admin to generate reports from the admin console and assign an attribute to a specific group of users. The expected format is `key=FirstKey,value=FirstValue`. Multiple key value pairs may be used when using the `;` seperator. | Optional | 
+| tracking_codes | Tracking codes allow an admin to generate reports from the admin console and assign an attribute to a specific group of users. The expected format is `key1:value1,key2:value2`. Multiple key value pairs may be used when using the `,` seperator. | Optional | 
 | user_id | The ID of the user. | Required | 
 | as_user | The ID of the user who is making the request. | Optional | 
 
@@ -2344,7 +2344,7 @@ Creates a new managed user in an enterprise. This endpoint is only available to 
 | phone | The user’s phone number. | Optional | 
 | address | The user’s address. | Optional | 
 | space_amount | The user’s total available space in bytes. Set this to -1 to indicate unlimited storage. | Optional | 
-| tracking_codes | Tracking codes allow an admin to generate reports from the admin console and assign an attribute to a specific group of users. The expected format is `key=FirstKey,value=FirstValue`. Multiple key value pairs may be used when using the `;` seperator. | Optional | 
+| tracking_codes | Tracking codes allow an admin to generate reports from the admin console and assign an attribute to a specific group of users. The expected format is `key1:value1,key2:value2`. Multiple key value pairs may be used when using the `,` seperator. | Optional | 
 | can_see_managed_users | Whether the user can see other enterprise users in their contact list. Possible values are: true, false. | Optional | 
 | timezone | The user's timezone. | Optional | 
 | is_exempt_from_device_limits | Whether to exempt the user from enterprise device limits. Possible values are: true, false. | Optional | 

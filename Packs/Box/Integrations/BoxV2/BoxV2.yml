@@ -2421,8 +2421,8 @@ script:
     - default: false
       description: Tracking codes allow an admin to generate reports from the admin
         console and assign an attribute to a specific group of users. The expected
-        format is `key=FirstKey,value=FirstValue`. Multiple key value pairs may be
-        used when using the `;` seperator.
+        format is `key1:value1,key2:value2`. Multiple key value pairs may be
+        used when using the `,` seperator.
       isArray: false
       name: tracking_codes
       required: false
@@ -2574,8 +2574,8 @@ script:
     - default: false
       description: Tracking codes allow an admin to generate reports from the admin
         console and assign an attribute to a specific group of users. The expected
-        format is `key=FirstKey,value=FirstValue`. Multiple key value pairs may be
-        used when using the `;` seperator.
+        format is `key1:value1,key2:value2`. Multiple key value pairs may be
+        used when using the `,` seperator.
       isArray: false
       name: tracking_codes
       required: false

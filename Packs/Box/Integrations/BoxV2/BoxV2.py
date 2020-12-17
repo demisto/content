@@ -259,7 +259,7 @@ class Client(BaseClient):
         auth_header = {'Authorization': f'Bearer {access_token}'}
         return auth_header
 
-    def handle_as_user(self, as_user_arg) -> str:
+    def handle_as_user(self, as_user_arg: Optional[str]) -> str:
         """
         Wrapper which gracefully handles the as-user header variable as well as resolves an argument
         to an ID if the given argument is a users login and the search_user_id parameter is set.
@@ -280,7 +280,7 @@ class Client(BaseClient):
         else:
             return as_user
 
-    def _handle_default_user(self, as_user_arg: str) -> Union[str, Any]:
+    def _handle_default_user(self, as_user_arg: Optional[str]) -> Union[str, Any]:
         """
         When the as-user argument is absent when executing a command, this function will return the
         default user if there is one. If neither have been provided, we raise an error.
@@ -297,7 +297,7 @@ class Client(BaseClient):
         else:
             return as_user_arg
 
-    def _search_user_id(self, as_user):
+    def _search_user_id(self, as_user: str) -> str:
         """
         When the search_user_id parameter is set, this function will resolve a users login to the
         users ID.
@@ -1066,23 +1066,17 @@ def parse_key_value_arg(arg_str: Optional[Any]):
     In some cases it is necessary to pass an argument with a specific name. The common usecase is
     for Tags. This function allows a user to create their own key value pairs.
 
-    :param arg_str: Argument given as a string in the format `key=SomeKey,value=SomeValue`
+    :param arg_str: Argument given as a string in the format `key1:value1,key2:value2`
     :return: List of sets.
     """
     if arg_str:
         tags = []
-        regex = re.compile(r'key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)', flags=re.I)
-        for f in arg_str.split(';'):
-            match = regex.match(f)
-            if match is None:
-                raise DemistoException(
-                    'Unable to parse the given key value pair argument. Please verify'
-                    ' the argument is formatted correctly. '
-                    '`key=ExampleKey,value=ExampleValue`. For more than one KV pair,'
-                    ' please use the separator `;`')
-            tags.append({
-                match.group(1): match.group(2)
-            })
+        for item in arg_str.split(','):
+            try:
+                key, value = item.split(':')
+            except ValueError:
+                raise DemistoException(f"Got invalid key/value pair {item}.")
+            tags.append({key.strip(): value.strip()})
 
         return tags
     else:
@@ -1877,7 +1871,7 @@ def test_module(client: Client, params: dict, first_fetch_time: int) -> str:
     :return: Test result.
     """
     if params.get('default_user'):
-        response = client.get_current_user(params.get('default_user'))
+        response = client.get_current_user(params.get('default_user'))  # type:ignore
     elif params.get('isFetch'):
         if not params.get('as_user'):
             raise DemistoException("In order to use fetch, a User ID for Fetching Incidents is "
@@ -1885,13 +1879,13 @@ def test_module(client: Client, params: dict, first_fetch_time: int) -> str:
         created_after = datetime.fromtimestamp(first_fetch_time, tz=timezone.utc).strftime(
             DATE_FORMAT)
         response = client.list_events(
-            as_user=params.get('as_user'),
+            as_user=params.get('as_user'),  # type:ignore
             created_after=created_after,
             stream_type='admin_logs',
             limit=1
         )
     else:
-        response: Response = client.list_users(limit=1)
+        response: Response = client.list_users(limit=1)  # type:ignore
     if response:
         return 'ok'
     else:
@@ -1944,8 +1938,8 @@ def main() -> None:
         arg_name='First fetch time',
         required=True
     )
-    # Using assert as a type guard (since first_fetch_time is always an int when required=True)
-    assert isinstance(first_fetch_time, int)
+    if not isinstance(first_fetch_time, int):
+        raise DemistoException("An error occurred while creating the first fetch time.")
     proxy = demisto.params().get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
