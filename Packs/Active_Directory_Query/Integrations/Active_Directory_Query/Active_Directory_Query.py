@@ -1116,7 +1116,7 @@ def enable_user_iam(default_base_dn, dn, disabled_users_group_cn):
         grp_dn = group_dn(disabled_users_group_cn, default_base_dn)
         success = microsoft.removeMembersFromGroups.ad_remove_members_from_groups(conn, [dn], [grp_dn], True)
         if not success:
-            raise Exception('Failed to add user to {} group'.format(disabled_users_group_cn))
+            raise Exception('Failed to remove user from {} group'.format(disabled_users_group_cn))
 
 
 def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out):
