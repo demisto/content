@@ -15,7 +15,7 @@ from time import sleep
 from threading import Thread
 from distutils.version import LooseVersion
 import logging
-from typing import List
+from typing import List, Tuple
 
 from Tests.mock_server import MITMProxy, run_with_mock, RESULT
 from Tests.scripts.utils.log_util import install_logging
@@ -167,7 +167,12 @@ class Build:
         self.service_account = options.service_account
 
     @property
-    def proxy(self):
+    def proxy(self) -> MITMProxy:
+        """
+        A property method that should create and return a single proxy instance through out the build
+        Returns:
+            The single proxy instance that should be used in this build.
+        """
         if not self._proxy:
             self._proxy = MITMProxy(self.servers[0].host.replace('https://', ''), logging_module=logging)
         return self._proxy
@@ -1110,7 +1115,18 @@ def configure_modified_and_new_integrations(build: Build,
 
 
 @run_with_proxy_configured
-def instance_testing(build: Build, all_module_instances, pre_update):
+def instance_testing(build: Build, all_module_instances: list, pre_update: bool) -> Tuple[set, set]:
+    """
+    Runs 'test-module' command for the instances detailed in `all_module_instances`
+    Args:
+        build: An object containing the current build info.
+        all_module_instances: The integration instances that should be tested
+        pre_update: Whether this instance testing is before or after the content update on the server.
+
+    Returns:
+        A set of the successful tests containing the instance name and the integration name
+        A set of the failed tests containing the instance name and the integration name
+    """
     update_status = 'Pre' if pre_update else 'Post'
     failed_tests = set()
     successful_tests = set()
