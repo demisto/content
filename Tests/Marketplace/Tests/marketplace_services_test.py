@@ -4,7 +4,7 @@ import json
 import os
 import random
 from unittest.mock import mock_open
-from mock_open import MockOpen
+#from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
 from distutils.version import LooseVersion
 
@@ -29,15 +29,21 @@ class TestMetadataParsing:
     """ Class for validating parsing of pack_metadata.json (metadata.json will be created from parsed result).
     """
 
-    def test_validate_all_fields_of_parsed_metadata(self, dummy_pack_metadata):
-        """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
-
+    @pytest.fixture(scope="class", autouse=True)
+    def dummy_pack(self):
+        """ dummy pack fixture
         """
-        parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
-                                                    pack_id='test_pack_id', integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="5.5.0",
-                                                    build_number="dummy_build_number", commit_hash="dummy_commit",
-                                                    downloads_count=10)
+        return Pack(pack_name="Test Pack Name", pack_path="dummy_path")
+
+    def test_validate_all_fields_of_parsed_metadata(self, dummy_pack, dummy_pack_metadata):
+        """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
+        """
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="",
+                                                          dependencies_data={}, server_min_version="5.5.0",
+                                                          build_number="dummy_build_number", commit_hash="dummy_commit",
+                                                          downloads_count=10)
         assert parsed_metadata['name'] == 'Test Pack Name'
         assert parsed_metadata['id'] == 'test_pack_id'
         assert parsed_metadata['description'] == 'Description of test pack'
@@ -64,11 +70,11 @@ class TestMetadataParsing:
         assert parsed_metadata['downloads'] == 10
         assert 'dependencies' in parsed_metadata
 
-    def test_parsed_metadata_empty_input(self):
+    def test_parsed_metadata_empty_input(self, dummy_pack):
         """ Test for empty pack_metadata.json and validating that support, support details and author are set correctly
             to XSOAR defaults value of Metadata class.
         """
-        parsed_metadata = Pack._parse_pack_metadata(user_metadata={}, pack_content_items={},
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata={}, pack_content_items={},
                                                     pack_id='test_pack_id', integration_images=[], author_image="",
                                                     dependencies_data={}, server_min_version="dummy_server_version",
                                                     build_number="dummy_build_number", commit_hash="dummy_hash",
@@ -210,6 +216,12 @@ class TestParsingInternalFunctions:
         result_certification = Pack._get_certification(support_type="partner", certification="certified")
 
         assert result_certification == Metadata.CERTIFIED
+
+    def test_get_pack_publish_date(self):
+        """
+        """
+        result_date = Pack._get_pack_publish_date(user_metadata=dummy_pack_metadata)
+        assert result_date == '2020-03-07T12:35:55Z'
 
 
 class TestHelperFunctions:
@@ -1358,6 +1370,7 @@ class TestGetSuccessfulAndFailedPacks:
     """ Test the get_successful_and_failed_packs function
 
     """
+
     def test_get_successful_and_failed_packs(self, tmp_path):
         """
            Given:

@@ -532,8 +532,7 @@ class Pack(object):
         else:
             return ""
 
-    @staticmethod
-    def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image,
+    def _parse_pack_metadata(self, user_metadata, pack_content_items, pack_id, integration_images, author_image,
                              dependencies_data, server_min_version, build_number, commit_hash, downloads_count,
                              is_feed_pack=False):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
@@ -559,7 +558,7 @@ class Pack(object):
         pack_metadata['name'] = user_metadata.get('name') or pack_id
         pack_metadata['id'] = pack_id
         pack_metadata['description'] = user_metadata.get('description') or pack_id
-        pack_metadata['created'] = Pack._get_pack_publish_date(user_metadata)
+        pack_metadata['created'] = self._get_pack_publish_date(user_metadata)
         pack_metadata['updated'] = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
         pack_metadata['legacy'] = user_metadata.get('legacy', True)
         pack_metadata['support'] = user_metadata.get('support') or Metadata.XSOAR_SUPPORT
@@ -601,8 +600,7 @@ class Pack(object):
 
         return pack_metadata
 
-    @staticmethod
-    def _get_pack_publish_date(user_metadata):
+    def _get_pack_publish_date(self, user_metadata):
         """ Get pack publish date.
 
         Args:
@@ -613,7 +611,7 @@ class Pack(object):
 
         """
         added_pack_metadata = run_command(f'git diff --diff-filter=A --name-only master '
-                                          f'Packs/{str(Pack.name)}/{Pack.USER_METADATA}', exit_on_error=False)
+                                          f'Packs/{self._pack_name}/{Pack.USER_METADATA}', exit_on_error=False)
         if added_pack_metadata:
             return datetime.utcnow().strftime(Metadata.DATE_FORMAT)
 
@@ -1420,7 +1418,7 @@ class Pack(object):
             if packs_statistic_df is not None:
                 self.downloads_count = self._get_downloads_count(packs_statistic_df)
 
-            formatted_metadata = Pack._parse_pack_metadata(user_metadata=user_metadata,
+            formatted_metadata = self._parse_pack_metadata(user_metadata=user_metadata,
                                                            pack_content_items=pack_content_items,
                                                            pack_id=self._pack_name,
                                                            integration_images=integration_images,
