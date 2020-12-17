@@ -2242,6 +2242,7 @@
         {
             "integrations": "iDefense Feed",
             "playbookID": "Feed iDefense Test",
+            "memory_threshold": 100,
             "fromversion": "5.5.0"
         },
         {
@@ -3273,6 +3274,7 @@
         "Fidelis Elevate Network": "Issue 26453",
         "CrowdStrike Falcon X": "Issue 26209",
         "ArcSight Logger": "Issue 24303",
+        "Sophos Central": "No instance",
         "MxToolBox": "No instance",
         "Prisma Access": "Instance will be provided soon by Lior and Prasen - Issue 27112",
         "AlphaSOC Network Behavior Analytics": "No instance",
@@ -3345,6 +3347,7 @@
         "AWS - Athena - Beta": "Issue 19834",
         "SNDBOX": "Issue 28826",
         "Workday": "License expired Issue: 29595",
+        "FireEyeFeed": "License expired Issue: 31838",
 
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
