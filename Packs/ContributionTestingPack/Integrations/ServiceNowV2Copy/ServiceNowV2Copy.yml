@@ -1,0 +1,1304 @@
+category: Case Management
+commonfields:
+  id: ServiceNow v2
+  version: -1
+configuration:
+- display: ServiceNow URL, in the format https://company.service-now.com/
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+- defaultvalue: incident
+  display: Default ticket type for running ticket commands and fetching incidents
+  name: ticket_type
+  required: false
+  type: 0
+- display: ServiceNow API Version (e.g. 'v1')
+  name: api_version
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: stateNOT IN6,7
+  display: The query to use when fetching incidents
+  name: sysparm_query
+  required: false
+  type: 0
+- defaultvalue: "10"
+  display: How many incidents to fetch each time
+  name: fetch_limit
+  required: false
+  type: 0
+- defaultvalue: 10 minutes
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: opened_at
+  display: |-
+    Timestamp field to filter by (e.g., `opened_at`) This is how the filter is applied to the query: "ORDERBYopened_at^opened_at>[Last Run]".
+    To prevent duplicate incidents, this field is mandatory for fetching incidents.
+  name: timestamp_field
+  required: false
+  type: 0
+- display: ServiceNow ticket column to be set as the incident name, default is the
+    incident number
+  name: incident_name
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Get incident attachments
+  name: get_attachments
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: IT service management
+display: ServiceNow v2
+name: ServiceNow v2
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: Ticket system ID for which to retrieve information.
+      name: id
+    - auto: PREDEFINED
+      defaultValue: incident
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", or "sc_req_item". Default is "incident".
+      name: ticket_type
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+      - sc_req_item
+    - description: Ticket number to retrieve.
+      name: number
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: If "true" will retrieve ticket attachments. Default is "false".
+      name: get_attachments
+      predefined:
+      - "true"
+      - "false"
+    - description: 'Custom fields on which to query. For example: state_code=AR,time_zone=PST.'
+      name: custom_fields
+    - description: Additional fields to display in the War Room entry and incident
+        context.
+      isArray: true
+      name: additional_fields
+    description: Retrieves ticket information by ticket ID.
+    name: servicenow-get-ticket
+    outputs:
+    - contextPath: ServiceNow.Ticket.ID
+      description: ServiceNow ticket ID.
+      type: string
+    - contextPath: ServiceNow.Ticket.OpenedBy
+      description: ServiceNow ticket opener ID.
+      type: string
+    - contextPath: ServiceNow.Ticket.CreatedOn
+      description: ServiceNow ticket creation date.
+      type: date
+    - contextPath: ServiceNow.Ticket.Assignee
+      description: ServiceNow ticket assignee ID.
+      type: string
+    - contextPath: ServiceNow.Ticket.State
+      description: ServiceNow ticket state.
+      type: string
+    - contextPath: ServiceNow.Ticket.Summary
+      description: ServiceNow ticket short summary.
+      type: string
+    - contextPath: ServiceNow.Ticket.Number
+      description: ServiceNow ticket number.
+      type: string
+    - contextPath: ServiceNow.Ticket.Active
+      description: ServiceNow ticket active.
+      type: boolean
+    - contextPath: ServiceNow.Ticket.AdditionalComments
+      description: ServiceNow ticket comments.
+      type: string
+    - contextPath: ServiceNow.Ticket.Priority
+      description: ServiceNow ticket priority.
+      type: string
+    - contextPath: ServiceNow.Ticket.OpenedAt
+      description: ServiceNow ticket opening time.
+      type: date
+    - contextPath: ServiceNow.Ticket.ResolvedBy
+      description: ServiceNow ticket resolver ID.
+      type: string
+    - contextPath: ServiceNow.Ticket.CloseCode
+      description: ServiceNow ticket close code.
+      type: string
+    - contextPath: File.Info
+      description: Attachment file info.
+      type: string
+    - contextPath: File.Name
+      description: Attachment file name.
+      type: string
+    - contextPath: File.Size
+      description: Attachment file size.
+      type: number
+    - contextPath: File.SHA1
+      description: Attachment file SHA1 hash.
+      type: string
+    - contextPath: File.SHA256
+      description: Attachment file SHA256 hash.
+      type: string
+    - contextPath: File.EntryID
+      description: Attachment file entry ID.
+      type: string
+    - contextPath: File.Type
+      description: Attachment file type.
+      type: string
+    - contextPath: File.MD5
+      description: Attachment file MD5 hash.
+      type: string
+  - arguments:
+    - description: Short description of the ticket.
+      name: short_description
+    - auto: PREDEFINED
+      defaultValue: incident
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", or "sc_req_item". Default is "incident".
+      name: ticket_type
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+      - sc_req_item
+    - auto: PREDEFINED
+      description: 'Ticket urgency. You can either select from the predefined options
+        or enter another value, for example: "Urgent" or "5".'
+      name: urgency
+      predefined:
+      - 3 - Low
+      - 2 - Medium
+      - 1 - High
+    - auto: PREDEFINED
+      description: 'Ticket severity. You can either select from the predefined options
+        or enter another value, for example: "Urgent" or "5".'
+      name: severity
+      predefined:
+      - 3 - Low
+      - 2 - Medium
+      - 1 - High
+    - auto: PREDEFINED
+      description: Ticket impact.
+      name: impact
+      predefined:
+      - 3 - Low
+      - 2 - Medium
+      - 1 - High
+    - auto: PREDEFINED
+      description: Whether to set the ticket as Active. Can be "true" or "false".
+      name: active
+      predefined:
+      - "true"
+      - "false"
+    - description: The ticket activity due date, in the format "2016-07-02 21:51:11".
+      name: activity_due
+    - description: List of users assigned to the ticket.
+      name: additional_assignee_list
+    - description: Ticket history approval.
+      name: approval_history
+    - description: The ticket approval set date, in the format "2016-07-02 21:51:11".
+      name: approval_set
+    - description: User assigned to the ticket.
+      name: assigned_to
+    - description: 'Business duration, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: business_duration
+    - description: Business service.
+      name: business_service
+    - description: Business source.
+      name: business_stc
+    - description: 'Calendar duration, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: calendar_duration
+    - description: Caller ID (UID format).
+      name: caller_id
+    - description: Category of the ticket.
+      name: category
+    - description: UID Format
+      name: caused_by
+    - auto: PREDEFINED
+      description: Ticket's close code. Can be "Solved (Work Around)", "Solved (Permanently)",
+        "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved
+        (Not Reproducible)", "Not Solved (Too Costly)", or "Closed/Resolved by Caller".
+      name: close_code
+      predefined:
+      - Solved (Work Around)
+      - Solved (Permanently)
+      - Solved Remotely (Work Around)
+      - Solved Remotely (Permanently)
+      - Not Solved (Not Reproducible)
+      - Not Solved (Too Costly)
+      - Closed/Resolved by Caller
+    - description: Close notes of the ticket.
+      name: close_notes
+    - description: 'When the ticket was closed, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: closed_at
+    - description: User who closed the ticket.
+      name: closed_by
+    - description: UID Format.
+      name: cmdb_ci
+    - description: Format type journal input.
+      name: comments
+    - description: Format type journal input.
+      name: comments_and_work_notes
+    - description: Company (UID format).
+      name: company
+    - description: Contact type.
+      name: contact_type
+    - description: Correlation display.
+      name: correlation_display
+    - description: Correlation ID.
+      name: correlation_id
+    - description: Delivery plan (UID format).
+      name: delivery_plan
+    - auto: PREDEFINED
+      description: Whether to display comments, work notes, and so on. Can be "true"
+        or "false".
+      name: display
+      predefined:
+      - "true"
+      - "false"
+    - description: Ticket description.
+      name: description
+    - description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: due_date
+    - description: Escalation
+      name: escalation
+    - description: 'Expected start date/time, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: expected_start
+    - description: 'Follow up date/time, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: follow_up
+    - description: UID format list (group).
+      name: group_list
+    - auto: PREDEFINED
+      description: Whether the ticket is solved in the knowledge base. Can be "true"
+        or "false".
+      name: knowledge
+      predefined:
+      - "true"
+      - "false"
+    - description: Location of the ticket.
+      name: location
+    - description: SLA of the ticket.
+      name: made_sla
+    - auto: PREDEFINED
+      description: Whether to be notified about this ticket. Can be "1" or "0".
+      name: notify
+      predefined:
+      - "1"
+      - "0"
+    - description: Order number.
+      name: order
+    - description: UID Format
+      name: parent
+    - description: UID Format
+      name: parent_incident
+    - description: UID Format
+      name: problem_id
+    - description: The number of users included in this ticket.
+      name: reassignment_count
+    - description: How many times the ticket has been reopened.
+      name: reopen_count
+    - description: 'The date/time that the ticket was resolved, in the format: YYYY-MM-DD
+        HH:MM:SS.'
+      name: resolved_at
+    - description: ID of the user that resolved the ticket.
+      name: resolved_by
+    - description: UID
+      name: rfc
+    - description: 'SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: sla_due
+    - description: Ticket subcategory.
+      name: subcategory
+    - description: Last updated by.
+      name: sys_updated_by
+    - description: 'Last date/time that the system was updated, in the format: YYYY-MM-DD
+        HH:MM:SS.'
+      name: sys_updated_on
+    - description: Input from the end user.
+      name: user_input
+    - description: A list of watched tickets.
+      name: watch_list
+    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+      name: work_end
+    - description: Format journal list
+      name: work_notes
+    - description: List work notes UIDs.
+      name: work_notes_list
+    - description: Date/time when work started on the ticket.
+      name: work_start
+    - description: The sys_id of the group to assign.
+      name: assignment_group
+    - description: The number that represents the incident state.
+      name: incident_state
+    - description: Ticket number.
+      name: number
+    - auto: PREDEFINED
+      description: Priority of the ticket.
+      name: priority
+      predefined:
+      - 5 - Planning
+      - 4 - Low
+      - 3 - Moderate
+      - 2 - High
+      - 1 - Critical
+    - description: Template name to use as a base to create new tickets.
+      name: template
+    - description: 'Custom (user defined) fields in the format: fieldname1=value;fieldname2=value;
+        custom fields start with a "u_".'
+      name: custom_fields
+    - auto: PREDEFINED
+      defaultValue: normal
+      description: Type of Change Request ticket. Can be "normal", "standard", or
+        "emergency". Default is "normal".
+      name: change_type
+      predefined:
+      - normal
+      - standard
+      - emergency
+    - description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed".'
+      name: state
+    - description: ' Date/time the ticket was opened, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: opened_at
+    - description: Caller system ID.
+      name: caller
+    - description: Ticket approval.
+      name: approval
+    - description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
+      name: additional_fields
+    description: Creates new ServiceNow ticket.
+    name: servicenow-create-ticket
+    outputs:
+    - contextPath: ServiceNow.Ticket.ID
+      description: ServiceNow ticket ID.
+      type: string
+    - contextPath: ServiceNow.Ticket.OpenedBy
+      description: ServiceNow ticket opener ID.
+      type: string
+    - contextPath: ServiceNow.Ticket.CreatedOn
+      description: ServiceNow ticket creation date.
+      type: date
+    - contextPath: ServiceNow.Ticket.Assignee
+      description: ServiceNow ticket assignee ID.
+      type: string
+    - contextPath: ServiceNow.Ticket.State
+      description: ServiceNow ticket state.
+      type: string
+    - contextPath: ServiceNow.Ticket.Summary
+      description: ServiceNow ticket short summary.
+      type: string
+    - contextPath: ServiceNow.Ticket.Number
+      description: ServiceNow ticket number.
+      type: string
+    - contextPath: ServiceNow.Ticket.Active
+      description: ServiceNow ticket active.
+      type: boolean
+    - contextPath: ServiceNow.Ticket.AdditionalComments
+      description: ServiceNow ticket comments.
+      type: string
+    - contextPath: ServiceNow.Ticket.Priority
+      description: ServiceNow ticket priority.
+      type: string
+    - contextPath: ServiceNow.Ticket.OpenedAt
+      description: ServiceNow ticket opening time.
+      type: date
+    - contextPath: ServiceNow.Ticket.ResolvedBy
+      description: ServiceNow ticket resolver ID.
+      type: string
+    - contextPath: ServiceNow.Ticket.CloseCode
+      description: ServiceNow ticket close code.
+      type: string
+  - arguments:
+    - description: Short description of the ticket.
+      name: short_description
+    - auto: PREDEFINED
+      defaultValue: incident
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", or "sc_req_item". Default is "incident".
+      name: ticket_type
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+      - sc_req_item
+    - auto: PREDEFINED
+      description: 'Ticket urgency. You can either select from the predefined options
+        or enter another value, for example: "Urgent" or "5".'
+      name: urgency
+      predefined:
+      - 3 - Low
+      - 2 - Medium
+      - 1 - High
+    - auto: PREDEFINED
+      description: 'Ticket severity. You can either select from the predefined options
+        or enter another value, for example: "Urgent" or "5".'
+      name: severity
+      predefined:
+      - 3 - Low
+      - 2 - Medium
+      - 1 - High
+    - auto: PREDEFINED
+      description: Ticket impact.
+      name: impact
+      predefined:
+      - 3 - Low
+      - 2 - Medium
+      - 1 - High
+    - auto: PREDEFINED
+      description: Whether the ticket is Active. Can be "true" or "false".
+      name: active
+      predefined:
+      - "true"
+      - "false"
+    - description: 'The ticket activity due date, in the format: "2016-07-02 21:51:11".'
+      name: activity_due
+    - description: List of users assigned to the ticket.
+      name: additional_assignee_list
+    - description: Ticket history approval.
+      name: approval_history
+    - description: 'The ticket approval set date/time, in the format: "2016-07-02
+        21:51:11".'
+      name: approval_set
+    - description: User assigned to the ticket.
+      name: assigned_to
+    - description: 'Business duration, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: business_duration
+    - description: Business service.
+      name: business_service
+    - description: Business source.
+      name: business_stc
+    - description: 'Calendar duration, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: calendar_duration
+    - description: Caller ID (UID format).
+      name: caller_id
+    - description: Category name.
+      name: category
+    - description: UID format.
+      name: caused_by
+    - auto: PREDEFINED
+      description: Ticket's close code. Ticket's close code. Can be "Solved (Work
+        Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved
+        Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too
+        Costly)", or "Closed/Resolved by Caller".
+      name: close_code
+      predefined:
+      - Solved (Work Around)
+      - Solved (Permanently)
+      - Solved Remotely (Work Around)
+      - Solved Remotely (Permanently)
+      - Not Solved (Not Reproducible)
+      - Not Solved (Too Costly)
+      - Closed/Resolved by Caller
+    - description: Close notes of the ticket.
+      name: close_notes
+    - description: 'Date/time the ticket was closed, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: closed_at
+    - description: User who closed the ticket.
+      name: closed_by
+    - description: UID Format.
+      name: cmdb_ci
+    - description: Format type journal input.
+      name: comments
+    - description: Format type journal input.
+      name: comments_and_work_notes
+    - description: UID Format.
+      name: company
+    - description: Contact type.
+      name: contact_type
+    - description: Correlation display.
+      name: correlation_display
+    - description: Correlation ID.
+      name: correlation_id
+    - description: UID Format.
+      name: delivery_plan
+    - auto: PREDEFINED
+      description: Whether to display comments, work notes, and so on. Can be "true"
+        or "false".
+      name: display
+      predefined:
+      - "true"
+      - "false"
+    - description: Ticket description.
+      name: description
+    - description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: due_date
+    - description: Escalation.
+      name: escalation
+    - description: 'Expected start date/time, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: expected_start
+    - description: 'Follow up date/time, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: follow_up
+    - description: UID format list.
+      name: group_list
+    - auto: PREDEFINED
+      description: Whether the ticket is solved in the knowledge base. Can be "true"
+        or "false".
+      name: knowledge
+      predefined:
+      - "true"
+      - "false"
+    - description: Location of the ticket.
+      name: location
+    - description: SLA of the ticket.
+      name: made_sla
+    - auto: PREDEFINED
+      description: Whether to be notified about this ticket. Can be "1" or "0".
+      name: notify
+      predefined:
+      - "1"
+      - "0"
+    - description: Order number.
+      name: order
+    - description: Parent (UID format).
+      name: parent
+    - description: Parent incident (UID format).
+      name: parent_incident
+    - description: Problem ID (UID format).
+      name: problem_id
+    - description: The number of users included in this ticket.
+      name: reassignment_count
+    - description: The number of times the ticket has been reopened.
+      name: reopen_count
+    - description: 'Date/time the ticket was resolved, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: resolved_at
+    - description: Resolved by (UID format).
+      name: resolved_by
+    - description: UID
+      name: rfc
+    - description: 'SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS.'
+      name: sla_due
+    - description: Ticket subcategory.
+      name: subcategory
+    - description: Last updated by
+      name: sys_updated_by
+    - description: Date/time the system was last updated.
+      name: sys_updated_on
+    - description: Input from the end user.
+      name: user_input
+    - description: A list of watched tickets.
+      name: watch_list
+    - description: 'Format: YYYY-MM-DD HH:MM:SS'
+      name: work_end
+    - description: Format journal list.
+      name: work_notes
+    - description: Comma-separated list of work notes UIDs.
+      name: work_notes_list
+    - description: Date/time when work started on the ticket.
+      name: work_start
+    - description: Assignment group UID.
+      name: assignment_group
+    - description: Number representing the incident state.
+      name: incident_state
+    - description: Ticket number.
+      name: number
+    - auto: PREDEFINED
+      description: Priority of the ticket.
+      name: priority
+      predefined:
+      - 5 - Planning
+      - 4 - Low
+      - 3 - Moderate
+      - 2 - High
+      - 1 - Critical
+    - description: System ID of the ticket to update.
+      name: id
+      required: true
+    - description: 'Custom (user defined) fields in the format: fieldname1=value;fieldname2=value;
+        custom fields start with a "u_".'
+      name: custom_fields
+    - auto: PREDEFINED
+      defaultValue: normal
+      description: Type of Change Request ticket. Can be "normal", "standard", or
+        "emergency". Default is "normal".
+      name: change_type
+      predefined:
+      - normal
+      - standard
+      - emergency
+    - description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed".'
+      name: state
+    - description: Caller system ID.
+      name: caller
+    - description: Ticket approval.
+      name: approval
+    - description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
+      name: additional_fields
+    description: Updates the specified ticket.
+    name: servicenow-update-ticket
+  - arguments:
+    - description: Ticket System ID
+      name: id
+      required: true
+    - auto: PREDEFINED
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", or "sc_req_item".
+      name: ticket_type
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+      - sc_req_item
+    description: Deletes a ticket from ServiceNow.
+    name: servicenow-delete-ticket
+  - arguments:
+    - defaultValue: "10"
+      description: The maximum number of tickets to retrieve.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: incident
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", or "sc_req_item". Default is "incident".
+      name: ticket_type
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+    - description: The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+      name: query
+    - defaultValue: "0"
+      description: Starting record index to begin retrieving records from.
+      name: offset
+    - description: Additional fields to present in the War Room entry and incident
+        context.
+      isArray: true
+      name: additional_fields
+    - description: 'System parameters in the format: fieldname1=value;fieldname2=value.
+        For example: "sysparm_display_value=al;&sysparm_exclude_reference_link=True"'
+      name: system_params
+    description: Retrieves ticket information according to the supplied query.
+    name: servicenow-query-tickets
+    outputs:
+    - contextPath: Ticket.ID
+      description: The unique ticket identifier.
+      type: string
+    - contextPath: Ticket.Creator
+      description: A string field that indicates the user who created the ticket.
+      type: string
+    - contextPath: Ticket.CreatedOn
+      description: The date/time when the ticket was created.
+      type: date
+    - contextPath: Ticket.Assignee
+      description: Specifies the user assigned to complete the ticket. By default,
+        this field uses a reference qualifier to only display users with the itil
+        role.
+      type: string
+    - contextPath: Ticket.State
+      description: Status of the ticket.
+      type: string
+    - contextPath: Ticket.Summary
+      description: A human-readable title for the record.
+      type: string
+    - contextPath: Ticket.Number
+      description: The display value of the ticket.
+      type: string
+    - contextPath: Ticket.Active
+      description: Specifies whether work is still being done on a task or whether
+        the work for the task is complete.
+      type: boolean
+    - contextPath: Ticket.AdditionalComments
+      description: Comments about the task record.
+      type: Unknown
+    - contextPath: Ticket.Priority
+      description: Specifies the ticket priority for the assignee.
+      type: string
+    - contextPath: Ticket.OpenedAt
+      description: The date/time when the ticket was first opened.
+      type: date
+    - contextPath: Ticket.Escalation
+      description: Indicates how long the ticket has been open.
+      type: string
+  - arguments:
+    - description: Ticket System ID.
+      name: id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: incident
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", or "sc_req_item". Default is "incident".
+      name: ticket_type
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+    - description: The actual link to publish in ServiceNow ticket, in a valid URL
+        format, for example, http://www.demisto.com.
+      name: link
+      required: true
+    - description: Whether to publish the link as comment on the ticket. Can be "true"
+        or "false". If false will publish the link as WorkNote.
+      name: post-as-comment
+    - description: The text to represent the link.
+      name: text
+    description: Adds a link to the specified ticket.
+    name: servicenow-add-link
+  - arguments:
+    - description: Ticket System ID.
+      name: id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: incident
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", or "sc_req_item". Default is "incident".
+      name: ticket_type
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+    - description: Comment to add.
+      name: comment
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to publish the note as comment on the ticket. Can be "true"
+        or "false". Default is "false".
+      name: post-as-comment
+      predefined:
+      - "true"
+      - "false"
+    description: Adds a comment to the specified ticket, by ticket ID.
+    name: servicenow-add-comment
+  - arguments:
+    - description: Ticket System ID.
+      name: id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: incident
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", or "sc_req_item". Default is "incident".
+      name: ticket_type
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+    - description: War Room entry ID that includes the file.
+      name: file_id
+      required: true
+    - description: Filename of the uploaded file to override the existing file name
+        in the entry.
+      name: file_name
+    description: Uploads a file to the specified ticket.
+    name: servicenow-upload-file
+    outputs:
+    - contextPath: ServiceNow.Ticket.File.Filename
+      description: Name of the file.
+      type: string
+    - contextPath: ServiceNow.Ticket.File.Link
+      description: Download link for the file.
+      type: string
+    - contextPath: ServiceNow.Ticket.File.SystemID
+      description: System ID of the file.
+      type: string
+  - arguments:
+    - description: Record System ID.
+      name: id
+      required: true
+    - description: 'Comma-separated list of table fields to display and output to
+        the context, for example: name,tag,company. ID field is added by default.'
+      name: fields
+    - description: The name of the table from which to get the record.
+      name: table_name
+      required: true
+    description: Retrieves record information, by record ID.
+    name: servicenow-get-record
+    outputs:
+    - contextPath: ServiceNow.Record.ID
+      description: The unique record identifier for the record.
+      type: string
+    - contextPath: ServiceNow.Record.UpdatedBy
+      description: A string field that indicates the user who most recently updated
+        the record.
+      type: string
+    - contextPath: ServiceNow.Record.UpdatedAt
+      description: A time-stamp field that indicates the date and time of the most
+        recent update.
+      type: date
+    - contextPath: ServiceNow.Record.CreatedBy
+      description: A string field that indicates the user who created the record.
+      type: string
+    - contextPath: ServiceNow.Record.CreatedOn
+      description: A time-stamp field that indicates when a record was created.
+      type: date
+  - arguments:
+    - description: The name of the table to query
+      name: table_name
+      required: true
+    - defaultValue: "10"
+      description: The maximum number of tickets to retrieve.
+      name: limit
+    - description: The query to run. For more information about querying in ServiceNow,
+        see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+      name: query
+    - description: 'Comma-separated list of table fields to display and output to
+        the context, for example: name,tag,company. ID field is added by default.'
+      isArray: true
+      name: fields
+    - defaultValue: "0"
+      description: Starting record index to begin retrieving records from.
+      name: offset
+    - description: 'System parameters in the format: fieldname1=value;fieldname2=value.
+        For example: "sysparm_display_value=al;&sysparm_exclude_reference_link=True"'
+      name: system_params
+    description: Queries the specified table in ServiceNow.
+    name: servicenow-query-table
+    outputs:
+    - contextPath: ServiceNow.Results.ID
+      description: The unique record identifier for the record.
+      type: string
+    - contextPath: ServiceNow.Results.UpdatedBy
+      description: A string field that indicates the user who most recently updated
+        the record.
+      type: string
+    - contextPath: ServiceNow.Results.UpdatedAt
+      description: A time-stamp field that indicates the date and time of the most
+        recent update.
+      type: date
+    - contextPath: ServiceNow.Results.CreatedBy
+      description: A string field that indicates the user who created the record.
+      type: string
+    - contextPath: ServiceNow.Results.CreatedOn
+      description: A time-stamp field that indicates when a record was created.
+      type: date
+  - arguments:
+    - description: The name of the table in which to create a record.
+      name: table_name
+      required: true
+    - description: 'Fields and their values to create the record with, in the format:
+        fieldname1=value;fieldname2=value;...'
+      name: fields
+    - description: 'Custom (user defined) fields in the format: fieldname1=value;fieldname2=value;...'
+      name: custom_fields
+    description: Creates a new record in the specified ServiceNow table.
+    name: servicenow-create-record
+    outputs:
+    - contextPath: ServiceNow.Record.ID
+      description: The unique record identifier for the record.
+      type: string
+    - contextPath: ServiceNow.Record.UpdatedBy
+      description: A string field that indicates the user who most recently updated
+        the record.
+      type: string
+    - contextPath: ServiceNow.Record.UpdatedAt
+      description: A time-stamp field that indicates the date and time of the most
+        recent update.
+      type: date
+    - contextPath: ServiceNow.Record.CreatedBy
+      description: A string field that indicates the user who created the record.
+      type: string
+    - contextPath: ServiceNow.Record.CreatedOn
+      description: A time-stamp field that indicates when a record was created.
+      type: date
+  - arguments:
+    - description: The name of the table to update the record in.
+      name: table_name
+      required: true
+    - description: The system ID of the ticket to update.
+      name: id
+      required: true
+    - description: 'Fields and their values to update in the record, in the format:
+        fieldname1=value;fieldname2=value;...'
+      name: fields
+    - description: 'Custom (user defined) fields and their values to update in the
+        record, in the format: fieldname1=value;fieldname2=value;...'
+      name: custom_fields
+    description: Updates a record in the specified ServiceNow table.
+    name: servicenow-update-record
+    outputs:
+    - contextPath: ServiceNow.Record.ID
+      description: The unique record identifier for the record.
+      type: string
+    - contextPath: ServiceNow.Record.UpdatedBy
+      description: A string field that indicates the user who most recently updated
+        the record.
+      type: string
+    - contextPath: ServiceNow.Record.UpdatedAt
+      description: A time-stamp field that indicates the date and time of the most
+        recent update.
+      type: date
+    - contextPath: ServiceNow.Record.CreatedBy
+      description: A string field that indicates the user who created the record.
+      type: string
+    - contextPath: ServiceNow.Record.CreatedOn
+      description: A time-stamp field that indicates when a record was created.
+      type: date
+  - arguments:
+    - description: The table name.
+      name: table_name
+      required: true
+    - description: The system ID of the ticket to delete.
+      name: id
+      required: true
+    description: Deletes a record in the specified ServiceNow table.
+    name: servicenow-delete-record
+  - arguments:
+    - description: Table name
+      name: table_name
+      required: true
+    description: Lists API fields for the specified ServiceNow table.
+    name: servicenow-list-table-fields
+    outputs:
+    - contextPath: ServiceNow.Field
+      description: Table API field name.
+      type: string
+  - arguments:
+    - description: Query by computer sys_id.
+      name: computer_id
+    - description: Query by computer name.
+      name: computer_name
+    - description: Query by specified query, for more information about querying in
+        ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+      name: query
+    - description: Query by asset tag.
+      name: asset_tag
+    - defaultValue: "10"
+      description: Maximum number of query results. Default is 10.
+      name: limit
+    - defaultValue: "0"
+      description: Starting record index to begin retrieving records from.
+      name: offset
+    description: Queries the cmdb_ci_computer table in ServiceNow.
+    name: servicenow-query-computers
+    outputs:
+    - contextPath: ServiceNow.Computer.ID
+      description: Computer system ID.
+      type: string
+    - contextPath: ServiceNow.Computer.AssetTag
+      description: Computer Asset tag.
+      type: string
+    - contextPath: ServiceNow.Computer.Name
+      description: Computer name.
+      type: string
+    - contextPath: ServiceNow.Computer.DisplayName
+      description: Computer display name.
+      type: string
+    - contextPath: ServiceNow.Computer.SupportGroup
+      description: Computer support group.
+      type: string
+    - contextPath: ServiceNow.Computer.OperatingSystem
+      description: Computer operating system.
+      type: string
+    - contextPath: ServiceNow.Computer.Company
+      description: Computer company system ID.
+      type: string
+    - contextPath: ServiceNow.Computer.AssignedTo
+      description: Computer assigned to user system ID.
+      type: string
+    - contextPath: ServiceNow.Computer.State
+      description: Computer state.
+      type: string
+    - contextPath: ServiceNow.Computer.Cost
+      description: Computer cost.
+      type: string
+    - contextPath: ServiceNow.Computer.Comments
+      description: Computer comments.
+      type: string
+  - arguments:
+    - description: Query by group system ID.
+      name: group_id
+    - description: Query by group name.
+      name: group_name
+    - description: Query by specified query, for more information about querying in
+        ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+      name: query
+    - defaultValue: "10"
+      description: Maximum number of query results. Default is 10.
+      name: limit
+    - defaultValue: "0"
+      description: Starting record index to begin retrieving records from.
+      name: offset
+    description: Queries the sys_user_group table in ServiceNow.
+    name: servicenow-query-groups
+    outputs:
+    - contextPath: ServiceNow.Group.ID
+      description: Group system ID.
+      type: string
+    - contextPath: ServiceNow.Group.Description
+      description: Group description.
+      type: string
+    - contextPath: ServiceNow.Group.Name
+      description: Group name.
+      type: string
+    - contextPath: ServiceNow.Group.Manager
+      description: Group manager system ID.
+      type: string
+    - contextPath: ServiceNow.Group.Updated
+      description: Date/time the group was last updated.
+      type: date
+  - arguments:
+    - description: Query by user system ID.
+      name: user_id
+    - description: Query by username.
+      name: user_name
+    - description: Query by specified query, for more information about querying in
+        ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+      name: query
+    - defaultValue: "10"
+      description: Maximum number of query results. Default is 10.
+      name: limit
+    - defaultValue: "0"
+      description: Starting record index to begin retrieving records from.
+      name: offset
+    description: Queries the sys_user table in ServiceNow.
+    name: servicenow-query-users
+    outputs:
+    - contextPath: ServiceNow.User.ID
+      description: User system ID.
+      type: string
+    - contextPath: ServiceNow.User.Name
+      description: User name (first and last).
+      type: string
+    - contextPath: ServiceNow.User.UserName
+      description: User username.
+      type: string
+    - contextPath: ServiceNow.User.Email
+      description: User email address.
+      type: string
+    - contextPath: ServiceNow.User.Created
+      description: Date/time the user was created.
+      type: date
+    - contextPath: ServiceNow.User.Updated
+      description: Date/time the user was last updated.
+      type: date
+  - arguments:
+    - description: 'The table label, for example: Asset, Incident, IP address, and
+        so on.'
+      name: label
+      required: true
+    - defaultValue: "10"
+      description: Maximum number of query results. Default is 10.
+      name: limit
+    - description: Starting record index to begin retrieving records from.
+      name: offset
+    description: Gets table names by a label to use in commands.
+    name: servicenow-get-table-name
+    outputs:
+    - contextPath: ServiceNow.Table.ID
+      description: Table system ID.
+      type: string
+    - contextPath: ServiceNow.Table.Name
+      description: 'Table name to use in commands, for example: alm_asset.'
+      type: string
+    - contextPath: ServiceNow.Table.SystemName
+      description: 'Table system name, for example: Asset.'
+      type: string
+  - arguments:
+    - default: true
+      description: Ticket System ID.
+      name: id
+      required: true
+    - defaultValue: "10"
+      description: Maximum number of ticket notes. Default is 10.
+      name: limit
+    - defaultValue: "0"
+      description: Offset of the ticket notes.
+      name: offset
+    description: Gets notes from the specified ServiceNow ticket. "Read permissions"
+      are required for the sys_journal_field table.
+    name: servicenow-get-ticket-notes
+    outputs:
+    - contextPath: ServiceNow.Ticket.ID
+      description: Ticket ID.
+      type: string
+    - contextPath: ServiceNow.Ticket.Note.Value
+      description: Ticket note value.
+      type: unknown
+    - contextPath: ServiceNow.Ticket.Note.CreatedOn
+      description: Date/time the ticket note was created.
+      type: date
+    - contextPath: ServiceNow.Ticket.Note.CreatedBy
+      description: User that created the ticket note.
+      type: string
+    - contextPath: ServiceNow.Ticket.Note.Type
+      description: Ticket note type.
+      type: string
+  - arguments:
+    - description: Ticket System ID.
+      name: id
+      required: true
+    - description: Tag system ID. Can be retrieved using the "!servicenow-query-table
+        table_name=label fields=name,active,sys_id" command.
+      name: tag_id
+      required: true
+    - description: 'Tag title. For example: "Incident - INC000001".'
+      name: title
+      required: true
+    - auto: PREDEFINED
+      defaultValue: incident
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", or "sc_req_item". Default is "incident".
+      name: ticket_type
+      predefined:
+      - incident
+      - problem
+      - change_request
+      - sc_request
+      - sc_task
+      - sc_req_item
+    description: Adds a tag to a ticket. The added tag entry will be visible in the
+      label_entry table and can be retrieved using the "!servicenow-query-table table_name=label_entry
+      fields=title,table,sys_id,id_display,id_type" command.
+    name: servicenow-add-tag
+    outputs:
+    - contextPath: ServiceNow.Ticket.ID
+      description: The unique ticket identifier.
+      type: String
+    - contextPath: ServiceNow.Ticket.TagTitle
+      description: Ticket tag title.
+      type: String
+    - contextPath: ServiceNow.Ticket.TagID
+      description: Ticket tag ID.
+      type: String
+  - arguments:
+    - description: Query by name. Does not require an exact match.
+      name: name
+    - defaultValue: "0"
+      description: Starting record index to begin retrieving records from.
+      name: offset
+    - defaultValue: "10"
+      description: Maximum number of query results. Default is 10.
+      name: limit
+    description: Queries the sc_cat_item table in ServiceNow.
+    name: servicenow-query-items
+    outputs:
+    - contextPath: ServiceNow.CatalogItem.ID
+      description: Catalog item system ID.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Name
+      description: Catalog item name.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Description
+      description: Catalog item description.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Price
+      description: Catalog item price.
+      type: Number
+  - arguments:
+    - description: Catalog item system ID.
+      name: id
+      required: true
+    description: Retrieves item details by system ID.
+    name: servicenow-get-item-details
+    outputs:
+    - contextPath: ServiceNow.CatalogItem.ID
+      description: Catalog item system ID.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Name
+      description: Catalog item name.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Description
+      description: Catalog item description.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Price
+      description: Catalog item price.
+      type: Number
+    - contextPath: ServiceNow.CatalogItem.Variables.Mandatory
+      description: Is the variable mandatory as part of the ordering process.
+      type: Boolean
+    - contextPath: ServiceNow.CatalogItem.Variables.Name
+      description: A name to identify the question.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Variables.Question
+      description: Question to ask users ordering the catalog item.
+      type: String
+    - contextPath: ServiceNow.CatalogItem.Variables.Type
+      description: The variable type.
+      type: String
+  - arguments:
+    - description: Catalog item system ID.
+      name: id
+      required: true
+    - description: Quantity of the item to order.
+      name: quantity
+      required: true
+    - description: If there are mandatory variables defined for the item, they must
+        be passed to the endpoint. Can be retrieved using the servicenow-get-item-details
+        command. For example, var1=value1;var2=value2.
+      name: variables
+    description: Orders the specified catalog item.
+    name: servicenow-create-item-order
+    outputs:
+    - contextPath: ServiceNow.OrderRequest.ID
+      description: Generated request system ID.
+      type: String
+    - contextPath: ServiceNow.OrderRequest.RequestNumber
+      description: Number of the generated request.
+      type: String
+  - arguments:
+    - description: Queue ID. Can be retrieved using the "!servicenow-query-table table_name=awa_queue
+        fields=name,number,order" command.
+      name: queue_id
+      required: true
+    - defaultValue: incident
+      description: Document table.
+      name: document_table
+    - description: Document ID.
+      name: document_id
+      required: true
+    description: Documents a route to a queue. Requires an installation of the Advanced
+      Work Assignments plugin. An active queue and service channel to the designated
+      table.
+    name: servicenow-document-route-to-queue
+    outputs:
+    - contextPath: ServiceNow.WorkItem.WorkItemID
+      description: Unique ID of the work item assigned to the queue.
+      type: String
+    - contextPath: ServiceNow.WorkItem.DocumentTable
+      description: Name of the table associated with the document
+      type: String
+    - contextPath: ServiceNow.WorkItem.DocumentID
+      description: Unique ID of the document to be routed to the queue.
+      type: String
+    - contextPath: ServiceNow.WorkItem.QueueID
+      description: Unique ID of the queue on which to route a document.
+      type: String
+    - contextPath: ServiceNow.WorkItem.DisplayName
+      description: 'Name of the document to be routed by this work item, for example:
+        case record.'
+      type: String
+  dockerimage: demisto/python3:3.8.6.14516
+  isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
