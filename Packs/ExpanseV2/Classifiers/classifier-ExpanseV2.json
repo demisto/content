@@ -4,14 +4,15 @@
     "feed": false,
     "id": "ExpanseV2",
     "keyTypeMap": {
-        "DataStorageAndAnalysis": "Expanse Issue",
-        "DevelopmentEnvironment": "Expanse Issue",
-        "NetworkingAndSecurityInfrastructure": "Expanse Issue"
+        "Low": "Expanse Issue",
+        "Medium": "Expanse Issue",
+        "High": "Expanse Issue",
+        "Critical": "Expanse Issue"        
     },
     "name": "ExpanseV2 - Classifier",
 	"transformer": {
 		"complex": null,
-		"simple": "issueType.id"
+		"simple": "priority"
 	},
     "type": "classification",
     "version": -1,
