@@ -55,6 +55,62 @@ script:
     deprecated: false
     execution: false
     name: ansible-awx-inventories-list
+  - arguments:
+    - default: false
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: inventory_id
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '1'
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: ansible-awx-hosts-list
+  - arguments:
+    - default: false
+      isArray: false
+      name: inventory_id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: host_name
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: true
+      defaultValue: 'True'
+      isArray: false
+      name: enabled
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: ansible-awx-host-create
   dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: true

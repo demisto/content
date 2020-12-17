@@ -26,38 +26,13 @@ class Client(BaseClient):
                                      auth=authentication,
                                      proxy=proxy)
 
-    def api_request(self, url_suffix: str, data: dict = {}) -> dict:
-        return self._http_request(method='GET', url_suffix=url_suffix, params=data)
-
-
-def generate_info(res: dict):
-    return {'id': res.get('id'),
-            'type': res.get('type'),
-            'url': res.get('url'),
-            'inventory name': res.get('name'),
-            'created': str(parse_date_string(res.get('created'), DATE_FORMAT)),
-            'modified': str(parse_date_string(res.get('modified'), DATE_FORMAT)),
-            'description': res.get('description'),
-            'organization': res.get('organization'),
-            'kind': res.get('kind'),
-            'host_filter': res.get('host_filter'),
-            'variables': res.get('variables'),
-            'has_active_failures': res.get('has_active_failures'),
-            'total_hosts': res.get('total_hosts'),
-            'hosts_with_active_failures': res.get('hosts_with_active_failures'),
-            'total_groups': res.get('total_groups'),
-            'groups_with_active_failures': res.get('groups_with_active_failures'),
-            'has_inventory_sources': res.get('has_inventory_sources'),
-            'total_inventory_sources': res.get('total_inventory_sources'),
-            'inventory_sources_with_failures': res.get('inventory_sources_with_failures'),
-            'insights_credential': res.get('insights_credential'),
-            'pending_deletion': res.get('pending_deletion')
-            }
+    def api_request(self, method: str, url_suffix: str, params: dict = None, data: dict = None) -> dict:
+        return self._http_request(method=method, url_suffix=url_suffix, params=params, data=data)
 
 
 def inventories_list(client: Client, args: dict) -> List[CommandResults]:
     command_results = []
-    response = client.api_request('inventories/', args)
+    response = client.api_request('GET', 'inventories/', args)
     results = response.get('results')
     if not len(results):
         command_results.append(CommandResults(
@@ -65,26 +40,27 @@ def inventories_list(client: Client, args: dict) -> List[CommandResults]:
             raw_response=response
         ))
     for res in results:
-        info = generate_info(res)
+        res.pop('related')  # remove irelevant fields from output
+        res.pop('summary_fields')
         command_results.append(CommandResults(
             outputs_prefix='AnsibleAWX.Inventory',
             outputs_key_field='id',
-            outputs=info,
-            readable_output=tableToMarkdown(name='Results', t=info),
+            outputs=res,
+            readable_output=tableToMarkdown(name='Results', t=res),
             raw_response=res
         ))
     return command_results
 
 
 def hosts_list(client: Client, args: dict) -> List[CommandResults]:
-    inventory_id = args.pop('inventory_id')
+    inventory_id = args.pop('inventory_id', None)
     if inventory_id:
         url_suffix = f'inventories/{inventory_id}/hosts'
     else:
         url_suffix = 'hosts/'
 
     command_results = []
-    response = client.api_request(url_suffix, args)
+    response = client.api_request('GET', url_suffix, args)
     results = response.get('results')
     if not len(results):
         command_results.append(CommandResults(
@@ -92,23 +68,41 @@ def hosts_list(client: Client, args: dict) -> List[CommandResults]:
             raw_response=response
         ))
     for res in results:
-        info = generate_info(res)
+        res.pop('related')  # remove irelevant fields from output
+        res.pop('summary_fields')
         command_results.append(CommandResults(
-            outputs_prefix='AnsibleAWX.Inventory',
+            outputs_prefix='AnsibleAWX.Host',
             outputs_key_field='id',
-            outputs=info,
-            readable_output=tableToMarkdown(name='Results', t=info),
+            outputs=res,
+            readable_output=tableToMarkdown(name='Results', t=res),
             raw_response=res
         ))
     return command_results
 
 
+def create_host(client: Client, args: dict):
+    inventory_id = args.pop('inventory_id', None)
+    if inventory_id:
+        url_suffix = f'inventories/{inventory_id}/hosts'
+    else:
+        url_suffix = 'hosts/'
+
+    body = {'name': args.get('host_name'),
+            'description': args.get('description', ''),
+            'enabled': bool(args.get('enabled', 'True')),
+            }
+
+    response = client.api_request('POST', url_suffix, args)
+
+
+
 def test_module(client: Client) -> str:
-     try:
+
+    try:
         client.api_request('inventories/', {})
         return 'ok'
-     except Exception as e:
-         raise DemistoException(f"Error in API call - check the input parameters. Error: {e}.")
+    except Exception as e:
+        raise DemistoException(f"Error in API call - check the input parameters. Error: {e}.")
 
 
 def main() -> None:
@@ -120,7 +114,8 @@ def main() -> None:
     params = demisto.params()
     commands = {
         'ansible-awx-inventories-list': inventories_list,
-        'ansible-awx-hosts-list': hosts_list
+        'ansible-awx-hosts-list': hosts_list,
+        'ansible-awx-host-create': create_host
     }
 
     base_url = params.get("url")
