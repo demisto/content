@@ -129,7 +129,7 @@ def get_demisto_datetme_format(date_string):
 
 def get_incidents(query, time_field, size, from_date, to_date, fields_to_populate, include_context):
     query_size = min(PAGE_SIZE, size)
-    args = {"query": query, "size": query_size, "sort": time_field}
+    args = {"query": query, "size": query_size, "sort": "%s.%s" % (time_field, "desc")}
     # apply only when created time field
     if time_field == 'created':
         if from_date:
