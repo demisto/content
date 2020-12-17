@@ -355,12 +355,6 @@ class Client(BaseClient):
         if start_time:
             request_params['start_time'] = start_time
 
-        return self._http_request(
-            method='GET',
-            url_suffix='/get_alerts',
-            params=request_params
-        )
-
     def get_alert(self, alert_id: str) -> Dict[str, Any]:
         """Gets a specific HelloWorld alert by id
 
@@ -526,43 +520,6 @@ def convert_to_demisto_severity(severity: str) -> int:
 
 
 ''' COMMAND FUNCTIONS '''
-
-
-def test_module(client: Client, first_fetch_time: int) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
-
-    :type name: ``str``
-    :param name: name to append to the 'Hello' string
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    # INTEGRATION DEVELOPER TIP
-    # Client class should raise the exceptions, but if the test fails
-    # the exception text is printed to the Cortex XSOAR UI.
-    # If you have some specific errors you want to capture (i.e. auth failure)
-    # you should catch the exception here and return a string with a more
-    # readable output (for example return 'Authentication Error, API Key
-    # invalid').
-    # Cortex XSOAR will print everything you return different than 'ok' as
-    # an error
-    try:
-        client.search_alerts(max_results=1, start_time=first_fetch_time, alert_status=None, alert_type=None,
-                             severity=None)
-    except DemistoException as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return 'ok'
 
 
 def say_hello_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1383,12 +1340,7 @@ def main() -> None:
             headers=headers,
             proxy=proxy)
 
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client, first_fetch_timestamp)
-            return_results(result)
-
-        elif demisto.command() == 'fetch-incidents':
+        if demisto.command() == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
             alert_status = demisto.params().get('alert_status', None)
             alert_type = demisto.params().get('alert_type', None)
