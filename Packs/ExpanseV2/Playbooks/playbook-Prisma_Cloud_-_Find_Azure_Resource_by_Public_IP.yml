@@ -1,4 +1,6 @@
-description: Find Azure resources by Public IP using Prisma Cloud inventory
+description: |
+  Find Azure resources by Public IP using Prisma Cloud inventory.
+  Supported services: Azure VM, Azure Load Balancer, Azure Application Gateway, Azure Web Apps.
 id: Prisma Cloud - Find Azure Resource by Public IP
 inputs:
 - description: Public IP Address to look up

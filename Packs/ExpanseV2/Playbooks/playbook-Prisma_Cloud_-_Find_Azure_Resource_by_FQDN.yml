@@ -1,4 +1,6 @@
-description: Find Azure resources by FQDN using Prisma Cloud inventory
+description: |
+  Find Azure resources by FQDN using Prisma Cloud inventory.
+  Supported services: Azure VM, Azure Load Balancer, Azure Application Gateway, AKS, Azure Web Apps, Azure Storage.
 id: Prisma Cloud - Find Azure Resource by FQDN
 inputs:
 - description: FQDN to look up

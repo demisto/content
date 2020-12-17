@@ -1,4 +1,6 @@
-description: Find an AWS resources by Public IP using Prisma Cloud inventory
+description: |
+  Find an AWS resources by Public IP using Prisma Cloud inventory.
+  Supported services: EC2, Network Load Balancer, ECS, Route53
 id: Prisma Cloud - Find AWS Resource by Public IP
 inputs:
 - description: Public IP Address to look up
