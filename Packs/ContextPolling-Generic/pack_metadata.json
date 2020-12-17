@@ -1,0 +1,14 @@
+{
+    "name": "Context Polling - Generic",
+    "description": "This pack provides the same functionality as the \"Field Polling - Generic\" but works with context rather than fields.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Adam Burt",
+    "url": "",
+    "email": "",
+    "created": "2020-12-17T12:13:18Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

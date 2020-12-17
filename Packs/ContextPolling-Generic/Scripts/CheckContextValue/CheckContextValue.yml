@@ -1,0 +1,44 @@
+args:
+- description: 'The key to check (can contain. ex: key1.key2.key3)'
+  name: key
+  required: true
+- description: The regex pattern to check the field for (optional).
+  name: regex
+- auto: PREDEFINED
+  defaultValue: "False"
+  description: Whether character matching will be case-insensitive. Default is "False".
+  name: ignore_case
+  predefined:
+  - "True"
+  - "False"
+comment: This script checks that a context key exists (and contains data), and optionally
+  checks the value of the context key for a match against an input value. If a regex
+  is not supplied, the script checks that the key is not empty. This script can be
+  used with the "GenericPolling" playbook to poll for field population or that a field
+  contains a specific value.
+commonfields:
+  id: CheckContextValue
+  version: -1
+dockerimage: demisto/python3:3.8.6.14516
+enabled: true
+name: CheckContextValue
+outputs:
+- contextPath: CheckContextKey.name
+  description: Key Name
+  type: string
+- contextPath: CheckContextKey.exists
+  description: Whether the Key Exists.
+  type: Unknown
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- evaluation
+- polling
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+dockerimage45: demisto/python3:3.8.5.11789
