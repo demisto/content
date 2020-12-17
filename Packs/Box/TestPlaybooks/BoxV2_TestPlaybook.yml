@@ -35,7 +35,7 @@ tasks:
     taskid: 4ba7c3a1-fb70-487c-8587-70ff2fc66b99
     type: regular
     task:
-      id: "1"
+      id: 4ba7c3a1-fb70-487c-8587-70ff2fc66b99
       version: -1
       name: DeleteContext
       script: DeleteContext
