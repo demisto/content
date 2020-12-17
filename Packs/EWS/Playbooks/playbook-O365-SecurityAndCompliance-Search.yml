@@ -687,7 +687,7 @@ tasks:
     task:
       brand: ""
       description: If the compliance search exists and force == "true", the existing
-        compliance search will be removed and a new will be created. If force == "false",
+        compliance search will be removed and a new one will be created. If force == "false",
         the existing search will be used.
       id: 877404e3-7a2f-47d2-817e-db477bf4b028
       iscommand: false
@@ -763,8 +763,8 @@ tasks:
     task:
       brand: ""
       description: |-
-        This playbook perform:
-        1. Creates a new compliance search action - Preview (Base on created compliance search).
+        This playbook performs the following:
+        1. Creates a new compliance search action - Preview (Base on the created compliance search).
         2. Waits for the preview action to complete.
         3. Retrieves the preview results.
       id: 2f7d696d-8e45-4bbf-88bf-63eb8e11a268
