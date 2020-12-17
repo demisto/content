@@ -1,4 +1,4 @@
-# import requests_mock
+import requests_mock
 from CSVFeedApiModule import *
 import io
 
