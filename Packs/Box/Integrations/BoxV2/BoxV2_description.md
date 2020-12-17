@@ -3,21 +3,21 @@ This integration was integrated and tested with API version 2.0 of Box v2
 
 ## Configure the Box Application to Interface with XSOAR
 1. Navigate to [the developer console](https://app.box.com/developers/console) for Box.
-2. Click *Create a New App*.
-3. Select *Custom App* and when prompted, select *Server Authentication (with JWT)*
+2. Click **Create a New App**.
+3. Select **Custom App** and when prompted, select **Server Authentication (with JWT)**
 4. Enter your desired App Name.
-5. In the Configuration menu under Application Access, select *Enterprise*.
-6. Under the Advanced Features option, enable both *Perform Actions as Users* and *Generate User Access Tokens*.
-7. In the Add and Manage Public Keys section, click *Generate a Public/Private Keypair* and follow the prompts.
-8. Next click *Save Changes* un the upper right-hand corner.
-9. Lastly navigate to the bottom of the page and select *Download as a JSON*.
+5. In the Configuration menu under Application Access, select **Enterprise**.
+6. Under the Advanced Features option, enable both **Perform Actions as Users** and **Generate User Access Tokens**.
+7. In the Add and Manage Public Keys section, click **Generate a Public/Private Keypair** and follow the prompts.
+8. Click **Save Changes** in the upper right-hand corner.
+9. Navigate to the bottom of the page and select **Download as a JSON**.
 
-Once you have obtained the JSON file, copy and paste its contents into the `Credentials JSON` parameter.
+Once you have obtained the JSON file, copy and paste its contents into the *Credentials JSON* parameter.
 
-Before testing the integration, please navigate to the General Settings for your app in the developer console and click 
-Review and Submit. Your enterprise admin will need to approve the app before your integration will start working.
+Before testing the integration, navigate to the General Settings for your app in the developer console and click 
+**Review and Submit**. Your enterprise admin will need to approve the app before your integration will start working.
 
-From the General Settings menu, you may also obtain your *User ID* for the service account.
+From the General Settings menu, you can obtain your *User ID* for the service account.
 
 ## Configure Box v2 on Cortex XSOAR
 
