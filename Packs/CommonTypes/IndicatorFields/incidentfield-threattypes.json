@@ -2,12 +2,7 @@
     "id": "indicator_threattypes",
     "version": -1,
     "modified": "2020-02-06T16:01:51.156723531Z",
-    "sortValues": null,
-    "vcShouldIgnore": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "name": "Threat Types",
-    "prevName": "Feed Threat Types",
     "ownerOnly": false,
     "placeholder": "",
     "description": "The threat category associated to this indicator by the source vendor. For example, Phishing, Command \\u0026 Control, TOR, etc.",
@@ -27,7 +22,6 @@
     "system": false,
     "content": true,
     "group": 2,
-    "mergeStrategy": "",
     "hidden": false,
     "associatedTypes": null,
     "systemAssociatedTypes": null,
@@ -67,6 +61,5 @@
     "sla": 0,
     "threshold": 72,
     "breachScript": "",
-    "validatedError": "",
     "fromVersion": "5.5.0"
 }
