@@ -130,19 +130,21 @@ def get_demisto_datetme_format(date_string):
 def get_incidents(query, time_field, size, from_date, to_date, fields_to_populate, include_context):
     query_size = min(PAGE_SIZE, size)
     args = {"query": query, "size": query_size, "sort": time_field}
-    if from_date:
-        from_datetime = get_demisto_datetme_format(from_date)
-        if from_datetime:
-            args['fromdate'] = from_datetime
-        else:
-            demisto.results("did not set from date due to a wrong format: " + from_date)
+    # apply only when created time field
+    if time_field == 'created':
+        if from_date:
+            from_datetime = get_demisto_datetme_format(from_date)
+            if from_datetime:
+                args['fromdate'] = from_datetime
+            else:
+                demisto.results("did not set from date due to a wrong format: " + from_date)
 
-    if to_date:
-        to_datetime = get_demisto_datetme_format(to_date)
-        if to_datetime:
-            args['todate'] = to_datetime
-        else:
-            demisto.results("did not set to date due to a wrong format: " + from_date)
+        if to_date:
+            to_datetime = get_demisto_datetme_format(to_date)
+            if to_datetime:
+                args['todate'] = to_datetime
+            else:
+                demisto.results("did not set to date due to a wrong format: " + from_date)
 
     incident_list = []  # type: ignore
     page = 0
