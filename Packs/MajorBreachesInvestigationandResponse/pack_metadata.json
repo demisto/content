@@ -1,5 +1,5 @@
 {
-    "name": "Major Breaches Investigation and Response",
+    "name": "Rapid Breach Response",
     "description": "This content pack helps you to collect, investigate, and remediate incident relates to major breaches.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
@@ -12,6 +12,7 @@
     "useCases": [],
     "keywords": [
         "SolarStorm",
-        "SunBrust"
+        "SunBurst",
+        "SolarWinds"
     ]
 }
