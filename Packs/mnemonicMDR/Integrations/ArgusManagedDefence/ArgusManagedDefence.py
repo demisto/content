@@ -246,6 +246,22 @@ def fetch_incidents(
     return last_run, incidents
 
 
+def get_remote_data_command(args: Dict[str, Any]) -> CommandResults:
+    raise NotImplementedError
+
+
+def get_modified_remote_data_command(args: Dict[str, Any]) -> CommandResults:
+    raise NotImplementedError
+
+
+def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
+    raise NotImplementedError
+
+
+def get_mapping_fields_command(args: Dict[str, Any]) -> CommandResults:
+    raise NotImplementedError
+
+
 def add_case_tag_command(args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id", None)
     key = args.get("key", None)
@@ -991,6 +1007,18 @@ def main() -> None:
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+
+        elif demisto.command() == "get-remote-data":
+            return_results(get_remote_data_command(demisto.args()))
+
+        elif demisto.command() == "get-modified-remote-data":
+            return_results(get_modified_remote_data_command(demisto.args()))
+
+        elif demisto.command() == "update-remote-system":
+            return_results(update_remote_system_command(demisto.args()))
+
+        elif demisto.command() == "get-mapping-fields":
+            return_results(get_mapping_fields_command(demisto.args()))
 
         elif demisto.command() == "argus-add-case-tag":
             return_results(add_case_tag_command(demisto.args()))

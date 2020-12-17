@@ -6690,6 +6690,61 @@ script:
     - contextPath: Argus.ObservationsIP.data.address.address
       description: Observations IP Address Address
       type: String
+  - arguments:
+    - default: false
+      description: Argus Case ID
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
+      description: Time or timestamp case was last updated.
+      isArray: false
+      name: last_updated
+      required: false
+      secret: false
+    deprecated: false
+    description: Get remote data from a remote incident. This method does not update
+      the current incident, and should be used for debugging purposes.
+    execution: false
+    name: get-remote-data
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: last_updated
+      description: Argus Case ID
+      isArray: false
+      name: case_id
+      predefined:
+      - Time or timestamp case was last updated.
+      required: false
+      secret: false
+    deprecated: false
+    description: Get updated only remote data from a remote incident. This method
+      does not update the current incident, and should be used for debugging purposes.
+    execution: false
+    name: get-modified-remote-data
+  - arguments:
+    - default: false
+      description: Argus Case ID
+      isArray: false
+      name: case_id
+      required: false
+      secret: false
+    - default: false
+      description: Time or timestamp case was last updated.
+      isArray: false
+      name: last_updated
+      required: false
+      secret: false
+    deprecated: false
+    description: Update remote system with changes in XSOAR
+    execution: false
+    name: update-remote-system
+  - deprecated: false
+    description: Get mapping fields for mirroring
+    execution: false
+    name: get-mapping-fields
   dockerimage: demisto/argus-toolbelt:1.0.0.14035
   feed: false
   isfetch: true
@@ -6699,6 +6754,9 @@ script:
   script: '-'
   subtype: python3
   type: python
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
