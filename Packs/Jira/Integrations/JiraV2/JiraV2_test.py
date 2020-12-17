@@ -155,7 +155,7 @@ def test_get_modified_remote_data(mocker):
         main()
 
 
-def test_get_remote_data(mocker):
+def test_get_remote_data_when_needs_update(mocker):
     """
     Given:
         - Jira v2 client
@@ -168,10 +168,139 @@ def test_get_remote_data(mocker):
         - Verify the `updated` field is set as expected
     """
     from JiraV2 import get_remote_data_command
-    updated_date = '2020-11-25T16:29:37.277764067Z'
+    from test_data.expected_results import GET_JIRA_ISSUE_RES
+
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     mocker.patch(
         'JiraV2.get_issue',
-        return_value=('', '', {'fields': {'updated': updated_date}})
+        return_value=('', '', GET_JIRA_ISSUE_RES)
     )
-    res = get_remote_data_command('id', '0')
-    assert res.mirrored_object['updated'] == updated_date
+    mocker.patch(
+        'JiraV2.get_comments_command',
+        return_value=''
+    )
+    mocker.patch(
+        'JiraV2.get_new_attachments',
+        return_value=''
+    )
+    res = get_remote_data_command({'id': '15', 'lastUpdate': '0'})
+    assert len(res.mirrored_object) != 0
+    assert res.entries == []
+
+
+def test_get_remote_data_when_dont_need_update(mocker):
+    """
+    Given:
+        - Jira v2 client
+        - An update for the issue
+
+    When:
+        - Running get-remote-date
+
+    Then:
+        - Verify the `updated` field is set as expected
+    """
+    from JiraV2 import get_remote_data_command
+    from test_data.expected_results import GET_JIRA_ISSUE_RES
+
+    updated_date = '1996-11-25T16:29:37.277764067Z'
+    GET_JIRA_ISSUE_RES['updated'] = updated_date
+    mocker.patch(
+        'JiraV2.get_issue',
+        return_value=('', '', GET_JIRA_ISSUE_RES)
+    )
+    mocker.patch(
+        'JiraV2.get_comments_command',
+        return_value=''
+    )
+    mocker.patch(
+        'JiraV2.get_new_attachments',
+        return_value=''
+    )
+
+    res = get_remote_data_command({'id': '15', 'lastUpdate': '2050-11-25T16:29:37.277764067Z'})
+    assert res.mirrored_object == {}
+    assert res.entries == []
+
+
+def test_update_remote_system_delta(mocker):
+    from JiraV2 import update_remote_system_command
+    mocker.patch(
+        'JiraV2.edit_issue_command',
+        return_value=''
+    )
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
+    res = update_remote_system_command({'incidentChanged': '17757', 'remoteId': '17757', 'delta': {'summary': 'changes'}})
+    assert res == '17757'
+
+
+def test_get_mapping_fields():
+    from JiraV2 import get_mapping_fields_command
+    res = get_mapping_fields_command()
+    assert list(res.scheme_types_mappings[0].fields.keys()) == ['issueId', 'summary', 'description', 'labels', 'priority', 'dueDate', 'assignee', 'status']
+
+
+def test_get_new_attachment_return_result(mocker):
+    from JiraV2 import get_new_attachments
+    from test_data.expected_results import JIRA_ATTACHMENT
+    from dateparser import parse
+    import pytz
+
+    class file:
+        def __init__(self):
+            self.content = b'content'
+    file_content = file()
+    mocker.patch(
+        'JiraV2.jira_req',
+        return_value=file_content
+    )
+    res = get_new_attachments(JIRA_ATTACHMENT, parse('1996-11-25T16:29:37.277764067Z').replace(tzinfo=pytz.UTC))
+    assert res[0]['File'] == 'download.png'
+
+
+def test_get_new_attachment_without_return_new_attachment(mocker):
+    from JiraV2 import get_new_attachments
+    from test_data.expected_results import JIRA_ATTACHMENT
+    from dateparser import parse
+    import pytz
+
+    class file:
+        def __init__(self):
+            self.content = b'content'
+    file_content = file()
+    mocker.patch(
+        'JiraV2.jira_req',
+        return_value=file_content
+    )
+    res = get_new_attachments(JIRA_ATTACHMENT, parse('2070-11-25T16:29:37.277764067Z').replace(tzinfo=pytz.UTC))
+    assert res == []
+
+
+def test_get_incident_entries(mocker):
+    """
+    Given:
+        - Jira v2 client
+        - An update for the issue
+
+    When:
+        - Running get-remote-date
+
+    Then:
+        - Verify the `updated` field is set as expected
+    """
+    from JiraV2 import get_incident_entries
+    from test_data.expected_results import GET_JIRA_ISSUE_RES
+
+    updated_date = '1996-11-25T16:29:37.277764067Z'
+    GET_JIRA_ISSUE_RES['updated'] = updated_date
+
+    mocker.patch(
+        'JiraV2.get_comments_command',
+        return_value=''
+    )
+    mocker.patch(
+        'JiraV2.get_new_attachments',
+        return_value=''
+    )

@@ -769,7 +769,7 @@ def update_remote_system_command(args):
             demisto.info(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Jira '
                           f'incident {remote_args.remote_incident_id}')
 
-            demisto.info(f'Sending incident with remote ID [{remote_args.remote_incident_id}] to Jira\n')
+            demisto.info(f'Sending incident with remote ID [{remote_args.remote_incident_idupdate_remote_system_command}] to Jira\n')
             edit_issue_command(remote_args.remote_incident_id, **remote_args.delta)
 
         else:
