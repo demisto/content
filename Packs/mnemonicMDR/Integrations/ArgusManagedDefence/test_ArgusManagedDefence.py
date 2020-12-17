@@ -169,7 +169,7 @@ def test_fetch_incidents(requests_mock):
     next_run, incidents = fetch_incidents(last_run, "-1 day")
     assert len(incidents) == 1
     assert incidents[0]["name"] == "#0: string"
-    assert next_run.get("start_time") == 1
+    assert next_run.get("start_time") == "1"
 
 
 def test_fetch_incidents_increment_timestamp(requests_mock):
@@ -185,7 +185,7 @@ def test_fetch_incidents_increment_timestamp(requests_mock):
 
     next_run, incidents = fetch_incidents({}, "-1 day")
     assert len(incidents) == 1
-    assert next_run.get("start_time") == timestamp + 1
+    assert next_run.get("start_time") == str(timestamp + 1)
 
 
 def test_add_case_tag_command(requests_mock):

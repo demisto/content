@@ -241,7 +241,7 @@ def fetch_incidents(
             }
         )
     if result["data"]:
-        last_run["start_time"] = result["data"][-1]["createdTimestamp"] + 1
+        last_run["start_time"] = str(result["data"][-1]["createdTimestamp"] + 1)
 
     return last_run, incidents
 
