@@ -1,14 +1,12 @@
 {
- "id": "Pong",
+ "id": "Box Incident",
  "version": -1,
- "vcShouldIgnore": false,
+ "fromVersion": "6.0.0",
  "locked": false,
- "name": "Pong",
- "prevName": "Pong",
- "color": "#8052F3",
- "sla": 72,
+ "name": "Box Incident",
+ "color": "#418ae6",
  "hours": 0,
- "days": 3,
+ "days": 0,
  "weeks": 0,
  "hoursR": 0,
  "daysR": 0,
@@ -17,7 +15,6 @@
  "readonly": false,
  "default": false,
  "autorun": false,
- "fromVersion": "6.0.0",
  "disabled": false,
  "reputationCalc": 0
 }

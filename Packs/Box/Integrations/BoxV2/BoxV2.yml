@@ -1,0 +1,2913 @@
+category: IT Services
+commonfields:
+  id: Box v2
+  version: -1
+configuration:
+- display: Trust any certificate (not secure)
+  hidden: false
+  name: insecure
+  required: false
+  type: 8
+- display: Credentials JSON
+  name: credentials_json
+  required: true
+  type: 4
+- display: User ID for Fetching Incidents
+  hidden: false
+  name: as_user
+  required: false
+  type: 0
+- hidden: false
+  name: event_type
+  options:
+  - ACCESS_GRANTED
+  - ACCESS_REVOKED
+  - ADD_DEVICE_ASSOCIATION
+  - ADD_LOGIN_ACTIVITY_DEVICE
+  - ADMIN_LOGIN
+  - APPLICATION_CREATED
+  - APPLICATION_PUBLIC_KEY_ADDED
+  - APPLICATION_PUBLIC_KEY_DELETED
+  - CHANGE_ADMIN_ROLE
+  - CHANGE_FOLDER_PERMISSION
+  - COLLABORATION_ACCEPT
+  - COLLABORATION_EXPIRATION
+  - COLLABORATION_INVITE
+  - COLLABORATION_REMOVE
+  - COLLABORATION_ROLE_CHANGE
+  - COMMENT_CREATE
+  - COMMENT_DELETE
+  - CONTENT_ACCESS
+  - CONTENT_WORKFLOW_ABNORMAL_DOWNLOAD_ACTIVITY
+  - CONTENT_WORKFLOW_AUTOMATION_ADD
+  - CONTENT_WORKFLOW_AUTOMATION_DELETE
+  - CONTENT_WORKFLOW_POLICY_ADD
+  - CONTENT_WORKFLOW_SHARING_POLICY_VIOLATION
+  - CONTENT_WORKFLOW_UPLOAD_POLICY_VIOLATION
+  - COPY
+  - DATA_RETENTION_CREATE_RETENTION
+  - DATA_RETENTION_REMOVE_RETENTION
+  - DELETE
+  - DELETE_USER
+  - DEVICE_TRUST_CHECK_FAILED
+  - DOWNLOAD
+  - EDIT
+  - EDIT_USER
+  - EMAIL_ALIAS_CONFIRM
+  - EMAIL_ALIAS_REMOVE
+  - ENTERPRISE_APP_AUTHORIZATION_UPDATE
+  - EXTERNAL_COLLAB_SECURITY_SETTINGS
+  - FAILED_LOGIN
+  - FILE_MARKED_MALICIOUS
+  - FILE_WATERMARKED_DOWNLOAD
+  - GROUP_ADD_ITEM
+  - GROUP_ADD_USER
+  - GROUP_CREATION
+  - GROUP_DELETION
+  - GROUP_EDITED
+  - GROUP_REMOVE_ITEM
+  - GROUP_REMOVE_USER
+  - ITEM_MODIFY
+  - ITEM_OPEN
+  - ITEM_SHARED_UPDATE
+  - ITEM_SYNC
+  - ITEM_UNSYNC
+  - LEGAL_HOLD_ASSIGNMENT_CREATE
+  - LEGAL_HOLD_ASSIGNMENT_DELETE
+  - LEGAL_HOLD_POLICY_CREATE
+  - LEGAL_HOLD_POLICY_DELETE
+  - LEGAL_HOLD_POLICY_UPDATE
+  - LOCK
+  - LOGIN
+  - METADATA_INSTANCE_CREATE
+  - METADATA_INSTANCE_DELETE
+  - METADATA_INSTANCE_UPDATE
+  - METADATA_TEMPLATE_CREATE
+  - METADATA_TEMPLATE_UPDATE
+  - METADATA_TEMPLATE_DELETE
+  - MOVE
+  - NEW_USER
+  - OAUTH2_ACCESS_TOKEN_REVOKE
+  - PREVIEW
+  - REMOVE_DEVICE_ASSOCIATION
+  - REMOVE_LOGIN_ACTIVITY_DEVICE
+  - RENAME
+  - RETENTION_POLICY_ASSIGNMENT_ADD
+  - SHARE
+  - SHARE_EXPIRATION
+  - SHIELD_ALERT
+  - STORAGE_EXPIRATION
+  - TASK_ASSIGNMENT_UPDATE
+  - TASK_ASSIGNMENT_CREATE
+  - TASK_ASSIGNMENT_DELETE
+  - TASK_CREATE
+  - TASK_UPDATE
+  - TERMS_OF_SERVICE_ACCEPT
+  - TERMS_OF_SERVICE_REJECT
+  - UNDELETE
+  - UNLOCK
+  - UNSHARE
+  - UPDATE_COLLABORATION_EXPIRATION
+  - UPDATE_SHARE_EXPIRATION
+  - UPLOAD
+  - USER_AUTHENTICATE_OAUTH2_ACCESS_TOKEN_CREATE
+  - WATERMARK_LABEL_CREATE
+  - WATERMARK_LABEL_DELETE
+  required: false
+  type: 16
+- additionalinfo: When the as-user argument is not provided, the command will be executed
+    using this user ID.
+  display: Default User
+  hidden: false
+  name: default_user
+  required: false
+  type: 0
+- additionalinfo: 'Note: If more than one user exists for the email address,
+    the commands will fail.'
+  defaultvalue: 'true'
+  display: Auto-detect user IDs based on their email address.
+  hidden: false
+  name: search_user_id
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: '50'
+  name: max_fetch
+  required: false
+  type: 0
+description: Manage Box users.
+display: Box v2
+name: Box v2
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'Limits the search results to any items of this type. This parameter
+        only takes one value. By default, the API returns items that match any of these
+        types. Possible values are: "file", "folder", "web_link".'
+      isArray: false
+      name: type
+      predefined:
+      - file
+      - folder
+      - web_link
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated lists of folder IDs that limits the search results to items within the given list of folders.
+      isArray: false
+      name: ancestor_folder_ids
+      required: false
+      secret: false
+    - default: false
+      description: Query for an item by name.
+      isArray: false
+      name: item_name
+      required: false
+      secret: false
+    - default: false
+      description: The description of the item to search for.
+      isArray: false
+      name: item_description
+      required: false
+      secret: false
+    - default: false
+      description: The comments of the item to search for.
+      isArray: false
+      name: comments
+      required: false
+      secret: false
+    - default: false
+      description: The tag of the item to search for. 
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the time frame of when the item was created. Can be RFC3339 timestamps, or relative to the current time (e.g., 3 Days).
+      isArray: false
+      name: created_range
+      required: false
+      secret: false
+    - default: false
+      description: Limits the search results to any files that match any of the provided file extensions.
+      isArray: false
+      name: file_extensions
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The maximum number of items to return as part of a page of results. Default is "100".
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The offset of the item at which to begin the response. Default is "0".
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of user IDs used to limit the search results to any items that are owned by the given list of owners.
+      isArray: false
+      name: owner_uids
+      required: false
+      secret: false
+    - default: false
+      description: Whether the search should look in the trash for items.
+      isArray: false
+      name: trash_content
+      required: false
+      secret: false
+    - default: false
+      description: Limits the search results to any items updated within a given date range.
+      isArray: false
+      name: updated_at_range
+      required: false
+      secret: false
+    - default: false
+      description: The string to search for.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches for files, folders, web links, and shared files across the users' content or across the entire enterprise.
+    execution: false
+    name: box-search-content
+    outputs:
+    - contextPath: Box.Query.id
+      description: The ID of the item found.
+      type: Number
+    - contextPath: Box.Query.etag
+      description: The entry tag for the item found.
+      type: Number
+    - contextPath: Box.Query.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.Query.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the item.
+      type: Number
+    - contextPath: Box.Query.name
+      description: The name of the item.
+      type: String
+    - contextPath: Box.Query.sha1
+      description: The SHA1 hash of the item.
+      type: String
+    - contextPath: Box.Query.file_version.id
+      description: The unique identifier that represents a file version.
+      type: Number
+    - contextPath: Box.Query.file_version.type
+      description: Value is always file_version.
+      type: String
+    - contextPath: Box.Query.file_version.sha1
+      description: The SHA1 hash of this version of the file.
+      type: String
+    - contextPath: Box.Query.description
+      description: The description of the item.
+      type: String
+    - contextPath: Box.Query.size
+      description: The file size in bytes.
+      type: Number
+    - contextPath: Box.Query.path_collection.total_count
+      description: The number of folders in the list.
+      type: Number
+    - contextPath: Box.Query.path_collection.entries.id
+      description: The ID of the item found.
+      type: Number
+    - contextPath: Box.Query.path_collection.entries.etag
+      description: The entry tag for the item found.
+      type: Number
+    - contextPath: Box.Query.path_collection.entries.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.Query.path_collection.entries.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the item.
+      type: Number
+    - contextPath: Box.Query.path_collection.entries.name
+      description: The name of the item.
+      type: String
+    - contextPath: Box.Query.created_at
+      description: The date and time when the item was created on Box.
+      type: Date
+    - contextPath: Box.Query.modified_at
+      description: The date and time when the item was last updated on Box.
+      type: Date
+    - contextPath: Box.Query.trashed_at
+      description: The time at which the item was put in the trash.
+      type: Date
+    - contextPath: Box.Query.purged_at
+      description: The time at which the item is expected to be purged from the trash.
+      type: Date
+    - contextPath: Box.Query.content_created_at
+      description: The date and time at which the item was originally created, which
+        might be before it was uploaded to Box.
+      type: Date
+    - contextPath: Box.Query.content_modified_at
+      description: The date and time at which the item was last updated, which might
+        be before it was uploaded to Box.
+      type: Date
+    - contextPath: Box.Query.created_by.id
+      description: The unique identifier for the user who created the item.
+      type: Number
+    - contextPath: Box.Query.created_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.Query.created_by.name
+      description: The display name of the user who created the item.
+      type: String
+    - contextPath: Box.Query.created_by.login
+      description: The primary email address of the user who created the item.
+      type: String
+    - contextPath: Box.Query.modified_by.id
+      description: The unique identifier for the user who modified the item.
+      type: Number
+    - contextPath: Box.Query.modified_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.Query.modified_by.name
+      description: The display name of the user who modified the item.
+      type: String
+    - contextPath: Box.Query.modified_by.login
+      description: The primary email address of the user who modified the item.
+      type: String
+    - contextPath: Box.Query.owned_by.id
+      description: The unique identifier for the user who owns the item.
+      type: Number
+    - contextPath: Box.Query.owned_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.Query.owned_by.name
+      description: The display name of the user who owns the item.
+      type: String
+    - contextPath: Box.Query.owned_by.login
+      description: The primary email address of the user who owns the item.
+      type: String
+    - contextPath: Box.Query.shared_link.url
+      description: The URL that can be used to access the item on Box.
+      type: String
+    - contextPath: Box.Query.shared_link.download_url
+      description: The URL that can be used to download the item from Box.
+      type: String
+    - contextPath: Box.Query.shared_link.vanity_url
+      description: The "Custom URL" that can also be used to preview the item on Box.
+      type: String
+    - contextPath: Box.Query.shared_link.vanity_name
+      description: The custom name of a shared link, as used in the vanity_url field.
+      type: String
+    - contextPath: Box.Query.entries.shared_link.access
+      description: The access level for the shared link.
+      type: String
+    - contextPath: Box.Query.shared_link.effective_access
+      description: The effective access level for the shared link.
+      type: String
+    - contextPath: Box.Query.shared_link.effective_permission
+      description: The effective permissions for this shared link.
+      type: String
+    - contextPath: Box.Query.shared_link.unshared_at
+      description: The date and time when the link will be unshared.
+      type: Date
+    - contextPath: Box.Query.shared_link.is_password_enabled
+      description: Whether the shared link requires a password to access the item.
+      type: Boolean
+    - contextPath: Box.Query.shared_link.permissions.can_download
+      description: Whether the shared link allows for the item to be downloaded.
+      type: Boolean
+    - contextPath: Box.Query.shared_link.permissions.can_preview
+      description: Whether the shared link allows for the item to be previewed.
+      type: Boolean
+    - contextPath: Box.Query.entries.shared_link.download_count
+      description: The number of times the item has been downloaded.
+      type: Number
+    - contextPath: Box.Query.shared_link.preview_count
+      description: The number of times the item has been previewed.
+      type: Number
+    - contextPath: Box.Query.parent.id
+      description: The ID of the parent for the item found.
+      type: Number
+    - contextPath: Box.Query.parent.etag
+      description: The entry tag for the parent of the item found.
+      type: Number
+    - contextPath: Box.Query.parent.type
+      description: The type for the parent of the item found.
+      type: String
+    - contextPath: Box.Query.parent.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the parent of the item.
+      type: Number
+    - contextPath: Box.Query.parent.name
+      description: The name of the parent of the item.
+      type: String
+    - contextPath: Box.Query.item_status
+      description: The status of the parent of the item.
+      type: String
+  - arguments:
+    - default: false
+      description: Link used to share the file.
+      isArray: false
+      name: shared_link
+      required: true
+      secret: false
+    - default: false
+      description: Password used to access the shared link.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    deprecated: false
+    description: Return the file represented by a shared link.
+    execution: false
+    name: box-find-file-folder-by-share-link
+    outputs:
+    - contextPath: Box.ShareLink.id
+      description: The ID of the item found.
+      type: Number
+    - contextPath: Box.ShareLink.etag
+      description: The entry tag for the item found.
+      type: Number
+    - contextPath: Box.ShareLink.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.ShareLink.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the item.
+      type: Number
+    - contextPath: Box.ShareLink.name
+      description: The name of the item.
+      type: String
+    - contextPath: Box.ShareLink.sha1
+      description: The SHA1 hash of the item.
+      type: String
+    - contextPath: Box.ShareLink.file_version.id
+      description: The unique identifier that represents a file version.
+      type: Number
+    - contextPath: Box.ShareLink.file_version.type
+      description: Value is always file_version.
+      type: String
+    - contextPath: Box.ShareLink.file_version.sha1
+      description: The SHA1 hash of this version of the file.
+      type: String
+    - contextPath: Box.ShareLink.description
+      description: The description of the item.
+      type: String
+    - contextPath: Box.ShareLink.size
+      description: The file size in bytes.
+      type: Number
+    - contextPath: Box.ShareLink.path_collection.total_count
+      description: The number of folders in the list.
+      type: Number
+    - contextPath: Box.ShareLink.path_collection.entries.id
+      description: The ID of the item found.
+      type: Number
+    - contextPath: Box.ShareLink.path_collection.entries.etag
+      description: The entry tag for the item found.
+      type: Number
+    - contextPath: Box.ShareLink.path_collection.entries.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.ShareLink.path_collection.entries.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the item.
+      type: Number
+    - contextPath: Box.ShareLink.path_collection.entries.name
+      description: The name of the item.
+      type: String
+    - contextPath: Box.ShareLink.created_at
+      description: The date and time when the item was created on Box.
+      type: Date
+    - contextPath: Box.ShareLink.modified_at
+      description: The date and time when the item was last updated on Box.
+      type: Date
+    - contextPath: Box.ShareLink.trashed_at
+      description: The time at which the item was put in the trash.
+      type: Date
+    - contextPath: Box.ShareLink.purged_at
+      description: The time at which the item is expected to be purged from the trash.
+      type: Date
+    - contextPath: Box.ShareLink.content_created_at
+      description: The date and time at which the item was originally created, which
+        might be before it was uploaded to Box.
+      type: Date
+    - contextPath: Box.ShareLink.content_modified_at
+      description: The date and time at which the item was last updated, which might
+        be before it was uploaded to Box.
+      type: Date
+    - contextPath: Box.ShareLink.created_by.id
+      description: The unique identifier for the user who created the item.
+      type: Number
+    - contextPath: Box.ShareLink.created_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.ShareLink.created_by.name
+      description: The display name of the user who created the item.
+      type: String
+    - contextPath: Box.ShareLink.created_by.login
+      description: The primary email address of the user who created the item.
+      type: String
+    - contextPath: Box.ShareLink.modified_by.id
+      description: The unique identifier for the user who modified the item.
+      type: Number
+    - contextPath: Box.ShareLink.modified_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.ShareLink.modified_by.name
+      description: The display name of the user who modified the item.
+      type: String
+    - contextPath: Box.ShareLink.modified_by.login
+      description: The primary email address of the user who modified the item.
+      type: String
+    - contextPath: Box.ShareLink.owned_by.id
+      description: The unique identifier for the user who owns the item.
+      type: Number
+    - contextPath: Box.ShareLink.owned_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.ShareLink.owned_by.name
+      description: The display name of the user who owns the item.
+      type: String
+    - contextPath: Box.ShareLink.owned_by.login
+      description: The primary email address of the user who owns the item.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.url
+      description: The URL that can be used to access the item on Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.download_url
+      description: The URL that can be used to download the item from Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.vanity_url
+      description: The "Custom URL" that can also be used to preview the item on Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.vanity_name
+      description: The custom name of a shared link, as used in the vanity_url field.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.access
+      description: The access level for the shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.effective_access
+      description: The effective access level for the shared link. 
+      type: String
+    - contextPath: Box.ShareLink.shared_link.effective_permission
+      description: The effective permissions for this shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.unshared_at
+      description: The date and time when the link will be unshared.
+      type: Date
+    - contextPath: Box.ShareLink.shared_link.is_password_enabled
+      description: Defines if the shared link requires a password to access the item.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.permissions.can_download
+      description: Defines if the shared link allows for the item to be downloaded.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.permissions.can_preview
+      description: Defines if the shared link allows for the item to be previewed.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.download_count
+      description: The number of times the item has been downloaded.
+      type: Number
+    - contextPath: Box.ShareLink.shared_link.preview_count
+      description: The number of times the item has been previewed.
+      type: Number
+    - contextPath: Box.ShareLink.parent.id
+      description: The ID of the parent for the item found.
+      type: Number
+    - contextPath: Box.ShareLink.parent.etag
+      description: The entry tag for the parent of the item found.
+      type: Number
+    - contextPath: Box.ShareLink.parent.type
+      description: The type for the parent of the item found.
+      type: String
+    - contextPath: Box.ShareLink.parent.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the parent of the item.
+      type: Number
+    - contextPath: Box.ShareLink.parent.name
+      description: The name of the parent of the item.
+      type: String
+    - contextPath: Box.ShareLink.item_status
+      description: The status of the parent of the item.
+      type: String
+  - arguments:
+    - default: false
+      description: The unique identifier that represents a file.
+      isArray: false
+      name: file_id
+      required: true
+      secret: false
+    - default: false
+      description: The user ID for the account used to access the file.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the information for a shared link on a file.
+    execution: false
+    name: box-get-shared-link-by-file
+    outputs:
+    - contextPath: Box.ShareLink.id
+      description: The ID of the item found.
+      type: String
+    - contextPath: Box.ShareLink.etag
+      description: The entry tag for the item found.
+      type: String
+    - contextPath: Box.ShareLink.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.url
+      description: The URL that can be used to access the item on Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.download_url
+      description: The URL that can be used to download the item from Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.vanity_url
+      description: The "Custom URL" that can also be used to preview the item on Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.vanity_name
+      description: The custom name of a shared link, as used in the vanity_url field.
+      type: String
+    - contextPath: Box.ShareLink.entries.shared_link.access
+      description: The access level for the shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.effective_access
+      description: The effective access level for the shared link. 
+      type: String
+    - contextPath: Box.ShareLink.shared_link.effective_permission
+      description: The effective permissions for this shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.unshared_at
+      description: The date and time when the link will be unshared.
+      type: Date
+    - contextPath: Box.ShareLink.shared_link.is_password_enabled
+      description: Defines if the shared link requires a password to access the item.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.permissions.can_download
+      description: Defines if the shared link allows for the item to be downloaded.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.permissions.can_preview
+      description: Defines if the shared link allows for the item to be previewed.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.download_count
+      description: The number of times the item has been downloaded.
+      type: Number
+    - contextPath: Box.ShareLink.shared_link.preview_count
+      description: The number of times the item has been previewed.
+      type: Number
+  - arguments:
+    - default: false
+      description: The unique identifier that represents a file.
+      isArray: false
+      name: file_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The level of access for the shared link. Possible values are: "open", "company", and "collaborators".'
+      isArray: false
+      name: access
+      predefined:
+      - open
+      - company
+      - collaborators
+      required: false
+      secret: false
+    - default: false
+      description: The password required to access the shared link.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - default: false
+      description: The timestamp at which this shared link will expire.
+      isArray: false
+      name: unshared_at
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'If the shared link allows for downloading of files. Possible values are: "true" and "false".'
+      isArray: false
+      name: can_download
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: User who is making the request.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds a shared link to a file.
+    execution: false
+    name: box-create-file-share-link
+    outputs:
+    - contextPath: Box.ShareLink.id
+      description: The ID of the item found.
+      type: Number
+    - contextPath: Box.ShareLink.etag
+      description: The entry tag for the item found.
+      type: Number
+    - contextPath: Box.ShareLink.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.url
+      description: The URL that can be used to access the item on Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.download_url
+      description: The URL that can be used to download the item from Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.vanity_url
+      description: The "Custom URL" that can also be used to preview the item on Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.vanity_name
+      description: The custom name of a shared link, as used in the vanity_url field.
+      type: String
+    - contextPath: Box.ShareLink.entries.shared_link.access
+      description: The access level for the shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.effective_access
+      description: The effective access level for the shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.effective_permission
+      description: The effective permissions for this shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.unshared_at
+      description: The date and time when the link will be unshared.
+      type: Date
+    - contextPath: Box.ShareLink.shared_link.is_password_enabled
+      description: Defines if the shared link requires a password to access the item.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.permissions.can_download
+      description: Defines if the shared link allows for the item to be downloaded.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.permissions.can_preview
+      description: Defines if the shared link allows for the item to be previewed.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.download_count
+      description: The number of times the item has been downloaded.
+      type: Number
+    - contextPath: Box.ShareLink.shared_link.preview_count
+      description: The number of times the item has been previewed.
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'The level of access for the shared link. Possible values are: "open", "company", and "collaborators".'
+      isArray: false
+      name: access
+      predefined:
+      - open
+      - company
+      - collaborators
+      required: false
+      secret: false
+    - default: false
+      description: The password required to access the shared link.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - default: false
+      description: The timestamp at which this shared link will expire.
+      isArray: false
+      name: unshared_at
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'If the shared link allows for downloading of files. Possible values are: "true" and "false".'
+      isArray: false
+      name: can_download
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The unique identifier that represents a file.
+      isArray: false
+      name: file_id
+      required: true
+      secret: false
+    - default: false
+      description: The user who is performing the action.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates a shared link on a file.
+    execution: false
+    name: box-update-file-share-link
+    outputs:
+    - contextPath: Box.ShareLink.id
+      description: The ID of the item found.
+      type: Number
+    - contextPath: Box.ShareLink.etag
+      description: The entry tag for the item found.
+      type: Number
+    - contextPath: Box.ShareLink.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.url
+      description: The URL that can be used to access the item on Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.download_url
+      description: The URL that can be used to download the item from Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.vanity_url
+      description: The "Custom URL" that can also be used to preview the item on Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.vanity_name
+      description: The custom name of a shared link, as used in the vanity_url field.
+      type: String
+    - contextPath: Box.ShareLink.entries.shared_link.access
+      description: The access level for the shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.effective_access
+      description: The effective access level for the shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.effective_permission
+      description: The effective permissions for this shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.unshared_at
+      description: The date and time when the link will be unshared.
+      type: Date
+    - contextPath: Box.ShareLink.shared_link.is_password_enabled
+      description: Defines if the shared link requires a password to access the item.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.permissions.can_download
+      description: Defines if the shared link allows for the item to be downloaded.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.permissions.can_preview
+      description: Defines if the shared link allows for the item to be previewed.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.download_count
+      description: The number of times the item has been downloaded.
+      type: Number
+    - contextPath: Box.ShareLink.shared_link.preview_count
+      description: The number of times the item has been previewed.
+      type: Number
+  - arguments:
+    - default: false
+      description: The unique identifier that represents a file.
+      isArray: false
+      name: file_id
+      required: true
+      secret: false
+    - default: false
+      description: The user who is performing the action.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    deprecated: false
+    description: Removes a shared link from a file.
+    execution: false
+    name: box-remove-file-share-link
+    outputs:
+    - contextPath: Box.ShareLink.id
+      description: The ID of the item found,
+      type: String
+    - contextPath: Box.ShareLink.etag
+      description: The entry tag for the item found.
+      type: String
+    - contextPath: Box.ShareLink.type
+      description: The type of the item found.
+      type: String
+  - arguments:
+    - default: false
+      description: The unique identifier that represents a folder.
+      isArray: false
+      name: folder_id
+      required: true
+      secret: false
+    - default: false
+      description: User who is performing the action.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the information for a shared link on a folder.
+    execution: false
+    name: box-get-shared-link-by-folder
+    outputs:
+    - contextPath: Box.ShareLink.id
+      description: The ID of the item found.
+      type: String
+    - contextPath: Box.ShareLink.etag
+      description: The entry tag for the item found.
+      type: String
+    - contextPath: Box.ShareLink.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.url
+      description: The URL that can be used to access the item on Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.download_url
+      description: The URL that can be used to download the item from Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.vanity_url
+      description: The "Custom URL" that can also be used to preview the item on Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.vanity_name
+      description: The custom name of a shared link, as used in the vanity_url field.
+      type: String
+    - contextPath: Box.ShareLink.entries.shared_link.access
+      description: The access level for the shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.effective_access
+      description: The effective access level for the shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.effective_permission
+      description: The effective permissions for this shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.unshared_at
+      description: The date and time when the link will be unshared.
+      type: Date
+    - contextPath: Box.ShareLink.shared_link.is_password_enabled
+      description: Defines if the shared link requires a password to access the item.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.permissions.can_download
+      description: Defines if the shared link allows for the item to be downloaded.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.permissions.can_preview
+      description: Defines if the shared link allows for the item to be previewed.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.download_count
+      description: The number of times the item has been downloaded.
+      type: Number
+    - contextPath: Box.ShareLink.shared_link.preview_count
+      description: The number of times the item has been previewed.
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'The level of access for the shared link. Possible values are: "open", "company", and "collaborators".'
+      isArray: false
+      name: access
+      predefined:
+      - open
+      - company
+      - collaborators
+      required: false
+      secret: false
+    - default: false
+      description: The password required to access the shared link.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - default: false
+      description: The timestamp at which this shared link will expire.
+      isArray: false
+      name: unshared_at
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'If the shared link allows for downloading of folders. Possible values are: "true" and "false".'
+      isArray: false
+      name: can_download
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The unique identifier that represents a folder.
+      isArray: false
+      name: folder_id
+      required: true
+      secret: false
+    - default: false
+      description: The user who is performing the action.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds a shared link to a folder.
+    execution: false
+    name: box-create-folder-share-link
+    outputs:
+    - contextPath: Box.ShareLink.id
+      description: The ID of the item found.
+      type: String
+    - contextPath: Box.ShareLink.etag
+      description: The entry tag for the item found.
+      type: String
+    - contextPath: Box.ShareLink.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.url
+      description: The URL that can be used to access the item on Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.download_url
+      description: The URL that can be used to download the item from Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.vanity_url
+      description: The "Custom URL" that can also be used to preview the item on Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.vanity_name
+      description: The custom name of a shared link, as used in the vanity_url field.
+      type: String
+    - contextPath: Box.ShareLink.entries.shared_link.access
+      description: The access level for the shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.effective_access
+      description: The effective access level for the shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.effective_permission
+      description: The effective permissions for this shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.unshared_at
+      description: The date and time when the link will be unshared.
+      type: Date
+    - contextPath: Box.ShareLink.shared_link.is_password_enabled
+      description: Defines if the shared link requires a password to access the item.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.permissions.can_download
+      description: Defines if the shared link allows for the item to be downloaded.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.permissions.can_preview
+      description: Defines if the shared link allows for the item to be previewed.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.download_count
+      description: The number of times the item has been downloaded.
+      type: Number
+    - contextPath: Box.ShareLink.shared_link.preview_count
+      description: The number of times the item has been previewed.
+      type: Number
+  - arguments:
+    - default: false
+      description: The unique identifier that represents a folder.
+      isArray: false
+      name: folder_id
+      required: true
+      secret: false
+    - default: false
+      description: The user who is performing the action.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The level of access for the shared link. Possible values are: "open", "company", and "collaborators".'
+      isArray: false
+      name: access
+      predefined:
+      - open
+      - company
+      - collaborators
+      required: false
+      secret: false
+    - default: false
+      description: The password required to access the shared link.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - default: false
+      description: The timestamp at which this shared link will expire.
+      isArray: false
+      name: unshared_at
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'If the shared link allows for downloading of folders. Possible values are: "true" and "false".'
+      isArray: false
+      name: can_download
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates a shared link on a folder.
+    execution: false
+    name: box-update-folder-share-link
+    outputs:
+    - contextPath: Box.ShareLink.id
+      description: The ID of the item found.
+      type: String
+    - contextPath: Box.ShareLink.etag
+      description: The entry tag for the item found.
+      type: String
+    - contextPath: Box.ShareLink.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.url
+      description: The URL that can be used to access the item on Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.download_url
+      description: The URL that can be used to download the item from Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.vanity_url
+      description: The "Custom URL" that can also be used to preview the item on Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.vanity_name
+      description: The custom name of a shared link, as used in the vanity_url field.
+      type: String
+    - contextPath: Box.ShareLink.entries.shared_link.access
+      description: The access level for the shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.effective_access
+      description: The effective access level for the shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.effective_permission
+      description: The effective permissions for this shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.unshared_at
+      description: The date and time when the link will be unshared.
+      type: Date
+    - contextPath: Box.ShareLink.shared_link.is_password_enabled
+      description: Defines if the shared link requires a password to access the item.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.permissions.can_download
+      description: Defines if the shared link allows for the item to be downloaded.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.permissions.can_preview
+      description: Defines if the shared link allows for the item to be previewed.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.download_count
+      description: The number of times the item has been downloaded.
+      type: Number
+    - contextPath: Box.ShareLink.shared_link.preview_count
+      description: The number of times the item has been previewed.
+      type: Number
+  - arguments:
+    - default: false
+      description: The unique identifier that represents a folder.
+      isArray: false
+      name: folder_id
+      required: true
+      secret: false
+    - default: false
+      description: User who is performing the action.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    deprecated: false
+    description: Removes a shared link from a folder.
+    execution: false
+    name: box-remove-folder-share-link
+    outputs:
+    - contextPath: Box.ShareLink.id
+      description: The ID of the item found.
+      type: String
+    - contextPath: Box.ShareLink.etag
+      description: The entry tag for the item found.
+      type: String
+    - contextPath: Box.ShareLink.type
+      description: The type of the item found.
+      type: String
+  - arguments:
+    - default: false
+      description: The unique identifier that represents a folder.
+      isArray: false
+      name: folder_id
+      required: true
+      secret: false
+    - default: false
+      description: The user who is performing the action.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves details for a folder, including the first 100 entries in
+      the folder.
+    execution: false
+    name: box-get-folder
+    outputs:
+    - contextPath: Box.ShareLink.id
+      description: The ID of the item found.
+      type: Number
+    - contextPath: Box.ShareLink.etag
+      description: The entry tag for the item found.
+      type: Number
+    - contextPath: Box.ShareLink.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.ShareLink.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the item.
+      type: Number
+    - contextPath: Box.ShareLink.name
+      description: The name of the item.
+      type: String
+    - contextPath: Box.ShareLink.sha1
+      description: The SHA1 hash of the item.
+      type: String
+    - contextPath: Box.ShareLink.file_version.id
+      description: The unique identifier that represents a file version.
+      type: Number
+    - contextPath: Box.ShareLink.file_version.type
+      description: Value is always file_version.
+      type: String
+    - contextPath: Box.ShareLink.file_version.sha1
+      description: The SHA1 hash of this version of the file.
+      type: String
+    - contextPath: Box.ShareLink.description
+      description: The description of the item.
+      type: String
+    - contextPath: Box.ShareLink.size
+      description: The file size in bytes.
+      type: Number
+    - contextPath: Box.ShareLink.path_collection.total_count
+      description: The number of folders in the list.
+      type: Number
+    - contextPath: Box.ShareLink.path_collection.entries.id
+      description: The ID of the item found.
+      type: Number
+    - contextPath: Box.ShareLink.path_collection.entries.etag
+      description: The entry tag for the item found.
+      type: Number
+    - contextPath: Box.ShareLink.path_collection.entries.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.ShareLink.path_collection.entries.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the item.
+      type: Number
+    - contextPath: Box.ShareLink.path_collection.entries.name
+      description: The name of the item.
+      type: String
+    - contextPath: Box.ShareLink.created_at
+      description: The date and time when the item was created on Box.
+      type: Date
+    - contextPath: Box.ShareLink.modified_at
+      description: The date and time when the item was last updated on Box.
+      type: Date
+    - contextPath: Box.ShareLink.trashed_at
+      description: The time at which the item was put in the trash.
+      type: Date
+    - contextPath: Box.ShareLink.purged_at
+      description: The time at which the item is expected to be purged from the trash.
+      type: Date
+    - contextPath: Box.ShareLink.content_created_at
+      description: The date and time at which the item was originally created, which
+        might be before it was uploaded to Box.
+      type: Date
+    - contextPath: Box.ShareLink.content_modified_at
+      description: The date and time at which the item was last updated, which might
+        be before it was uploaded to Box.
+      type: Date
+    - contextPath: Box.ShareLink.created_by.id
+      description: The unique identifier for the user who created the item.
+      type: Number
+    - contextPath: Box.ShareLink.created_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.ShareLink.created_by.name
+      description: The display name of the user who created the item.
+      type: String
+    - contextPath: Box.ShareLink.created_by.login
+      description: The primary email address of the user who created the item.
+      type: String
+    - contextPath: Box.ShareLink.modified_by.id
+      description: The unique identifier for the user who modified the item.
+      type: Number
+    - contextPath: Box.ShareLink.modified_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.ShareLink.modified_by.name
+      description: The display name of the user who modified the item.
+      type: String
+    - contextPath: Box.ShareLink.modified_by.login
+      description: The primary email address of the user who modified the item.
+      type: String
+    - contextPath: Box.ShareLink.owned_by.id
+      description: The unique identifier for the user who owns the item.
+      type: Number
+    - contextPath: Box.ShareLink.owned_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.ShareLink.owned_by.name
+      description: The display name of the user who owns the item.
+      type: String
+    - contextPath: Box.ShareLink.owned_by.login
+      description: The primary email address of the user who owns the item.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.url
+      description: The URL that can be used to access the item on Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.download_url
+      description: The URL that can be used to download the item from Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.vanity_url
+      description: The "Custom URL" that can also be used to preview the item on Box.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.vanity_name
+      description: The custom name of a shared link, as used in the vanity_url field.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.access
+      description: The access level for the shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.effective_access
+      description: The effective access level for the shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.effective_permission
+      description: The effective permissions for this shared link.
+      type: String
+    - contextPath: Box.ShareLink.shared_link.unshared_at
+      description: The date and time when the link will be unshared.
+      type: Date
+    - contextPath: Box.ShareLink.shared_link.is_password_enabled
+      description: Defines if the shared link requires a password to access the item.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.permissions.can_download
+      description: Defines if the shared link allows for the item to be downloaded.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.permissions.can_preview
+      description: Defines if the shared link allows for the item to be previewed.
+      type: Boolean
+    - contextPath: Box.ShareLink.shared_link.download_count
+      description: The number of times the item has been downloaded.
+      type: Number
+    - contextPath: Box.ShareLink.shared_link.preview_count
+      description: The number of times the item has been previewed.
+      type: Number
+    - contextPath: Box.ShareLink.parent.id
+      description: The ID of the parent for the item found.
+      type: Number
+    - contextPath: Box.ShareLink.parent.etag
+      description: The entry tag for the parent of the item found.
+      type: Number
+    - contextPath: Box.ShareLink.parent.type
+      description: The type for the parent of the item found.
+      type: String
+    - contextPath: Box.ShareLink.parent.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the parent of the item.
+      type: Number
+    - contextPath: Box.ShareLink.parent.name
+      description: The name of the parent of the item.
+      type: String
+    - contextPath: Box.ShareLink.item_status
+      description: The status of the parent of the item.
+      type: String
+  - arguments:
+    - default: false
+      description: The unique identifier that represents a folder.
+      isArray: false
+      name: folder_id
+      required: true
+      secret: false
+    - default: false
+      description: The user who is performing the action.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The maximum number of items to return per page. Default is "100".
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The offset of the item at which to begin the response. Default is "0".
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: name
+      description: 'The field the results should be sorted by. Possible values are: "id", "name", "date", and "size".'
+      isArray: false
+      name: sort
+      predefined:
+      - id
+      - name
+      - date
+      - size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a page of items in a folder.
+    execution: false
+    name: box-list-folder-items
+    outputs:
+    - contextPath: Box.Folder.id
+      description: The ID of the folder.
+      type: Number
+    - contextPath: Box.Folder.etag
+      description: The entity tag of the folder.
+      type: Number
+    - contextPath: Box.Folder.type
+      description: Value is always `folder`.
+      type: String
+    - contextPath: Box.Folder.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the item.
+      type: Number
+    - contextPath: Box.Folder.name
+      description: The name of the folder.
+      type: String
+    - contextPath: Box.Folder.sha1
+      description: The SHA1 has of the folder.
+      type: String
+    - contextPath: Box.Folder.file_version.id
+      description: The unique identifier that represents a file version.
+      type: Number
+    - contextPath: Box.Folder.file_version.type
+      description: Value is always file_version.
+      type: String
+    - contextPath: Box.Folder.file_version.sha1
+      description: The SHA1 hash of this version of the file.
+      type: String
+  - arguments:
+    - default: false
+      description: The name for the new folder.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The parent folder to create the new folder within. Default is "0".
+      isArray: false
+      name: parent_id
+      required: true
+      secret: false
+    - default: false
+      description: The user who is performing the action.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new empty folder within the specified parent folder.
+    execution: false
+    name: box-folder-create
+    outputs:
+    - contextPath: Box.Folder.id
+      description: The ID of the folder created.
+      type: Number
+    - contextPath: Box.Folder.etag
+      description: The entry tag for the folder created.
+      type: Number
+    - contextPath: Box.Folder.type
+      description: The type of folder.
+      type: String
+    - contextPath: Box.Folder.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the folder.
+      type: Number
+    - contextPath: Box.Folder.name
+      description: The name of the folder.
+      type: String
+    - contextPath: Box.Folder.sha1
+      description: The SHA1 hash of the folder.
+      type: String
+    - contextPath: Box.Folder.file_version.id
+      description: The unique identifier that represents a file version.
+      type: Number
+    - contextPath: Box.Folder.file_version.type
+      description: Value is always file_version.
+      type: String
+    - contextPath: Box.Folder.file_version.sha1
+      description: The SHA1 hash of this version of the file.
+      type: String
+    - contextPath: Box.Folder.description
+      description: The description of the item.
+      type: String
+    - contextPath: Box.Folder.size
+      description: The folder size in bytes.
+      type: Number
+    - contextPath: Box.Folder.path_collection.total_count
+      description: The number of folders in the list.
+      type: Number
+    - contextPath: Box.Folder.path_collection.entries.id
+      description: The ID of the item found.
+      type: Number
+    - contextPath: Box.Folder.path_collection.entries.etag
+      description: The entry tag for the item found.
+      type: Number
+    - contextPath: Box.Folder.path_collection.entries.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.Folder.path_collection.entries.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the item.
+      type: Number
+    - contextPath: Box.Folder.path_collection.entries.name
+      description: The name of the item.
+      type: String
+    - contextPath: Box.Folder.created_at
+      description: The date and time when the item was created on Box.
+      type: Date
+    - contextPath: Box.Folder.modified_at
+      description: The date and time when the item was last updated on Box.
+      type: Date
+    - contextPath: Box.Folder.trashed_at
+      description: The time at which the item was put in the trash.
+      type: Date
+    - contextPath: Box.Folder.purged_at
+      description: The time at which the item is expected to be purged from the trash.
+      type: Date
+    - contextPath: Box.Folder.content_created_at
+      description: The date and time at which the item was originally created, which
+        might be before it was uploaded to Box.
+      type: Date
+    - contextPath: Box.Folder.content_modified_at
+      description: The date and time at which the item was last updated, which might
+        be before it was uploaded to Box.
+      type: Date
+    - contextPath: Box.Folder.created_by.id
+      description: The unique identifier for the user who created the item.
+      type: Number
+    - contextPath: Box.Folder.created_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.Folder.created_by.name
+      description: The display name of the user who created the item.
+      type: String
+    - contextPath: Box.Folder.created_by.login
+      description: The primary email address of the user who created the item.
+      type: String
+    - contextPath: Box.Folder.modified_by.id
+      description: The unique identifier for the user who modified the item.
+      type: Number
+    - contextPath: Box.Folder.modified_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.Folder.modified_by.name
+      description: The display name of the user who modified the item.
+      type: String
+    - contextPath: Box.Folder.modified_by.login
+      description: The primary email address of the user who modified the item.
+      type: String
+    - contextPath: Box.Folder.owned_by.id
+      description: The unique identifier for the user who owns the item.
+      type: Number
+    - contextPath: Box.Folder.owned_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.Folder.owned_by.name
+      description: The display name of the user who owns the item.
+      type: String
+    - contextPath: Box.Folder.owned_by.login
+      description: The primary email address of the user who owns the item.
+      type: String
+    - contextPath: Box.Folder.shared_link.url
+      description: The URL that can be used to access the item on Box.
+      type: String
+    - contextPath: Box.Folder.shared_link.download_url
+      description: The URL that can be used to download the item from Box.
+      type: String
+    - contextPath: Box.Folder.shared_link.vanity_url
+      description: The "Custom URL" that can also be used to preview the item on Box.
+      type: String
+    - contextPath: Box.Folder.shared_link.vanity_name
+      description: The custom name of a shared link, as used in the vanity_url field.
+      type: String
+    - contextPath: Box.Folder.shared_link.access
+      description: The access level for the shared link.
+      type: String
+    - contextPath: Box.Folder.shared_link.effective_access
+      description: The effective access level for the shared link.
+      type: String
+    - contextPath: Box.Folder.shared_link.effective_permission
+      description: The effective permissions for this shared link.
+      type: String
+    - contextPath: Box.Folder.shared_link.unshared_at
+      description: The date and time when the link will be unshared.
+      type: Date
+    - contextPath: Box.Folder.shared_link.is_password_enabled
+      description: Defines if the shared link requires a password to access the item.
+      type: Boolean
+    - contextPath: Box.Folder.shared_link.permissions.can_download
+      description: Defines if the shared link allows for the item to be downloaded.
+      type: Boolean
+    - contextPath: Box.Folder.shared_link.permissions.can_preview
+      description: Defines if the shared link allows for the item to be previewed.
+      type: Boolean
+    - contextPath: Box.Folder.shared_link.download_count
+      description: The number of times the item has been downloaded.
+      type: Number
+    - contextPath: Box.Folder.shared_link.preview_count
+      description: The number of times the item has been previewed.
+      type: Number
+    - contextPath: Box.Folder.parent.id
+      description: The ID of the parent for the item found.
+      type: Number
+    - contextPath: Box.Folder.parent.etag
+      description: The entry tag for the parent of the item found.
+      type: Number
+    - contextPath: Box.Folder.parent.type
+      description: The type for the parent of the item found.
+      type: String
+    - contextPath: Box.Folder.parent.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the parent of the item.
+      type: Number
+    - contextPath: Box.Folder.parent.name
+      description: The name of the parent of the item.
+      type: String
+    - contextPath: Box.Folder.item_status
+      description: The status of the parent of the item.
+      type: String
+  - arguments:
+    - default: false
+      description: The unique identifier that represents a file.
+      isArray: false
+      name: file_id
+      required: true
+      secret: false
+    - default: false
+      description: The user who is performing the action.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    deprecated: false
+    description: Deletes a file, either permanently or by moving it to the trash.
+    execution: false
+    name: box-file-delete
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'Attributes to include in the response. Possible values are: "id", "type", and "name".'
+      isArray: false
+      name: fields
+      predefined:
+      - id
+      - type
+      - name
+      required: false
+      secret: false
+    - default: false
+      description: Limits the results to only users who's name or login start with
+        the search term.
+      isArray: false
+      name: filter_term
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The maximum number of items to return per page. Default is "100".
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The offset of the item at which to begin the response. Default is "0".
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of all users for the Enterprise along with their user_id,
+      public_name, and login.
+    execution: false
+    name: box-list-users
+    outputs:
+    - contextPath: Box.User.id
+      description: The unique identifier for this user.
+      type: Number
+    - contextPath: Box.User.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.User.name
+      description: The display name of this user.
+      type: String
+    - contextPath: Box.User.login
+      description: The primary email address of this user.
+      type: String
+    - contextPath: Box.User.created_at
+      description: When the user object was created.
+      type: Date
+    - contextPath: Box.User.modified_at
+      description: When the user object was last modified.
+      type: Date
+    - contextPath: Box.User.language
+      description: The language of the user, formatted in a modified version of the
+        ISO 639-1 format.
+      type: String
+    - contextPath: Box.User.timezone
+      description: The users timezone.
+      type: String
+    - contextPath: Box.User.space_amount
+      description: The users total available space amount in bytes.
+      type: Number
+    - contextPath: Box.User.space_used
+      description: The amount of space in use by the user.
+      type: Number
+    - contextPath: Box.User.max_upload_size
+      description: The maximum individual file size in bytes the user can have.
+      type: Number
+    - contextPath: Box.User.status
+      description: The users account status.
+      type: String
+    - contextPath: Box.User.job_title
+      description: The users job title.
+      type: String
+    - contextPath: Box.User.phone
+      description: The users phone number.
+      type: Number
+    - contextPath: Box.User.address
+      description: The users address.
+      type: String
+    - contextPath: Box.User.avatar_url
+      description: URL of the users avatar image.
+      type: String
+    - contextPath: Box.User.notification_email.email
+      description: The email address to send the notifications to.
+      type: String
+    - contextPath: Box.User.notification_email.is_confirmed
+      description: Specifies if this email address has been confirmed.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The entry ID of the file to upload.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the user who is performing the action.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    - default: false
+      description: The name of the file.
+      isArray: false
+      name: file_name
+      required: false
+      secret: false
+    - default: false
+      description: 'The ID of the folder the file is being uploaded to. Default is
+        "0/root".'
+      isArray: false
+      name: folder_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Uploads a file to the given folder.
+    execution: false
+    name: box-upload-file
+    outputs:
+    - contextPath: Box.File.id
+      description: The ID of the item found.
+      type: Number
+    - contextPath: Box.File.etag
+      description: The entry tag for the item found.
+      type: Number
+    - contextPath: Box.File.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.File.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the item.
+      type: Number
+    - contextPath: Box.File.name
+      description: The name of the item.
+      type: String
+    - contextPath: Box.File.sha1
+      description: The SHA1 hash of the item.
+      type: String
+    - contextPath: Box.File.file_version.id
+      description: The unique identifier that represents a file version.
+      type: Number
+    - contextPath: Box.File.file_version.type
+      description: Value is always file_version.
+      type: String
+    - contextPath: Box.File.file_version.sha1
+      description: The SHA1 hash of this version of the file.
+      type: String
+    - contextPath: Box.File.description
+      description: The description of the item.
+      type: String
+    - contextPath: Box.File.size
+      description: The file size in bytes.
+      type: Number
+    - contextPath: Box.File.path_collection.total_count
+      description: The number of folders in the list.
+      type: Number
+    - contextPath: Box.File.path_collection.entries.id
+      description: The ID of the item found.
+      type: Number
+    - contextPath: Box.File.path_collection.entries.etag
+      description: The entry tag for the item found.
+      type: Number
+    - contextPath: Box.File.path_collection.entries.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.File.path_collection.entries.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the item.
+      type: Number
+    - contextPath: Box.File.path_collection.entries.name
+      description: The name of the item.
+      type: String
+    - contextPath: Box.File.created_at
+      description: The date and time when the item was created on Box.
+      type: Date
+    - contextPath: Box.File.modified_at
+      description: The date and time when the item was last updated on Box.
+      type: Date
+    - contextPath: Box.File.trashed_at
+      description: The time at which the item was put in the trash.
+      type: Date
+    - contextPath: Box.File.purged_at
+      description: The time at which the item is expected to be purged from the trash.
+      type: Date
+    - contextPath: Box.File.content_created_at
+      description: The date and time at which the item was originally created, which
+        might be before it was uploaded to Box.
+      type: Date
+    - contextPath: Box.File.content_modified_at
+      description: The date and time at which the item was last updated, which might
+        be before it was uploaded to Box.
+      type: Date
+    - contextPath: Box.File.created_by.id
+      description: The unique identifier for the user who created the item.
+      type: Number
+    - contextPath: Box.File.created_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.File.created_by.name
+      description: The display name of the user who created the item.
+      type: String
+    - contextPath: Box.File.created_by.login
+      description: The primary email address of the user who created the item.
+      type: String
+    - contextPath: Box.File.modified_by.id
+      description: The unique identifier for the user who modified the item.
+      type: Number
+    - contextPath: Box.File.modified_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.File.modified_by.name
+      description: The display name of the user who modified the item.
+      type: String
+    - contextPath: Box.File.modified_by.login
+      description: The primary email address of the user who modified the item.
+      type: String
+    - contextPath: Box.File.owned_by.id
+      description: The unique identifier for the user who owns the item.
+      type: Number
+    - contextPath: Box.File.owned_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.File.owned_by.name
+      description: The display name of the user who owns the item.
+      type: String
+    - contextPath: Box.File.owned_by.login
+      description: The primary email address of the user who owns the item.
+      type: String
+    - contextPath: Box.File.shared_link.url
+      description: The URL that can be used to access the item on Box.
+      type: String
+    - contextPath: Box.File.shared_link.download_url
+      description: The URL that can be used to download the item from Box.
+      type: String
+    - contextPath: Box.File.shared_link.vanity_url
+      description: The "Custom URL" that can also be used to preview the item on Box.
+      type: String
+    - contextPath: Box.File.shared_link.vanity_name
+      description: The custom name of a shared link, as used in the vanity_url field.
+      type: String
+    - contextPath: Box.File.shared_link.access
+      description: The access level for the shared link.
+      type: String
+    - contextPath: Box.File.shared_link.effective_access
+      description: The effective access level for the shared link.
+      type: String
+    - contextPath: Box.File.shared_link.effective_permission
+      description: The effective permissions for this shared link.
+      type: String
+    - contextPath: Box.File.shared_link.unshared_at
+      description: The date and time when the link will be unshared.
+      type: Date
+    - contextPath: Box.File.shared_link.is_password_enabled
+      description: Defines if the shared link requires a password to access the item.
+      type: Boolean
+    - contextPath: Box.File.shared_link.permissions.can_download
+      description: Defines if the shared link allows for the item to be downloaded.
+      type: Boolean
+    - contextPath: Box.File.shared_link.permissions.can_preview
+      description: Defines if the shared link allows for the item to be previewed.
+      type: Boolean
+    - contextPath: Box.File.shared_link.download_count
+      description: The number of times the item has been downloaded.
+      type: Number
+    - contextPath: Box.File.shared_link.preview_count
+      description: The number of times the item has been previewed.
+      type: Number
+    - contextPath: Box.File.parent.id
+      description: The ID of the parent for the item found.
+      type: Number
+    - contextPath: Box.File.parent.etag
+      description: The entry tag for the parent of the item found.
+      type: Number
+    - contextPath: Box.File.parent.type
+      description: The type for the parent of the item found.
+      type: String
+    - contextPath: Box.File.parent.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the parent of the item.
+      type: Number
+    - contextPath: Box.File.parent.name
+      description: The name of the parent of the item.
+      type: String
+    - contextPath: Box.File.item_status
+      description: The status of the parent of the item.
+      type: String
+  - arguments:
+    - default: false
+      description: The user performing the action.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The maximum number of items to return per page. Default is "100".
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The offset of the item at which to begin the response. Default is "0".
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the files and folders that have been moved to the trash.
+    execution: false
+    name: box-trashed-items-list
+    outputs:
+    - contextPath: Box.Trash.id
+      description: The ID of the item found.
+      type: Number
+    - contextPath: Box.Trash.etag
+      description: The entry tag for the item found.
+      type: Number
+    - contextPath: Box.Trash.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.Trash.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the item.
+      type: Number
+    - contextPath: Box.Trash.name
+      description: The name of the item.
+      type: String
+    - contextPath: Box.Trash.sha1
+      description: The SHA1 hash of the item.
+      type: String
+    - contextPath: Box.Trash.file_version.id
+      description: The unique identifier that represents a file version.
+      type: Number
+    - contextPath: Box.Trash.file_version.type
+      description: Value is always file_version.
+      type: String
+    - contextPath: Box.Trash.file_version.sha1
+      description: The SHA1 hash of this version of the file.
+      type: String
+  - arguments:
+    - default: false
+      description: The unique identifier that represents the file or folder.
+      isArray: false
+      name: item_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of the object to restore. Possible values are "file" and "folder".
+      isArray: false
+      name: type
+      predefined:
+      - file
+      - folder
+      required: true
+      secret: false
+    - default: false
+      description: The user who is performing the action.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    deprecated: false
+    description: Restores a file or folder that has been moved to the trash.
+    execution: false
+    name: box-trashed-item-restore
+    outputs:
+    - contextPath: Box.Item.id
+      description: The ID of the item found.
+      type: Number
+    - contextPath: Box.Item.etag
+      description: The entry tag for the item found.
+      type: Number
+    - contextPath: Box.Item.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.Item.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the item.
+      type: Number
+    - contextPath: Box.Item.name
+      description: The name of the item.
+      type: String
+    - contextPath: Box.Item.sha1
+      description: The SHA1 hash of the item.
+      type: String
+    - contextPath: Box.Item.file_version.id
+      description: The unique identifier that represents a file version.
+      type: Number
+    - contextPath: Box.Item.file_version.type
+      description: Value is always file_version.
+      type: String
+    - contextPath: Box.Item.file_version.sha1
+      description: The SHA1 hash of this version of the file.
+      type: String
+    - contextPath: Box.Item.description
+      description: The description of the item.
+      type: String
+    - contextPath: Box.Item.size
+      description: The file size in bytes.
+      type: Number
+    - contextPath: Box.Item.path_collection.total_count
+      description: The number of folders in the list.
+      type: Number
+    - contextPath: Box.Item.path_collection.entries.id
+      description: The ID of the item found.
+      type: Number
+    - contextPath: Box.Item.path_collection.entries.etag
+      description: The entry tag for the item found.
+      type: Number
+    - contextPath: Box.Item.path_collection.entries.type
+      description: The type of the item found.
+      type: String
+    - contextPath: Box.Item.path_collection.entries.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the item.
+      type: Number
+    - contextPath: Box.Item.path_collection.entries.name
+      description: The name of the item.
+      type: String
+    - contextPath: Box.Item.created_at
+      description: The date and time when the item was created on Box.
+      type: Date
+    - contextPath: Box.Item.modified_at
+      description: The date and time when the item was last updated on Box.
+      type: Date
+    - contextPath: Box.Item.trashed_at
+      description: The time at which the item was put in the trash.
+      type: Date
+    - contextPath: Box.Item.purged_at
+      description: The time at which the item is expected to be purged from the trash.
+      type: Date
+    - contextPath: Box.Item.content_created_at
+      description: The date and time at which the item was originally created, which
+        might be before it was uploaded to Box.
+      type: Date
+    - contextPath: Box.Item.content_modified_at
+      description: The date and time at which the item was last updated, which might
+        be before it was uploaded to Box.
+      type: Date
+    - contextPath: Box.Item.created_by.id
+      description: The unique identifier for the user who created the item.
+      type: Number
+    - contextPath: Box.Item.created_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.Item.created_by.name
+      description: The display name of the user who created the item.
+      type: String
+    - contextPath: Box.Item.created_by.login
+      description: The primary email address of the user who created the item.
+      type: String
+    - contextPath: Box.Item.modified_by.id
+      description: The unique identifier for the user who modified the item.
+      type: Number
+    - contextPath: Box.Item.modified_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.Item.modified_by.name
+      description: The display name of the user who modified the item.
+      type: String
+    - contextPath: Box.Item.modified_by.login
+      description: The primary email address of the user who modified the item.
+      type: String
+    - contextPath: Box.Item.owned_by.id
+      description: The unique identifier for the user who owns the item.
+      type: Number
+    - contextPath: Box.Item.owned_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.Item.owned_by.name
+      description: The display name of the user who owns the item.
+      type: String
+    - contextPath: Box.Item.owned_by.login
+      description: The primary email address of the user who owns the item.
+      type: String
+    - contextPath: Box.Item.shared_link.url
+      description: The URL that can be used to access the item on Box.
+      type: String
+    - contextPath: Box.Item.shared_link.download_url
+      description: The URL that can be used to download the item from Box.
+      type: String
+    - contextPath: Box.Item.shared_link.vanity_url
+      description: The "Custom URL" that can also be used to preview the item on Box.
+      type: String
+    - contextPath: Box.Item.shared_link.vanity_name
+      description: The custom name of a shared link, as used in the vanity_url field.
+      type: String
+    - contextPath: Box.Item.shared_link.access
+      description: The access level for the shared link.
+      type: String
+    - contextPath: Box.Item.shared_link.effective_access
+      description: The effective access level for the shared link.
+      type: String
+    - contextPath: Box.Item.shared_link.effective_permission
+      description: The effective permissions for this shared link.
+      type: String
+    - contextPath: Box.Item.shared_link.unshared_at
+      description: The date and time when the link will be unshared.
+      type: Date
+    - contextPath: Box.Item.shared_link.is_password_enabled
+      description: Defines if the shared link requires a password to access the item.
+      type: Boolean
+    - contextPath: Box.Item.shared_link.permissions.can_download
+      description: Defines if the shared link allows for the item to be downloaded.
+      type: Boolean
+    - contextPath: Box.Item.shared_link.permissions.can_preview
+      description: Defines if the shared link allows for the item to be previewed.
+      type: Boolean
+    - contextPath: Box.Item.shared_link.download_count
+      description: The number of times the item has been downloaded.
+      type: Number
+    - contextPath: Box.Item.shared_link.preview_count
+      description: The number of times the item has been previewed.
+      type: Number
+    - contextPath: Box.Item.parent.id
+      description: The ID of the parent for the item found.
+      type: Number
+    - contextPath: Box.Item.parent.etag
+      description: The entry tag for the parent of the item found.
+      type: Number
+    - contextPath: Box.Item.parent.type
+      description: The type for the parent of the item found.
+      type: String
+    - contextPath: Box.Item.parent.sequence_id
+      description: The numeric identifier that represents the most recent user event
+        that has been applied to the parent of the item.
+      type: Number
+    - contextPath: Box.Item.parent.name
+      description: The name of the parent of the item.
+      type: String
+    - contextPath: Box.Item.item_status
+      description: The status of the parent of the item.
+      type: String
+  - arguments:
+    - default: false
+      description: The unique identifier that represents the file or folder.
+      isArray: false
+      name: item_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of the item to delete. Possible values are: "file" and "folder".'
+      isArray: false
+      name: type
+      predefined:
+      - file
+      - folder
+      required: true
+      secret: false
+    - default: false
+      description: The user who is performing the action.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    deprecated: false
+    description: Permanently deletes a file or folder that is in the trash. This action
+      cannot be undone.
+    execution: true
+    name: box-trashed-item-delete-permanently
+  - arguments:
+    - default: false
+      description: The ID of the user making the request.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves information about the user who is currently authenticated.
+    execution: false
+    name: box-get-current-user
+    outputs:
+    - contextPath: Box.User.id
+      description: The unique identifier for this user.
+      type: Number
+    - contextPath: Box.User.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.User.name
+      description: The display name of this user.
+      type: String
+    - contextPath: Box.User.login
+      description: The primary email address of this user.
+      type: String
+    - contextPath: Box.User.created_at
+      description: When the user object was created.
+      type: Date
+    - contextPath: Box.User.modified_at
+      description: When the user object was last modified.
+      type: Date
+    - contextPath: Box.User.language
+      description: The language of the user, formatted in a modified version of the
+        ISO 639-1 format.
+      type: String
+    - contextPath: Box.User.timezone
+      description: The user's timezone.
+      type: String
+    - contextPath: Box.User.space_amount
+      description: The user's total available space amount in bytes.
+      type: Number
+    - contextPath: Box.User.space_used
+      description: The amount of space in use by the user.
+      type: Number
+    - contextPath: Box.User.max_upload_size
+      description: The maximum individual file size in bytes the user can have.
+      type: Number
+    - contextPath: Box.User.status
+      description: The user's account status.
+      type: String
+    - contextPath: Box.User.job_title
+      description: The user's job title.
+      type: String
+    - contextPath: Box.User.phone
+      description: The users phone number.
+      type: Number
+    - contextPath: Box.User.address
+      description: The user's address.
+      type: String
+    - contextPath: Box.User.avatar_url
+      description: URL of the user's avatar image.
+      type: String
+    - contextPath: Box.User.notification_email.email
+      description: The email address to send the notifications to.
+      type: String
+    - contextPath: Box.User.notification_email.is_confirmed
+      description: Specifies if this email address has been confirmed.
+      type: Boolean
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The user’s enterprise role. Possible values are "coadmin" and "user".
+      isArray: false
+      name: role
+      predefined:
+      - coadmin
+      - user
+      required: false
+      secret: false
+    - default: false
+      description: The user’s address.
+      isArray: false
+      name: address
+      required: false
+      secret: false
+    - default: false
+      description: The user’s job title.
+      isArray: false
+      name: job_title
+      required: false
+      secret: false
+    - default: false
+      description: The language of the user, formatted in a modified version of the
+        ISO 639-1 format.
+      isArray: false
+      name: language
+      required: false
+      secret: false
+    - default: false
+      description: The email address the user uses to log in.
+      isArray: false
+      name: login
+      required: false
+      secret: false
+    - default: false
+      description: The name of the user.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The user’s phone number.
+      isArray: false
+      name: phone
+      required: false
+      secret: false
+    - default: false
+      description: The user’s total available space in bytes. Set this to -1 to indicate
+        unlimited storage.
+      isArray: false
+      name: space_amount
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "The user's account status. Possible values are \"active\", \"inactive\", \"cannot_delete_edit\", and \"cannot_delete_edit_upload\"."
+      isArray: false
+      name: status
+      predefined:
+      - active
+      - inactive
+      - cannot_delete_edit
+      - cannot_delete_edit_upload
+      required: false
+      secret: false
+    - default: false
+      description: The user's timezone.
+      isArray: false
+      name: timezone
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether the user can use Box Sync. Possible values are: "true" and "false".'
+      isArray: false
+      name: is_sync_enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether to exempt the user from enterprise device limits. Possible values are: "true" and "false".'
+      isArray: false
+      name: is_exempt_from_device_limits
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether the user is allowed to collaborate with users outside their
+        enterprise. Possible values are: "true" and "false".'
+      isArray: false
+      name: is_external_collab_restricted
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether the user must use two-factor authentication. Possible values are: "true" and "false".'
+      isArray: false
+      name: is_exempt_from_login_verification
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether the user can see other enterprise users in their contact
+        list. Possible values are: "true" and "false".'
+      isArray: false
+      name: can_see_managed_users
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: A tracking code that allows an admin to generate reports from the admin
+        console and assign an attribute to a specific group of users. The expected
+        format is `key=FirstKey,value=FirstValue`. Multiple key value pairs may be
+        used when using the `;` separator.
+      isArray: false
+      name: tracking_codes
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the user.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the user who is making the request.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates a managed user in an enterprise. This endpoint is only available
+      to users and applications with the right admin permissions.
+    execution: false
+    name: box-update-user
+    outputs:
+    - contextPath: Box.User.id
+      description: The unique identifier for this user.
+      type: Number
+    - contextPath: Box.User.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.User.name
+      description: The display name of this user.
+      type: String
+    - contextPath: Box.User.login
+      description: The primary email address of this user.
+      type: String
+    - contextPath: Box.User.created_at
+      description: When the user object was created.
+      type: Date
+    - contextPath: Box.User.modified_at
+      description: When the user object was last modified.
+      type: Date
+    - contextPath: Box.User.language
+      description: The language of the user, formatted in a modified version of the
+        ISO 639-1 format.
+      type: String
+    - contextPath: Box.User.timezone
+      description: The user's timezone.
+      type: String
+    - contextPath: Box.User.space_amount
+      description: The user's total available space amount in bytes.
+      type: Number
+    - contextPath: Box.User.space_used
+      description: The amount of space in use by the user.
+      type: Number
+    - contextPath: Box.User.max_upload_size
+      description: The maximum individual file size in bytes the user can have.
+      type: Number
+    - contextPath: Box.User.status
+      description: The users account status.
+      type: String
+    - contextPath: Box.User.job_title
+      description: The user's job title.
+      type: String
+    - contextPath: Box.User.phone
+      description: The user's phone number.
+      type: Number
+    - contextPath: Box.User.address
+      description: The user's address.
+      type: String
+    - contextPath: Box.User.avatar_url
+      description: URL of the user's avatar image.
+      type: String
+    - contextPath: Box.User.notification_email.email
+      description: The email address to send the notifications to.
+      type: String
+    - contextPath: Box.User.notification_email.is_confirmed
+      description: Specifies if this email address has been confirmed.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The user who is making the request.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    - default: false
+      description: The email address the user uses to log in.
+      isArray: false
+      name: login
+      required: false
+      secret: false
+    - default: false
+      description: The name of the user.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The user’s enterprise role. Possible values are: "coadmin" and "user".'
+      isArray: false
+      name: role
+      predefined:
+      - coadmin
+      - user
+      required: false
+      secret: false
+    - default: false
+      description: The language of the user, formatted in a modified version of the
+        ISO 639-1 format.
+      isArray: false
+      name: language
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether the user can use Box Sync. Possible values are: "true" and "false".'
+      isArray: false
+      name: is_sync_enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The user’s job title.
+      isArray: false
+      name: job_title
+      required: false
+      secret: false
+    - default: false
+      description: The user’s phone number.
+      isArray: false
+      name: phone
+      required: false
+      secret: false
+    - default: false
+      description: The user’s address.
+      isArray: false
+      name: address
+      required: false
+      secret: false
+    - default: false
+      description: The user’s total available space in bytes. Set this to -1 to indicate
+        unlimited storage.
+      isArray: false
+      name: space_amount
+      required: false
+      secret: false
+    - default: false
+      description: A tracking code that allows an admin to generate reports from the admin
+        console and assign an attribute to a specific group of users. The expected
+        format is `key=FirstKey,value=FirstValue`. Multiple key value pairs may be
+        used when using the `;` separator.
+      isArray: false
+      name: tracking_codes
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether the user can see other enterprise users in their contact
+        list. Possible values are: "true" and "false".'
+      isArray: false
+      name: can_see_managed_users
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The user's timezone.
+      isArray: false
+      name: timezone
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether to exempt the user from enterprise device limits. Possible values are: "true" and "false".'
+      isArray: false
+      name: is_exempt_from_device_limits
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether the user must use two-factor authentication. Possible values are: "true" and "false".'
+      isArray: false
+      name: is_exempt_from_login_verification
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether the user is allowed to collaborate with users outside their
+        enterprise. Possible values are: "true" and "false".'
+      isArray: false
+      name: is_external_collab_restricted
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether the user is an app user. Possible values are: "true" and "false".'
+      isArray: false
+      name: is_platform_access_only
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The account status of the user. Possible values are: "active", "inactive", "cannot_delete_edit", and "cannot_delete_edit_upload".'
+      isArray: false
+      name: status
+      predefined:
+      - active
+      - inactive
+      - cannot_delete_edit
+      - cannot_delete_edit_upload
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new managed user in an enterprise. This endpoint is only
+      available to users and applications with the correct admin permissions.
+    execution: false
+    name: box-create-user
+    outputs:
+    - contextPath: Box.User.id
+      description: The unique identifier for this user.
+      type: Number
+    - contextPath: Box.User.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.User.name
+      description: The display name of this user.
+      type: String
+    - contextPath: Box.User.login
+      description: The primary email address of this user.
+      type: String
+    - contextPath: Box.User.created_at
+      description: When the user object was created.
+      type: Date
+    - contextPath: Box.User.modified_at
+      description: When the user object was last modified.
+      type: Date
+    - contextPath: Box.User.language
+      description: The language of the user, formatted in a modified version of the
+        ISO 639-1 format.
+      type: String
+    - contextPath: Box.User.timezone
+      description: The user's timezone.
+      type: String
+    - contextPath: Box.User.space_amount
+      description: The user's total available space amount in bytes.
+      type: Number
+    - contextPath: Box.User.space_used
+      description: The amount of space in use by the user.
+      type: Number
+    - contextPath: Box.User.max_upload_size
+      description: The maximum individual file size in bytes the user can have.
+      type: Number
+    - contextPath: Box.User.status
+      description: The user's account status.
+      type: String
+    - contextPath: Box.User.job_title
+      description: The user's job title.
+      type: String
+    - contextPath: Box.User.phone
+      description: The user's phone number.
+      type: Number
+    - contextPath: Box.User.address
+      description: The user's address.
+      type: String
+    - contextPath: Box.User.avatar_url
+      description: URL of the user's avatar image.
+      type: String
+    - contextPath: Box.User.notification_email.email
+      description: The email address to send the notifications to.
+      type: String
+    - contextPath: Box.User.notification_email.is_confirmed
+      description: Specifies if this email address has been confirmed.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The ID of the user.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      description: The user ID of the account making the request.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether the user should be deleted even if this user still owns
+        files. Possible values are: "true" and "false".'
+      isArray: false
+      name: force
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Deletes a user. By default this will fail if the user still owns
+      any content. Move their owned content before proceeding, or use the force
+      field to delete the user and their files.
+    execution: true
+    name: box-delete-user
+  - arguments:
+    - default: false
+      description: The user who is performing the action.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of stream to retrieve. Possible values are: "all", "changes", and "sync".'
+      isArray: false
+      name: stream_type
+      predefined:
+      - all
+      - changes
+      - sync
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The maximum number of events to return. Default is "100".
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns up to a year of past events for a given user.
+    execution: false
+    name: box-list-user-events
+    outputs:
+    - contextPath: Box.Events.type
+      description: The type of the event.
+      type: String
+    - contextPath: Box.Events.event_id
+      description: The ID of the event object. You can use this to detect duplicate
+        events.
+      type: String
+    - contextPath: Box.Events.created_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.Events.created_by.id
+      description: The unique identifier for this user.
+      type: Date
+    - contextPath: Box.Events.created_by.name
+      description: The display name of this user.
+      type: String
+    - contextPath: Box.Events.created_by.login
+      description: The primary email address of this user.
+      type: String
+    - contextPath: Box.Events.created_at
+      description: Time which the event was created.
+      type: Date
+    - contextPath: Box.Events.recorded_at
+      description: Time which the event was recorded.
+      type: Date
+    - contextPath: Box.Events.event_type
+      description: The event type that triggered this event.
+      type: String
+    - contextPath: Box.Events.session_id
+      description: The session of the user who performed the action. Not all events
+        will populate this attribute.
+      type: String
+  - arguments:
+    - default: false
+      description: The user who is performing the action.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    - default: false
+      description: The lower bound date and time to return events for.
+      isArray: false
+      name: created_after
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The maximum number of events to return. Default is "100".
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns up to a year of past events for the entire enterprise.
+    execution: false
+    name: box-list-enterprise-events
+    outputs:
+    - contextPath: Box.Events.source.item_type
+      description: The type of the item that the event represents.
+      type: String
+    - contextPath: Box.Events.source.item_id
+      description: The unique identifier that represents the item.
+      type: Date
+    - contextPath: Box.Events.source.item_name
+      description: The name of the item.
+      type: String
+    - contextPath: Box.Events.source.parent.type
+      description: Value is always folder.
+      type: String
+    - contextPath: Box.Events.source.parent.name
+      description: The name of the folder.
+      type: String
+    - contextPath: Box.Events.source.parent.id
+      description: The unique identifier that represents a folder.
+      type: String
+    - contextPath: Box.Events.source.owned_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.Events.source.owned_by.id
+      description: The unique identifier for this user.
+      type: Date
+    - contextPath: Box.Events.source.owned_by.name
+      description: The display name of this user.
+      type: String
+    - contextPath: Box.Events.source.owned_by.login
+      description: The primary email address of this user.
+      type: String
+    - contextPath: Box.Events.created_by.type
+      description: Value is always user.
+      type: String
+    - contextPath: Box.Events.created_by.id
+      description: The unique identifier for this user.
+      type: Date
+    - contextPath: Box.Events.created_by.name
+      description: The display name of this user.
+      type: String
+    - contextPath: Box.Events.created_by.login
+      description: The primary email address of this user.
+      type: String
+    - contextPath: Box.Events.created_at
+      description: Time which the event was created.
+      type: Date
+    - contextPath: Box.Events.event_id
+      description: The ID of the event object. You can use this to detect duplicate
+        events.
+      type: String
+    - contextPath: Box.Events.event_type
+      description: The event type that triggered this event.
+      type: String
+    - contextPath: Box.Events.ip_address
+      description: IP address of the user who triggered the event.
+      type: String
+    - contextPath: Box.Events.type
+      description: Value is always event.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the file to download.
+      isArray: false
+      name: file_id
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the user performing the action.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the contents of a file in binary format.
+    execution: false
+    name: box-download-file
+  dockerimage: demisto/pyjwt3:1.0.0.13142
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- BoxV2_TestPlaybook
+fromversion: 5.0.0
