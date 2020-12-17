@@ -16,6 +16,7 @@ def create_bar_widget() -> BarColumnPieWidget:
         'Gal': 2,
         'Bar': 4,
         'Guy': 3,
+        'Rony': 0,
     }
 
     for name, count in name_count_mapping.items():

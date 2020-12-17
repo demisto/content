@@ -1,0 +1,314 @@
+{
+ "group": "indicator",
+ "id": "ER Token Layout",
+ "indicatorsDetails": {
+  "tabs": [
+   {
+    "id": "default-main",
+    "name": "Info",
+    "sections": [
+     {
+      "h": 2,
+      "hideName": false,
+      "i": "default-main-bab7e352-c354-45d8-8133-b0f1bd1c6061-default-main-relatedIncidents",
+      "maxH": null,
+      "maxW": 2,
+      "minH": 1,
+      "minW": 2,
+      "moved": false,
+      "name": "Related Incidents",
+      "static": false,
+      "type": "relatedIncidents",
+      "w": 2,
+      "x": 0,
+      "y": 3
+     },
+     {
+      "h": 1,
+      "hideName": true,
+      "i": "default-main-bab7e352-c354-45d8-8133-b0f1bd1c6061-default-main-reputationStatus",
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Reputation Status",
+      "static": false,
+      "type": "reputationStatus",
+      "w": 1,
+      "x": 1,
+      "y": 0
+     },
+     {
+      "h": 1,
+      "hideName": true,
+      "i": "default-main-bab7e352-c354-45d8-8133-b0f1bd1c6061-default-main-expirationStatus",
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Expiration Status",
+      "static": false,
+      "type": "expirationStatus",
+      "w": 1,
+      "x": 0,
+      "y": 0
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "hideName": false,
+      "i": "default-main-bab7e352-c354-45d8-8133-b0f1bd1c6061-default-main-38be2c50-2c82-11eb-8304-a75e45391705",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "assigneduser",
+        "height": 22,
+        "id": "91851240-2c82-11eb-8304-a75e45391705",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "userpswd",
+        "height": 22,
+        "id": "1e69e020-2c90-11eb-8304-a75e45391705",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "userpswdhintv2",
+        "height": 22,
+        "id": "a43451e0-2da8-11eb-a01e-9de7f25b7f8b",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Login Information",
+      "static": false,
+      "w": 1,
+      "x": 2,
+      "y": 0
+     },
+     {
+      "h": 3,
+      "hideName": true,
+      "i": "default-main-17fac710-2dba-11eb-81b8-51dd99a0c0cc",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Gif",
+      "query": "ERTokenLayoutGif",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 1,
+      "x": 2,
+      "y": 2
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "hideItemTitleOnlyOne": true,
+      "hideName": true,
+      "i": "default-main-0b0fb420-2dd3-11eb-81b8-51dd99a0c0cc",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "userpswdhint",
+        "height": 22,
+        "id": "dfc0c000-2dd4-11eb-81b8-51dd99a0c0cc",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Password Hint",
+      "static": false,
+      "w": 1,
+      "x": 1,
+      "y": 1
+     },
+     {
+      "displayType": "ROW",
+      "h": 1,
+      "hideName": false,
+      "i": "default-main-1ed10560-2f0c-11eb-aae0-f5e14db9c95d",
+      "items": [
+       {
+        "args": {
+
+        },
+        "buttonClass": "success",
+        "endCol": 2,
+        "fieldId": "",
+        "height": 44,
+        "id": "8c912e90-2f0c-11eb-aae0-f5e14db9c95d",
+        "index": 0,
+        "name": "Explore",
+        "scriptId": "ERTokenReputationWrapper",
+        "sectionItemType": "button",
+        "startCol": 0
+       },
+       {
+        "args": {
+
+        },
+        "buttonClass": "secondary",
+        "endCol": 2,
+        "fieldId": "",
+        "height": 44,
+        "id": "ab6ab5c0-2c82-11eb-8304-a75e45391705",
+        "index": 1,
+        "name": "💎",
+        "scriptId": "ERTokenLayoutButtonPasswordHint",
+        "sectionItemType": "button",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Actions",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 2
+     },
+     {
+      "displayType": "ROW",
+      "h": 1,
+      "hideName": false,
+      "i": "default-main-c0ec8090-2f0c-11eb-aae0-f5e14db9c95d",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "modified",
+        "height": 22,
+        "id": "indicator-modified",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "expiration",
+        "height": 22,
+        "id": "indicator-expiration",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Basic Information",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 1
+     }
+    ],
+    "type": "custom"
+   }
+  ]
+ },
+ "indicatorsQuickView": {
+  "tabs": [
+   {
+    "id": "indicator-quick-view-info",
+    "name": "Info",
+    "sections": [
+     {
+      "h": 1,
+      "hideName": true,
+      "i": "indicator-quick-view-info-expirationStatus",
+      "name": "Expiration Status",
+      "type": "expirationStatus",
+      "w": 1,
+      "x": 0,
+      "y": 0
+     },
+     {
+      "h": 2,
+      "i": "indicator-quick-view-info-reputationSources",
+      "name": "Reputation",
+      "type": "reputationSources",
+      "w": 1,
+      "x": 0,
+      "y": 1
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "hideItemTitleOnlyOne": true,
+      "i": "indicator-quick-view-info-tags-section",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "tags",
+        "height": 22,
+        "id": "indicator-quick-view-info-tags-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "name": "Tags",
+      "w": 1,
+      "x": 0,
+      "y": 3
+     },
+     {
+      "h": 2,
+      "i": "indicator-quick-view-info-relatedIncidents",
+      "name": "Related Incidents",
+      "type": "relatedIncidents",
+      "w": 1,
+      "x": 0,
+      "y": 5
+     },
+     {
+      "h": 2,
+      "i": "indicator-quick-view-info-comments",
+      "name": "Comments",
+      "type": "comments",
+      "w": 1,
+      "x": 0,
+      "y": 7
+     }
+    ],
+    "type": "custom"
+   }
+  ]
+ },
+ "name": "ER Token Layout",
+ "system": false,
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "description": ""
+}
