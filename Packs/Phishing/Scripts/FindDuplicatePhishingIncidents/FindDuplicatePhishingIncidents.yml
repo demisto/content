@@ -96,9 +96,9 @@ args:
   isArray: false
   name: statusScope
   predefined:
-    - All
-    - ClosedOnly
-    - NonClosedOnly
+  - All
+  - ClosedOnly
+  - NonClosedOnly
   required: false
   secret: false
 - auto: PREDEFINED
@@ -108,8 +108,8 @@ args:
   isArray: false
   name: closeAsDuplicate
   predefined:
-    - 'true'
-    - 'false'
+  - 'true'
+  - 'false'
   required: false
   secret: false
 - default: false
@@ -117,6 +117,13 @@ args:
   description: Threshold to consider incident as duplication, number between 0-1
   isArray: false
   name: threshold
+  required: false
+  secret: false
+- default: false
+  defaultValue: '20'
+  description: Maximum number of duplicate incidents ids to return. Default is 20.
+  isArray: false
+  name: maxIncidentsToReturn
   required: false
   secret: false
 comment: An out-of-the-box deduplication preprocessing script based on a machine learning
@@ -127,25 +134,27 @@ commonfields:
 enabled: false
 name: FindDuplicatePhishingIncidents
 outputs:
-  - contextPath: similarIncident.id
-    description: Similar incident ID.
-    type: string
-  - contextPath: isSimilarIncidentFound
-    description: Whether a similar incident was found ("true" or "false").
-    type: boolean
-  - contextPath: similarIncident
-    description: Similar incident.
-    type: unknown
-  - contextPath: similarIncident.name
-    description: Similar incident name.
-    type: string
-  - contextPath: similarIncident.rawId
-    description: Similar incident ID.
-    type: Unknown
-  - contextPath: similarIncident.similarity
-    description: 'Number in range 0-1 which describe the similairty between the existing
+- contextPath: similarIncident.id
+  description: Similar incident ID.
+  type: string
+- contextPath: isSimilarIncidentFound
+  description: Whether a similar incident was found ("true" or "false").
+  type: boolean
+- contextPath: similarIncident
+  description: Similar incident.
+  type: unknown
+- contextPath: similarIncident.name
+  description: Similar incident name.
+  type: string
+- contextPath: similarIncident.rawId
+  description: Similar incident ID.
+  type: Unknown
+- contextPath: similarIncident.similarity
+  description: 'Number in range 0-1 which describe the similairty between the existing
     incident and the new incident. '
-    type: Unknown
+  type: Unknown
+- contextPath: allSimilarIncidentsIds
+  type: Unknown
 script: '-'
 subtype: python3
 system: false

@@ -187,7 +187,7 @@ def cosine_sim(a, b):
     return dot(a, b) / (norm(a) * norm(b))
 
 
-def find_duplicate_incidents(new_incident, existing_incidents_df):
+def find_duplicate_incidents(new_incident, existing_incidents_df, max_incidents_to_return):
     global MERGED_TEXT_FIELD, FROM_POLICY
     new_incident_text = new_incident[MERGED_TEXT_FIELD]
     text = [new_incident_text] + existing_incidents_df[MERGED_TEXT_FIELD].tolist()
@@ -212,7 +212,7 @@ def find_duplicate_incidents(new_incident, existing_incidents_df):
     except Exception:
         pass
     existing_incidents_df.sort_values(by=['distance', 'created', tie_breaker_col], inplace=True)
-    return existing_incidents_df
+    return existing_incidents_df.head(max_incidents_to_return)
 
 
 def return_entry(message, duplicate_incidents_df=None, similarity=0):
@@ -225,11 +225,11 @@ def return_entry(message, duplicate_incidents_df=None, similarity=0):
             'id': most_similar_incident['id'],
             'name': most_similar_incident.get('name'),
             'similarity': similarity,
-            'allSimilarIncdientsIds': duplicate_incidents_df['id'].tolist()
         }
     outputs = {
         'similarIncident': similar_incident,
-        'isSimilarIncidentFound': duplicate_incidents_df is not None
+        'isSimilarIncidentFound': duplicate_incidents_df is not None,
+        'allSimilarIncidentsIds': duplicate_incidents_df['id'].tolist()
     }
     return_outputs(message, outputs)
 
@@ -314,6 +314,12 @@ def main():
     EMAIL_HTML_FIELD = input_args.get('emailBodyHTML', EMAIL_HTML_FIELD)
     FROM_FIELD = input_args.get('emailFrom', FROM_FIELD)
     FROM_POLICY = input_args.get('fromPolicy', FROM_POLICY)
+    max_incidents_to_return = input_args.get('maxIncidentsToReturn', '20')
+    try:
+        max_incidents_to_return = int(max_incidents_to_return)
+    except Exception:
+        return_error('Illegal value of arguement "maxIncidentsToReturn": {}. '
+                     'Value should be an integer'.format(max_incidents_to_return))
     new_incident = demisto.incidents()[0]
     existing_incidents = get_existing_incidents(input_args, new_incident.get('type', IGNORE_INCIDENT_TYPE_VALUE))
     demisto.debug('found {} incidents by query'.format(len(existing_incidents)))
@@ -335,7 +341,7 @@ def main():
         return
     new_incident_preprocessed = new_incident_df.iloc[0].to_dict()
     duplicate_incidents_df = find_duplicate_incidents(new_incident_preprocessed,
-                                                      existing_incidents_df)
+                                                      existing_incidents_df, max_incidents_to_return)
     if len(duplicate_incidents_df) == 0:
         create_new_incident()
         return
