@@ -18,9 +18,9 @@ def test_get_incidents(requests_mock, mocker):
         demisto,
         'params',
         return_value={
-            'API_KEY': 'API_KEY',
-            'SERVICE_KEY': 'SERVICE_KEY',
-            'FETCH_INTERVAL': 'FETCH_INTERVAL'
+            'APIKey': 'API_KEY',
+            'ServiceKey': 'SERVICE_KEY',
+            'FetchInterval': 'FETCH_INTERVAL'
         }
     )
     from PagerDuty import get_incidents_command
