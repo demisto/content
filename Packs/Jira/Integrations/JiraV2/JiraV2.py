@@ -729,14 +729,16 @@ def get_new_attachments(attachments, incident_modified_date):
 
 def get_incident_entries(issue, incident_modified_date):
     entries = {'comments': [], 'attachments': []}
-    _, _, raw_comments_content = get_comments_command(issue['id'])
-    comments = raw_comments_content['comments']
-    for comment in comments:
-        comment_modified_date: datetime = parse(
-            str(dict_safe_get(comment, ['updated'], "", str))
-        ).replace(tzinfo=pytz.UTC)
-        if incident_modified_date <= comment_modified_date:
-            entries['comments'].append(comment)
+    command_output = get_comments_command(issue['id'])
+    if command_output:
+        raw_comments_content = command_output[2]
+        comments = raw_comments_content['comments']
+        for comment in comments:
+            comment_modified_date: datetime = parse(
+                str(dict_safe_get(comment, ['updated'], "", str))
+            ).replace(tzinfo=pytz.UTC)
+            if incident_modified_date <= comment_modified_date:
+                entries['comments'].append(comment)
     attachments = demisto.get(issue, 'fields.attachment')
     if attachments:
         file_results = get_new_attachments(attachments, incident_modified_date)
