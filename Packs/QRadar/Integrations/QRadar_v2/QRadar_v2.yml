@@ -317,13 +317,6 @@ script:
       name: headers
       required: false
       secret: false
-    - default: false
-      description: Table headers to use the human readable output (if none provided,
-        will show all table headers).
-      isArray: false
-      name: headers
-      required: false
-      secret: false
     deprecated: false
     description: Gets a specific search id and status.
     execution: false
@@ -1385,7 +1378,7 @@ script:
     - contextPath: QRadar.Properties.username
       description: The owner of the event regex property.
       type: String
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: false
   longRunning: true

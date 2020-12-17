@@ -592,6 +592,8 @@ class Pack(object):
                                                                   user_metadata.get('displayedImages', []),
                                                                   dependencies_data)
         pack_metadata['useCases'] = input_to_list(input_data=user_metadata.get('useCases'), capitalize_input=True)
+        if pack_metadata.get('useCases') and 'Use Case' not in pack_metadata['tags']:
+            pack_metadata['tags'].append('Use Case')
         pack_metadata['keywords'] = input_to_list(user_metadata.get('keywords'))
         pack_metadata['dependencies'] = Pack._parse_pack_dependencies(user_metadata.get('dependencies', {}),
                                                                       dependencies_data)
@@ -773,7 +775,9 @@ class Pack(object):
         except Exception:
             logging.exception(f"Failed in zipping {self._pack_name} folder")
         finally:
-            return task_status, zip_pack_path
+            # If the pack needs to be encrypted, it is initially at a different location than this final path
+            final_path_to_zipped_pack = f"{self._pack_path}.zip"
+            return task_status, final_path_to_zipped_pack
 
     def detect_modified(self, content_repo, index_folder_path, current_commit_hash, previous_commit_hash):
         """ Detects pack modified files.
