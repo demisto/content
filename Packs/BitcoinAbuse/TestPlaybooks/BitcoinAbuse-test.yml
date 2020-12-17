@@ -1,5 +1,5 @@
-id: BitcoinAbuse-test
-version: 1
+id: 6c08ab9f-0680-454a-86d7-51bc760fa97a
+version: 4
 vcShouldKeepItemLegacyProdMachine: false
 name: BitcoinAbuse-test
 starttaskid: "0"
@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -57,8 +57,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 210
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -68,10 +68,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 4ec62af0-dd89-4ae7-8cfb-8bab9f69f661
+    taskid: 0de2b8ac-56be-49c8-84b0-08501399e120
     type: regular
     task:
-      id: 4ec62af0-dd89-4ae7-8cfb-8bab9f69f661
+      id: 0de2b8ac-56be-49c8-84b0-08501399e120
       version: -1
       name: Bitcoin Report Address
       description: Reports an abuser to Bitcoin Abuse API. abuse_type_other field
@@ -88,18 +88,17 @@ tasks:
         simple: bitcoin tumbler
       abuse_type_other: {}
       abuser:
-        simple: rctc@verizo.net
+        simple: abuser@abuse.net
       address:
-        simple: 1FTJfkSLXj3JoWpW2ZKjk7FdWcTepWGQUC
+        simple: L1eqWYHYFrcMfFP4Ckn7tT9UnNeCyhssnfw6RaKYxPZgwNQy1neK
       description:
-        simple: Kradzież to największe  zło na świecie okradaj dalej ludzi jak nie
-          masz sumienia....ty debilu rctc
+        simple: this is a description of the abuse
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 390
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -120,12 +119,39 @@ tasks:
       type: regular
       iscommand: true
       brand: BitcoinAbuse
+    nexttasks:
+      '#none#':
+      - "4"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 570
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: e0f26460-51d7-42ed-861d-e63cb81479dd
+    type: title
+    task:
+      id: e0f26460-51d7-42ed-861d-e63cb81479dd
+      version: -1
+      name: Playbook Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -138,9 +164,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 615,
+        "height": 735,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
