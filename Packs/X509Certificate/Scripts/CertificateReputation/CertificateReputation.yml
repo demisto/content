@@ -6,7 +6,7 @@ args:
   required: true
   secret: false
 - default: false
-  description: Set validation checks in the indicator
+  description: Whether to set validation checks in the indicator. Possible values are "true" and "false".
   isArray: false
   name: update_indicator
   required: false
@@ -14,7 +14,7 @@ args:
   predefined:
     - 'true'
     - 'false'
-comment: Enrich and calculate reputation of a Certificate indicator.
+comment: Enrich and calculate the reputation of a certificate indicator.
 commonfields:
   id: CertificateReputation
   version: -1
@@ -22,7 +22,7 @@ enabled: false
 name: CertificateReputation
 outputs:
 - contextPath: Certificate.Name
-  description: Name (CN or SAN) appearing in the certificate.
+  description: Name (CN or SAN) that appears in the certificate.
   type: String
 - contextPath: Certificate.SubjectDN
   description: |
@@ -36,34 +36,34 @@ outputs:
   description: The Issuer Distinguished Name of the certificate.
   type: String
 - contextPath: Certificate.SerialNumber
-  description: The Serial Number of the certificate.
+  description: The serial number of the certificate.
   type: String
 - contextPath: Certificate.ValidityNotAfter
-  description: End of certificate validity period.
+  description: End of the certificate validity period.
   type: Date
 - contextPath: Certificate.ValidityNotBefore
-  description: Start of certificate validity period.
+  description: Start of the certificate validity period.
   type: Date
 - contextPath: Certificate.SubjectAlternativeName.Type
-  description: Type of the SAN.
+  description: Type of the Subject Alternative Name (SAN).
   type: String
 - contextPath: Certificate.SubjectAlternativeName.Value
   description: Name of the SAN.
   type: String
 - contextPath: Certificate.SHA512
-  description: SHA512 Fingerprint of the certificate in DER format.
+  description: SHA512 fingerprint of the certificate in DER format.
   type: String
 - contextPath: Certificate.SHA256
-  description: SHA256 Fingerprint of the certificate in DER format.
+  description: SHA256 fingerprint of the certificate in DER format.
   type: String
 - contextPath: Certificate.SHA1
-  description: SHA1 Fingerprint of the certificate in DER format.
+  description: SHA1 fingerprint of the certificate in DER format.
   type: String
 - contextPath: Certificate.MD5
-  description: MD5 Fingerprint of the certificate in DER format.
+  description: MD5 fingerprint of the certificate in DER format.
   type: String
 - contextPath: Certificate.PublicKey.Algorithm
-  description: Algorithm used for public key of the certificate.
+  description: Algorithm used for the public key of the certificate.
   type: String
 - contextPath: Certificate.PublicKey.Length
   description: Length in bits of the public key of the certificate.
@@ -93,7 +93,7 @@ outputs:
   description: The Y parameter for EC keys.
   type: String
 - contextPath: Certificate.PublicKey.Curve
-  description: Curve of the Public Key for EC keys.
+  description: Curve of the public key for EC keys.
   type: String
 - contextPath: Certificate.SPKISHA256
   description: SHA256 fingerprint of the certificate Subject Public Key Info.
