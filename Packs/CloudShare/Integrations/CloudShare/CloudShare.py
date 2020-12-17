@@ -740,7 +740,7 @@ def get_env_command(client, args):
     envID = args.get('envID')
     res = client.send_request(
         'GET',
-        f'envs/{envId}',
+        f'envs/{envID}',
         queryParams={k: v for k, v in args.items()}
     )
     if res.status == 200:
