@@ -180,7 +180,7 @@ def find_malformed_pack_id(error_message: str) -> List:
     if malformed_pack_id:
         return malformed_pack_id
     else:
-        raise Exception(f'The request to install packs has failed. Reason: {str(error_message)}')
+        return []
 
 
 def install_nightly_packs(client: demisto_client,
@@ -391,11 +391,15 @@ def get_latest_version_from_bucket(pack_id: str, production_bucket: Bucket) -> s
     """
     pack_bucket_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, pack_id)
     # Adding the '/' in the end of the prefix to search for the exact pack id
+    logging.debug(f'Trying to get latest version for pack {pack_id} from bucket path {pack_bucket_path}')
     pack_versions_paths = [f.name for f in production_bucket.list_blobs(prefix=f'{pack_bucket_path}/') if
                            f.name.endswith('.zip')]
     pack_versions = [LooseVersion(PACK_PATH_VERSION_REGEX.findall(path)[0]) for path in pack_versions_paths]
-    pack_latest_version = max(pack_versions).vstring
-    return pack_latest_version
+    if pack_versions:
+        pack_latest_version = max(pack_versions).vstring
+        return pack_latest_version
+    else:
+        logging.error(f'Could not find any versions for pack {pack_id} in bucket path {pack_bucket_path}')
 
 
 def get_pack_installation_request_data(pack_id: str, pack_version: str):
@@ -431,7 +435,8 @@ def install_all_content_packs_for_nightly(client: demisto_client, host: str, ser
     for pack_id in os.listdir(PACKS_FULL_PATH):
         if pack_id not in IGNORED_FILES:
             pack_version = get_latest_version_from_bucket(pack_id, production_bucket)
-            all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
+            if pack_version:
+                all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
     install_packs(client, host, all_packs, is_nightly=True)
 
 
