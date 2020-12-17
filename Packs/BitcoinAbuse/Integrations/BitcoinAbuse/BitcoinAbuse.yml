@@ -78,8 +78,7 @@ configuration:
   isArray: false
   required: false
   secret: false
-description: This is integration for Bitcoin Abuse API. contains 2 commands, bitcoin-report-address
-  and fetch-indicators
+description: BitcoinAbuse.com is a public database of bitcoin addresses used by hackers and criminals.
 display: BitcoinAbuse
 name: BitcoinAbuse
 script:

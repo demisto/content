@@ -32,7 +32,7 @@ def test_report_address_command_success(requests_mock):
      - Ensure the command runs successfully
      - Verify expected results are returned.
     """
-    mock_response = util_load_json('test_data/successful_bitcoin_report_address_response.json.json')
+    mock_response = util_load_json('test_data/successful_bitcoin_report_address_response.json')
     valid_report_address = util_load_json('test_data/valid_bitcoin_report_address.json')
     requests_mock.post(
         'https://www.bitcoinabuse.com/api/reports/create',
@@ -56,8 +56,8 @@ def test_report_address_command_failure(requests_mock):
      - Ensure the command fails to run
      - Verify expected results are returned.
     """
-    mock_response = util_load_json('test_data/failure_bitcoin_report_address_response.json.json')
-    valid_report_address = util_load_json('test_data/valid_bitcoin_report_address.json.json.json')
+    mock_response = util_load_json('test_data/failure_bitcoin_report_address_response.json')
+    valid_report_address = util_load_json('test_data/valid_bitcoin_report_address.json')
     requests_mock.post(
         'https://www.bitcoinabuse.com/api/reports/create',
         json=mock_response
@@ -81,9 +81,9 @@ def test_report_address_command_success_type_other(requests_mock):
      - Ensure the command runs successfully
      - Verify expected results are returned.
     """
-    mock_response = util_load_json('test_data/successful_bitcoin_report_address_response.json.json')
+    mock_response = util_load_json('test_data/successful_bitcoin_report_address_response.json')
     valid_report_address_other_type = util_load_json(
-        'test_data/valid_bitcoin_report_address_with_other_abuse_type.json.json.json')
+        'test_data/valid_bitcoin_report_address_with_other_abuse_type.json')
     requests_mock.post(
         'https://www.bitcoinabuse.com/api/reports/create',
         json=mock_response
@@ -107,7 +107,7 @@ def test_report_address_command_failure_type_other():
      - Verify error message which indicates missing abuse_type_other is returned
     """
     invalid_report_address_other_type_missing = util_load_json(
-        'test_data/invalid_bitcoin_report_address_other_type_missing.json.json')
+        'test_data/invalid_bitcoin_report_address_other_type_missing.json')
     try:
         report_address_command(client, invalid_report_address_other_type_missing)
         raise AssertionError('report address command should fail when type is other and no abuse_type_other was given')
@@ -128,7 +128,7 @@ def test_report_address_command_failure_unknown_type():
      - Verify error message which indicates the abuse_type is unknown
     """
     failure_report_address_unknown_type = util_load_json(
-        'test_data/invalid_bitcoin_report_address_unknown_type.json.json.json')
+        'test_data/invalid_bitcoin_report_address_unknown_type.json')
     try:
         report_address_command(client, failure_report_address_unknown_type)
         raise AssertionError('report address command should fail when not given a known type')

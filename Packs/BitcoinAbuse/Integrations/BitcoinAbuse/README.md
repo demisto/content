@@ -1,6 +1,6 @@
-This is integration for Bitcoin Abuse API. contains 2 commands, bitcoin-report-address and fetch-indicators
+BitcoinAbuse.com is a public database of bitcoin addresses used by hackers and criminals.
 This integration was integrated and tested with version xx of BitcoinAbuse.
-Supported Cortex XSOAR versions: 5.0.0 and later.
+Supported Cortex XSOAR versions: 5.5.0 and later.
 
 ## Configure BitcoinAbuse on Cortex XSOAR
 
@@ -11,14 +11,16 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | incidentType | Incident type | False |
+    | feed | Fetch indicators | False |
     | api_key | API Key | True |
     | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
-    | feedIncremental | Incremental Feed | False |
-    | feed | Fetch indicators | False |
+    | initial_fetch_interval | First Fetch Time | True |
     | feedReputation | Indicator Reputation | False |
     | feedReliability | Source Reliability | True |
     | feedExpirationPolicy |  | False |
+    | feedFetchInterval | Feed Fetch Interval | False |
+    | limit |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -26,7 +28,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fetch-indicators
 ***
- 
+fetches indicators from BitcoinAbuse API
 
 
 #### Base Command
@@ -47,8 +49,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-### fetch-indicators
-***
+
 
 ### bitcoin-report-address
 ***
@@ -83,4 +84,4 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->bitcoin address 1FTJfkSLXj3JoWpW2ZKjk7FdWcTepWGQUC by abuser abuser@abuse.net was reported to BitcoinAbuse API
+>Bitcoin address 1FTJfkSLXj3JoWpW2ZKjk7FdWcTepWGQUC by abuse bitcoin user abuser@abuse.net was reported to BitcoinAbuse API
