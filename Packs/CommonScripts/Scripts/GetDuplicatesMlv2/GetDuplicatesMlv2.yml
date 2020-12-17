@@ -1,3 +1,4 @@
+deprecated: true 
 commonfields:
   id: GetDuplicatesMlv2
   version: -1
@@ -12,6 +13,7 @@ tags:
 - ml
 - duplicate
 comment: |-
+  Deprecated. Please use the "PhishingDedupPreprocessingRule" script insetead.
   Find duplicate incidents candidates.
   Using machine learning techniques with pre-defined data (can also use data from the local environment), this script takes into consideration different features such as: labels comparison, email labels (relevant for phishing), incident time difference and shared indicators, which can be customized by the arguments.
 enabled: true

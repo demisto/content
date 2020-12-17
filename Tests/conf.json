@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Tripwire",
+            "playbookID": "TestplaybookTripwire",
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "Generic Polling Test",
             "timeout": 250
         },
@@ -45,6 +50,17 @@
             "integrations": "CrowdStrike Falcon Intel v2",
             "playbookID": "CrowdStrike Falcon Intel v2 - Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "SecurityAndCompliance",
+            "playbookID": "O365-SecurityAndCompliance-Test",
+            "fromversion": "5.5.0",
+            "timeout": 700
+        },
+        {
+            "integrations": "SecurityIntelligenceServicesFeed",
+            "playbookID": "SecurityIntelligenceServicesFeed - Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Majestic Million",
@@ -3141,6 +3157,11 @@
         {
             "integrations": "Cryptocurrency",
             "playbookID": "Cryptocurrency-Test"
+        },
+        {
+            "integrations": "Public DNS Feed",
+            "playbookID": "Public_DNS_Feed_Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -3236,7 +3257,7 @@
         "Cisco Umbrella Test": "Issue 24338"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
@@ -3247,6 +3268,7 @@
         "Fidelis Elevate Network": "Issue 26453",
         "CrowdStrike Falcon X": "Issue 26209",
         "ArcSight Logger": "Issue 24303",
+        "Sophos Central": "No instance",
         "MxToolBox": "No instance",
         "Prisma Access": "Instance will be provided soon by Lior and Prasen - Issue 27112",
         "AlphaSOC Network Behavior Analytics": "No instance",
@@ -3319,11 +3341,11 @@
         "AWS - Athena - Beta": "Issue 19834",
         "SNDBOX": "Issue 28826",
         "Workday": "License expired Issue: 29595",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
@@ -3331,7 +3353,7 @@
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-        
+
         "_comment4": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Endace": "Issue 24304",
@@ -3356,6 +3378,8 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "CloudConvert": "has a command that uploads a file (!cloudconvert-upload)",
+        "EWS v2": "Fetches bytes data (!ews-get-items-from-folder)",
         "jira-v2": "has a command that uploads a file ( !jira-issue-upload-file)",
         "Rundeck": "has a command that uploads a file (!rundeck-adhoc-script-run)",
         "ServiceDeskPlus": "Playbook uses a random string and verifying the response contain it",
@@ -3375,6 +3399,7 @@
         "Mail Listener v2": "Integration has no proxy checkbox",
         "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
         "AWS - Security Hub": "Issue 24926",
+        "SecurityAndCompliance": "Integration doesn't support proxy",
         "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
@@ -3517,7 +3542,7 @@
         "Mail Listener v2"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
