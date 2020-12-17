@@ -11,16 +11,17 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Expanse",
+        "Threat Intelligence",
         "Network",
         "Security"
     ],
     "useCases": [
-        "Attack Surface Management",
+        "Asset Management",
         "Threat Intelligence Management",
         "Vulnerability Management"
     ],
     "keywords": [
+        "Attack Surface Management",
         "Expanse",
         "Expander",
         "Behavior"
