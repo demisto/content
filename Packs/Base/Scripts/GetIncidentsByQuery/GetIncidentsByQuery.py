@@ -2,7 +2,6 @@ from CommonServerPython import *
 
 import pickle
 import uuid
-
 from dateutil import parser
 
 PREFIXES_TO_REMOVE = ['incident.']
@@ -18,23 +17,29 @@ def parse_datetime(datetime_str):
 
 
 def parse_relative_time(datetime_str):
-    try:
-        res = re.search("([0-9]+) (minutes|hours|days|weeks|months|years) ago", datetime_str)
-        if res:
-            number = int(res.group(1))
-            unit = res.group(2)
-            if unit == 'years':
-                unit = 'days'
-                number *= 365
-            elif unit == 'months':
-                number *= 43800
-                unit = 'minutes'
-            kargs = {}
-            kargs[unit] = int(number)
-            result = datetime.now() - timedelta(**kargs)
-            return result
-    except Exception:
-        return None
+    if datetime_str:
+        datetime_str = datetime_str.lower()
+        try:
+            res = re.search("([0-9]+) (minute|minutes|hour|hours|day|days|week|weeks|month|months|year|years) ago",
+                            datetime_str)
+            if res:
+                number = int(res.group(1))
+                unit = res.group(2)
+                if unit in ['minute', 'hour', 'day', 'week', 'month', 'year']:
+                    unit += "s"
+                if unit == 'years':
+                    unit = 'days'
+                    number *= 365
+                elif unit == 'months':
+                    number *= 43800
+                    unit = 'minutes'
+
+                kargs = {}
+                kargs[unit] = int(number)
+                result = datetime.now() - timedelta(**kargs)
+                return result
+        except Exception:
+            return None
 
 
 def get_context(incident_id):
@@ -104,19 +109,41 @@ def get_incidents_by_page(args, page, fields_to_populate, include_context):
     return parsed_incidents
 
 
-def get_incidents(query, time_field, size, from_date, fields_to_populate, include_context):
-    query_size = min(PAGE_SIZE, size)
-    args = {"query": query, "size": query_size, "sort": time_field}
-    if time_field == "created" and from_date:
-        from_datetime = None
+def get_demisto_datetme_format(date_string):
+    if date_string:
+        date_object = None
+        # try to parse date string
         try:
-            from_datetime = parser.parse(from_date)
+            date_object = parser.parse(date_string)
         except Exception:
             pass
-        if from_datetime is None and from_date.strip().endswith("ago"):
-            from_datetime = parse_relative_time(from_date)
+        # try to parse relative time
+        if date_object is None and date_string.strip().endswith("ago"):
+            date_object = parse_relative_time(date_string)
+
+        if date_object:
+            return date_object.astimezone().isoformat('T')
+        else:
+            return None
+
+
+def get_incidents(query, time_field, size, from_date, to_date, fields_to_populate, include_context):
+    query_size = min(PAGE_SIZE, size)
+    args = {"query": query, "size": query_size, "sort": time_field}
+    if from_date:
+        from_datetime = get_demisto_datetme_format(from_date)
         if from_datetime:
-            args['from'] = from_datetime.isoformat()
+            args['fromdate'] = from_datetime
+        else:
+            return_error("failed to parse from date: " + from_date)
+
+    if to_date:
+        to_datetime = get_demisto_datetme_format(to_date)
+        if to_datetime:
+            args['todate'] = to_datetime
+        else:
+            return_error("failed to parse to date: " + to_date)
+
     incident_list = []  # type: ignore
     page = 0
     while len(incident_list) < size:
@@ -166,6 +193,7 @@ def main():
         incidents = get_incidents(query, d_args['timeField'],
                                   int(d_args['limit']),
                                   d_args.get('fromDate'),
+                                  d_args.get('toDate'),
                                   fields_to_populate,
                                   include_context)
 

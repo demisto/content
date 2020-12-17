@@ -14,7 +14,7 @@ args:
 - default: false
   description: 'The start date by which to filter incidents. Date format will be the
     same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
-    +0200").'
+    +0200"). This apply to incident creation time.'
   isArray: false
   name: fromDate
   required: false
@@ -22,7 +22,7 @@ args:
 - default: false
   description: 'The end date by which to filter incidents. Date format will be the
     same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
-    +0200").'
+    +0200"). This apply to incident creation time.'
   isArray: false
   name: toDate
   required: false

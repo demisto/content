@@ -1,3 +1,4 @@
+import pytest
 from GetIncidentsByQuery import build_incidents_query, get_incidents, parse_relative_time, main, \
     preprocess_incidents_fields_list, PYTHON_MAGIC
 
@@ -56,24 +57,31 @@ def test_get_incidents(mocker):
     query = 'query'
 
     def validate_args(command, args):
-        assert len(args.get('from')) > 5
+        assert args.get('fromdate')
+        assert len(args.get('fromdate')) > 5
+        assert args.get('todate')
+        assert len(args.get('todate')) > 5
         assert args['size'] == size
         assert args['query'] == query
         return [{'Type': entryTypes['note'], 'Contents': {'data': []}}]
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=validate_args)
-    get_incidents(query, "created", size, "3 days ago", None, False)
-    get_incidents(query, "created", size, "3 months ago", None, False)
-    get_incidents(query, "created", size, "3 weeks ago", None, False)
-    get_incidents(query, "created", size, "2020-02-16T17:45:53.179489", None, False)
+    get_incidents(query, "created", size, "3 days ago", "1 days ago", None, False)
+    get_incidents(query, "created", size, "3 months ago", "1 month ago", None, False)
+    get_incidents(query, "created", size, "3 weeks ago", "1 weeks ago", None, False)
+    get_incidents(query, "created", size, "2020-02-16T17:45:53.179489", "2020-02-20", None, False)
 
     def validate_args_without_from(command, args):
-        assert args.get('from') is None
+        assert args.get('fromdate') is None
         return [{'Type': entryTypes['note'], 'Contents': {'data': []}}]
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=validate_args_without_from)
 
-    get_incidents(query, "modified", size, "3 weeks ago", None, False)
+    get_incidents(query, "created", size, None, None, None, False)
+
+    with pytest.raises(SystemExit) as e:
+        get_incidents(query, "created", size, "3 min ago", None, None, False)
+        assert e
 
 
 def test_parse_relative_time():
@@ -90,7 +98,15 @@ def test_parse_relative_time():
     t2 = datetime.now() - timedelta(minutes=43800)
     assert abs((t2 - t1)).total_seconds() < threshold
 
+    t1 = parse_relative_time("1 month ago")
+    t2 = datetime.now() - timedelta(minutes=43800)
+    assert abs((t2 - t1)).total_seconds() < threshold
+
     t1 = parse_relative_time("2 weeks ago")
+    t2 = datetime.now() - timedelta(weeks=2)
+    assert abs((t2 - t1)).total_seconds() < threshold
+
+    t1 = parse_relative_time("2 week ago")
     t2 = datetime.now() - timedelta(weeks=2)
     assert abs((t2 - t1)).total_seconds() < threshold
 
