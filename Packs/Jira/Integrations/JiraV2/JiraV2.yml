@@ -548,18 +548,24 @@ script:
     description: Returns the fields to map.it's here for debugging purposes.
     execution: false
     name: get-mapping-fields
+  - deprecated: false
+    description: Get incident changes. Please note that this method will not update
+      the current incident, it's here for debugging purposes.
+    execution: false
+    name: update-remote-system
   dockerimage: demisto/oauthlib:1.0.0.14319
   feed: false
   isfetch: true
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+
 tests:
 - Jira-v2-Test
 defaultmapperin: classifier-mapper-incoming-JiraV2
