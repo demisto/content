@@ -113,9 +113,9 @@ EXPANSE_LOGO = (
 
 
 def expanse_print_suggestions(args: Dict[str, Any]) -> CommandResults:
-    ip = args.get("ip", None)
-    port = args.get("port", None)
-    fqdn = args.get("fqdn", None)
+    ip = args.get("ip")
+    port = args.get("port")
+    fqdn = args.get("fqdn")
     expanse_users = argToList(args.get("expanse_users", []))
     expanse_devices = argToList(args.get("expanse_devices", []))
     expanse_ips = argToList(args.get("expanse_ips", []))
@@ -123,9 +123,9 @@ def expanse_print_suggestions(args: Dict[str, Any]) -> CommandResults:
     expanse_asset_tags = argToList(args.get("expanse_asset_tags", []))
     expanse_business_units = argToList(args.get("expanse_business_units", []))
     shadow_it = argToList(args.get("shadow_it", []))
-    provider = args.get("provider", None)
-    region = args.get("region", None)
-    service = args.get("service", None)
+    provider = args.get("provider")
+    region = args.get("region")
+    service = args.get("service")
     prisma_cloud_assets = argToList(args.get("prisma_cloud_assets", []))
 
     md = f"![expanse_logo]({EXPANSE_LOGO})\n\n"
@@ -144,9 +144,7 @@ def expanse_print_suggestions(args: Dict[str, Any]) -> CommandResults:
     md += "Logs and asset information were searched for the following service:\n"
     md += tableToMarkdown(
         name="Service Information",
-        t=[{"IP": ip, "port": port, "FQDN": fqdn}],
-        headers=["IP", "port", "FQDN"],
-        headerTransform=pascalToSpace,
+        t=[{"IP": ip, "port": port, "FQDN": fqdn}]
     )
 
     if provider:
@@ -159,7 +157,7 @@ def expanse_print_suggestions(args: Dict[str, Any]) -> CommandResults:
         md += f"The IP address belongs to the following Public Cloud service: **{service}**\n"
     md += "\n\n"
 
-    if shadow_it and isinstance(shadow_it, list) and len(shadow_it) > 0:
+    if shadow_it and isinstance(shadow_it, list):
         md += "## Shadow IT\n\n"
         md += (
             "Based on the information above, the Playbook tries to determine whether this service is sanctioned or can be Shadow"
@@ -167,7 +165,7 @@ def expanse_print_suggestions(args: Dict[str, Any]) -> CommandResults:
         )
         shadow = False
         for n, c in enumerate(shadow_it):
-            if isinstance(c, dict) and "value" in c and c["value"] is True:
+            if isinstance(c, dict) c.get('value')  is True:
                 shadow_it[n]["result"] = "✅"
                 shadow = True
             else:
@@ -210,12 +208,12 @@ def expanse_print_suggestions(args: Dict[str, Any]) -> CommandResults:
         for n, u in enumerate(expanse_users):
             if not isinstance(u, dict):
                 continue
-            if (groups := u.get("groups", [])) and isinstance(groups, list) and len(groups) > 0:
+            if (groups := u.get("groups", [])) and isinstance(groups, list):
                 for m, g in enumerate(groups):
                     f = re.search("CN=([^,]*),*", g)
                     if f:
                         expanse_users[n]["groups"][m] = str(f.groups(0)[0])
-            if (manager := u.get("manager", [])) and isinstance(manager, str) and len(manager) > 0:
+            if (manager := u.get("manager", [])) and isinstance(manager, str):
                 f = re.search("CN=([^,]*),*", manager)
                 if f:
                     expanse_users[n]["manager"] = str(f.groups(0)[0])
