@@ -1635,9 +1635,8 @@ def checkpoint_login_and_get_sid_command(base_url: str, username: str, password:
     if domain_arg:
         jsonbody['domain'] = domain_arg
 
-        response = requests.post(base_url + 'login', verify=verify_certificate,
-                             headers={'Content-Type': 'application/json'},
-                             json=jsonbody).json()
+    response = requests.post(base_url + 'login', verify=verify_certificate, json=jsonbody,
+                             headers={'Content-Type': 'application/json'}).json()
     printable_result = {'session-id': response.get('sid')}
     readable_output = tableToMarkdown('CheckPoint session data:', printable_result)
 
