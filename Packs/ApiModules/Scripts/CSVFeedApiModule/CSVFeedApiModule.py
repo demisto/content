@@ -7,7 +7,7 @@ import csv
 import gzip
 import urllib3
 from dateutil.parser import parse
-from typing import Optional, Pattern, Dict, Any, Tuple, Union, List, Callable
+from typing import Optional, Pattern, Dict, Any, Tuple, Union, List
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -231,8 +231,7 @@ def date_format_parsing(date_string):
     return formatted_date
 
 
-def create_fields_mapping(raw_json: Dict[str, Any]
-                          , mapping: Dict[str, Union[Tuple[str, Any, Any], Union[str, Callable[[str], str]]]]):
+def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tuple, str]]):
     fields_mapping = {}  # type: dict
 
     for key, field in mapping.items():
@@ -240,11 +239,10 @@ def create_fields_mapping(raw_json: Dict[str, Any]
         formatter_string = None
         field_mapper_function = None
 
-        if isinstance(field, tuple):
-            if len(field) == 3:
-                field, regex_extractor, formatter_string = field
-            elif len(field) == 2:
-                field, field_mapper_function = field
+        if isinstance(field, tuple) and len(field) == 3:
+            field, regex_extractor, formatter_string = field
+        elif isinstance(field, tuple) and len(field) == 2:
+            field, field_mapper_function = field
 
         if not raw_json.get(field):  # type: ignore
             continue
