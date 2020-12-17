@@ -313,7 +313,15 @@ def create_incident_from_ticket(issue):
             severity = 1
 
     # Adding mirroring details
-    issue['mirror_direction'] = 'In' if demisto.params().get("incoming_mirror") else None
+    if demisto.params().get("incoming_mirror") and demisto.params().get("outgoing_mirror"):
+        issue['mirror_direction'] = 'Both'
+    elif demisto.params().get("incoming_mirror"):
+        issue['mirror_direction'] = 'In'
+    elif demisto.params().get('outgoing_mirror'):
+        issue['mirror_direction'] = 'Out'
+    else:
+        issue['mirror_direction'] = None
+
     issue['mirror_instance'] = demisto.integrationInstance()
 
     return {
@@ -506,9 +514,9 @@ def create_issue_command():
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
-def edit_issue_command(issue_id, headers=None, status=None, **_):
+def edit_issue_command(issue_id, headers=None, status=None, **kwargs):
     url = f'rest/api/latest/issue/{issue_id}/'
-    issue = get_issue_fields(**demisto.args())
+    issue = get_issue_fields(**kwargs)
     jira_req('PUT', url, json.dumps(issue))
     if status:
         edit_status(issue_id, status)
@@ -683,7 +691,7 @@ def fetch_incidents(query, id_offset, fetch_by_created=None, **_):
     if not id_offset:
         id_offset = 0
 
-    incidents, max_results = [], 1
+    incidents, max_results = [], 1  # TODO: need to change this value back to 50
     if id_offset:
         query = f'{query} AND id >= {id_offset}'
     if fetch_by_created:
@@ -737,7 +745,7 @@ def get_incident_entries(issue, incident_modified_date):
     return entries
 
 
-def get_mapping_fields_command():
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
     jira_incident_type_scheme = SchemeTypeMapping(type_name=JIRA_INCIDENT_TYPE_NAME)
     for argument, description in ISSUE_INCIDENT_FIELDS.items():
         jira_incident_type_scheme.add_field(name=argument, description=description)
@@ -747,6 +755,32 @@ def get_mapping_fields_command():
 
     return mapping_response
 
+
+def update_remote_args(delta):
+    pass
+
+
+def update_remote_system_command(args):
+    remote_args = UpdateRemoteSystemArgs(args)
+    try:
+        if remote_args.delta and remote_args.incident_changed:
+            demisto.info(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Jira '
+                          f'incident {remote_args.remote_incident_id}')
+
+            demisto.info(f'Sending incident with remote ID [{remote_args.remote_incident_id}] to Jira\n')
+            edit_issue_command(remote_args.remote_incident_id, **remote_args.delta)
+
+        else:
+            demisto.info(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
+                          f'as it is not new nor changed')
+
+        return remote_args.remote_incident_id
+
+    except Exception as e:
+        demisto.info(f"Error in Jira outgoing mirror for incident {remote_args.remote_incident_id} \n"
+                      f"Error message: {str(e)}")
+
+        return remote_args.remote_incident_id
 
 
 def get_remote_data_command(args) -> GetRemoteDataResponse:
@@ -851,7 +885,10 @@ def main():
             get_id_offset()
 
         elif demisto.command() == 'get-mapping-fields':
-            get_mapping_fields_command()
+            return_results(get_mapping_fields_command())
+
+        elif demisto.command() == 'update-remote-system':
+            return_results(update_remote_system_command(demisto.args()))
 
         elif demisto.command() == 'get-remote-data':
             return_results(get_remote_data_command(demisto.args()))
