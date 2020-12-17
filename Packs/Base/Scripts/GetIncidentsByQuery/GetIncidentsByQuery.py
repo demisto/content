@@ -135,14 +135,14 @@ def get_incidents(query, time_field, size, from_date, to_date, fields_to_populat
         if from_datetime:
             args['fromdate'] = from_datetime
         else:
-            return_error("failed to parse from date: " + from_date)
+            demisto.results("did not set from date due to a wrong format: " + from_date)
 
     if to_date:
         to_datetime = get_demisto_datetme_format(to_date)
         if to_datetime:
             args['todate'] = to_datetime
         else:
-            return_error("failed to parse to date: " + to_date)
+            demisto.results("did not set to date due to a wrong format: " + from_date)
 
     incident_list = []  # type: ignore
     page = 0
