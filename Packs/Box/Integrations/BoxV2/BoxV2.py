@@ -178,6 +178,8 @@ class Client(BaseClient):
         self.enterprise_id = self.credentials_dict.get('enterpriseID')
         self.authentication_url = 'https://api.box.com/oauth2/token'
         self.as_user = as_user
+        self.default_as_user = auth_params.get('default_user')
+        self.search_user_id = auth_params.get('search_user_id', False)
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self._headers = self._request_token()
@@ -257,6 +259,62 @@ class Client(BaseClient):
         auth_header = {'Authorization': f'Bearer {access_token}'}
         return auth_header
 
+    def handle_as_user(self, as_user_arg) -> str:
+        """
+        Wrapper which gracefully handles the as-user header variable as well as resolves an argument
+        to an ID if the given argument is a users login and the search_user_id parameter is set.
+
+        :param as_user_arg: Value for the argument as-user
+        :return: Validated as_user id string.
+        """
+        as_user = self._handle_default_user(as_user_arg=as_user_arg)
+        if re.match(emailRegex, as_user):
+            if self.search_user_id is True:
+                # If the integration is configured to allow auto-detection of User IDs based on
+                # emails, then the match is performed here.
+
+                return self._search_user_id(as_user=as_user)
+            else:
+                raise DemistoException("The current as-user is invalid. Please either specify the "
+                                       "user ID, or enable the auto-detect user IDs setting.")
+        else:
+            return as_user
+
+    def _handle_default_user(self, as_user_arg: str) -> Union[str, Any]:
+        """
+        When the as-user argument is absent when executing a command, this function will return the
+        default user if there is one. If neither have been provided, we raise an error.
+
+        :param as_user_arg: Value for the argument as-user
+        :return: Correct as_user string.
+        """
+        if as_user_arg is None:
+            if not self.default_as_user:
+                raise DemistoException(
+                    "A user ID has not been specified. Please configure a default, or"
+                    " add the user ID in the as_user argument.")
+            return self.default_as_user
+        else:
+            return as_user_arg
+
+    def _search_user_id(self, as_user):
+        """
+        When the search_user_id parameter is set, this function will resolve a users login to the
+        users ID.
+
+        :param as_user: Value for the as-user field.
+        :return: resolved as_user ID.
+        """
+        try:
+            response = self.list_users(fields='id,name', filter_term=as_user, limit=1, offset=0)
+            # In all cases, we retrieve the first (and ideally only) entry from the query.
+            matched_user_id = response.get('entries')[0].get('id')
+        except Exception as exception:
+            raise DemistoException(
+                "An error occurred while attempting to match the as_user to a"
+                " valid ID", exception)
+        return str(matched_user_id)
+
     def search_content(self, as_user: str, query_object: QueryHandler) -> Dict[str, Any]:
         """
         Searches for files, folders, web links, and shared files across the users content or across
@@ -266,7 +324,8 @@ class Client(BaseClient):
         :param query_object: QueryHandler - an object containing the data required for the query.
         :return: dict containing the results from the http request.
         """
-        self._headers.update({'As-User': as_user})
+        validated_as_user = self.handle_as_user(as_user_arg=as_user)
+        self._headers.update({'As-User': validated_as_user})
         return self._http_request(
             method='GET',
             url_suffix='/search/',
@@ -302,7 +361,8 @@ class Client(BaseClient):
         """
         url_suffix = f'/files/{file_id}/'
         request_params = {'fields': 'shared_link'}
-        self._headers.update({'As-User': as_user})
+        validated_as_user = self.handle_as_user(as_user_arg=as_user)
+        self._headers.update({'As-User': validated_as_user})
         return self._http_request(
             method='GET',
             url_suffix=url_suffix,
@@ -326,7 +386,8 @@ class Client(BaseClient):
             request_body = file_share_link.prepare_request_object()
         else:
             request_body = None
-        self._headers.update({'As-User': as_user})
+        validated_as_user = self.handle_as_user(as_user_arg=as_user)
+        self._headers.update({'As-User': validated_as_user})
         return self._http_request(
             method='PUT',
             url_suffix=url_suffix,
@@ -346,7 +407,8 @@ class Client(BaseClient):
         """
         url_suffix = f'/folders/{folder_id}/'
         request_params = {'fields': 'shared_link'}
-        self._headers.update({'As-User': as_user})
+        validated_as_user = self.handle_as_user(as_user_arg=as_user)
+        self._headers.update({'As-User': validated_as_user})
         return self._http_request(
             method='GET',
             url_suffix=url_suffix,
@@ -369,7 +431,8 @@ class Client(BaseClient):
             request_body = folder_share_link.prepare_request_object()
         else:
             request_body = None
-        self._headers.update({'As-User': as_user})
+        validated_as_user = self.handle_as_user(as_user_arg=as_user)
+        self._headers.update({'As-User': validated_as_user})
         return self._http_request(
             method='PUT',
             url_suffix=url_suffix,
@@ -389,7 +452,8 @@ class Client(BaseClient):
         """
         url_suffix = f'/folders/{folder_id}/'
 
-        self._headers.update({'As-User': as_user})
+        validated_as_user = self.handle_as_user(as_user_arg=as_user)
+        self._headers.update({'As-User': validated_as_user})
         return self._http_request(
             method='GET',
             url_suffix=url_suffix
@@ -412,7 +476,8 @@ class Client(BaseClient):
             'offset': offset,
             'sort': sort
         }
-        self._headers.update({'As-User': as_user})
+        validated_as_user = self.handle_as_user(as_user_arg=as_user)
+        self._headers.update({'As-User': validated_as_user})
         return self._http_request(
             method='GET',
             url_suffix=url_suffix,
@@ -431,7 +496,8 @@ class Client(BaseClient):
         :return: dict containing the results from the http request.
         """
         url_suffix = '/folders/'
-        self._headers.update({'As-User': as_user})
+        validated_as_user = self.handle_as_user(as_user_arg=as_user)
+        self._headers.update({'As-User': validated_as_user})
         return self._http_request(
             method='POST',
             url_suffix=url_suffix,
@@ -455,7 +521,8 @@ class Client(BaseClient):
         :return: Status code indicating success or not.
         """
         url_suffix = f'/files/{file_id}'
-        self._headers.update({'As-User': as_user})
+        validated_as_user = self.handle_as_user(as_user_arg=as_user)
+        self._headers.update({'As-User': validated_as_user})
         return self._http_request(
             method='DELETE',
             url_suffix=url_suffix,
@@ -504,7 +571,8 @@ class Client(BaseClient):
         """
         url_suffix = '/files/upload_sessions'
         self._base_url = 'https://upload.box.com/api/2.0'
-        self._headers.update({'As-User': as_user})
+        validated_as_user = self.handle_as_user(as_user_arg=as_user)
+        self._headers.update({'As-User': validated_as_user})
         upload_data = {
             'file_name': file_name,
             'file_size': file_size,
@@ -642,9 +710,8 @@ class Client(BaseClient):
             return self.commit_file(file_path, as_user, parts, upload_url_suffix)
         else:
             with open(file_path, 'rb') as file:
-                self._headers.update({
-                    'As-User': as_user
-                })
+                validated_as_user = self.handle_as_user(as_user_arg=as_user)
+                self._headers.update({'As-User': validated_as_user})
                 upload_url_suffix = '/files/content'
                 attributes = {
                     'name': file_name,
@@ -673,7 +740,8 @@ class Client(BaseClient):
             'limit': limit,
             'offset': offset
         }
-        self._headers.update({'As-User': as_user})
+        validated_as_user = self.handle_as_user(as_user_arg=as_user)
+        self._headers.update({'As-User': validated_as_user})
         return self._http_request(
             method='GET',
             url_suffix=url_suffix,
@@ -691,7 +759,8 @@ class Client(BaseClient):
         """
         # The url requires a plural version of the item.
         url_suffix = f'/{type + "s"}/{item_id}'
-        self._headers.update({'As-User': as_user})
+        validated_as_user = self.handle_as_user(as_user_arg=as_user)
+        self._headers.update({'As-User': validated_as_user})
         return self._http_request(
             method='POST',
             url_suffix=url_suffix
@@ -708,7 +777,8 @@ class Client(BaseClient):
         :return: Status code indicating success/failure of the request.
         """
         url_suffix = f'/{type + "s"}/{item_id}/trash/'
-        self._headers.update({'As-User': as_user})
+        validated_as_user = self.handle_as_user(as_user_arg=as_user)
+        self._headers.update({'As-User': validated_as_user})
         return self._http_request(
             method='DELETE',
             url_suffix=url_suffix,
@@ -728,7 +798,8 @@ class Client(BaseClient):
         :return: dict - The results for the given logs query.
         """
         url_suffix = '/events/'
-        self._headers.update({'As-User': as_user})
+        validated_as_user = self.handle_as_user(as_user_arg=as_user)
+        self._headers.update({'As-User': validated_as_user})
         request_params = {
             'stream_type': stream_type
         }
@@ -751,7 +822,8 @@ class Client(BaseClient):
         :return: dict - The details for the current user.
         """
         url_suffix = '/users/me/'
-        self._headers.update({'As-User': as_user})
+        validated_as_user = self.handle_as_user(as_user_arg=as_user)
+        self._headers.update({'As-User': validated_as_user})
         return self._http_request(
             method='GET',
             url_suffix=url_suffix
@@ -804,7 +876,8 @@ class Client(BaseClient):
         else:
             url_suffix = '/users/'
             method = 'POST'
-        self._headers.update({'As-User': as_user})
+        validated_as_user = self.handle_as_user(as_user_arg=as_user)
+        self._headers.update({'As-User': validated_as_user})
         request_body = {
             "role": role,
             "address": address,
@@ -843,7 +916,8 @@ class Client(BaseClient):
         :return: Status code indicating success or not.
         """
         url_suffix = f'/users/{user_id}/'
-        self._headers.update({'As-User': as_user})
+        validated_as_user = self.handle_as_user(as_user_arg=as_user)
+        self._headers.update({'As-User': validated_as_user})
         query_params = {'force': force}
         return self._http_request(
             method='DELETE',
@@ -985,22 +1059,6 @@ def format_time_range(range_arg: str):
         return f"{dt_from},{dt_to}"
     else:
         return None
-
-
-def handle_default_user(args: dict, params: dict) -> None:
-    """
-    When the as-user argument is absent when executing a command, the argument will be updated to
-    use the value given as the default user.
-
-    :param args: demisto.args() object
-    :param params:  demisto.params() object
-    :return: None - Updates the args object in place.
-    """
-    if 'as_user' not in args:
-        if 'default_user' not in params:
-            raise DemistoException("A user ID has not been specified. Please configure a default, or"
-                                   " add the user ID in the as_user argument.")
-        args.update({'as_user': params.get('default_user')})
 
 
 def parse_key_value_arg(arg_str: Optional[Any]):
@@ -1519,7 +1577,7 @@ def trashed_item_delete_permanently_command(client: Client, args: Dict[str, Any]
     if response.status_code == 204:
         readable_output = f'Item with the ID {item_id} was deleted permanently.'
     else:
-        readable_output = 'Failed to delete the item.'
+        readable_output = f'Failed to delete the item - {item_id}.'
     return CommandResults(
         readable_output=readable_output
     )
@@ -1808,15 +1866,32 @@ def download_file_command(auth_params: dict, base_url: str, verify: bool, proxy:
 ''' MAIN FUNCTION '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, params: dict, first_fetch_time: int) -> str:
     """
     This test assumes that the account has at least one user. By definition, if the instance is
     configured correctly, there will always be a minimum of one user.
 
-    :param client:
-    :return:
+    :param client: Initiated Client object.
+    :param params: Parameters given to Demisto in the integration config.
+    :param first_fetch_time: Int to be used to create a created_after timestamp.
+    :return: Test result.
     """
-    response: Response = client.list_users(limit=1)
+    if params.get('default_user'):
+        response = client.get_current_user(params.get('default_user'))
+    elif params.get('isFetch'):
+        if not params.get('as_user'):
+            raise DemistoException("In order to use fetch, a User ID for Fetching Incidents is "
+                                   "required.")
+        created_after = datetime.fromtimestamp(first_fetch_time, tz=timezone.utc).strftime(
+            DATE_FORMAT)
+        response = client.list_events(
+            as_user=params.get('as_user'),
+            created_after=created_after,
+            stream_type='admin_logs',
+            limit=1
+        )
+    else:
+        response: Response = client.list_users(limit=1)
     if response:
         return 'ok'
     else:
@@ -1879,32 +1954,9 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             proxy=proxy)
-        if not any(command in demisto.command() for command in ['test-module', 'fetch-incidents',
-                                                                'box-find-file-folder-by-share-link']):
-            # Both commands should only use the explicit user they were assigned and not inherit
-            # the default user. This ensures as-user is used every time.
-            handle_default_user(args=demisto.args(), params=demisto.params())
-            if demisto.params().get('search_user_id', False) is True:
-                # If the integration is configured to allow auto-detection of User IDs based on
-                # emails, then the match is performed here.
-                as_user_arg = demisto.args().get('as_user', None)
-                if re.match(emailRegex, as_user_arg):
-                    matched_user_id = None
-                    try:
-                        response = client.list_users(fields='id,name', filter_term=as_user_arg,
-                                                     limit=1,
-                                                     offset=0)
-                        # In all cases, we retrieve the first (and ideally only) entry from the
-                        # query.
-                        matched_user_id = response.get('entries')[0].get('id')
-                    except Exception as exception:
-                        raise DemistoException(
-                            "An error occurred while attempting to match the as_user to a"
-                            " valid ID", exception)
-                    demisto.args().update({'as_user': str(matched_user_id)})
 
         if demisto.command() == 'test-module':
-            result = test_module(client)
+            result = test_module(client, params=demisto.params(), first_fetch_time=first_fetch_time)
             return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
