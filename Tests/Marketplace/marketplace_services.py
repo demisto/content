@@ -22,6 +22,7 @@ from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
 from typing import Tuple, Any, Union
+from demisto_sdk.commands.common.tools import run_command
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
@@ -558,7 +559,7 @@ class Pack(object):
         pack_metadata['name'] = user_metadata.get('name') or pack_id
         pack_metadata['id'] = pack_id
         pack_metadata['description'] = user_metadata.get('description') or pack_id
-        pack_metadata['created'] = user_metadata.get('created', datetime.utcnow().strftime(Metadata.DATE_FORMAT))
+        pack_metadata['created'] = Pack._get_pack_publish_date(user_metadata)
         pack_metadata['updated'] = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
         pack_metadata['legacy'] = user_metadata.get('legacy', True)
         pack_metadata['support'] = user_metadata.get('support') or Metadata.XSOAR_SUPPORT
@@ -599,6 +600,24 @@ class Pack(object):
                                                                       dependencies_data)
 
         return pack_metadata
+
+    def _get_pack_publish_date(self, user_metadata):
+        """ Get pack publish date.
+
+        Args:
+            user_metadata (dict): user metadata that was created in pack initialization.
+
+        Returns:
+            datetime: Pack publish date.
+
+        """
+        added_pack_metadata = run_command(f'git diff --diff-filter=A --name-only master '
+                                          f'Packs/{self._pack_name}/{Pack.USER_METADATA}', exit_on_error=False)
+        if added_pack_metadata:
+            return datetime.utcnow().strftime(Metadata.DATE_FORMAT)
+
+        else:
+            return user_metadata.get('created', datetime.utcnow().strftime(Metadata.DATE_FORMAT))
 
     def _load_pack_dependencies(self, index_folder_path, first_level_dependencies, all_level_displayed_dependencies):
         """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
