@@ -221,7 +221,7 @@ def report_address_command(client: BitcoinAbuseClient, args: Dict) -> str:
 
 def main() -> None:
     command = demisto.command()
-    params = {k: v for k, v in demisto.params() if v is not None}
+    params = {k: v for k, v in demisto.params().items() if v is not None}
     args = demisto.args()
 
     verify_certificate = not demisto.params().get('insecure', False)

@@ -1,0 +1,149 @@
+id: BitcoinAbuse-test
+version: 1
+vcShouldKeepItemLegacyProdMachine: false
+name: BitcoinAbuse-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: de08589e-6d0f-4b33-8f72-2d019f50bff2
+    type: start
+    task:
+      id: de08589e-6d0f-4b33-8f72-2d019f50bff2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 6739a4e6-dc65-4b25-8e4d-1bebc79725ab
+    type: regular
+    task:
+      id: 6739a4e6-dc65-4b25-8e4d-1bebc79725ab
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4ec62af0-dd89-4ae7-8cfb-8bab9f69f661
+    type: regular
+    task:
+      id: 4ec62af0-dd89-4ae7-8cfb-8bab9f69f661
+      version: -1
+      name: Bitcoin Report Address
+      description: Reports an abuser to Bitcoin Abuse API. abuse_type_other field
+        is required when abuse_type is other
+      script: '|||bitcoin-report-address'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      abuse_type:
+        simple: bitcoin tumbler
+      abuse_type_other: {}
+      abuser:
+        simple: rctc@verizo.net
+      address:
+        simple: 1FTJfkSLXj3JoWpW2ZKjk7FdWcTepWGQUC
+      description:
+        simple: Kradzież to największe  zło na świecie okradaj dalej ludzi jak nie
+          masz sumienia....ty debilu rctc
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: e46db6bf-349c-456e-82f8-822bafe0833d
+    type: regular
+    task:
+      id: e46db6bf-349c-456e-82f8-822bafe0833d
+      version: -1
+      name: Bitcoin Fetch Indicators
+      description: fetches indicators from BitcoinAbuse API
+      script: BitcoinAbuse|||fetch-indicators
+      type: regular
+      iscommand: true
+      brand: BitcoinAbuse
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 615,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

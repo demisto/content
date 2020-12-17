@@ -3,6 +3,8 @@ Bitcoin Abuse Integration for Cortex XSOAR - Unit Tests file
 """
 
 from BitcoinAbuse import *
+import json
+import io
 
 SERVER_URL = 'https://www.bitcoinabuse.com/api/'
 
@@ -12,45 +14,10 @@ client = BitcoinAbuseClient(
     proxy=False
 )
 
-failure_mock_response = {
-    'response': 'Description is mandatory',
-    'success': False
-}
 
-success_mock_response = {
-    'response': 'Uploaded address successfully',
-    'success': True
-}
-
-failure_report_address_other_type_missing = {
-    'address': '12xfas41',
-    'abuser': 'blabla@blabla.net',
-    'abuse_type': 'other',
-    'description': 'this is a description of an abuse done to the api'
-}
-
-success_report_address_other_type = {
-    'address': '12xfas41',
-    'abuser': 'blabla@blabla.net',
-    'abuse_type': 'other',
-    'abuse_type_other': 'Stole my bitcoins',
-    'description': 'this is a description of an abuse done to the api'
-}
-
-success_report_address = {
-    'address': '12xfas41',
-    'abuser': 'blabla@blabla.net',
-    'abuse_type': 'darknet market',
-    'description': 'this is a description of an abuse done to the api'
-}
-
-failure_report_address_unknown_type = {
-    'address': '12xfas41',
-    'abuser': 'blabla@blabla.net',
-    'abuse_type': 'unknown type',
-    'abuse_type_other': 'Stole my bitcoins',
-    'description': 'this is a description of an abuse done to the api'
-}
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 def test_report_address_command_success(requests_mock):
@@ -65,14 +32,16 @@ def test_report_address_command_success(requests_mock):
      - Ensure the command runs successfully
      - Verify expected results are returned.
     """
+    mock_response = util_load_json('test_data/successful_bitcoin_report_address_response.json.json')
+    valid_report_address = util_load_json('test_data/valid_bitcoin_report_address.json')
     requests_mock.post(
         'https://www.bitcoinabuse.com/api/reports/create',
-        json=success_mock_response
+        json=mock_response
     )
     assert report_address_command(client,
-                                  success_report_address) == 'Bitcoin address 12xfas41 by abuse bitcoin user ' \
-                                                             'blabla@blabla.net was reported to ' \
-                                                             'BitcoinAbuse API'
+                                  valid_report_address) == 'Bitcoin address 12xfas41 by abuse bitcoin user ' \
+                                                           'blabla@blabla.net was reported to ' \
+                                                           'BitcoinAbuse API'
 
 
 def test_report_address_command_failure(requests_mock):
@@ -87,15 +56,17 @@ def test_report_address_command_failure(requests_mock):
      - Ensure the command fails to run
      - Verify expected results are returned.
     """
+    mock_response = util_load_json('test_data/failure_bitcoin_report_address_response.json.json')
+    valid_report_address = util_load_json('test_data/valid_bitcoin_report_address.json.json.json')
     requests_mock.post(
         'https://www.bitcoinabuse.com/api/reports/create',
-        json=failure_mock_response
+        json=mock_response
     )
     try:
-        report_address_command(client, success_report_address)
+        report_address_command(client, valid_report_address)
         raise AssertionError('report address command should fail when not given success response from api')
     except DemistoException as error:
-        assert error.message == f'bitcoin report address did not succeed, response was {failure_mock_response}'
+        assert error.message == f'bitcoin report address did not succeed, response was {mock_response}'
 
 
 def test_report_address_command_success_type_other(requests_mock):
@@ -110,14 +81,17 @@ def test_report_address_command_success_type_other(requests_mock):
      - Ensure the command runs successfully
      - Verify expected results are returned.
     """
+    mock_response = util_load_json('test_data/successful_bitcoin_report_address_response.json.json')
+    valid_report_address_other_type = util_load_json(
+        'test_data/valid_bitcoin_report_address_with_other_abuse_type.json.json.json')
     requests_mock.post(
         'https://www.bitcoinabuse.com/api/reports/create',
-        json=success_mock_response
+        json=mock_response
     )
     assert report_address_command(client,
-                                  success_report_address_other_type) == 'Bitcoin address 12xfas41 by abuse bitcoin ' \
-                                                                        'user blabla@blabla.net was reported to ' \
-                                                                        'BitcoinAbuse API'
+                                  valid_report_address_other_type) == 'Bitcoin address 12xfas41 by abuse bitcoin ' \
+                                                                      'user blabla@blabla.net was reported to ' \
+                                                                      'BitcoinAbuse API'
 
 
 def test_report_address_command_failure_type_other():
@@ -132,8 +106,10 @@ def test_report_address_command_failure_type_other():
      - Ensure the command fails to run
      - Verify error message which indicates missing abuse_type_other is returned
     """
+    invalid_report_address_other_type_missing = util_load_json(
+        'test_data/invalid_bitcoin_report_address_other_type_missing.json.json')
     try:
-        report_address_command(client, failure_report_address_other_type_missing)
+        report_address_command(client, invalid_report_address_other_type_missing)
         raise AssertionError('report address command should fail when type is other and no abuse_type_other was given')
     except DemistoException as error:
         assert error.message == 'Bitcoin Abuse: abuse_type_other is mandatory when abuse type is other'
@@ -151,6 +127,8 @@ def test_report_address_command_failure_unknown_type():
      - Ensure the command fails to run
      - Verify error message which indicates the abuse_type is unknown
     """
+    failure_report_address_unknown_type = util_load_json(
+        'test_data/invalid_bitcoin_report_address_unknown_type.json.json.json')
     try:
         report_address_command(client, failure_report_address_unknown_type)
         raise AssertionError('report address command should fail when not given a known type')

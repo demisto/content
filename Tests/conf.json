@@ -3162,6 +3162,11 @@
             "integrations": "Public DNS Feed",
             "playbookID": "Public_DNS_Feed_Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "BitcoinAbuse",
+            "playbookID": "BitcoinAbuse-test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
