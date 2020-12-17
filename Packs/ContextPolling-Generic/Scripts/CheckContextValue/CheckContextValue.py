@@ -17,7 +17,7 @@ def check_key(field_value, regex=None):
 
 def poll_field(args: Dict[str, Any]) -> Tuple[str, dict, dict]:
 
-    key = args.get('key').split(".")
+    key = args.get('key', '').split(".")
     regex = args.get('regex')
     ignore_case = argToBoolean(args.get('ignore_case', 'False'))
     regex_ignore_case_flag = re.IGNORECASE if ignore_case else 0
