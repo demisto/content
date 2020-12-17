@@ -9,9 +9,9 @@ flake8 = "*"
 [packages]
 pygithub = "*"
 requests = "*"
-po = "*"
+blessings = "*"
 dateparser = "*"
-slackclient = "*"
+slack_sdk = "*"
 
 [requires]
 python_version = "3.8"
