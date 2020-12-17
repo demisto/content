@@ -50,8 +50,8 @@ args:
   default: false
   defaultValue: created
   description: The incident field to specify for the date range. Can be "created"
-    or "modified". The default is "created" - we recommend not to change it if you
-    have a large number of incidents, for better preformance.
+    or "modified". The default is "created". Due to performance considerations, you should only use "modified" if you
+    have a large number of incidents.
   isArray: false
   name: timeField
   predefined:
