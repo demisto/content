@@ -1,5 +1,5 @@
 from CommonServerPython import *
-from FindDuplicatePhishingIncidents import *
+from FindDuplicateEmailIncidents import *
 import json
 from datetime import datetime
 
@@ -393,4 +393,4 @@ def test_multiple_incidents_word_difference(mocker):
     mocker.patch.object(demisto, 'results', side_effect=results)
     main()
     assert duplicated_incidents_found(existing_incidents_list[0])
-    assert all(inc['id'] in RESULTS['Contents']['allSimilarIncidentsIds'] for inc in existing_incidents_list)
+    assert all(inc['id'] in RESULTS['Contents']['allDuplicateIncidentsIds'] for inc in existing_incidents_list)

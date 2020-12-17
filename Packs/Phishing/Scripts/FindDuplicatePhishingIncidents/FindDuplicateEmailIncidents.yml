@@ -126,34 +126,35 @@ args:
   name: maxIncidentsToReturn
   required: false
   secret: false
-comment: An out-of-the-box deduplication preprocessing script based on a machine learning
-  algorithm.
+comment: Can be used to find duplicate emails for incidents of type Phishing, including  malicious, spam, and legitimate emails.
 commonfields:
-  id: FindDuplicatePhishingIncidents
+  id: FindDuplicateEmailIncidents
   version: -1
 enabled: false
-name: FindDuplicatePhishingIncidents
+name: FindDuplicateEmailIncidents
 outputs:
-- contextPath: similarIncident.id
-  description: Similar incident ID.
+- contextPath: duplicateIncident.id
+  description: Duplicate incident ID.
   type: string
 - contextPath: isSimilarIncidentFound
-  description: Whether a similar incident was found ("true" or "false").
+  description: Whether a duplicate incident was found ("true" or "false").
   type: boolean
-- contextPath: similarIncident
-  description: Similar incident.
+- contextPath: duplicateIncident
+  description: The oldest duplicate incident found with the highest simalirty to the
+    current incdient.
   type: unknown
-- contextPath: similarIncident.name
-  description: Similar incident name.
+- contextPath: duplicateIncident.name
+  description: Duplicate incident name.
   type: string
-- contextPath: similarIncident.rawId
-  description: Similar incident ID.
+- contextPath: duplicateIncident.rawId
+  description: Duplicate incident ID.
   type: Unknown
-- contextPath: similarIncident.similarity
+- contextPath: duplicateIncident.similarity
   description: 'Number in range 0-1 which describe the similairty between the existing
     incident and the new incident. '
   type: Unknown
-- contextPath: allSimilarIncidentsIds
+- contextPath: allDuplicateIncidentsIds
+  description: All duplicate incidents IDS found.
   type: Unknown
 script: '-'
 subtype: python3
