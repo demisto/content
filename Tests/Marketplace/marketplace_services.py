@@ -613,7 +613,7 @@ class Pack(object):
 
         """
         added_pack_metadata = run_command(f'git diff --diff-filter=A --name-only master '
-                                          f'Packs/{Pack.name}/{Pack.USER_METADATA}', exit_on_error=False)
+                                          f'Packs/{str(Pack.name)}/{Pack.USER_METADATA}', exit_on_error=False)
         if added_pack_metadata:
             return datetime.utcnow().strftime(Metadata.DATE_FORMAT)
 
