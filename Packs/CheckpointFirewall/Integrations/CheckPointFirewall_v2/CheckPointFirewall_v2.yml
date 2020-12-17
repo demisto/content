@@ -1763,6 +1763,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: ''
       description: Optional domain to start session in, for use with MDS login only.
       isArray: false
       name: domain
