@@ -126,7 +126,8 @@ args:
   name: maxIncidentsToReturn
   required: false
   secret: false
-comment: Can be used to find duplicate emails for incidents of type Phishing, including  malicious, spam, and legitimate emails.
+comment: Can be used to find duplicate emails for incidents of type Phishing, including  malicious,
+  spam, and legitimate emails.
 commonfields:
   id: FindDuplicateEmailIncidents
   version: -1
@@ -164,5 +165,7 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.12410
+dockerimage: demisto/sklearn:1.0.0.14213
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
