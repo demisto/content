@@ -1,0 +1,23 @@
+args:
+- default: true
+  description: Entry ID of the last task.
+  name: humanReadableEntryId
+  required: true
+- description: The substring to look for.
+  name: substring
+  required: true
+comment: Verify given entry contains a string
+commonfields:
+  id: VerifyHumanReadableContains
+  version: -1
+enabled: true
+name: VerifyHumanReadableContains
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags: []
+type: javascript
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
