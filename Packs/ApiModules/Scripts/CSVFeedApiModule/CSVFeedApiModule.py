@@ -12,7 +12,6 @@ from typing import Optional, Pattern, Dict, Any, Tuple, Union, List, Callable
 # disable insecure warnings
 urllib3.disable_warnings()
 
-
 # Globals
 
 
