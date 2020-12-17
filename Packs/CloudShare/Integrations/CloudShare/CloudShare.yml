@@ -1,0 +1,2684 @@
+commonfields:
+  id: CloudShare
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: CloudShare
+display: CloudShare
+category: Utilities
+description: Cloudshare integration.
+configuration:
+- display: Hostname
+  name: hostname
+  defaultvalue: use.cloudshare.com
+  type: 0
+  required: true
+  additionalinfo: This is usually use.cloudshare.com unless your using some mock or
+    proxy
+- display: API ID
+  name: api_id
+  type: 4
+  required: true
+  additionalinfo: Valid CloudShare API ID
+- display: API Key
+  name: api_key
+  type: 4
+  required: true
+  additionalinfo: Valid CloudShare API ID
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: cloudshare-get-envs
+    arguments:
+    - name: owned
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Returns only environments owned by the user.
+      defaultValue: "false"
+    - name: visible
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Returns all environments visible to the user.
+      defaultValue: "false"
+    - name: ownerEmail
+      description: Optional. Filters results by the environment owner's email address,
+        where {ownerEmail} is the environment owner's email address.
+    - name: classId
+      description: Optional. Filters results to include only environments created
+        for a specified class, including instructor and student environments, where
+        {classId} is the ID of the class.
+    - name: brief
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: 'Optional. Whether to return a less detailed or more detailed response.
+        {brief_value} can be: true (default) - Returns less detail. false - Returns
+        more detail.'
+      defaultValue: "true"
+    outputs:
+    - contextPath: CloudShare.Environments.projectId
+      description: Project ID
+      type: string
+    - contextPath: CloudShare.Environments.policyId
+      description: Policy ID
+      type: string
+    - contextPath: CloudShare.Environments.blueprintId
+      description: Blueprint ID
+      type: string
+    - contextPath: CloudShare.Environments.description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Environments.ownerEmail
+      description: Owner email
+      type: string
+    - contextPath: CloudShare.Environments.regionId
+      description: Region ID
+      type: string
+    - contextPath: CloudShare.Environments.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Environments.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Environments.status
+      description: Status
+      type: string
+    - contextPath: CloudShare.Environments.teamId
+      description: Team ID
+      type: string
+    description: Retrieves environments
+  - name: cloudshare-get-projects
+    arguments:
+    - name: WhereUserIsProjectManager
+      auto: PREDEFINED
+      predefined:
+      - tru
+      - "false"
+      description: Returns only projects in which the user is a project manager.
+      defaultValue: "false"
+    - name: WhereUserIsProjectMember
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Returns only projects in which the user is a project member.
+      defaultValue: "false"
+    - name: WhereUserCanCreateClass
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Returns only projects in which the user is allowed to create a
+        class. The minimum user level allowed to create classes is set per project
+        and can be changed by project manager users.
+      defaultValue: "false"
+    outputs:
+    - contextPath: CloudShare.Projects.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Projects.isActive
+      description: Is Active
+      type: boolean
+    - contextPath: CloudShare.Projects.id
+      description: ID
+      type: string
+    description: Retrieves all available projects
+  - name: cloudshare-get-project
+    arguments:
+    - name: projectId
+      required: true
+      description: The ID of a specific project.
+    outputs:
+    - contextPath: CloudShare.Projects.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Projects.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Projects.hasNonGenericPolicy
+      description: Has non-generic policy
+      type: boolean
+    - contextPath: CloudShare.Projects.canAddPolicy
+      description: Can add policy
+      type: boolean
+    - contextPath: CloudShare.Projects.awsEnabled
+      description: AWS enabled
+      type: boolean
+    - contextPath: CloudShare.Projects.environmentResourceQuota.cpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Projects.environmentResourceQuota.diskSizeMB
+      description: Disk size(MB)
+      type: number
+    - contextPath: CloudShare.Projects.environmentResourceQuota.memorySizeMB
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Projects.projectResourceQuota.cpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Projects.projectResourceQuota.diskSizeMB
+      description: Disk size(MB)
+      type: number
+    - contextPath: CloudShare.Projects.projectResourceQuota.memorySizeMB
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Projects.subscriptionResourceQuota.cpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Projects.subscriptionResourceQuota.diskSizeMB
+      description: Disk size(MB)
+      type: number
+    - contextPath: CloudShare.Projects.subscriptionResourceQuota.memorySizeMB
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Projects.canCreateFromScratch
+      description: Can create from scratch
+      type: boolean
+    - contextPath: CloudShare.Projects.defaultPolicyForEnvCreation
+      description: Default policy for env creation
+      type: string
+    - contextPath: CloudShare.Projects.isActive
+      description: Is active
+      type: boolean
+    description: Retrieves a specified project’s details
+  - name: cloudshare-get-project-policies
+    arguments:
+    - name: projectId
+      required: true
+      description: The ID of the project.
+    outputs:
+    - contextPath: CloudShare.Project.Policies.allowEnvironmentCreation
+      description: Allow environment creation
+      type: boolean
+    - contextPath: CloudShare.Project.Policies.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Project.Policies.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Project.Policies.projectId
+      description: Project ID
+      type: string
+    description: Retrieves all environment policies available in a specified project.
+      Environment policies define how long an environment will run, when it will be
+      deleted, and what happens to it when it has been idle for a certain length of
+      time.
+  - name: cloudshare-get-project-blueprints
+    arguments:
+    - name: projectId
+      required: true
+      description: The Id of the project.
+    - name: regionId
+      description: The ID of a region. Returns all blueprints that have default snapshots
+        on the specified region.  If unspecified, returns all blueprints in the project
+        on all regions.
+    - name: defaultSnapshot
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: ' If set to true – get the default snapshot for every blueprint.
+        The returned JSON will contain a property ‘CreateFromVersions’, which is an
+        array of one element – the default snapshot. If unspecified, default is false
+        (don’t return the default snapshot).'
+      defaultValue: "false"
+    outputs:
+    - contextPath: CloudShare.Projects.Blueprints.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.isEnvironmentTemplate
+      description: Is template
+      type: boolean
+    - contextPath: CloudShare.Projects.Blueprints.type
+      description: Type
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.imageUrl
+      description: Image URL
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.tags
+      description: Tags
+      type: unknown
+    - contextPath: CloudShare.Projects.Blueprints.categories
+      description: Categories
+      type: unknown
+    - contextPath: CloudShare.Projects.Blueprints.resources.cpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.resources.diskSizeMB
+      description: Disk size(MB)
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.resources.memorySizeMB
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.numberOfMachines
+      description: Number of machines
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.hasMultipleVersions
+      description: Has multiple versions
+      type: boolean
+    - contextPath: CloudShare.Projects.Blueprints.hasDefaultVersion
+      description: Has default version
+      type: boolean
+    - contextPath: CloudShare.Projects.Blueprints.disabledForRegularEnvironmentCreation
+      description: Disabled for regular environment creation
+      type: boolean
+    - contextPath: CloudShare.Projects.Blueprints.disabledForTrainingEnvironmentCreation
+      description: Disabled for training environment creation
+      type: boolean
+    - contextPath: CloudShare.Projects.Blueprints.canAddMultipleInstances
+      description: Can add multiple instances
+      type: boolean
+    - contextPath: CloudShare.Projects.Blueprints.envTemplateScope
+      description: Environment template scope
+      type: unknown
+    - contextPath: CloudShare.Projects.Blueprints.creationDate
+      description: Creation date
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Machines
+      description: Machines
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.AuthorName
+      description: Author name
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Comment
+      description: Comment
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Type
+      description: Type
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.IsDefault
+      description: Is default
+      type: boolean
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.IsLatest
+      description: Is latest
+      type: boolean
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Number
+      description: Number
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Resources.CpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Resources.DiskSizeMB
+      description: Disk size(MB)
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Resources.MemorySizeMB
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.CreateTime
+      description: Create time
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.ImageUrl
+      description: Image URL
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Regions
+      description: Regions
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Id
+      description: ID
+      type: string
+    description: Retrieves all blueprints available in a specified project
+  - name: cloudshare-get-project-blueprint
+    arguments:
+    - name: projectId
+      required: true
+      description: The ID of the project in which the blueprint resides.
+    - name: blueprintId
+      required: true
+      description: The ID of the blueprint.
+    outputs:
+    - contextPath: CloudShare.Projects.Blueprints.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.isEnvironmentTemplate
+      description: Is template
+      type: boolean
+    - contextPath: CloudShare.Projects.Blueprints.type
+      description: Type
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.imageUrl
+      description: Image URL
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.tags
+      description: Tags
+      type: unknown
+    - contextPath: CloudShare.Projects.Blueprints.categories
+      description: Categories
+      type: unknown
+    - contextPath: CloudShare.Projects.Blueprints.resources.cpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.resources.diskSizeMB
+      description: Disk size(MB)
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.resources.memorySizeMB
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.numberOfMachines
+      description: Number of machines
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.hasMultipleVersions
+      description: Has multiple versions
+      type: boolean
+    - contextPath: CloudShare.Projects.Blueprints.hasDefaultVersion
+      description: Has default version
+      type: boolean
+    - contextPath: CloudShare.Projects.Blueprints.disabledForRegularEnvironmentCreation
+      description: Disabled for regular environment creation
+      type: boolean
+    - contextPath: CloudShare.Projects.Blueprints.disabledForTrainingEnvironmentCreation
+      description: Disabled for training environment creation
+      type: boolean
+    - contextPath: CloudShare.Projects.Blueprints.canAddMultipleInstances
+      description: Can add multiple instances
+      type: boolean
+    - contextPath: CloudShare.Projects.Blueprints.envTemplateScope
+      description: Environment template scope
+      type: unknown
+    - contextPath: CloudShare.Projects.Blueprints.creationDate
+      description: Creation date
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Machines
+      description: Machines
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.AuthorName
+      description: Author name
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Comment
+      description: Comment
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Type
+      description: Type
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.IsDefault
+      description: Is default
+      type: boolean
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.IsLatest
+      description: Is latest
+      type: boolean
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Number
+      description: Number
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Resources.CpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Resources.DiskSizeMB
+      description: Disk size(MB)
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Resources.MemorySizeMB
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.CreateTime
+      description: Create time
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.ImageUrl
+      description: Image URL
+      type: string
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Regions
+      description: Regions
+    - contextPath: CloudShare.Projects.Blueprints.CreateFromVersions.Id
+      description: ID
+      type: string
+    description: Retrieves details of a specified blueprint, including snapshots.
+  - name: cloudshare-get-classes
+    arguments: []
+    outputs:
+    - contextPath: CloudShare.Classes.instructorEmail
+      description: Instructor email
+      type: string
+    - contextPath: CloudShare.Classes.timeZoneName
+      description: Timezone name
+      type: string
+    - contextPath: CloudShare.Classes.startDate
+      description: Start date
+      type: string
+    - contextPath: CloudShare.Classes.endDate
+      description: End date
+      type: string
+    - contextPath: CloudShare.Classes.status
+      description: Status
+      type: string
+    - contextPath: CloudShare.Classes.name
+      description: Name
+      type: unknown
+    - contextPath: CloudShare.Classes.shortId
+      description: Short ID
+      type: string
+    - contextPath: CloudShare.Classes.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Classes.regionId
+      description: Region ID
+      type: string
+    description: Retrieves all classes visible to the user
+  - name: cloudshare-get-class
+    arguments:
+    - name: classId
+      required: true
+      description: The id of the class.
+    outputs:
+    - contextPath: CloudShare.Classes.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Classes.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Classes.shortId
+      description: Short ID
+      type: string
+    - contextPath: CloudShare.Classes.policyId
+      description: Policy ID
+      type: string
+    - contextPath: CloudShare.Classes.policyName
+      description: Policy name
+      type: string
+    - contextPath: CloudShare.Classes.isUsingClassTypes
+      description: Is issuing class types
+      type: boolean
+    - contextPath: CloudShare.Classes.blueprintId
+      description: Blueprint ID
+      type: string
+    - contextPath: CloudShare.Classes.blueprintName
+      description: Blueprint name
+      type: string
+    - contextPath: CloudShare.Classes.blueprintToken
+      description: Blueprint token
+      type: string
+    - contextPath: CloudShare.Classes.cloudName
+      description: Cloud name
+      type: string
+    - contextPath: CloudShare.Classes.timeZoneId
+      description: Timezone ID
+      type: string
+    - contextPath: CloudShare.Classes.projectId
+      description: Project ID
+      type: string
+    - contextPath: CloudShare.Classes.projectName
+      description: Project name
+      type: string
+    - contextPath: CloudShare.Classes.creatorName
+      description: Creator name
+      type: string
+    - contextPath: CloudShare.Classes.creatorEmail
+      description: Creator email
+      type: string
+    - contextPath: CloudShare.Classes.instructorVupId
+      description: Instructor VUP ID
+      type: string
+    - contextPath: CloudShare.Classes.instructorName
+      description: Instructor name
+      type: string
+    - contextPath: CloudShare.Classes.defaultDurationInMinutes
+      description: Default duration (mins)
+      type: number
+    - contextPath: CloudShare.Classes.allowStartDateEditing
+      description: Allow start date editing
+      type: boolean
+    - contextPath: CloudShare.Classes.limitEarlyAccess
+      description: Limit early access
+      type: number
+    - contextPath: CloudShare.Classes.studentPassphrase
+      description: Student passphrase
+      type: string
+    - contextPath: CloudShare.Classes.useCustomInvitationEmail
+      description: Use custom invitation email
+      type: boolean
+    - contextPath: CloudShare.Classes.showCourseAddressField
+      description: Show course address field
+      type: boolean
+    - contextPath: CloudShare.Classes.address
+      description: Address
+      type: string
+    - contextPath: CloudShare.Classes.customInvitationEmailSubject
+      description: Custom invitation email subject
+      type: string
+    - contextPath: CloudShare.Classes.customInvitationEmailBody
+      description: Custom invitation email body
+      type: string
+    - contextPath: CloudShare.Classes.defaultInvitationEmailSubject
+      description: Default invitation email subject
+      type: string
+    - contextPath: CloudShare.Classes.defaultInvitationEmailBody
+      description: Default invitation email subject
+      type: string
+    - contextPath: CloudShare.Classes.showPermitAccessToNonRegisteredStudent
+      description: Show permit access to non-registered student
+      type: boolean
+    - contextPath: CloudShare.Classes.allowEditDefaultsWhenPermitAccessToNonRegistered
+      description: Allow edit defaults when permit access to non registered
+      type: boolean
+    - contextPath: CloudShare.Classes.permitAccessToNonRegisteredStudent
+      description: Permit access to non registered student
+      type: boolean
+    - contextPath: CloudShare.Classes.showMaxStudentsField
+      description: Show max students field
+      type: boolean
+    - contextPath: CloudShare.Classes.maxStudents
+      description: Max students
+      type: number
+    - contextPath: CloudShare.Classes.maxLimitOnMaxStudentField
+      description: Max kimit on max student field
+      type: number
+    - contextPath: CloudShare.Classes.customFieldsValues.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Classes.customFieldsValues.order
+      description: Order
+      type: number
+    - contextPath: CloudShare.Classes.customFieldsValues.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Classes.customFieldsValues.type
+      description: Type
+      type: number
+    - contextPath: CloudShare.Classes.customFieldsValues.isRequired
+      description: Is required
+      type: boolean
+    - contextPath: CloudShare.Classes.customFieldsValues.regex
+      description: Regex
+      type: string
+    - contextPath: CloudShare.Classes.customFieldsValues.defaultValue
+      description: Default value
+      type: unknown
+    - contextPath: CloudShare.Classes.customFieldsValues.value
+      description: Value
+    - contextPath: CloudShare.Classes.instructorEmail
+      description: Instructor email
+      type: string
+    - contextPath: CloudShare.Classes.timeZoneName
+      description: Timezone name
+      type: string
+    - contextPath: CloudShare.Classes.startDate
+      description: Start date
+      type: string
+    - contextPath: CloudShare.Classes.endDate
+      description: End date
+      type: string
+    - contextPath: CloudShare.Classes.status
+      description: Status
+      type: string
+    description: Retrieves details of a specified class
+  - name: cloudshare-delete-class
+    arguments:
+    - name: classId
+      required: true
+      description: The id of the class.
+    description: Deletes a class
+  - name: cloudshare-delete-class-environments
+    arguments:
+    - name: classId
+      description: The ID of the class.
+    outputs:
+    - contextPath: cloudshare.Classes.Actions.Delete.failed
+      description: Failed deletions
+      type: unknown
+    - contextPath: cloudshare.Classes.Actions.Delete.succeed
+      description: Succeeded deletions
+    - contextPath: cloudshare.Classes.Actions.Delete.succeed.id
+      description: ID
+      type: string
+    - contextPath: cloudshare.Classes.Actions.Delete.succeed.email
+      description: Email
+      type: string
+    - contextPath: cloudshare.Classes.Actions.Delete.succeed.fullName
+      description: Full name
+      type: string
+    - contextPath: cloudshare.Classes.Actions.Delete.succeed.envId
+      description: Environment ID
+      type: string
+    description: Deletes all active student environments in a class
+  - name: cloudshare-get-classes-countries
+    arguments: []
+    outputs:
+    - contextPath: CloudShare.Classes.Countries.code
+      description: Code
+      type: string
+    - contextPath: CloudShare.Classes.Countries.englishName
+      description: English name
+      type: string
+    - contextPath: CloudShare.Classes.Countries.states
+      description: States
+    description: Retrieves all countries that can be set as class locations
+  - name: cloudshare-get-classes-customfields
+    arguments:
+    - name: projectId
+      required: true
+      description: The id of the project.
+    outputs:
+    - contextPath: CloudShare.Classes.CustomFields.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Classes.CustomFields.order
+      description: Order
+      type: number
+    - contextPath: CloudShare.Classes.CustomFields.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Classes.CustomFields.type
+      description: Type
+      type: number
+    - contextPath: CloudShare.Classes.CustomFields.isRequired
+      description: Is required
+      type: boolean
+    - contextPath: CloudShare.Classes.CustomFields.regex
+      description: Regex
+      type: string
+    - contextPath: CloudShare.Classes.CustomFields.defaultValue
+      description: Default value
+      type: unknown
+    - contextPath: CloudShare.Classes.CustomFields.value
+      description: Value
+      type: unknown
+    description: Retrieves any custom class creation fields defined in a specified
+      project.
+  - name: cloudshare-get-classes-detailed
+    arguments:
+    - name: classId
+      required: true
+      description: The id of the class.
+    outputs:
+    - contextPath: CloudShare.Classes.Class.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Classes.Class.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Classes.Class.shortId
+      description: Short ID
+      type: string
+    - contextPath: CloudShare.Classes.Class.policyId
+      description: Policy ID
+      type: string
+    - contextPath: CloudShare.Classes.Class.policyName
+      description: Policy name
+      type: string
+    - contextPath: CloudShare.Classes.Class.isUsingClassTypes
+      description: Is issuing class types
+      type: boolean
+    - contextPath: CloudShare.Classes.Class.blueprintId
+      description: Blueprint ID
+      type: string
+    - contextPath: CloudShare.Classes.Class.blueprintName
+      description: Blueprint name
+      type: string
+    - contextPath: CloudShare.Classes.Class.blueprintToken
+      description: Blueprint token
+      type: string
+    - contextPath: CloudShare.Classes.Class.cloudName
+      description: Cloud name
+      type: string
+    - contextPath: CloudShare.Classes.Class.timeZoneId
+      description: Timezone ID
+      type: string
+    - contextPath: CloudShare.Classes.Class.projectId
+      description: Project ID
+      type: string
+    - contextPath: CloudShare.Classes.Class.projectName
+      description: Project name
+      type: string
+    - contextPath: CloudShare.Classes.Class.creatorName
+      description: Creator name
+      type: string
+    - contextPath: CloudShare.Classes.Class.creatorEmail
+      description: Creator email
+      type: string
+    - contextPath: CloudShare.Classes.Class.instructorVupId
+      description: Instructor VUP ID
+      type: string
+    - contextPath: CloudShare.Classes.Class.instructorName
+      description: Instructor name
+      type: string
+    - contextPath: CloudShare.Classes.Class.defaultDurationInMinutes
+      description: Default duration (mins)
+      type: number
+    - contextPath: CloudShare.Classes.Class.allowStartDateEditing
+      description: Allow start date editing
+      type: boolean
+    - contextPath: CloudShare.Classes.Class.limitEarlyAccess
+      description: Limit early access
+      type: number
+    - contextPath: CloudShare.Classes.Class.studentPassphrase
+      description: Student passphrase
+      type: string
+    - contextPath: CloudShare.Classes.Class.useCustomInvitationEmail
+      description: Use custom invitation email
+      type: boolean
+    - contextPath: CloudShare.Classes.Class.showCourseAddressField
+      description: Show course address field
+      type: boolean
+    - contextPath: CloudShare.Classes.Class.address
+      description: Address
+      type: string
+    - contextPath: CloudShare.Classes.Class.customInvitationEmailSubject
+      description: Custom invitation email subject
+      type: string
+    - contextPath: CloudShare.Classes.Class.customInvitationEmailBody
+      description: Custom invitation email body
+      type: string
+    - contextPath: CloudShare.Classes.Class.defaultInvitationEmailSubject
+      description: Default invitation email subject
+      type: string
+    - contextPath: CloudShare.Classes.Class.defaultInvitationEmailBody
+      description: Default invitation email subject
+      type: string
+    - contextPath: CloudShare.Classes.Class.showPermitAccessToNonRegisteredStudent
+      description: Show permit access to non-registered student
+      type: boolean
+    - contextPath: CloudShare.Classes.Class.allowEditDefaultsWhenPermitAccessToNonRegistered
+      description: Allow edit defaults when permit access to non registered
+      type: boolean
+    - contextPath: CloudShare.Classes.Class.permitAccessToNonRegisteredStudent
+      description: Permit access to non registered student
+      type: boolean
+    - contextPath: CloudShare.Classes.Class.showMaxStudentsField
+      description: Show max students field
+      type: boolean
+    - contextPath: CloudShare.Classes.Class.maxStudents
+      description: Max students
+      type: number
+    - contextPath: CloudShare.Classes.Class.maxLimitOnMaxStudentField
+      description: Max kimit on max student field
+      type: number
+    - contextPath: CloudShare.Classes.Class.customFieldsValues.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Classes.Class.customFieldsValues.order
+      description: Order
+      type: number
+    - contextPath: CloudShare.Classes.Class.customFieldsValues.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Classes.Class.customFieldsValues.type
+      description: Type
+      type: number
+    - contextPath: CloudShare.Classes.Class.customFieldsValues.isRequired
+      description: Is required
+      type: boolean
+    - contextPath: CloudShare.Classes.Class.customFieldsValues.regex
+      description: Regex
+      type: string
+    - contextPath: CloudShare.Classes.Class.customFieldsValues.defaultValue
+      description: Default value
+      type: unknown
+    - contextPath: CloudShare.Classes.Class.customFieldsValues.value
+      description: Value
+    - contextPath: CloudShare.Classes.Class.instructorEmail
+      description: Instructor email
+      type: string
+    - contextPath: CloudShare.Classes.Class.timeZoneName
+      description: Timezone name
+      type: string
+    - contextPath: CloudShare.Classes.Class.startDate
+      description: Start date
+      type: string
+    - contextPath: CloudShare.Classes.Class.endDate
+      description: End date
+      type: string
+    - contextPath: CloudShare.Classes.Class.status
+      description: Status
+      type: string
+    - contextPath: CloudShare.Classes.Students.firstName
+      description: First name
+      type: string
+    - contextPath: CloudShare.Classes.Students.lastName
+      description: Last name
+      type: string
+    - contextPath: CloudShare.Classes.Students.email
+      description: Email
+      type: string
+    - contextPath: CloudShare.Classes.Students.company
+      description: Company
+      type: string
+    - contextPath: CloudShare.Classes.Students.jobLevel
+      description: Job level
+      type: string
+    - contextPath: CloudShare.Classes.Students.address1
+      description: Address 1
+      type: string
+    - contextPath: CloudShare.Classes.Students.address2
+      description: Address 2
+      type: string
+    - contextPath: CloudShare.Classes.Students.city
+      description: City
+      type: string
+    - contextPath: CloudShare.Classes.Students.state
+      description: State
+      type: string
+    - contextPath: CloudShare.Classes.Students.zipCode
+      description: Zip code
+      type: string
+    - contextPath: CloudShare.Classes.Students.country
+      description: Country
+      type: string
+    - contextPath: CloudShare.Classes.Students.phone
+      description: Phone
+      type: string
+    - contextPath: CloudShare.Classes.Students.regCode
+      description: Reg code
+      type: string
+    - contextPath: CloudShare.Classes.Students.id
+      description: ID
+      type: string
+    description: Retrieves all the details of a specified class, including full student
+      data.
+  - name: cloudshare-get-classes-instructors
+    arguments:
+    - name: policyId
+      required: true
+      description: The ID of a policy.
+    outputs:
+    - contextPath: CloudShare.Classes.Instructors.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Classes.Instructors.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Classes.Instructors.email
+      description: Email
+      type: string
+    description: Retrieves project member users who can be assigned to classes as
+      instructors
+  - name: cloudshare-create-class
+    arguments:
+    - name: PolicyId
+      required: true
+      description: The ID of the policy to apply to the class. The policy will control
+        the runtime and storage time of each student’s environment and what will happen
+        to the environment when it is inactive.
+    - name: BlueprintId
+      required: true
+      description: The ID of the blueprint to base the class on. Students who attend
+        the class will be served environments based on this blueprint.
+    - name: ProjectId
+      required: true
+      description: The ID of the project in which the class will be created. The specified
+        blueprint and instructor must be from the same project.
+    - name: InstructorVupId
+      required: true
+      description: The ID of the project member user to assign to the class as the
+        instructor.
+    - name: RegionId
+      description: The ID of the region the class should be created in.
+    - name: StartDate
+      required: true
+      description: The date and time at which to start the class, in MM/DD/YYYY HH:MM
+        AM/PM format.
+    - name: TimeZoneId
+      required: true
+      description: The ID of the timezone for the startDate.
+    - name: StudentPassphrase
+      required: true
+      description: The passphrase that students will need to enter in order to attend
+        the class
+    - name: UseCustomInvitationEmail
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Whether or not the student invitation email is customized.
+      defaultValue: "false"
+    - name: LimitEarlyAccess
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      - "2"
+      description: 'This option controls access by students and instructor to a lab
+        before scheduled class time. Possible values: 0 - Allow lab access before
+        class (default). 1 - Allow lab access before class for instructor only. 2
+        - No early access allowed.'
+      defaultValue: "0"
+    - name: CustomInvitationEmailSubject
+      description: The subject line of the custom student invitation email. Used if
+        UseCustomInvitationEmail is set to true.
+    - name: CustomInvitationEmailBody
+      description: The body of the custom student invitation email. Used if UseCustomInvitationEmail
+        is set to true.
+    - name: PermitAccessToNonRegisteredStudent
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Whether to permit users to self register as students for the class.
+      defaultValue: "false"
+    - name: MaxStudents
+      description: 'Numeric. The maximum number of students allowed in the class (can
+        be null). Maximum value: 60'
+    - name: address
+      description: 'The location of the class (JSON dictionary) including keys: state,
+        address1, address2, zipCode, city,  country (To retrieve valid values for
+        country, use cloudshare-get-classes-countries)'
+    - name: CustomFieldsValues
+      description: Specifies input values for custom fields defined for class creation
+        in the project. Mandatory if project forces validation of custom fields. Fields
+        and valid values depend on custom fields structure for the project. To retrieve
+        custom fields structure for the project, use cloudshare-get-classes-customfields
+    - name: enableSteps
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Enables the class to have multiple steps.
+      defaultValue: "false"
+    - name: StudentsCanSwitchStep
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Whether students can change steps independently. Applies when enableSteps
+        is set to true.
+      defaultValue: "false"
+    - name: steps
+      description: A list of class steps (JSON dictionaries) for a multi-step class.
+        Must be provided if enableSteps is set to true.
+    - name: selfPaced
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Creates a Self-Paced Class that allows a student to enter class
+        at a time convenient to them.
+      defaultValue: "false"
+    - name: allowMultipleStudentLogin
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: When set to true, allows for more than one environment activation
+        per student.
+      defaultValue: "false"
+    outputs:
+    - contextPath: CloudShare.Classes.id
+      description: ID
+      type: string
+    description: Creates a class
+  - name: cloudshare-send-class-invitations
+    arguments:
+    - name: classId
+      required: true
+      description: The ID of the class
+    - name: studentIds
+      required: true
+      description: A list (CSV) of IDs of students to send invite invitations to.
+    description: Sends invitations to students to attend a class
+  - name: cloudshare-suspend-class-environments
+    arguments:
+    - name: classId
+      required: true
+      description: The ID of the class.
+    outputs:
+    - contextPath: CloudShare.Classes.Suspended.failed.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Classes.Suspended.succeed.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Classes.Suspended.succeed.email
+      description: Email
+      type: string
+    - contextPath: CloudShare.Classes.Suspended.succeed.fullName
+      description: Full name
+      type: string
+    - contextPath: CloudShare.Classes.Suspended.succeed.envId
+      description: Environment ID
+      type: string
+    description: Suspends all running student environments in a specified class
+  - name: cloudshare-modify-class
+    arguments:
+    - name: instructorVupId
+      description: The ID of the project member user to assign to the class as the
+        instructor.
+    - name: startDate
+      description: The date and time at which to start the class, in MM/DD/YYYY HH:MM
+        AM/PM format.
+    - name: timeZoneId
+      description: The ID of the timezone for the startDate.
+    - name: studentPassphrase
+      description: The passphrase that students will need to enter in order to attend
+        the class
+    - name: useCustomInvitationEmail
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Whether or not the student invitation email is customized.
+      defaultValue: "false"
+    - name: limitEarlyAccess
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      - "2"
+      description: 'This option controls access by students and instructor to a lab
+        before scheduled class time. Possible values: 0 - Allow lab access before
+        class (default). 1 - Allow lab access before class for instructor only. 2
+        - No early access allowed.'
+      defaultValue: "0"
+    - name: customInvitationEmailSubject
+      description: The subject line of the custom student invitation email. Used if
+        UseCustomInvitationEmail is set to true.
+    - name: customInvitationEmailBody
+      description: The body of the custom student invitation email. Used if UseCustomInvitationEmail
+        is set to true.
+    - name: permitAccessToNonRegisteredStudent
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Whether to permit users to self register as students for the class.
+      defaultValue: "false"
+    - name: maxStudents
+      description: 'Numeric. The maximum number of students allowed in the class (can
+        be null). Maximum value: 60'
+    - name: address
+      description: 'The location of the class (JSON dictionary) including keys: state,
+        address1, address2, zipCode, city,  country (To retrieve valid values for
+        country, use cloudshare-get-classes-countries)'
+    - name: customFieldsValues
+      description: Specifies input values for custom fields defined for class creation
+        in the project. Mandatory if project forces validation of custom fields. Fields
+        and valid values depend on custom fields structure for the project. To retrieve
+        custom fields structure for the project, use cloudshare-get-classes-customfields
+    - name: selfPaced
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Creates a Self-Paced Class that allows a student to enter class
+        at a time convenient to them.
+      defaultValue: "false"
+    - name: allowMultipleStudentLogin
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: When set to true, allows for more than one environment activation
+        per student.
+      defaultValue: "false"
+    - name: classId
+      required: true
+      description: The ID of the class.
+    - name: name
+      description: The name of the class.
+    outputs:
+    - contextPath: CloudShare.Classes.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Classes.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Classes.shortId
+      description: Short ID
+      type: string
+    - contextPath: CloudShare.Classes.policyId
+      description: Policy ID
+      type: string
+    - contextPath: CloudShare.Classes.policyName
+      description: Policy name
+      type: string
+    - contextPath: CloudShare.Classes.isUsingClassTypes
+      description: Is issuing class types
+      type: boolean
+    - contextPath: CloudShare.Classes.blueprintId
+      description: Blueprint ID
+      type: string
+    - contextPath: CloudShare.Classes.blueprintName
+      description: Blueprint name
+      type: string
+    - contextPath: CloudShare.Classes.blueprintToken
+      description: Blueprint token
+      type: string
+    - contextPath: CloudShare.Classes.cloudName
+      description: Cloud name
+      type: string
+    - contextPath: CloudShare.Classes.timeZoneId
+      description: Timezone ID
+      type: string
+    - contextPath: CloudShare.Classes.projectId
+      description: Project ID
+      type: string
+    - contextPath: CloudShare.Classes.projectName
+      description: Project name
+      type: string
+    - contextPath: CloudShare.Classes.creatorName
+      description: Creator name
+      type: string
+    - contextPath: CloudShare.Classes.creatorEmail
+      description: Creator email
+      type: string
+    - contextPath: CloudShare.Classes.instructorVupId
+      description: Instructor VUP ID
+      type: string
+    - contextPath: CloudShare.Classes.instructorName
+      description: Instructor name
+      type: string
+    - contextPath: CloudShare.Classes.defaultDurationInMinutes
+      description: Default duration (mins)
+      type: number
+    - contextPath: CloudShare.Classes.allowStartDateEditing
+      description: Allow start date editing
+      type: boolean
+    - contextPath: CloudShare.Classes.limitEarlyAccess
+      description: Limit early access
+      type: number
+    - contextPath: CloudShare.Classes.studentPassphrase
+      description: Student passphrase
+      type: string
+    - contextPath: CloudShare.Classes.useCustomInvitationEmail
+      description: Use custom invitation email
+      type: boolean
+    - contextPath: CloudShare.Classes.showCourseAddressField
+      description: Show course address field
+      type: boolean
+    - contextPath: CloudShare.Classes.address
+      description: Address
+      type: string
+    - contextPath: CloudShare.Classes.customInvitationEmailSubject
+      description: Custom invitation email subject
+      type: string
+    - contextPath: CloudShare.Classes.customInvitationEmailBody
+      description: Custom invitation email body
+      type: string
+    - contextPath: CloudShare.Classes.defaultInvitationEmailSubject
+      description: Default invitation email subject
+      type: string
+    - contextPath: CloudShare.Classes.defaultInvitationEmailBody
+      description: Default invitation email subject
+      type: string
+    - contextPath: CloudShare.Classes.showPermitAccessToNonRegisteredStudent
+      description: Show permit access to non-registered student
+      type: boolean
+    - contextPath: CloudShare.Classes.allowEditDefaultsWhenPermitAccessToNonRegistered
+      description: Allow edit defaults when permit access to non registered
+      type: boolean
+    - contextPath: CloudShare.Classes.permitAccessToNonRegisteredStudent
+      description: Permit access to non registered student
+      type: boolean
+    - contextPath: CloudShare.Classes.showMaxStudentsField
+      description: Show max students field
+      type: boolean
+    - contextPath: CloudShare.Classes.maxStudents
+      description: Max students
+      type: number
+    - contextPath: CloudShare.Classes.maxLimitOnMaxStudentField
+      description: Max kimit on max student field
+      type: number
+    - contextPath: CloudShare.Classes.customFieldsValues.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Classes.customFieldsValues.order
+      description: Order
+      type: number
+    - contextPath: CloudShare.Classes.customFieldsValues.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Classes.customFieldsValues.type
+      description: Type
+      type: number
+    - contextPath: CloudShare.Classes.customFieldsValues.isRequired
+      description: Is required
+      type: boolean
+    - contextPath: CloudShare.Classes.customFieldsValues.regex
+      description: Regex
+      type: string
+    - contextPath: CloudShare.Classes.customFieldsValues.defaultValue
+      description: Default value
+      type: unknown
+    - contextPath: CloudShare.Classes.customFieldsValues.value
+      description: Value
+    - contextPath: CloudShare.Classes.instructorEmail
+      description: Instructor email
+      type: string
+    - contextPath: CloudShare.Classes.timeZoneName
+      description: Timezone name
+      type: string
+    - contextPath: CloudShare.Classes.startDate
+      description: Start date
+      type: string
+    - contextPath: CloudShare.Classes.endDate
+      description: End date
+      type: string
+    - contextPath: CloudShare.Classes.status
+      description: Status
+      type: string
+    description: Modifies a class
+  - name: cloudshare-get-students
+    arguments:
+    - name: classId
+      required: true
+      description: The ID of the class.
+    - name: isFull
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Whether to return the details of the VMs in each student’s environment
+        as well as other details.
+      defaultValue: "false"
+    outputs:
+    - contextPath: CloudShare.Students.status
+      description: Status
+      type: number
+    - contextPath: CloudShare.Students.envStatus
+      description: Environemtn Status
+      type: number
+    - contextPath: CloudShare.Students.envCommands
+      description: Environment commands
+      type: unknown
+    - contextPath: CloudShare.Students.envId
+      description: Environment ID
+      type: string
+    - contextPath: CloudShare.Students.firstName
+      description: First name
+      type: string
+    - contextPath: CloudShare.Students.lastName
+      description: Last name
+      type: string
+    - contextPath: CloudShare.Students.email
+      description: Email
+      type: string
+    - contextPath: CloudShare.Students.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Students.VMs.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Students.VMs.name
+      description: Name
+      type: string
+    description: Retrieves information about the students in a class
+  - name: cloudshare-get-student
+    arguments:
+    - name: classId
+      required: true
+      description: The ID of the class.
+    - name: studentId
+      required: true
+      description: The ID of the student in the class.
+    outputs:
+    - contextPath: CloudShare.Students.status
+      description: Status
+      type: number
+    - contextPath: CloudShare.Students.envStatus
+      description: Environemtn Status
+      type: number
+    - contextPath: CloudShare.Students.envCommands
+      description: Environment commands
+      type: unknown
+    - contextPath: CloudShare.Students.envId
+      description: Environment ID
+      type: string
+    - contextPath: CloudShare.Students.firstName
+      description: First name
+      type: string
+    - contextPath: CloudShare.Students.lastName
+      description: Last name
+      type: string
+    - contextPath: CloudShare.Students.email
+      description: Email
+      type: string
+    - contextPath: CloudShare.Students.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Students.VMs.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Students.VMs.name
+      description: Name
+      type: string
+    description: Retrieves information about a student in a class, including the student’s
+      environment and VMs
+  - name: cloudshare-delete-student
+    arguments:
+    - name: classId
+      required: true
+      description: The ID of the class.
+    - name: studentId
+      required: true
+      description: The ID of the student.
+    description: Removes a student from a class
+  - name: cloudshare-register-student
+    arguments:
+    - name: classID
+      required: true
+      description: The ID of the class.
+    - name: email
+      required: true
+      description: The student’s email address
+    - name: firstName
+      required: true
+      description: The student’s first name
+    - name: lastName
+      required: true
+      description: The student’s last name
+    outputs:
+    - contextPath: CloudShare.Students.id
+      description: ID
+      type: string
+    description: Registers a student for a class
+  - name: cloudshare-modify-student
+    arguments:
+    - name: classId
+      required: true
+      description: The ID of the class for which the student is registered.
+    - name: studentId
+      required: true
+      description: The ID of the student.
+    - name: email
+      description: The student’s email address. This can be changed as long as the
+        student did not yet log in.
+    - name: firstName
+      description: The student’s first name.
+    - name: lastName
+      description: The student’s last name.
+    description: Modifies a student’s registration details
+  - name: cloudshare-get-regions
+    arguments: []
+    outputs:
+    - contextPath: CloudShare.Regions.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Regions.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Regions.cloudName
+      description: Cloud name
+      type: string
+    - contextPath: CloudShare.Regions.friendlyName
+      description: Friendly name
+      type: string
+    description: Retrieves available regions
+  - name: cloudshare-get-timezones
+    arguments: []
+    outputs:
+    - contextPath: CloudShare.Timezones.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Timezones.displayName
+      description: Display name
+      type: string
+    description: Retrieves available time zones
+  - name: cloudshare-get-env-resource
+    arguments:
+    - name: envId
+      required: true
+      description: The environment ID.
+    outputs:
+    - contextPath: CloudShare.EnvironmentResources.totalRuntimeHours
+      description: Total run time
+      type: number
+    - contextPath: CloudShare.EnvironmentResources.totalGbh
+      description: Total GB / hour
+      type: number
+    - contextPath: CloudShare.EnvironmentResources.maxDiskGb
+      description: Max disk space(GB)
+      type: number
+    - contextPath: CloudShare.EnvironmentResources.lastUpdateTime
+      description: Last update time
+      type: string
+    - contextPath: CloudShare.EnvironmentResources.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.EnvironmentResources.id
+      description: ID
+      type: string
+    description: Retrieves the total resources that have been used by an environment
+  - name: cloudshare-get-env-extended
+    arguments:
+    - name: envId
+      required: true
+      description: The ID of the environment.
+    outputs:
+    - contextPath: CloudShare.Environments.projectId
+      description: Project ID
+      type: string
+    - contextPath: CloudShare.Environments.policyId
+      description: Policy ID
+      type: string
+    - contextPath: CloudShare.Environments.blueprintId
+      description: Blueprint ID
+      type: string
+    - contextPath: CloudShare.Environments.description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Environments.ownerEmail
+      description: Owner email
+      type: string
+    - contextPath: CloudShare.Environments.regionId
+      description: Region ID
+      type: string
+    - contextPath: CloudShare.Environments.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Environments.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Environments.status
+      description: Status
+      type: string
+    - contextPath: CloudShare.Environments.teamId
+      description: Team ID
+      type: string
+    - contextPath: CloudShare.Environments.VMs.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Environments.VMs.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Environments.VMs.description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Environments.VMs.statusText
+      description: Status text
+      type: string
+    - contextPath: CloudShare.Environments.VMs.progress
+      description: Progress
+      type: number
+    - contextPath: CloudShare.Environments.VMs.imageId
+      description: Image ID
+      type: string
+    - contextPath: CloudShare.Environments.VMs.os
+      description: OS
+      type: string
+    - contextPath: CloudShare.Environments.VMs.webAccessUrl
+      description: Web access URL
+      type: string
+    - contextPath: CloudShare.Environments.VMs.fqdn
+      description: FQDN
+      type: string
+    - contextPath: CloudShare.Environments.VMs.externalAddress
+      description: External address
+      type: string
+    - contextPath: CloudShare.Environments.VMs.internalAddresses
+      description: Internal addresses
+      type: unknown
+    - contextPath: CloudShare.Environments.VMs.cpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Environments.VMs.diskSizeGb
+      description: Disk size(GB)
+      type: number
+    - contextPath: CloudShare.Environments.VMs.memorySizeMb
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Environments.VMs.username
+      description: Username
+      type: string
+    - contextPath: CloudShare.Environments.VMs.password
+      description: Password
+      type: string
+    - contextPath: CloudShare.Environments.VMs.consoleToken
+      description: Console token
+      type: string
+    description: Retrieves details of an environment along with VM information
+  - name: cloudshare-get-env-extended-vanity
+    arguments:
+    - name: machineVanity
+      required: true
+      description: Specifies the vanity name or FQDN of a machine.
+    outputs:
+    - contextPath: CloudShare.Environments.projectId
+      description: Project ID
+      type: string
+    - contextPath: CloudShare.Environments.policyId
+      description: Policy ID
+      type: string
+    - contextPath: CloudShare.Environments.blueprintId
+      description: Blueprint ID
+      type: string
+    - contextPath: CloudShare.Environments.description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Environments.ownerEmail
+      description: Owner email
+      type: string
+    - contextPath: CloudShare.Environments.regionId
+      description: Region ID
+      type: string
+    - contextPath: CloudShare.Environments.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Environments.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Environments.status
+      description: Status
+      type: string
+    - contextPath: CloudShare.Environments.teamId
+      description: Team ID
+      type: string
+    - contextPath: CloudShare.Environments.VMs.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Environments.VMs.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Environments.VMs.description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Environments.VMs.statusText
+      description: Status text
+      type: string
+    - contextPath: CloudShare.Environments.VMs.progress
+      description: Progress
+      type: number
+    - contextPath: CloudShare.Environments.VMs.imageId
+      description: Image ID
+      type: string
+    - contextPath: CloudShare.Environments.VMs.os
+      description: OS
+      type: string
+    - contextPath: CloudShare.Environments.VMs.webAccessUrl
+      description: Web access URL
+      type: string
+    - contextPath: CloudShare.Environments.VMs.fqdn
+      description: FQDN
+      type: string
+    - contextPath: CloudShare.Environments.VMs.externalAddress
+      description: External address
+      type: string
+    - contextPath: CloudShare.Environments.VMs.internalAddresses
+      description: Internal addresses
+      type: unknown
+    - contextPath: CloudShare.Environments.VMs.cpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Environments.VMs.diskSizeGb
+      description: Disk size(GB)
+      type: number
+    - contextPath: CloudShare.Environments.VMs.memorySizeMb
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Environments.VMs.username
+      description: Username
+      type: string
+    - contextPath: CloudShare.Environments.VMs.password
+      description: Password
+      type: string
+    - contextPath: CloudShare.Environments.VMs.consoleToken
+      description: Console token
+      type: string
+    description: Uses the vanity name or FQDN of a VM to retrieve details of an environment
+      and its VMs
+  - name: cloudshare-get-env-extended-token
+    arguments:
+    - name: sponsoredLoginToken
+      required: true
+      description: Specifies the token.
+    outputs:
+    - contextPath: CloudShare.Environments.projectId
+      description: Project ID
+      type: string
+    - contextPath: CloudShare.Environments.policyId
+      description: Policy ID
+      type: string
+    - contextPath: CloudShare.Environments.blueprintId
+      description: Blueprint ID
+      type: string
+    - contextPath: CloudShare.Environments.description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Environments.ownerEmail
+      description: Owner email
+      type: string
+    - contextPath: CloudShare.Environments.regionId
+      description: Region ID
+      type: string
+    - contextPath: CloudShare.Environments.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Environments.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Environments.status
+      description: Status
+      type: string
+    - contextPath: CloudShare.Environments.teamId
+      description: Team ID
+      type: string
+    - contextPath: CloudShare.Environments.VMs.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Environments.VMs.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Environments.VMs.description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Environments.VMs.statusText
+      description: Status text
+      type: string
+    - contextPath: CloudShare.Environments.VMs.progress
+      description: Progress
+      type: number
+    - contextPath: CloudShare.Environments.VMs.imageId
+      description: Image ID
+      type: string
+    - contextPath: CloudShare.Environments.VMs.os
+      description: OS
+      type: string
+    - contextPath: CloudShare.Environments.VMs.webAccessUrl
+      description: Web access URL
+      type: string
+    - contextPath: CloudShare.Environments.VMs.fqdn
+      description: FQDN
+      type: string
+    - contextPath: CloudShare.Environments.VMs.externalAddress
+      description: External address
+      type: string
+    - contextPath: CloudShare.Environments.VMs.internalAddresses
+      description: Internal addresses
+      type: unknown
+    - contextPath: CloudShare.Environments.VMs.cpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Environments.VMs.diskSizeGb
+      description: Disk size(GB)
+      type: number
+    - contextPath: CloudShare.Environments.VMs.memorySizeMb
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Environments.VMs.username
+      description: Username
+      type: string
+    - contextPath: CloudShare.Environments.VMs.password
+      description: Password
+      type: string
+    - contextPath: CloudShare.Environments.VMs.consoleToken
+      description: Console token
+      type: string
+    description: Uses a sponsored login token to retrieve details of an environment
+      along with VM information
+  - name: cloudshare-get-env-multiple-resources
+    arguments:
+    - name: subscriptionId
+      description: Specifies a user subscription, where {subscriptionID} is the ID
+        of the subscription. Provide the subscription if the user is a member of multiple
+        subscriptions.
+    - name: starttime
+      required: true
+      description: Specifies the start of the time range, where {starttime_value}
+        is the start of the time range in the format ISO 8601. For example, "2017-01-01"
+    - name: endtime
+      required: true
+      description: Specifies the end of the time range, where {endtime_value} is the
+        end of the time range in the format ISO 8601. For example, “2017-02-01“.
+    - name: skip
+      description: 'Optional. Specifies to skip the first {skip_value} records, where
+        {skip_value} is an integer (default: 0). Can be used iteratively in conjunction
+        with take to view distinct sets of environment records.'
+    - name: take
+      description: 'Optional. Limits the number of records returned, where {take_value}
+        is the maximum number of records to return. Integer (default: 1000, maximum:
+        1000).'
+    outputs:
+    - contextPath: CloudShare.EnvironmentResources.sponsoredLoginToken
+      description: Sponsored login token
+      type: string
+    - contextPath: CloudShare.EnvironmentResources.totalRuntimeHours
+      description: Total run time (hours)
+      type: number
+    - contextPath: CloudShare.EnvironmentResources.totalGbh
+      description: Total GB / hour
+      type: number
+    - contextPath: CloudShare.EnvironmentResources.maxDiskGb
+      description: Max disk(GB)
+      type: number
+    - contextPath: CloudShare.EnvironmentResources.lastUpdateTime
+      description: Last update time
+      type: string
+    - contextPath: CloudShare.EnvironmentResources.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.EnvironmentResources.id
+      description: ID
+      type: string
+    description: Retrieves all environments that were active in a specified time range,
+      and their resource usage. Each environment record includes total run time, total
+      RAM-GB Hours, max disk usage and the sponsored token that was used to create
+      the environment, if applicable.
+  - name: cloudshare-extend-env
+    arguments:
+    - name: envId
+      required: true
+      description: Specifies the environment, where {envId} is the environment’s ID.
+    description: Extends the lifetime of an environment
+  - name: cloudshare-postpone-env-suspend
+    arguments:
+    - name: envId
+      required: true
+      description: Specifies the environment, where {envId} is the environment’s ID.
+    description: Postpones an environment’s suspended state  Request Path
+  - name: cloudshare-resume-env
+    arguments:
+    - name: envId
+      required: true
+      description: Specifies the environment, where {envId} is the environment’s ID.
+    description: Resumes an environment that was previously suspended, returning it
+      to active running state
+  - name: cloudshare-revert-env
+    arguments:
+    - name: envId
+      required: true
+      description: Specifies the environment, where {envId} is the environment’s ID.
+    - name: snapshotId
+      required: true
+      description: Specifies the snapshot to which to revert the environment, where
+        {snapshotId} is the snapshot’s ID.
+    description: Reverts an environment to a specified snapshot
+  - name: cloudshare-suspend-env
+    arguments:
+    - name: envId
+      required: true
+      description: Specifies the environment, where {envId} is the environment’s ID.
+    description: Suspends an environment
+  - name: cloudshare-get-env
+    arguments:
+    - name: envID
+      required: true
+      description: The environment’s ID.
+    - name: permission
+      auto: PREDEFINED
+      predefined:
+      - view
+      - edit
+      - owner
+      description: Specifies a type of permission to access the environment. Returns
+        an error (status code 500) if the requesting user does not have the specified
+        permission level. Otherwise, returns the environment properties.
+    outputs:
+    - contextPath: CloudShare.Environments.projectId
+      description: Project ID
+      type: string
+    - contextPath: CloudShare.Environments.policyId
+      description: Policy ID
+      type: string
+    - contextPath: CloudShare.Environments.description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Environments.ownerEmail
+      description: Owner email
+      type: string
+    - contextPath: CloudShare.Environments.regionId
+      description: Region ID
+      type: string
+    - contextPath: CloudShare.Environments.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Environments.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Environments.status
+      description: Status
+      type: string
+    - contextPath: CloudShare.Environments.teamId
+      description: Team ID
+      type: string
+    description: Retrieves properties of an environment and enables verification of
+      the requesting user’s permissions to the environment
+  - name: cloudshare-delete-env
+    arguments:
+    - name: envID
+      required: true
+      description: The Id of the environment.
+    description: Deletes an environment
+  - name: cloudshare-create-env
+    arguments:
+    - name: environment
+      required: true
+      description: Specifies details (JSON) of the environment to create. Please refer
+        to https://docs.cloudshare.com/rest-api/v3/environments/envs/post-envs/ for
+        the format
+    - name: itemsCart
+      required: true
+      description: Specifies templates (JSON array) from which to build the environment.
+        Please refer to https://docs.cloudshare.com/rest-api/v3/environments/envs/post-envs/
+        for the format.
+    outputs:
+    - contextPath: CloudShare.Environments.resources.cpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Environments.resources.diskSizeMB
+      description: Disk size(MB)
+      type: number
+    - contextPath: CloudShare.Environments.resources.memorySizeMB
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Environments.VMs.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Environments.VMs.description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Environments.VMs.osTypeName
+      description: OS type name
+      type: string
+    - contextPath: CloudShare.Environments.VMs.imageUrl
+      description: Image URL
+      type: string
+    - contextPath: CloudShare.Environments.VMs.resources.cpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Environments.VMs.resources.diskSizeMB
+      description: Disk size(MB)
+      type: number
+    - contextPath: CloudShare.Environments.VMs.resources.memorySizeMB
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Environments.VMs.domainName
+      description: Domain name
+      type: string
+    - contextPath: CloudShare.Environments.VMs.internalIPs
+      description: Internal IPs
+      type: unknown
+    - contextPath: CloudShare.Environments.VMs.macAddresses
+      description: MAC addresses
+      type: unknown
+    - contextPath: CloudShare.Environments.VMs.canAddMultipleInstances
+      description: Can add multiple instances
+      type: boolean
+    - contextPath: CloudShare.Environments.VMs.hostName
+      description: Hostname
+      type: string
+    - contextPath: CloudShare.Environments.VMs.vanityName
+      description: Vanity name
+      type: string
+    - contextPath: CloudShare.Environments.VMs.httpAccessEnabled
+      description: HTTP access enabled
+      type: boolean
+    - contextPath: CloudShare.Environments.VMs.startWithHttps
+      description: Start with HTTPS
+      type: boolean
+    - contextPath: CloudShare.Environments.VMs.user
+      description: User
+      type: string
+    - contextPath: CloudShare.Environments.VMs.password
+      description: Password
+      type: string
+    - contextPath: CloudShare.Environments.VMs.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Environments.environmentId
+      description: Environment ID
+      type: string
+    - contextPath: CloudShare.Environments.id
+      description: ID
+      type: string
+    description: Creates an environment from a snapshot or from one or more VM templates
+  - name: cloudshare-modify-env
+    arguments:
+    - name: envId
+      required: true
+      description: The ID of the environment.
+    - name: itemsCart
+      required: true
+      description: Specifies templates (JSON array) of VMs to add to the environment.
+        Please refer to https://docs.cloudshare.com/rest-api/v3/environments/envs/post-envs/
+        for the format.
+    outputs:
+    - contextPath: CloudShare.Environments.resources.cpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Environments.resources.diskSizeMB
+      description: Disk size(MB)
+      type: number
+    - contextPath: CloudShare.Environments.resources.memorySizeMB
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Environments.VMs.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Environments.VMs.description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Environments.VMs.osTypeName
+      description: OS type name
+      type: string
+    - contextPath: CloudShare.Environments.VMs.imageUrl
+      description: Image URL
+      type: string
+    - contextPath: CloudShare.Environments.VMs.resources.cpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Environments.VMs.resources.diskSizeMB
+      description: Disk size(MB)
+      type: number
+    - contextPath: CloudShare.Environments.VMs.resources.memorySizeMB
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Environments.VMs.domainName
+      description: Domain name
+      type: string
+    - contextPath: CloudShare.Environments.VMs.internalIPs
+      description: Internal IPs
+      type: unknown
+    - contextPath: CloudShare.Environments.VMs.macAddresses
+      description: MAC addresses
+      type: unknown
+    - contextPath: CloudShare.Environments.VMs.canAddMultipleInstances
+      description: Can add multiple instances
+      type: boolean
+    - contextPath: CloudShare.Environments.VMs.hostName
+      description: Hostname
+      type: string
+    - contextPath: CloudShare.Environments.VMs.vanityName
+      description: Vanity name
+      type: string
+    - contextPath: CloudShare.Environments.VMs.httpAccessEnabled
+      description: HTTP access enabled
+      type: boolean
+    - contextPath: CloudShare.Environments.VMs.startWithHttps
+      description: Start with HTTPS
+      type: boolean
+    - contextPath: CloudShare.Environments.VMs.user
+      description: User
+      type: string
+    - contextPath: CloudShare.Environments.VMs.password
+      description: Password
+      type: string
+    - contextPath: CloudShare.Environments.VMs.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Environments.environmentId
+      description: Environment ID
+      type: string
+    - contextPath: CloudShare.Environments.id
+      description: ID
+      type: string
+    description: Adds one or more VMs to an existing environment
+  - name: cloudshare-delete-vm
+    arguments:
+    - name: VmID
+      description: The ID of the VM.
+    description: Deletes a VM
+  - name: cloudshare-check-vm-execution-status
+    arguments:
+    - name: vmID
+      required: true
+      description: The ID of the VM on which the script was executed.
+    - name: executionId
+      required: true
+      description: The ID returned by the execution request.
+    outputs:
+    - contextPath: CloudShare.VM.Executions.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.VM.Executions.exitCode
+      description: Exit code
+      type: number
+    - contextPath: CloudShare.VM.Executions.success
+      description: Success
+      type: boolean
+    - contextPath: CloudShare.VM.Executions.standardOutput
+      description: Standard output
+      type: string
+    - contextPath: CloudShare.VM.Executions.standardError
+      description: Standard error
+      type: string
+    - contextPath: CloudShare.VM.Executions.executedPath
+      description: Executed path
+      type: string
+    description: Checks the status of a previously executed command line script
+  - name: cloudshare-get-vm-remote-access-file
+    arguments:
+    - name: VmID
+      description: The ID of the VM.
+    - name: desktopHeight
+      required: true
+      description: The height resolution of the remote access session, in pixels.
+    - name: desktopWidth
+      required: true
+      description: The width resolution of the remote access session, in pixels.
+    outputs:
+    - contextPath: CloudShare.VM.Remote.VmID
+      description: VM ID
+      type: string
+    - contextPath: CloudShare.VM.Remote.rdpFileContent
+      description: RDP file content
+      type: string
+    - contextPath: CloudShare.VM.Remote.clearTextPassword
+      description: Clear text password
+      type: string
+    description: Retrieves the content of a .rdp file that provides remote desktop
+      access to the specified VM. An .rdp file comprising the returned content opens
+      a remote desktop session to the VM from a Windows machine. It can also be used
+      on Linux with FreeRDP or on Mac with Microsoft Remote Access.
+  - name: cloudshare-execute-vm-command
+    arguments:
+    - name: vmId
+      required: true
+      description: "\tThe ID of the VM"
+    - name: path
+      required: true
+    outputs:
+    - contextPath: CloudShare.VM.Execute.executionId
+      description: Execution ID
+      type: string
+    description: Executes a command line script on a VM
+  - name: cloudshare-modify-vm-hardware
+    arguments:
+    - name: vmID
+      required: true
+      description: The ID of the VM.
+    - name: numCpus
+      required: true
+      description: Number of CPUs
+    - name: memorySizeMBs
+      required: true
+      description: RAM size, in megabytes
+    - name: diskSizeGBs
+      required: true
+      description: Disk size, in gigabytes
+    outputs:
+    - contextPath: CloudShare.VM.Modify.vmID
+      description: VM ID
+      type: string
+    - contextPath: CloudShare.VM.Modify.conflictsFound
+      description: Conflicts found
+      type: boolean
+    - contextPath: CloudShare.VM.Modify.conflicts
+      description: Conflicts
+      type: string
+    description: Adjusts a VM’s CPU count, disk size, and RAM
+  - name: cloudshare-reboot-vm
+    arguments:
+    - name: VmID
+      required: true
+      description: The ID of the VM.
+    description: Reboots a VM
+  - name: cloudshare-revert-vm
+    arguments:
+    - name: VmID
+      required: true
+      description: The ID of the VM.
+    description: Reverts a VM
+  - name: cloudshare-get-cloud-folders
+    arguments: []
+    outputs:
+    - contextPath: CloudShare.Folders.host
+      description: Host
+      type: string
+    - contextPath: CloudShare.Folders.path
+      description: Path
+      type: string
+    - contextPath: CloudShare.Folders.userName
+      description: Username
+      type: string
+    - contextPath: CloudShare.Folders.password
+      description: Password
+      type: string
+    - contextPath: CloudShare.Folders.userFolder.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Folders.userFolder.quotaSizeGB
+      description: Quota size(GB)
+      type: string
+    - contextPath: CloudShare.Folders.userFolder.quotaSizeInUseGB
+      description: Quota size in use(GB)
+      type: string
+    - contextPath: CloudShare.Folders.userFolder.usagePercentage
+      description: Usage percentage
+      type: string
+    - contextPath: CloudShare.Folders.projectFolders.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Folders.projectFolders.quotaSizeGB
+      description: Quota size(GB)
+      type: string
+    - contextPath: CloudShare.Folders.projectFolders.quotaSizeInUseGB
+      description: Quota size in use(GB)
+      type: string
+    - contextPath: CloudShare.Folders.projectFolders.usagePercentage
+      description: Usage percentage
+      type: string
+    description: Retrieves the user’s cloud folder and the user’s projects’ project
+      folder(s)
+  - name: cloudshare-get-env-cloud-folders
+    arguments:
+    - name: EnvId
+      required: true
+      description: The ID of the environment.
+    outputs:
+    - contextPath: CloudShare.EnvFolders.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.EnvFolders.sanitizedName
+      description: Santized name
+      type: string
+    - contextPath: CloudShare.EnvFolders.windowsFolder
+      description: Windows folder
+      type: string
+    - contextPath: CloudShare.EnvFolders.linuxFolder
+      description: Linux folder
+      type: string
+    - contextPath: CloudShare.EnvFolders.token
+      description: Token
+      type: string
+    description: Shows the cloud folder on all of the environment’s machines
+  - name: cloudshare-generate-cloud-folder-password
+    arguments: []
+    outputs:
+    - contextPath: CloudShare.FoldersPassword.newPassword
+      description: New password
+      type: string
+    - contextPath: CloudShare.FoldersPassword.newFtpUri
+      description: New FTP URI
+      type: string
+    description: Generates a new FTP password for accessing the user’s cloud folders.
+  - name: cloudshare-unmount-env-folders
+    arguments:
+    - name: EnvId
+      required: true
+      description: The ID of the environment.
+    description: Hides the cloud folder on all of the environment’s machines
+  - name: cloudshare-get-templates
+    arguments:
+    - name: templateType
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: 'Filters the results by type of template. Possible values: 0 -
+        Returns blueprints only. 1 - Returns VM templates only.'
+    - name: projectId
+      description: Filters the results to include only blueprints that belong to a
+        specific project.
+    - name: regionId
+      description: Filters the results to include only templates that belong to a
+        specific region.
+    - name: skip
+      description: Specifies to skip the first {skip} records, where {skip} is an
+        integer
+    - name: take
+      description: 'Limits the number of records returned, where {take_value} is the
+        maximum number of records to return. Integer (default: 1000, maximum: 1000).'
+    outputs:
+    - contextPath: CloudShare.Templates.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Templates.description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Templates.isEnvironmentTemplate
+      description: Is environment template
+      type: boolean
+    - contextPath: CloudShare.Templates.type
+      description: Type
+      type: number
+    - contextPath: CloudShare.Templates.imageUrl
+      description: Image URL
+      type: string
+    - contextPath: CloudShare.Templates.regionId
+      description: Region ID
+      type: string
+    - contextPath: CloudShare.Templates.tags
+      description: Tags
+      type: unknown
+    - contextPath: CloudShare.Templates.categories
+      description: Categories
+      type: unknown
+    - contextPath: CloudShare.Templates.resources.cpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Templates.resources.diskSizeMB
+      description: Disk size(MB)
+      type: number
+    - contextPath: CloudShare.Templates.resources.memorySizeMB
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Templates.numberOfMachines
+      description: Number of mahcines
+      type: number
+    - contextPath: CloudShare.Templates.hasMultipleVersions
+      description: Has multiple versions
+      type: boolean
+    - contextPath: CloudShare.Templates.hasDefaultVersion
+      description: Has default version
+      type: boolean
+    - contextPath: CloudShare.Templates.disabledForRegularEnvironmentCreation
+      description: Disabled for regular environment creation
+      type: boolean
+    - contextPath: CloudShare.Templates.disabledForTrainingEnvironmentCreation
+      description: Disabled for training environment creation
+      type: boolean
+    - contextPath: CloudShare.Templates.canAddMultipleInstances
+      description: Can add multiple instances
+      type: boolean
+    - contextPath: CloudShare.Templates.envTemplateScope
+      description: Env template scopt
+      type: unknown
+    - contextPath: CloudShare.Templates.creationDate
+      description: Creation date
+      type: string
+    - contextPath: CloudShare.Templates.id
+      description: ID
+      type: string
+    description: Retrieves VM templates and blueprints
+  - name: cloudshare-get-snapshot
+    arguments:
+    - name: snapshotID
+      required: true
+      description: The ID of the snapshot.
+    outputs:
+    - contextPath: CloudShare.Snapshots.authorName
+      description: Author name
+      type: string
+    - contextPath: CloudShare.Snapshots.comment
+      description: Comment
+      type: string
+    - contextPath: CloudShare.Snapshots.createTime
+      description: Create time
+      type: string
+    - contextPath: CloudShare.Snapshots.description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Snapshots.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Snapshots.imageUrl
+      description: Image URL
+      type: string
+    - contextPath: CloudShare.Snapshots.isDefault
+      description: Is default
+      type: boolean
+    - contextPath: CloudShare.Snapshots.isLatest
+      description: Is latest
+      type: boolean
+    - contextPath: CloudShare.Snapshots.machines.canAddMultipleInstances
+      description: Can add multiple instances
+      type: boolean
+    - contextPath: CloudShare.Snapshots.machines.description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Snapshots.machines.domainName
+      description: Domain name
+      type: string
+    - contextPath: CloudShare.Snapshots.machines.hostName
+      description: Hostname
+      type: string
+    - contextPath: CloudShare.Snapshots.machines.httpAccessEnabled
+      description: HTTP access enabled
+      type: boolean
+    - contextPath: CloudShare.Snapshots.machines.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Snapshots.machines.id
+      description: Image URL
+      type: string
+    - contextPath: CloudShare.Snapshots.machines.internalIPs
+      description: Internal IPs
+      type: unknown
+    - contextPath: CloudShare.Snapshots.machines.macAddresses
+      description: MAC addresses
+      type: unknown
+    - contextPath: CloudShare.Snapshots.machines.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Snapshots.machines.osTypeName
+      description: OS type name
+      type: string
+    - contextPath: CloudShare.Snapshots.machines.password
+      description: Password
+      type: string
+    - contextPath: CloudShare.Snapshots.machines.resources.cpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Snapshots.machines.resources.diskSizeMB
+      description: Disk size(MB)
+      type: number
+    - contextPath: CloudShare.Snapshots.machines.resources.memorySizeMB
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Snapshots.machines.startWithHttps
+      description: Start with HTTPS
+      type: boolean
+    - contextPath: CloudShare.Snapshots.machines.user
+      description: User
+      type: string
+    - contextPath: CloudShare.Snapshots.machines.vanityName
+      description: Vanity name
+      type: string
+    - contextPath: CloudShare.Snapshots.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Snapshots.number
+      description: Number
+      type: number
+    - contextPath: CloudShare.Snapshots.resources.cpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Snapshots.resources.diskSizeMB
+      description: Disk size(MB)
+      type: number
+    - contextPath: CloudShare.Snapshots.resources.memorySizeMB
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Snapshots.type
+      description: Type
+      type: number
+    - contextPath: CloudShare.Snapshots.regions
+      description: Regions
+    description: Retrieves details of a snapshot
+  - name: cloudshare-get-env-snapshots
+    arguments:
+    - name: envId
+      required: true
+      description: The ID of the environment.
+    outputs:
+    - contextPath: CloudShare.Snapshots.authorName
+      description: Author name
+      type: string
+    - contextPath: CloudShare.Snapshots.comment
+      description: Comment
+      type: string
+    - contextPath: CloudShare.Snapshots.createTime
+      description: Create time
+      type: string
+    - contextPath: CloudShare.Snapshots.description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Snapshots.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Snapshots.imageUrl
+      description: Image URL
+      type: string
+    - contextPath: CloudShare.Snapshots.isDefault
+      description: Is default
+      type: boolean
+    - contextPath: CloudShare.Snapshots.isLatest
+      description: Is latest
+      type: boolean
+    - contextPath: CloudShare.Snapshots.machines.canAddMultipleInstances
+      description: Can add multiple instances
+      type: boolean
+    - contextPath: CloudShare.Snapshots.machines.description
+      description: Description
+      type: string
+    - contextPath: CloudShare.Snapshots.machines.domainName
+      description: Domain name
+      type: string
+    - contextPath: CloudShare.Snapshots.machines.hostName
+      description: Hostname
+      type: string
+    - contextPath: CloudShare.Snapshots.machines.httpAccessEnabled
+      description: HTTP access enabled
+      type: boolean
+    - contextPath: CloudShare.Snapshots.machines.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.Snapshots.machines.id
+      description: Image URL
+      type: string
+    - contextPath: CloudShare.Snapshots.machines.internalIPs
+      description: Internal IPs
+      type: unknown
+    - contextPath: CloudShare.Snapshots.machines.macAddresses
+      description: MAC addresses
+      type: unknown
+    - contextPath: CloudShare.Snapshots.machines.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Snapshots.machines.osTypeName
+      description: OS type name
+      type: string
+    - contextPath: CloudShare.Snapshots.machines.password
+      description: Password
+      type: string
+    - contextPath: CloudShare.Snapshots.machines.resources.cpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Snapshots.machines.resources.diskSizeMB
+      description: Disk size(MB)
+      type: number
+    - contextPath: CloudShare.Snapshots.machines.resources.memorySizeMB
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Snapshots.machines.startWithHttps
+      description: Start with HTTPS
+      type: boolean
+    - contextPath: CloudShare.Snapshots.machines.user
+      description: User
+      type: string
+    - contextPath: CloudShare.Snapshots.machines.vanityName
+      description: Vanity name
+      type: string
+    - contextPath: CloudShare.Snapshots.name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Snapshots.number
+      description: Number
+      type: number
+    - contextPath: CloudShare.Snapshots.resources.cpuCount
+      description: CPU count
+      type: number
+    - contextPath: CloudShare.Snapshots.resources.diskSizeMB
+      description: Disk size(MB)
+      type: number
+    - contextPath: CloudShare.Snapshots.resources.memorySizeMB
+      description: Memory size(MB)
+      type: number
+    - contextPath: CloudShare.Snapshots.type
+      description: Type
+      type: number
+    - contextPath: CloudShare.Snapshots.regions
+      description: Regions
+    description: Retrieves all snapshots contained in a specified environment’s blueprint.
+      A blueprint can contain up to five snapshots, with newer snapshots displacing
+      the oldest snapshots in the blueprint.
+  - name: cloudshare-mark-default-snapshot
+    arguments:
+    - name: snapshotID
+      required: true
+      description: The ID of the snapshot that you want to mark as default.
+    description: Marks a specified snapshot as the default snapshot in its containing
+      blueprint.  New environments created from a blueprint are based on the default
+      snapshot in the blueprint. This request enables you to change which snapshot
+      is the default snapshot in a given blueprint so that new environments will be
+      based on the snapshot of your choice.
+  - name: cloudshare-take-snapshot-env
+    arguments:
+    - name: envId
+      required: true
+      description: The ID of the environment of which to take the snapshot
+    - name: name
+      required: true
+      description: A name for the new snapshot. Should not exceed 32 characters.
+    - name: description
+      description: A description for the new snapshot.
+    - name: newBlueprintName
+      description: A name to assign to a new blueprint. If specified, the snapshot
+        is created in a new blueprint with the specified name, rather than in the
+        default environment blueprint. Must be null if there is not yet at least one
+        snapshot in the default environment blueprint. If specified, otherBlueprintId
+        must be null. If both newBlueprintName and otherBlueprintId are null, the
+        snapshot is created in the default environment blueprint.
+    - name: otherBlueprintId
+      description: The ID of an existing blueprint. If specified, the snapshot is
+        created in the specified blueprint rather than in the default environment
+        blueprint. Must be null if there is not yet at least one snapshot in the default
+        environment blueprint. If specified, newBlueprintName must be null. If both
+        newBlueprintName and otherBlueprintId are null, the snapshot is created in
+        the default environment blueprint.
+    - name: setAsDefault
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Defaults to true. If true, the new snapshot is marked as the default
+        snapshot in the containing blueprint.
+      defaultValue: "true"
+    description: Takes a snapshot of an environment
+  - name: cloudshare-get-teams
+    arguments: []
+    outputs:
+    - contextPath: CloudShare.Teams.Name
+      description: Name
+      type: string
+    - contextPath: CloudShare.Teams.Id
+      description: ID
+      type: string
+    description: Retrieves all available teams in all available projects
+  - name: cloudshare-invite-user-poc
+    arguments:
+    - name: policyId
+      description: The ID of the environment policy to assign to the environment created
+        for the end user as part of the POC. The policy will govern the life cycle
+        of the end user’s environment.
+    - name: blueprintId
+      required: true
+      description: The ID of the blueprint based on which the end user’s environment
+        will be created (this is the POC’s blueprint).
+    - name: OwningProjectMemberId
+      required: true
+      description: The ID of the project member user to whom the end user will be
+        assigned
+    - name: opportunity
+      required: true
+      description: The name of the business opportunity to be associated with the
+        end user
+    - name: validForDays
+      required: true
+      description: The number of days to keep the invitation valid for
+    - name: email
+      required: true
+      description: The recipient’s email. The invitation will be sent to the specified
+        email.
+    - name: firstName
+      required: true
+      description: The recipient’s first name
+    - name: LastName
+      required: true
+      description: The recipient’s last name
+    - name: regionId
+      description: The region in which to create the POC’s environment.
+    - name: InviteeCanSetEmail
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates whether an end user can set email when accepting the
+        invitation. Default is true.
+      defaultValue: "true"
+    - name: customEmailSubject
+      description: The subject of the email. The invitation will be sent with the
+        specified custom email subject. This value will override the custom email
+        subject in the UI.
+    - name: customEmailBody
+      description: The body of the email. The invitation will be sent with the specified
+        custom email body. This value will override the custom email body in the UI.
+    outputs:
+    - contextPath: CloudShare.Invites.invitationDetailsUrl
+      description: Invitation details URL
+      type: string
+    - contextPath: CloudShare.Invites.acceptInvitationUrl
+      description: Accept invitation URL
+      type: string
+    - contextPath: CloudShare.Invites.message
+      description: Message
+      type: string
+    description: Invite an end user to a POC, based on a specified blueprint, and
+      assigns a specific project member user to be the owning project member for the
+      end user.  A policy ID, blueprint ID and owning project member ID must be specified.
+  - name: cloudshare-get-poc-invitations
+    arguments:
+    - name: from
+      description: 'Retrieve invites from a particular time (Example: "last 7 days")'
+    - name: sentBy
+      description: Filter based on who sent the invite (default is anyone).
+    - name: skip
+      description: 'Specifies to skip the first {skip} records, where {skip} is an
+        integer (default: 0). Can be used iteratively in conjunction with take to
+        view distinct sets of template records.'
+    - name: sortBy
+      description: The filed to sort by
+    - name: statusCategory
+      description: The status categoey to filter by
+    - name: take
+      description: 'Limits the number of records returned, where {take} is the maximum
+        number of records to return. Integer (default: 1000, maximum: 1000).'
+    outputs:
+    - contextPath: CloudShare.POCInvites.blueprintShortId
+      description: Blueprint short ID
+      type: string
+    - contextPath: CloudShare.POCInvites.projectName
+      description: Project name
+      type: string
+    - contextPath: CloudShare.POCInvites.createdOn
+      description: Created on
+      type: string
+    - contextPath: CloudShare.POCInvites.owningSe
+      description: Owning SE
+      type: string
+    - contextPath: CloudShare.POCInvites.environmentId
+      description: Environment ID
+      type: string
+    - contextPath: CloudShare.POCInvites.pocUser
+      description: POC user
+      type: string
+    - contextPath: CloudShare.POCInvites.startDate
+      description: Start date
+      type: string
+    - contextPath: CloudShare.POCInvites.status
+      description: Status
+      type: number
+    - contextPath: CloudShare.POCInvites.opportunity
+      description: Opportunity
+      type: string
+    - contextPath: CloudShare.POCInvites.owningSeUserId
+      description: Owning SE user ID
+      type: string
+    - contextPath: CloudShare.POCInvites.projectId
+      description: Project ID
+      type: string
+    - contextPath: CloudShare.POCInvites.randomToken
+      description: Random token
+      type: string
+    - contextPath: CloudShare.POCInvites.id
+      description: ID
+      type: string
+    - contextPath: CloudShare.POCInvites.expirationDate
+      description: Expiration date
+      type: string
+    - contextPath: CloudShare.POCInvites.blueprintName
+      description: Blueprint name
+      type: string
+    description: Retrieves POC invitations sent.
+  dockerimage: cloudshare:latest
+  runonce: false
+  subtype: python3
+  beta: true
