@@ -22,6 +22,7 @@ tasks:
       id: 7c46d5ad-2e77-4213-8d84-4de23934ce23
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -48,6 +49,7 @@ tasks:
       id: 8277520e-1e78-403a-8914-018cd06cc1f3
       version: -1
       name: Triage
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -365,6 +367,7 @@ tasks:
       id: 8cbe42bf-2e02-4201-8a2a-10d019de3b5f
       version: -1
       name: Detection
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -828,6 +831,7 @@ tasks:
       id: 94865e07-4176-494c-815b-36d6e15aee37
       version: -1
       name: Containment & Remediation
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -1287,6 +1291,7 @@ tasks:
       id: 4aa93eea-6c1f-4581-836b-0fdbe9add734
       version: -1
       name: Block File - Generic v2
+      description: ""
       playbookName: Block File - Generic v2
       type: playbook
       iscommand: false
@@ -1915,6 +1920,7 @@ tasks:
       id: f0f2d1d0-d4c1-4089-8ed9-31e88ea93610
       version: -1
       name: Exploitation
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -1942,6 +1948,7 @@ tasks:
       id: 0818dc59-3276-4a92-86b3-20a0c006774c
       version: -1
       name: Port Blocking Unneeded
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -1969,6 +1976,7 @@ tasks:
       id: a6627a56-c465-4d96-8e3e-4f1ed0ed6bbb
       version: -1
       name: Port Blocking
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -1996,6 +2004,7 @@ tasks:
       id: 43adfaa6-26d4-4f0b-8429-90088ffa1094
       version: -1
       name: Malware Hunting
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -2023,6 +2032,7 @@ tasks:
       id: 887a43af-e9fe-4c60-85ca-611d319676f0
       version: -1
       name: Host Isolation
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -2050,6 +2060,7 @@ tasks:
       id: 9f4c3903-549c-4273-8a45-b98e203a2dc3
       version: -1
       name: IP Enrichment - Internal - Generic v2
+      description: ""
       playbookName: IP Enrichment - Internal - Generic v2
       type: playbook
       iscommand: false
@@ -3071,6 +3082,7 @@ tasks:
       id: 0dfd512e-ddfc-40ab-879c-301b55822d1a
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
