@@ -454,7 +454,12 @@ def change_placeholders_to_values(placeholders_map, config_item):
     return json.loads(item_as_string)
 
 
-def set_integration_params(integrations, secret_params, instance_names, placeholders_map, logging_module=logging):
+def set_integration_params(build,
+                           integrations,
+                           secret_params,
+                           instance_names,
+                           placeholders_map,
+                           logging_module=logging):
     """
     For each integration object, fill in the parameter values needed to configure an instance from
     the secret_params taken from our secret configuration file. Because there may be a number of
@@ -467,6 +472,7 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
     this function has completed execution and gone out of scope.
 
     Arguments:
+        build: Build object
         integrations: (list of dicts)
             List of integration objects whose 'params' attribute will be populated in this function.
         secret_params: (list of dicts)
@@ -485,7 +491,6 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
     for integration in integrations:
         integration_params = [change_placeholders_to_values(placeholders_map, item) for item
                               in secret_params if item['name'] == integration['name']]
-
         if integration_params:
             matched_integration_params = integration_params[0]
             # if there are more than one integration params, it means that there are configuration
@@ -513,6 +518,9 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
             integration['byoi'] = matched_integration_params.get('byoi', True)
             integration['instance_name'] = matched_integration_params.get('instance_name', integration['name'])
             integration['validate_test'] = matched_integration_params.get('validate_test', True)
+            if integration['name'] in build.unmockable_integrations:
+                integration['params'].update({'proxy': True})
+        logging.debug(f'Configuring integration {integration["name"]}with params: {pformat(integration["params"])}')
 
     return True
 
@@ -1058,10 +1066,13 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
         integrations_to_configure = modified_integrations[:]
         integrations_to_configure.extend(unchanged_integrations)
         placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
-        new_ints_params_set = set_integration_params(new_integrations, build.secret_conf['integrations'],
+        new_ints_params_set = set_integration_params(build,
+                                                     new_integrations,
+                                                     build.secret_conf['integrations'],
                                                      instance_names_conf,
                                                      placeholders_map)
-        ints_to_configure_params_set = set_integration_params(integrations_to_configure,
+        ints_to_configure_params_set = set_integration_params(build,
+                                                              integrations_to_configure,
                                                               build.secret_conf['integrations'],
                                                               instance_names_conf, placeholders_map)
         if not new_ints_params_set:
@@ -1142,6 +1153,7 @@ def instance_testing(build: Build, all_module_instances: list, pre_update: bool)
         testing_client = build.servers[0].reconnect_client()
         # If there is a failure, __test_integration_instance will print it
         if integration_of_instance not in build.unmockable_integrations:
+            logging.debug(f'Integration {integration_of_instance} is mockable, running test-module with mitmproxy')
             has_mock_file = build.proxy.has_mock_file(integration_of_instance)
             success = False
             if has_mock_file:
@@ -1149,9 +1161,11 @@ def instance_testing(build: Build, all_module_instances: list, pre_update: bool)
                     success, _ = __test_integration_instance(testing_client, instance)
                     result_holder[RESULT] = success
             if not success:
+                logging.debug(f'Playback mode for integration {integration_of_instance} has failed, recording.')
                 with run_with_mock(build.proxy, integration_of_instance, record=True) as result_holder:
                     success, _ = __test_integration_instance(testing_client, instance)
                     result_holder[RESULT] = success
+                    logging.debug(f'Record mode for integration {integration_of_instance} has failed.')
         else:
             success, _ = __test_integration_instance(testing_client, instance)
         if not success:
