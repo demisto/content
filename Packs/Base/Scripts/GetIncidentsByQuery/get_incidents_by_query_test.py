@@ -1,5 +1,5 @@
 from GetIncidentsByQuery import build_incidents_query, get_incidents, parse_relative_time, main, \
-    preprocess_incidents_fields_list, PYTHON_MAGIC
+    preprocess_incidents_fields_list, get_demisto_datetme_format, PYTHON_MAGIC
 
 from CommonServerPython import *
 
@@ -172,3 +172,7 @@ def test_skip_python_magic(mocker):
 def test_preprocess_incidents_fields_list():
     incidents_fields = ['incident.emailbody', ' incident.emailsbuject']
     assert preprocess_incidents_fields_list(incidents_fields) == ['emailbody', 'emailsbuject']
+
+
+def test_get_demisto_datetme_format():
+    assert "2020-01-01T00:00:00+02:00" == get_demisto_datetme_format("2020-01-01")
