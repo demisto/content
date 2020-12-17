@@ -89,7 +89,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Fetches IP addresses from the Public DNS feed.
+description: A feed of known benign IPs of public DNS servers.
 display: Public DNS Feed
 name: Public DNS Feed
 script:
