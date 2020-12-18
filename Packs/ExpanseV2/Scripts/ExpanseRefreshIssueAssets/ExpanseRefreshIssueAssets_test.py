@@ -6,9 +6,9 @@ import ExpanseRefreshIssueAssets
 EXAMPLE_INCIDENT = {
     'CustomFields': {
         'expanseasset': [
-            {'assettype': 'Certificate', 'assetkey': 'fakeMD5'},
-            {'assettype': 'IpRange', 'assetkey': 'fakeIPRange'},
-            {'assettype': 'Domain', 'assetkey': 'fakeDomain'},
+            {'assettype': 'Certificate', 'assetkey': 'fakeMD5', 'id': 'id-old-certificate'},
+            {'assettype': 'IpRange', 'assetkey': 'fakeIPRange', 'id': 'id-old-iprange'},
+            {'assettype': 'Domain', 'assetkey': 'fakeDomain', 'id': 'id-old-domain'},
         ]
     }
 }
@@ -17,14 +17,17 @@ EXAMPLE_INCIDENT = {
 REFRESH_RESULT = {'expanseasset': [{'assettype': 'Certificate',
                                     'assetkey': 'fakeMD5',
                                     'tags': 'tag-certificate',
+                                    'id': 'id-certificate',
                                     'attributionReasons': 'fake-certificate-reason1\nfake-certificate-reason2'},
                                    {'assettype': 'IpRange',
                                     'assetkey': 'fakeIPRange',
                                     'tags': 'tag-iprange1\ntag-iprange2',
+                                    'id': 'id-iprange',
                                     'attributionReasons': 'fake-iprange-reason'},
                                    {'assettype': 'Domain',
                                     'assetkey': 'fakeDomain',
                                     'tags': 'tag-domain',
+                                    'id': 'id-domain',
                                     'attributionReasons': 'fake-domain-reason'},
                                    ]}
 
@@ -33,7 +36,8 @@ ASSET_CERTIFICATE = {
     'annotations': {
         'tags': [{'name': 'tag-certificate'}]
     },
-    'attributionReasons': [{'reason': 'fake-certificate-reason1'}, {'reason': 'fake-certificate-reason2'}]
+    'attributionReasons': [{'reason': 'fake-certificate-reason1'}, {'reason': 'fake-certificate-reason2'}],
+    'id': 'id-certificate'
 }
 
 
@@ -41,7 +45,8 @@ ASSET_IPRANGE = {
     'annotations': {
         'tags': [{'name': 'tag-iprange1'}, {'name': 'tag-iprange2'}]
     },
-    'attributionReasons': [{'reason': 'fake-iprange-reason'}]
+    'attributionReasons': [{'reason': 'fake-iprange-reason'}],
+    'id': 'id-iprange'
 }
 
 
@@ -49,7 +54,8 @@ ASSET_DOMAIN = {
     'annotations': {
         'tags': [{'name': 'tag-domain'}]
     },
-    'attributionReasons': [{'reason': 'fake-domain-reason'}]
+    'attributionReasons': [{'reason': 'fake-domain-reason'}],
+    'id': 'id-domain'
 }
 
 

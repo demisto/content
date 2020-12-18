@@ -45,6 +45,8 @@ def refresh_issue_assets_command(args: Dict[str, Any]) -> CommandResults:
         if (ar := contents.get('attributionReasons', None)) and isinstance(ar, list) and len(ar) > 0:
             asset['attributionReasons'] = '\n'.join(a['reason'] for a in ar if 'reason' in a)
 
+        asset['id'] = contents.get('id') or asset['id']
+
     demisto.executeCommand('setIncident', {
         "expanseasset": assets
     })
