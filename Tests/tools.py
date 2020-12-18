@@ -73,11 +73,11 @@ def run_with_proxy_configured(function: Callable) -> Callable:
         function: Should be the instance_testing method.
     """
     @wraps(function)
-    def decorated(build, all_module_instances, pre_update):
+    def decorated(build, *args, **kwargs):
         build.proxy.configure_proxy_in_demisto(proxy=build.proxy.ami.docker_ip + ':' + build.proxy.PROXY_PORT,
                                                username=build.username, password=build.password,
                                                server=build.servers[0].host)
-        result = function(build, all_module_instances, pre_update)
+        result = function(build, *args, **kwargs)
         build.proxy.configure_proxy_in_demisto(proxy='',
                                                username=build.username, password=build.password,
                                                server=build.servers[0].host)

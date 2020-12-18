@@ -8,7 +8,7 @@ from ruamel import yaml
 from typing import List
 import logging
 
-from Tests.scripts.utils.log_util import install_simple_logging
+from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import find_type
 from Tests.configure_and_test_integration_instances import Build, configure_servers_and_restart, \
     get_tests, \
@@ -111,7 +111,7 @@ def write_test_pack_zip(tests_file_paths: set, path_to_content: str,
 
 
 def main():
-    install_simple_logging()
+    install_logging('Install Content And Configure Integrations On Server.log')
     build = Build(options_handler())
 
     configure_servers_and_restart(build)
@@ -128,10 +128,16 @@ def main():
         configure_server_instances(build, tests_for_iteration, new_integrations, modified_integrations)
 
     #  Running the instance tests (pushing the test button)
-    successful_tests_pre, failed_tests_pre = instance_testing(build, all_module_instances, pre_update=True)
+    successful_tests_pre, failed_tests_pre = instance_testing(build,
+                                                              all_module_instances,
+                                                              pre_update=True,
+                                                              use_mock=False)
     #  Adding the new integrations to the instance test list and testing them.
     all_module_instances.extend(brand_new_integrations)
-    successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances, pre_update=False)
+    successful_tests_post, failed_tests_post = instance_testing(build,
+                                                                all_module_instances,
+                                                                pre_update=False,
+                                                                use_mock=False)
     #  Gather tests to add to test pack
     test_playbooks_from_id_set = build.id_set.get('TestPlaybooks', [])
     tests_to_add_to_test_pack = find_needed_test_playbook_paths(test_playbooks=test_playbooks_from_id_set,

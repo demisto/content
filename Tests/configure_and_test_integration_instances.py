@@ -1125,14 +1125,18 @@ def configure_modified_and_new_integrations(build: Build,
     return modified_modules_instances, new_modules_instances
 
 
-@run_with_proxy_configured
-def instance_testing(build: Build, all_module_instances: list, pre_update: bool) -> Tuple[set, set]:
+def instance_testing(build: Build,
+                     all_module_instances: list,
+                     pre_update: bool,
+                     use_mock: bool = True) -> Tuple[set, set]:
     """
     Runs 'test-module' command for the instances detailed in `all_module_instances`
     Args:
         build: An object containing the current build info.
         all_module_instances: The integration instances that should be tested
         pre_update: Whether this instance testing is before or after the content update on the server.
+        use_mock: Whether to use mock while testing mockable integrations. Should be used mainly with
+        private content build which aren't using the mocks.
 
     Returns:
         A set of the successful tests containing the instance name and the integration name
@@ -1152,7 +1156,7 @@ def instance_testing(build: Build, all_module_instances: list, pre_update: bool)
         instance_name = instance.get('name', '')
         testing_client = build.servers[0].reconnect_client()
         # If there is a failure, __test_integration_instance will print it
-        if integration_of_instance not in build.unmockable_integrations:
+        if integration_of_instance not in build.unmockable_integrations and use_mock:
             logging.debug(f'Integration {integration_of_instance} is mockable, running test-module with mitmproxy')
             has_mock_file = build.proxy.has_mock_file(integration_of_instance)
             success = False
@@ -1292,6 +1296,7 @@ def set_marketplace_url(servers, branch_name, ci_build_number):
     sleep(60)
 
 
+@run_with_proxy_configured
 def test_integrations_post_update(build: Build, new_module_instances: list, modified_module_instances: list) -> tuple:
     """
     Runs 'test-module on all integrations for post-update check
@@ -1330,6 +1335,7 @@ def update_content_on_servers(build: Build) -> bool:
     return installed_content_packs_successfully
 
 
+@run_with_proxy_configured
 def configure_and_test_integrations_pre_update(build: Build, new_integrations, modified_integrations) -> tuple:
     """
     Configures integration instances that exist in the current version and for each integration runs 'test-module'.
