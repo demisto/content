@@ -43,8 +43,7 @@ description: Cymptom is a Breach and Attack Simulation solution that revolutioni
   the existing approach by transforming attack simulation into a data analysis question.
   Cymptom agentless scanning brings real-time always-on visibility into the entire
   security posture.
-display: Cymptom (Partner Contribution) (Partner Contribution) (Partner Contribution)
-  (Partner Contribution) (Partner Contribution) (Partner Contribution) (Partner Contribution)
+display: Cymptom (Partner Contribution)
 name: Cymptom
 script:
   commands:

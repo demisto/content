@@ -82,14 +82,10 @@ def api_test(client: Client):
     try:
         results = client.api_test()
         # TODO: Validate api key
-    except DemistoException as e:
-        return_error(
-            f"There was an error in testing connection to URL: {client._base_url}, API Key: {client._headers['Authorization'].split()[-1]}. "
-            f"Please make sure that the API key is valid and has the right permissions, and that the URL is in the correct form.")
     except Exception as e:
         return_error(
             f"There was an error in testing connection to URL: {client._base_url}, API Key: {client._headers['Authorization'].split()[-1]}. "
-            f"Please make sure that the API key is valid and has the right permissions, and that the URL is in the correct form.")
+            f"Please make sure that the API key is valid and has the right permissions, and that the URL is in the correct form. Error: {str(e)}")
 
     if results and results.get("status") == "ok":
         return return_results('ok')
