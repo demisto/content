@@ -1,5 +1,5 @@
-This playbook blocks a Destination IP and Service (tcp or udp port) by creating a rule for a specific Device Group on PAN-OS.
-Supported Cortex XSOAR versions: 6.0.0 and later.
+This playbook blocks a Destination IP and Service (TCP or UDP port) by creating a rule for a specific Device Group on PAN-OS. 
+Supported Cortex XSOAR versions: 5.0.0 and later.
 
 
 ## Dependencies
@@ -12,13 +12,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Panorama
 
 ### Scripts
-This playbook does not use any scripts.
+* SetAndHandleEmpty
+* Set
 
 ### Commands
+* panorama-create-address
 * panorama-create-rule
 * panorama-create-service
 * panorama-list-services
-* panorama-create-address
 
 ## Playbook Inputs
 ---
@@ -27,7 +28,7 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- |
 | LogForwarding | Panorama log forwarding object name. |  | Optional |
 | IP | IP address to block. |  | Optional |
-| AutoCommit | This input establishes whether to commit the configuration automatically.<br/>Yes - Commit automatically.<br/>No - Commit manually. | No | Optional |
+| AutoCommit | This input establishes whether to commit the configuration automatically.<br/>True - Commit automatically.<br/>False - Commit manually. | False | Optional |
 | DeviceGroup | Target Device Group. |  | Optional |
 | Port | Destination port to block. |  | Optional |
 | Protocol | Protocol |  | Optional |
