@@ -2,7 +2,7 @@ id: Expanse Load-Create List
 version: -1
 name: Expanse Load-Create List
 description: |
-  Subplaybook for Handl Expanse Incident playbooks.
+  Subplaybook to support Expanse Handle Incident playbook.
   Load a list to be used in Expanse playbook.
   Create the list if it does not exist.
 starttaskid: "0"
