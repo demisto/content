@@ -1,6 +1,5 @@
 id: Handle Expanse Incident
-version: 42
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Handle Expanse Incident
 description: |-
   Main Playbook to Handle Expanse Incidents.
@@ -32,6 +31,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "163"
@@ -99,6 +99,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -126,6 +127,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -224,6 +226,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -296,6 +299,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "75"
@@ -446,9 +450,9 @@ tasks:
             args:
               dt:
                 value:
-                  simple: ".=foo(val);function foo(aa) {\nresult = [];\nfor (const
-                    o of Object.keys(aa)) { \n  result.push({\"tag\":aa[o], \"dg\":
-                    o});\n}\nreturn result;\n}"
+                  simple: ".=foo(val);function foo(aa) {\nresult = [];\nfor (const\
+                    \ o of Object.keys(aa)) { \n  result.push({\"tag\":aa[o], \"dg\"\
+                    : o});\n}\nreturn result;\n}"
     separatecontext: false
     view: |-
       {
@@ -556,6 +560,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -646,8 +651,8 @@ tasks:
         simple: Choose target Device Group
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -697,6 +702,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "120"
@@ -749,7 +755,7 @@ tasks:
     task:
       id: c5535a82-8529-4442-8e22-6a97c811b9fe
       version: -1
-      name: PAN-OS - Block Destination Service on Panorama
+      name: PAN-OS - Block Destination Service
       description: This playbook blocks a Destination IP and Service (tcp or udp port)
         by creating a rule for a specific Device Group on PAN-OS.
       playbookName: PAN-OS - Block Destination Service
@@ -819,6 +825,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "25"
@@ -917,7 +924,7 @@ tasks:
     task:
       id: 3ad8dd38-b85c-46c6-856c-deeb6504fadb
       version: -1
-      name: PAN-OS - Block Destination Service on Firewall
+      name: PAN-OS - Block Destination Service
       description: This playbook blocks a Destination IP and Service (tcp or udp port)
         by creating a rule for a specific Device Group on PAN-OS.
       playbookName: PAN-OS - Block Destination Service
@@ -985,6 +992,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "167"
@@ -1014,6 +1022,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -1041,6 +1050,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "81"
@@ -1110,12 +1120,15 @@ tasks:
     task:
       id: 48a88295-5fe8-4219-8bd2-61250b300ef0
       version: -1
-      name: Expanse Attribution Subplaybook
-      description: "Given an Expanse Asset, Issue IP, Issue Provider, Issue Domain,
-        Issue Port and Issue Protocol hunts for internal activity on the detected
-        service. \nReturns a list of potential owner BUs, owner Users, Device and
-        Notes"
-      playbookName: Expanse Attribution Subplaybook
+      name: Expanse Attribution
+      description: >
+        Subplaybook for Handle Expanse Incident playbooks.
+        Given an Expanse Issue IP, Issue Provider, Issue Domain, Issue Port and Issue
+        Protocol
+        hunts for internal activity related to the detected service.
+        The playbook looks for logs on Splunk, Cortex Data Lake and Panorama.
+        Returns a list of potential owner BUs, owner Users, Device and Notes.
+      playbookName: Expanse Attribution
       type: playbook
       iscommand: false
       brand: ""
@@ -1292,8 +1305,8 @@ tasks:
               suffix: {}
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1756,6 +1769,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "75"
@@ -1944,6 +1958,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "154"
@@ -1971,6 +1986,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "68"
@@ -2725,6 +2741,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "76"
@@ -2820,6 +2837,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -2844,6 +2862,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "52"
@@ -2871,6 +2890,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "56"
@@ -2898,6 +2918,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "75"
@@ -2925,6 +2946,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -2952,6 +2974,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "73"
@@ -2979,6 +3002,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "75"
@@ -3063,14 +3087,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Add New OU
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -3529,6 +3553,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "85"
@@ -3969,6 +3994,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "110"
@@ -4036,6 +4062,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "75"
@@ -4259,8 +4286,8 @@ tasks:
         simple: Select Device Group Name and Tag
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -5045,6 +5072,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "62"
@@ -5236,6 +5264,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "151"
@@ -5265,6 +5294,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "59"
@@ -5701,6 +5731,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "164"
@@ -5728,6 +5759,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "30"
@@ -5914,6 +5946,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -6538,11 +6571,12 @@ tasks:
     task:
       id: 8b176b68-4261-4fbf-81d4-ff6c9524ede7
       version: -1
-      name: Enrich Cloud Assets
-      playbookName: Enrich Cloud Assets
+      name: Expanse Enrich Cloud Assets
+      playbookName: Expanse Enrich Cloud Assets
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "147"
@@ -7043,6 +7077,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "184"
@@ -7079,6 +7114,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "187"
@@ -7115,6 +7151,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "188"
@@ -7150,6 +7187,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "200"
@@ -7177,6 +7215,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "89"
@@ -7350,25 +7389,25 @@ inputs:
     3 - High
     4 - Critical
     5 - Disable AutoRemediation
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: FirewallTagListName
   value:
     simple: ExpanseTagsToPANOSDeviceGroup
   required: false
   description: Name of XSOAR List that contains the mapping between Expanse tags and
     XSOAR PANOS Instances.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: TagPrefix
   value:
     simple: xsoar-
   required: false
   description: Prefix for XSOAR related Expanse tags
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: LogForwarding
   value: {}
   required: false
   description: PAN-OS Log Forwarding Profile Name
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: AutoCommit
   value:
     simple: "False"
@@ -7377,33 +7416,33 @@ inputs:
     Panorama Auto Commit:
     True - enable AutoCommit
     False - disable AutoCommit
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: IPRangeLowConfidenceTagList
   value:
     simple: low confidence
   required: false
   description: Comma separated list of tags to be used to identify IP ranges attributed
     with low confidence
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: InvalidTag
   value:
     simple: xsoar-invalid
   required: false
   description: Tag to be used for Expanse assets that do not belong to org (set when
     the Analyst selects Invalid in the OU data collection)
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: WriteToExpanse
   value:
     simple: "True"
   required: false
   description: Write data back to Expanse?
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: OwnerNotificationSubject
   value:
     simple: New security issue on a public service owned by your team
   required: false
   description: Subject of the email to send to the OU Owner.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: OwnerNotificationBody
   value:
     simple: Infosec identified a security issue on a service owned by your team and
@@ -7411,36 +7450,40 @@ inputs:
       remediation access.
   required: false
   description: Body of the email to send to the OU Owner.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: UseBehavior
   value:
     simple: "True"
   required: false
   description: Enrich flows using Expanse Behavior.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ShadowITIncidentType
   value:
     simple: Shadow IT
   required: false
   description: If set, specifies the type of Incident that gets automatically created
     during the Shadow IT flow. If not set, the Incident is to be created manually.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: OrganizationUnitsToOwnerName
   value:
     simple: ExpanseOrganizationUnitsToOwner
   required: false
   description: Name of XSOAR List that contains the mapping between OU and Owners
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: OrganizationUnitsToTagName
   value:
     simple: ExpanseOrganizationUnitsToTag
   required: false
   description: Name of XSOAR List that contains the mapping between OU and Tag names
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: NumberOfDaysInThePast
   value:
     simple: "7"
   required: false
   description: How many days to go back in time when searching logs
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- ExpanseV2 Test
+- Feed Expanse Test
+fromversion: 6.0.0

@@ -1,28 +1,28 @@
-Subplaybook for Handle Expanse Incident playbooks.
-Extract and Enrich Indicators (CIDRs, IPs, Certificates, Domains and DomainGlobs) from Expanse Incidents.
-Enrichment is performed via enrichIndicators command and generic playbooks.
-Returns the enriched indicators.
-
+  Subplaybook for Handle Expanse Incident playbooks.
+  Extract and Enrich Indicators (CIDRs, IPs, Certificates, Domains and DomainGlobs) from Expanse Incidents.
+  Enrichment is performed via enrichIndicators command and generic playbooks.
+  Returns the enriched indicators.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Domain Enrichment - Generic v2
 * IP Enrichment - Generic v2
+* Domain Enrichment - Generic v2
 
 ### Integrations
-This playbook does not use any integrations.
+* ExpanseV2
 
 ### Scripts
-This playbook does not use any scripts.
+* GetDomainDNSDetails
+* SetAndHandleEmpty
 
 ### Commands
-* expanse-get-iprange
-* expanse-get-certificate
-* enrichIndicators
-* expanse-get-domain
 * createNewIndicator
+* expanse-get-domain
+* expanse-get-iprange
+* enrichIndicators
+* expanse-get-certificate
 
 ## Playbook Inputs
 ---
