@@ -314,7 +314,8 @@ def main():
 
         elif command == "test-module":
             return_results(
-                test_module_command(demisto.params()["client_id"], demisto.params()["client_secret"], channel_code))
+                test_module_command(demisto.params()["client_id"], demisto.params()["client_secret"], channel_code,
+                                    session, verify))
 
         elif command == "domain":
             return_results(domain_reputation_command(client, demisto.args()))
@@ -323,7 +324,6 @@ def main():
             return_results(url_reputation_command(client, demisto.args()))
 
         elif command == "file":
-            print("access")
             return_results(file_reputation_command(client, demisto.args()))
 
         elif command == "sixgill-get-actor":
