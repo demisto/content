@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa
 
 import json
 import traceback
-from json import JSONDecodeError
 from typing import Dict, Any, Tuple, List, Optional
 
 
@@ -51,7 +50,7 @@ def ds_to_field_list(name: str, d: Dict[str, Any], dict_stack: List[Tuple[str, D
         if isinstance(value, str):
             try:
                 value = json.loads(value)
-            except JSONDecodeError:
+            except json.JSONDecodeError:
                 pass
 
         formatted_value = value_to_markdown(value)
