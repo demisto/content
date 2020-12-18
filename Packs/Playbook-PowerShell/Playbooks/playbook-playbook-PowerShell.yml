@@ -1,0 +1,719 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: c2336791-8e12-4e22-8eeb-9965826397a1
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: PowerShell is an automated task framework with a command line shell and
+  a scripting language integrated into the .NET framework. Cyber threat actors often
+  leverage PowerShell once they gain access to a system. It provides them access to
+  the command line, stored data, local and remote systems. This in turn provides them
+  the ability to hide malicious commands and scripts and run locally or over a target
+  network as if the system administrator was performing a legitimate task.
+id: 04096978-83a4-4df2-8917-40e8db6c32f6
+inputs:
+- description: ""
+  key: ActiveDirectory
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "False"
+- description: ""
+  key: AdvancedInvestigation
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "False"
+- description: ""
+  key: Endgamehunt
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "True"
+- description: ""
+  key: BlockOffender
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "False"
+- description: ""
+  key: IsolateEndpoint
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "False"
+name: playbook-PowerShell
+outputs: []
+sourceplaybookid: 21683e41-171e-422a-88ac-f49b9745cdc6
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "62"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1e1f5a50-de39-43d1-8287-ff5c44d3e1f1
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 1e1f5a50-de39-43d1-8287-ff5c44d3e1f1
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "47"
+      - "48"
+      - "49"
+      - "43"
+      - "55"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5f339878-19b9-4456-8c64-48a17aee5872
+      iscommand: false
+      name: Further Enrichment
+      type: title
+      version: -1
+    taskid: 5f339878-19b9-4456-8c64-48a17aee5872
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1010
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0b7ee8e5-b75f-4a4a-8825-a9aefbf9fa0e
+      iscommand: false
+      name: User/Endpoint Response
+      type: title
+      version: -1
+    taskid: 0b7ee8e5-b75f-4a4a-8825-a9aefbf9fa0e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1475
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "64"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Active Directory Query v2
+      description: Disables an Active Directory user account.
+      id: 48b38277-4296-4960-8768-79396206e812
+      iscommand: false
+      name: AD Disable Account
+      type: regular
+      version: -1
+    taskid: 48b38277-4296-4960-8768-79396206e812
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1635
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Blocks IP in configured firewall
+      id: 6e37e894-6972-4818-8457-3943a1c53262
+      iscommand: false
+      name: Block Offender IP
+      type: regular
+      version: -1
+    taskid: 6e37e894-6972-4818-8457-3943a1c53262
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1795
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 89d5c0e0-0901-48a9-8e83-cd0fa7485187
+      iscommand: false
+      name: Isolate Endpoint
+      type: regular
+      version: -1
+    taskid: 89d5c0e0-0901-48a9-8e83-cd0fa7485187
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1795
+        }
+      }
+  "40":
+    id: "40"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "65"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3a4c8f8f-59ac-4dc9-8599-8ac2b220b2c5
+      iscommand: false
+      name: Response End
+      type: title
+      version: -1
+    taskid: 3a4c8f8f-59ac-4dc9-8599-8ac2b220b2c5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1970
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9d1cae9c-dd6b-4d29-816f-27775fc6d727
+      iscommand: false
+      name: Whitelist and False Positive Checkup
+      type: regular
+      version: -1
+    taskid: 9d1cae9c-dd6b-4d29-816f-27775fc6d727
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 515
+        }
+      }
+  "43":
+    id: "43"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "66"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3e67600c-6ed6-4cdd-8ffc-115d8b1ef5d2
+      iscommand: false
+      name: Incident Linking
+      type: regular
+      version: -1
+    taskid: 3e67600c-6ed6-4cdd-8ffc-115d8b1ef5d2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1155
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "45"
+      - "46"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 976eb9d6-8d34-418f-80d2-7ee15d7b6e52
+      iscommand: false
+      name: Threat Intelligence
+      type: title
+      version: -1
+    taskid: 976eb9d6-8d34-418f-80d2-7ee15d7b6e52
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 690
+        }
+      }
+  "45":
+    id: "45"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8a7fa1af-42c5-470b-8067-35543ddba751
+      iscommand: false
+      name: Intel from iDefense
+      type: regular
+      version: -1
+    taskid: 8a7fa1af-42c5-470b-8067-35543ddba751
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 835
+        }
+      }
+  "46":
+    id: "46"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: eaa45ad4-b049-4c5c-8135-722454c3e3ce
+      iscommand: false
+      name: Intel from other sources
+      type: regular
+      version: -1
+    taskid: eaa45ad4-b049-4c5c-8135-722454c3e3ce
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 835
+        }
+      }
+  "47":
+    id: "47"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "66"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3d9f37a4-33fb-4a97-8164-f9447886eb33
+      iscommand: false
+      name: Collect all artifacts in the host using EDR
+      type: regular
+      version: -1
+    taskid: 3d9f37a4-33fb-4a97-8164-f9447886eb33
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1155
+        }
+      }
+  "48":
+    id: "48"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "66"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6c28fbeb-ba2f-42c3-8b6e-963fd750fa1b
+      iscommand: false
+      name: Collect IPS/IDS data from SIEM
+      type: regular
+      version: -1
+    taskid: 6c28fbeb-ba2f-42c3-8b6e-963fd750fa1b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1155
+        }
+      }
+  "49":
+    id: "49"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "66"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6bc82b7d-6b98-41c3-858b-04607d72de3b
+      iscommand: false
+      name: Collect web proxy data from SIEM
+      type: regular
+      version: -1
+    taskid: 6bc82b7d-6b98-41c3-858b-04607d72de3b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1155
+        }
+      }
+  "51":
+    id: "51"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+      - "52"
+      - "56"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: aa845f0e-009c-4f7b-819b-896b5183ffd4
+      iscommand: false
+      name: Environment Response
+      type: title
+      version: -1
+    taskid: aa845f0e-009c-4f7b-819b-896b5183ffd4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1635
+        }
+      }
+  "52":
+    id: "52"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 044f4c06-e22d-43ac-8171-6c83a52f3910
+      iscommand: false
+      name: Hunt for malicious artifacts across the environment
+      type: regular
+      version: -1
+    taskid: 044f4c06-e22d-43ac-8171-6c83a52f3910
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1795
+        }
+      }
+  "55":
+    id: "55"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "66"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 95ea9733-de23-4665-888c-7cb89851554c
+      iscommand: false
+      name: Check for phishing
+      type: regular
+      version: -1
+    taskid: 95ea9733-de23-4665-888c-7cb89851554c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1155
+        }
+      }
+  "56":
+    id: "56"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8b227297-ca24-4d84-8267-ce8aa0da4716
+      iscommand: false
+      name: Phishing Detonation / Removal
+      type: regular
+      version: -1
+    taskid: 8b227297-ca24-4d84-8267-ce8aa0da4716
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1795
+        }
+      }
+  "62":
+    id: "62"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "63"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fdf47887-44d3-47a8-843f-3d86862e23e9
+      iscommand: false
+      name: Triage
+      type: title
+      version: -1
+    taskid: fdf47887-44d3-47a8-843f-3d86862e23e9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
+        }
+      }
+  "63":
+    id: "63"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bcf3f7f3-d2ae-4783-882f-62c44f5148ce
+      iscommand: false
+      name: Incident Deduplication
+      type: regular
+      version: -1
+    taskid: bcf3f7f3-d2ae-4783-882f-62c44f5148ce
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 340
+        }
+      }
+  "64":
+    id: "64"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 81588ebf-ea41-4801-871f-2d8821720cbb
+      iscommand: false
+      name: Expire AD Password
+      type: regular
+      version: -1
+    taskid: 81588ebf-ea41-4801-871f-2d8821720cbb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1795
+        }
+      }
+  "65":
+    id: "65"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8c440233-5b68-4d11-8ecf-1f7d5b7e892d
+      iscommand: false
+      name: Manual Investigation
+      type: regular
+      version: -1
+    taskid: 8c440233-5b68-4d11-8ecf-1f7d5b7e892d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2115
+        }
+      }
+  "66":
+    id: "66"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+      - "51"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4a8d7473-3cca-48b8-8966-5821a7307852
+      iscommand: false
+      name: Continue
+      type: title
+      version: -1
+    taskid: 4a8d7473-3cca-48b8-8966-5821a7307852
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1330
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2160,
+        "width": 2100,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
