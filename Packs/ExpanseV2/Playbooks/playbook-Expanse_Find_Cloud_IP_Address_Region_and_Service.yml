@@ -326,6 +326,5 @@ outputs:
 - contextPath: MatchingCIDRIndicator
   description: Matching CIDR Indicator
 tests:
-- ExpanseV2 Test
-- Feed Expanse Test
+- No tests
 fromversion: 6.0.0

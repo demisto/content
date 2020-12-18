@@ -7484,6 +7484,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- ExpanseV2 Test
-- Feed Expanse Test
+- No tests
 fromversion: 6.0.0

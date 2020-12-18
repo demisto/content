@@ -1524,5 +1524,4 @@ view: |-
   }
 fromversion: 6.0.0
 tests:
-- ExpanseV2 Test
-- Feed Expanse Test
+- No tests
