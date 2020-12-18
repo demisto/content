@@ -168,7 +168,7 @@ tasks:
       name: Find Cloud IP Address Region and Service
       description: Find Region and Service for IP Address belonging to Public Cloud,
         using Indicators (CIDRs)
-      playbookName: Find Cloud IP Address Region and Service
+      playbookName: Expanse Find Cloud IP Address Region and Service
       type: playbook
       iscommand: false
       brand: ""
