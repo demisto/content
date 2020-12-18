@@ -1,6 +1,9 @@
-description: Find Region and Service for IP Address belonging to Public Cloud, using
+description: |
+  Subplaybook for Expanse Enrich Cloud Assets subplaybook.
+  Finds Region and Service for IP Address belonging to Public Cloud, using
   Indicators (CIDRs) from Public Cloud feeds. Correlates based on longest match.
-id: Find Cloud IP Address Region and Service
+  Returns the matching indicator with the longest prefix.
+id: Expanse Find Cloud IP Address Region and Service
 inputs:
 - description: IP Address to find.
   key: ip
@@ -32,7 +35,7 @@ inputs:
   required: false
   value:
     simple: Azure
-name: Find Cloud IP Address Region and Service
+name: Expanse Find Cloud IP Address Region and Service
 outputs:
 - contextPath: MatchingCIDRIndicator
   description: Matching CIDR Indicator

@@ -1,8 +1,9 @@
 description: |-
-  This Playbook is meant to be used as a subplaybook to enrich Public Cloud Assets by:
+  Subplaybook for Handle Expanse Incident playbooks.
+  This Playbook is used to enrich Public Cloud Assets by:
   - Searching the corresponding Region and Service from IPRange feeds retrieved from Cloud Providers
   - Searching IPs and FQDNs in Prisma Cloud
-id: Enrich Cloud Assets
+id: Expanse Enrich Cloud Assets
 inputs:
 - description: IP to enrich
   key: IP
@@ -57,7 +58,7 @@ inputs:
   required: false
   value:
     simple: "True"
-name: Enrich Cloud Assets
+name: Expanse Enrich Cloud Assets
 outputs:
 - contextPath: PrismaCloud.Attribution
   description: Prisma Cloud Asset Attribution
@@ -251,8 +252,8 @@ tasks:
         using Indicators (CIDRs)
       id: ced4197e-44fd-425d-8bd1-dfa0bb95e998
       iscommand: false
-      name: Find Cloud IP Address Region and Service
-      playbookId: Find Cloud IP Address Region and Service
+      name: Expanse Find Cloud IP Address Region and Service
+      playbookId: Expanse Find Cloud IP Address Region and Service
       type: playbook
       version: -1
     taskid: ced4197e-44fd-425d-8bd1-dfa0bb95e998

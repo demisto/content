@@ -1,4 +1,8 @@
-description: Extract and Enrich Indicators (CIDRs, IPs, Certificates and Domains) from an Expanse Issue
+description: |
+  Subplaybook for Handle Expanse Incident playbooks.
+  Extract and Enrich Indicators (CIDRs, IPs, Certificates, Domains and DomainGlobs) from Expanse Incidents.
+  Enrichment is performed via enrichIndicators command and generic playbooks.
+  Returns the enriched indicators.
 id: Extract and Enrich Expanse Indicators
 inputs:
 - description: Expanse Assets to Extract and Enrich.

@@ -1,11 +1,14 @@
-id: Expanse Attribution Subplaybook
+id: Expanse Attribution
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Expanse Attribution Subplaybook
-description: "Given an Expanse Asset, Issue IP, Issue Provider, Issue Domain, Issue\
-  \ Port and Issue Protocol hunts for internal activity on the detected service. \n\
-  Returns a list of potential owner BUs, owner Users, Device and Notes"
+name: Expanse Attribution
+description: >
+  Subplaybook for Handle Expanse Incident playbooks.
+  Given an Expanse Issue IP, Issue Provider, Issue Domain, Issue Port and Issue Protocol
+  hunts for internal activity related to the detected service.
+  The playbook looks for logs on Splunk, Cortex Data Lake and Panorama.
+  Returns a list of potential owner BUs, owner Users, Device and Notes.
 starttaskid: "0"
 tasks:
   "0":

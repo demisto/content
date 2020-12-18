@@ -1,33 +1,32 @@
-Given an Expanse Asset, Issue IP, Issue Provider, Issue Domain, Issue Port and Issue Protocol hunts for internal activity on the detected service. 
-Returns a list of potential owner BUs, owner Users, Device and Notes
+Subplaybook for Handle Expanse Incident playbooks. Given an Expanse Issue IP, Issue Provider, Issue Domain, Issue Port and Issue Protocol hunts for internal activity related to the detected service. The playbook looks for logs on Splunk, Cortex Data Lake and Panorama. Returns a list of potential owner BUs, owner Users, Device and Notes.
+
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Panorama Query Logs
+* Account Enrichment - Generic v2.1
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-* ExpanseAggregateAttributionIP
-* ExpanseEnrichAttribution
 * ExpanseAggregateAttributionUser
+* ExpanseEnrichAttribution
 * ExpanseAggregateAttributionDevice
+* ExpanseAggregateAttributionIP
 
 ### Commands
 * cdl-query-logs
-* panorama
 * splunk-search
-* ad-get-user
+* panorama
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Asset | Expanse Asset. | ${incident.expanseasset[0]} | Optional |
 | IP | Expanse Issue IP. | ${incident.expanseip} | Required |
 | Domain | Expanse Issue Domain. | ${incident.expansedomain} | Optional |
 | Provider | Expanse Issue Provider. | ${incident.expanseprovider} | Optional |
@@ -47,4 +46,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Expanse Attribution Subplaybook](Insert the link to your image here)
+![Expanse Attribution](Insert the link to your image here)
