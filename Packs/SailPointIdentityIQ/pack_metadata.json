@@ -1,0 +1,45 @@
+{
+    "name": "SailPoint IdentityIQ",
+    "description": "SailPoint IdentityIQ context pack enables XSOAR customers to utilize the deep, enriched contextual data in the SailPoint predictive identity platform to better drive identity-aware security practices.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "SailPoint",
+    "url": "https://support.sailpoint.com/hc/en-us/requests/new",
+    "email": "support.idplusa@sailpoint.com",
+    "created": "2020-11-05T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Alerts",
+        "GDPR",
+        "HIPAA",
+        "IAM",
+        "IT",
+        "Security",
+        "Security Analytics"
+    ],
+    "useCases": [
+        "Compliance",
+        "Access",
+        "Identity and Access Management",
+        "Incident Response"
+    ],
+    "keywords": [
+        "SailPoint",
+        "Identity",
+        "Security",
+        "Governance",
+        "Context",
+        "IdentityIQ",
+        "Governance",
+        "Compliance",
+        "Identity Governance",
+        "Predictive Identity",
+        "Account Management",
+        "Disable",
+        "Enable",
+        "Risk",
+        "Policy"
+    ]
+}

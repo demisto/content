@@ -1,0 +1,40 @@
+{
+    "owner": {
+        "displayName": "Mary.Johnson",
+        "value": "7f000001705911b4817059d30994033b",
+        "$ref": "http://localhost:8088/iiq/scim/v2/Users/7f000001705911b4817059d30994033b"
+    },
+    "entitleAuth": "None",
+    "aggregated": true,
+    "reviewer": {},
+    "type": "group",
+    "descriptions": [
+        {
+            "locale": "en_GB",
+            "value": "<strong><em>ｪT dﾼsktㅇp sนppㅇrt</em></strong>"
+        },
+        {
+            "locale": "en_US",
+            "value": "<strong><em>IT desktop support</em></strong>"
+        }
+    ],
+    "application": {
+        "displayName": "ADDirectDemodata",
+        "value": "7f000001705911b4817059d354020625",
+        "$ref": "http://localhost:8088/iiq/scim/v2/Applications/7f000001705911b4817059d354020625"
+    },
+    "meta": {
+        "created": "2020-02-18T13:43:07.140-06:00",
+        "location": "http://localhost:8088/iiq/scim/v2/Entitlements/7f000001705911b4817059d355840657",
+        "version": "W/\"1582054987140\"",
+        "resourceType": "Entitlement"
+    },
+    "schemas": [
+        "urn:ietf:params:scim:schemas:sailpoint:1.0:Entitlement"
+    ],
+    "displayableName": "HelpDesk_AD",
+    "id": "7f000001705911b4817059d355840657",
+    "requestable": true,
+    "attribute": "memberOf",
+    "value": "CN=HelpDesk_AD,OU=demoGroups,OU=DemoData,DC=test,DC=sailpoint,DC=com"
+}

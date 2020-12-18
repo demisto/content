@@ -1,0 +1,65 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "SailPoint IdentityIQ Alert Mapper",
+    "mapping": {
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "SailPoint IdentityIQ Alert Display Name": {
+                    "complex": null,
+                    "simple": "displayName"
+                },
+                "SailPoint IdentityIQ Alert Target Display Name": {
+                    "complex": null,
+                    "simple": "targetDisplayName"
+                },
+                "SailPoint IdentityIQ Alert Target Id": {
+                    "complex": null,
+                    "simple": "targetId"
+                },
+                "SailPoint IdentityIQ Alert Target Type": {
+                    "complex": null,
+                    "simple": "targetType"
+                },
+                "SailPoint IdentityIQ Alert Type": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "SailPointIdentityIQ Alert DisplayName": {
+                    "complex": null,
+                    "simple": "displayName"
+                },
+                "SailPointIdentityIQ Alert TargetDisplayName": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "targetDisplayName",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SailPointIdentityIQ Alert TargetId": {
+                    "complex": null,
+                    "simple": "targetId"
+                },
+                "SailPointIdentityIQ Alert TargetType": {
+                    "complex": null,
+                    "simple": "targetType"
+                },
+                "SailPointIdentityIQ Alert Type": {
+                    "complex": null,
+                    "simple": "type"
+                }
+            }
+        }
+    },
+    "name": "SailPoint IdentityIQ Alert Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

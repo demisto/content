@@ -1,0 +1,613 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: SailPointIdentityIQ
+  version: -1
+configuration:
+- additionalinfo: The FQDN/IP of the IdentityIQ server to connect
+  display: IdentityIQ Server URL (e.g. https://identityiq-server.com/identityiq)
+  name: identityiq_url
+  required: true
+  type: 0
+- defaultvalue: OAUTH
+  display: Authentication Type
+  hidden: false
+  name: auth_type
+  options:
+  - OAUTH
+  - BASIC
+  required: true
+  type: 15
+- additionalinfo: Client Id for OAuth 2.0
+  display: Client Id (for OAuth 2.0)
+  hidden: false
+  name: client_id
+  required: false
+  type: 4
+- additionalinfo: Client Secret for OAuth 2.0
+  display: Client Secret (for OAuth 2.0)
+  hidden: false
+  name: client_secret
+  required: false
+  type: 4
+- additionalinfo: Username for Basic Authentication
+  display: Username (for Basic Auth)
+  hidden: false
+  name: username
+  required: false
+  type: 0
+- additionalinfo: Password for Basic Authentication
+  display: Password (for Basic Auth)
+  hidden: false
+  name: password
+  required: false
+  type: 4
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: '50'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+description: SailPoint IdentityIQ context pack enables XSOAR customers to utilize
+  the deep, enriched contextual data in the SailPoint predictive identity platform
+  to better drive identity-aware security practices.
+display: SailPoint IdentityIQ
+name: SailPointIdentityIQ
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Internal id of the identity being requested.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: Email address of the identity being requested.
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 'true'
+      description: Determines whether search will return only active identities.
+      isArray: false
+      name: active
+      required: false
+      secret: false
+    - default: false
+      description: Numeric value of baseline risk score, users above this will be
+        returned.
+      isArray: false
+      name: risk
+      required: false
+      secret: false
+    deprecated: false
+    description: Search identities by search/filter parameters (id, email, risk &
+      active) using IdentityIQ SCIM API's.
+    execution: false
+    name: identityiq-search-identities
+    outputs:
+    - contextPath: SailPointIdentityIQ.Identity.userName
+      description: The IdentityIQ username (primary id).
+      type: String
+    - contextPath: SailPointIdentityIQ.Identity.id
+      description: The IdentityIQ internal id (uuid).
+      type: String
+    - contextPath: SailPointIdentityIQ.Identity.name.formatted
+      description: The display name of the identity.
+      type: String
+    - contextPath: SailPointIdentityIQ.Identity.name.familyName
+      description: The last name of the identity.
+      type: String
+    - contextPath: SailPointIdentityIQ.Identity.name.givenName
+      description: The first name of the identity.
+      type: String
+    - contextPath: SailPointIdentityIQ.Identity.active
+      description: Indicates whether the id is active or inactive in IdentityIQ.
+      type: Boolean
+    - contextPath: SailPointIdentityIQ.Identity.manager.userName
+      description: The IdentityIQ username (primary id) of the identities manager.
+      type: String
+    - contextPath: SailPointIdentityIQ.Identity.lastModified
+      description: Timestamp of when the identity was last modified.
+      type: Date
+    - contextPath: SailPointIdentityIQ.Identity.displayName
+      description: The display name of the identity.
+      type: String
+    - contextPath: SailPointIdentityIQ.Identity.emails
+      description: Array of email objects.
+      type: Unknown
+    - contextPath: SailPointIdentityIQ.Identity.emails.type
+      description: Type of the email being returned.
+      type: String
+    - contextPath: SailPointIdentityIQ.Identity.emails.value
+      description: The email address of the identity.
+      type: String
+    - contextPath: SailPointIdentityIQ.Identity.emails.primary
+      description: Indicates if this email address is the identities primary email.
+      type: Boolean
+    - contextPath: SailPointIdentityIQ.Identity.entitlements
+      description: Array of entitlements objects that the identity has.
+      type: Unknown
+    - contextPath: SailPointIdentityIQ.Identity.roles
+      description: Array of role objects that the identity has.
+      type: Unknown
+    - contextPath: SailPointIdentityIQ.Identity.capabilities
+      description: Array of string representations of the IdentityIQ capabilities
+        assigned to this identity.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Internal id of the policy violation being requested.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetch policy violation by id or all policy violations using IdentityIQ
+      SCIM API's.
+    execution: false
+    name: identityiq-get-policyviolations
+    outputs:
+    - contextPath: SailPointIdentityIQ.PolicyViolation.policyName
+      description: Name of the policy that was violated.
+      type: String
+    - contextPath: SailPointIdentityIQ.PolicyViolation.constraintName
+      description: Name of the constraint being violated.
+      type: String
+    - contextPath: SailPointIdentityIQ.PolicyViolation.status
+      description: Status of the violation (open/closed).
+      type: String
+    - contextPath: SailPointIdentityIQ.PolicyViolation.description
+      description: Description of the policy/conflict.
+      type: String
+    - contextPath: SailPointIdentityIQ.PolicyViolation.identity.value
+      description: Internal id of the IdentityIQ identity in violation.
+      type: Unknown
+    - contextPath: SailPointIdentityIQ.PolicyViolation.identity.displayName
+      description: Display name of the IdentityIQ identity in violation.
+      type: String
+    - contextPath: SailPointIdentityIQ.PolicyViolation.id
+      description: Internal id of the task result.
+      type: String
+  - arguments:
+    - default: false
+      description: Internal id of the task result being requested.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetch task result by id or all task results using IdentityIQ SCIM
+      API's.
+    execution: false
+    name: identityiq-get-taskresults
+    outputs:
+    - contextPath: SailPointIdentityIQ.TaskResult.id
+      description: Internal id of the task result.
+      type: String
+    - contextPath: SailPointIdentityIQ.TaskResult.progress
+      description: String representation of the status of the task.
+      type: String
+    - contextPath: SailPointIdentityIQ.TaskResult.launched
+      description: Date representation of when the task was launched in IdentityIQ.
+      type: Date
+    - contextPath: SailPointIdentityIQ.TaskResult.taskDefinition
+      description: Name of the task template that this task result is an instantiation
+        of.
+      type: String
+    - contextPath: SailPointIdentityIQ.TaskResult.host
+      description: Host name of the IdentityIQ application server that is executing
+        this task.
+      type: String
+    - contextPath: SailPointIdentityIQ.TaskResult.type
+      description: Type of the task being executed.
+      type: String
+    - contextPath: SailPointIdentityIQ.TaskResult.pendingSignoffs
+      description: Number of signoffs on the task result that have not been done.
+      type: Number
+    - contextPath: SailPointIdentityIQ.TaskResult.completionStatus
+      description: Status of task 'success', 'termianted', 'failure', etc.
+      type: String
+    - contextPath: SailPointIdentityIQ.TaskResult.launcher
+      description: Name of the IdentityIQ identity who launched the task.
+      type: String
+    - contextPath: SailPointIdentityIQ.TaskResult.name
+      description: Unique name of the task that was launched.
+      type: String
+    - contextPath: SailPointIdentityIQ.TaskResult.completed
+      description: Timestamp of when the task was completed (if not currently executed).
+      type: Date
+  - arguments:
+    - default: false
+      description: Internal id of the account to be returned.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: displayName of the account to be returned.
+      isArray: false
+      name: display_name
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Timestamp of the last time the account(s) were refreshed from the target system.
+        [format : yyyy-MM-dd'T'HH:mm:ss or yyyy-MM-dd]
+      isArray: false
+      name: last_refresh
+      required: false
+      secret: false
+    - default: false
+      description: Unique identifier of the account on the target system.
+      isArray: false
+      name: native_identity
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Timestamp of the last targeted aggregation of the account from the target system.
+        [format : yyyy-MM-dd'T'HH:mm:ss or yyyy-MM-dd]
+      isArray: false
+      name: last_target_agg
+      required: false
+      secret: false
+    - default: false
+      description: Unique name of the identity for which all accounts will be returned.
+      isArray: false
+      name: identity_name
+      required: false
+      secret: false
+    - default: false
+      description: Unique name of the application for which all accounts will be returned.
+      isArray: false
+      name: application_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetch accounts by search/filter parameters (id, display_name, last_refresh,
+      native_identity, last_target_agg, identity_name & application_name) using IdentityIQ
+      SCIM API's.
+    execution: false
+    name: identityiq-get-accounts
+    outputs:
+    - contextPath: SailPointIdentityIQ.Account.id
+      description: Internal id of the account.
+      type: String
+    - contextPath: SailPointIdentityIQ.Account.identity.value
+      description: Internal id of the identity that this account belongs to.
+      type: String
+    - contextPath: SailPointIdentityIQ.Account.identity.displayName
+      description: Display name of the identity that this account belongs to.
+      type: String
+    - contextPath: SailPointIdentityIQ.Account.hasEntitlements
+      description: True if the account has access entitlements assigned to it, else
+        false.
+      type: Boolean
+    - contextPath: SailPointIdentityIQ.Account.application.value
+      description: Internal id of the application that this account is on.
+      type: Unknown
+    - contextPath: SailPointIdentityIQ.Account.application.displayName
+      description: Display name of the application that this account is on.
+      type: String
+    - contextPath: SailPointIdentityIQ.Account.nativeIdentity
+      description: The name of the account as it exists on the application.
+      type: String
+    - contextPath: SailPointIdentityIQ.Account.lastRefreshed
+      description: Timestamp of when this account was last refreshed in IdentityIQ.
+      type: Date
+  - arguments:
+    - default: false
+      description: Internal id of the specific account to be disabled.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Disable account's active status by id using IdentityIQ SCIM API's.
+    execution: false
+    name: identityiq-disable-account
+    outputs:
+    - contextPath: SailPointIdentityIQ.AccountDisable.active
+      description: Indicates the status of account (should be false after request
+        is successfully completed).
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Internal id of the specific account to be enabled.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Enable account's active status by id using IdentityIQ SCIM API's.
+    execution: false
+    name: identityiq-enable-account
+    outputs:
+    - contextPath: SailPointIdentityIQ.AccountDisable.active
+      description: Indicates the status of account (should be true after request is
+        successfully completed).
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Internal id of the specific account to be deleted.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete account by id using IdentityIQ SCIM API's.
+    execution: true
+    name: identityiq-delete-account
+  - arguments:
+    - default: false
+      description: Internal id of the specific launched workflow being requested.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetch launched workflow by id or all launched workflows using IdentityIQ
+      SCIM API's.
+    execution: false
+    name: identitytiq-get-launched-workflows
+    outputs:
+    - contextPath: SailPointIdentityIQ.Workflow.workflowName
+      description: Name of the workflow that was launched.
+      type: String
+    - contextPath: SailPointIdentityIQ.Workflow.identityRequestId
+      description: Unique id of the identity request that launched this workflow (if
+        exists).
+      type: String
+    - contextPath: SailPointIdentityIQ.Workflow.workflowCaseId
+      description: Internal id of the workflowcase for this workflow.
+      type: String
+    - contextPath: SailPointIdentityIQ.Workflow.launched
+      description: Timestamp of when this workflow was launched.
+      type: Date
+    - contextPath: SailPointIdentityIQ.Workflow.targetClass
+      description: Type of object targeted by the workflow, usually identity.
+      type: String
+    - contextPath: SailPointIdentityIQ.Workflow.targetName
+      description: Unique name of the object (username in the case of identity).
+      type: String
+    - contextPath: SailPointIdentityIQ.Workflow.type
+      description: The type of workflow.
+      type: String
+    - contextPath: SailPointIdentityIQ.Workflow.id
+      description: Internal id of the workflow.
+      type: String
+    - contextPath: SailPointIdentityIQ.Workflow.completionStatus
+      description: Status of workflow – 'success', 'failure', 'pending' etc.
+      type: String
+    - contextPath: SailPointIdentityIQ.Workflow.launcher
+      description: Name of the identity that launched the workflow.
+      type: String
+    - contextPath: SailPointIdentityIQ.Workflow.terminated
+      description: Indicates whether this workflow was terminated due to error or
+        intentionally stopped.
+      type: Boolean
+    - contextPath: SailPointIdentityIQ.Workflow.name
+      description: Name of the workflow that was launched.
+      type: String
+    - contextPath: SailPointIdentityIQ.Workflow.attributes
+      description: Array of key/value pairs that are the inputs and their values to
+        the workflow.
+      type: Unknown
+    - contextPath: SailPointIdentityIQ.Workflow.output
+      description: Array of key/type/value objects that list the output of the workflow.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Internal id of the specific role being requested.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetch role by id or all roles using IdentityIQ SCIM API's.
+    execution: false
+    name: identityiq-get-roles
+    outputs:
+    - contextPath: SailPointIdentityIQ.Role.name
+      description: Unique name of the role object in IdentityIQ.
+      type: String
+    - contextPath: SailPointIdentityIQ.Role.owner.value
+      description: Internal id of the role owner identity.
+      type: String
+    - contextPath: SailPointIdentityIQ.Role.owner.displayName
+      description: Displayname of the owner of the role.
+      type: String
+    - contextPath: SailPointIdentityIQ.Role.active
+      description: Indicates whether the role is active in IdentityIQ.
+      type: Boolean
+    - contextPath: SailPointIdentityIQ.Role.displayableName
+      description: Display name of the role in IdentityIQ.
+      type: String
+    - contextPath: SailPointIdentityIQ.Role.permits
+      description: Array of roles that this role permits in IdentityIQ.
+      type: Unknown
+    - contextPath: SailPointIdentityIQ.Role.type.name
+      description: Template role on which this role is based.
+      type: String
+    - contextPath: SailPointIdentityIQ.Role.type.autoAssignment
+      description: Indicates whether this type of role can be auto-assigned to identities.
+      type: Boolean
+    - contextPath: SailPointIdentityIQ.Role.type.displayName
+      description: Display name of the template role on which this role was based.
+      type: String
+    - contextPath: SailPointIdentityIQ.Role.type.manualAssignment
+      description: Indicates whether this role type can be manually assigned.
+      type: String
+    - contextPath: SailPointIdentityIQ.Role.descriptions.value
+      description: Description of the role shown in the UI.
+      type: String
+  - arguments:
+    - default: false
+      description: Internal id of the specific entitlement being requested.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetch entitlement by id or all entitlements using IdentityIQ SCIM
+      API's.
+    execution: false
+    name: identityiq-get-entitlements
+    outputs:
+    - contextPath: SailPointIdentityIQ.Entitlement.application.value
+      description: Internal id of the application that this entitlement resides on.
+      type: String
+    - contextPath: SailPointIdentityIQ.Entitlement.application.displayName
+      description: Display name of the application that this entitlement resides on.
+      type: String
+    - contextPath: SailPointIdentityIQ.Entitlement.attribute
+      description: String representing the attribute on the application that this
+        entitlement represents.
+      type: String
+    - contextPath: SailPointIdentityIQ.Entitlement.type
+      description: String representing the type of attribute on the application that
+        this entitlement represents.
+      type: String
+    - contextPath: SailPointIdentityIQ.Entitlement.descriptions
+      description: Array of description objects that contain a locale, and a value.
+      type: Unknown
+    - contextPath: SailPointIdentityIQ.Entitlement.id
+      description: Internal id of the entitlement object in IdentityIQ.
+      type: String
+    - contextPath: SailPointIdentityIQ.Entitlement.requestable
+      description: Boolean indicates whether this entitlement is directly requestable
+        in the IdentityIQ UI.
+      type: Boolean
+    - contextPath: SailPointIdentityIQ.Entitlement.owner.value
+      description: Internal id of the owner of the entitlement in IdentityIQ.
+      type: String
+    - contextPath: SailPointIdentityIQ.Entitlement.owner.displayName
+      description: Display name of the owner of the entitlement in IdentityIQ.
+      type: String
+    - contextPath: SailPointIdentityIQ.Entitlement.aggregated
+      description: Indicates whether this entitlement was aggregated from the source
+        system or not.
+      type: String
+    - contextPath: SailPointIdentityIQ.Entitlement.created
+      description: Timestamp indicates when the entitlement was created in IdentityIQ.
+      type: Date
+  - arguments:
+    - default: false
+      description: Internal id of the specific alert being requested.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetch alert by id or all alerts using IdentityIQ SCIM API's.
+    execution: false
+    name: identityiq-get-alerts
+    outputs:
+    - contextPath: SailPointIdentityIQ.Alert.id
+      description: Internal id of the Alert in IdentityIQ.
+      type: String
+    - contextPath: SailPointIdentityIQ.Alert.lastProcessed
+      description: Timestamp of when this alert was processed by IdentityIQ for match.
+      type: Date
+    - contextPath: SailPointIdentityIQ.Alert.displayName
+      description: Display name of the alert in IdentityIQ.
+      type: String
+    - contextPath: SailPointIdentityIQ.Alert.meta.created
+      description: Timestamp of when this alert was created in IdentityIQ
+      type: Date
+    - contextPath: SailPointIdentityIQ.Alert.name
+      description: Name of the alert in IdentityIQ
+      type: String
+    - contextPath: SailPointIdentityIQ.Alert.attributes
+      description: Array of attributes associated with this alert.
+      type: Unknown
+    - contextPath: SailPointIdentityIQ.Alert.actions
+      description: Array of actions taken on this alert after processing.
+      type: Unknown
+    - contextPath: SailPointIdentityIQ.Alert.application
+      description: List of applications that are related to this alert.
+      type: String
+  - arguments:
+    - default: false
+      description: Display name of the alert.
+      isArray: false
+      name: display_name
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        List of JSON objects with the following structure.
+        {
+            'key': '',
+            'value': '',
+            'type': ''
+        }
+      isArray: false
+      name: attributes
+      required: false
+      secret: false
+    deprecated: false
+    description: Create an alert using IdentityIQ SCIM API's.
+    execution: false
+    name: identityiq-create-alert
+    outputs:
+    - contextPath: SailPointIdentityIQ.Alert.id
+      description: Internal id of the Alert in IdentityIQ.
+      type: String
+    - contextPath: SailPointIdentityIQ.Alert.lastProcessed
+      description: Timestamp of when this alert was processed by IdentityIQ for match.
+      type: Date
+    - contextPath: SailPointIdentityIQ.Alert.displayName
+      description: Display name of the alert in IdentityIQ.
+      type: String
+    - contextPath: SailPointIdentityIQ.Alert.meta.created
+      description: Timestamp of when this alert.
+      type: Date
+    - contextPath: SailPointIdentityIQ.Alert.name
+      description: Unique name of the alert in IdentityIQ.
+      type: String
+    - contextPath: SailPointIdentityIQ.Alert.attributes
+      description: Array of attributes associated with this alert.
+      type: Unknown
+    - contextPath: SailPointIdentityIQ.Alert.actions
+      description: Array of actions taken on this alert after processing.
+      type: Unknown
+    - contextPath: SailPointIdentityIQ.Alert.application
+      description: List of applications that are related to this alert.
+      type: String
+  dockerimage: demisto/python3:3.8.6.14516
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- SailPointIdentityIQ-Test
+defaultmapperin: SailPoint IdentityIQ Alert Mapper
+defaultclassifier: SailPoint IdentityIQ Alert Classifier
+fromversion: 6.0.0

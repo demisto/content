@@ -1,0 +1,46 @@
+{
+    "targetName": "spadmin",
+    "partitioned": false,
+    "completed": "2020-08-11T13:03:30.252-05:00",
+    "type": "Workflow",
+    "launched": "2020-08-11T13:03:29.694-05:00",
+    "pendingSignoffs": 0,
+    "urn:ietf:params:scim:schemas:sailpoint:1.0:LaunchedWorkflow": {
+        "output": [
+            {
+                "type": "application/xml",
+                "value": "<WorkflowSummary step=\"end\"/>\n",
+                "key": "workflowSummary"
+            }
+        ],
+        "input": [
+            {}
+        ],
+        "workflowSummary": "<WorkflowSummary step=\"end\"/>\n",
+        "workflowName": "Update Identity spadmin"
+    },
+    "targetClass": "Identity",
+    "meta": {
+        "created": "2020-08-11T13:03:30.254-05:00",
+        "location": "http://localhost:8088/iiq/scim/v2/TaskResults/7f00000173de18fa8173deb1064e001c",
+        "version": "W/\"1597169010254\"",
+        "resourceType": "LaunchedWorkflow"
+    },
+    "schemas": [
+        "urn:ietf:params:scim:schemas:sailpoint:1.0:LaunchedWorkflow",
+        "urn:ietf:params:scim:schemas:sailpoint:1.0:TaskResult"
+    ],
+    "name": "Update Identity spadmin",
+    "messages": [],
+    "attributes": [
+        {
+            "value": "<WorkflowSummary step=\"end\"/>\n",
+            "key": "workflowSummary"
+        }
+    ],
+    "id": "7f00000173de18fa8173deb1064e001c",
+    "completionStatus": "Success",
+    "taskDefinition": "Workflow Launcher",
+    "terminated": false,
+    "launcher": "spadmin"
+}

@@ -1,0 +1,2 @@
+## SailPoint-IdentityIQ
+SailPoint IdentityIQ context pack enables XSOAR customers to utilize the deep, enriched contextual data in the SailPoint Predictive Identity platform to better drive identity-aware security practices.
