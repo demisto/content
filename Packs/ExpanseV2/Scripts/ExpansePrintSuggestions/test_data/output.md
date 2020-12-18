@@ -11,9 +11,9 @@ The Expanse Attribution Playbook has performed **enrichment** across several sys
 
 Logs and asset information were searched for the following service:
 ### Service Information
-|IP|Port|FQDN|
+|FQDN|IP|port|
 |---|---|---|
-| 198.51.101.1 | 8888 | test.developers.example.com |
+| test.developers.example.com | 198.51.101.1 | 8888 |
 The asset has been attributed to the following provider: **Amazon Web Services**
 The IP address belongs to the following Public Cloud region: **us-west-2**
 The IP address belongs to the following Public Cloud service: **EC2**
