@@ -293,8 +293,7 @@ view: |-
   }
 inputs:
 - key: ListName
-  value:
-    simple: {}
+  value: {}
   required: true
   description: Name of the list to load. List will be created if it does not exist/empty.
   playbookInputQuery:
