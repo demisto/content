@@ -14,32 +14,14 @@ from sixgill.sixgill_enrich_client import SixgillEnrichClient
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-""" GLOBALS/PARAMS """
-
-CHANNEL_CODE = "7698e8287dfde53dcd13082be750a85a"
-SUSPICIOUS_FEED_IDS = ["darkfeed_003"]
-VERIFY = not demisto.params().get("insecure", True)
-SESSION = requests.Session()
-
-HASH_MAPPING = {
-    "hashes.md5": "md5",
-    "hashes.'sha-1'": "sha1",
-    "hashes.'sha-256'": "sha256",
-    "hashes.'sha-512'": "sha512",
-    "hashes.ssdeep": "ssdeep",
-}
-
-""" HELPER FUNCTIONS """
-
 hashes: Dict[str, Any] = {}
-
-stix_regex_parser = re.compile(r"([\w-]+?):(\w.+?) (?:[!><]?=|IN|MATCHES|LIKE) '(.*?)' *[OR|AND|FOLLOWEDBY]?")
 
 
 def to_demisto_score(feed_id: str, revoked: bool):
+    suspicious_feed_ids = ["darkfeed_003"]
     if revoked:
         return Common.DBotScore.NONE  # unknown
-    if feed_id in SUSPICIOUS_FEED_IDS:
+    if feed_id in suspicious_feed_ids:
         return Common.DBotScore.SUSPICIOUS  # suspicious
     return Common.DBotScore.BAD  # bad
 
@@ -47,19 +29,19 @@ def to_demisto_score(feed_id: str, revoked: bool):
 """ COMMANDS + REQUESTS FUNCTIONS """
 
 
-def test_module_command(*args):
+def test_module_command(client_id, client_secret, channel_code, session, verify):
     """
     Performs basic Auth request
     """
-    response = SESSION.send(
+    response = session.send(
         request=SixgillAuthRequest(
-            demisto.params()["client_id"], demisto.params()["client_secret"], CHANNEL_CODE
+            client_id, client_secret, channel_code
         ).prepare(),
-        verify=VERIFY,
+        verify=verify,
     )
     if not response.ok:
         raise Exception("Auth request failed - please verify client_id, and client_secret.")
-    return "ok", None, "ok"
+    return "ok"
 
 
 def get_score(indicator):
@@ -69,23 +51,34 @@ def get_score(indicator):
 def get_file_hashes(indicators: list = []):
     for indicator in indicators:
         process_file_hashes(indicator, demisto)
-
     return hashes
 
 
 def process_file_hashes(stix2obj: Dict[str, Any], log):
+    """
+    Get the file hashes from indicator
+    """
     pattern = stix2obj.get("pattern", "")
-    global hashes
+    hash_mapping = {
+        "hashes.md5": "md5",
+        "hashes.'sha-1'": "sha1",
+        "hashes.'sha-256'": "sha256",
+        "hashes.'sha-512'": "sha512",
+        "hashes.ssdeep": "ssdeep",
+    }
+
+    stix_regex_parser = re.compile(r"([\w-]+?):(\w.+?) (?:[!><]?=|IN|MATCHES|LIKE) '(.*?)' *[OR|AND|FOLLOWEDBY]?")
 
     for match in stix_regex_parser.findall(pattern):
         try:
             _, sub_type, value = match
-            if HASH_MAPPING[sub_type.lower()] not in hashes:
-                hashes[HASH_MAPPING[sub_type.lower()]] = value
+            if hash_mapping[sub_type.lower()] not in hashes:
+                hashes[hash_mapping[sub_type.lower()]] = value
 
         except Exception as e:
             log.error(f"failed to get file hashes from: {e}, STIX object: {stix2obj}")
             continue
+    return hashes
 
 
 def ip_reputation_command(client: SixgillEnrichClient, args) -> List[CommandResults]:
@@ -301,34 +294,44 @@ def postid_reputation_command(client: SixgillEnrichClient, args) -> List[Command
 
 
 def main():
-    SESSION.proxies = handle_proxy()
+    channel_code = "7698e8287dfde53dcd13082be750a85a"
+
+    verify = not demisto.params().get("insecure", True)
+    session = requests.Session()
+
+    session.proxies = handle_proxy()
 
     client = SixgillEnrichClient(
-        demisto.params()["client_id"], demisto.params()["client_secret"], CHANNEL_CODE, demisto, SESSION, VERIFY
+        demisto.params()["client_id"], demisto.params()["client_secret"], channel_code, demisto, session, verify
     )
 
     command = demisto.command()
     demisto.info(f"Command being called is {command}")
-    commands: Dict[str, Callable] = {
-        "test-module": test_module_command,
-    }
-    try:
-        if demisto.command() == "ip":
-            return_results(ip_reputation_command(client, demisto.args()))
-        elif demisto.command() == "domain":
-            return_results(domain_reputation_command(client, demisto.args()))
-        elif demisto.command() == "url":
-            return_results(url_reputation_command(client, demisto.args()))
-        elif demisto.command() == "file":
-            return_results(file_reputation_command(client, demisto.args()))
-        elif demisto.command() == "actor":
-            return_results(actor_reputation_command(client, demisto.args()))
-        elif demisto.command() == "post_id":
-            return_results(postid_reputation_command(client, demisto.args()))
-        else:
-            readable_output, outputs, raw_response = commands[command](client, demisto.args())
 
-            return_outputs(readable_output, outputs, raw_response)
+    try:
+        if command == "ip":
+            return_results(ip_reputation_command(client, demisto.args()))
+
+        elif command == "test-module":
+            return_results(
+                test_module_command(demisto.params()["client_id"], demisto.params()["client_secret"], channel_code))
+
+        elif command == "domain":
+            return_results(domain_reputation_command(client, demisto.args()))
+
+        elif command == "url":
+            return_results(url_reputation_command(client, demisto.args()))
+
+        elif command == "file":
+            print("access")
+            return_results(file_reputation_command(client, demisto.args()))
+
+        elif command == "sixgill-get-actor":
+            return_results(actor_reputation_command(client, demisto.args()))
+
+        elif command == "sixgill-get-post-id":
+            return_results(postid_reputation_command(client, demisto.args()))
+
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f"Error failed to execute {demisto.command()}, error: [{e}]")

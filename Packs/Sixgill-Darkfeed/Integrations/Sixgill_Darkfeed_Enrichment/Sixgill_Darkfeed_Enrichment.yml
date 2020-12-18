@@ -429,7 +429,7 @@ script:
       deprecated: false
       description: Return Actor information and reputation
       execution: false
-      name: actor
+      name: sixgill-get-actor
       outputs:
         - contextPath: DBotScore.Indicator
           description: The indicator that was tested.
@@ -520,7 +520,7 @@ script:
       deprecated: false
       description: Return Postid information and reputation
       execution: false
-      name: post_id
+      name: sixgill-get-post-id
       outputs:
         - contextPath: DBotScore.Indicator
           description: The indicator that was tested.
