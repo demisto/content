@@ -25,5 +25,39 @@
         "Expanse",
         "Expander",
         "Behavior"
-    ]
+    ],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "PAN-OS": {
+            "mandatory": false,
+            "display_name": "PAN-OS"
+        },
+        "PrismaCloud": {
+            "mandatory": false,
+            "display_name": "Prisma Cloud"
+        },
+        "SplunkPy": {
+            "mandatory": false,
+            "display_name": "SplunkPy"
+        },
+        "FeedAWS": {
+            "mandatory": false,
+            "display_name": "AWS Feed"
+        },
+        "FeedAzure": {
+            "mandatory": false,
+            "display_name": "Azure Feed"
+        },
+        "Active_Directory_Query": {
+            "mandatory": false,
+            "display_name": "Active Directory Query"
+        }
+    }
 }
