@@ -49,4 +49,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Extract and Enrich Expanse Indicators](Insert the link to your image here)
+![Extract and Enrich Expanse Indicators](https://raw.githubusercontent.com/demisto/content/cfcd4dbc38cc4ec560202da62750c73c9452b553/Packs/ExpanseV2/Playbooks/playbook-Extract_and_Enrich_Expanse_Indicators.png)

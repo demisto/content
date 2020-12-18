@@ -46,4 +46,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Expanse Attribution](Insert the link to your image here)
+![Expanse Attribution](https://raw.githubusercontent.com/demisto/content/cfcd4dbc38cc4ec560202da62750c73c9452b553/Packs/ExpanseV2/Playbooks/playbook-Expanse_Attribution.png)

@@ -67,4 +67,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Handle Expanse Incident - Attribution Only](Insert the link to your image here)
+![Handle Expanse Incident - Attribution Only](https://raw.githubusercontent.com/demisto/content/cfcd4dbc38cc4ec560202da62750c73c9452b553/Packs/ExpanseV2/Playbooks/playbook-Handle_Expanse_Incident_-_Attribution_Only.png)

@@ -37,4 +37,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Expanse Load-Create List](Insert the link to your image here)
+![Expanse Load-Create List](https://raw.githubusercontent.com/demisto/content/cfcd4dbc38cc4ec560202da62750c73c9452b553/Packs/ExpanseV2/Playbooks/playbook-Expanse_Load_Create_List.png)
