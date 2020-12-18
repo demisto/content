@@ -37,4 +37,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Prisma Cloud Correlate Alerts](Insert the link to your image here)
+![Prisma Cloud Correlate Alerts](https://raw.githubusercontent.com/demisto/content/8d80d2e630f4a6aafd1fb1a27102d14565d429b1/Packs/PrismaCloud/Playbooks/playbook-Prisma_Cloud_Correlate_Alerts.png)

@@ -35,4 +35,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Prisma Cloud - Find GCP Resource by Public IP](Insert the link to your image here)
+![Prisma Cloud - Find GCP Resource by Public IP](https://raw.githubusercontent.com/demisto/content/8d80d2e630f4a6aafd1fb1a27102d14565d429b1/Packs/PrismaCloud/Playbooks/playbook-Prisma_Cloud_-_Find_GCP_Resource_by_Public_IP.png)

@@ -36,4 +36,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Prisma Cloud - Find Public Cloud Resource by FQDN](Insert the link to your image here)
+![Prisma Cloud - Find Public Cloud Resource by FQDN](https://raw.githubusercontent.com/demisto/content/8d80d2e630f4a6aafd1fb1a27102d14565d429b1/Packs/PrismaCloud/Playbooks/playbook-Prisma_Cloud_-_Find_Public_Cloud_Resource_by_FQDN.png)
