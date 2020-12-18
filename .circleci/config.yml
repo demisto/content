@@ -146,8 +146,6 @@ references:
           echo "venv exists (from cache). activating"
           source ./venv/bin/activate
         fi
-        # Install node packages
-        npm install .
         # store in bash env so we load our venv in each step
         echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
         git config diff.renameLimit 6000
