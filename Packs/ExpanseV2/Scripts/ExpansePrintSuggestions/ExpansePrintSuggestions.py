@@ -165,7 +165,7 @@ def expanse_print_suggestions(args: Dict[str, Any]) -> CommandResults:
         )
         shadow = False
         for n, c in enumerate(shadow_it):
-            if isinstance(c, dict) c.get('value')  is True:
+            if isinstance(c, dict) and c.get('value')  is True:
                 shadow_it[n]["result"] = "✅"
                 shadow = True
             else:
