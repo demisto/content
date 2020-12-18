@@ -1118,8 +1118,8 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
     Returns:
         (str, dict, dict). Human readable, context, raw response
     """
-    query = args.get('query')
-    timeout = int(args.get('timeout'))
+    query = args.get('query', '')
+    timeout = int(args.get('timeout', 10))
     response = client.get_advanced_hunting(query, timeout)
     results = response.get('Results')
     if isinstance(results, list) and len(results) == 1:
