@@ -1,7 +1,7 @@
 Main Playbook to Handle Expanse Incidents.
 
 There are several phases:
-1. Enrichment: all the related information from the incident is extracted and related Indicators (of types IP, CIDR, Domain, DomainGlob, Certificate) are created and enriched.
+1. Enrichment: all the related information from the incident is extracted and related Indicators (types IP, CIDR, Domain, DomainGlob, Certificate) are created and enriched.
 2. Validation: the found IP and FQDN are correlated with the information available in other products:
   - Firewall logs from Cortex Data Lake, Panorama and Splunk
   - User information from Active Directory

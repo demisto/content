@@ -1,6 +1,6 @@
 {
     "name": "Expanse",
-    "description": "The Cortex XSOAR Content Pack for Expanse enables automated Attack Surface Management through powerful Integrations and Playbooks.",
+    "description": "Automate Attack Surface Management to identify Internet assets and misconfigurations with fast remediation via comprehensive integrations and playbooks.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

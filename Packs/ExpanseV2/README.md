@@ -1,9 +1,11 @@
-The Expanse Content Pack for Cortex XSOAR provides full coverage of the Expander and Behavior product capabilities from Expanse, allowing SOCs to automate the resolution of their Company's attack surface. The Integrations included in the Pack enable fetching and mirroring of Expanse Issues into Cortex XSOAR Incidents, and ingestion of Indicators (IPs, Domains and Certificates) referring to the corporate Network Perimeter as discovered by Expanse.
+The Expanse Content Pack for Cortex XSOAR provides full coverage of the Expander and Behavior product capabilities from Expanse to allow SOCs to automate the defense of their Company's attack surface. The Integrations included in the Pack enable fetching and mirroring of Expanse Issues into Cortex XSOAR Incidents, and ingestion of Indicators (IPs, Domains and Certificates) referring to the corporate Network Perimeter as discovered by Expanse.
 
-Through a powerful set of Playbooks, Analysts can correlate the discovered information with data provided from internal security systems (such as Palo Alto Networks Cortex Data Lake, Prisma Cloud and Panorama, Active Directory, Splunk SIEM) to help pinpoint the right owners of assets and automate the remediation.
+Through a powerful set of Playbooks, analysts can correlate the discovered information with data provided from internal security systems (such as Palo Alto Networks Cortex Data Lake, Prisma Cloud and Panorama, Active Directory, Splunk SIEM) to help pinpoint the right owners of assets and automate remediation.
 
 ##### What does this pack do?
 - Provides Integrations for **Expanse** (Expander and Behavior)
 - Provides an **Expanse Issue** Incident Type with dedicated fields and layouts
 - Provides a rich set of Playbooks to Handle the investigation and resolution of Expanse Issues
 - Provides Dashboards about the Network perimeter as discovered by Expanse and the status of Expanse Issues
+
+![Handle Expanse Incident](https://raw.githubusercontent.com/demisto/content/e5ff1d909722f845d1326b7cdb3748a58b2d5c4c/Packs/ExpanseV2/Playbooks/playbook-Handle_Expanse_Incident.png)
