@@ -1,6 +1,6 @@
 {
     "name": "Rapid Breach Response",
-    "description": "This content pack helps you to collect, investigate, and remediate incident relates to major breaches.",
+    "description": "This content pack helps you collect, investigate, and remediate incident relate to major breaches.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -9,7 +9,9 @@
     "created": "2020-12-16T14:11:20Z",
     "categories": [],
     "tags": [],
-    "useCases": [],
+    "useCases": [
+        "Breach"
+    ],
     "keywords": [
         "SolarStorm",
         "SunBurst",
