@@ -9,7 +9,7 @@
     "cliName": "cyrendetectionmethods",
     "closeForm": false,
     "content": true,
-    "description": "Methods used by Cyren Threat Intelligence to detect the threat",
+    "description": "Methods used by Cyren Threat InDepth Intelligence to detect the threat",
     "editForm": true,
     "group": 2,
     "hidden": false,

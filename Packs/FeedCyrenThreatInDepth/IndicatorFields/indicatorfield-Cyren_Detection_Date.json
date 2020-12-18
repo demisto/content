@@ -9,7 +9,7 @@
     "cliName": "cyrendetectiondate",
     "closeForm": false,
     "content": true,
-    "description": "Time when the threat has been identified by Cyren Threat Intelligence",
+    "description": "Time when the threat has been identified by Cyren Threat InDepth Intelligence",
     "editForm": true,
     "group": 2,
     "hidden": false,

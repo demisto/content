@@ -7,7 +7,7 @@
     "cliName": "cyrenipclass",
     "closeForm": false,
     "content": true,
-    "description": "Type of IP identified by Cyren Threat Intelligence",
+    "description": "Type of IP identified by Cyren Threat InDepth Intelligence",
     "editForm": true,
     "group": 2,
     "hidden": false,

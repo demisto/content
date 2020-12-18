@@ -48,6 +48,17 @@ configuration:
   defaultvalue: "20160"
   type: 1
   required: false
+- additionalinfo: Incremental feeds pull only new or modified indicators that have
+   been sent from the integration. As the determination if the indicator is new or
+   modified happens on the 3rd-party vendor's side, and only indicators that are
+   new or modified are sent to Cortex XSOAR, all indicators coming from these feeds
+   are labeled new or modified.
+  defaultvalue: "true"
+  display: Incremental Feed
+  hidden: false
+  name: feedIncremental
+  required: false
+  type: 8
 - display: Feed Fetch Interval
   name: feedFetchInterval
   defaultvalue: "240"
@@ -87,7 +98,7 @@ configuration:
   type: 0
 - display: API Token
   name: apikey
-  type: 12
+  type: 4
   required: true
 - display: Feed Name
   name: feed_name
