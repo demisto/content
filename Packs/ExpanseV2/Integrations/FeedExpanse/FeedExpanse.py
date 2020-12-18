@@ -477,10 +477,7 @@ def test_module(
         client: Client,
         max_indicators_param: Optional[str],
         min_last_observed_param: Optional[str],
-        tlp_color: Optional[str],
-        feed_tags: str) -> str:
-    feed_tags = argToList(feed_tags)
-
+        tlp_color: Optional[str]) -> str:
     max_indicators = validate_max_indicators(max_indicators_param)
     if max_indicators is None:
         return "Invalid value for max indicators"
@@ -662,7 +659,7 @@ def main() -> None:
         client.authenticate()
 
         if command == "test-module":
-            result = test_module(client, max_indicators_param, min_last_observed_param, tlp_color, feed_tags)
+            result = test_module(client, max_indicators_param, min_last_observed_param, tlp_color)
             return_results(result)
 
         elif command == "fetch-indicators":
