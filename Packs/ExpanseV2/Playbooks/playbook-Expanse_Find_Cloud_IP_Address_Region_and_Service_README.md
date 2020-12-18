@@ -1,7 +1,5 @@
 Subplaybook for Expanse Enrich Cloud Assets subplaybook.
-Finds Region and Service for IP Address belonging to Public Cloud, using
-Indicators (CIDRs) from Public Cloud feeds. Correlates based on longest match.
-Returns the matching indicator with the longest prefix.
+This playbook is used to find the corresponding Public Cloud Region (i.e. AWS us-east-1) and Service (i.e. AWS EC2) for a provided IP Address. It works by correlating the provided IP address with the IP Range Indicators (CIDRs) that can be collected from Public Cloud feeds (i.e. AWS Feed) in XSOAR. CIDR Indicators must be tagged properly using the corresponding tags (i.e. AWS for AWS Feed): tags can be configured in the Feed Integrations and must match the ones provided in the inputs of this playbook. Correlation is done based on the longest match (i.e. smaller CIDR such as /20 range wins over a bigger one such as /16).
 
 
 ## Dependencies
