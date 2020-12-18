@@ -1,7 +1,6 @@
 id: Handle Expanse Incident
-version: -1
-contentitemexportablefields:
-  contentitemfields: {}
+version: 42
+vcShouldKeepItemLegacyProdMachine: false
 name: Handle Expanse Incident
 description: |-
   Main Playbook to Handle Expanse Incidents.
@@ -25,15 +24,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d6603c1e-8927-4351-8bba-a691699a9e80
+    taskid: 6787ba70-8ed2-447b-8fc6-a3a628ba1462
     type: start
     task:
-      id: d6603c1e-8927-4351-8bba-a691699a9e80
+      id: 6787ba70-8ed2-447b-8fc6-a3a628ba1462
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "163"
@@ -42,7 +40,7 @@ tasks:
       {
         "position": {
           "x": 1327.5,
-          "y": -2180
+          "y": -2870
         }
       }
     note: false
@@ -52,10 +50,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: aeb934d7-4d22-4a8f-813c-c9be6bf30d50
+    taskid: 5c111694-e05c-4863-8faf-b3dc243b666a
     type: condition
     task:
-      id: aeb934d7-4d22-4a8f-813c-c9be6bf30d50
+      id: 5c111694-e05c-4863-8faf-b3dc243b666a
       version: -1
       name: Are there Expanse Asset Tags for this incident?
       description: Check whether Expanse Asset tags are present in this incident.
@@ -81,8 +79,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1960,
-          "y": 6575
+          "x": 1930,
+          "y": 7260
         }
       }
     note: false
@@ -92,16 +90,15 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 3a5cd259-6d2e-45a3-89c7-cd76b78477e8
+    taskid: 252558dc-71f0-4e89-8dcc-829d4c25af87
     type: title
     task:
-      id: 3a5cd259-6d2e-45a3-89c7-cd76b78477e8
+      id: 252558dc-71f0-4e89-8dcc-829d4c25af87
       version: -1
       name: Use Device Groups from Expanse Asset Tags
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -109,8 +106,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2330,
-          "y": 6745
+          "x": 1580,
+          "y": 7440
         }
       }
     note: false
@@ -120,16 +117,15 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: facd19b0-8ad6-4f2d-8908-19cd6e123bf9
+    taskid: 5bb2ee82-61b3-45e1-8035-793b052fabc6
     type: title
     task:
-      id: facd19b0-8ad6-4f2d-8908-19cd6e123bf9
+      id: 5bb2ee82-61b3-45e1-8035-793b052fabc6
       version: -1
       name: Search Device Groups from Logs
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -137,8 +133,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1717.5,
-          "y": 6745
+          "x": 1930,
+          "y": 7900
         }
       }
     note: false
@@ -148,10 +144,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 16844f2c-ec1c-4f1a-8034-337356f26b9a
+    taskid: 001457d4-06f2-41e2-84d1-861e4563169b
     type: regular
     task:
-      id: 16844f2c-ec1c-4f1a-8034-337356f26b9a
+      id: 001457d4-06f2-41e2-84d1-861e4563169b
       version: -1
       name: Find Possible Device Groups
       description: Set a value in context under the key you entered. If no value is
@@ -164,7 +160,8 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      append: {}
+      append:
+        simple: "true"
       key:
         simple: TargetFirewalls
       stringify: {}
@@ -207,8 +204,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1717.5,
-          "y": 6850
+          "x": 1930,
+          "y": 8020
         }
       }
     note: false
@@ -218,28 +215,27 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: e3111605-6fdb-4d65-800a-1a67a96bbac6
+    taskid: ed8d23f4-533f-49e5-8e70-acaed824bab1
     type: title
     task:
-      id: e3111605-6fdb-4d65-800a-1a67a96bbac6
+      id: ed8d23f4-533f-49e5-8e70-acaed824bab1
       version: -1
       name: Set Up Context Variables
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "12"
       - "65"
       - "173"
-      - "200"
+      - "203"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1327.5,
-          "y": -1450
+          "y": -2140
         }
       }
     note: false
@@ -249,10 +245,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: c43df7ae-4309-4f32-83e4-1dd272d6fe93
+    taskid: 23cc2b32-e7ed-4b20-8bc6-ecc93aa551db
     type: condition
     task:
-      id: c43df7ae-4309-4f32-83e4-1dd272d6fe93
+      id: 23cc2b32-e7ed-4b20-8bc6-ecc93aa551db
       version: -1
       name: Is Incident Priority Above AutoRemediation Threshold?
       description: Check whether incident priority is above autoremediation threshold.
@@ -280,8 +276,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1457.5,
-          "y": 6130
+          "x": 1355,
+          "y": 6735
         }
       }
     note: false
@@ -291,16 +287,15 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: b3232d6f-019b-4089-8cc3-9812eff0c605
+    taskid: a1c4930f-a238-48a9-841e-00377e459cd9
     type: title
     task:
-      id: b3232d6f-019b-4089-8cc3-9812eff0c605
+      id: a1c4930f-a238-48a9-841e-00377e459cd9
       version: -1
       name: Done Network  Remediation
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "75"
@@ -308,8 +303,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1467.5,
-          "y": 10475
+          "x": 917.5,
+          "y": 11835
         }
       }
     note: false
@@ -319,10 +314,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 8577d990-2e93-497d-82ba-cfaed45a841b
+    taskid: 856c79ee-30e0-431d-8471-180b1157e70c
     type: condition
     task:
-      id: 8577d990-2e93-497d-82ba-cfaed45a841b
+      id: 856c79ee-30e0-431d-8471-180b1157e70c
       version: -1
       name: Is Issue AutoRemediable with PAN-OS? (On-Prem and has IP:Port)
       description: Check whether the issue can be auto-remediated with PAN-OS (on-prem
@@ -380,8 +375,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1112.5,
-          "y": 5950
+          "x": 917.5,
+          "y": 6530
         }
       }
     note: false
@@ -391,10 +386,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 8ed9d452-9025-44f5-87a5-2fff3db57946
+    taskid: f340edbb-08e4-4cae-8c79-d10e19c17dc3
     type: condition
     task:
-      id: 8ed9d452-9025-44f5-87a5-2fff3db57946
+      id: f340edbb-08e4-4cae-8c79-d10e19c17dc3
       version: -1
       name: Block ${incident.expanseip}:${incident.expanseport}/${incident.expanseprotocol}
         on ${TargetDG} ?
@@ -411,8 +406,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2017.5,
-          "y": 9455
+          "x": 1930,
+          "y": 10915
         }
       }
     note: false
@@ -422,12 +417,12 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 9c40a4c6-84d1-4552-86f7-916fb0eb1abf
+    taskid: cff181ca-63ea-44b2-8f65-6f696d4bdc12
     type: regular
     task:
-      id: 9c40a4c6-84d1-4552-86f7-916fb0eb1abf
+      id: cff181ca-63ea-44b2-8f65-6f696d4bdc12
       version: -1
-      name: Set Target Device Groups from Expanse Tags
+      name: Transpose Firewall TagList
       description: Set a value in context under the key you entered. If no value is
         entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
@@ -436,61 +431,30 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "207"
     scriptarguments:
       append:
-        simple: "true"
+        simple: "false"
       key:
-        simple: TargetFirewalls
+        simple: FirewallTagListTransposed
       stringify: {}
       value:
         complex:
-          root: ${
-          accessor: =[]}
+          root: FirewallTagList
           transformers:
-          - operator: GetValuesOfMultipleFields
+          - operator: DT
             args:
-              key:
+              dt:
                 value:
-                  simple: FirewallTagList
-                iscontext: true
-              list:
-                value:
-                  simple: ExpanseDeviceGroupAssetTags
-                iscontext: true
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: '{"dg":"'
-              suffix:
-                value:
-                  simple: '"}'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: '['
-              suffix:
-                value:
-                  simple: ']'
-          - operator: ParseJSON
-          - operator: jmespath
-            args:
-              expression:
-                value:
-                  simple: '{deviceGroup:dg, source: ''From Expanse Tags'', sightings:''N/A''}'
+                  simple: ".=foo(val);function foo(aa) {\nresult = [];\nfor (const
+                    o of Object.keys(aa)) { \n  result.push({\"tag\":aa[o], \"dg\":
+                    o});\n}\nreturn result;\n}"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2330,
-          "y": 6850
+          "x": 1580,
+          "y": 7565
         }
       }
     note: false
@@ -500,10 +464,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 4b788497-7448-4cf6-886a-9e8089f7f4ad
+    taskid: 453a112d-9021-4622-8839-9d75bf6c05ba
     type: regular
     task:
-      id: 4b788497-7448-4cf6-886a-9e8089f7f4ad
+      id: 453a112d-9021-4622-8839-9d75bf6c05ba
       version: -1
       name: Extract XSOAR Incident Tags from Expanse
       description: Set a value in context under the key you entered. If no value is
@@ -544,8 +508,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 907.5,
-          "y": -1305
+          "x": 917.5,
+          "y": -1825
         }
       }
     note: false
@@ -555,10 +519,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: b4cb5db2-020b-458a-8c68-1784345beb7f
+    taskid: 90aac7fa-bfec-414b-84c8-f3383fa31732
     type: regular
     task:
-      id: b4cb5db2-020b-458a-8c68-1784345beb7f
+      id: 90aac7fa-bfec-414b-84c8-f3383fa31732
       version: -1
       name: Manual Block on Network
       description: Perform manual block on the network
@@ -572,8 +536,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1457.5,
-          "y": 9950
+          "x": 917.5,
+          "y": 11225
         }
       }
     note: false
@@ -583,16 +547,15 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 09a9e5a8-e97e-4cd8-8e54-2528b2e7e5da
+    taskid: 991259c5-636a-44b3-8b75-f2586dfb35f4
     type: title
     task:
-      id: 09a9e5a8-e97e-4cd8-8e54-2528b2e7e5da
+      id: 991259c5-636a-44b3-8b75-f2586dfb35f4
       version: -1
       name: Manual Network Remediation
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -600,8 +563,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1457.5,
-          "y": 9730
+          "x": 917.5,
+          "y": 11100
         }
       }
     note: false
@@ -611,12 +574,12 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 28094798-b880-4195-8a15-a899c58b77f8
+    taskid: 37c823a7-7510-420b-8376-ff5d03b56eb0
     type: condition
     task:
-      id: 28094798-b880-4195-8a15-a899c58b77f8
+      id: 37c823a7-7510-420b-8376-ff5d03b56eb0
       version: -1
-      name: Device Groups found?
+      name: Suggested Device Groups found?
       description: Check whether a target device group is found
       type: condition
       iscommand: false
@@ -639,8 +602,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2017.5,
-          "y": 7020
+          "x": 1930,
+          "y": 8185
         }
       }
     note: false
@@ -650,10 +613,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 77a0e474-6109-472d-894e-002361305f06
+    taskid: 37d9e1c9-88ed-4d0f-871c-6456de0e5c63
     type: collection
     task:
-      id: 77a0e474-6109-472d-894e-002361305f06
+      id: 37d9e1c9-88ed-4d0f-871c-6456de0e5c63
       version: -1
       name: Choose Device Group to enforce policy
       description: Ask the user on which Device Group to enforce the policy change.
@@ -667,8 +630,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2055,
-          "y": 7645
+          "x": 1930,
+          "y": 8915
         }
       }
     note: false
@@ -683,8 +646,8 @@ tasks:
         simple: Choose target Device Group
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -725,16 +688,15 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 6326935d-4c96-43c5-8a47-2c2b11c241e6
+    taskid: 20acc70d-1268-4168-8ae9-8dc10fa27b87
     type: title
     task:
-      id: 6326935d-4c96-43c5-8a47-2c2b11c241e6
+      id: 20acc70d-1268-4168-8ae9-8dc10fa27b87
       version: -1
       name: DG Tagging
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "120"
@@ -742,8 +704,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2752.5,
-          "y": 7955
+          "x": 2722.5,
+          "y": 9245
         }
       }
     note: false
@@ -753,10 +715,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 2a27f2d9-0134-453c-8726-b1c15b60cd2b
+    taskid: 8dc40050-592a-4d16-8562-0c12a90e3a00
     type: title
     task:
-      id: 2a27f2d9-0134-453c-8726-b1c15b60cd2b
+      id: 8dc40050-592a-4d16-8562-0c12a90e3a00
       version: -1
       name: Start Validation
       description: Start validation of Incident
@@ -771,7 +733,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
+          "x": 1327.5,
           "y": 30
         }
       }
@@ -782,12 +744,12 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 54d5ad07-a038-4062-8c4d-9aca2322ef76
+    taskid: c5535a82-8529-4442-8e22-6a97c811b9fe
     type: playbook
     task:
-      id: 54d5ad07-a038-4062-8c4d-9aca2322ef76
+      id: c5535a82-8529-4442-8e22-6a97c811b9fe
       version: -1
-      name: PAN-OS - Block Destination Service
+      name: PAN-OS - Block Destination Service on Panorama
       description: This playbook blocks a Destination IP and Service (tcp or udp port)
         by creating a rule for a specific Device Group on PAN-OS.
       playbookName: PAN-OS - Block Destination Service
@@ -837,27 +799,26 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2495,
-          "y": 10285
+          "x": 2455,
+          "y": 11590
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "24":
     id: "24"
-    taskid: b37c64b5-c90e-4d1d-8dd4-b620957c9b68
+    taskid: a403f655-9b3a-430c-8501-4ac67898893b
     type: title
     task:
-      id: b37c64b5-c90e-4d1d-8dd4-b620957c9b68
+      id: a403f655-9b3a-430c-8501-4ac67898893b
       version: -1
       name: Block Service
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "25"
@@ -865,8 +826,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2282.5,
-          "y": 9665
+          "x": 2252.5,
+          "y": 11100
         }
       }
     note: false
@@ -876,10 +837,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 88896747-5e25-4923-8b67-a11e747f6f30
+    taskid: 9a1b6b1d-1c56-4c12-838b-2d9c5962684e
     type: regular
     task:
-      id: 88896747-5e25-4923-8b67-a11e747f6f30
+      id: 9a1b6b1d-1c56-4c12-838b-2d9c5962684e
       version: -1
       name: Get PAN-OS Version
       description: Show firewall device software version.
@@ -896,21 +857,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2282.5,
-          "y": 9845
+          "x": 2252.5,
+          "y": 11225
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "26":
     id: "26"
-    taskid: 6f652d92-63fd-4d2e-8143-3503f14bcc9f
+    taskid: 85cb41f2-41a8-4eb9-8f11-c91fdee71118
     type: condition
     task:
-      id: 6f652d92-63fd-4d2e-8143-3503f14bcc9f
+      id: 85cb41f2-41a8-4eb9-8f11-c91fdee71118
       version: -1
       name: Firewall or Panorama?
       description: Check whether target device is a Firewall or Panorama
@@ -940,8 +901,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2282.5,
-          "y": 10110
+          "x": 2252.5,
+          "y": 11380
         }
       }
     note: false
@@ -951,12 +912,12 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: eadc4dcd-c031-485e-88a5-fc2534d8a3ee
+    taskid: 3ad8dd38-b85c-46c6-856c-deeb6504fadb
     type: playbook
     task:
-      id: eadc4dcd-c031-485e-88a5-fc2534d8a3ee
+      id: 3ad8dd38-b85c-46c6-856c-deeb6504fadb
       version: -1
-      name: PAN-OS - Block Destination Service
+      name: PAN-OS - Block Destination Service on Firewall
       description: This playbook blocks a Destination IP and Service (tcp or udp port)
         by creating a rule for a specific Device Group on PAN-OS.
       playbookName: PAN-OS - Block Destination Service
@@ -1004,27 +965,26 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2075,
-          "y": 10285
+          "x": 2040,
+          "y": 11590
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "28":
     id: "28"
-    taskid: 7ebfbb9e-a404-4964-8a39-638f4b3fceb8
+    taskid: 5291b87c-a5c1-484e-8401-9069bcc4335c
     type: title
     task:
-      id: 7ebfbb9e-a404-4964-8a39-638f4b3fceb8
+      id: 5291b87c-a5c1-484e-8401-9069bcc4335c
       version: -1
       name: Enrichment
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "167"
@@ -1034,8 +994,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1337.5,
-          "y": -740
+          "x": 1327.5,
+          "y": -710
         }
       }
     note: false
@@ -1045,16 +1005,15 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: d63eaef1-a9b9-42b0-841e-ada75b26ed97
+    taskid: 8a688db1-7f4c-4619-8431-d63b00045a9d
     type: title
     task:
-      id: d63eaef1-a9b9-42b0-841e-ada75b26ed97
+      id: 8a688db1-7f4c-4619-8431-d63b00045a9d
       version: -1
       name: Done Enrichment
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -1062,8 +1021,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1337.5,
-          "y": -150
+          "x": 1327.5,
+          "y": -120
         }
       }
     note: false
@@ -1073,16 +1032,15 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: af8f61e8-9114-4818-85ce-0f8bdf74552e
+    taskid: c92c9191-6302-463f-8347-1c9188cca15e
     type: title
     task:
-      id: af8f61e8-9114-4818-85ce-0f8bdf74552e
+      id: c92c9191-6302-463f-8347-1c9188cca15e
       version: -1
       name: Remediation
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "81"
@@ -1093,8 +1051,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 5690
+          "x": 917.5,
+          "y": 6070
         }
       }
     note: false
@@ -1104,10 +1062,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 2c906d41-3447-4a78-863f-5b3c3ca4f727
+    taskid: 9d163411-019d-4a56-8112-fef2603e0c37
     type: regular
     task:
-      id: 2c906d41-3447-4a78-863f-5b3c3ca4f727
+      id: 9d163411-019d-4a56-8112-fef2603e0c37
       version: -1
       name: Extract Risky Flows from Behavior
       description: Retrieve Expanse Behavior Risky Flows
@@ -1132,8 +1090,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": -390
+          "x": 490,
+          "y": -320
         }
       }
     note: true
@@ -1147,16 +1105,16 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: afc85687-c354-4465-88c2-53bac1096464
+    taskid: 48a88295-5fe8-4219-8bd2-61250b300ef0
     type: playbook
     task:
-      id: afc85687-c354-4465-88c2-53bac1096464
+      id: 48a88295-5fe8-4219-8bd2-61250b300ef0
       version: -1
       name: Expanse Attribution Subplaybook
-      description: "Given an Expanse Asset, Issue IP, Issue Provider, Issue Domain,\
-        \ Issue Port and Issue Protocol hunts for internal activity on the detected\
-        \ service. \nReturns a list of potential owner BUs, owner Users, Device and\
-        \ Notes"
+      description: "Given an Expanse Asset, Issue IP, Issue Provider, Issue Domain,
+        Issue Port and Issue Protocol hunts for internal activity on the detected
+        service. \nReturns a list of potential owner BUs, owner Users, Device and
+        Notes"
       playbookName: Expanse Attribution Subplaybook
       type: playbook
       iscommand: false
@@ -1199,8 +1157,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 510
+          "x": 1740,
+          "y": 180
         }
       }
     note: false
@@ -1210,10 +1168,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 7f61b142-3d40-421a-85fc-b5754fc356cf
+    taskid: ac40f468-ea35-475b-882f-729bfd111b40
     type: condition
     task:
-      id: 7f61b142-3d40-421a-85fc-b5754fc356cf
+      id: ac40f468-ea35-475b-882f-729bfd111b40
       version: -1
       name: Is Issue Related To Cloud Asset?
       description: Check whether the asset is on prem or cloud.
@@ -1243,8 +1201,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1450,
-          "y": 190
+          "x": 1327.5,
+          "y": 180
         }
       }
     note: false
@@ -1254,10 +1212,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 13f53a86-804b-47bd-802b-5b953d63fbb4
+    taskid: 9527f790-32a0-49d4-8019-feb58f88c07e
     type: regular
     task:
-      id: 13f53a86-804b-47bd-802b-5b953d63fbb4
+      id: 9527f790-32a0-49d4-8019-feb58f88c07e
       version: -1
       name: Suggest possible Shadow IT
       description: Set a value in context under the key you entered.
@@ -1280,8 +1238,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 970,
-          "y": 2605
+          "x": 907.5,
+          "y": 1835
         }
       }
     note: false
@@ -1291,10 +1249,10 @@ tasks:
     quietmode: 0
   "48":
     id: "48"
-    taskid: 63af2eda-4c22-4b0f-804c-bd49344943b5
+    taskid: e36ef9fd-4f80-4661-8036-308931e74b1e
     type: collection
     task:
-      id: 63af2eda-4c22-4b0f-804c-bd49344943b5
+      id: e36ef9fd-4f80-4661-8036-308931e74b1e
       version: -1
       name: 'Ask: What Is The Organization Unit?'
       description: Ask the user to perform attribution.
@@ -1309,8 +1267,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1257.5,
-          "y": 3335
+          "x": 1317.5,
+          "y": 2595
         }
       }
     note: false
@@ -1334,8 +1292,8 @@ tasks:
               suffix: {}
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1362,7 +1320,7 @@ tasks:
                     simple: keys(@)
         - simple: ❓Unknown
         - simple: ➕ Add New
-        - simple: ❌ False Positive
+        - simple: ❌ Invalid
         fieldassociated: ""
         placeholder: ""
         tooltip: Select the Organization Unit owning this asset
@@ -1404,7 +1362,7 @@ tasks:
         Playbook automatically collected details from different sources to help the identification of the owner of the asset. Please check the Evidence board for additional details that could help in your investigation.
 
         To continue your investigation, please decide:
-        - the **Organization Unit** this asset belongs to. This will be used for notifications and remediations actions. If you don't know, you can select *Unknown*. If the asset doesn't belong to your organization, select *False Positive*. If the OU is not listed select *Add New* to add a new OU.
+        - the **Organization Unit** this asset belongs to. This will be used for notifications and remediations actions. If you don't know, you can select *Unknown*. If the asset doesn't belong to your organization, select *Invalid*. If the OU is not listed select *Add New* to add a new OU.
         - if the asset should be considered **Shadow IT**
       sender: Your SOC team
       expired: false
@@ -1413,10 +1371,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: c7b822d1-5e9c-4339-8371-1f62ea3174d2
+    taskid: 249ff9af-df20-4090-88d3-074844a6fcab
     type: regular
     task:
-      id: c7b822d1-5e9c-4339-8371-1f62ea3174d2
+      id: 249ff9af-df20-4090-88d3-074844a6fcab
       version: -1
       name: Set Organization Unit
       description: commands.local.cmd.set.incident
@@ -1717,8 +1675,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1062.5,
-          "y": 4210
+          "x": 1317.5,
+          "y": 3060
         }
       }
     note: false
@@ -1728,12 +1686,12 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: f1c5d48d-b3e6-42c8-88e8-87056b568e75
+    taskid: e4a36978-5c42-40bb-81b0-c98e60819cd6
     type: regular
     task:
-      id: f1c5d48d-b3e6-42c8-88e8-87056b568e75
+      id: e4a36978-5c42-40bb-81b0-c98e60819cd6
       version: -1
-      name: Setup Vulnerability Assessment Tool To Scan The Asset
+      name: 'Setup Vulnerability Assessment Tool To Scan ${incident.expanseip}:${incident.expanseport}/${incident.expanseprotocol} '
       description: Add this discovered asset to Vulnerability Management tools.
       type: regular
       iscommand: false
@@ -1745,8 +1703,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -590,
-          "y": 8020
+          "x": -630,
+          "y": 7210
         }
       }
     note: false
@@ -1756,13 +1714,13 @@ tasks:
     quietmode: 0
   "52":
     id: "52"
-    taskid: 5f7ee269-baa0-4586-8022-bcbc997b977c
+    taskid: b6e1a383-cbd8-4ad1-8a4f-9e60c73ffb76
     type: condition
     task:
-      id: 5f7ee269-baa0-4586-8022-bcbc997b977c
+      id: b6e1a383-cbd8-4ad1-8a4f-9e60c73ffb76
       version: -1
       name: |-
-        Check if the system is scanned by Vulnerability Assessment systems.
+        Check if ${incident.expanseip}:${incident.expanseport}/${incident.expanseprotocol} is scanned by Vulnerability Assessment systems.
 
         Is this protected?
       description: Check if this system is scanned by Vulnerability Management systems.
@@ -1778,8 +1736,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -267.5,
-          "y": 7820
+          "x": -277.5,
+          "y": 6965
         }
       }
     note: false
@@ -1789,16 +1747,15 @@ tasks:
     quietmode: 0
   "53":
     id: "53"
-    taskid: 3b0fd9da-e814-44bb-8945-779236b05513
+    taskid: c6887eee-a422-42d9-807e-5c1945ea7a4f
     type: title
     task:
-      id: 3b0fd9da-e814-44bb-8945-779236b05513
+      id: c6887eee-a422-42d9-807e-5c1945ea7a4f
       version: -1
       name: Done Vulnerability Assessment
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "75"
@@ -1806,8 +1763,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -347.5,
-          "y": 9550
+          "x": -277.5,
+          "y": 7490
         }
       }
     note: false
@@ -1817,10 +1774,10 @@ tasks:
     quietmode: 0
   "56":
     id: "56"
-    taskid: 13c8d688-5222-4eb5-86c0-35a6391bc188
+    taskid: 9820f14a-390e-46ab-8c39-ff6f9e1aa90d
     type: condition
     task:
-      id: 13c8d688-5222-4eb5-86c0-35a6391bc188
+      id: 9820f14a-390e-46ab-8c39-ff6f9e1aa90d
       version: -1
       name: Is Asset Organization Unit Known?
       description: Check the attributed Organization Unit.
@@ -1852,12 +1809,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: False Positive
+              simple: Invalid
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 7515
+          "x": 572.5,
+          "y": 6965
         }
       }
     note: false
@@ -1867,10 +1824,10 @@ tasks:
     quietmode: 0
   "58":
     id: "58"
-    taskid: a3567038-fb7e-48e7-8c23-528921c5a99f
+    taskid: f2267b0d-0a69-438c-81b8-cf3bd6d8ac3e
     type: regular
     task:
-      id: a3567038-fb7e-48e7-8c23-528921c5a99f
+      id: f2267b0d-0a69-438c-81b8-cf3bd6d8ac3e
       version: -1
       name: Notify OU Owner
       description: Send an email
@@ -1922,8 +1879,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 7755
+          "x": 272.5,
+          "y": 7210
         }
       }
     note: false
@@ -1933,10 +1890,10 @@ tasks:
     quietmode: 0
   "59":
     id: "59"
-    taskid: 187be90c-5d51-4c94-8b94-3e52d6d871fe
+    taskid: 32975315-bcb3-469e-8479-aa6b07ddfd68
     type: condition
     task:
-      id: 187be90c-5d51-4c94-8b94-3e52d6d871fe
+      id: 32975315-bcb3-469e-8479-aa6b07ddfd68
       version: -1
       name: Check for Possible Shadow IT?
       description: Check if the incident is a possible Shadow IT one.
@@ -1945,14 +1902,14 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "40"
-      Possible:
       - "133"
+      Possible:
+      - "40"
     separatecontext: false
     conditions:
     - label: Possible
       condition:
-      - - operator: isNotEmpty
+      - - operator: isEmpty
           left:
             value:
               complex:
@@ -1967,8 +1924,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1297.5,
-          "y": 2370
+          "x": 1317.5,
+          "y": 1610
         }
       }
     note: false
@@ -1978,16 +1935,15 @@ tasks:
     quietmode: 0
   "62":
     id: "62"
-    taskid: ecfa8661-c945-4bfb-8d84-12670c4b80f1
+    taskid: 6785a8ca-71a8-4831-8424-45278e375fbf
     type: title
     task:
-      id: ecfa8661-c945-4bfb-8d84-12670c4b80f1
+      id: 6785a8ca-71a8-4831-8424-45278e375fbf
       version: -1
       name: Shadow IT
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "154"
@@ -1995,8 +1951,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1297.5,
-          "y": 1450
+          "x": 1327.5,
+          "y": 780
         }
       }
     note: false
@@ -2006,16 +1962,15 @@ tasks:
     quietmode: 0
   "63":
     id: "63"
-    taskid: e169ac62-f570-4764-8ff3-e5e0364ad62b
+    taskid: c7d1610e-130b-4584-8581-44081a96867f
     type: title
     task:
-      id: e169ac62-f570-4764-8ff3-e5e0364ad62b
+      id: c7d1610e-130b-4584-8581-44081a96867f
       version: -1
       name: Organization Unit
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "68"
@@ -2026,8 +1981,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1257.5,
-          "y": 3015
+          "x": 1317.5,
+          "y": 2215
         }
       }
     note: false
@@ -2037,10 +1992,10 @@ tasks:
     quietmode: 0
   "65":
     id: "65"
-    taskid: e9b5ed3e-deca-4ed1-878f-0161012fc622
+    taskid: 5dcaad4e-88c7-4008-88e4-b2ff7cacf791
     type: regular
     task:
-      id: e9b5ed3e-deca-4ed1-878f-0161012fc622
+      id: 5dcaad4e-88c7-4008-88e4-b2ff7cacf791
       version: -1
       name: Extract List of Low Confidence Discovery tags from PB Inputs
       description: Set a value in context under the key you entered. If no value is
@@ -2072,7 +2027,7 @@ tasks:
       {
         "position": {
           "x": 1327.5,
-          "y": -1130
+          "y": -1825
         }
       }
     note: false
@@ -2082,10 +2037,10 @@ tasks:
     quietmode: 0
   "66":
     id: "66"
-    taskid: d44a5836-3dd5-431a-886f-c05806e87f8b
+    taskid: d96abe53-d7fc-40cc-8518-8f43125940f1
     type: regular
     task:
-      id: d44a5836-3dd5-431a-886f-c05806e87f8b
+      id: d96abe53-d7fc-40cc-8518-8f43125940f1
       version: -1
       name: Print Target Device Group suggestions
       description: Convert an array to a nice table display. Usually, from the context.
@@ -2107,8 +2062,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2435,
-          "y": 7190
+          "x": 2200,
+          "y": 8440
         }
       }
     note: true
@@ -2122,10 +2077,10 @@ tasks:
     quietmode: 0
   "67":
     id: "67"
-    taskid: 86470e30-c196-4d80-87a7-888971a05876
+    taskid: ea46a7b0-640a-40fd-8b50-87427e7c57cf
     type: regular
     task:
-      id: 86470e30-c196-4d80-87a7-888971a05876
+      id: ea46a7b0-640a-40fd-8b50-87427e7c57cf
       version: -1
       name: Set Target Device Group based on user input
       description: Set a value in context under the key you entered.
@@ -2150,8 +2105,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2312.5,
-          "y": 8350
+          "x": 2292.5,
+          "y": 9690
         }
       }
     note: false
@@ -2161,10 +2116,10 @@ tasks:
     quietmode: 0
   "68":
     id: "68"
-    taskid: bde51d54-70b5-463c-893b-fecb60cdfad4
+    taskid: ddc36e20-a011-4339-88e4-3ab8d8a21ac9
     type: regular
     task:
-      id: bde51d54-70b5-463c-893b-fecb60cdfad4
+      id: ddc36e20-a011-4339-88e4-3ab8d8a21ac9
       version: -1
       name: Print Target Users suggestions
       description: Convert an array to a nice table display. Usually, from the context.
@@ -2205,8 +2160,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1062.5,
-          "y": 3160
+          "x": 1317.5,
+          "y": 2420
         }
       }
     note: true
@@ -2216,10 +2171,10 @@ tasks:
     quietmode: 0
   "69":
     id: "69"
-    taskid: 5d292fe1-f6fa-42cb-83b1-fdb0929a815b
+    taskid: bf2a573d-152f-40b3-86a7-68dd860b4a14
     type: regular
     task:
-      id: 5d292fe1-f6fa-42cb-83b1-fdb0929a815b
+      id: bf2a573d-152f-40b3-86a7-68dd860b4a14
       version: -1
       name: Print Target IP suggestions
       description: Convert an array to a nice table display. Usually, from the context.
@@ -2260,8 +2215,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1502.5,
-          "y": 3160
+          "x": 917.5,
+          "y": 2420
         }
       }
     note: true
@@ -2271,10 +2226,10 @@ tasks:
     quietmode: 0
   "70":
     id: "70"
-    taskid: d88e13df-9839-4856-8b3c-da7404d4590f
+    taskid: 16dab237-f597-443e-8980-e5e6431f5fb4
     type: regular
     task:
-      id: d88e13df-9839-4856-8b3c-da7404d4590f
+      id: 16dab237-f597-443e-8980-e5e6431f5fb4
       version: -1
       name: Print Target Devices suggestions
       description: Convert an array to a nice table display. Usually, from the context.
@@ -2315,8 +2270,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1922.5,
-          "y": 3160
+          "x": 1735,
+          "y": 2420
         }
       }
     note: true
@@ -2326,10 +2281,10 @@ tasks:
     quietmode: 0
   "73":
     id: "73"
-    taskid: a31d08c4-318f-4264-8567-791faa55c260
+    taskid: e0f6e9e4-dfcf-448c-8a6b-78e0c1ff9bc8
     type: condition
     task:
-      id: a31d08c4-318f-4264-8567-791faa55c260
+      id: e0f6e9e4-dfcf-448c-8a6b-78e0c1ff9bc8
       version: -1
       name: Is this shadow IT?
       description: Check if the incident is marked as Shadow IT.
@@ -2355,8 +2310,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3842.5,
-          "y": 8285
+          "x": 3240,
+          "y": 6220
         }
       }
     note: false
@@ -2366,10 +2321,10 @@ tasks:
     quietmode: 0
   "74":
     id: "74"
-    taskid: ee27d2c7-bf7a-4e15-8bb3-74bf52a7072e
+    taskid: e3a77ba2-2132-41ea-84e0-9635a9c2ae70
     type: regular
     task:
-      id: ee27d2c7-bf7a-4e15-8bb3-74bf52a7072e
+      id: e3a77ba2-2132-41ea-84e0-9635a9c2ae70
       version: -1
       name: Create Shadow IT Incident
       description: commands.local.cmd.create.inc
@@ -2750,8 +2705,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4610,
-          "y": 8690
+          "x": 2520,
+          "y": 6680
         }
       }
     note: false
@@ -2761,16 +2716,15 @@ tasks:
     quietmode: 0
   "75":
     id: "75"
-    taskid: 81514b4f-c8d9-4e8f-8fe1-7f15c31c2ce4
+    taskid: 943b18f9-921c-4dd8-848a-013c5510719d
     type: title
     task:
-      id: 81514b4f-c8d9-4e8f-8fe1-7f15c31c2ce4
+      id: 943b18f9-921c-4dd8-848a-013c5510719d
       version: -1
       name: Close Investigation
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "76"
@@ -2778,8 +2732,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1297.5,
-          "y": 10705
+          "x": 917.5,
+          "y": 13470
         }
       }
     note: false
@@ -2789,10 +2743,10 @@ tasks:
     quietmode: 0
   "76":
     id: "76"
-    taskid: da9b8ea8-b08c-49ef-8432-2d2c6e7d14ff
+    taskid: f6893240-bc15-4819-882d-8014104909d2
     type: condition
     task:
-      id: da9b8ea8-b08c-49ef-8432-2d2c6e7d14ff
+      id: f6893240-bc15-4819-882d-8014104909d2
       version: -1
       name: Close Investigation?
       description: Ask the user whether to close the investigation.
@@ -2808,8 +2762,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1297.5,
-          "y": 10850
+          "x": 917.5,
+          "y": 13615
         }
       }
     note: false
@@ -2819,10 +2773,10 @@ tasks:
     quietmode: 0
   "77":
     id: "77"
-    taskid: 81f2bb0a-81be-4ba1-841c-dee2270aae3e
+    taskid: 8fbe3d34-0ceb-4e1b-860c-fac24398d909
     type: regular
     task:
-      id: 81f2bb0a-81be-4ba1-841c-dee2270aae3e
+      id: 8fbe3d34-0ceb-4e1b-860c-fac24398d909
       version: -1
       name: Close Investigation
       description: commands.local.cmd.close.inv
@@ -2846,8 +2800,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1570,
-          "y": 11080
+          "x": 1230,
+          "y": 13840
         }
       }
     note: false
@@ -2857,22 +2811,21 @@ tasks:
     quietmode: 0
   "78":
     id: "78"
-    taskid: 7bd2fb64-a145-4008-8aec-3122da71b46e
+    taskid: 7ecbd2d6-e3a0-4395-8478-415a6f4f41f5
     type: title
     task:
-      id: 7bd2fb64-a145-4008-8aec-3122da71b46e
+      id: 7ecbd2d6-e3a0-4395-8478-415a6f4f41f5
       version: -1
       name: All done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1297.5,
-          "y": 11320
+          "x": 917.5,
+          "y": 14090
         }
       }
     note: false
@@ -2882,16 +2835,15 @@ tasks:
     quietmode: 0
   "81":
     id: "81"
-    taskid: 2c8aabaa-7ae6-449e-8ac3-a59639e515b6
+    taskid: 159f1781-99da-48b8-8889-6d1cb93273cf
     type: title
     task:
-      id: 2c8aabaa-7ae6-449e-8ac3-a59639e515b6
+      id: 159f1781-99da-48b8-8889-6d1cb93273cf
       version: -1
       name: Vulnerability Assessment
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "52"
@@ -2899,8 +2851,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -267.5,
-          "y": 7660
+          "x": -277.5,
+          "y": 6830
         }
       }
     note: false
@@ -2910,16 +2862,15 @@ tasks:
     quietmode: 0
   "82":
     id: "82"
-    taskid: d7dcbab5-ea69-4b66-8f5f-21e3a15d143a
+    taskid: 384767ae-2a7c-43fe-83b0-5455afb5390f
     type: title
     task:
-      id: d7dcbab5-ea69-4b66-8f5f-21e3a15d143a
+      id: 384767ae-2a7c-43fe-83b0-5455afb5390f
       version: -1
       name: Notification Flow
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "56"
@@ -2927,8 +2878,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 7320
+          "x": 572.5,
+          "y": 6830
         }
       }
     note: false
@@ -2938,16 +2889,15 @@ tasks:
     quietmode: 0
   "83":
     id: "83"
-    taskid: 306714ca-ed8c-4d3e-8faa-81daced43b3a
+    taskid: 1946784c-920b-48bb-8e80-890503b9a450
     type: title
     task:
-      id: 306714ca-ed8c-4d3e-8faa-81daced43b3a
+      id: 1946784c-920b-48bb-8e80-890503b9a450
       version: -1
       name: Done Notification
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "75"
@@ -2955,8 +2905,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 562.5,
-          "y": 9550
+          "x": 572.5,
+          "y": 7490
         }
       }
     note: false
@@ -2966,16 +2916,15 @@ tasks:
     quietmode: 0
   "84":
     id: "84"
-    taskid: a453e4bc-375c-478b-875e-2ea7f98acad3
+    taskid: 7b2c2e40-4e9f-4762-81db-4196b3649bd1
     type: title
     task:
-      id: a453e4bc-375c-478b-875e-2ea7f98acad3
+      id: 7b2c2e40-4e9f-4762-81db-4196b3649bd1
       version: -1
       name: Network Remediation
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -2983,8 +2932,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1112.5,
-          "y": 5840
+          "x": 917.5,
+          "y": 6375
         }
       }
     note: false
@@ -2994,16 +2943,15 @@ tasks:
     quietmode: 0
   "85":
     id: "85"
-    taskid: c043a444-e8c5-4c6f-8f30-cd7c11fe6c8a
+    taskid: 7e9b2fd7-ad29-48b8-84e2-95be24da7ecf
     type: title
     task:
-      id: c043a444-e8c5-4c6f-8f30-cd7c11fe6c8a
+      id: 7e9b2fd7-ad29-48b8-84e2-95be24da7ecf
       version: -1
       name: Shadow IT
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "73"
@@ -3011,8 +2959,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3842.5,
-          "y": 8125
+          "x": 3240,
+          "y": 6070
         }
       }
     note: false
@@ -3022,16 +2970,15 @@ tasks:
     quietmode: 0
   "86":
     id: "86"
-    taskid: a7a00f94-9d7f-4387-88fa-06884e1f176c
+    taskid: c76455c0-3aa2-4213-8056-a54704ebbda0
     type: title
     task:
-      id: a7a00f94-9d7f-4387-88fa-06884e1f176c
+      id: c76455c0-3aa2-4213-8056-a54704ebbda0
       version: -1
       name: Done Shadow IT
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "75"
@@ -3039,8 +2986,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3852.5,
-          "y": 10430
+          "x": 3240,
+          "y": 7490
         }
       }
     note: false
@@ -3050,10 +2997,10 @@ tasks:
     quietmode: 0
   "88":
     id: "88"
-    taskid: 35e8f6c2-4358-4913-8c2b-4f6d0842d699
+    taskid: 0f69197e-de37-4db7-87d5-8fcbdaa32ce2
     type: condition
     task:
-      id: 35e8f6c2-4358-4913-8c2b-4f6d0842d699
+      id: 0f69197e-de37-4db7-87d5-8fcbdaa32ce2
       version: -1
       name: Should Add New OU?
       description: Determine if a new OU has to be added.
@@ -3064,7 +3011,7 @@ tasks:
       '#default#':
       - "49"
       "yes":
-      - "89"
+      - "204"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -3080,8 +3027,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1062.5,
-          "y": 3510
+          "x": 1317.5,
+          "y": 2840
         }
       }
     note: false
@@ -3091,10 +3038,10 @@ tasks:
     quietmode: 0
   "89":
     id: "89"
-    taskid: 617ab769-5a23-4d55-8284-e76ac40878b0
+    taskid: 5f333eeb-e232-47d4-88ff-bad96f230759
     type: collection
     task:
-      id: 617ab769-5a23-4d55-8284-e76ac40878b0
+      id: 5f333eeb-e232-47d4-88ff-bad96f230759
       version: -1
       name: Add New OU
       description: Collect new OU details from the user.
@@ -3108,22 +3055,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2330,
-          "y": 3695
+          "x": 2070,
+          "y": 3145
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
+      to: null
+      subject: null
       body:
         simple: Add New OU
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -3197,10 +3144,10 @@ tasks:
     quietmode: 0
   "90":
     id: "90"
-    taskid: cf93689a-4a40-4857-81c9-ed628a16f6a3
+    taskid: a353d999-04d7-4613-8bcf-4394c81e99ea
     type: regular
     task:
-      id: cf93689a-4a40-4857-81c9-ed628a16f6a3
+      id: a353d999-04d7-4613-8bcf-4394c81e99ea
       version: -1
       name: Save New Organization Unit to List
       description: Adds/Replaces a key in key/value store backed by an XSOAR list.
@@ -3220,7 +3167,7 @@ tasks:
           root: Add New Organization Unit.Answers
           accessor: "0"
       listName:
-        simple: ExpanseOrganizationUnitsToOwner
+        simple: ${inputs.OrganizationUnitsToOwnerName}
       value:
         complex:
           root: Add New Organization Unit.Answers
@@ -3251,8 +3198,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2330,
-          "y": 3860
+          "x": 2070,
+          "y": 3300
         }
       }
     note: false
@@ -3262,10 +3209,10 @@ tasks:
     quietmode: 0
   "91":
     id: "91"
-    taskid: c0574f59-9ad4-462f-85bc-39fc5b06dc2d
+    taskid: 6cbcd7b0-6692-413a-8d6b-62542c3a97f1
     type: regular
     task:
-      id: c0574f59-9ad4-462f-85bc-39fc5b06dc2d
+      id: 6cbcd7b0-6692-413a-8d6b-62542c3a97f1
       version: -1
       name: Set Organization Unit
       description: commands.local.cmd.set.incident
@@ -3562,8 +3509,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2330,
-          "y": 4800
+          "x": 2070,
+          "y": 4250
         }
       }
     note: false
@@ -3573,16 +3520,15 @@ tasks:
     quietmode: 0
   "93":
     id: "93"
-    taskid: ce650a1b-76ed-4410-8070-0759c25036a1
+    taskid: 7af77f78-1804-4a7f-841b-38d359c7cb57
     type: title
     task:
-      id: ce650a1b-76ed-4410-8070-0759c25036a1
+      id: 7af77f78-1804-4a7f-841b-38d359c7cb57
       version: -1
       name: Done Organization Unit
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "85"
@@ -3591,8 +3537,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1257.5,
-          "y": 4385
+          "x": 1260,
+          "y": 4450
         }
       }
     note: false
@@ -3602,10 +3548,10 @@ tasks:
     quietmode: 0
   "94":
     id: "94"
-    taskid: b49dfaf5-2dc7-42ae-84cd-df7c6498c27f
+    taskid: 2b7bb962-a6b4-417d-8be4-2531e498d290
     type: regular
     task:
-      id: b49dfaf5-2dc7-42ae-84cd-df7c6498c27f
+      id: 2b7bb962-a6b4-417d-8be4-2531e498d290
       version: -1
       name: Save New Organization Tag to List
       description: Adds/Replaces a key in key/value store backed by an XSOAR list.
@@ -3625,7 +3571,7 @@ tasks:
           root: Add New Organization Unit.Answers
           accessor: "0"
       listName:
-        simple: ExpanseOrganizationUnitsToTag
+        simple: ${inputs.OrganizationUnitsToTagName}
       value:
         complex:
           root: Add New Organization Unit.Answers
@@ -3648,8 +3594,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2330,
-          "y": 4315
+          "x": 2070,
+          "y": 3765
         }
       }
     note: false
@@ -3659,10 +3605,10 @@ tasks:
     quietmode: 0
   "95":
     id: "95"
-    taskid: 830f88c5-941d-4c7a-81e3-1454291effb8
+    taskid: bffbb1d9-6fd8-4b17-88c5-ed16fac2d117
     type: regular
     task:
-      id: 830f88c5-941d-4c7a-81e3-1454291effb8
+      id: bffbb1d9-6fd8-4b17-88c5-ed16fac2d117
       version: -1
       name: Create Tag in Expanse (if it doesn't exist already)
       description: Create a new tag in Expanse.
@@ -3672,7 +3618,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "99"
+      - "205"
     scriptarguments:
       description:
         simple: Created by XSOAR for Organization Unit tagging
@@ -3683,8 +3629,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -80,
-          "y": 5240
+          "x": 490,
+          "y": 5280
         }
       }
     note: false
@@ -3694,10 +3640,10 @@ tasks:
     quietmode: 0
   "96":
     id: "96"
-    taskid: 74e6a121-4c3e-4a04-8d1f-c397f13a980f
+    taskid: b8b92c6c-d420-447d-8f6b-22859f73ad96
     type: condition
     task:
-      id: 74e6a121-4c3e-4a04-8d1f-c397f13a980f
+      id: b8b92c6c-d420-447d-8f6b-22859f73ad96
       version: -1
       name: Do We Have Tag To Use?
       description: Branch depending on the OU.
@@ -3707,7 +3653,7 @@ tasks:
     nexttasks:
       '#default#':
       - "166"
-      false-positive:
+      invalid:
       - "104"
       known-ou:
       - "103"
@@ -3737,7 +3683,7 @@ tasks:
           right:
             value:
               simple: '**NoTag**'
-    - label: false-positive
+    - label: invalid
       condition:
       - - operator: containsString
           left:
@@ -3746,12 +3692,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: False Positive
+              simple: Invalid
     view: |-
       {
         "position": {
-          "x": 300,
-          "y": 4840
+          "x": 490,
+          "y": 4930
         }
       }
     note: false
@@ -3761,10 +3707,10 @@ tasks:
     quietmode: 0
   "99":
     id: "99"
-    taskid: 7e86abf6-be3f-4a44-842d-7f5dd01c8056
+    taskid: 3a125587-d6f2-48c9-8156-c4e78b9c0d34
     type: regular
     task:
-      id: 7e86abf6-be3f-4a44-842d-7f5dd01c8056
+      id: 3a125587-d6f2-48c9-8156-c4e78b9c0d34
       version: -1
       name: Tag Assets on Expanse with AssetTag
       description: Assign tags to Asset.
@@ -3795,8 +3741,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -80,
-          "y": 5395
+          "x": 490,
+          "y": 5600
         }
       }
     note: false
@@ -3806,10 +3752,10 @@ tasks:
     quietmode: 0
   "103":
     id: "103"
-    taskid: ecafd518-1891-4e73-80c5-3fd7bd352022
+    taskid: fd7c2c48-8c63-42b7-804a-a3e5f4e2cf96
     type: regular
     task:
-      id: ecafd518-1891-4e73-80c5-3fd7bd352022
+      id: fd7c2c48-8c63-42b7-804a-a3e5f4e2cf96
       version: -1
       name: Set AssetTag with Known OU Tag
       description: Set a value in context under the key you entered.
@@ -3840,8 +3786,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": 5060
+          "x": 490,
+          "y": 5110
         }
       }
     note: false
@@ -3851,12 +3797,12 @@ tasks:
     quietmode: 0
   "104":
     id: "104"
-    taskid: 28fe8e34-959f-44c2-8cf2-f6711605e816
+    taskid: 908c82d7-8360-41b6-8072-76061a394e3e
     type: regular
     task:
-      id: 28fe8e34-959f-44c2-8cf2-f6711605e816
+      id: 908c82d7-8360-41b6-8072-76061a394e3e
       version: -1
-      name: Set AssetTag with False Positive Tag from Inputs
+      name: Set AssetTag with Invalid Tag from Inputs
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -3872,13 +3818,14 @@ tasks:
         simple: AssetTag
       stringify: {}
       value:
-        simple: ${inputs.FalsePositiveTag}
+        complex:
+          root: inputs.InvalidTag
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -267.5,
-          "y": 5060
+          "x": 70,
+          "y": 5110
         }
       }
     note: false
@@ -3888,10 +3835,10 @@ tasks:
     quietmode: 0
   "105":
     id: "105"
-    taskid: a14e7fb3-548a-4022-8cc1-4fffc8b3e67f
+    taskid: 67bbd48a-fb4a-4c58-8664-5ea371bb653e
     type: regular
     task:
-      id: a14e7fb3-548a-4022-8cc1-4fffc8b3e67f
+      id: 67bbd48a-fb4a-4c58-8664-5ea371bb653e
       version: -1
       name: Link Incidents
       description: commands.local.cmd.linkIncidents
@@ -3913,8 +3860,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4610,
-          "y": 8875
+          "x": 2520,
+          "y": 6845
         }
       }
     note: false
@@ -3924,10 +3871,10 @@ tasks:
     quietmode: 0
   "106":
     id: "106"
-    taskid: 869fb602-13ca-4f45-884d-3c3990e12b0a
+    taskid: 0f638d94-a06c-409f-8123-a48e4445ec3b
     type: regular
     task:
-      id: 869fb602-13ca-4f45-884d-3c3990e12b0a
+      id: 0f638d94-a06c-409f-8123-a48e4445ec3b
       version: -1
       name: Copy Suggestion Notes to Created Incident
       description: Copy notes from current incident to a remote incident
@@ -3948,8 +3895,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4610,
-          "y": 9305
+          "x": 2520,
+          "y": 7165
         }
       }
     note: false
@@ -3959,10 +3906,10 @@ tasks:
     quietmode: 0
   "108":
     id: "108"
-    taskid: cb8b1c13-5157-49ff-8eab-c87acda169f3
+    taskid: c4527952-0ea6-4088-8116-11becd29b88c
     type: regular
     task:
-      id: cb8b1c13-5157-49ff-8eab-c87acda169f3
+      id: c4527952-0ea6-4088-8116-11becd29b88c
       version: -1
       name: Print Prisma Cloud suggestions
       description: Convert an array to a nice table display. Usually, from the context.
@@ -4002,8 +3949,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2350,
-          "y": 3160
+          "x": 490,
+          "y": 2420
         }
       }
     note: true
@@ -4013,16 +3960,15 @@ tasks:
     quietmode: 0
   "109":
     id: "109"
-    taskid: a550d800-3579-47e9-86cc-4f376fb3ba6c
+    taskid: 876f3d9c-aea6-4d31-8011-35c61544d830
     type: title
     task:
-      id: a550d800-3579-47e9-86cc-4f376fb3ba6c
+      id: 876f3d9c-aea6-4d31-8011-35c61544d830
       version: -1
       name: Prisma Cloud Alert Detection
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "110"
@@ -4030,8 +3976,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1180,
-          "y": 5860
+          "x": -1150,
+          "y": 6830
         }
       }
     note: false
@@ -4041,10 +3987,10 @@ tasks:
     quietmode: 0
   "110":
     id: "110"
-    taskid: 4083cbc8-0f6d-43b9-8629-a27b932670f9
+    taskid: 1cf90da1-5be2-4a1c-8071-e9361f03e623
     type: condition
     task:
-      id: 4083cbc8-0f6d-43b9-8629-a27b932670f9
+      id: 1cf90da1-5be2-4a1c-8071-e9361f03e623
       version: -1
       name: Are assets in Prisma Cloud found?
       description: Check whether assets are found in Prisma Cloud
@@ -4070,8 +4016,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1180,
-          "y": 6130
+          "x": -1150,
+          "y": 6965
         }
       }
     note: false
@@ -4081,16 +4027,15 @@ tasks:
     quietmode: 0
   "111":
     id: "111"
-    taskid: 92a309ef-c33c-4b00-8dcc-6de5338efce7
+    taskid: ea69cf87-766b-41b3-872c-d1429fec0c8b
     type: title
     task:
-      id: 92a309ef-c33c-4b00-8dcc-6de5338efce7
+      id: ea69cf87-766b-41b3-872c-d1429fec0c8b
       version: -1
       name: Done Prisma Cloud Alert Detection
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "75"
@@ -4098,8 +4043,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1180,
-          "y": 9555
+          "x": -1150,
+          "y": 7490
         }
       }
     note: false
@@ -4109,10 +4054,10 @@ tasks:
     quietmode: 0
   "116":
     id: "116"
-    taskid: 10dc439e-3f13-4847-8b6a-db9e4e1948e8
+    taskid: 81d15dc4-3d3e-4b59-8d8f-6dee55228fcb
     type: regular
     task:
-      id: 10dc439e-3f13-4847-8b6a-db9e4e1948e8
+      id: 81d15dc4-3d3e-4b59-8d8f-6dee55228fcb
       version: -1
       name: Create DG Tag in Expanse (if it doesn't already exist)
       description: Create a new tag in Expanse.
@@ -4122,7 +4067,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "194"
+      - "206"
     scriptarguments:
       description:
         simple: Created by XSOAR for Device Group tagging
@@ -4133,8 +4078,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2495,
-          "y": 8835
+          "x": 2465,
+          "y": 10175
         }
       }
     note: false
@@ -4144,10 +4089,10 @@ tasks:
     quietmode: 0
   "118":
     id: "118"
-    taskid: 235436c2-d599-4c07-8403-af69e949712e
+    taskid: c8fb61b4-7e06-4203-89aa-1dfb86896203
     type: regular
     task:
-      id: 235436c2-d599-4c07-8403-af69e949712e
+      id: c8fb61b4-7e06-4203-89aa-1dfb86896203
       version: -1
       name: Save DG Tag to List
       description: Adds/Replaces a key in key/value store backed by an XSOAR list.
@@ -4175,8 +4120,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2752.5,
-          "y": 8490
+          "x": 2722.5,
+          "y": 9840
         }
       }
     note: false
@@ -4186,10 +4131,10 @@ tasks:
     quietmode: 0
   "119":
     id: "119"
-    taskid: f815157d-8c02-44ab-8849-b11b6181b519
+    taskid: 8aa14c11-857a-440a-8c29-66cee2143db9
     type: condition
     task:
-      id: f815157d-8c02-44ab-8849-b11b6181b519
+      id: 8aa14c11-857a-440a-8c29-66cee2143db9
       version: -1
       name: Determine Target
       description: Determine the target Device Group
@@ -4270,8 +4215,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2055,
-          "y": 7785
+          "x": 1930,
+          "y": 9070
         }
       }
     note: false
@@ -4281,10 +4226,10 @@ tasks:
     quietmode: 0
   "120":
     id: "120"
-    taskid: 2d568b42-0ca8-4a89-8cca-258621529bae
+    taskid: 0aead5b7-e566-4dda-8aac-2cba7690bc1d
     type: collection
     task:
-      id: 2d568b42-0ca8-4a89-8cca-258621529bae
+      id: 0aead5b7-e566-4dda-8aac-2cba7690bc1d
       version: -1
       name: Insert Device Group name and tag
       description: Collect Device Group information from user.
@@ -4298,8 +4243,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2752.5,
-          "y": 8060
+          "x": 2722.5,
+          "y": 9370
         }
       }
     note: false
@@ -4314,8 +4259,8 @@ tasks:
         simple: Select Device Group Name and Tag
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -4361,12 +4306,12 @@ tasks:
     quietmode: 0
   "121":
     id: "121"
-    taskid: 8a530c01-2dfb-488d-830d-d3785d8061c3
+    taskid: 7010099c-826e-4066-80ed-1c10a7f13639
     type: regular
     task:
-      id: 8a530c01-2dfb-488d-830d-d3785d8061c3
+      id: 7010099c-826e-4066-80ed-1c10a7f13639
       version: -1
-      name: Refresh Assets
+      name: Refresh Assets to sync updated tags
       description: |
         Script to refresh tags and attribution reasons of assets inside Expanse Issue. The script should be used inside the Expanse Issue incident context.
       scriptName: ExpanseRefreshIssueAssets
@@ -4380,8 +4325,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2752.5,
-          "y": 9160
+          "x": 2465,
+          "y": 10620
         }
       }
     note: false
@@ -4391,10 +4336,10 @@ tasks:
     quietmode: 0
   "122":
     id: "122"
-    taskid: 843cf650-061d-4ba9-8245-69c0c91280f2
+    taskid: ced5ad8f-6473-45a0-8ce7-c945efae13d1
     type: regular
     task:
-      id: 843cf650-061d-4ba9-8245-69c0c91280f2
+      id: ced5ad8f-6473-45a0-8ce7-c945efae13d1
       version: -1
       name: Extract All Asset Tags from Expanse
       description: Set a value in context under the key you entered. If no value is
@@ -4417,17 +4362,17 @@ tasks:
           root: incident.expanseasset
           accessor: tags
           transformers:
-          - operator: split
+          - operator: DT
             args:
-              delimiter:
+              dt:
                 value:
-                  simple: \n
+                  simple: .=foo(val);function foo(aa) { return aa.split('\n');}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": -1130
+          "x": 490,
+          "y": -1650
         }
       }
     note: false
@@ -4437,10 +4382,10 @@ tasks:
     quietmode: 0
   "123":
     id: "123"
-    taskid: a8625115-6ced-453c-8fe3-0e45bd042ae2
+    taskid: d40153bf-f327-41bc-8510-7535a4f0779f
     type: regular
     task:
-      id: a8625115-6ced-453c-8fe3-0e45bd042ae2
+      id: d40153bf-f327-41bc-8510-7535a4f0779f
       version: -1
       name: Extract only XSOAR-related Asset Tags
       description: Set a value in context under the key you entered. If no value is
@@ -4475,8 +4420,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": -950
+          "x": 490,
+          "y": -1490
         }
       }
     note: false
@@ -4486,10 +4431,10 @@ tasks:
     quietmode: 0
   "124":
     id: "124"
-    taskid: 3cab733e-b6dc-4e8b-8a50-b67bcbfb0704
+    taskid: 47421455-5bea-4b4f-8f0e-5d8b79c8cec2
     type: regular
     task:
-      id: 3cab733e-b6dc-4e8b-8a50-b67bcbfb0704
+      id: 47421455-5bea-4b4f-8f0e-5d8b79c8cec2
       version: -1
       name: Set Device Group Tag Prefix
       description: Set a value in context under the key you entered.
@@ -4520,8 +4465,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1960,
-          "y": 6310
+          "x": 1930,
+          "y": 6925
         }
       }
     note: false
@@ -4531,10 +4476,10 @@ tasks:
     quietmode: 0
   "125":
     id: "125"
-    taskid: 1a978907-642c-4305-89ac-9f859f4491b5
+    taskid: 043da868-5c99-436a-8ed5-a8d3e049d133
     type: regular
     task:
-      id: 1a978907-642c-4305-89ac-9f859f4491b5
+      id: 043da868-5c99-436a-8ed5-a8d3e049d133
       version: -1
       name: Find Device Group Tags
       description: Set a value in context under the key you entered. If no value is
@@ -4569,8 +4514,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1960,
-          "y": 6440
+          "x": 1930,
+          "y": 7095
         }
       }
     note: false
@@ -4580,10 +4525,10 @@ tasks:
     quietmode: 0
   "133":
     id: "133"
-    taskid: c09dc9ae-4543-4c7f-8076-cd88ec39d3a0
+    taskid: 2f747558-305a-45e1-8ee6-0e0a4aa33701
     type: regular
     task:
-      id: c09dc9ae-4543-4c7f-8076-cd88ec39d3a0
+      id: 2f747558-305a-45e1-8ee6-0e0a4aa33701
       version: -1
       name: Suggest No Shadow IT
       description: Set a value in context under the key you entered.
@@ -4606,8 +4551,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1677.5,
-          "y": 2605
+          "x": 1740,
+          "y": 1835
         }
       }
     note: false
@@ -4617,10 +4562,10 @@ tasks:
     quietmode: 0
   "135":
     id: "135"
-    taskid: 25105084-c304-4a66-8409-9e8a4a52d263
+    taskid: b224e618-7144-4a72-8520-899a4ec2b9fb
     type: regular
     task:
-      id: 25105084-c304-4a66-8409-9e8a4a52d263
+      id: b224e618-7144-4a72-8520-899a4ec2b9fb
       version: -1
       name: Set Shadow IT flag based on User response
       description: commands.local.cmd.set.incident
@@ -4944,8 +4889,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 650,
-          "y": 4210
+          "x": 490,
+          "y": 3060
         }
       }
     note: false
@@ -4955,10 +4900,10 @@ tasks:
     quietmode: 0
   "136":
     id: "136"
-    taskid: 87450fbe-24b8-4f11-8112-703ebb10c1f5
+    taskid: 1087caa3-49a0-4b40-83d6-a497e9cc9683
     type: condition
     task:
-      id: 87450fbe-24b8-4f11-8112-703ebb10c1f5
+      id: 1087caa3-49a0-4b40-83d6-a497e9cc9683
       version: -1
       name: Did User reply to the Shadow IT question?
       description: Check whether user answered to the Shadow IT question.
@@ -4988,8 +4933,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 297.5,
-          "y": 3510
+          "x": 917.5,
+          "y": 2840
         }
       }
     note: false
@@ -4999,10 +4944,10 @@ tasks:
     quietmode: 0
   "140":
     id: "140"
-    taskid: 89a32cfc-1c3f-41ca-87ee-52a366cea8c0
+    taskid: cb9d3123-6f95-4036-8266-bd10724c7a81
     type: regular
     task:
-      id: 89a32cfc-1c3f-41ca-87ee-52a366cea8c0
+      id: cb9d3123-6f95-4036-8266-bd10724c7a81
       version: -1
       name: Set Device Group Tag Value
       description: Set a value in context under the key you entered.
@@ -5041,8 +4986,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2752.5,
-          "y": 8210
+          "x": 2722.5,
+          "y": 9530
         }
       }
     note: false
@@ -5052,10 +4997,10 @@ tasks:
     quietmode: 0
   "141":
     id: "141"
-    taskid: d689b5e0-23c1-4df3-807f-9ff0e5e5f84a
+    taskid: 1c02727a-bf8b-400e-8b92-4dfe82a044e6
     type: regular
     task:
-      id: d689b5e0-23c1-4df3-807f-9ff0e5e5f84a
+      id: 1c02727a-bf8b-400e-8b92-4dfe82a044e6
       version: -1
       name: Get Expanse Comments
       description: Retrieve issue comments (subset of updates)
@@ -5076,8 +5021,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1070,
-          "y": -460
+          "x": 1327.5,
+          "y": -510
         }
       }
     note: true
@@ -5091,16 +5036,15 @@ tasks:
     quietmode: 0
   "147":
     id: "147"
-    taskid: adb0c0db-f712-4dde-8a6d-dd0a19a58a7b
+    taskid: 593ba383-561d-4a96-823a-bcd5292be2b7
     type: title
     task:
-      id: adb0c0db-f712-4dde-8a6d-dd0a19a58a7b
+      id: 593ba383-561d-4a96-823a-bcd5292be2b7
       version: -1
       name: Done Validation
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "62"
@@ -5108,8 +5052,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1297.5,
-          "y": 1230
+          "x": 1327.5,
+          "y": 620
         }
       }
     note: false
@@ -5119,10 +5063,10 @@ tasks:
     quietmode: 0
   "151":
     id: "151"
-    taskid: baa6de02-9300-4422-8318-c06cde0569a2
+    taskid: 23103234-729a-46a0-8b13-ac336de0eb60
     type: regular
     task:
-      id: baa6de02-9300-4422-8318-c06cde0569a2
+      id: 23103234-729a-46a0-8b13-ac336de0eb60
       version: -1
       name: 'Set Shadow IT Condition variable: On Prisma Cloud?'
       description: Set a value in context under the key you entered. If no value is
@@ -5162,8 +5106,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 712.5,
-          "y": 1870
+          "x": 490,
+          "y": 1080
         }
       }
     note: false
@@ -5173,10 +5117,10 @@ tasks:
     quietmode: 0
   "152":
     id: "152"
-    taskid: 0e906644-500e-4d74-8af9-14249b09fb92
+    taskid: c4c2a701-9240-4927-82b8-ff5be34db847
     type: regular
     task:
-      id: 0e906644-500e-4d74-8af9-14249b09fb92
+      id: c4c2a701-9240-4927-82b8-ff5be34db847
       version: -1
       name: 'Set Shadow IT Condition variable: On Prem high confidence to True'
       description: Set a value in context under the key you entered. If no value is
@@ -5209,8 +5153,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1070,
-          "y": 2040
+          "x": 907.5,
+          "y": 1260
         }
       }
     note: false
@@ -5220,10 +5164,10 @@ tasks:
     quietmode: 0
   "153":
     id: "153"
-    taskid: 2dfe4f71-5345-4f65-8e38-a8cf6b6ad286
+    taskid: dd53f028-f287-453f-842f-15b019a22984
     type: regular
     task:
-      id: 2dfe4f71-5345-4f65-8e38-a8cf6b6ad286
+      id: dd53f028-f287-453f-842f-15b019a22984
       version: -1
       name: 'Set Shadow IT Condition variable: any Firewall exposing service?'
       description: Set a value in context under the key you entered. If no value is
@@ -5272,8 +5216,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1922.5,
-          "y": 1870
+          "x": 2150,
+          "y": 1080
         }
       }
     note: false
@@ -5283,16 +5227,15 @@ tasks:
     quietmode: 0
   "154":
     id: "154"
-    taskid: 685a3514-b573-44e6-8636-0a5cf81945e8
+    taskid: 4fd66c19-3e6a-4a66-87b3-2d523a4a4783
     type: title
     task:
-      id: 685a3514-b573-44e6-8636-0a5cf81945e8
+      id: 4fd66c19-3e6a-4a66-87b3-2d523a4a4783
       version: -1
       name: Set up Shadow IT Condition Variables for report
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "151"
@@ -5302,8 +5245,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1297.5,
-          "y": 1680
+          "x": 1327.5,
+          "y": 910
         }
       }
     note: false
@@ -5313,16 +5256,15 @@ tasks:
     quietmode: 0
   "155":
     id: "155"
-    taskid: f90bd3d0-2b0b-4cc5-8ed2-93fcd51be598
+    taskid: 7f4042b7-0ad7-4a2e-8b7d-fc2b30ec8d28
     type: title
     task:
-      id: f90bd3d0-2b0b-4cc5-8ed2-93fcd51be598
+      id: 7f4042b7-0ad7-4a2e-8b7d-fc2b30ec8d28
       version: -1
       name: Done Setting up Shadow IT Conditions for Report
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "59"
@@ -5330,8 +5272,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1297.5,
-          "y": 2220
+          "x": 1317.5,
+          "y": 1460
         }
       }
     note: false
@@ -5341,10 +5283,10 @@ tasks:
     quietmode: 0
   "156":
     id: "156"
-    taskid: 27a42fda-44c4-424e-86fe-9e77ccaf9c71
+    taskid: d02a612b-f698-4687-89ee-307f5ed896a2
     type: condition
     task:
-      id: 27a42fda-44c4-424e-86fe-9e77ccaf9c71
+      id: d02a612b-f698-4687-89ee-307f5ed896a2
       version: -1
       name: On-prem with high confidence?
       description: Check whether the asset is market as on prem with a high degree
@@ -5395,8 +5337,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1297.5,
-          "y": 1860
+          "x": 1327.5,
+          "y": 1090
         }
       }
     note: false
@@ -5406,10 +5348,10 @@ tasks:
     quietmode: 0
   "157":
     id: "157"
-    taskid: 182c0bd6-80c5-4a09-8e64-2e32cea65c24
+    taskid: ad1a266f-8ca1-45bc-8198-4389ef9cf30d
     type: regular
     task:
-      id: 182c0bd6-80c5-4a09-8e64-2e32cea65c24
+      id: ad1a266f-8ca1-45bc-8198-4389ef9cf30d
       version: -1
       name: 'Set Shadow IT Condition variable: On Prem high confidence to False'
       description: Set a value in context under the key you entered. If no value is
@@ -5442,8 +5384,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1517.5,
-          "y": 2040
+          "x": 1735,
+          "y": 1260
         }
       }
     note: false
@@ -5453,10 +5395,10 @@ tasks:
     quietmode: 0
   "158":
     id: "158"
-    taskid: 7c27cc76-181d-4333-8394-bc7616434b6c
+    taskid: 477ccccf-63fa-479b-8a95-fe4e34fc2cfc
     type: regular
     task:
-      id: 7c27cc76-181d-4333-8394-bc7616434b6c
+      id: 477ccccf-63fa-479b-8a95-fe4e34fc2cfc
       version: -1
       name: Generate Report for Attribution
       description: 'Print '
@@ -5526,8 +5468,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1297.5,
-          "y": 2780
+          "x": 1317.5,
+          "y": 2020
         }
       }
     note: true
@@ -5541,10 +5483,10 @@ tasks:
     quietmode: 0
   "159":
     id: "159"
-    taskid: baa647b7-5226-47d3-8b43-d9382a62a330
+    taskid: b0efd4f5-e68e-4f53-8c24-223e769d1112
     type: regular
     task:
-      id: baa647b7-5226-47d3-8b43-d9382a62a330
+      id: b0efd4f5-e68e-4f53-8c24-223e769d1112
       version: -1
       name: 'Extract XSOAR Incident Tags related to OU Attribtion '
       description: Set a value in context under the key you entered. If no value is
@@ -5563,23 +5505,22 @@ tasks:
       stringify: {}
       value:
         complex:
-          root: ExpanseXSOARIssueTags
+          root: incident.expansetags
           filters:
           - - operator: StringContainsArray
               left:
                 value:
-                  simple: ExpanseXSOARIssueTags
+                  simple: incident.expansetags
                 iscontext: true
               right:
                 value:
                   simple: -ou-
-              ignorecase: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 907.5,
-          "y": -1130
+          "x": 917.5,
+          "y": -1650
         }
       }
     note: false
@@ -5589,10 +5530,10 @@ tasks:
     quietmode: 0
   "161":
     id: "161"
-    taskid: 23c457ff-df33-49df-833e-750deb5a3fb8
+    taskid: 940b64fb-9a91-4876-816b-a33c95558147
     type: regular
     task:
-      id: 23c457ff-df33-49df-833e-750deb5a3fb8
+      id: 940b64fb-9a91-4876-816b-a33c95558147
       version: -1
       name: Set Progress Status to Investigating in Expanse issue
       description: Update Expanse issue.
@@ -5617,7 +5558,7 @@ tasks:
       {
         "position": {
           "x": 1740,
-          "y": -1840
+          "y": -2530
         }
       }
     note: false
@@ -5627,10 +5568,10 @@ tasks:
     quietmode: 0
   "162":
     id: "162"
-    taskid: 34ad51a2-ea5c-4b42-8bcd-ac8949aefcce
+    taskid: 40fbf1f0-0966-4161-8b4c-b908270d8e67
     type: regular
     task:
-      id: 34ad51a2-ea5c-4b42-8bcd-ac8949aefcce
+      id: 40fbf1f0-0966-4161-8b4c-b908270d8e67
       version: -1
       name: Add "Being investigated by XSOAR" comment to Expanse issue
       description: Update Expanse issue.
@@ -5655,7 +5596,7 @@ tasks:
       {
         "position": {
           "x": 1740,
-          "y": -1680
+          "y": -2370
         }
       }
     note: false
@@ -5665,10 +5606,10 @@ tasks:
     quietmode: 0
   "163":
     id: "163"
-    taskid: da57cc06-4744-4127-89c2-bf1b17a51ab5
+    taskid: 8f7254c6-cb2b-438b-88e9-36e609651f99
     type: condition
     task:
-      id: da57cc06-4744-4127-89c2-bf1b17a51ab5
+      id: 8f7254c6-cb2b-438b-88e9-36e609651f99
       version: -1
       name: Are we writing to Expanse?
       description: Determine whether playbook should write data back to Expanse.
@@ -5698,7 +5639,7 @@ tasks:
       {
         "position": {
           "x": 1327.5,
-          "y": -2040
+          "y": -2730
         }
       }
     note: false
@@ -5708,10 +5649,10 @@ tasks:
     quietmode: 0
   "164":
     id: "164"
-    taskid: 6479c0e7-81eb-47bf-8ec8-2edffac23a7a
+    taskid: 88bf4419-33ff-4426-8d9d-d72834d844a6
     type: condition
     task:
-      id: 6479c0e7-81eb-47bf-8ec8-2edffac23a7a
+      id: 88bf4419-33ff-4426-8d9d-d72834d844a6
       version: -1
       name: Are we writing to Expanse?
       description: Determine whether playbook should write data back to Expanse.
@@ -5740,8 +5681,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 4670
+          "x": 917.5,
+          "y": 4730
         }
       }
     note: false
@@ -5751,16 +5692,15 @@ tasks:
     quietmode: 0
   "165":
     id: "165"
-    taskid: 1f2c14c2-483f-4860-8a32-23759e2eeeef
+    taskid: b7933c10-4a57-430f-8536-40f8343b5600
     type: title
     task:
-      id: 1f2c14c2-483f-4860-8a32-23759e2eeeef
+      id: b7933c10-4a57-430f-8536-40f8343b5600
       version: -1
       name: Tag Assets
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "164"
@@ -5768,8 +5708,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 4530
+          "x": 917.5,
+          "y": 4595
         }
       }
     note: false
@@ -5779,16 +5719,15 @@ tasks:
     quietmode: 0
   "166":
     id: "166"
-    taskid: caed24cd-e6d8-4f6b-81e4-fbbadac96709
+    taskid: 3bcb3acd-0e9d-426a-8e4b-65345f676472
     type: title
     task:
-      id: caed24cd-e6d8-4f6b-81e4-fbbadac96709
+      id: 3bcb3acd-0e9d-426a-8e4b-65345f676472
       version: -1
       name: Done Tagging
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "30"
@@ -5796,8 +5735,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 5580
+          "x": 917.5,
+          "y": 5935
         }
       }
     note: false
@@ -5807,10 +5746,10 @@ tasks:
     quietmode: 0
   "167":
     id: "167"
-    taskid: dce3d124-8262-4302-88a2-77c7bc00bb6d
+    taskid: 5c378e00-6638-41a2-888d-1c9fea52a4f5
     type: playbook
     task:
-      id: dce3d124-8262-4302-88a2-77c7bc00bb6d
+      id: 5c378e00-6638-41a2-888d-1c9fea52a4f5
       version: -1
       name: Extract and Enrich Expanse Indicators
       description: Extract and Enrich Indicators (CIDRs, IPs, Certificates and Domains)
@@ -5842,8 +5781,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1620,
-          "y": -460
+          "x": 1735,
+          "y": -510
         }
       }
     note: false
@@ -5853,10 +5792,10 @@ tasks:
     quietmode: 0
   "169":
     id: "169"
-    taskid: b9ebb5c4-33ee-46d3-81e7-0a8c9b10b9d2
+    taskid: 07d4f11d-4054-4505-844d-39d8a2d8f28f
     type: condition
     task:
-      id: b9ebb5c4-33ee-46d3-81e7-0a8c9b10b9d2
+      id: 07d4f11d-4054-4505-844d-39d8a2d8f28f
       version: -1
       name: Are we writing to Expanse?
       description: Determine whether playbook should write data back to Expanse.
@@ -5883,8 +5822,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2752.5,
-          "y": 8660
+          "x": 2722.5,
+          "y": 10000
         }
       }
     note: false
@@ -5894,17 +5833,18 @@ tasks:
     quietmode: 0
   "172":
     id: "172"
-    taskid: 8028156d-0d7f-46a7-889d-5ba9732c737c
+    taskid: b6279c8c-454d-429b-86fe-72a27ab36194
     type: playbook
     task:
-      id: 8028156d-0d7f-46a7-889d-5ba9732c737c
+      id: b6279c8c-454d-429b-86fe-72a27ab36194
       version: -1
       name: Prisma Cloud Correlate Alerts
+      description: Search alerts in Prisma Cloud for a specific asset ID and, if present
+        in XSOAR, link them.
       playbookName: Prisma Cloud Correlate Alerts
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "111"
@@ -5924,21 +5864,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1600,
-          "y": 7460
+          "x": -1450,
+          "y": 7210
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "173":
     id: "173"
-    taskid: 29ba3e6d-66a0-47a6-85ef-96c30e206c0e
+    taskid: c066d9e9-a089-4b47-893d-0fffb8debfe1
     type: regular
     task:
-      id: 29ba3e6d-66a0-47a6-85ef-96c30e206c0e
+      id: c066d9e9-a089-4b47-893d-0fffb8debfe1
       version: -1
       name: Refresh Assets
       description: |
@@ -5954,8 +5894,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": -1305
+          "x": 490,
+          "y": -1825
         }
       }
     note: false
@@ -5965,16 +5905,15 @@ tasks:
     quietmode: 0
   "174":
     id: "174"
-    taskid: 2789fc33-86f2-48a8-81ad-d3cbc81605be
+    taskid: e5ad0374-877e-4fd2-8bda-305482d7eeef
     type: title
     task:
-      id: 2789fc33-86f2-48a8-81ad-d3cbc81605be
+      id: e5ad0374-877e-4fd2-8bda-305482d7eeef
       version: -1
       name: Done DG Tagging
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -5982,8 +5921,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2752.5,
-          "y": 9305
+          "x": 2465,
+          "y": 10775
         }
       }
     note: false
@@ -5993,12 +5932,12 @@ tasks:
     quietmode: 0
   "175":
     id: "175"
-    taskid: 62164524-366d-4045-83c4-f349a6bfd5ab
+    taskid: 98de7bbf-c6b9-4cb8-8a9d-17f3ced525d6
     type: regular
     task:
-      id: 62164524-366d-4045-83c4-f349a6bfd5ab
+      id: 98de7bbf-c6b9-4cb8-8a9d-17f3ced525d6
       version: -1
-      name: Refresh Assets
+      name: Refresh Assets to sync updated tags
       description: |
         Script to refresh tags and attribution reasons of assets inside Expanse Issue. The script should be used inside the Expanse Issue incident context.
       scriptName: ExpanseRefreshIssueAssets
@@ -6012,8 +5951,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -80,
-          "y": 5550
+          "x": 490,
+          "y": 5750
         }
       }
     note: false
@@ -6023,10 +5962,10 @@ tasks:
     quietmode: 0
   "176":
     id: "176"
-    taskid: 31f9a6a6-3bfb-40f0-8476-489ff444f36c
+    taskid: f29fb579-9258-4afb-876c-7fd2d031ad61
     type: condition
     task:
-      id: 31f9a6a6-3bfb-40f0-8476-489ff444f36c
+      id: f29fb579-9258-4afb-876c-7fd2d031ad61
       version: -1
       name: Collect Risky Flows from Behavior?
       description: Collect Risky Flows for the IP address from Expanse Behavior?
@@ -6055,8 +5994,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 620,
-          "y": -590
+          "x": 917.5,
+          "y": -510
         }
       }
     note: false
@@ -6066,10 +6005,10 @@ tasks:
     quietmode: 0
   "177":
     id: "177"
-    taskid: 626a3ba8-23a2-47b3-8be3-ccb712ef6e0f
+    taskid: 0f048d87-a207-4590-8dfa-aa2649fd47d7
     type: condition
     task:
-      id: 626a3ba8-23a2-47b3-8be3-ccb712ef6e0f
+      id: 0f048d87-a207-4590-8dfa-aa2649fd47d7
       version: -1
       name: Create Shadow IT Incident automatically?
       description: If the ShadowITIncidentType input is set, an incident of this type
@@ -6095,8 +6034,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4222.5,
-          "y": 8500
+          "x": 2980,
+          "y": 6420
         }
       }
     note: false
@@ -6106,10 +6045,10 @@ tasks:
     quietmode: 0
   "178":
     id: "178"
-    taskid: 42cb95e5-ff1e-4c72-861b-f71a5caa3f8f
+    taskid: 421938dd-f7a8-4b8e-8633-96c2d754a934
     type: regular
     task:
-      id: 42cb95e5-ff1e-4c72-861b-f71a5caa3f8f
+      id: 421938dd-f7a8-4b8e-8633-96c2d754a934
       version: -1
       name: Manually create Shadow IT Incident
       description: Manually create an Incident to handle the Shadow IT investigation.
@@ -6124,8 +6063,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4060,
-          "y": 8680
+          "x": 2980,
+          "y": 6680
         }
       }
     note: false
@@ -6135,10 +6074,10 @@ tasks:
     quietmode: 0
   "179":
     id: "179"
-    taskid: 1f058f6d-7228-48b7-8114-c852a86debe3
+    taskid: 9f422485-30e0-4bb1-88b3-4d6b3e7cb6e8
     type: regular
     task:
-      id: 1f058f6d-7228-48b7-8114-c852a86debe3
+      id: 9f422485-30e0-4bb1-88b3-4d6b3e7cb6e8
       version: -1
       name: Set Shadow IT Pack Incident Fields
       description: If the Shadow IT content pack is enabled and the Shadow IT incident
@@ -6583,8 +6522,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4610,
-          "y": 9095
+          "x": 2520,
+          "y": 7010
         }
       }
     note: false
@@ -6594,17 +6533,16 @@ tasks:
     quietmode: 0
   "180":
     id: "180"
-    taskid: c4f5b2a6-84e6-4ebd-81f6-df2aedc28aaf
+    taskid: 8b176b68-4261-4fbf-81d4-ff6c9524ede7
     type: playbook
     task:
-      id: c4f5b2a6-84e6-4ebd-81f6-df2aedc28aaf
+      id: 8b176b68-4261-4fbf-81d4-ff6c9524ede7
       version: -1
       name: Enrich Cloud Assets
       playbookName: Enrich Cloud Assets
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "147"
@@ -6612,8 +6550,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1637.5,
-          "y": 420
+          "x": 917.5,
+          "y": 370
         }
       }
     note: false
@@ -6623,10 +6561,10 @@ tasks:
     quietmode: 0
   "184":
     id: "184"
-    taskid: 731c7d3e-e986-4aec-8155-a8cbdc59b3c6
+    taskid: 830dee14-969a-4365-852b-b0ad76a86584
     type: regular
     task:
-      id: 731c7d3e-e986-4aec-8155-a8cbdc59b3c6
+      id: 830dee14-969a-4365-852b-b0ad76a86584
       version: -1
       name: Save OU To Tag List
       description: Set a value in context under the key you entered.
@@ -6651,8 +6589,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2435,
-          "y": -1130
+          "x": 1735,
+          "y": -1650
         }
       }
     note: false
@@ -6662,10 +6600,10 @@ tasks:
     quietmode: 0
   "187":
     id: "187"
-    taskid: 830be7e1-ea54-4928-89d9-473667975952
+    taskid: 1afccf8e-14ca-4c18-8d0a-cedd756b050e
     type: regular
     task:
-      id: 830be7e1-ea54-4928-89d9-473667975952
+      id: 1afccf8e-14ca-4c18-8d0a-cedd756b050e
       version: -1
       name: Save OU To Owner List
       description: Set a value in context under the key you entered.
@@ -6690,8 +6628,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2435,
-          "y": -770
+          "x": 1735,
+          "y": -1310
         }
       }
     note: false
@@ -6701,10 +6639,10 @@ tasks:
     quietmode: 0
   "188":
     id: "188"
-    taskid: ed1b5fd5-50a0-4977-8880-202bbf6c4b61
+    taskid: 144034b4-a033-4aa7-8d4c-4015e68ea0e2
     type: regular
     task:
-      id: ed1b5fd5-50a0-4977-8880-202bbf6c4b61
+      id: 144034b4-a033-4aa7-8d4c-4015e68ea0e2
       version: -1
       name: Save Firewall Tag List
       description: Set a value in context under the key you entered.
@@ -6729,8 +6667,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2435,
-          "y": -420
+          "x": 1735,
+          "y": -960
         }
       }
     note: false
@@ -6740,10 +6678,10 @@ tasks:
     quietmode: 0
   "190":
     id: "190"
-    taskid: 420a4ae3-b10f-4f70-89f0-9e7f4482cdb4
+    taskid: 86bde740-aa95-4a42-8e2f-c1e32fba9648
     type: regular
     task:
-      id: 420a4ae3-b10f-4f70-89f0-9e7f4482cdb4
+      id: 86bde740-aa95-4a42-8e2f-c1e32fba9648
       version: -1
       name: Reload OU To Owner List
       description: commands.local.cmd.list.get
@@ -6763,8 +6701,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2330,
-          "y": 4010
+          "x": 2070,
+          "y": 3460
         }
       }
     note: false
@@ -6774,10 +6712,10 @@ tasks:
     quietmode: 0
   "191":
     id: "191"
-    taskid: f28577e3-5ae5-4e18-852e-e594782570b1
+    taskid: 352a34cc-5462-45ca-8d5b-ea02816e3ae6
     type: regular
     task:
-      id: f28577e3-5ae5-4e18-852e-e594782570b1
+      id: 352a34cc-5462-45ca-8d5b-ea02816e3ae6
       version: -1
       name: Set OU To Owner List
       description: Set a value in context under the key you entered.
@@ -6804,8 +6742,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2330,
-          "y": 4160
+          "x": 2070,
+          "y": 3610
         }
       }
     note: false
@@ -6815,10 +6753,10 @@ tasks:
     quietmode: 0
   "192":
     id: "192"
-    taskid: 8837eb58-a89c-4d47-820e-1f268ddc5cee
+    taskid: 6adfabe7-031d-46c2-8d4e-4a6464746de9
     type: regular
     task:
-      id: 8837eb58-a89c-4d47-820e-1f268ddc5cee
+      id: 6adfabe7-031d-46c2-8d4e-4a6464746de9
       version: -1
       name: Reload OU To Tag List
       description: commands.local.cmd.list.get
@@ -6838,8 +6776,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2330,
-          "y": 4485
+          "x": 2070,
+          "y": 3935
         }
       }
     note: false
@@ -6849,10 +6787,10 @@ tasks:
     quietmode: 0
   "193":
     id: "193"
-    taskid: 84dc7a24-1f78-4b05-8407-669b57186d18
+    taskid: 88754c96-8017-4252-89db-163a88d4c66a
     type: regular
     task:
-      id: 84dc7a24-1f78-4b05-8407-669b57186d18
+      id: 88754c96-8017-4252-89db-163a88d4c66a
       version: -1
       name: Set OU To Tag List
       description: Set a value in context under the key you entered.
@@ -6879,8 +6817,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2330,
-          "y": 4640
+          "x": 2070,
+          "y": 4090
         }
       }
     note: false
@@ -6890,10 +6828,10 @@ tasks:
     quietmode: 0
   "194":
     id: "194"
-    taskid: 2165c08d-eef3-447a-83a6-769f66d19f9a
+    taskid: dbb275a5-0004-483d-8c73-4e7fafe38a5d
     type: regular
     task:
-      id: 2165c08d-eef3-447a-83a6-769f66d19f9a
+      id: dbb275a5-0004-483d-8c73-4e7fafe38a5d
       version: -1
       name: Tag Assets on Expanse
       description: Assign tags to Asset.
@@ -6924,8 +6862,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2495,
-          "y": 8990
+          "x": 2465,
+          "y": 10470
         }
       }
     note: false
@@ -6935,10 +6873,10 @@ tasks:
     quietmode: 0
   "196":
     id: "196"
-    taskid: 74757578-39d8-4f98-8c74-c7faef42b3df
+    taskid: ba58e87f-63bb-43d0-8945-1a4ba52ddc1b
     type: regular
     task:
-      id: 74757578-39d8-4f98-8c74-c7faef42b3df
+      id: ba58e87f-63bb-43d0-8945-1a4ba52ddc1b
       version: -1
       name: Reload Device Group List
       description: commands.local.cmd.list.get
@@ -6959,8 +6897,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2055,
-          "y": 7365
+          "x": 1930,
+          "y": 8615
         }
       }
     note: false
@@ -6970,10 +6908,10 @@ tasks:
     quietmode: 0
   "197":
     id: "197"
-    taskid: 383e9503-d22b-4aa4-878b-f04f5e78f7d1
+    taskid: b40c8e9a-174e-4729-8f4c-5174c802979d
     type: regular
     task:
-      id: 383e9503-d22b-4aa4-878b-f04f5e78f7d1
+      id: b40c8e9a-174e-4729-8f4c-5174c802979d
       version: -1
       name: Set Firewall Tag List
       description: Set a value in context under the key you entered.
@@ -7000,8 +6938,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2055,
-          "y": 7495
+          "x": 1930,
+          "y": 8765
         }
       }
     note: false
@@ -7011,10 +6949,10 @@ tasks:
     quietmode: 0
   "198":
     id: "198"
-    taskid: 67a43768-fb8b-432b-8b21-7f1baa26c90b
+    taskid: 736b5614-b0ac-46a2-826f-62a1b3a5283e
     type: regular
     task:
-      id: 67a43768-fb8b-432b-8b21-7f1baa26c90b
+      id: 736b5614-b0ac-46a2-826f-62a1b3a5283e
       version: -1
       name: Set Target Device Group
       description: Set a value in context under the key you entered.
@@ -7039,8 +6977,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2752.5,
-          "y": 8350
+          "x": 2722.5,
+          "y": 9690
         }
       }
     note: false
@@ -7050,10 +6988,10 @@ tasks:
     quietmode: 0
   "199":
     id: "199"
-    taskid: dd1004d1-0bfb-45f3-8bf3-ccc2f1ab8340
+    taskid: 605df4fc-33a4-4762-848a-c4443f19be37
     type: regular
     task:
-      id: dd1004d1-0bfb-45f3-8bf3-ccc2f1ab8340
+      id: 605df4fc-33a4-4762-848a-c4443f19be37
       version: -1
       name: Set Device Group Tag Value
       description: Set a value in context under the key you entered.
@@ -7084,8 +7022,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2312.5,
-          "y": 8210
+          "x": 2292.5,
+          "y": 9530
         }
       }
     note: false
@@ -7095,17 +7033,16 @@ tasks:
     quietmode: 0
   "200":
     id: "200"
-    taskid: 460b0b5c-a088-4776-835b-0337e2fe6fbe
+    taskid: ec3ae74b-61ef-4c3d-889c-a38d8cf1c1f5
     type: playbook
     task:
-      id: 460b0b5c-a088-4776-835b-0337e2fe6fbe
+      id: ec3ae74b-61ef-4c3d-889c-a38d8cf1c1f5
       version: -1
       name: Expanse Load-Create List
       playbookName: Expanse Load-Create List
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "184"
@@ -7121,8 +7058,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2435,
-          "y": -1295
+          "x": 1735,
+          "y": -1825
         }
       }
     note: false
@@ -7132,17 +7069,16 @@ tasks:
     quietmode: 0
   "201":
     id: "201"
-    taskid: c99e7f85-8763-42b1-8df3-2e7b80b31a5a
+    taskid: 7e7b4fdc-39a0-4bc5-8f6e-049dfb9fcb92
     type: playbook
     task:
-      id: c99e7f85-8763-42b1-8df3-2e7b80b31a5a
+      id: 7e7b4fdc-39a0-4bc5-8f6e-049dfb9fcb92
       version: -1
       name: Expanse Load-Create List
       playbookName: Expanse Load-Create List
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "187"
@@ -7158,8 +7094,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2435,
-          "y": -950
+          "x": 1735,
+          "y": -1490
         }
       }
     note: false
@@ -7169,17 +7105,16 @@ tasks:
     quietmode: 0
   "202":
     id: "202"
-    taskid: 0388dcfe-8168-4177-8c81-51e1f0eb3a22
+    taskid: dc5bf0aa-e476-41e8-8919-9ba3d22ddb84
     type: playbook
     task:
-      id: 0388dcfe-8168-4177-8c81-51e1f0eb3a22
+      id: dc5bf0aa-e476-41e8-8919-9ba3d22ddb84
       version: -1
       name: Expanse Load-Create List
       playbookName: Expanse Load-Create List
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "188"
@@ -7195,8 +7130,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2435,
-          "y": -590
+          "x": 1735,
+          "y": -1130
         }
       }
     note: false
@@ -7204,27 +7139,209 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "203":
+    id: "203"
+    taskid: b3072eae-ed9f-4430-84c7-857a35a2bee8
+    type: title
+    task:
+      id: b3072eae-ed9f-4430-84c7-857a35a2bee8
+      version: -1
+      name: Load/Create Lists
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "200"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1735,
+          "y": -1965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "204":
+    id: "204"
+    taskid: c9eb073a-f749-4997-8a4b-247b8ff9b674
+    type: title
+    task:
+      id: c9eb073a-f749-4997-8a4b-247b8ff9b674
+      version: -1
+      name: Add new OU
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "89"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2070,
+          "y": 3020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "205":
+    id: "205"
+    taskid: 3a6e4008-0c80-4ab6-845e-bbb2eda4e239
+    type: regular
+    task:
+      id: 3a6e4008-0c80-4ab6-845e-bbb2eda4e239
+      version: -1
+      name: Refresh Assets to make sure IDs are in sync
+      description: |
+        Script to refresh tags and attribution reasons of assets inside Expanse Issue. The script should be used inside the Expanse Issue incident context.
+      scriptName: ExpanseRefreshIssueAssets
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 5440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "206":
+    id: "206"
+    taskid: 5d5e611b-e425-460b-8fd6-96068b88db14
+    type: regular
+    task:
+      id: 5d5e611b-e425-460b-8fd6-96068b88db14
+      version: -1
+      name: Refresh Assets to make sure IDs are in sync
+      description: |
+        Script to refresh tags and attribution reasons of assets inside Expanse Issue. The script should be used inside the Expanse Issue incident context.
+      scriptName: ExpanseRefreshIssueAssets
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "194"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2465,
+          "y": 10320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "207":
+    id: "207"
+    taskid: 7f55d875-2ee4-4e0e-847c-84f936a3f21f
+    type: regular
+    task:
+      id: 7f55d875-2ee4-4e0e-847c-84f936a3f21f
+      version: -1
+      name: Set Target Device Groups from Expanse Tags
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: TargetFirewalls
+      stringify:
+        simple: "false"
+      value:
+        complex:
+          root: FirewallTagListTransposed
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: FirewallTagListTransposed.tag
+                iscontext: true
+              right:
+                value:
+                  simple: ExpanseDeviceGroupAssetTags
+                iscontext: true
+          transformers:
+          - operator: jmespath
+            args:
+              expression:
+                value:
+                  simple: '{deviceGroup:dg, source: ''From Expanse Tags'', sightings:''N/A''}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 7720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
+      "10_14_❌ No": 0.29,
+      "119_10_NO-PANORAMA": 0.11,
+      "119_14_MANUAL": 0.11,
+      "119_199_known-device-group": 0.51,
+      "15_196_#default#": 0.42,
+      "176_29_#default#": 0.25,
       "177_178_#default#": 0.62,
+      "1_3_#default#": 0.2,
+      "26_23_Panorama": 0.65,
+      "26_27_#default#": 0.62,
+      "36_147_#default#": 0.46,
       "73_86_#default#": 0.11,
+      "76_78_❌ No": 0.27,
       "96_166_#default#": 0.4,
       "9_14_#default#": 0.69
     },
     "paper": {
       "dimensions": {
-        "height": 13565,
-        "width": 6590,
-        "x": -1600,
-        "y": -2180
+        "height": 17025,
+        "width": 5070,
+        "x": -1450,
+        "y": -2870
       }
     }
   }
 inputs:
 - key: MinPriorityForAutoRemediation
   value:
-    simple: "1"
+    simple: "5"
   required: false
   description: |-
     Minimum Incident Priority for Auto Remediation:
@@ -7232,56 +7349,61 @@ inputs:
     2 - Medium
     3 - High
     4 - Critical
-  playbookInputQuery:
+    5 - Disable AutoRemediation
+  playbookInputQuery: null
 - key: FirewallTagListName
   value:
     simple: ExpanseTagsToPANOSDeviceGroup
   required: false
   description: Name of XSOAR List that contains the mapping between Expanse tags and
     XSOAR PANOS Instances.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: TagPrefix
   value:
     simple: xsoar-
   required: false
   description: Prefix for XSOAR related Expanse tags
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: LogForwarding
   value: {}
   required: false
   description: PAN-OS Log Forwarding Profile Name
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: AutoCommit
   value:
-    simple: "Yes"
+    simple: "False"
   required: false
-  description: Panorama Auto Commit
-  playbookInputQuery:
+  description: |-
+    Panorama Auto Commit:
+    True - enable AutoCommit
+    False - disable AutoCommit
+  playbookInputQuery: null
 - key: IPRangeLowConfidenceTagList
   value:
     simple: low confidence
   required: false
   description: Comma separated list of tags to be used to identify IP ranges attributed
     with low confidence
-  playbookInputQuery:
-- key: FalsePositiveTag
+  playbookInputQuery: null
+- key: InvalidTag
   value:
-    simple: xsoar-false-positive
+    simple: xsoar-invalid
   required: false
-  description: Tag to be used for assets that do not belong to org
-  playbookInputQuery:
+  description: Tag to be used for Expanse assets that do not belong to org (set when
+    the Analyst selects Invalid in the OU data collection)
+  playbookInputQuery: null
 - key: WriteToExpanse
   value:
     simple: "True"
   required: false
   description: Write data back to Expanse?
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: OwnerNotificationSubject
   value:
     simple: New security issue on a public service owned by your team
   required: false
   description: Subject of the email to send to the OU Owner.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: OwnerNotificationBody
   value:
     simple: Infosec identified a security issue on a service owned by your team and
@@ -7289,40 +7411,36 @@ inputs:
       remediation access.
   required: false
   description: Body of the email to send to the OU Owner.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: UseBehavior
   value:
     simple: "True"
   required: false
   description: Enrich flows using Expanse Behavior.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ShadowITIncidentType
   value:
     simple: Shadow IT
   required: false
   description: If set, specifies the type of Incident that gets automatically created
     during the Shadow IT flow. If not set, the Incident is to be created manually.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: OrganizationUnitsToOwnerName
   value:
     simple: ExpanseOrganizationUnitsToOwner
   required: false
   description: Name of XSOAR List that contains the mapping between OU and Owners
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: OrganizationUnitsToTagName
   value:
     simple: ExpanseOrganizationUnitsToTag
   required: false
   description: Name of XSOAR List that contains the mapping between OU and Tag names
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: NumberOfDaysInThePast
   value:
-    simple: "30"
+    simple: "7"
   required: false
   description: How many days to go back in time when searching logs
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
-tests:
-- ExpanseV2 Test
-- Feed Expanse Test
-fromversion: 6.0.0
