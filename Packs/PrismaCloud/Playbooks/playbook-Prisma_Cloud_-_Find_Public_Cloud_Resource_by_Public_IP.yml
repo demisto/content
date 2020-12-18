@@ -1,4 +1,4 @@
-description: Find a Public Cloud resource by Public IP using Prisma Cloud inventory
+description: Find Public Cloud resource by Public IP using Prisma Cloud inventory
 id: Prisma Cloud - Find Public Cloud Resource by Public IP
 inputs:
 - description: Public IP Address to look up

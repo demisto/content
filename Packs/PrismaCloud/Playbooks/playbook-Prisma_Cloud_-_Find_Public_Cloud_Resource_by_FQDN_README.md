@@ -1,4 +1,4 @@
-Find a Public Cloud resources by FQDN using Prisma Cloud inventory
+Find Public Cloud resources by FQDN using Prisma Cloud inventory
 Supported Cortex XSOAR versions: 6.0.0 and later.
 
 

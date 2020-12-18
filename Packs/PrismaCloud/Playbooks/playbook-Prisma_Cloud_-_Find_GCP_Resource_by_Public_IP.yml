@@ -1,5 +1,5 @@
 description: |
-  Find a GCP resources by Public IP using Prisma Cloud inventory.
+  Find GCP resources by Public IP using Prisma Cloud inventory.
   Supported services: GCE, Load Balancing, GKE.
 id: Prisma Cloud - Find GCP Resource by Public IP
 inputs:

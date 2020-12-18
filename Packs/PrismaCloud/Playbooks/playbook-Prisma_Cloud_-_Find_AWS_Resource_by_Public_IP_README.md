@@ -1,4 +1,4 @@
-Find an AWS resources by Public IP using Prisma Cloud inventory.
+Find AWS resources by Public IP using Prisma Cloud inventory.
 Supported services: EC2, Network Load Balancer, ECS, Route53.
 
 Supported Cortex XSOAR versions: 6.0.0 and later.

@@ -1,4 +1,4 @@
-description: Find a Public Cloud resources by FQDN using Prisma Cloud inventory
+description: Find Public Cloud resources by FQDN using Prisma Cloud inventory
 id: Prisma Cloud - Find Public Cloud Resource by FQDN
 inputs:
 - description: FQDN to look up

@@ -1,4 +1,4 @@
-Find a GCP resources by Public IP using Prisma Cloud inventory.
+Find GCP resources by Public IP using Prisma Cloud inventory.
 Supported services: GCE, Load Balancing, GKE.
 
 Supported Cortex XSOAR versions: 6.0.0 and later.

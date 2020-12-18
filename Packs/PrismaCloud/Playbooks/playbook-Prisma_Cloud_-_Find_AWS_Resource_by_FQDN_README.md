@@ -1,4 +1,4 @@
-Find an AWS resources by FQDN using Prisma Cloud inventory.
+Find AWS resources by FQDN using Prisma Cloud inventory.
 Supported services: EC2, Application Load Balancer, ECS, Route53, CloudFront, S3, API Gateway.
 
 Supported Cortex XSOAR versions: 6.0.0 and later.
