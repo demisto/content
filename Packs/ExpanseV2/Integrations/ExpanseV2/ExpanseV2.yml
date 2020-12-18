@@ -33,7 +33,7 @@ configuration:
   display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
-  type: 0  
+  type: 0
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
@@ -65,7 +65,7 @@ configuration:
   - AcceptableRisk
   - Resolved
   required: false
-  type: 16  
+  type: 16
 - display: Fetch issues with Business Units (comma separated string)
   name: business_unit
   required: false
@@ -88,7 +88,7 @@ configuration:
   - Outgoing
   - Both
   required: false
-  type: 15  
+  type: 15
 - display: Sync Incident Owners
   hidden: false
   name: sync_owners
@@ -96,16 +96,20 @@ configuration:
   defaultvalue: false
   type: 8
 - display: Tag(s) for mirrored comments
-  additionalinfo: Assign these XSOAR tags (comma separated list) to the incoming comments mirrored from the Expanse Issue (must be different from the sync_tags to prevent loops).
+  additionalinfo: Assign these XSOAR tags (comma separated list) to the incoming comments
+    mirrored from the Expanse Issue (must be different from the sync_tags to prevent
+    loops).
   name: incoming_tags
   required: false
   type: 0
   defaultvalue: FromExpanse
 - display: Mirror out Entries with tag(s)
-  additionalinfo: Mirror XSOAR entries with these XSOAR tags (comma separate list) to the corresponding Expanse Issue as comments (must be different from the incoming_tags to prevent loops).
+  additionalinfo: Mirror XSOAR entries with these XSOAR tags (comma separate list)
+    to the corresponding Expanse Issue as comments (must be different from the incoming_tags
+    to prevent loops).
   name: sync_tags
   required: false
-  type: 0  
+  type: 0
 description: Expanse Expander V2
 display: Expanse v2
 name: ExpanseV2
@@ -129,61 +133,75 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returns only results that were found on the given providers (comma separated string).
+      description: Returns only results that were found on the given providers (comma
+        separated string).
       isArray: true
       name: provider
       required: false
       secret: false
     - default: false
-      description: Returns only results with a business unit whose name falls in the provided list (comma separated string).
+      description: Returns only results with a business unit whose name falls in the
+        provided list (comma separated string).
       isArray: true
       name: business_unit
       required: false
       secret: false
     - default: false
-      description: Returns only results whose assignee's username matches one of the given usernames. Use "Unassigned" to fetch issues that are not assigned to any user.
+      description: Returns only results whose assignee's username matches one of the
+        given usernames. Use "Unassigned" to fetch issues that are not assigned to
+        any user.
       isArray: true
       name: assignee
       required: false
       secret: false
     - default: false
-      description: Returns only results whose issue type name matches one of the given types (comma separated string).
+      description: Returns only results whose issue type name matches one of the given
+        types (comma separated string).
       isArray: true
       name: issue_type
       required: false
-      secret: false 
+      secret: false
     - default: false
-      description: Returns results whose identifier includes an IP matching the query. Search for results in a given IP/CIDR block using a single IP (d.d.d.d), a dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.), or a wildcard (d.d.*.d).
+      description: Returns results whose identifier includes an IP matching the query.
+        Search for results in a given IP/CIDR block using a single IP (d.d.d.d), a
+        dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR
+        (d.d.), or a wildcard (d.d.*.d).
       isArray: false
       name: inet_search
       required: false
       secret: false
     - default: false
-      description: Returns results whose identifier includes a domain matching the query.
+      description: Returns results whose identifier includes a domain matching the
+        query.
       isArray: false
       name: domain_search
       required: false
-      secret: false         
+      secret: false
     - default: false
-      description: Returns only results whose identifier includes one of the given port numbers (comma separated list).
+      description: Returns only results whose identifier includes one of the given
+        port numbers (comma separated list).
       isArray: true
       name: port_number
       required: false
-      secret: false      
+      secret: false
     - default: false
-      description: Returns only results whose priority matches one of the given values (comma separated string, options are 'Low', 'Medium', 'High', 'Critical').
+      description: Returns only results whose priority matches one of the given values
+        (comma separated string, options are 'Low', 'Medium', 'High', 'Critical').
       isArray: true
       name: priority
       required: false
       secret: false
     - default: false
-      description: Returns only results whose progress status matches one of the given values (comma separated string, options are 'New', 'Investigating', 'InProgress', 'AcceptableRisk', 'Resolved').
+      description: Returns only results whose progress status matches one of the given
+        values (comma separated string, options are 'New', 'Investigating', 'InProgress',
+        'AcceptableRisk', 'Resolved').
       isArray: true
       name: progress_status
       required: false
       secret: false
     - default: false
-      description: Returns only results whose activity status matches one of the given values.
+      description: Returns only results whose activity status matches one of the given
+        values.
       auto: PREDEFINED
       isArray: true
       name: activity_status
@@ -193,35 +211,40 @@ script:
       - Inactive
       secret: false
     - default: false
-      description: Returns only results that are associated with the provided tag names (comma separated string).
+      description: Returns only results that are associated with the provided tag
+        names (comma separated string).
       isArray: true
       name: tag
       required: false
       secret: false
     - default: false
-      description: Returns only results created before the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
+      description: Returns only results created before the provided timestamp (ISO8601
+        format YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: created_before
       required: false
-      secret: false       
+      secret: false
     - default: false
-      description: Returns only results created after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
+      description: Returns only results created after the provided timestamp (ISO8601
+        format YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: created_after
       required: false
-      secret: false 
+      secret: false
     - default: false
-      description: Returns only results modified before the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
+      description: Returns only results modified before the provided timestamp (ISO8601
+        format YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: modified_before
       required: false
-      secret: false       
+      secret: false
     - default: false
-      description: Returns only results modified after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
+      description: Returns only results modified after the provided timestamp (ISO8601
+        format YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: modified_after
       required: false
-      secret: false    
+      secret: false
     - default: false
       description: Sort by specified properties.
       isArray: false
@@ -759,13 +782,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: Update types to retrieve (comma separated string. Valid options are 'Assignee', 'Comment', 'Priority', 'ProgressStatus', 'ActivityStatus')
+      description: Update types to retrieve (comma separated string. Valid options
+        are 'Assignee', 'Comment', 'Priority', 'ProgressStatus', 'ActivityStatus')
       isArray: false
       name: update_types
       required: false
       secret: false
     - default: false
-      description: Returns only updates created after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
+      description: Returns only updates created after the provided timestamp (ISO8601
+        format YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: created_after
       required: false
@@ -810,7 +835,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Returns only comments created after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
+      description: Returns only comments created after the provided timestamp (ISO8601
+        format YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: created_after
       required: false
@@ -860,7 +886,7 @@ script:
       name: update_type
       defaultValue: false
       required: true
-      secret: false      
+      secret: false
     - default: false
       description: Updated value.
       isArray: false
@@ -1494,13 +1520,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to assign to the asset (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to assign to the asset (comma separated string).
+        If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to assign to the asset (comma separated string). If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to assign to the asset (comma separated string).
+        If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -1529,13 +1557,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to unassign from the asset (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to unassign from the asset (comma separated string).
+        If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to unassign from the asset (comma separated string). If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to unassign from the asset (comma separated string).
+        If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -1553,13 +1583,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to assign to the IP range (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to assign to the IP range (comma separated string).
+        If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to assign to the IP range (comma separated string). If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to assign to the IP range (comma separated string).
+        If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -1577,18 +1609,20 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to unassign from the IP range (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to unassign from the IP range (comma separated
+        string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to unassign from the IP range (comma separated string). If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to unassign from the IP range (comma separated
+        string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
       secret: false
-    outputs: []    
+    outputs: []
   - name: expanse-assign-tags-to-certificate
     description: Assign tags to an Expanse certificate.
     deprecated: false
@@ -1601,13 +1635,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to assign to the certificate (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to assign to the certificate (comma separated string).
+        If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to assign to the certificate (comma separated string). If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to assign to the certificate (comma separated
+        string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -1625,18 +1661,20 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to unassign from the certificate (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to unassign from the certificate (comma separated
+        string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to unassign from the certificate (comma separated string). If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to unassign from the certificate (comma separated
+        string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
       secret: false
-    outputs: []   
+    outputs: []
   - name: expanse-assign-tags-to-domain
     description: Assign tags to an Expanse domain.
     deprecated: false
@@ -1649,13 +1687,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to assign to the domain (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to assign to the domain (comma separated string).
+        If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to assign to the domain (comma separated string). If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to assign to the domain (comma separated string).
+        If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
@@ -1673,18 +1713,20 @@ script:
       required: true
       secret: false
     - default: false
-      description: IDs of the tags to unassign from the domain (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
+      description: IDs of the tags to unassign from the domain (comma separated string).
+        If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Names of the tags to unassign from the domain (comma separated string). If used in combination with 'tags' the lists of tags are merged.
+      description: Names of the tags to unassign from the domain (comma separated
+        string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
       required: false
       secret: false
-    outputs: []           
+    outputs: []
   - name: expanse-create-tag
     description: Create a new tag in Expanse.
     deprecated: false
@@ -1723,32 +1765,38 @@ script:
       type: String
     - contextPath: 'Expanse.Tag.tenantId'
       description: Associated Tenant ID.
-      type: String      
+      type: String
   - name: expanse-get-iprange
     description: Retrieve Expanse IP ranges by asset id or search parameters.
     deprecated: false
     execution: false
     arguments:
     - default: false
-      description: Asset ID of the Expanse IP range to retrieve. If provided, other search parameters are ignored.
+      description: Asset ID of the Expanse IP range to retrieve. If provided, other
+        search parameters are ignored.
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_unit_names' argument.
+      description: Returns only results whose Business Unit's ID falls in the provided
+        list. (comma separated string). Cannot be used with the 'business_unit_names'
+        argument.
       isArray: true
       name: business_units
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_units' argument.
+      description: Returns only results whose Business Unit's ID falls in the provided
+        list. (comma separated string). Cannot be used with the 'business_units' argument.
       isArray: true
       name: business_unit_names
       required: false
       secret: false
     - default: false
-      description: Search for given IP/CIDR block using a single IP (d.d.d.d), a dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.), or a wildcard (d.d.*.d).
+      description: Search for given IP/CIDR block using a single IP (d.d.d.d), a dashed
+        IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.),
+        or a wildcard (d.d.*.d).
       isArray: false
       name: inet
       required: false
@@ -1760,13 +1808,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Tag ID falls in the provided list. (comma separated string). Cannot be used with the 'tag_names' argument.
+      description: Returns only results whose Tag ID falls in the provided list. (comma
+        separated string). Cannot be used with the 'tag_names' argument.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Tag name falls in the provided list. (comma separated string). Cannot be used with the 'tags' argument.
+      description: Returns only results whose Tag name falls in the provided list.
+        (comma separated string). Cannot be used with the 'tags' argument.
       isArray: true
       name: tag_names
       required: false
@@ -1774,7 +1824,9 @@ script:
     - default: false
       isArray: false
       name: include
-      description: Include "none" or any of the following options in the response (comma separated) - annotations, severityCounts, attributionReasons, relatedRegistrationInformation, locationInformation
+      description: Include "none" or any of the following options in the response
+        (comma separated) - annotations, severityCounts, attributionReasons, relatedRegistrationInformation,
+        locationInformation
       defaultValue: none
       required: false
       secret: false
@@ -1790,15 +1842,17 @@ script:
       type: String
     - contextPath: Expanse.IPRange.annotations.tags
       description: ''
-      type: Unknown      
+      type: Unknown
     - contextPath: Expanse.IPRange.attributionReasons.reason
       description: A reason why Expanse attributed the given resource to your organization.
       type: String
     - contextPath: Expanse.IPRange.businessUnits.id
-      description: ID of the organization or subsidiary which Expanse has defined as being part of your public organizational structure.
+      description: ID of the organization or subsidiary which Expanse has defined
+        as being part of your public organizational structure.
       type: String
     - contextPath: Expanse.IPRange.businessUnits.name
-      description: Name of the organization or subsidiary which Expanse has defined as being part of your public organizational structure.
+      description: Name of the organization or subsidiary which Expanse has defined
+        as being part of your public organizational structure.
       type: String
     - contextPath: Expanse.IPRange.cidr
       description: ''
@@ -1885,7 +1939,10 @@ script:
       description: Registry entity handle.
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.id
-      description: Expanse ID of points of contact as maintained by the global internet registries (ARIN, APNIC, etc.), which identifies people or a role (group of people) within your organization that is responsible for the day-to-day management of this IP Network.
+      description: Expanse ID of points of contact as maintained by the global internet
+        registries (ARIN, APNIC, etc.), which identifies people or a role (group of
+        people) within your organization that is responsible for the day-to-day management
+        of this IP Network.
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.lastChanged
       description: Registry entity latest update date.
@@ -1915,7 +1972,8 @@ script:
       description: ''
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.updatedDate
-      description: Date when this IP Network was last processed by Expanse from the given global internet registry.
+      description: Date when this IP Network was last processed by Expanse from the
+        given global internet registry.
       type: Date
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.whoisServer
       description: ''
@@ -1947,7 +2005,8 @@ script:
     execution: false
     arguments:
     - default: false
-      description: Domain name to retrieve (exact match). If provided, other search parameters are ignored.
+      description: Domain name to retrieve (exact match). If provided, other search
+        parameters are ignored.
       isArray: false
       name: domain
       required: false
@@ -1981,7 +2040,8 @@ script:
       - 'true'
       - 'false'
     - default: false
-      description: Retrieve only domains with or without an active service discovered by Expanse.
+      description: Retrieve only domains with or without an active service discovered
+        by Expanse.
       isArray: false
       name: has_active_service
       required: false
@@ -1991,7 +2051,8 @@ script:
       - 'true'
       - 'false'
     - default: false
-      description: Retrieve only domains with or without cloud resources discovered by Expanse.
+      description: Retrieve only domains with or without cloud resources discovered
+        by Expanse.
       isArray: false
       name: has_related_cloud_resources
       required: false
@@ -2001,35 +2062,42 @@ script:
       - 'true'
       - 'false'
     - default: false
-      description: Returns only results whose Tag ID falls in the provided list. (comma separated string). Cannot be used with the 'tag_names' argument.
+      description: Returns only results whose Tag ID falls in the provided list. (comma
+        separated string). Cannot be used with the 'tag_names' argument.
       isArray: false
       name: tags
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Tag name falls in the provided list. (comma separated string). Cannot be used with the 'tags' argument.
+      description: Returns only results whose Tag name falls in the provided list.
+        (comma separated string). Cannot be used with the 'tags' argument.
       name: tag_names
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_unit_names' argument.
+      description: Returns only results whose Business Unit's ID falls in the provided
+        list. (comma separated string). Cannot be used with the 'business_unit_names'
+        argument.
       isArray: false
       name: business_units
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's name falls in the provided list. (comma separated string). Cannot be used with the 'business_units' argument.
+      description: Returns only results whose Business Unit's name falls in the provided
+        list. (comma separated string). Cannot be used with the 'business_units' argument.
       name: business_unit_names
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Provider's ID falls in the provided list. (comma separated string). Cannot be used with the 'provider_names' argument.
+      description: Returns only results whose Provider's ID falls in the provided
+        list. (comma separated string). Cannot be used with the 'provider_names' argument.
       isArray: false
       name: providers
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Provider's name falls in the provided list. (comma separated string). Cannot be used with the 'providers' argument.
+      description: Returns only results whose Provider's name falls in the provided
+        list. (comma separated string). Cannot be used with the 'providers' argument.
       name: provider_names
       required: false
       secret: false
@@ -2296,7 +2364,8 @@ script:
       description: The total number of engines that checked the indicator.
       type: Number
     - contextPath: Domain.PositiveDetections
-      description: The number of engines that positively detected the indicator as malicious.
+      description: The number of engines that positively detected the indicator as
+        malicious.
       type: Number
     - contextPath: Domain.CreationDate
       description: The date that the domain was created.
@@ -2311,7 +2380,7 @@ script:
       description: The status of the domain.
       type: Date
     - contextPath: Domain.NameServers
-      description: Name servers of the domain.  
+      description: Name servers of the domain.
       type: String
     - contextPath: Domain.Organization
       description: The organization of the domain.
@@ -2409,7 +2478,10 @@ script:
   - name: expanse-get-associated-domains
     arguments:
     - default: false
-      description: The common name of the certificate to search domains for. Fuzzy matching is done on this name, however query times can grow quite large when searching for short strings. Ex. "*.myhost.com" is a better search term than "host".
+      description: The common name of the certificate to search domains for. Fuzzy
+        matching is done on this name, however query times can grow quite large when
+        searching for short strings. Ex. "*.myhost.com" is a better search term than
+        "host".
       isArray: false
       name: common_name
       required: false
@@ -2432,7 +2504,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns all the Expanse domains which have been seen with the specified certificate or IP address.
+    description: Returns all the Expanse domains which have been seen with the specified
+      certificate or IP address.
     execution: false
     outputs:
     - contextPath: Expanse.AssociatedDomain.name
@@ -2458,26 +2531,29 @@ script:
       type: String
     - contextPath: DBotScore.Score
       description: The actual score.
-      type: Number            
+      type: Number
   - name: expanse-get-certificate
     description: Retrieve Expanse certificates by MD5 hash or search parameters.
     deprecated: false
     execution: false
     arguments:
     - default: false
-      description: MD5 Hash of the certificate. If provided, other search parameters are ignored.
+      description: MD5 Hash of the certificate. If provided, other search parameters
+        are ignored.
       isArray: false
       name: md5_hash
       required: false
       secret: false
     - default: false
-      description: Last date the domain was observed by Expanse (Format is YYYY-MM-DD), to be used with domain argument.
+      description: Last date the domain was observed by Expanse (Format is YYYY-MM-DD),
+        to be used with domain argument.
       isArray: false
       name: last_observed_date
       required: false
       secret: false
     - default: false
-      description: Search for  certificates with the specified substring in common name.
+      description: Search for  certificates with the specified substring in common
+        name.
       isArray: false
       name: search
       required: false
@@ -2499,7 +2575,8 @@ script:
       - 'true'
       - 'false'
     - default: false
-      description: Retrieve only certificates with or without an active service discovered by Expanse.
+      description: Retrieve only certificates with or without an active service discovered
+        by Expanse.
       isArray: false
       name: has_active_service
       required: false
@@ -2509,7 +2586,8 @@ script:
       - 'true'
       - 'false'
     - default: false
-      description: Retrieve only certificates with or without cloud resources discovered by Expanse.
+      description: Retrieve only certificates with or without cloud resources discovered
+        by Expanse.
       isArray: false
       name: has_related_cloud_resources
       required: false
@@ -2519,35 +2597,42 @@ script:
       - 'true'
       - 'false'
     - default: false
-      description: Returns only results whose Tag ID falls in the provided list. (comma separated string). Cannot be used with the 'tag_names' argument.
+      description: Returns only results whose Tag ID falls in the provided list. (comma
+        separated string). Cannot be used with the 'tag_names' argument.
       isArray: false
       name: tags
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Tag name falls in the provided list. (comma separated string). Cannot be used with the 'tags' argument.
+      description: Returns only results whose Tag name falls in the provided list.
+        (comma separated string). Cannot be used with the 'tags' argument.
       name: tag_names
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_unit_names' argument.
+      description: Returns only results whose Business Unit's ID falls in the provided
+        list. (comma separated string). Cannot be used with the 'business_unit_names'
+        argument.
       isArray: false
       name: business_units
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Business Unit's name falls in the provided list. (comma separated string). Cannot be used with the 'business_units' argument.
+      description: Returns only results whose Business Unit's name falls in the provided
+        list. (comma separated string). Cannot be used with the 'business_units' argument.
       name: business_unit_names
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Provider's ID falls in the provided list. (comma separated string). Cannot be used with the 'provider_names' argument.
+      description: Returns only results whose Provider's ID falls in the provided
+        list. (comma separated string). Cannot be used with the 'provider_names' argument.
       isArray: false
       name: providers
       required: false
       secret: false
     - default: false
-      description: Returns only results whose Provider's name falls in the provided list. (comma separated string). Cannot be used with the 'providers' argument.
+      description: Returns only results whose Provider's name falls in the provided
+        list. (comma separated string). Cannot be used with the 'providers' argument.
       name: provider_names
       required: false
       secret: false
@@ -2814,13 +2899,13 @@ script:
       type: String
     - contextPath: Certificate.Signature.Algorithm
       description: Algorithm used in the signature of the certificate.
-      type: String      
+      type: String
     - contextPath: Certificate.Malicious.Vendor
       description: The vendor that reported the file as malicious.
       type: String
     - contextPath: Certificate.Malicious.Description
       description: A description explaining why the file was determined to be malicious.
-      type: String     
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
@@ -2832,7 +2917,7 @@ script:
       type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
-      type: String        
+      type: String
   - name: certificate
     arguments:
     - default: true
@@ -3123,13 +3208,13 @@ script:
       type: String
     - contextPath: Certificate.Signature.Algorithm
       description: Algorithm used in the signature of the certificate.
-      type: String      
+      type: String
     - contextPath: Certificate.Malicious.Vendor
       description: The vendor that reported the file as malicious.
       type: String
     - contextPath: Certificate.Malicious.Description
       description: A description explaining why the file was determined to be malicious.
-      type: String     
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
@@ -3160,7 +3245,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter by internal IP range. Supported formats a.b.c.d, a.b.c.d/e, a.b.c.d-a.b.c.d, a., a.*
+      description: Filter by internal IP range. Supported formats a.b.c.d, a.b.c.d/e,
+        a.b.c.d-a.b.c.d, a., a.*
       isArray: false
       name: internal_ip_range
       required: false
@@ -3176,13 +3262,13 @@ script:
       isArray: false
       name: created_before
       required: false
-      secret: false       
+      secret: false
     - default: false
       description: Created After date (supports ISO8601 format).
       isArray: false
       name: created_after
       required: false
-      secret: false 
+      secret: false
     outputs:
     - contextPath: Expanse.RiskyFlow.acked
       description: ''
@@ -3295,7 +3381,7 @@ script:
       description: The domain name to enrich.
       isArray: true
       name: domain
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Provides data enrichment for domains.
@@ -3563,7 +3649,8 @@ script:
       description: The total number of engines that checked the indicator.
       type: Number
     - contextPath: Domain.PositiveDetections
-      description: The number of engines that positively detected the indicator as malicious.
+      description: The number of engines that positively detected the indicator as
+        malicious.
       type: Number
     - contextPath: Domain.CreationDate
       description: The date that the domain was created.
@@ -3578,7 +3665,7 @@ script:
       description: The status of the domain.
       type: Date
     - contextPath: Domain.NameServers
-      description: Name servers of the domain.  
+      description: Name servers of the domain.
       type: String
     - contextPath: Domain.Organization
       description: The organization of the domain.
@@ -3679,7 +3766,7 @@ script:
       description: The IP to enrich.
       isArray: true
       name: ip
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Provides data enrichment for IPs.
@@ -3740,7 +3827,8 @@ script:
       description: The hostname that is mapped to this IP address.
       type: String
     - contextPath: IP.Geo.Location
-      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
+      description: 'The geolocation where the IP address is located, in the format:
+        latitude:longitude.'
       type: String
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
@@ -3752,7 +3840,8 @@ script:
       description: The total number of engines that checked the indicator.
       type: Number
     - contextPath: IP.PositiveDetections
-      description: The number of engines that positively detected the indicator as malicious.
+      description: The number of engines that positively detected the indicator as
+        malicious.
       type: Number
     - contextPath: IP.Malicious.Vendor
       description: The vendor reporting the IP address as malicious.
@@ -3783,7 +3872,9 @@ script:
     - default: false
       isArray: false
       name: include
-      description: Include "none" or any of the following options (comma separated) - annotations, severityCounts, attributionReasons, relatedRegistrationInformation, locationInformation
+      description: Include "none" or any of the following options (comma separated)
+        - annotations, severityCounts, attributionReasons, relatedRegistrationInformation,
+        locationInformation
       required: false
       secret: false
       defaultValue: severityCounts,annotations,attributionReasons,relatedRegistrationInformation,locationInformation
@@ -3796,7 +3887,7 @@ script:
       type: String
     - contextPath: Expanse.IPRange.annotations.tags
       description: ''
-      type: Unknown      
+      type: Unknown
     - contextPath: Expanse.IPRange.attributionReasons.reason
       description: ''
       type: String
@@ -3952,7 +4043,7 @@ script:
   runonce: false
   isremotesyncin: true
   isremotesyncout: true
-  ismappable: true  
+  ismappable: true
   script: '-'
   type: python
   subtype: python3

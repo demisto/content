@@ -4,7 +4,8 @@ commonfields:
 display: FeedExpanse
 name: FeedExpanse
 category: Utilities
-description: Use FeedExpanse to retrieve the list of discovered IPs/Domains/Certificates from Expander
+description: Use FeedExpanse to retrieve the list of discovered IPs/Domains/Certificates
+  from Expander
 configuration:
 - defaultvalue: https://expander.expanse.co
   display: Your server URL
@@ -79,7 +80,8 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
-- additionalinfo: Indicators from this integration instance will be marked with this reputation
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -94,7 +96,8 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -150,7 +153,7 @@ script:
   feed: true
   runonce: false
   isremotesyncin: false
-  isremotesyncout: false  
+  isremotesyncout: false
   script: '-'
   type: python
   subtype: python3
