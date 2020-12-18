@@ -644,6 +644,7 @@ def main() -> None:
     """
 
     params = demisto.params()
+    command = demisto.command()
     api_key = params.get("apikey")
     base_url = urljoin(params["url"], "/api")
     verify_certificate = not params.get("insecure", False)
@@ -660,11 +661,11 @@ def main() -> None:
 
         client.authenticate()
 
-        if demisto.command() == "test-module":
+        if command == "test-module":
             result = test_module(client, max_indicators_param, min_last_observed_param, tlp_color, feed_tags)
             return_results(result)
 
-        elif demisto.command() == "fetch-indicators":
+        elif command == "fetch-indicators":
             max_indicators = validate_max_indicators(max_indicators_param)
             if validate_max_indicators is None:
                 raise ValueError("Invalid value for max indicators")
@@ -682,14 +683,16 @@ def main() -> None:
             if len(indicator_batch) != 0:
                 demisto.createIndicators(indicator_batch)
 
-        elif demisto.command() == "feedexpanse-get-indicators":
+        elif command == "feedexpanse-get-indicators":
             return_results(get_indicators_command(client, demisto.args(), tlp_color=tlp_color, feed_tags=feed_tags))
+        else:
+            raise NotImplementedError(f'Command {command} is not implemented.')
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
+            f"Failed to execute {command} command.\nError:\n{str(e)}"
         )
 
 
