@@ -12,13 +12,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any integrations.
 
 ### Scripts
-This playbook does not use any scripts.
+* ToTable
 
 ### Commands
-* findIndicators
-* appendIndicatorField
-* send-mail
 * setIncident
+* send-mail
+* appendIndicatorField
+* findIndicators
 
 ## Playbook Inputs
 ---
@@ -27,6 +27,8 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- |
 | Notify Manager | Notify user's manager | Yes | Optional |
 | ShadowITIndicatorTags | Tags to add to indicators to identify potential Shadow IT assets | ShadowIT | Optional |
+| ManagerNotificationSubjectPrefix | This input is added as prefix to the owner name to build the subject of the email sent to the owner's manager. | Shadow IT asset detected - owned by  | Optional |
+| ManagerNotificationBody | Body of the email to send to the owner's manager. | Dear ${UserManagerDisplayName},<br/><br/>we detected a Shadow IT service for User ${incident.shadowitaccountownername} who, according to the Company's directory, directly reports to you.<br/><br/>The service is: ${shadowitip}:${shadowitport} (${shadowitfqdn}), please work with your team and us to resolve this issue.<br/><br/>Best regards,<br/><br/>InfoSec team | Optional |
 
 ## Playbook Outputs
 ---
@@ -34,4 +36,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Handle Shadow IT Incident](https://github.com/demisto/content/raw/5bc55ad72806e9b442b10f1cc75c41aee13760d9/Packs/ShadowIT/doc_files/Handle_Shadow_IT_Incident.png)
+![Handle Shadow IT Incident](Insert the link to your image here)
