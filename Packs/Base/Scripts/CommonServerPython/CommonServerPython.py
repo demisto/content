@@ -1345,6 +1345,48 @@ def appendContext(key, data, dedup=False):
         demisto.setContext(key, data)
 
 
+def url_to_clickable_markdown(data, url_keys):
+    """
+    Turn the given urls fields in to clickable url, used for the markdown table.
+
+    :type data: ``[Union[str, List[Any], Dict[str, Any]]]``
+    :param data: a dictionary or a list containing data with some values that are urls
+
+    :type url_keys: ``List[str]``
+    :param url_keys: the keys of the url's wished to turn clickable
+
+    :return: markdown format for clickable url
+    :rtype: ``[Union[str, List[Any], Dict[str, Any]]]``
+    """
+
+    if isinstance(data, list):
+        data = [url_to_clickable_markdown(item, url_keys) for item in data]
+
+    elif isinstance(data, dict):
+        data = {key: create_clickable_url(value) if key in url_keys else url_to_clickable_markdown(data[key], url_keys)
+                for key, value in data.items()}
+
+    return data
+
+
+def create_clickable_url(url):
+    """
+    Make the given url clickable when in markdown format by concatenating itself, with the proper brackets
+
+    :type url: ``Union[List[str], str]``
+    :param url: the url of interest or a list of urls
+
+    :return: markdown format for clickable url
+    :rtype: ``str``
+
+    """
+    if not url:
+        return None
+    elif isinstance(url, list):
+        return ['[{}]({})'.format(item, item) for item in url]
+    return '[{}]({})'.format(url, url)
+
+
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None):
     """
        Converts a demisto table in JSON form to a Markdown table
@@ -1368,9 +1410,15 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :type metadata: ``str``
        :param metadata: Metadata about the table contents
 
+       :type url_keys: ``list``
+       :param url_keys: a list of keys in the given JSON table that should be turned in to clickable
+
        :return: A string representation of the markdown table
        :rtype: ``str``
     """
+    # Turning the urls in the table to clickable
+    if url_keys:
+        t = url_to_clickable_markdown(t, url_keys)
 
     mdResult = ''
     if name:
