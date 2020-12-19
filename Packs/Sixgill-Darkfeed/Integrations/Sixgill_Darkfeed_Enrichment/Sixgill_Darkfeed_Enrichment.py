@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 """ IMPORTS """
 
-from typing import Dict, List, Any, Callable
+from typing import Dict, List, Any
 import traceback
 import requests
 
