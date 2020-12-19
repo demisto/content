@@ -307,9 +307,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
         incident_result['rawJSON'] = json.dumps(incident)
 
         file_attachments = []
-        if incident.get('attachment') and len(incident.get('attachment', [])) > 0:
+        if incident.get('attachment') and len(incident.get('attachment', [])) > 0 and incident.get('investigationId'):
             entries = client.get_incident_entries(
-                incident_id=incident['id'],  # type: ignore
+                incident_id=incident['investigationId'],  # type: ignore
                 from_date=0,
                 max_results=10,
                 categories=['attachments'],
