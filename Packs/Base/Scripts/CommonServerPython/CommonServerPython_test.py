@@ -2395,11 +2395,11 @@ def test_http_client_debug_int_logger_sensitive_query_params(mocker):
     con.request('GET', '?apikey=dummy')
     r = con.getresponse()
     r.read()
-    assert debug_log is not None
+    assert debug_log
     for arg in demisto.info.call_args_list:
-        assert 'dummy' not in arg
-        if 'apikey' in arg:
-            assert 'apikey=<XX_REPLACED>' in arg
+        assert 'dummy' not in arg[0][0]
+        if 'apikey' in arg[0][0]:
+            assert 'apikey=<XX_REPLACED>' in arg[0][0]
 
 
 class TestParseDateRange:
