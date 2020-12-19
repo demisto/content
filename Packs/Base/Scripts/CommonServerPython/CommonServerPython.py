@@ -4815,6 +4815,16 @@ class DemistoHandler(logging.Handler):
             pass
 
 
+class DemistoFormatter(logging.Formatter):
+    def format(self, record):
+        res = logging.Formatter.format(self, record)
+        sensitive_url_params = ('key=', 'password=', 'token=')
+        for param in sensitive_url_params:
+            if param in res:
+                return re.sub('{param}[^>]+&'.format(param=param), '{param}<XX_REPLACED>&'.format(param=param), res)
+        return res
+
+
 class DebugLogger(object):
     """
         Wrapper to initiate logging at logging.DEBUG level.
@@ -4837,8 +4847,7 @@ class DebugLogger(object):
             self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
             setattr(http_client, 'print', self.int_logger.print_override)
         self.handler = DemistoHandler()
-        demisto_formatter = logging.Formatter(fmt='%(asctime)s - %(message)s', datefmt=None)
-        self.handler.setFormatter(demisto_formatter)
+        self.handler.setFormatter(DemistoFormatter(fmt='%(asctime)s - %(message)s', datefmt=None))
         self.root_logger = logging.getLogger()
         self.prev_log_level = self.root_logger.getEffectiveLevel()
         self.root_logger.setLevel(logging.DEBUG)
