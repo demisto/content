@@ -4808,21 +4808,11 @@ class DemistoHandler(logging.Handler):
         msg = self.format(record)
         try:
             if self.int_logger:
-                self.int_logger.write(msg)
+                self.int_logger(msg)
             else:
                 demisto.debug(msg)
         except Exception:
             pass
-
-
-class DemistoFormatter(logging.Formatter):
-    def format(self, record):
-        res = logging.Formatter.format(self, record)
-        sensitive_url_params = ('key=', 'password=', 'token=')
-        for param in sensitive_url_params:
-            if param in res:
-                return re.sub('{param}[^>]+&'.format(param=param), '{param}<XX_REPLACED>&'.format(param=param), res)
-        return res
 
 
 class DebugLogger(object):
@@ -4846,8 +4836,9 @@ class DebugLogger(object):
             self.http_client.HTTPConnection.debuglevel = 1
             self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
             setattr(http_client, 'print', self.int_logger.print_override)
-        self.handler = DemistoHandler()
-        self.handler.setFormatter(DemistoFormatter(fmt='%(asctime)s - %(message)s', datefmt=None))
+        self.handler = DemistoHandler(self.int_logger)
+        demisto_formatter = logging.Formatter(fmt='%(asctime)s - %(message)s', datefmt=None)
+        self.handler.setFormatter(demisto_formatter)
         self.root_logger = logging.getLogger()
         self.prev_log_level = self.root_logger.getEffectiveLevel()
         self.root_logger.setLevel(logging.DEBUG)
