@@ -3263,7 +3263,12 @@
         "Test-Detonate URL - Crowdstrike": "Issue 30879",
         "nexpose_test": "Issue 31019",
         "CuckooTest": "Issue 25601",
-        "Cisco Umbrella Test": "Issue 24338"
+        "Cisco Umbrella Test": "Issue 24338",
+        "PhishlabsIOC_DRP-Test": "Issue 29589",
+        "Akamai_WAF-Test": "Issue 31900",
+        "Archer-Test-Playbook": "Issue 26851",
+        "FireEye HX Test": "Issue 24935",
+        "Carbon Black Enterprise Protection V2 Test": "Issue 27846"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
