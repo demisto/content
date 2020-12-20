@@ -1,6 +1,6 @@
 ## Overview
 ---
-Use the Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP) integration for preventative protection, post-breach detection, automated investigation, and response.
+Use the Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) integration for preventative protection, post-breach detection, automated investigation, and response.
 
 ## Microsoft Defender Advanced Threat Protection Playbook
 ---
