@@ -254,7 +254,7 @@ def fetch_indicators_from_file(args):
             domains.append(domain_obj)
     if errors:
         return_error(json.dumps(errors, indent=4))
-    domain_context = {outputPaths['domain']: domains}
+    domain_context = {outputPaths['domain']: domains} if domains else None
     return human_readable, domain_context, indicator_list
 
 
