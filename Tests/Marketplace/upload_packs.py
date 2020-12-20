@@ -268,7 +268,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         # Otherwise, update the index with the current commit hash (the commit of the upload)
         commit = current_commit_hash
         logging.info('Updating production index commit hash to master last commit hash')
-    
+
     logging.debug(f'commit hash is: {commit}')
     with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json"), "w+") as index_file:
         index = {
