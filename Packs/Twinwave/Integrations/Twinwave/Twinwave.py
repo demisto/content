@@ -1,3 +1,5 @@
+from typing import Union
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -180,7 +182,7 @@ def test_module(client):
             return 'ok'
         else:
             return_error('Authentication failed! Please check the username and password before continuing.')
-    except Exception as ex:
+    except Exception:
         return_error('Authentication failed! Please check the username and password before continuing.')
 
 
@@ -190,7 +192,7 @@ def get_engines(client):
     """
     result = client.get_engines()
     # readable output will be in markdown format
-    readable_output = f'## List of Engines\n'
+    readable_output = '## List of Engines\n'
     readable_output += tableToMarkdown('Twinwave Engines', result, headers=['Name', 'SupportedTypes', 'DefaultEnabled'])
     return CommandResults(
         readable_output=readable_output,
@@ -236,23 +238,23 @@ def submit_url(client, args):
 
     # validate the url
     regex_matches = re.match(URL_REGEX, url)
-    if not regex_matches:
-        return_error("Validation Failed. Please check the format of the submitted URL")
+    if regex_matches:
+        # passing the validated url into the search
+        result = client.submit_url(scan_url=regex_matches.group(0), engine_list=engines, parameters=parameters,
+                                   priority=priority, profile=profile)
 
-    # passing the validated url into the search
-    result = client.submit_url(scan_url=regex_matches.group(0), engine_list=engines, parameters=parameters,
-                               priority=priority, profile=profile)
+        # readable output will be in markdown format
+        readable_output = '## Submitted URL\n'
+        readable_output += tableToMarkdown('Twinwave Submissions', result, headers=['JobID'])
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="Twinwave.Submissions",
+            outputs_key_field='JobID',
+            outputs=result,
+            raw_response=result  # raw response - the original response
+        )
 
-    # readable output will be in markdown format
-    readable_output = f'## Submitted URL\n'
-    readable_output += tableToMarkdown('Twinwave Submissions', result, headers=['JobID'])
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix="Twinwave.Submissions",
-        outputs_key_field='JobID',
-        outputs=result,
-        raw_response=result  # raw response - the original response
-    )
+    return_error("Validation Failed. Please check the format of the submitted URL")
 
 
 def submit_file(client, args):
@@ -277,7 +279,7 @@ def submit_file(client, args):
         with open(file_name, 'rb') as file:
             result = client.submit_file(file_name=file_name, file_obj=file.read(), priority=priority, profile=profile)
 
-        readable_output = f'## Submitted File\n'
+        readable_output = '## Submitted File\n'
         readable_output += tableToMarkdown('Twinwave Submissions', result,
                                            headers=['JobID'])
 
@@ -301,7 +303,7 @@ def resubmit_job(client, args):
 
     result = client.resubmit_job(job_id=job_id)
     # readable output will be in markdown format
-    readable_output = f'## Resubmitted Job'
+    readable_output = '## Resubmitted Job'
     readable_output += tableToMarkdown('Twinwave Submissions', result, headers=['JobID'])
     return CommandResults(
         readable_output=readable_output,
@@ -376,7 +378,7 @@ def search_across_jobs_and_resources(client, args):
     result = client.search_across_jobs_and_resources(term=term, field=field, type=type, count=count,
                                                      shared_only=shared_only, submitted_by=submitted_by,
                                                      timeframe=timeframe, page=page)
-    readable_output = f'## Search Across Jobs and Resources \n'
+    readable_output = '## Search Across Jobs and Resources \n'
     readable_output += tableToMarkdown('Jobs and Resources', result.get('Jobs'),
                                        headers=[])
     return CommandResults(
@@ -394,7 +396,7 @@ def get_job_summary(client, args):
     """
     job_id = args.get('job_id')
     result = client.get_job(job_id=job_id)
-    indicators = []
+    indicators: List[Union[Common.File, Common.URL]] = []
 
     # Setting the DbotScore
     twinwave_score = round(float(result.get('Score')) * 100, 2)
@@ -408,14 +410,13 @@ def get_job_summary(client, args):
     submission = result.get('Submission')
     resources = result.get('Resources')
     tasks = result.get('Tasks')
-    created_at = result.get('CreatedAt')
+    # created_at = result.get('CreatedAt')
 
-    readable_output = f'## Job Summary\n'
+    readable_output = '## Job Summary\n'
 
     # check if the job is a file
     if submission.get('SHA256'):
         size = None
-        mime_type = None
 
         # if Twinwave scan is not completed, don't set the DBotScore
         if result.get('State') == 'done':
@@ -426,7 +427,6 @@ def get_job_summary(client, args):
                     if file_metadata:
                         if file_metadata.get('SHA256') == submission.get('SHA256'):
                             size = file_metadata.get('Size')
-                            mime_type = file_metadata.get('MimeType')
 
             dbot_score = Common.DBotScore(
                 indicator=submission.get('SHA256'),
@@ -505,7 +505,7 @@ def get_job_normalized_forensics(client, args):
     if result and isinstance(result, dict):
         result['JobID'] = job_id
     # readable output will be in markdown format
-    readable_output = f'## Normalized Forensics\n'
+    readable_output = '## Normalized Forensics\n'
     readable_output += tableToMarkdown('Twinwave Job Normalized Forensics', result,
                                        headers=['JobID', 'Version', 'Engine', 'DisplayScore', 'Verdict', 'StartTime',
                                                 'EndTime'])
@@ -530,7 +530,7 @@ def get_task_normalized_forensics(client, args):
         result['TaskID'] = task_id
         result['JobID'] = job_id
     # readable output will be in markdown format
-    readable_output = f'## Normalized Forensics\n'
+    readable_output = '## Normalized Forensics\n'
     readable_output += tableToMarkdown('Twinwave Task Normalized Forensics', result,
                                        headers=['JobID', 'TaskID', 'Version', 'Engine', 'DisplayScore', 'Verdict',
                                                 'StartTime', 'EndTime'])
@@ -555,7 +555,7 @@ def get_task_raw_forensics(client, args):
         result['TaskID'] = task_id
         result['JobID'] = job_id
     # readable output will be in markdown format
-    readable_output = f'## Raw Forensics\n'
+    readable_output = '## Raw Forensics\n'
     readable_output += tableToMarkdown('Twinwave Task Raw Forensics', result,
                                        headers=[])
     return CommandResults(
@@ -584,7 +584,7 @@ def get_temp_artifact_url(client, args):
     path = args.get('path')
     result = client.get_temp_artifact_url(path=path)
     # readable output will be in markdown format
-    readable_output = f'## Get Temp Artifact URL \n'
+    readable_output = '## Get Temp Artifact URL \n'
     readable_output += tableToMarkdown('Temp Artifact URL', result,
                                        headers=[])
     return CommandResults(

@@ -81,6 +81,7 @@ script:
   - arguments:
     - name: entry_id
       required: true
+      description: The entry id of the File.
     - defaultValue: "10"
       description: The job's priority relative to other jobs. Jobs with a lower priority
         value are processed before those with a higher value. (e.g., a priority=1
@@ -109,6 +110,7 @@ script:
   - arguments:
     - name: job_id
       required: true
+      description: the job ID
     description: Get Job Summary
     name: twinwave-get-job-summary
     outputs:
@@ -127,6 +129,7 @@ script:
   - arguments:
     - name: job_id
       required: true
+      description: The job ID
     description: Get a Job's Normalized Forensics
     name: twinwave-get-job-normalized-forensics
     outputs:
@@ -139,8 +142,10 @@ script:
   - arguments:
     - name: job_id
       required: true
+      description: The job ID
     - name: task_id
       required: true
+      description: The task ID
     description: Get a Task's Normalized Forensics
     name: twinwave-get-task-normalized-forensics
     outputs:
@@ -156,8 +161,10 @@ script:
   - arguments:
     - name: job_id
       required: true
+      description: The job ID
     - name: task_id
       required: true
+      description: The task ID
     description: Get a Task's Raw Forensics
     name: twinwave-get-task-raw-forensics
     outputs:
@@ -173,8 +180,10 @@ script:
   - arguments:
     - name: job_id
       required: true
+      description: The job ID
     - name: sha256
       required: true
+      description: The File sha256.
     description: "Download the Submitted Resource. \n\nDownload a password-protected\
       \ Zip archive of the Resource. Use the password 'infected' to decrypt the archive.\n\
       \nAll Resources discovered during the analysis are available for download via\
@@ -256,13 +265,12 @@ script:
     - contextPath: Twinwave.TempArtifactURL.URL
       description: Temporary URL
       type: Unknown
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.6.14516
   isfetch: true
   runonce: false
   script: ''
   subtype: python3
   type: python
-  dockerimage45: demisto/python3:3.7.4.2245
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
