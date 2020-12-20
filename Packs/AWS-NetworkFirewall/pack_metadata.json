@@ -1,14 +1,14 @@
 {
-    "name": "PagerDuty",
-    "description": "Alert and notify users using PagerDuty",
+    "name": "AWS-NetworkFirewall",
+    "description": "Amazon Web Services Network Firewall",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-04-14T00:00:00Z",
+    "created": "2020-11-17T08:37:18Z",
     "categories": [
-        "Messaging"
+        "IT Services"
     ],
     "tags": [],
     "useCases": [],
