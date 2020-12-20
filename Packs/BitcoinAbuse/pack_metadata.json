@@ -1,6 +1,7 @@
 {
     "name": "BitcoinAbuse",
     "description": "BitcoinAbuse Integration Pack",
+    "serverMinVersion": "5.5.0",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
