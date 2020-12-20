@@ -11,7 +11,7 @@ configuration:
 - display: Credentials JSON
   name: credentials_json
   required: true
-  type: 12
+  type: 4
 - display: User ID for Fetching Incidents
   hidden: false
   name: as_user

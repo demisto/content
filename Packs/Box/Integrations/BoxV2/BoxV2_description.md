@@ -39,3 +39,10 @@ From the General Settings menu, you can obtain your *User ID* for the service ac
     | max_fetch |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Differences between Box \(Deprecated\) and Box v2
+- Context outputs were changed to be nested under the entity type for each command. For example, user outputs
+used to be stored under the context root, Box. In this version they are stored under the entity Box.Users.
+- Authentication is handled via JSON Web Tokens \(JWT\) and no longer requires each command to retrieve an authentication
+token manually.
+- All results given via the Box API is returned into the context.
