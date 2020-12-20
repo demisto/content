@@ -208,6 +208,30 @@ def check_if_user_exists_by_samaccountname(default_base_dn, samaccountname):
     return False
 
 
+def get_user_activity_by_samaccountname(default_base_dn, samaccountname):
+    """Get if user is active or not by samaccountname
+    :param default_base_dn: The location in the DIT where the search will start
+    :param samaccountname: The user's unique samaccountname
+    :return: True if the user active, False otherwise.
+    """
+    active = False
+    query = f'(&(objectClass=User)(objectCategory=person)(samaccountname={samaccountname}))'
+    entries = search_with_paging(
+        query,
+        default_base_dn,
+        attributes=["userAccountControl"],
+        size_limit=1,
+        page_size=1
+    )
+
+    if entries.get('flat'):
+        user = entries.get('flat')[0]
+        activity = user.get('userAccountControl')[0]
+        active = activity not in INACTIVE_LIST_OPTIONS
+
+    return active
+
+
 def modify_user_ou(dn, new_ou):
     assert conn is not None
     cn = dn.split(',', 1)[0]
@@ -525,8 +549,7 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
                                         action=IAMActions.GET_USER
                                         )
         else:
-            ad_user = entries.get('flat')[0]
-            user_account_control = ad_user.get('userAccountControl') not in INACTIVE_LIST_OPTIONS
+            user_account_control = get_user_activity_by_samaccountname(default_base_dn, value)
             ad_user["userAccountControl"] = user_account_control
             iam_user_profile.update_with_app_data(ad_user, mapper_in)
             iam_user_profile.set_result(success=True,
@@ -840,7 +863,7 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
                                             )
 
             else:
-                active = ad_user.get('userAccountControl') not in INACTIVE_LIST_OPTIONS
+                active = get_user_activity_by_samaccountname(default_base_dn, sam_account_name)
                 iam_user_profile.set_result(success=True,
                                             email=ad_user.get('email'),
                                             username=ad_user.get('name'),
