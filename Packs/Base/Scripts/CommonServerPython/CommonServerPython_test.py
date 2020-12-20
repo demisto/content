@@ -15,7 +15,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers
+    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers,\
+    url_to_clickable_markdown
 
 try:
     from StringIO import StringIO
@@ -124,6 +125,99 @@ TABLE_TO_MARKDOWN_ONLY_DATA_PACK = [
 '''
     )
 ]
+
+DATA_WITH_URLS =  [(
+        [
+            {
+            'header_1': 'a1',
+            'url1': 'b1',
+            'url2': 'c1'
+            },
+            {
+            'header_1': 'a2',
+            'url1': 'b2',
+            'url2': 'c2'
+            },
+            {
+            'header_1': 'a3',
+            'url1': 'b3',
+            'url2': 'c3'
+            }
+        ],
+'''### tableToMarkdown test
+|header_1|url1|url2|
+|---|---|---|
+| a1 | [b1](b1) | [c1](c1) |
+| a2 | [b2](b2) | [c2](c2) |
+| a3 | [b3](b3) | [c3](c3) |
+'''
+    )]
+
+COMPLEX_DATA_WITH_URLS = [(
+    [
+    {'data':
+         {'id': '1',
+          'result':
+              {'files':
+                  [
+                      {
+                          'filename': 'name',
+                          'size': 0,
+                          'url': 'url'
+                      }
+                  ]
+              },
+          'links': ['link']
+          }
+     },
+    {'data':
+        {'id': '2',
+            'result':
+            {'files':
+               [
+                   {
+                       'filename': 'name',
+                       'size': 0,
+                       'url': 'url'
+                    }
+               ]
+            },
+            'links': ['link']
+         }
+     }
+],
+    [
+    {'data':
+         {'id': '1',
+          'result':
+              {'files':
+                  [
+                      {
+                          'filename': 'name',
+                          'size': 0,
+                          'url': '[url](url)'
+                      }
+                  ]
+              },
+          'links': ['[link](link)']
+          }
+     },
+    {'data':
+        {'id': '2',
+            'result':
+            {'files':
+               [
+                   {
+                       'filename': 'name',
+                       'size': 0,
+                       'url': '[url](url)'
+                    }
+               ]
+            },
+            'links': ['[link](link)']
+         }
+     }
+])]
 
 
 @pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
@@ -367,6 +461,17 @@ def test_tbl_to_md_header_with_special_character():
 '''
     assert table_with_character == expected_string_with_special_character
 
+
+@pytest.mark.parametrize('data, expected_table', DATA_WITH_URLS)
+def test_tbl_to_md_clickable_url(data, expected_table):
+    table = tableToMarkdown('tableToMarkdown test', data, url_keys=['url1', 'url2'])
+    assert table == expected_table
+
+
+@pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
+def test_url_to_clickable_markdown(data, expected_data):
+    table = url_to_clickable_markdown(data, url_keys=['url', 'links'])
+    assert table == expected_data
 
 def test_flatten_cell():
     # sanity
@@ -2275,6 +2380,26 @@ def test_http_client_debug(mocker):
     r.read()
     assert demisto.info.call_count > 5
     assert debug_log is not None
+
+
+def test_http_client_debug_int_logger_sensitive_query_params(mocker):
+    if not IS_PY3:
+        pytest.skip("test not supported in py2")
+        return
+    mocker.patch.object(demisto, 'params', return_value={'APIKey': 'dummy'})
+    mocker.patch.object(demisto, 'info')
+    debug_log = DebugLogger()
+    from http.client import HTTPConnection
+    HTTPConnection.debuglevel = 1
+    con = HTTPConnection("google.com")
+    con.request('GET', '?apikey=dummy')
+    r = con.getresponse()
+    r.read()
+    assert debug_log
+    for arg in demisto.info.call_args_list:
+        assert 'dummy' not in arg[0][0]
+        if 'apikey' in arg[0][0]:
+            assert 'apikey=<XX_REPLACED>' in arg[0][0]
 
 
 class TestParseDateRange:
