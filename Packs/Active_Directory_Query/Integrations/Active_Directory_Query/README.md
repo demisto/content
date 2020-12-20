@@ -71,28 +71,6 @@ Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-1. Expire a password: ad-expire-password
-2. Create an AD user: ad-create-user
-3. Perform a search in AD: ad-search
-4. Add an AD user or computer to a group: ad-add-to-group
-5. Remove an AD user or computer from a group: ad-remove-from-group
-6. Update attributes of an AD user: ad-update-user
-7. Delete an AD user: ad-delete-user
-8. Create an AD contact: ad-create-contact
-9. Update attributes of an AD contact: ad-update-contact
-10. Disable an AD user account: ad-disable-account
-11. Enable an AD user account: ad-enable-account
-12. Unlock an AD user account: ad-unlock-account
-13. Set a new password for an AD user: ad-set-new-password
-14. Modify the computer organizational unit in a domain: ad-modify-computer-ou
-15. Get information for an AD user account: ad-get-user
-16. Get information for a computer account: ad-get-computer
-17. Get a list of users or computers for a group: ad-get-group-members
-18. Get an AD user, used in the IAM premium pack: get-user
-19. Create an AD user, used in the IAM premium pack: create-user
-20. Update an AD user, used in the IAM premium pack: update-user
-21. Disable an AD user, used in the IAM premium pack: disable-user
-
 ### 1. Expire a password
 
 Expires the password of an Active Directory user.
