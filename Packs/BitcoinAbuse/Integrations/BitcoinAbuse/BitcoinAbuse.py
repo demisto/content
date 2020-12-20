@@ -1,8 +1,7 @@
-from dataclasses import dataclass
-
 import demistomock as demisto  # noqa: F401
-from CSVFeedApiModule import *
 from CommonServerPython import *  # noqa: F401
+from dataclasses import dataclass
+from CSVFeedApiModule import *
 
 # disable insecure warnings
 urllib3.disable_warnings()
