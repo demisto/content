@@ -95,9 +95,6 @@ def test_serialize_report_info(mocker):
 def test_get_main_indicator(mocker):
     from Polygon import get_main_indicator
     results = get_main_indicator(MOCKED_REPORT, FILE_TYPE)
-    indicators_list = []
-    for command_result in results:
-        indicators_list.append(command_result.get('indicator'))
     assert results.to_context() == MOCKED_MAIN_INDICATOR
 
 
@@ -106,8 +103,8 @@ def test_get_packages_indicators(mocker):
     results = get_packages_indicators(MOCKED_REPORT_RESULT)
     indicators_list = []
     for command_result in results:
-        indicators_list.append(command_result.get('indicator'))
-    assert MOCKED_PACKAGES_INDICATORS == [r.to_context() for r in results]
+        indicators_list.append(command_result.to_context())
+    assert MOCKED_PACKAGES_INDICATORS == [r['EntryContext'] for r in indicators_list]
 
 
 def test_get_network_indicators(mocker):
@@ -115,14 +112,14 @@ def test_get_network_indicators(mocker):
     results = get_network_indicators(MOCKED_REPORT_RESULT)
     indicators_list = []
     for command_result in results:
-        indicators_list.append(command_result.get('indicator'))
-    assert MOCKED_NETWORK_INDICATORS == [r.to_context() for r in results]
+        indicators_list.append(command_result.to_context())
+    assert MOCKED_NETWORK_INDICATORS == [r['EntryContext'] for r in indicators_list]
 
 
-def test_get_monitor_indicators():
+def test_get_monitor_indicators(mocker):
     from Polygon import get_monitor_indicators
     results = get_monitor_indicators(MOCKED_REPORT_RESULT)
     indicators_list = []
     for command_result in results:
         indicators_list.append(command_result.to_context())
-    assert MOCKED_MONITOR_INDICATORS == [r.to_context() for r in indicators_list]
+    assert MOCKED_MONITOR_INDICATORS == [r['EntryContext'] for r in indicators_list]
