@@ -90,10 +90,10 @@ configuration:
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
-  - RED
-  - AMBER
-  - GREEN
-  - WHITE
+    - RED
+    - AMBER
+    - GREEN
+    - WHITE
   required: false
   type: 15
 description: BitcoinAbuse.com is a public database of bitcoin addresses used by hackers
