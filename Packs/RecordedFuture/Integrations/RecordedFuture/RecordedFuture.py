@@ -570,7 +570,6 @@ def build_intel_context(entity: str, entity_data: Dict[str, Any],
         indicator = create_indicator(entity, entity_type, 0, '')
         command_results.append(CommandResults(readable_output=tableToMarkdown("New indicator was created", indicator.to_context()),
                                               indicator=indicator))
-        return command_results
 
     return command_results
 
