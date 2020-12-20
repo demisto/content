@@ -12,6 +12,11 @@
             "timeout": 250
         },
         {
+            "integrations": "Cisco Umbrella Enforcement",
+            "playbookID": "Cisco Umbrella Enforcement-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "GSuiteAdmin",
             "playbookID": "GSuiteAdmin-Test",
             "fromversion": "5.0.0"
