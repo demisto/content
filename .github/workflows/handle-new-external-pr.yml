@@ -6,7 +6,7 @@ on:
 jobs:
   handle_new_external_pr:
     runs-on: ubuntu-latest
-    if: github.repository == 'demisto/content' && github.event.action == 'opened'
+    if: github.repository == 'demisto/content' && github.event.action == 'opened' && github.event.pull_request.head.repo.fork == true
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -36,7 +36,7 @@ jobs:
           cd Utils/github_workflow_scripts
           pipenv install --dev
           cat ./handle_external_pr.py
-          echo "Finished Handling External PR"
+          pipenv run "Finished Handling External PR"
       - name: Send Notification
         env:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
@@ -45,6 +45,4 @@ jobs:
         run: |
           echo "Sending notification about External PR ${{ github.event.pull_request.html_url }}"
           cd Utils/github_workflow_scripts
-          ls -l
           pipenv run ./send_slack_message.py
-          echo "Finshed sending message"
