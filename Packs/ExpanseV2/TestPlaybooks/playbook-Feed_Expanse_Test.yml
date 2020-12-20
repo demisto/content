@@ -173,24 +173,6 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: IP
-            iscontext: true
-          right:
-            value:
-              simple: "1"
-      - - operator: hasLength
-          left:
-            value:
-              complex:
-                root: Indicator
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Indicator.type
-                      iscontext: true
-                    right:
-                      value:
                         simple: Certificate
             iscontext: true
           right:
@@ -203,7 +185,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "4"
+              simple: "3"
     view: |-
       {
         "position": {
