@@ -6,39 +6,41 @@ from Tests.Marketplace.marketplace_services import init_storage_client
 
 STORAGE_ID_SET_PATH = 'content/private_id_set.json'
 ARTIFACTS_PATH = '/home/runner/work/content-private/content-private/content/artifacts'
-PRIVATE_ID_SET_FILE = 'private_id_set.json'
+PRIVATE_ID_SET_FILE_IN_ARTIFACTS = ARTIFACTS_PATH + 'private_id_set.json'
 
 
-EMPTY_ID_SET = {
-    "scripts": [],
-    "playbooks": [],
-    "integrations": [],
-    "TestPlaybooks": [],
-    "Classifiers": [],
-    "Dashboards": [],
-    "IncidentFields": [],
-    "IncidentTypes": [],
-    "IndicatorFields": [],
-    "IndicatorTypes": [],
-    "Layouts": [],
-    "Reports": [],
-    "Widgets": [],
-    "Mappers": []
-}
+def upload_empty_id_set_to_bucket():
+    empty_id_set = {
+        "scripts": [],
+        "playbooks": [],
+        "integrations": [],
+        "TestPlaybooks": [],
+        "Classifiers": [],
+        "Dashboards": [],
+        "IncidentFields": [],
+        "IncidentTypes": [],
+        "IndicatorFields": [],
+        "IndicatorTypes": [],
+        "Layouts": [],
+        "Reports": [],
+        "Widgets": [],
+        "Mappers": []
+    }
+    with open(PRIVATE_ID_SET_FILE_IN_ARTIFACTS, 'w') as id_set:
+        json.dump(empty_id_set, id_set)
 
 
-def is_file_exist(public_storage_bucket, storage_client):
+def file_exists_in_bucket(public_storage_bucket):
     blob = public_storage_bucket.blob(STORAGE_ID_SET_PATH)
-    return blob.exists(storage_client)
+    return blob.exists()
 
 
-def download_private_id_set_from_gcp(public_storage_bucket, storage_client):
+def download_private_id_set_from_gcp(public_storage_bucket):
     """Downloads private ID set file from cloud storage.
 
     Args:
         public_storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where private_id_set.json
         is stored.
-        storage_client: The GCP storage client
     Returns:
         str: private ID set file full path.
     """
@@ -46,20 +48,16 @@ def download_private_id_set_from_gcp(public_storage_bucket, storage_client):
     if not os.path.exists(ARTIFACTS_PATH):
         os.mkdir(ARTIFACTS_PATH)
 
-    is_private_id_set_file_exist = is_file_exist(public_storage_bucket, storage_client)
+    is_private_id_set_file_exist = file_exists_in_bucket(public_storage_bucket)
 
     if is_private_id_set_file_exist:
         index_blob = public_storage_bucket.blob(STORAGE_ID_SET_PATH)
-        index_blob.download_to_filename(f'{ARTIFACTS_PATH}/{PRIVATE_ID_SET_FILE}')
+        index_blob.download_to_filename(PRIVATE_ID_SET_FILE_IN_ARTIFACTS)
 
     else:
-        with open(f'{ARTIFACTS_PATH}/{PRIVATE_ID_SET_FILE}', 'w') as empty_id_set:
-            json.dump(EMPTY_ID_SET, empty_id_set)
+        upload_empty_id_set_to_bucket()
 
-    if os.path.exists(f'{ARTIFACTS_PATH}/{PRIVATE_ID_SET_FILE}'):
-        return f'{ARTIFACTS_PATH}/{PRIVATE_ID_SET_FILE}'
-
-    return ''
+    return PRIVATE_ID_SET_FILE_IN_ARTIFACTS if os.path.exists(PRIVATE_ID_SET_FILE_IN_ARTIFACTS) else ''
 
 
 def option_handler():
@@ -91,7 +89,7 @@ def main():
     storage_client = init_storage_client(service_account)
     public_bucket_name = options.public_bucket_name
     public_storage_bucket = storage_client.bucket(public_bucket_name)
-    private_id_set = download_private_id_set_from_gcp(public_storage_bucket, storage_client)
+    private_id_set = download_private_id_set_from_gcp(public_storage_bucket)
     return private_id_set
 
 
