@@ -11,7 +11,7 @@ configuration:
 - display: Credentials JSON
   name: credentials_json
   required: true
-  type: 12
+  type: 4
 - display: User ID for Fetching Incidents
   hidden: false
   name: as_user
@@ -2008,7 +2008,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of the object to restore. Possible values are: "file" and "folder".
+      description: Type of the object to restore. Possible values are "file" and "folder".
       isArray: false
       name: type
       predefined:
@@ -2292,7 +2292,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The user’s enterprise role. Possible values are: "coadmin" and "user".
+      description: The user’s enterprise role. Possible values are "coadmin" and "user".
       isArray: false
       name: role
       predefined:
@@ -2346,7 +2346,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The user's account status. Possible values are: "active", "inactive", "cannot_delete_edit", and "cannot_delete_edit_upload".'
+      description: "The user's account status. Possible values are \"active\", \"inactive\", \"cannot_delete_edit\", and \"cannot_delete_edit_upload\"."
       isArray: false
       name: status
       predefined:
