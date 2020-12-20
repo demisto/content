@@ -546,4 +546,4 @@ script:
   type: python
 tests:
 - Azure NSG - Test
-fromversion: 6.0.0
+fromversion: 5.0.0

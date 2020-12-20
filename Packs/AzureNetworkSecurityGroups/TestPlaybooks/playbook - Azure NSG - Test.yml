@@ -402,10 +402,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 912860a9-7fc2-429a-8877-a0153fd3339b
+    taskid: 771f23bd-b068-4ef0-8f93-a22783b4f73c
     type: condition
     task:
-      id: 912860a9-7fc2-429a-8877-a0153fd3339b
+      id: 771f23bd-b068-4ef0-8f93-a22783b4f73c
       version: -1
       name: Check outputs
       type: condition
@@ -421,7 +421,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AzureNSG.Rules.name
+              simple: AzureNSG.Rule.name
             iscontext: true
           right:
             value:
@@ -429,7 +429,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AzureNSG.Rules.sourceAddressPrefix
+              simple: AzureNSG.Rule.sourceAddressPrefix
             iscontext: true
           right:
             value:
@@ -437,7 +437,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AzureNSG.Rules.destinationAddressPrefix
+              simple: AzureNSG.Rule.destinationAddressPrefix
             iscontext: true
           right:
             value:
@@ -456,10 +456,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 6c58af5d-70ed-437c-885f-65b9b2140a27
+    taskid: b087c7ba-3bdb-4c03-81dd-22dc3f2271ea
     type: condition
     task:
-      id: 6c58af5d-70ed-437c-885f-65b9b2140a27
+      id: b087c7ba-3bdb-4c03-81dd-22dc3f2271ea
       version: -1
       name: Check Outputs
       type: condition
@@ -475,7 +475,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: AzureNSG.Rules.sourcePortRanges
+              simple: AzureNSG.Rule.sourcePortRanges
             iscontext: true
           right:
             value:
@@ -483,7 +483,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: AzureNSG.Rules.sourcePortRanges
+              simple: AzureNSG.Rule.sourcePortRanges
             iscontext: true
           right:
             value:
@@ -491,7 +491,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: AzureNSG.Rules.sourcePortRanges
+              simple: AzureNSG.Rule.sourcePortRanges
             iscontext: true
           right:
             value:
@@ -533,48 +533,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "14":
-    id: "14"
-    taskid: 6c1e6790-2b3a-4ec9-85a9-ec87eebdc77b
-    type: regular
-    task:
-      id: 6c1e6790-2b3a-4ec9-85a9-ec87eebdc77b
-      version: -1
-      name: Get Refresh Token
-      description: Connects to the user and client set up in the parameters.
-      script: '|||ms-login-helper-get-refresh-token'
-      type: regular
-      iscommand: true
-      brand: ""
-    scriptarguments:
-      client_id:
-        simple: d4736600-e3d5-4c97-8e65-57abd2b979fe
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2340,
-        "width": 810,
+        "height": 2325,
+        "width": 492.5,
         "x": 50,
-        "y": 50
+        "y": 65
       }
     }
   }
-inputs: []
+inputs:
+- key: ""
+  value:
+    simple: גגכ
+  required: false
+  description: ""
+  playbookInputQuery:
 outputs: []
-fromversion: 6.0.0
+fromversion: 5.0.0
 description: ''
