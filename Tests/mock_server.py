@@ -82,7 +82,6 @@ class AMIConnection:
     REMOTE_MACHINE_USER = 'ec2-user'
     REMOTE_HOME = f'/home/{REMOTE_MACHINE_USER}/'
     LOCAL_SCRIPTS_DIR = '/home/circleci/project/Tests/scripts/'
-    CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
     UPLOAD_MOCKS_SCRIPT = 'upload_mocks.sh'
 
     def __init__(self, public_ip):
@@ -151,9 +150,6 @@ class AMIConnection:
 
     def upload_mock_files(self, build_name, build_number):
         self.run_script(self.UPLOAD_MOCKS_SCRIPT, build_name, build_number)
-
-    def clone_mock_data(self):
-        self.run_script(self.CLONE_MOCKS_SCRIPT)
 
 
 class MITMProxy:
