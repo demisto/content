@@ -83,12 +83,10 @@ class AMIConnection:
     REMOTE_HOME = f'/home/{REMOTE_MACHINE_USER}/'
     LOCAL_SCRIPTS_DIR = '/home/circleci/project/Tests/scripts/'
     CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
-    UPLOAD_MOCKS_SCRIPT = 'upload_mocks.sh'
 
-    def __init__(self, public_ip, build_number=''):
+    def __init__(self, public_ip):
         self.public_ip = public_ip
         self.docker_ip = self._get_docker_ip()
-        self.build_number = build_number
 
     def _get_docker_ip(self):
         """Get the IP of the AMI on the docker bridge.
@@ -150,23 +148,6 @@ class AMIConnection:
         silence_output(self.check_call, ['chmod', '+x', remote_script_path], stdout='null')
         silence_output(self.check_call, [remote_script_path] + list(args), stdout='null')
 
-    def commit_mock_file(self):
-        silence_output(self.check_call,
-                       'cd content-test-data && '
-                       'git add * && '
-                       f'git commit -m "Updated mock files from build number - {self.build_number}'.split(),
-                       stdout='null')
-
-    def reset_mock_files(self):
-        silence_output(self.check_call,
-                       'cd content-test-data && git reset --hard'.split(),
-                       stdout='null')
-
-    def push_mock_files(self):
-        silence_output(self.check_call,
-                       'cd content-test-data && git pull -r -Xtheirs && git push --f || :'.split(),
-                       stdout='null')
-
     def clone_mock_data(self):
         self.run_script(self.CLONE_MOCKS_SCRIPT)
 
@@ -204,8 +185,9 @@ class MITMProxy:
         self.current_folder = self.repo_folder = repo_folder
         self.tmp_folder = tmp_folder
         self.logging_module = logging_module
-        self.ami = AMIConnection(self.public_ip, build_number)
-        self.should_update = branch_name == 'master'
+        self.build_number = build_number
+        self.ami = AMIConnection(self.public_ip)
+        self.should_update_mock_repo = branch_name == 'master'
         self.empty_files = []
         self.failed_tests_count = 0
         self.successful_tests_count = 0
@@ -216,6 +198,38 @@ class MITMProxy:
         silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
         script_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'timestamp_replacer.py')
         self.ami.copy_file(script_filepath)
+
+    def commit_mock_file(self):
+        self.logging_module.debug('Committing mock files')
+        try:
+            output = self.ami.check_output(
+                'cd content-test-data && '
+                'git add * -v && '
+                f'git commit -m "Updated mock files from build number - {self.build_number}" -v'.split(),
+                stderr=STDOUT)
+            self.logging_module.debug(f'Committing mock files output:\n{output.decode()}')
+        except CalledProcessError as exc:
+            self.logging_module.debug(f'Committing mock files output:\n{exc.output.decode()}')
+
+    def reset_mock_files(self):
+        self.logging_module.debug('Resetting mock files')
+        try:
+            output = self.ami.check_output(
+                'cd content-test-data && git reset --hard'.split(),
+                stderr=STDOUT)
+            self.logging_module.debug(f'Resetting mock files output:\n{output.decode()}')
+        except CalledProcessError as exc:
+            self.logging_module.debug(f'Resetting mock files output:\n{exc.output.decode()}')
+
+    def push_mock_files(self):
+        self.logging_module.debug('Pushing new/updated mock files to mock git repo.', real_time=True)
+        try:
+            output = self.ami.check_output(
+                'cd content-test-data && git pull -r -Xtheirs && git push -f'.split(),
+                stderr=STDOUT)
+            self.logging_module.debug(f'Pushing mock files output:\n{output.decode()}', real_time=True)
+        except CalledProcessError as exc:
+            self.logging_module.debug(f'Pushing mock files output:\n{exc.output.decode()}', real_time=True)
 
     def configure_proxy_in_demisto(self, username, password, server, proxy=''):
         client = demisto_client.configure(base_url=server, username=username,
@@ -536,10 +550,10 @@ def run_with_mock(proxy_instance: MITMProxy,
     """
     if record:
         proxy_instance.set_tmp_folder()
-        # If the record files should be commited - let's clean the content-test-data repo first
-        if proxy_instance.should_update:
+        # If the record files should be committed - clean the content-test-data repo first
+        if proxy_instance.should_update_mock_repo:
             proxy_instance.logging_module.debug('Cleaning content-test-data repo')
-            proxy_instance.ami.reset_mock_files()
+            proxy_instance.reset_mock_files()
     proxy_instance.start(playbook_or_integration_id, record=record)
     result_holder = {}
     try:
@@ -554,9 +568,9 @@ def run_with_mock(proxy_instance: MITMProxy,
                 proxy_instance.move_mock_file_to_repo(playbook_or_integration_id)
                 proxy_instance.successful_rerecord_count += 1
                 proxy_instance.rerecorded_tests.append(playbook_or_integration_id)
-                if proxy_instance.should_update:
+                if proxy_instance.should_update_mock_repo:
                     proxy_instance.logging_module.debug("committing new/updated mock files to mock git repo.")
-                    proxy_instance.ami.commit_mock_file()
+                    proxy_instance.commit_mock_file()
             else:
                 proxy_instance.failed_rerecord_count += 1
                 proxy_instance.failed_rerecord_tests.append(playbook_or_integration_id)

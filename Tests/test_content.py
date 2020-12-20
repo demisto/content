@@ -855,9 +855,8 @@ def execute_testing(tests_settings,
                                          skipped_integration, unmockable_integrations)
         if is_ami:
             tests_data_keeper.add_proxy_related_test_data(proxy)
-            if proxy.should_update:
-                logging_manager.debug("Pushing new/updated mock files to mock git repo.", real_time=True)
-                ami.push_mock_files()
+            if proxy.should_update_mock_repo:
+                proxy.push_mock_files()
 
         if playbook_skipped_integration and build_name == 'master':
             comment = 'The following integrations are skipped and critical for the test:\n {}'. \
