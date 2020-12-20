@@ -363,6 +363,10 @@
             "playbookID": "Maltiverse Test"
         },
         {
+            "integrations": "Box v2",
+            "playbookID": "BoxV2_TestPlaybook"
+        },
+        {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test",
             "instance_names": "ms_graph_mail_dev"
