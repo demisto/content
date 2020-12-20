@@ -797,7 +797,7 @@ def perform_offense_events_enrichment(
 
     # decreasing 1 minute from the start_time to avoid the case where the minute queried in the start_time and the
     # end_time is equal
-    offense_start_time = offense["start_time"] - 60*1000
+    offense_start_time = offense["start_time"] - 60 * 1000
     query_expression = (
         f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense["id"]})'
         f"{additional_where} limit {events_limit} START '{offense_start_time}'"
