@@ -390,11 +390,12 @@ def get_latest_version_from_bucket(pack_id: str, production_bucket: Bucket) -> s
 
     """
     pack_bucket_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, pack_id)
-    # Adding the '/' in the end of the prefix to search for the exact pack id
     logging.debug(f'Trying to get latest version for pack {pack_id} from bucket path {pack_bucket_path}')
+    # Adding the '/' in the end of the prefix to search for the exact pack id
     pack_versions_paths = [f.name for f in production_bucket.list_blobs(prefix=f'{pack_bucket_path}/') if
                            f.name.endswith('.zip')]
     pack_versions = [LooseVersion(PACK_PATH_VERSION_REGEX.findall(path)[0]) for path in pack_versions_paths]
+    logging.debug(f'Found the following zips for {pack_id} pack: {pack_versions}')
     if pack_versions:
         pack_latest_version = max(pack_versions).vstring
         return pack_latest_version
