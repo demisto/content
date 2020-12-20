@@ -1,11 +1,26 @@
 id: SolarStorm and SUNBURST Hunting and Response Playbook
 version: -1
 name: SolarStorm and SUNBURST Hunting and Response Playbook
-description: "This playbook collects IOCs from known sources that relate to SolarStorm and SUNBURST.
-  The playbook will hunt the IOCs across the organization using EDR platforms for endpoints and Panorama for network activity.
-  Lastly, the playbook will mitigate the threat by isolating the compromised hosts and blocking the indicators across the organization network.
-  Note: This is a beta pack, which lets you implement and test pre-release software. Since the pack is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve."
+description: "This playbook does the following:
 
+              Collect indicators to aid in your threat hunting process
+
+              - Retrieve IOCs of SUNBURST (a trojanized version of the SolarWinds Orion plugin)
+              - Retrieve C2 domains and URLs associated with Sunburst
+              - Discover IOCs of associated activity related to the infection
+              - Generate an indicator list to block indicators with SUNBURST tags
+
+              Hunt for the SUNBURST backdoor
+
+              - Query firewall logs to detect network activity
+              - Search endpoint logs for Sunburst hashes to detect presence on hosts
+
+              If compromised hosts are found then:
+
+              - Notify security team to review and trigger remediation response actions
+              - Fire off sub-playbooks to isolate/quarantine infected hosts/endpoints and await further actions from the security team.
+
+              Note: This is a beta pack, which lets you implement and test pre-release software. Since the pack is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve."
 starttaskid: "0"
 tasks:
   "0":
