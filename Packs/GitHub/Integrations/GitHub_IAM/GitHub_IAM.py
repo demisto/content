@@ -328,8 +328,8 @@ def main():
     token = params.get('token')
     org = params.get('org')
 
-    mapper_in = params.get('mapper_in', DEFAULT_INCOMING_MAPPER)
-    mapper_out = params.get('mapper_out', DEFAULT_OUTGOING_MAPPER)
+    mapper_in = params.get('mapper-in', DEFAULT_INCOMING_MAPPER)
+    mapper_out = params.get('mapper-out', DEFAULT_OUTGOING_MAPPER)
     is_create_enabled = params.get("create-user-enabled")
     is_disable_enabled = params.get("disable-user-enabled")
     is_update_enabled = demisto.params().get("update-user-enabled")
