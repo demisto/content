@@ -47,7 +47,7 @@ def download_private_id_set_from_gcp(public_storage_bucket):
     if not os.path.exists(ARTIFACTS_PATH):
         os.mkdir(ARTIFACTS_PATH)
 
-    private_id_set_artifacts_path = ARTIFACTS_PATH + 'private_id_set.json'
+    private_id_set_artifacts_path = ARTIFACTS_PATH + '/private_id_set.json'
 
     is_private_id_set_file_exist = file_exists_in_bucket(public_storage_bucket)
 
