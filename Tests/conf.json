@@ -12,6 +12,11 @@
             "timeout": 250
         },
         {
+            "integrations": "Cisco Umbrella Enforcement",
+            "playbookID": "Cisco Umbrella Enforcement-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "GSuiteAdmin",
             "playbookID": "GSuiteAdmin-Test",
             "fromversion": "5.0.0"
@@ -361,6 +366,10 @@
         {
             "integrations": "Maltiverse",
             "playbookID": "Maltiverse Test"
+        },
+        {
+            "integrations": "Box v2",
+            "playbookID": "BoxV2_TestPlaybook"
         },
         {
             "integrations": "MicrosoftGraphMail",
@@ -3266,7 +3275,6 @@
         "Cisco Umbrella Test": "Issue 24338",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
         "Akamai_WAF-Test": "Issue 31900",
-        "Archer-Test-Playbook": "Issue 26851",
         "FireEye HX Test": "Issue 24935",
         "Carbon Black Enterprise Protection V2 Test": "Issue 27846"
     },
