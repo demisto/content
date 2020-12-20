@@ -195,7 +195,7 @@ def format_results(uuid):
     file_context = makehash()
     url_cont = makehash()
 
-    LIMIT = int(demisto.args().get('limit'))
+    LIMIT = int(demisto.args().get('limit', 20))
     if 'certificates' in scan_lists:
         cert_md = []
         cert_ec = []
