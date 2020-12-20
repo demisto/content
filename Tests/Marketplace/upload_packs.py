@@ -745,6 +745,29 @@ def get_packs_summary(packs_list):
     return successful_packs, skipped_packs, failed_packs
 
 
+def get_images_data(packs_list: list):
+    """ Returns a data structure of all packs that an integration/author image of them was uploaded
+
+    Args:
+        packs_list (list): The list of all packs
+
+    Returns:
+        The images data structure
+    """
+    images_data = {}
+
+    for pack in packs_list:
+        pack_image_data = {pack.name: {}}
+        if pack.uploaded_author_image:
+            pack_image_data[pack.name][BucketUploadFlow.AUTHOR] = True
+        if pack.uploaded_integration_images:
+            pack_image_data[pack.name][BucketUploadFlow.INTEGRATION] = pack.uploaded_integration_images
+        if pack_image_data[pack.name]:
+            images_data.update(pack_image_data)
+
+    return images_data
+
+
 def main():
     install_logging('Prepare_Content_Packs_For_Testing.log')
     option = option_handler()
@@ -820,13 +843,15 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, integration_images = pack.upload_integration_images(storage_bucket)
+        task_status, integration_images = pack.upload_integration_images(storage_bucket, current_commit_hash,
+                                                                         previous_commit_hash, content_repo)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status, author_image = pack.upload_author_image(storage_bucket)
+        task_status, author_image = pack.upload_author_image(storage_bucket, current_commit_hash,
+                                                             previous_commit_hash, content_repo)
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             pack.cleanup()
@@ -934,7 +959,8 @@ def main():
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
     store_successful_and_failed_packs_in_ci_artifacts(
-        packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs
+        packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs,
+        images_data=get_images_data(packs_list)
     )
 
     # summary of packs status

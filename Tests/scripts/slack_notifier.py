@@ -139,7 +139,7 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
         }] + steps_fields
 
     if job_name and job_name == BucketUploadFlow.UPLOAD_JOB_NAME:
-        successful_packs, failed_packs = get_successful_and_failed_packs(
+        successful_packs, failed_packs, _ = get_successful_and_failed_packs(
             packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
         )
         if successful_packs:
