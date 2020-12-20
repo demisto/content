@@ -1,0 +1,24 @@
+{
+   "commentCount":0,
+   "pbid":95,
+   "time":"2020-08-17T18:18:24.000Z",
+   "score":0.729,
+   "device":{
+      "did":"823",
+      "macaddress":"00:00:00:00:00:00",
+      "vendor":"No device vendor in Darktrace",
+      "ip":"10.0.0.1",
+      "hostname":"ip-10-0-0-1",
+      "devicelabel":"No device label in Darktrace"
+   },
+   "model":{
+      "name":"Testing::Test DNS",
+      "pid":762,
+      "uuid":"3338210a-8979-4a1b-8039-63ca8addf166",
+      "tags":["No Darktrace model tags"
+
+      ],
+      "priority":3,
+      "description":"DNS lookups for various https://test.com/"
+   }
+}
