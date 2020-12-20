@@ -3,19 +3,19 @@ This integration was integrated and tested with API version 2.0 of Box v2
 
 ## Configure the Box Application to Interface with XSOAR
 1. Navigate to [the developer console](https://app.box.com/developers/console) for Box.
-2. Click *Create a New App*.
-3. Select *Custom App* and when prompted, select *Server Authentication (with JWT)*
+2. Click **Create a New App**.
+3. Select **Custom App** and when prompted, select **Server Authentication (with JWT)**
 4. Enter your desired App Name.
-5. In the Configuration menu under Application Access, select *Enterprise*.
-6. Under the Advanced Features option, enable both *Perform Actions as Users* and *Generate User Access Tokens*.
-7. In the Add and Manage Public Keys section, click *Generate a Public/Private Keypair* and follow the prompts.
-8. Next click *Save Changes* un the upper right-hand corner.
-9. Lastly navigate to the bottom of the page and select *Download as a JSON*.
+5. In the Configuration menu under Application Access, select **Enterprise**.
+6. Under the Advanced Features option, enable both **Perform Actions as Users** and **Generate User Access Tokens**.
+7. In the Add and Manage Public Keys section, click **Generate a Public/Private Keypair** and follow the prompts.
+8. Click **Save Changes** in the upper right-hand corner.
+9. Navigate to the bottom of the page and select **Download as a JSON**.
 
-Once you have obtained the JSON file, copy and paste its contents into the `Credentials JSON` parameter.
+Once you have obtained the JSON file, copy and paste its contents into the *Credentials JSON* parameter.
 
-Before testing the integration, please navigate to the General Settings for your app in the developer console and click 
-Review and Submit. Your enterprise admin will need to approve the app before your integration will start working.
+Before testing the integration, navigate to the General Settings for your app in the developer console and click 
+**Review and Submit**. Your enterprise admin will need to approve the app before your integration will start working.
 
 From the General Settings menu, you may also obtain your *User ID* for the service account.
 
@@ -63,17 +63,17 @@ Searches for files, folders, web links, and shared files across the users conten
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | Limits the search results to any items of this type. This parameter only takes one value. By default the API returns items that match any of these types. Possible values are: file, folder, web_link. | Optional | 
-| ancestor_folder_ids | Limits the search results to items within the given list of folders, defined as a comma separated lists of folder IDs. | Optional | 
+| ancestor_folder_ids | A comma-separated lists of folder IDs that limits the search results to items within the given list of folders. | Optional | 
 | item_name | Query for an item by name. | Optional | 
-| item_description | Search for an item by its description. | Optional | 
-| comments | Search for an item by its comments. | Optional | 
-| tag | Search for an item by its tag. | Optional | 
-| created_range | Time frame of when the item was created. Can be comma separated RFC3339 timestamps, or relative to now. (e.g. 3 Days). | Optional | 
+| item_description | The description of the item to search for. | Optional | 
+| comments | The comments of the item to search for. | Optional | 
+| tag | The tag of the item to search for.  | Optional | 
+| created_range | A comma-separated list of the time frame of when the item was created. Can be RFC3339 timestamps, or relative to the current time (e.g., 3 Days). | Optional | 
 | file_extensions | Limits the search results to any files that match any of the provided file extensions. | Optional | 
-| limit | Defines the maximum number of items to return as part of a page of results. Default is 100. | Optional | 
-| offset | The offset of the item at which to begin the response. Default is 0. | Optional | 
-| owner_uids | Limits the search results to any items that are owned by the given list of owners, defined as a list of comma separated user IDs. | Optional | 
-| trash_content | Determines if the search should look in the trash for items. | Optional | 
+| limit | The maximum number of items to return as part of a page of results. Default is "100". | Optional | 
+| offset | The offset of the item at which to begin the response. Default is "0". | Optional | 
+| owner_uids | A comma-separated list of user IDs used to limit the search results to any items that are owned by the given list of owners. | Optional | 
+| trash_content | Whether the search should look in the trash for items. | Optional | 
 | updated_at_range | Limits the search results to any items updated within a given date range. | Optional | 
 | query | The string to search for. | Optional | 
 
@@ -82,19 +82,19 @@ Searches for files, folders, web links, and shared files across the users conten
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.Query.id | Number | The ID of the item found | 
+| Box.Query.id | Number | The ID of the item found. | 
 | Box.Query.etag | Number | The entry tag for the item found. | 
 | Box.Query.type | String | The type of the item found. | 
 | Box.Query.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
 | Box.Query.name | String | The name of the item. | 
 | Box.Query.sha1 | String | The SHA1 hash of the item. | 
 | Box.Query.file_version.id | Number | The unique identifier that represent a file version. | 
-| Box.Query.file_version.type | String | Value is always file_version | 
+| Box.Query.file_version.type | String | Value is always file_version. | 
 | Box.Query.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
 | Box.Query.description | String | The description of the item. | 
 | Box.Query.size | Number | The file size in bytes. | 
 | Box.Query.path_collection.total_count | Number | The number of folders in the list. | 
-| Box.Query.path_collection.entries.id | Number | The ID of the item found | 
+| Box.Query.path_collection.entries.id | Number | The ID of the item found. | 
 | Box.Query.path_collection.entries.etag | Number | The entry tag for the item found. | 
 | Box.Query.path_collection.entries.type | String | The type of the item found. | 
 | Box.Query.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
@@ -232,19 +232,19 @@ Return the file represented by a shared link.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | Number | The ID of the item found | 
+| Box.ShareLink.id | Number | The ID of the item found. | 
 | Box.ShareLink.etag | Number | The entry tag for the item found. | 
 | Box.ShareLink.type | String | The type of the item found. | 
 | Box.ShareLink.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
 | Box.ShareLink.name | String | The name of the item. | 
 | Box.ShareLink.sha1 | String | The SHA1 hash of the item. | 
 | Box.ShareLink.file_version.id | Number | The unique identifier that represent a file version. | 
-| Box.ShareLink.file_version.type | String | Value is always file_version | 
+| Box.ShareLink.file_version.type | String | Value is always file_version. | 
 | Box.ShareLink.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
 | Box.ShareLink.description | String | The description of the item. | 
 | Box.ShareLink.size | Number | The file size in bytes. | 
 | Box.ShareLink.path_collection.total_count | Number | The number of folders in the list. | 
-| Box.ShareLink.path_collection.entries.id | Number | The ID of the item found | 
+| Box.ShareLink.path_collection.entries.id | Number | The ID of the item found. | 
 | Box.ShareLink.path_collection.entries.etag | Number | The entry tag for the item found. | 
 | Box.ShareLink.path_collection.entries.type | String | The type of the item found. | 
 | Box.ShareLink.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
@@ -373,7 +373,7 @@ Gets the information for a shared link on a file.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | String | The ID of the item found | 
+| Box.ShareLink.id | String | The ID of the item found. | 
 | Box.ShareLink.etag | String | The entry tag for the item found. | 
 | Box.ShareLink.type | String | The type of the item found. | 
 | Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. | 
@@ -449,14 +449,14 @@ Adds a shared link to a file.
 | password | The password required to access the shared link. | Optional | 
 | unshared_at | The timestamp at which this shared link will expire. | Optional | 
 | can_download | If the shared link allows for downloading of files. Possible values are: true, false. | Optional | 
-| as_user | User which is making the request. | Optional | 
+| as_user | The user who is making the request. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | Number | The ID of the item found | 
+| Box.ShareLink.id | Number | The ID of the item found. | 
 | Box.ShareLink.etag | Number | The entry tag for the item found. | 
 | Box.ShareLink.type | String | The type of the item found. | 
 | Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. | 
@@ -532,14 +532,14 @@ Updates a shared link on a file.
 | unshared_at | The timestamp at which this shared link will expire. | Optional | 
 | can_download | If the shared link allows for downloading of files. Possible values are: true, false. | Optional | 
 | file_id | The unique identifier that represent a file. | Required | 
-| as_user | The user which is performing the action. | Optional | 
+| as_user | The user who is performing the action. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | Number | The ID of the item found | 
+| Box.ShareLink.id | Number | The ID of the item found. | 
 | Box.ShareLink.etag | Number | The entry tag for the item found. | 
 | Box.ShareLink.type | String | The type of the item found. | 
 | Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. | 
@@ -611,14 +611,14 @@ Removes a shared link from a file.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | file_id | The unique identifier that represents a file. | Required | 
-| as_user | The user which is performing the action. | Optional | 
+| as_user | The user who is performing the action. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | String | The ID of the item found | 
+| Box.ShareLink.id | String | The ID of the item found. | 
 | Box.ShareLink.etag | String | The entry tag for the item found. | 
 | Box.ShareLink.type | String | The type of the item found. | 
 
@@ -657,14 +657,14 @@ Gets the information for a shared link on a folder.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder_id | The unique identifier that represent a folder. | Required | 
-| as_user | User which is performing the action. | Optional | 
+| as_user | The user who is performing the action. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | String | The ID of the item found | 
+| Box.ShareLink.id | String | The ID of the item found. | 
 | Box.ShareLink.etag | String | The entry tag for the item found. | 
 | Box.ShareLink.type | String | The type of the item found. | 
 | Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. | 
@@ -740,14 +740,14 @@ Adds a shared link to a folder.
 | unshared_at | The timestamp at which this shared link will expire. | Optional | 
 | can_download | If the shared link allows for downloading of folders. Possible values are: true, false. | Optional | 
 | folder_id | The unique identifier that represent a folder. | Required | 
-| as_user | The user which is performing the action. | Optional | 
+| as_user | The user who is performing the action. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | String | The ID of the item found | 
+| Box.ShareLink.id | String | The ID of the item found. | 
 | Box.ShareLink.etag | String | The entry tag for the item found. | 
 | Box.ShareLink.type | String | The type of the item found. | 
 | Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. | 
@@ -819,7 +819,7 @@ Updates a shared link on a folder.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder_id | The unique identifier that represent a folder. | Required | 
-| as_user | The user which is performing the action. | Optional | 
+| as_user | The user who is performing the action. | Optional | 
 | access | The level of access for the shared link. Possible values are: open, company, collaborators. | Optional | 
 | password | The password required to access the shared link. | Optional | 
 | unshared_at | The timestamp at which this shared link will expire. | Optional | 
@@ -830,7 +830,7 @@ Updates a shared link on a folder.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | String | The ID of the item found | 
+| Box.ShareLink.id | String | The ID of the item found. | 
 | Box.ShareLink.etag | String | The entry tag for the item found. | 
 | Box.ShareLink.type | String | The type of the item found. | 
 | Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. | 
@@ -902,14 +902,14 @@ Removes a shared link from a folder.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder_id | The unique identifier that represent a folder. | Required | 
-| as_user | User which is performing the action. | Optional | 
+| as_user | The user who is performing the action. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | String | The ID of the item found | 
+| Box.ShareLink.id | String | The ID of the item found. | 
 | Box.ShareLink.etag | String | The entry tag for the item found. | 
 | Box.ShareLink.type | String | The type of the item found. | 
 
@@ -952,26 +952,26 @@ Retrieves details for a folder, including the first 100 entries in the folder.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder_id | The unique identifier that represent a folder. | Required | 
-| as_user | The user that is performing the action. | Optional | 
+| as_user | The user who is performing the action. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | Number | The ID of the item found | 
+| Box.ShareLink.id | Number | The ID of the item found. | 
 | Box.ShareLink.etag | Number | The entry tag for the item found. | 
 | Box.ShareLink.type | String | The type of the item found. | 
 | Box.ShareLink.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
 | Box.ShareLink.name | String | The name of the item. | 
 | Box.ShareLink.sha1 | String | The SHA1 hash of the item. | 
 | Box.ShareLink.file_version.id | Number | The unique identifier that represent a file version. | 
-| Box.ShareLink.file_version.type | String | Value is always file_version | 
+| Box.ShareLink.file_version.type | String | Value is always file_version. | 
 | Box.ShareLink.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
 | Box.ShareLink.description | String | The description of the item. | 
 | Box.ShareLink.size | Number | The file size in bytes. | 
 | Box.ShareLink.path_collection.total_count | Number | The number of folders in the list. | 
-| Box.ShareLink.path_collection.entries.id | Number | The ID of the item found | 
+| Box.ShareLink.path_collection.entries.id | Number | The ID of the item found. | 
 | Box.ShareLink.path_collection.entries.etag | Number | The entry tag for the item found. | 
 | Box.ShareLink.path_collection.entries.type | String | The type of the item found. | 
 | Box.ShareLink.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
@@ -1318,9 +1318,9 @@ Retrieves a page of items in a folder.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder_id | The unique identifier that represent a folder. | Required | 
-| as_user | The user which is performing the action. | Optional | 
-| limit | The maximum number of items to return per page. Default is 100. | Optional | 
-| offset | The offset of the item at which to begin the response. Default is 0. | Optional | 
+| as_user | The user who is performing the action. | Optional | 
+| limit | The maximum number of items to return per page. Default is "100". | Optional | 
+| offset | The offset of the item at which to begin the response. Default is "0". | Optional | 
 | sort | The field the results should be sorted by. Possible values are: id, name, date, size. Default is name. | Optional | 
 
 
@@ -1330,12 +1330,12 @@ Retrieves a page of items in a folder.
 | --- | --- | --- |
 | Box.Folder.id | Number | The ID of the folder. | 
 | Box.Folder.etag | Number | The entity tag of the folder. | 
-| Box.Folder.type | String | Is always \`folder\`. | 
+| Box.Folder.type | String | Value is always \`folder\`. | 
 | Box.Folder.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
 | Box.Folder.name | String | The name of the folder. | 
 | Box.Folder.sha1 | String | The SHA1 has of the folder. | 
 | Box.Folder.file_version.id | Number | The unique identifier that represent a file version. | 
-| Box.Folder.file_version.type | String | Value is always file_version | 
+| Box.Folder.file_version.type | String | Value is always file_version. | 
 | Box.Folder.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
 
 
@@ -1643,7 +1643,7 @@ Creates a new empty folder within the specified parent folder.
 | --- | --- | --- |
 | name | The name for the new folder. | Required | 
 | parent_id | The parent folder to create the new folder within. Default is 0. | Required | 
-| as_user | The user which is performing the action. | Optional | 
+| as_user | The user who is performing the action. | Optional | 
 
 
 #### Context Output
@@ -1657,12 +1657,12 @@ Creates a new empty folder within the specified parent folder.
 | Box.Folder.name | String | The name of the folder. | 
 | Box.Folder.sha1 | String | The SHA1 hash of the folder. | 
 | Box.Folder.file_version.id | Number | The unique identifier that represents a file version. | 
-| Box.Folder.file_version.type | String | Value is always file_version | 
+| Box.Folder.file_version.type | String | Value is always file_version. | 
 | Box.Folder.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
 | Box.Folder.description | String | The description of the item. | 
 | Box.Folder.size | Number | The folder size in bytes. | 
 | Box.Folder.path_collection.total_count | Number | The number of folders in the list. | 
-| Box.Folder.path_collection.entries.id | Number | The ID of the item found | 
+| Box.Folder.path_collection.entries.id | Number | The ID of the item found. | 
 | Box.Folder.path_collection.entries.etag | Number | The entry tag for the item found. | 
 | Box.Folder.path_collection.entries.type | String | The type of the item found. | 
 | Box.Folder.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
@@ -1740,7 +1740,7 @@ Deletes a file, either permanently or by moving it to the trash.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | file_id | The unique identifier that represent a file. | Required | 
-| as_user | The user which is performing the action. | Optional | 
+| as_user | The user who is performing the action. | Optional | 
 
 
 #### Context Output
@@ -1773,8 +1773,8 @@ Returns a list of all users for the Enterprise along with their user_id, public_
 | --- | --- | --- |
 | fields | Attributes to include in the response. Possible values are: id, type, name. | Optional | 
 | filter_term | Limits the results to only users who's name or login start with the search term. | Optional | 
-| limit | The maximum number of items to return per page. Default is 100. | Optional | 
-| offset | The offset of the item at which to begin the response. | Optional | 
+| limit | The maximum number of items to return per page. Default is "100". | Optional | 
+| offset | The offset of the item at which to begin the response. Default is "0". | Optional | 
 
 
 #### Context Output
@@ -1787,16 +1787,16 @@ Returns a list of all users for the Enterprise along with their user_id, public_
 | Box.User.login | String | The primary email address of this user. | 
 | Box.User.created_at | Date | When the user object was created. | 
 | Box.User.modified_at | Date | When the user object was last modified. | 
-| Box.User.language | String | The language of the user, formatted in modified version of the ISO 639-1 format. | 
-| Box.User.timezone | String | The users timezone. | 
-| Box.User.space_amount | Number | The users total available space amount in bytes. | 
+| Box.User.language | String | The language of the user, formatted in a modified version of the ISO 639-1 format. | 
+| Box.User.timezone | String | The user's timezone. | 
+| Box.User.space_amount | Number | The user's total available space amount in bytes. | 
 | Box.User.space_used | Number | The amount of space in use by the user. | 
 | Box.User.max_upload_size | Number | The maximum individual file size in bytes the user can have. | 
-| Box.User.status | String | The users account status. | 
-| Box.User.job_title | String | The users job title. | 
+| Box.User.status | String | The user's account status. | 
+| Box.User.job_title | String | The user's job title. | 
 | Box.User.phone | Number | The users phone number. | 
-| Box.User.address | String | The users address. | 
-| Box.User.avatar_url | String | URL of the users avatar image | 
+| Box.User.address | String | The user's address. | 
+| Box.User.avatar_url | String | URL of the user's avatar image | 
 | Box.User.notification_email.email | String | The email address to send the notifications to. | 
 | Box.User.notification_email.is_confirmed | Boolean | Specifies if this email address has been confirmed. | 
 
@@ -1838,7 +1838,7 @@ Uploads a file to the given folder.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | The entry ID of the file to upload. | Required | 
-| as_user | The id of the user who is performing the action. | Optional | 
+| as_user | The ID of the user who is performing the action. | Optional | 
 | file_name | The name of the file. | Optional | 
 | folder_id | The ID of the folder the file is being uploaded to. Default is 0/root. | Required | 
 
@@ -1847,19 +1847,19 @@ Uploads a file to the given folder.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.File.id | Number | The ID of the item found | 
+| Box.File.id | Number | The ID of the item found. | 
 | Box.File.etag | Number | The entry tag for the item found. | 
 | Box.File.type | String | The type of the item found. | 
 | Box.File.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
 | Box.File.name | String | The name of the item. | 
 | Box.File.sha1 | String | The SHA1 hash of the item. | 
 | Box.File.file_version.id | Number | The unique identifier that represent a file version. | 
-| Box.File.file_version.type | String | Value is always file_version | 
+| Box.File.file_version.type | String | Value is always file_version. | 
 | Box.File.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
 | Box.File.description | String | The description of the item. | 
 | Box.File.size | Number | The file size in bytes. | 
 | Box.File.path_collection.total_count | Number | The number of folders in the list. | 
-| Box.File.path_collection.entries.id | Number | The ID of the item found | 
+| Box.File.path_collection.entries.id | Number | The ID of the item found. | 
 | Box.File.path_collection.entries.etag | Number | The entry tag for the item found. | 
 | Box.File.path_collection.entries.type | String | The type of the item found. | 
 | Box.File.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
@@ -1928,22 +1928,22 @@ Retrieves the files and folders that have been moved to the trash.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | as_user | The user performing the action. | Optional | 
-| limit | The maximum number of items to return per page. | Optional | 
-| offset | The offset of the item at which to begin the response. | Optional | 
+| limit | The maximum number of items to return per page. Default is "100". | Optional | 
+| offset | The offset of the item at which to begin the response. Default is "0". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.Trash.id | Number | The ID of the item found | 
+| Box.Trash.id | Number | The ID of the item found. | 
 | Box.Trash.etag | Number | The entry tag for the item found. | 
 | Box.Trash.type | String | The type of the item found. | 
 | Box.Trash.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
 | Box.Trash.name | String | The name of the item. | 
 | Box.Trash.sha1 | String | The SHA1 hash of the item. | 
 | Box.Trash.file_version.id | Number | The unique identifier that represent a file version. | 
-| Box.Trash.file_version.type | String | Value is always file_version | 
+| Box.Trash.file_version.type | String | Value is always file_version. | 
 | Box.Trash.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
 
 
@@ -1993,26 +1993,26 @@ Restores a file or folder that has been moved to the trash.
 | --- | --- | --- |
 | item_id | The unique identifier that represents the file or folder. | Required | 
 | type | Type of the object to restore. Possible values are: file, folder. | Required | 
-| as_user | The user which is performing the action. | Optional | 
+| as_user | The user who is performing the action. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.Item.id | Number | The ID of the item found | 
+| Box.Item.id | Number | The ID of the item found. | 
 | Box.Item.etag | Number | The entry tag for the item found. | 
 | Box.Item.type | String | The type of the item found. | 
 | Box.Item.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
 | Box.Item.name | String | The name of the item. | 
 | Box.Item.sha1 | String | The SHA1 hash of the item. | 
 | Box.Item.file_version.id | Number | The unique identifier that represent a file version. | 
-| Box.Item.file_version.type | String | Value is always file_version | 
+| Box.Item.file_version.type | String | Value is always file_version. | 
 | Box.Item.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
 | Box.Item.description | String | The description of the item. | 
 | Box.Item.size | Number | The file size in bytes. | 
 | Box.Item.path_collection.total_count | Number | The number of folders in the list. | 
-| Box.Item.path_collection.entries.id | Number | The ID of the item found | 
+| Box.Item.path_collection.entries.id | Number | The ID of the item found. | 
 | Box.Item.path_collection.entries.etag | Number | The entry tag for the item found. | 
 | Box.Item.path_collection.entries.type | String | The type of the item found. | 
 | Box.Item.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
@@ -2145,7 +2145,7 @@ Permanently deletes a file or folder that is in the trash. This action cannot be
 | --- | --- | --- |
 | item_id | The unique identifier that represents the file or folder. | Required | 
 | type | The type of the item to delete. Possible values are: file, folder. | Required | 
-| as_user | The user which is performing the action. | Optional | 
+| as_user | The user who is performing the action. | Optional | 
 
 
 #### Context Output
@@ -2184,16 +2184,16 @@ Retrieves information about the user who is currently authenticated.
 | Box.User.login | String | The primary email address of this user. | 
 | Box.User.created_at | Date | When the user object was created. | 
 | Box.User.modified_at | Date | When the user object was last modified. | 
-| Box.User.language | String | The language of the user, formatted in modified version of the ISO 639-1 format. | 
+| Box.User.language | String | The language of the user, formatted in a modified version of the ISO 639-1 format. | 
 | Box.User.timezone | String | The users timezone. | 
-| Box.User.space_amount | Number | The users total available space amount in bytes. | 
+| Box.User.space_amount | Number | The user's total available space amount in bytes. | 
 | Box.User.space_used | Number | The amount of space in use by the user. | 
 | Box.User.max_upload_size | Number | The maximum individual file size in bytes the user can have. | 
-| Box.User.status | String | The users account status. | 
-| Box.User.job_title | String | The users job title. | 
-| Box.User.phone | Number | The users phone number. | 
-| Box.User.address | String | The users address. | 
-| Box.User.avatar_url | String | URL of the users avatar image | 
+| Box.User.status | String | The user's account status. | 
+| Box.User.job_title | String | The user's job title. | 
+| Box.User.phone | Number | The user's phone number. | 
+| Box.User.address | String | The user's address. | 
+| Box.User.avatar_url | String | URL of the user's avatar image | 
 | Box.User.notification_email.email | String | The email address to send the notifications to. | 
 | Box.User.notification_email.is_confirmed | Boolean | Specifies if this email address has been confirmed. | 
 
@@ -2251,7 +2251,7 @@ Updates a managed user in an enterprise. This endpoint is only available to user
 | role | The user’s enterprise role. Possible values are: coadmin, user. | Optional | 
 | address | The user’s address. | Optional | 
 | job_title | The user’s job title. | Optional | 
-| language | The language of the user, formatted in modified version of the ISO 639-1 format. | Optional | 
+| language | The language of the user, formatted in a modified version of the ISO 639-1 format. | Optional | 
 | login | The email address the user uses to log in. | Optional | 
 | name | The name of the user. | Optional | 
 | phone | The user’s phone number. | Optional | 
@@ -2263,7 +2263,7 @@ Updates a managed user in an enterprise. This endpoint is only available to user
 | is_external_collab_restricted | Whether the user is allowed to collaborate with users outside their enterprise. Possible values are: true, false. | Optional | 
 | is_exempt_from_login_verification | Whether the user must use two-factor authentication. Possible values are: true, false. | Optional | 
 | can_see_managed_users | Whether the user can see other enterprise users in their contact list. Possible values are: true, false. | Optional | 
-| tracking_codes | Tracking codes allow an admin to generate reports from the admin console and assign an attribute to a specific group of users. The expected format is `key1:value1,key2:value2`. Multiple key value pairs may be used when using the `,` seperator. | Optional | 
+| tracking_codes | A tracking code that allows an admin to generate reports from the admin console and assign an attribute to a specific group of users. The expected format is `key1:value1,key2:value2`. Multiple key value pairs may be used when using the `,` separator. | Optional | 
 | user_id | The ID of the user. | Required | 
 | as_user | The ID of the user who is making the request. | Optional | 
 
@@ -2278,16 +2278,16 @@ Updates a managed user in an enterprise. This endpoint is only available to user
 | Box.User.login | String | The primary email address of this user. | 
 | Box.User.created_at | Date | When the user object was created. | 
 | Box.User.modified_at | Date | When the user object was last modified. | 
-| Box.User.language | String | The language of the user, formatted in modified version of the ISO 639-1 format. | 
-| Box.User.timezone | String | The users timezone. | 
-| Box.User.space_amount | Number | The users total available space amount in bytes. | 
+| Box.User.language | String | The language of the user, formatted in a modified version of the ISO 639-1 format. | 
+| Box.User.timezone | String | The user's timezone. | 
+| Box.User.space_amount | Number | The user's total available space amount in bytes. | 
 | Box.User.space_used | Number | The amount of space in use by the user. | 
 | Box.User.max_upload_size | Number | The maximum individual file size in bytes the user can have. | 
-| Box.User.status | String | The users account status. | 
-| Box.User.job_title | String | The users job title. | 
-| Box.User.phone | Number | The users phone number. | 
-| Box.User.address | String | The users address. | 
-| Box.User.avatar_url | String | URL of the users avatar image | 
+| Box.User.status | String | The user's account status. | 
+| Box.User.job_title | String | The user's job title. | 
+| Box.User.phone | Number | The user's phone number. | 
+| Box.User.address | String | The user's address. | 
+| Box.User.avatar_url | String | URL of the user's avatar image | 
 | Box.User.notification_email.email | String | The email address to send the notifications to. | 
 | Box.User.notification_email.is_confirmed | Boolean | Specifies if this email address has been confirmed. | 
 
@@ -2346,13 +2346,13 @@ Creates a new managed user in an enterprise. This endpoint is only available to 
 | login | The email address the user uses to log in. | Optional | 
 | name | The name of the user. | Required | 
 | role | The user’s enterprise role. Possible values are: coadmin, user. | Optional | 
-| language | The language of the user, formatted in modified version of the ISO 639-1 format. | Optional | 
+| language | The language of the user, formatted in a modified version of the ISO 639-1 format. | Optional | 
 | is_sync_enabled | Whether the user can use Box Sync. Possible values are: true, false. | Optional | 
 | job_title | The user’s job title. | Optional | 
 | phone | The user’s phone number. | Optional | 
 | address | The user’s address. | Optional | 
 | space_amount | The user’s total available space in bytes. Set this to -1 to indicate unlimited storage. | Optional | 
-| tracking_codes | Tracking codes allow an admin to generate reports from the admin console and assign an attribute to a specific group of users. The expected format is `key1:value1,key2:value2`. Multiple key value pairs may be used when using the `,` seperator. | Optional | 
+| tracking_codes | A tracking code that allows an admin to generate reports from the admin console and assign an attribute to a specific group of users. The expected format is `key1:value1,key2:value2`. Multiple key value pairs may be used when using the `,` separator. | Optional | 
 | can_see_managed_users | Whether the user can see other enterprise users in their contact list. Possible values are: true, false. | Optional | 
 | timezone | The user's timezone. | Optional | 
 | is_exempt_from_device_limits | Whether to exempt the user from enterprise device limits. Possible values are: true, false. | Optional | 
@@ -2372,16 +2372,16 @@ Creates a new managed user in an enterprise. This endpoint is only available to 
 | Box.User.login | String | The primary email address of this user. | 
 | Box.User.created_at | Date | When the user object was created. | 
 | Box.User.modified_at | Date | When the user object was last modified. | 
-| Box.User.language | String | The language of the user, formatted in modified version of the ISO 639-1 format. | 
-| Box.User.timezone | String | The users timezone. | 
-| Box.User.space_amount | Number | The users total available space amount in bytes. | 
+| Box.User.language | String | The language of the user, formatted in a modified version of the ISO 639-1 format. | 
+| Box.User.timezone | String | The user's timezone. | 
+| Box.User.space_amount | Number | The user's total available space amount in bytes. | 
 | Box.User.space_used | Number | The amount of space in use by the user. | 
 | Box.User.max_upload_size | Number | The maximum individual file size in bytes the user can have. | 
-| Box.User.status | String | The users account status. | 
-| Box.User.job_title | String | The users job title. | 
-| Box.User.phone | Number | The users phone number. | 
-| Box.User.address | String | The users address. | 
-| Box.User.avatar_url | String | URL of the users avatar image | 
+| Box.User.status | String | The user's account status. | 
+| Box.User.job_title | String | The user's job title. | 
+| Box.User.phone | Number | The user's phone number. | 
+| Box.User.address | String | The user's address. | 
+| Box.User.avatar_url | String | URL of the user's avatar image | 
 | Box.User.notification_email.email | String | The email address to send the notifications to. | 
 | Box.User.notification_email.is_confirmed | Boolean | Specifies if this email address has been confirmed. | 
 
@@ -2471,7 +2471,7 @@ Returns up to a year of past events for a given user.
 | --- | --- | --- |
 | as_user | The user who is performing the action. | Optional | 
 | stream_type | The type of stream to retrieve. Possible values are: all, changes, sync. | Required | 
-| limit | The maximum amount of events to return. | Optional | 
+| limit | The maximum number of events to return. Default is "100". | Optional | 
 
 
 #### Context Output
@@ -2487,7 +2487,7 @@ Returns up to a year of past events for a given user.
 | Box.Events.created_at | Date | Time which the event was created. | 
 | Box.Events.recorded_at | Date | Time which the event was recorded. | 
 | Box.Events.event_type | String | The event type that triggered this event. | 
-| Box.Events.session_id | String | The session of the user that performed the action. Not all events will populate this attribute. | 
+| Box.Events.session_id | String | The session of the user who performed the action. Not all events will populate this attribute. | 
 
 
 #### Command Example
@@ -3284,7 +3284,7 @@ Returns up to a year of past events for the entire enterprise.
 | --- | --- | --- |
 | as_user | The user who is performing the action. | Optional | 
 | created_after | The lower bound date and time to return events for. | Optional | 
-| limit | The maximum amount of events to return. | Optional | 
+| limit | The maximum number of events to return. Default is "100". | Optional | 
 
 
 #### Context Output
@@ -3308,7 +3308,7 @@ Returns up to a year of past events for the entire enterprise.
 | Box.Events.created_at | Date | Time which the event was created. | 
 | Box.Events.event_id | String | The ID of the event object. You can use this to detect duplicate events. | 
 | Box.Events.event_type | String | The event type that triggered this event. | 
-| Box.Events.ip_address | String | IP address of the user which triggered the event. | 
+| Box.Events.ip_address | String | IP address of the user who triggered the event. | 
 | Box.Events.type | String | Always event. | 
 
 
