@@ -1,6 +1,6 @@
 {
     "name": "Azure Network Security Groups",
-    "description": "Azure nNtwork Security Groups are used to filter network traffic to and from Azure resources in an Azure virtual network",
+    "description": "Azure Network Security Groups are used to filter network traffic to and from Azure resources in an Azure virtual network",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -10,7 +10,9 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network"
+    ],
     "useCases": [],
     "keywords": []
 }

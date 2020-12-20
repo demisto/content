@@ -1,4 +1,4 @@
-category: Utilities
+category: Network Security
 commonfields:
   id: Azure Network Security Groups
   version: -1
@@ -65,14 +65,14 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of rules to display. Default is 50.
+      description: The maximum number of rules to display.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: The index of the first rule to display.  Used for pagination.
+      description: The index of the first rule to display. Used for pagination.
       isArray: false
       name: offset
       required: false
@@ -203,7 +203,7 @@ script:
     - default: false
       description: The source IP address range from which incoming traffic will be
         allowed or denied by this rule. Possible values are "Any", an IP address range,
-        an application security group, or a default tag. Default is "Any".
+        an application security group, or a default tag.
       isArray: false
       name: source
       required: false
@@ -212,7 +212,7 @@ script:
       description: The priority by which the rules will be processed. The lower the
         number, the higher the priority. We recommend leaving gaps between rules -
         100, 200, 300, etc. - so that it is easier to add new rules without having
-        to edit existing rules. Default is "4096".
+        to edit existing rules.
       isArray: false
       name: priority
       required: false
@@ -221,7 +221,7 @@ script:
       description: The source ports from which traffic will be allowed or denied by
         this rule. Provide a single port, such as 80; a port range, such as 1024-65535;
         or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535.
-        Use an asterisk (*) to allow traffic on any port. Default is "*".
+        Use an asterisk (*) to allow traffic on any port.
       isArray: false
       name: source_ports
       required: false
@@ -238,7 +238,7 @@ script:
       description: The destination ports for which traffic will be allowed or denied
         by this rule. Provide a single port, such as 80; a port range, such as 1024-65535;
         or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535.
-        Use an asterisk (*) to allow traffic on any port. Default is "*".
+        Use an asterisk (*) to allow traffic on any port.
       isArray: false
       name: destination_ports
       required: false
@@ -353,7 +353,7 @@ script:
     - default: false
       description: The source IP address range from which incoming traffic will be
         allowed or denied by this rule. Possible values are "Any", an IP address range,
-        an application security group, or a default tag. Default is "Any".
+        an application security group, or a default tag.
       isArray: false
       name: source
       required: false
@@ -362,7 +362,7 @@ script:
       description: The priority by which the rules will be processed. The lower the
         number, the higher the priority. We recommend leaving gaps between rules -
         100, 200, 300, etc. - so that it is easier to add new rules without having
-        to edit existing rules. Default is "4096".
+        to edit existing rules.
       isArray: false
       name: priority
       required: false
@@ -371,7 +371,7 @@ script:
       description: The source ports from which traffic will be allowed or denied by
         this rule. Provide a single port, such as 80; a port range, such as 1024-65535;
         or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535.
-        Use an asterisk (*) to allow traffic on any port. Default is "*".
+        Use an asterisk (*) to allow traffic on any port.
       isArray: false
       name: source_ports
       required: false
@@ -388,7 +388,7 @@ script:
       description: The destination ports for which traffic will be allowed or denied
         by this rule. Provide a single port, such as 80; a port range, such as 1024-65535;
         or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535.
-        Use an asterisk (*) to allow traffic on any port. Default is "*".
+        Use an asterisk (*) to allow traffic on any port.
       isArray: false
       name: destination_ports
       required: false

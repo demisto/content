@@ -26,7 +26,7 @@ class AzureNSGClient:
             app_id, refresh_token = app_id.split('@')
             integration_context = demisto.getIntegrationContext()
             integration_context.update(current_refresh_token=refresh_token)
-            demisto.setIntegrationContext(integration_context)
+            set_integration_context(integration_context)
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/' \
             f'resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups'
         client_args = {
@@ -289,7 +289,7 @@ def test_connection(client: AzureNSGClient, params: dict) -> str:
     if params.get('self_deployed', False) and not params.get('auth_code'):
         return_error('You must enter an authorization code in a self-deployed configuration.')
     client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
-    return '✅ Great Success!'
+    return '✅ Success!'
 
 
 @logger
@@ -309,7 +309,7 @@ def complete_auth(client: AzureNSGClient):
 
 @logger
 def reset_auth(client: AzureNSGClient):
-    demisto.setIntegrationContext({})
+    set_integration_context({})
     return CommandResults(readable_output='Authorization was reset successfully. You can now run '
                                           '**!azure-nsg-auth-start** and **!azure-nsg-auth-complete**.')
 

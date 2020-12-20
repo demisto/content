@@ -1,20 +1,28 @@
 Azure network security groups are used to filter network traffic to and from Azure resources in an Azure virtual network.
-This integration was integrated and tested with version xx of Azure Network Security Groups
 ## Configure Azure Network Security Groups on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Azure Network Security Groups.
-3. Click **Add instance** to create and configure a new integration instance.
+In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | app_id | Application ID | True |
-    | subscription_id | Subscription ID | True |
-    | resource_group_name | Resource Group Name | True |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+In order to connect to the Azure Network Security Group using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
+1. Fill in the required parameters.
+2. Run the ***!azure-nsg-auth-start*** command. 
+3. Follow the instructions that appear.
+4. Run the ***!azure-nsg-auth-complete*** command.
 
-4. Click **Test** to validate the URLs, token, and connection.
+At end of the process you'll see a message that you've logged in successfully. 
+
+#### Cortex XSOAR Azure App
+
+In order to use the Cortex XSOAR Azure application, use the default application ID (d4736600-e3d5-4c97-8e65-57abd2b979fe).
+
+You only need to fill in your subscription ID and resource group name. 
+
+#### Self-Deployed Azure App
+
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
+
+The application must have *user_impersonation* permission and must allow public client flows (can be found under the **Authentication** section of the app).
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -51,7 +59,7 @@ There are no input arguments for this command.
     "AzureNSG": {
         "SecurityGroup": {
             "etag": "W/\"fdba51cf-46b3-44af-8da5-16666aa578cc\"",
-            "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg",
+            "id": "/subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg",
             "location": "westeurope",
             "name": "alerts-nsg",
             "tags": {},
@@ -66,7 +74,7 @@ There are no input arguments for this command.
 >### Network Security Groups
 >|etag|id|location|name|tags|type|
 >|---|---|---|---|---|---|
->| W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg | westeurope | alerts-nsg |  | Microsoft.Network/networkSecurityGroups |
+>| W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg | westeurope | alerts-nsg |  | Microsoft.Network/networkSecurityGroups |
 
 
 ### azure-nsg-security-rules-list
@@ -122,7 +130,7 @@ List all rules of the specified security groups.
             "destinationPortRanges": [],
             "direction": "Inbound",
             "etag": "W/\"fdba51cf-46b3-44af-8da5-16666aa578cc\"",
-            "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow",
+            "id": "/subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow",
             "name": "wow",
             "priority": 3323,
             "protocol": "*",
@@ -145,7 +153,7 @@ List all rules of the specified security groups.
 >### Rules in alerts-nsg
 >|access|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRanges|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Allow | 1.1.1.1 | * | Inbound | W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow | wow | 3323 | * | Succeeded | 8.1.2.3 | 1,<br/>2,<br/>3 | Microsoft.Network/networkSecurityGroups/securityRules |
+>| Allow | 1.1.1.1 | * | Inbound | W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow | wow | 3323 | * | Succeeded | 8.1.2.3 | 1,<br/>2,<br/>3 | Microsoft.Network/networkSecurityGroups/securityRules |
 
 
 ### azure-nsg-auth-test
@@ -167,10 +175,6 @@ There is no context output for this command.
 #### Command Example
 ```!azure-nsg-auth-test```
 
-#### Context Example
-```json
-{}
-```
 
 #### Human Readable Output
 
@@ -198,11 +202,6 @@ There is no context output for this command.
 
 #### Command Example
 ```!azure-nsg-security-rules-delete security_group_name=alerts-nsg security_rule_name=wow```
-
-#### Context Example
-```json
-{}
-```
 
 #### Human Readable Output
 
@@ -269,7 +268,7 @@ Create a security rule.
             "destinationPortRanges": [],
             "direction": "Inbound",
             "etag": "W/\"276dc93a-488d-47a1-8971-19a1171242a9\"",
-            "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/rulerule",
+            "id": "/subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/rulerule",
             "name": "rulerule",
             "priority": 4096,
             "protocol": "*",
@@ -289,7 +288,7 @@ Create a security rule.
 >### Rules rulerule
 >|access|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRange|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Allow | * | * | Inbound | W/"276dc93a-488d-47a1-8971-19a1171242a9" | /subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/rulerule | rulerule | 4096 | * | Updating | 1.1.1.1 | * | Microsoft.Network/networkSecurityGroups/securityRules |
+>| Allow | * | * | Inbound | W/"276dc93a-488d-47a1-8971-19a1171242a9" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/rulerule | rulerule | 4096 | * | Updating | 1.1.1.1 | * | Microsoft.Network/networkSecurityGroups/securityRules |
 
 
 ### azure-nsg-security-rules-update
@@ -354,7 +353,7 @@ Update a security rule. If one does not exist, it will be created.
             "destinationPortRanges": [],
             "direction": "Outbound",
             "etag": "W/\"9fad6036-4c3a-4d60-aac9-18281dba3305\"",
-            "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/Demisto_Rule",
+            "id": "/subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/Demisto_Rule",
             "name": "Demisto_Rule",
             "priority": 100,
             "protocol": "*",
@@ -374,7 +373,7 @@ Update a security rule. If one does not exist, it will be created.
 >### Rules Demisto_Rule
 >|access|description|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRange|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Allow | description | 11.0.0.0/8 | 8080 | Outbound | W/"9fad6036-4c3a-4d60-aac9-18281dba3305" | /subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/Demisto_Rule | Demisto_Rule | 100 | * | Succeeded | 10.0.0.0/8 | * | Microsoft.Network/networkSecurityGroups/securityRules |
+>| Allow | description | 11.0.0.0/8 | 8080 | Outbound | W/"9fad6036-4c3a-4d60-aac9-18281dba3305" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/Demisto_Rule | Demisto_Rule | 100 | * | Succeeded | 10.0.0.0/8 | * | Microsoft.Network/networkSecurityGroups/securityRules |
 
 
 ### azure-nsg-security-rules-get
@@ -429,7 +428,7 @@ Get a specific rule.
             "destinationPortRanges": [],
             "direction": "Inbound",
             "etag": "W/\"fdba51cf-46b3-44af-8da5-16666aa578cc\"",
-            "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow",
+            "id": "/subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow",
             "name": "wow",
             "priority": 3323,
             "protocol": "*",
@@ -452,7 +451,7 @@ Get a specific rule.
 >### Rules wow
 >|access|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRanges|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Allow | 1.1.1.1 | * | Inbound | W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow | wow | 3323 | * | Succeeded | 8.1.2.3 | 1,<br/>2,<br/>3 | Microsoft.Network/networkSecurityGroups/securityRules |
+>| Allow | 1.1.1.1 | * | Inbound | W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow | wow | 3323 | * | Succeeded | 8.1.2.3 | 1,<br/>2,<br/>3 | Microsoft.Network/networkSecurityGroups/securityRules |
 
 
 ### azure-nsg-auth-start
@@ -499,10 +498,6 @@ There is no context output for this command.
 #### Command Example
 ```!azure-nsg-auth-complete```
 
-#### Context Example
-```json
-{}
-```
 
 #### Human Readable Output
 
@@ -527,10 +522,6 @@ There is no context output for this command.
 #### Command Example
 ```!azure-nsg-auth-reset```
 
-#### Context Example
-```json
-{}
-```
 
 #### Human Readable Output
 
