@@ -2382,6 +2382,26 @@ def test_http_client_debug(mocker):
     assert debug_log is not None
 
 
+def test_http_client_debug_int_logger_sensitive_query_params(mocker):
+    if not IS_PY3:
+        pytest.skip("test not supported in py2")
+        return
+    mocker.patch.object(demisto, 'params', return_value={'APIKey': 'dummy'})
+    mocker.patch.object(demisto, 'info')
+    debug_log = DebugLogger()
+    from http.client import HTTPConnection
+    HTTPConnection.debuglevel = 1
+    con = HTTPConnection("google.com")
+    con.request('GET', '?apikey=dummy')
+    r = con.getresponse()
+    r.read()
+    assert debug_log
+    for arg in demisto.info.call_args_list:
+        assert 'dummy' not in arg[0][0]
+        if 'apikey' in arg[0][0]:
+            assert 'apikey=<XX_REPLACED>' in arg[0][0]
+
+
 class TestParseDateRange:
     @staticmethod
     def test_utc_time_sanity():
