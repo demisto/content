@@ -2,16 +2,19 @@ import os
 import json
 import argparse
 import logging
+from concurrent.futures import as_completed
+from contextlib import contextmanager
 from pprint import pformat
-from multiprocessing import cpu_count
 
 from pebble import ProcessPool, ProcessFuture
 from Tests.Marketplace.upload_packs import PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER
 from Tests.Marketplace.marketplace_services import GCPConfig
 from demisto_sdk.commands.find_dependencies.find_dependencies import VerboseFile, PackDependencies,\
     parse_for_pack_metadata
-from typing import Tuple, Iterable
+from typing import Tuple, Iterable, List, Callable
 from Tests.scripts.utils.log_util import install_logging
+
+PROCESS_FAILURE = False
 
 
 def option_handler():
@@ -25,6 +28,42 @@ def option_handler():
     parser.add_argument('-o', '--output_path', help="The full path to store created file", required=True)
     parser.add_argument('-i', '--id_set_path', help="The full path of id set", required=True)
     return parser.parse_args()
+
+
+@contextmanager
+def ProcessPoolHandler() -> ProcessPool:
+    """ Process pool Handler which terminate all processes in case of Exception.
+
+    Yields:
+        ProcessPool: Pebble process pool.
+    """
+    with ProcessPool(max_workers=3) as pool:
+        try:
+            yield pool
+        except Exception:
+            logging.exception("Gracefully release all resources due to Error...")
+            raise
+        finally:
+            pool.close()
+            pool.join()
+
+
+def wait_futures_complete(futures: List[ProcessFuture], done_fn: Callable):
+    """Wait for all futures to complete, Raise exception if occurred.
+
+    Args:
+        futures: futures to wait for.
+        done_fn: Function to run on result.
+    Raises:
+        Exception: Raise caught exception for further cleanups.
+    """
+    for future in as_completed(futures):
+        try:
+            result = future.result()
+            done_fn(result)
+        except Exception as e:
+            logging.exception(e)
+            raise
 
 
 def calculate_single_pack_dependencies(pack: str, dependency_graph: object) -> Tuple[dict, list, str]:
@@ -46,7 +85,7 @@ def calculate_single_pack_dependencies(pack: str, dependency_graph: object) -> T
         all_level_dependencies: A list with all dependencies names
         pack: The pack name
     """
-    install_logging('Calculate Packs Dependencies.log', include_process_name=True)
+    install_logging('Calculate_Packs_Dependencies.log', include_process_name=True)
     first_level_dependencies = {}
     all_level_dependencies = []
     try:
@@ -59,6 +98,8 @@ def calculate_single_pack_dependencies(pack: str, dependency_graph: object) -> T
             first_level_dependencies, all_level_dependencies = parse_for_pack_metadata(subgraph, pack)
     except Exception:
         logging.exception(f"Failed calculating {pack} pack dependencies")
+        raise
+
     return first_level_dependencies, all_level_dependencies, pack
 
 
@@ -124,14 +165,14 @@ def calculate_all_packs_dependencies(pack_dependencies_result: dict, id_set: dic
         id_set: The id_set content
         packs: The packs that should be part of the dependencies calculation
     """
-    def add_pack_metadata_results(future: ProcessFuture) -> None:
+    def add_pack_metadata_results(results: Tuple) -> None:
         """
         This is a callback that should be called once the result of the future is ready.
         The results include: first_level_dependencies, all_level_dependencies, pack_name
         Using these results we write the dependencies
         """
         try:
-            first_level_dependencies, all_level_dependencies, pack_name = future.result()  # blocks until results ready
+            first_level_dependencies, all_level_dependencies, pack_name = results
             logging.debug(f'Got dependencies for pack {pack_name}\n: {pformat(all_level_dependencies)}')
             pack_dependencies_result[pack_name] = {
                 "dependencies": first_level_dependencies,
@@ -142,14 +183,16 @@ def calculate_all_packs_dependencies(pack_dependencies_result: dict, id_set: dic
             }
         except Exception:
             logging.exception('Failed to collect pack dependencies results')
+            raise
 
     # Generating one graph with dependencies for all packs
     dependency_graph = get_all_packs_dependency_graph(id_set, packs)
 
-    with ProcessPool(max_workers=cpu_count(), max_tasks=100) as pool:
+    with ProcessPoolHandler() as pool:
+        futures = []
         for pack in dependency_graph:
-            future_object = pool.schedule(calculate_single_pack_dependencies, args=(pack, dependency_graph), timeout=10)
-            future_object.add_done_callback(add_pack_metadata_results)
+            futures.append(pool.schedule(calculate_single_pack_dependencies, args=(pack, dependency_graph), timeout=10))
+        wait_futures_complete(futures=futures, done_fn=add_pack_metadata_results)
 
 
 def main():
@@ -157,7 +200,7 @@ def main():
     packs dependencies. The logic of pack dependency is identical to sdk find-dependencies command.
 
     """
-    install_logging('Calculate Packs Dependencies.log', include_process_name=True)
+    install_logging('Calculate_Packs_Dependencies.log', include_process_name=True)
     option = option_handler()
     output_path = option.output_path
     id_set_path = option.id_set_path

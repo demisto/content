@@ -6,7 +6,6 @@ import shutil
 import uuid
 import prettytable
 import glob
-import git
 import requests
 import logging
 from datetime import datetime
@@ -14,7 +13,8 @@ from zipfile import ZipFile
 from typing import Any, Tuple, Union
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
-    get_packs_statistics_dataframe, PACKS_RESULTS_FILE
+    get_packs_statistics_dataframe, BucketUploadFlow, load_json, get_content_git_client, get_recent_commits_data, \
+    store_successful_and_failed_packs_in_ci_artifacts
 from demisto_sdk.commands.common.tools import run_command, str2bool
 
 from Tests.scripts.utils.log_util import install_logging
@@ -438,59 +438,6 @@ def build_summary_table_md(packs_input_list: list, include_pack_status: bool = F
     return '\n'.join(table)
 
 
-def load_json(file_path: str) -> dict:
-    """ Reads and loads json file.
-
-    Args:
-        file_path (str): full path to json file.
-
-    Returns:
-        dict: loaded json file.
-
-    """
-    try:
-        if file_path:
-            with open(file_path, 'r') as json_file:
-                result = json.load(json_file)
-        else:
-            result = {}
-        return result
-    except json.decoder.JSONDecodeError:
-        return {}
-
-
-def get_content_git_client(content_repo_path: str):
-    """ Initializes content repo client.
-
-    Args:
-        content_repo_path (str): content repo full path
-
-    Returns:
-        git.repo.base.Repo: content repo object.
-
-    """
-    return git.Repo(content_repo_path)
-
-
-def get_recent_commits_data(content_repo: Any, index_folder_path: str, is_bucket_upload_flow: bool,
-                            is_private_build: bool = False, circle_branch: str = "master"):
-    """ Returns recent commits hashes (of head and remote master)
-
-    Args:
-        content_repo (git.repo.base.Repo): content repo object.
-        index_folder_path (str): the path to the local index folder
-        is_bucket_upload_flow (bool): indicates whether its a run of bucket upload flow or regular build
-        is_private_build (bool): indicates whether its a run of private build or not
-        circle_branch (str): CircleCi branch of current build
-
-    Returns:
-        str: last commit hash of head.
-        str: previous commit depending on the flow the script is running
-    """
-    return content_repo.head.commit.hexsha, get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow,
-                                                                is_private_build, circle_branch)
-
-
 def update_index_with_priced_packs(private_storage_bucket: Any, extract_destination_path: str,
                                    index_folder_path: str, pack_names: set) \
         -> Tuple[Union[list, list], str, Any]:
@@ -780,75 +727,6 @@ def handle_github_response(response: json) -> dict:
     return res_dict
 
 
-def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, is_private_build, circle_branch):
-    """ If running in bucket upload workflow we want to get the commit in the index which is the index
-    We've last uploaded to production bucket. Otherwise, we are in a commit workflow and the diff should be from the
-    head of origin/master
-
-    Args:
-        content_repo (git.repo.base.Repo): content repo object.
-        index_folder_path (str): the path to the local index folder
-        is_bucket_upload_flow (bool): indicates whether its a run of bucket upload flow or regular build
-        is_private_build (bool): indicates whether its a run of private build or not
-        circle_branch (str): CircleCi branch of current build
-
-    Returns:
-        str: previous commit depending on the flow the script is running
-
-    """
-    if is_bucket_upload_flow:
-        return get_last_upload_commit_hash(content_repo, index_folder_path)
-    elif is_private_build:
-        previous_master_head_commit = content_repo.commit('origin/master~1').hexsha
-        logging.info(f"Using origin/master HEAD~1 commit hash {previous_master_head_commit} to diff with.")
-        return previous_master_head_commit
-    else:
-        if circle_branch == 'master':
-            head_str = "HEAD~1"
-            # if circle branch is master than current commit is origin/master HEAD, so we need to diff with HEAD~1
-            previous_master_head_commit = content_repo.commit('origin/master~1').hexsha
-        else:
-            head_str = "HEAD"
-            # else we are on a regular branch and the diff should be done with origin/master HEAD
-            previous_master_head_commit = content_repo.commit('origin/master').hexsha
-        logging.info(f"Using origin/master {head_str} commit hash {previous_master_head_commit} to diff with.")
-        return previous_master_head_commit
-
-
-def get_last_upload_commit_hash(content_repo, index_folder_path):
-    """
-    Returns the last origin/master commit hash that was uploaded to the bucket
-    Args:
-        content_repo (git.repo.base.Repo): content repo object.
-        index_folder_path: The path to the index folder
-
-    Returns:
-        The commit hash
-    """
-
-    inner_index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
-    if not os.path.exists(inner_index_json_path):
-        logging.critical(f"{GCPConfig.INDEX_NAME}.json not found in {GCPConfig.INDEX_NAME} folder")
-        sys.exit(1)
-    else:
-        inner_index_json_file = load_json(inner_index_json_path)
-        if 'commit' in inner_index_json_file:
-            last_upload_commit_hash = inner_index_json_file['commit']
-            logging.info(f"Retrieved the last commit that was uploaded to production: {last_upload_commit_hash}")
-        else:
-            logging.critical(f"No commit field in {GCPConfig.INDEX_NAME}.json, content: {str(inner_index_json_file)}")
-            sys.exit(1)
-
-    try:
-        last_upload_commit = content_repo.commit(last_upload_commit_hash).hexsha
-        logging.info(f"Using commit hash {last_upload_commit} from index.json to diff with.")
-        return last_upload_commit
-    except Exception as e:
-        logging.critical(f'Commit {last_upload_commit_hash} in {GCPConfig.INDEX_NAME}.json does not exist in content '
-                         f'repo. Additional info:\n {e}')
-        sys.exit(1)
-
-
 def get_packs_summary(packs_list):
     """ Returns the packs list divided into 3 lists by their status
 
@@ -867,46 +745,8 @@ def get_packs_summary(packs_list):
     return successful_packs, skipped_packs, failed_packs
 
 
-def store_successful_and_failed_packs_in_ci_artifacts(circle_artifacts_path, successful_packs, failed_packs):
-    """ Saves successful and failed packs to circle ci env - to be used in Upload Packs To Marketplace job (Bucket Upload flow)
-
-    Args:
-        circle_artifacts_path (str): The path to the circle artifacts dir path
-        failed_packs: The list of all failed packs
-        successful_packs: The list of all successful packs
-
-    """
-    packs_results = dict()
-
-    if failed_packs:
-        failed_packs_dict = {
-            "failed_packs": {
-                pack.name: {
-                    "status": PackStatus[pack.status].value,
-                    "aggregated": pack.aggregation_str if pack.aggregated and pack.aggregation_str else "False"
-                } for pack in failed_packs
-            }
-        }
-        packs_results.update(failed_packs_dict)
-
-    if successful_packs:
-        successful_packs_dict = {
-            "successful_packs": {
-                pack.name: {
-                    "status": PackStatus[pack.status].value,
-                    "aggregated": pack.aggregation_str if pack.aggregated and pack.aggregation_str else "False"
-                } for pack in successful_packs
-            }
-        }
-        packs_results.update(successful_packs_dict)
-
-    if packs_results:
-        with open(os.path.join(circle_artifacts_path, PACKS_RESULTS_FILE), "w") as f:
-            f.write(json.dumps(packs_results, indent=4))
-
-
 def main():
-    install_logging('Prepare Content Packs For Testing.log')
+    install_logging('Prepare_Content_Packs_For_Testing.log')
     option = option_handler()
     packs_artifacts_path = option.artifacts_path
     extract_destination_path = option.extract_path
@@ -1092,8 +932,10 @@ def main():
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
-    store_successful_and_failed_packs_in_ci_artifacts(os.path.dirname(packs_artifacts_path), successful_packs,
-                                                      failed_packs)
+    packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
+    store_successful_and_failed_packs_in_ci_artifacts(
+        packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs
+    )
 
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs, not is_bucket_upload_flow)

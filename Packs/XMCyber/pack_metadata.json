@@ -2,10 +2,10 @@
     "name": "XM Cyber",
     "description": "XMCyber continuously finds attack vectors to critical assets. This integration fetches events (incidents) on new critical assets at risk, new choke points, and trends in the overall risk score. Additionally incidents are enriched with incoming attack vectors to the incident's endpoints, and critical assets at risk form the incident.",
     "support": "partner",
-    "currentVersion": "1.0.1",
-    "author": "Matan Mazursky and Mark Rachman",
-    "url": "https://github.com/matan-xmcyber/content",
-    "email": "matan@xmcyber.com",
+    "currentVersion": "1.0.2",
+    "author": "XM Cyber",
+    "url": "https://www.xmcyber.com",
+    "email": "support@xmcyber.com",
     "created": "2020-09-02T19:59:58Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
@@ -20,6 +20,9 @@
     ],
     "useCases": [],
     "keywords": [],
-    "githubUser": ["matan-xmcyber", "MarkRachmanXMCyber"],
+    "githubUser": [
+        "matan-xmcyber",
+        "MarkRachmanXMCyber"
+    ],
     "certification": "certified"
 }

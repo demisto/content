@@ -26,7 +26,7 @@ PY_PRIVATE_FUNCS = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeCo
                     "BaseHTTPClient", "DemistoHandler", "DebugLogger", "FeedIndicatorType", "Indicator",
                     "IndicatorType", "EntryType", "EntryFormat", "abstractmethod",
                     "HTTPAdapter", "Retry", "Common", "randint", "GetDemistoVersion", "get_demisto_version",
-                    "Optional", "List", "BaseWidget", "Any"]
+                    "BaseWidget", "UTC"]
 
 PY_IRREGULAR_FUNCS = {"LOG": {"argList": ["message"]}}
 
@@ -149,8 +149,11 @@ def create_py_documentation(path, origin, language):
     x = []
 
     for a in ns:
-        if a != 'demisto' and callable(ns.get(a)) and a not in PY_PRIVATE_FUNCS:
-            docstring = inspect.getdoc(ns.get(a))
+        a_object = ns.get(a)
+        if a != 'demisto' and callable(a_object) and a not in PY_PRIVATE_FUNCS and ns \
+                and a_object.__module__ in (None, 'builtin', 'builtins'):
+
+            docstring = inspect.getdoc(a_object)
             if not docstring:
                 logging.error("docstring for function {} is empty".format(a))
                 is_error_py = True
@@ -162,21 +165,21 @@ def create_py_documentation(path, origin, language):
                     y["name"] = a
                     logging.info('Processing {}'.format(a))
 
-                    if inspect.isclass(ns.get(a)):
-                        y["argList"] = list(inspect.getfullargspec(ns.get(a).__init__))[0] \
+                    if inspect.isclass(a_object):
+                        y["argList"] = list(inspect.getfullargspec(a_object.__init__))[0] \
                             if PY_IRREGULAR_FUNCS.get(a, None) is None \
                             else PY_IRREGULAR_FUNCS[a]["argList"]
 
                         # init will contains self, so remove the self from the arg list
                         y["argList"].remove('self')
                     else:
-                        y["argList"] = list(inspect.getfullargspec(ns.get(a)))[0] if PY_IRREGULAR_FUNCS.get(a,
-                                                                                                            None) is None \
+                        y["argList"] = list(inspect.getfullargspec(a_object))[0] \
+                            if PY_IRREGULAR_FUNCS.get(a, None) is None \
                             else PY_IRREGULAR_FUNCS[a]["argList"]
 
                     x.append(y)
                 except parser.MethodParsingException:
-                    logging.exception('Failed to parse {} class/function')
+                    logging.exception('Failed to parse {} class/function'.format(a))
                     is_error_py = True
 
     if is_error_py:
@@ -236,7 +239,7 @@ def create_ps_documentation(path, origin, language):
     return function_doc_list, is_error_ps
 
 
-def main(argv):
+def main():
     install_logging('Common Server Documentation.log')
     js_doc, is_error_js = create_js_documentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs',
                                                   'javascript')
@@ -251,11 +254,9 @@ def main(argv):
         logging.critical("Errors found in common server docs.")
         sys.exit(1)
     with open('./Documentation/doc-CommonServer.json', 'w') as fp:
-        final_docs += js_doc
         final_docs += py_doc
-        final_docs += ps_doc
         json.dump(final_docs, fp)
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()

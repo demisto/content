@@ -226,7 +226,7 @@ def install_nightly_packs(client: demisto_client,
             else:
                 result_object = ast.literal_eval(response_data)
                 message = result_object.get('message', '')
-                raise Exception(f'Failed to install packs - with status code {status_code}\n{message}\n')
+                raise Exception(f'Failed to install packs on server {host}- with status code {status_code}\n{message}\n')
             break
 
         except Exception as e:
@@ -241,7 +241,7 @@ def install_nightly_packs(client: demisto_client,
                 logging.exception(
                     f'The pack {malformed_pack_id} has failed to install even though it was not in the installation list')
                 raise
-            logging.warning(f'The request to install packs has failed, retrying without {malformed_pack_id}')
+            logging.warning(f'The request to install packs on server {host} has failed, retrying without {malformed_pack_id}')
             # Remove the malformed pack from the pack to install list.
             packs_to_install = [pack for pack in packs_to_install if pack['id'] not in malformed_pack_id]
             request_data = {
@@ -481,7 +481,7 @@ def upload_zipped_packs(client: demisto_client,
                                                                    header_params=header_params, files=files)
 
         if 200 <= status_code < 300:
-            logging.info(f'All packs from file {pack_path} were successfully installed!')
+            logging.info(f'All packs from file {pack_path} were successfully installed on server {host}')
         else:
             result_object = ast.literal_eval(response_data)
             message = result_object.get('message', '')
