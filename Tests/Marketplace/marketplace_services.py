@@ -775,7 +775,9 @@ class Pack(object):
         except Exception:
             logging.exception(f"Failed in zipping {self._pack_name} folder")
         finally:
-            return task_status, zip_pack_path
+            # If the pack needs to be encrypted, it is initially at a different location than this final path
+            final_path_to_zipped_pack = f"{self._pack_path}.zip"
+            return task_status, final_path_to_zipped_pack
 
     def detect_modified(self, content_repo, index_folder_path, current_commit_hash, previous_commit_hash):
         """ Detects pack modified files.
