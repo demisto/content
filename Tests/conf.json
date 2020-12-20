@@ -12,6 +12,11 @@
             "timeout": 250
         },
         {
+            "integrations": "Cisco Umbrella Enforcement",
+            "playbookID": "Cisco Umbrella Enforcement-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "GSuiteAdmin",
             "playbookID": "GSuiteAdmin-Test",
             "fromversion": "5.0.0"
@@ -361,6 +366,10 @@
         {
             "integrations": "Maltiverse",
             "playbookID": "Maltiverse Test"
+        },
+        {
+            "integrations": "Box v2",
+            "playbookID": "BoxV2_TestPlaybook"
         },
         {
             "integrations": "MicrosoftGraphMail",
@@ -2242,6 +2251,7 @@
         {
             "integrations": "iDefense Feed",
             "playbookID": "Feed iDefense Test",
+            "memory_threshold": 100,
             "fromversion": "5.5.0"
         },
         {
@@ -3254,10 +3264,14 @@
         "Test-Detonate URL - Crowdstrike": "Issue 30879",
         "nexpose_test": "Issue 31019",
         "CuckooTest": "Issue 25601",
-        "Cisco Umbrella Test": "Issue 24338"
+        "Cisco Umbrella Test": "Issue 24338",
+        "PhishlabsIOC_DRP-Test": "Issue 29589",
+        "Akamai_WAF-Test": "Issue 31900",
+        "FireEye HX Test": "Issue 24935",
+        "Carbon Black Enterprise Protection V2 Test": "Issue 27846"
     },
     "skipped_integrations": {
-
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
@@ -3268,6 +3282,7 @@
         "Fidelis Elevate Network": "Issue 26453",
         "CrowdStrike Falcon X": "Issue 26209",
         "ArcSight Logger": "Issue 24303",
+        "Sophos Central": "No instance",
         "MxToolBox": "No instance",
         "Prisma Access": "Instance will be provided soon by Lior and Prasen - Issue 27112",
         "AlphaSOC Network Behavior Analytics": "No instance",
@@ -3340,11 +3355,12 @@
         "AWS - Athena - Beta": "Issue 19834",
         "SNDBOX": "Issue 28826",
         "Workday": "License expired Issue: 29595",
-
+        "FireEyeFeed": "License expired Issue: 31838",
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
@@ -3352,7 +3368,7 @@
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-
+        
         "_comment4": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Endace": "Issue 24304",
@@ -3541,7 +3557,7 @@
         "Mail Listener v2"
     ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
