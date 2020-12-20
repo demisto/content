@@ -2,9 +2,9 @@
 Bitcoin Abuse Integration for Cortex XSOAR - Unit Tests file
 """
 
-from BitcoinAbuse import *
-import json
 import io
+
+from BitcoinAbuse import *
 
 SERVER_URL = 'https://www.bitcoinabuse.com/api/'
 
@@ -62,11 +62,9 @@ def test_report_address_command_failure(requests_mock):
         'https://www.bitcoinabuse.com/api/reports/create',
         json=mock_response
     )
-    try:
-        report_address_command(client, valid_report_address)
-        raise AssertionError('report address command should fail when not given success response from api')
-    except DemistoException as error:
-        assert error.message == f'bitcoin report address did not succeed, response was {mock_response}'
+    assert report_address_command(client,
+                                  valid_report_address) == f'bitcoin report address did not succeed: ' \
+                                                           f'response: {mock_response}'
 
 
 def test_report_address_command_success_type_other(requests_mock):

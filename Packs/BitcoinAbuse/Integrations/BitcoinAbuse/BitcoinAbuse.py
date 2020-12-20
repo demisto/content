@@ -225,7 +225,7 @@ def report_address_command(client: BitcoinAbuseClient, args: Dict) -> str:
         return f'Bitcoin address {report_address_params.address} by abuse bitcoin user {report_address_params.abuser}' \
                f' was reported to BitcoinAbuse API'
     else:
-        raise DemistoException(f'bitcoin report address did not succeed, response was {response}')
+        return f'bitcoin report address did not succeed: response: {response}'
 
 
 def main() -> None:
