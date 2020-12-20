@@ -319,11 +319,10 @@ def list_recent_jobs(client, args):
     last_run = demisto.getLastRun()
     jobs = []
 
-    count = args.get('initial_fetch', 10)
+    count = args.get('first_fetch', 10)
     state = args.get('state')
     username = args.get('username')
     source = args.get('source')
-
     if source == 'all':
         source = None
 
@@ -331,10 +330,11 @@ def list_recent_jobs(client, args):
     if not last_run:
         jobs = client.get_recent_jobs(num_jobs=count, state=state, username=username, source=source)
     else:
+        max_fetch = min(int(args.get('max_fetch', 50)), 200)
         # logic to fetch the incidents from the last run onwards
         # retrieving 50 incidents at a time assuming
         # there will not be 50 events submitted concurrently within a 1 min period
-        retrieved_jobs = client.get_recent_jobs(num_jobs=50, state=state, username=username, source=source)
+        retrieved_jobs = client.get_recent_jobs(num_jobs=max_fetch, state=state, username=username, source=source)
         for job in retrieved_jobs:
             # comparing the time to see if the last fetch time is less than or equal
             # to the incidents that are being fetched
