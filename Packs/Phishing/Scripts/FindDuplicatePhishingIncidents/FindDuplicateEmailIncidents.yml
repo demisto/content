@@ -134,18 +134,12 @@ commonfields:
 enabled: false
 name: FindDuplicateEmailIncidents
 outputs:
-- contextPath: duplicateIncident.id
-  description: Duplicate incident ID.
-  type: string
-- contextPath: isSimilarIncidentFound
-  description: Whether a duplicate incident was found ("true" or "false").
-  type: boolean
 - contextPath: duplicateIncident
   description: The oldest duplicate incident found with the highest simalirty to the
     current incdient.
   type: unknown
-- contextPath: duplicateIncident.name
-  description: Duplicate incident name.
+- contextPath: duplicateIncident.id
+  description: Duplicate incident ID.
   type: string
 - contextPath: duplicateIncident.rawId
   description: Duplicate incident ID.
@@ -154,8 +148,21 @@ outputs:
   description: 'Number in range 0-1 which describe the similairty between the existing
     incident and the new incident. '
   type: Unknown
-- contextPath: allDuplicateIncidentsIds
-  description: All duplicate incidents IDS found.
+- contextPath: isDuplicateIncidentFound
+  description: Whether a duplicate incident was found ("true" or "false").
+  type: boolean
+- contextPath: allDuplicateIncidents
+  description: All duplicate incidents found which their simalirty with the new incidnet
+    exceeds the threshold.
+  type: Unknown
+- contextPath: allDuplicateIncidents.id
+  description: A list of all duplicate incidents IDs found.
+  type: Unknown
+- contextPath: allDuplicateIncidents.rawId
+  description: A list of all duplicate incidents IDs found.
+  type: Unknown
+- contextPath: allDuplicateIncidents.name
+  description: A list of all duplicate incidents names found.
   type: Unknown
 script: '-'
 subtype: python3
@@ -166,6 +173,6 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/sklearn:1.0.0.14213
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0

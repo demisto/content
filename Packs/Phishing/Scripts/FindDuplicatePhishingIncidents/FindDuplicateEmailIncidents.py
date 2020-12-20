@@ -215,33 +215,39 @@ def find_duplicate_incidents(new_incident, existing_incidents_df, max_incidents_
     return existing_incidents_df.head(max_incidents_to_return)
 
 
-def return_entry(message, duplicate_incidents_df=None, similarity=0):
+def return_entry(message, duplicate_incidents_df=None):
     if duplicate_incidents_df is None:
-        similar_incident = {}
+        duplicate_incident = {}
+        all_duplicate_incidents = []
     else:
         most_similar_incident = duplicate_incidents_df.iloc[0]
-        similar_incident = {
-            'rawId': most_similar_incident['id'],
-            'id': most_similar_incident['id'],
-            'name': most_similar_incident.get('name'),
-            'similarity': similarity,
-        }
+        duplicate_incident = format_incident_context(most_similar_incident)
+        all_duplicate_incidents = [format_incident_context(row) for _, row in duplicate_incidents_df.iterrows()]
     outputs = {
-        'similarIncident': similar_incident,
-        'isSimilarIncidentFound': duplicate_incidents_df is not None,
-        'allDuplicateIncidentsIds': duplicate_incidents_df['id'].tolist() if duplicate_incidents_df is not None else []
+        'duplicateIncident': duplicate_incident,
+        'isDuplicateIncidentFound': duplicate_incidents_df is not None,
+        'allDuplicateIncidents': all_duplicate_incidents
     }
     return_outputs(message, outputs)
+
+
+def format_incident_context(df_row):
+    duplicate_incident = {
+        'rawId': df_row['id'],
+        'id': df_row['id'],
+        'name': df_row.get('name'),
+        'similarity': df_row.get('similarity'),
+    }
+    return duplicate_incident
 
 
 def close_new_incident_and_link_to_existing(new_incident, duplicate_incidents_df):
     mask = duplicate_incidents_df['similarity'] >= SIMILARITY_THRESHOLD
     duplicate_incidents_df = duplicate_incidents_df[mask]
-
     most_similar_incident = duplicate_incidents_df.iloc[0]
     max_similarity = duplicate_incidents_df.iloc[0]['similarity']
     min_similarity = duplicate_incidents_df.iloc[-1]['similarity']
-    formatted_incident, headers = format_similar_incident(duplicate_incidents_df)
+    formatted_incident, headers = format_incident_hr(duplicate_incidents_df)
     incident = 'incidents' if len(duplicate_incidents_df) > 1 else 'incident'
     if max_similarity > min_similarity:
         title = "Duplicate {} found with similarity {:.1f}%-{:.1f}%".format(incident, min_similarity * 100,
@@ -257,14 +263,14 @@ def close_new_incident_and_link_to_existing(new_incident, duplicate_incidents_df
             return_error(res)
         message += 'This incident (#{}) will be closed and linked to #{}.'.format(new_incident['id'],
                                                                                   most_similar_incident['id'])
-    return_entry(message, duplicate_incidents_df, max_similarity)
+    return_entry(message, duplicate_incidents_df)
 
 
 def create_new_incident():
     return_entry('This incident is not a duplicate of an existing incident.')
 
 
-def format_similar_incident(duplicate_incidents_df):
+def format_incident_hr(duplicate_incidents_df):
     incidents_list = duplicate_incidents_df.to_dict('records')
     json_lists = []
     status_map = {'0': 'Pending', '1': 'Active', '2': 'Closed', '3': 'Archive'}
@@ -286,7 +292,7 @@ def create_new_incident_low_similarity(duplicate_incidents_df):
     if similarity > SIMILARITY_THRESHOLD - CLOSE_TO_SIMILAR_DISTANCE:
         mask = duplicate_incidents_df['similarity'] >= SIMILARITY_THRESHOLD - CLOSE_TO_SIMILAR_DISTANCE
         duplicate_incidents_df = duplicate_incidents_df[mask]
-        formatted_incident, headers = format_similar_incident(duplicate_incidents_df)
+        formatted_incident, headers = format_incident_hr(duplicate_incidents_df)
         message += tableToMarkdown("Most similar incidents found", formatted_incident, headers=headers)
         message += 'The threshold for considering 2 incidents as duplicate is a similarity ' \
                    'of {:.1f}%.\n'.format(SIMILARITY_THRESHOLD * 100)
