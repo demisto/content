@@ -1,8 +1,8 @@
 Preprocessing script for Email Communication layout.
 This script checks incoming emails from the incident type. If those emails contain an Incident Unique ID in the email subject, then the preprocessing will not open a new incident for this email. Instead, it will add the email response to the existing incident war room with the  "email-thread" tag.
 
-**Note:** In order to avoid performance issues, incoming emails will be added to an existing incident as "email-thread" only if the incident was modified in the last 2 months.
-If you wish to extend this period, you can make a copy of the script, change the `QUERY_TIME` constant in line #12 to the desired period and configure the new script to be the pre-processing script of the incident type `Email Communication`.
+**Note:** In order to avoid performance issues, incoming emails will be added to an existing incident as "email-thread" only if the incident was **modified** in the last 60 days.
+If you wish to extend this period, navigate to Settings->Advanced->Lists and add a new list with the name `EmailCommunicationQueryWindow`. In the `Data` field fill in a single number representing the number of days to query back, for example: 90.
 
 The script is a part of the Email Communication pack.
 

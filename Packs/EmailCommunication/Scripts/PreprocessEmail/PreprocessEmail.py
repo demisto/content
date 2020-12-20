@@ -8,8 +8,29 @@ ERROR_TEMPLATE = 'ERROR: PreprocessEmail - {function_name}: {reason}'
 QUOTE_MARKERS = ['<div class="gmail_quote">',
                  '<hr tabindex="-1" style="display:inline-block; width:98%"><div id="divRplyFwdMsg"']
 
+
+def get_query_window():
+    """
+    Check if the user defined the list `EmailCommunicationQueryWindow` to give a custom value for the time to query back
+    for related incidents. If yes, use this value, else use the default value of 60 days.
+    """
+    user_defined_time = demisto.executeCommand('getList', {'listName': 'EmailCommunicationQueryWindow'})
+    if is_error(user_defined_time):
+        demisto.debug(f'The following error occurred while trying to load the EmailCommunicationQueryWindow list - '
+                      f'{user_defined_time[0].get("Contents")}.\nUsing the default query time - 60 days')
+        return '60 days'
+
+    try:
+        query_time = user_defined_time[0].get('Contents')
+        return f'{int(query_time)} days'
+    except ValueError:
+        demisto.debug('Invalid input for number of days to query. Input should be a number only, representing the '
+                      'number of days to query back.\nUsing the default query time - 60 days')
+        return '60 days'
+
+
 # The time to query back for related incidents. Note that a large number might lead to performance issues.
-QUERY_TIME = '2 months'  # Input format: <number> <time unit>, e.g. 2 months, 45 days.
+QUERY_TIME = get_query_window()
 
 
 def create_email_html(email_html='', entry_id_list=None):
