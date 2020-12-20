@@ -19,9 +19,10 @@ configuration:
     name: proxy
     required: false
     type: 8
-description: Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time
-  Threat Intelligence indicators. Get IOCs such as domains, URLs, hashes, and IP addresses
-  straight into the XSOAR platform.
+description: Sixgill Darkfeed Enrichment – powered by the broadest automated collection from the deep and dark web – is the most comprehensive IOC enrichment solution on the market.
+  By enriching Palo Alto’s Cortex XSOAR IOCs with Darkfeed, customers gain unparalleled context and essential explanations in order to accelerate their incident prevention and response and stay ahead of the threat curve.
+  Automatically enrich Cortex XSOAR IOCs (machine to machine) via Darkfeed Block threats and enrich endpoint protection in real-time from the Cortex XSOAR dashboard,
+  Gain contextual and actionable insights with essential explanations of Cortex XSOAR IOCs.
 display: Sixgill DarkFeed Enrichment
 name: Sixgill_Darkfeed_Enrichment
 script:
