@@ -73,20 +73,20 @@ configuration:
   name: feedExpirationInterval
   type: 1
   required: false
-- display: Bypass exclusion list
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this
+    feed. This means that if an indicator from this feed is on the exclusion list, the
+    indicator might still be added to the system.
+  display: Bypass exclusion list
   name: feedBypassExclusionList
-  type: 8
   required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+  type: 8
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   required: false
   type: 0
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed.
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
