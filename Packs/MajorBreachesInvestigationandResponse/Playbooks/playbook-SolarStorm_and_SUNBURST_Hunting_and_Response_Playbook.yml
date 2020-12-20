@@ -1,0 +1,1583 @@
+id: SolarStorm and SUNBURST Hunting and Response Playbook
+version: -1
+name: SolarStorm and SUNBURST Hunting and Response Playbook
+description: "This playbook does the following:
+
+              Collect indicators to aid in your threat hunting process
+
+              - Retrieve IOCs of SUNBURST (a trojanized version of the SolarWinds Orion plugin)
+              - Retrieve C2 domains and URLs associated with Sunburst
+              - Discover IOCs of associated activity related to the infection
+              - Generate an indicator list to block indicators with SUNBURST tags
+
+              Hunt for the SUNBURST backdoor
+
+              - Query firewall logs to detect network activity
+              - Search endpoint logs for Sunburst hashes to detect presence on hosts
+
+              If compromised hosts are found then:
+
+              - Notify security team to review and trigger remediation response actions
+              - Fire off sub-playbooks to isolate/quarantine infected hosts/endpoints and await further actions from the security team.
+
+              Note: This is a beta pack, which lets you implement and test pre-release software. Since the pack is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: df7502eb-2e4b-4de4-8ef1-697b83012f1b
+    type: start
+    task:
+      id: df7502eb-2e4b-4de4-8ef1-697b83012f1b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 82d4e0f5-6e3a-42cb-8887-764cf9e8eb8e
+    type: title
+    task:
+      id: 82d4e0f5-6e3a-42cb-8887-764cf9e8eb8e
+      version: -1
+      name: Collect  and retrieve indicators to hunt
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+      - "47"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: f6dc8e72-4e53-495f-80c8-57260deac55d
+    type: regular
+    task:
+      id: f6dc8e72-4e53-495f-80c8-57260deac55d
+      version: -1
+      name: Collect Hashes from FireEye for installed SUNBURST backdoor
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: fireeye_Indicator_Release_Hashes.csv
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile: {}
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/fireeye/sunburst_countermeasures/main/indicator_release/Indicator_Release_Hashes.csv
+      username: {}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1052.5,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: d3bb2cfc-d4d3-45ac-8d51-6d176397f96c
+    type: regular
+    task:
+      id: d3bb2cfc-d4d3-45ac-8d51-6d176397f96c
+      version: -1
+      name: Close investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2150,
+          "y": 2240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 23e1215c-26fe-4bb2-8a6a-cf5d0c558ca5
+    type: title
+    task:
+      id: 23e1215c-26fe-4bb2-8a6a-cf5d0c558ca5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2150,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: c852d2ac-32c0-4615-889e-6e4be614f555
+    type: playbook
+    task:
+      id: c852d2ac-32c0-4615-889e-6e4be614f555
+      version: -1
+      name: Panorama Query Logs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
+        and wildfire.'
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      ip: {}
+      log_type:
+        simple: threat
+      port-dst: {}
+      query:
+        simple: (threatid eq 86237) or (threatid eq 86245) or (threatid eq 86242)
+          or (threatid eq 86246) or (threatid eq 86249) or (threatid eq 86247) or
+          (threatid eq 86243) or (threatid eq 86248) or (threatid eq 86244) or (threatid
+          eq 86238) or (threatid eq 86239) or (threatid eq 86240) or (threatid eq
+          86251) or (threatid eq 86250)
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1860,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 3b3ec1af-3ba3-4347-83cb-8358f68d94c0
+    type: title
+    task:
+      id: 3b3ec1af-3ba3-4347-83cb-8358f68d94c0
+      version: -1
+      name: 'Remediation '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "42"
+      - "52"
+      - "58"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 1b3f1aa9-8a28-4fba-8554-e3381dee3420
+    type: regular
+    task:
+      id: 1b3f1aa9-8a28-4fba-8554-e3381dee3420
+      version: -1
+      name: Investigate further
+      description: Further investigate the incident (endpoints, the entry point, etc')
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: ae08192e-febb-4add-8562-43816b91ada1
+    type: title
+    task:
+      id: ae08192e-febb-4add-8562-43816b91ada1
+      version: -1
+      name: Remediation complete
+      description: commands.local.cmd.close.inv
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 670f354b-63e3-475c-846f-ca8569fa94a2
+    type: regular
+    task:
+      id: 670f354b-63e3-475c-846f-ca8569fa94a2
+      version: -1
+      name: Mark hashes indicators with SolarStorm tag
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: SolarStorm
+      indicatorsValues:
+        complex:
+          root: File
+          accessor: MD5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2150,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 52de4a62-08e8-4905-87d9-59cb7bcc9740
+    type: playbook
+    task:
+      id: 52de4a62-08e8-4905-87d9-59cb7bcc9740
+      version: -1
+      name: Search Endpoints By Hash - Generic V2
+      description: Hunt using available tools
+      playbookName: Search Endpoints By Hash - Generic V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      MD5Hash:
+        complex:
+          root: File
+          accessor: MD5
+      SHA1Hash:
+        complex:
+          root: File
+          accessor: SHA1
+      SHA256Hash:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 672.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 12cfb5ac-5886-4e69-8b8b-7d470a3d05f7
+    type: title
+    task:
+      id: 12cfb5ac-5886-4e69-8b8b-7d470a3d05f7
+      version: -1
+      name: Hunt SolarStorm in network activity
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+      - "46"
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: ccce7899-e328-4179-871e-9ed448c955a0
+    type: title
+    task:
+      id: ccce7899-e328-4179-871e-9ed448c955a0
+      version: -1
+      name: Hunt backdoored SolarWinds in endpoints
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 672.5,
+          "y": 745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 77f3a8fc-80f9-47c6-836a-59dce1072831
+    type: title
+    task:
+      id: 77f3a8fc-80f9-47c6-836a-59dce1072831
+      version: -1
+      name: No infections found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: e3330b59-8196-4d1a-8c9c-aac4c6f1bad4
+    type: playbook
+    task:
+      id: e3330b59-8196-4d1a-8c9c-aac4c6f1bad4
+      version: -1
+      name: Isolate Endpoint - Generic
+      description: |-
+        This playbook isolates a given endpoint using the following integrations:
+        - Carbon Black Enterprise Response
+        - Palo Alto Networks Traps
+      playbookName: Isolate Endpoint - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      EndpointId: {}
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+      IP:
+        complex:
+          root: PANWHunting
+          accessor: DetectedInternalIPs
+      xdr_endpoint_id: {}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1640,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 21a8a931-f780-4493-8f81-0857d1a566e7
+    type: playbook
+    task:
+      id: 21a8a931-f780-4493-8f81-0857d1a566e7
+      version: -1
+      name: Panorama Query Logs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
+        and wildfire.'
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      ip: {}
+      log_type:
+        simple: traffic
+      port-dst: {}
+      query:
+        simple: (app eq solarwinds)or(app eq solarwinds-rmm)or(app eq solarwinds-msp-manager)or(app
+          eq solarwinds-agent)or(app eq solarwinds-npm)or(app eq solarwinds-sam)or(app
+          eq solarwinds-msp-anywhere)
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2340,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 108005bc-2251-4e03-88f4-36fe203a315d
+    type: title
+    task:
+      id: 108005bc-2251-4e03-88f4-36fe203a315d
+      version: -1
+      name: Block indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "55"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2700,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 7f8cb40d-a6bf-4de5-8f42-d5933ae01f9b
+    type: condition
+    task:
+      id: 7f8cb40d-a6bf-4de5-8f42-d5933ae01f9b
+      version: -1
+      name: Any compromised hosts found?
+      description: |
+        Checks whether there was a compromised hosts found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Endpoint
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: PANWHunting
+                accessor: DetectedInternalIPs
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: PANWHunting
+                accessor: DetectedInternalHosts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 15014fdf-4f81-4f58-8b7b-2c76e10e9c06
+    type: title
+    task:
+      id: 15014fdf-4f81-4f58-8b7b-2c76e10e9c06
+      version: -1
+      name: Hunt IOC's
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1052.5,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 838bb5a8-c5b1-42f7-814b-cdc8a9fb786b
+    type: playbook
+    task:
+      id: 838bb5a8-c5b1-42f7-814b-cdc8a9fb786b
+      version: -1
+      name: Palo Alto Networks - Hunting And Threat Detection
+      playbookName: Palo Alto Networks - Hunting And Threat Detection
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      IPAddresses:
+        complex:
+          root: IP
+          accessor: Address
+      InternalDomainName: {}
+      InternalHostRegex: {}
+      InternalRange: {}
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+      URLDomain:
+        complex:
+          root: URL
+          accessor: Data
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: ae3c46c9-ff8a-4458-83ba-abe76e20b4ee
+    type: regular
+    task:
+      id: ae3c46c9-ff8a-4458-83ba-abe76e20b4ee
+      version: -1
+      name: Collect Domains and IPs from FireEye for installed SUNBURST backdoor
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: Indicator_Release_NBIs.csv
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile: {}
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/fireeye/sunburst_countermeasures/main/indicator_release/Indicator_Release_NBIs.csv
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 559abe5c-5326-4b75-8682-7e6aa4c3a6d3
+    type: regular
+    task:
+      id: 559abe5c-5326-4b75-8682-7e6aa4c3a6d3
+      version: -1
+      name: UnEescape IPs from result to indicators
+      description: |-
+        Remove escaping chars from IP
+        127[.]0[.]0[.]1 -> 127.0.0.1
+      scriptName: UnEscapeIPs
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      input:
+        complex:
+          root: HttpRequest.Response
+          accessor: Body
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: dcf9c17e-1de1-464e-8f79-45b45f4e6f37
+    type: regular
+    task:
+      id: dcf9c17e-1de1-464e-8f79-45b45f4e6f37
+      version: -1
+      name: UnEescape URLs from result to indicators
+      description: |-
+        Extract URLs redirected by security tools like Proofpoint.
+        Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
+        Also, un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      input:
+        complex:
+          root: HttpRequest.Response
+          accessor: Body
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 4a3d415c-8f04-4028-857b-d6d39b7a2c14
+    type: condition
+    task:
+      id: 4a3d415c-8f04-4028-857b-d6d39b7a2c14
+      version: -1
+      name: Should isolate automatically compromised hosts?
+      description: |
+        Checks whether files associated with the incident can be blocked automatically using various EDR integrations.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "57"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.IsolateEndpointAutomatically
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: b4c04399-ce97-465e-89b8-d60252fd8426
+    type: playbook
+    task:
+      id: b4c04399-ce97-465e-89b8-d60252fd8426
+      version: -1
+      name: Block Indicators - Generic v2
+      playbookName: Block Indicators - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
+      DAG: {}
+      EDLServerIP: {}
+      IP:
+        complex:
+          root: PANWHunting
+          accessor: DetectedExternalIPs
+      IPBlacklistMiner: {}
+      IPListName: {}
+      LogForwarding: {}
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+      StaticAddressGroup: {}
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+      URLBlacklistMiner: {}
+      URLListName:
+        simple: Demisto Remediation - URL EDL
+      Username: {}
+      categories: {}
+      device-group: {}
+      type: {}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 3120,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: 0bdbe6b6-fbb3-4ba5-805e-2ca08b4b4a79
+    type: title
+    task:
+      id: 0bdbe6b6-fbb3-4ba5-805e-2ca08b4b4a79
+      version: -1
+      name: Isolate compromised hosts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 1e1519a6-b565-4d55-858a-5a97b05e34fc
+    type: regular
+    task:
+      id: 1e1519a6-b565-4d55-858a-5a97b05e34fc
+      version: -1
+      name: Mark IP's indicators with SolarStorm tag
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      city: {}
+      costcenter: {}
+      costcentercode: {}
+      countryname: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      department: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainidnname: {}
+      domainname: {}
+      domainreferringips: {}
+      domainreferringsubnets: {}
+      domainstatus: {}
+      email: {}
+      emailaddress: {}
+      entryid: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      givenname: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      lastseenbysource: {}
+      leadership: {}
+      location: {}
+      locationregion: {}
+      macaddress: {}
+      malwarefamily: {}
+      malwaretypes: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      mobilephone: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      personalemail: {}
+      port: {}
+      positivedetections: {}
+      primarymotivation: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relateToIncident: {}
+      relatedIncidents: {}
+      reportedby: {}
+      reputation: {}
+      seenNow: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source: {}
+      sourceTimeStamp: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      state: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      streetaddress: {}
+      subdomains: {}
+      surname: {}
+      tags:
+        simple: SolarStorm
+      threattypes: {}
+      title: {}
+      trafficlightprotocol: {}
+      type:
+        simple: IP
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: IP
+                iscontext: true
+          accessor: Address
+      workphone: {}
+      xdrstatus: {}
+      zipcode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2150,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: 810ca6aa-3358-4f68-80a3-828d0900804a
+    type: regular
+    task:
+      id: 810ca6aa-3358-4f68-80a3-828d0900804a
+      version: -1
+      name: Mark Urls indicators with SolarStorm tag
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      city: {}
+      costcenter: {}
+      costcentercode: {}
+      countryname: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      department: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainidnname: {}
+      domainname: {}
+      domainreferringips: {}
+      domainreferringsubnets: {}
+      domainstatus: {}
+      email: {}
+      emailaddress: {}
+      entryid: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      givenname: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      lastseenbysource: {}
+      leadership: {}
+      location: {}
+      locationregion: {}
+      macaddress: {}
+      malwarefamily: {}
+      malwaretypes: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      mobilephone: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      personalemail: {}
+      port: {}
+      positivedetections: {}
+      primarymotivation: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relateToIncident: {}
+      relatedIncidents: {}
+      reportedby: {}
+      reputation: {}
+      seenNow: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source: {}
+      sourceTimeStamp: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      state: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      streetaddress: {}
+      subdomains: {}
+      surname: {}
+      tags:
+        simple: SolarStorm
+      threattypes: {}
+      title: {}
+      trafficlightprotocol: {}
+      type:
+        simple: URL
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: URL.Data
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: URL.Data
+                iscontext: true
+      workphone: {}
+      xdrstatus: {}
+      zipcode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2150,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: 9d6d6b1d-9742-461d-86b1-cd8e5e9fbfa2
+    type: condition
+    task:
+      id: 9d6d6b1d-9742-461d-86b1-cd8e5e9fbfa2
+      version: -1
+      name: Should block indicators automatically?
+      description: Checks whether IOC's associated with the incident can be blocked
+        automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.BlockIndicatorsAutomatically
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 2700,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: 511ceecb-ce1d-4060-8f4d-5e96475ebb41
+    type: regular
+    task:
+      id: 511ceecb-ce1d-4060-8f4d-5e96475ebb41
+      version: -1
+      name: Manually block indicators
+      description: Manually block the IOCs in the relevant systems.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2700,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: cc2310e2-051f-46d1-8a1d-83b3a3fcb4ad
+    type: regular
+    task:
+      id: cc2310e2-051f-46d1-8a1d-83b3a3fcb4ad
+      version: -1
+      name: Manually isolate endpoints
+      description: Manually Isolate the compromised hosts.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: b306b461-ba3d-4f0a-81d7-5fc914403130
+    type: title
+    task:
+      id: b306b461-ba3d-4f0a-81d7-5fc914403130
+      version: -1
+      name: Tag SolarStorm Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2150,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "43_33_#default#": 0.27,
+      "43_50_yes": 0.26,
+      "50_34_yes": 0.5
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2675,
+        "width": 2827.5,
+        "x": 672.5,
+        "y": -190
+      }
+    }
+  }
+inputs:
+- key: ThreatID
+  value:
+    simple: 86246,86237,34801,39934,58049,38399,55378,37582,36709,37781,38388,56269
+  required: false
+  description: Threat IDs to hunt through NGFW Threat Logs
+  playbookInputQuery:
+- key: IsolateEndpointAutomatically
+  value:
+    simple: "False"
+  required: false
+  description: Whether to automatically isolate endpoints, or opt for manual user
+    approval. True means isolation will be done automatically.
+  playbookInputQuery:
+- key: BlockIndicatorsAutomatically
+  value:
+    simple: "False"
+  required: false
+  description: Whether to automatically indicators involved with SolarStorm.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests
+fromversion: 6.0.0

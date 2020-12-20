@@ -1,7 +1,7 @@
 <p>
 Use the Proofpoint Targeted Attack Protection (TAP) integration to protect against and provide additional visibility into phishing and other malicious email attacks.
 
-This integration was integrated and tested with version xx of Proofpoint TAP v2
+This integration was integrated and tested with version 8.15.0 of Proofpoint TAP
 </p>
 </ul><h2>Detailed Description</h2>
 <ul>

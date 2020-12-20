@@ -359,14 +359,7 @@ script:
     name: url
     outputs:
     - contextPath: URL.Data
-      description: The URL
-      type: string
-    - contextPath: URL.DetectionEngines
-      description: The total number of engines that checked the indicator.
-      type: string
-    - contextPath: URL.PositiveDetections
-      description: The number of engines that positively detected the indicator as
-        malicious.
+      description: The URL.
       type: string
     - contextPath: URL.Malicious.Vendor
       description: The vendor reporting the URL as malicious.
@@ -374,7 +367,26 @@ script:
     - contextPath: URL.Malicious.Description
       description: A description of the malicious URL.
       type: string
-  dockerimage: demisto/python3:3.8.6.12176
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: URL.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: string
+    - contextPath: URL.PositiveDetections
+      description: The number of engines that positively detected the indicator as
+        malicious.
+      type: string
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: false
   longRunning: false

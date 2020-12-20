@@ -15,7 +15,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers
+    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers,\
+    url_to_clickable_markdown
 
 try:
     from StringIO import StringIO
@@ -124,6 +125,99 @@ TABLE_TO_MARKDOWN_ONLY_DATA_PACK = [
 '''
     )
 ]
+
+DATA_WITH_URLS =  [(
+        [
+            {
+            'header_1': 'a1',
+            'url1': 'b1',
+            'url2': 'c1'
+            },
+            {
+            'header_1': 'a2',
+            'url1': 'b2',
+            'url2': 'c2'
+            },
+            {
+            'header_1': 'a3',
+            'url1': 'b3',
+            'url2': 'c3'
+            }
+        ],
+'''### tableToMarkdown test
+|header_1|url1|url2|
+|---|---|---|
+| a1 | [b1](b1) | [c1](c1) |
+| a2 | [b2](b2) | [c2](c2) |
+| a3 | [b3](b3) | [c3](c3) |
+'''
+    )]
+
+COMPLEX_DATA_WITH_URLS = [(
+    [
+    {'data':
+         {'id': '1',
+          'result':
+              {'files':
+                  [
+                      {
+                          'filename': 'name',
+                          'size': 0,
+                          'url': 'url'
+                      }
+                  ]
+              },
+          'links': ['link']
+          }
+     },
+    {'data':
+        {'id': '2',
+            'result':
+            {'files':
+               [
+                   {
+                       'filename': 'name',
+                       'size': 0,
+                       'url': 'url'
+                    }
+               ]
+            },
+            'links': ['link']
+         }
+     }
+],
+    [
+    {'data':
+         {'id': '1',
+          'result':
+              {'files':
+                  [
+                      {
+                          'filename': 'name',
+                          'size': 0,
+                          'url': '[url](url)'
+                      }
+                  ]
+              },
+          'links': ['[link](link)']
+          }
+     },
+    {'data':
+        {'id': '2',
+            'result':
+            {'files':
+               [
+                   {
+                       'filename': 'name',
+                       'size': 0,
+                       'url': '[url](url)'
+                    }
+               ]
+            },
+            'links': ['[link](link)']
+         }
+     }
+])]
 
 
 @pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
@@ -368,6 +462,17 @@ def test_tbl_to_md_header_with_special_character():
     assert table_with_character == expected_string_with_special_character
 
 
+@pytest.mark.parametrize('data, expected_table', DATA_WITH_URLS)
+def test_tbl_to_md_clickable_url(data, expected_table):
+    table = tableToMarkdown('tableToMarkdown test', data, url_keys=['url1', 'url2'])
+    assert table == expected_table
+
+
+@pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
+def test_url_to_clickable_markdown(data, expected_data):
+    table = url_to_clickable_markdown(data, url_keys=['url', 'links'])
+    assert table == expected_data
+
 def test_flatten_cell():
     # sanity
     utf8_to_flatten = b'abcdefghijklmnopqrstuvwxyz1234567890!'.decode('utf8')
@@ -461,22 +566,28 @@ def test_remove_empty_elements():
     assert expected_result == remove_empty_elements(test_dict)
 
 
-def test_aws_table_to_markdown():
-    header = "AWS DynamoDB DescribeBackup"
-    raw_input = {
+@pytest.mark.parametrize('header,raw_input,expected_output', [
+    ('AWS DynamoDB DescribeBackup', {
         'BackupDescription': {
             "Foo": "Bar",
             "Baz": "Bang",
             "TestKey": "TestValue"
         }
-    }
-    expected_output = '''### AWS DynamoDB DescribeBackup
-|Baz|Foo|TestKey|
-|---|---|---|
-| Bang | Bar | TestValue |
-'''
-
-    assert expected_output == aws_table_to_markdown(raw_input, header)
+    }, '''### AWS DynamoDB DescribeBackup\n|Baz|Foo|TestKey|\n|---|---|---|\n| Bang | Bar | TestValue |\n'''),
+    ('Empty Results', {'key': []}, '### Empty Results\n**No entries.**\n')
+])
+def test_aws_table_to_markdown(header, raw_input, expected_output):
+    """
+    Given
+        - A header and a dict with two levels
+        - A header and a dict with one key pointing to an empty list
+    When
+        - Creating a markdown table using the aws_table_to_markdown function
+    Ensure
+        - The header appears as a markdown header and the dictionary is translated to a markdown table
+        - The header appears as a markdown header and "No entries" text appears instead of a markdown table"
+    """
+    assert aws_table_to_markdown(raw_input, header) == expected_output
 
 
 def test_argToList():
@@ -1620,7 +1731,7 @@ class TestCommandResults:
         )
 
         CONTEXT_PATH = "Certificate(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || " \
-            "val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512)"
+                       "val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512)"
 
         assert results.to_context() == {
             'Type': EntryType.NOTE,
@@ -3396,4 +3507,3 @@ def test_arg_to_timestamp_invalid_inputs():
 
     except ValueError as e:
         assert '"2010-32-01" is not a valid date' in str(e)
-
