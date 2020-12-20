@@ -27,7 +27,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fetch-indicators
 ***
-fetches indicators from BitcoinAbuse API
+Fetches indicators from BitcoinAbuse API
 
 
 #### Base Command
@@ -52,7 +52,7 @@ There is no context output for this command.
 
 ### bitcoin-report-address
 ***
-Reports an abuser to Bitcoin Abuse API. abuse_type_other field is required when abuse_type is other
+Reports an abuser to the Bitcoin Abuse API. The abuse_type_other field is required when the value of the abuse_type field is other.
 
 
 #### Base Command
@@ -62,11 +62,11 @@ Reports an abuser to Bitcoin Abuse API. abuse_type_other field is required when 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| address | address of the abuser. | Required | 
-| abuser | information of the abuser. | Required | 
-| description | description of the abusement. | Optional | 
-| abuse_type | type of abuse made. abuse_type_other field is required when abuse_type is other . Possible values are: ransomware, darknet market, bitcoin tumbler, blackmail scam, sextortion, other. | Required | 
-| abuse_type_other | description of abuse type, abuse_type_other field is required when abuse_type is other. | Optional | 
+| address | Address of the abuser. | Required | 
+| abuser | Information of the abuser. | Required | 
+| description | description of the abuse. | Optional | 
+| abuse_type | Type of the abuse. The abuse_type_other field is required when the value of the abuse_type field is other. Possible values are: ransomware, darknet market, bitcoin tumbler, blackmail scam, sextortion, other. | Required | 
+| abuse_type_other | Description of the abuse type. The abuse_type_other field is required when the value of the abuse_type field is other. | Optional | 
 
 
 #### Context Output

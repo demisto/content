@@ -86,7 +86,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+    fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -103,20 +103,19 @@ name: BitcoinAbuse
 script:
   commands:
   - arguments: []
-    description: fetches indicators from BitcoinAbuse API
+    description: Fetches indicators from the BitcoinAbuse API.
     name: fetch-indicators
   - arguments:
-    - description: address of the abuser
+    - description: Address of the abuser.
       name: address
       required: true
-    - description: information of the abuser
+    - description: Information about the abuser.
       name: abuser
       required: true
-    - description: description of the abusement
+    - description: Description of the abuse.
       name: description
     - auto: PREDEFINED
-      description: 'type of abuse made. abuse_type_other field is required when abuse_type
-        is other '
+      description: 'Type of abuse. The abuse_type_other field is required when the value of the abuse_type field is other. Possible values are: "ransomware", "darknet market", "bitcoin tumbler", "blackmail scam", "sextortion", and "other".'
       name: abuse_type
       predefined:
       - ransomware
@@ -126,11 +125,11 @@ script:
       - sextortion
       - other
       required: true
-    - description: description of abuse type, abuse_type_other field is required when
-        abuse_type is other
+    - description: Description of the abuse type. The abuse_type_other field is required when
+        the value of the abuse_type field is other.
       name: abuse_type_other
-    description: Reports an abuser to Bitcoin Abuse API. abuse_type_other field is
-      required when abuse_type is other
+    description: Reports an abuser to the Bitcoin Abuse API. The abuse_type_other field is
+      required when the value of the abuse_type field is other.
     name: bitcoin-report-address
   dockerimage: demisto/python3:3.8.6.14516
   feed: true
