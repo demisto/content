@@ -11,6 +11,7 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 GREEN_COLOR = "#6eb788"
+SLACK_CHANNEL_TO_SEND_PR_TO = 'contribution-reviews'
 
 
 def get_metadata_file(file: File) -> dict:
@@ -124,7 +125,7 @@ def create_pull_request_segment(pr: PullRequest) -> List[dict]:
             pr (PullRequest): object that represents the pull request.
 
         Returns:
-            (list): List containing a lack block-kit section entry which represents the PR info
+            (list): List containing a slack block-kit section entry which represents the PR info
     """
     assignees = ','.join([assignee.login for assignee in pr.assignees])
     contributor = pr.user.login
@@ -139,7 +140,15 @@ def create_pull_request_segment(pr: PullRequest) -> List[dict]:
     return [pr_info_segment]
 
 
-def create_pr_title(pr: PullRequest) -> list[dict]:
+def create_pr_title(pr: PullRequest) -> List[dict]:
+    """Create the message title
+
+        Args:
+            pr (PullRequest): object that represents the pull request.
+
+        Returns:
+            (list): List containing a dictionary which represents the message title
+    """
     header = [{
         "type": "header",
         "text": {
@@ -148,6 +157,31 @@ def create_pr_title(pr: PullRequest) -> list[dict]:
             "emoji": True
         }
     }]
+    return header
+
+
+def slack_post_message(client: WebClient, message_blocks: list, pr: PullRequest):
+    """Post a message to a slack channel
+
+        Args:
+            client (WebClient): Slack web-client object.
+            message_blocks (list): List fo blocks representing the message blocks.
+            pr (PullRequest): object that represents the pull request.
+
+        Returns:
+            (list): List containing a dictionary which represents the message title
+    """
+    client.chat_postMessage(
+        channel="WHCL130LE",
+        # channel=SLACK_CHANNEL_TO_SEND_PR_TO,
+        url="https://google.coms",
+        attachments=[
+            {
+                "color": GREEN_COLOR,
+                "blocks": message_blocks
+            }],
+        text=f"<{pr.html_url}|*New Contribution:* {pr.title}>")
+
 
 def main():
     t = Terminal()
@@ -167,23 +201,18 @@ def main():
     pr = content_repo.get_pull(pr_number)
     metadata_files = [file for file in pr.get_files() if file.filename.endswith('_metadata.json')]
 
-
+    # Build all blocks of the message
+    header = create_pr_title(pr)
     pull_request_segment = create_pull_request_segment(pr)
     packs_segment = create_packs_segment(metadata_files)
-
     blocks = header + pull_request_segment + packs_segment
-    print(json.dumps(blocks))
+    print(f'{t.yellow}Finished preparing message: {json.dumps(blocks)}{t.normal}')
+
+    # Send message
     slack_token = get_env_var('CORTEX_XSOAR_SLACK_TOKEN')
     client = WebClient(token=slack_token)
-    client.chat_postMessage(
-        channel="WHCL130LE",
-        url="https://google.coms",
-        attachments=[
-            {
-                "color": GREEN_COLOR,
-                "blocks": blocks
-            }],
-        text=f"<{pr.html_url}|*New Contribution:* {pr.title}>")
+    slack_post_message(client, blocks, pr)
+    print(f'{t.cyan}Slack message sent successfully{t.normal}')
 
 
 if __name__ == "__main__":
