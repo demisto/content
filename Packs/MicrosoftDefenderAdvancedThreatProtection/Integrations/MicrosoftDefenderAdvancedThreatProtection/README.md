@@ -839,6 +839,7 @@ AdvancedQuery.Read.All
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The query to run. | Required | 
+| timeout | The amount of time (in seconds) that a request will wait for the query response before a timeout occurs. | Optional | 
 
 
 ##### Context Output
