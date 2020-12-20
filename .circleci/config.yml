@@ -46,7 +46,7 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.12.0"
+      CONTENT_VERSION: "20.12.1"
       SERVER_VERSION: "6.0.0"
       GIT_SHA1: "c49eabe52f748c4e2a3a5bdd1ab64ccf3c12a83b" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
