@@ -1,0 +1,67 @@
+{
+    "name": "Expanse",
+    "description": "Automate Attack Surface Management to identify Internet assets and misconfigurations with fast remediation via comprehensive integrations and playbooks.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-11-20T16:01:46Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence",
+        "Network",
+        "Security"
+    ],
+    "useCases": [
+        "Asset Management",
+        "Threat Intelligence Management",
+        "Vulnerability Management"
+    ],
+    "keywords": [
+        "Attack Surface Management",
+        "Expanse",
+        "Expander",
+        "Behavior"
+    ],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "X509Certificate": {
+            "mandatory": true,
+            "display_name": "X509Certificate"
+        },
+        "PAN-OS": {
+            "mandatory": false,
+            "display_name": "PAN-OS"
+        },
+        "PrismaCloud": {
+            "mandatory": false,
+            "display_name": "Prisma Cloud"
+        },
+        "SplunkPy": {
+            "mandatory": false,
+            "display_name": "SplunkPy"
+        },
+        "FeedAWS": {
+            "mandatory": false,
+            "display_name": "AWS Feed"
+        },
+        "FeedAzure": {
+            "mandatory": false,
+            "display_name": "Azure Feed"
+        },
+        "Active_Directory_Query": {
+            "mandatory": false,
+            "display_name": "Active Directory Query"
+        }
+    }
+}
