@@ -3167,7 +3167,7 @@
         {
             "integrations": "BitcoinAbuse",
             "playbookID": "BitcoinAbuse-test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
