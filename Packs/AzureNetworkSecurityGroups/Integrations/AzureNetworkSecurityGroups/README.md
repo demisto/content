@@ -90,7 +90,7 @@ List all rules of the specified security groups.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | security_group_name | A comma-separated list of the names of the security groups. | Required | 
-| limit | The maximum number of rules to display. Default is 50. Default is 50. | Optional | 
+| limit | The maximum number of rules to display. Default is 50. | Optional | 
 | offset | The index of the first rule to display.  Used for pagination. Default is 0. | Optional | 
 
 
