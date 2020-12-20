@@ -1,14 +1,17 @@
 {
     "name": "Twinwave",
     "description": "Stealth mode cybersecurity startup",
-    "support": "community",
+    "support": "partner",
     "currentVersion": "1.0.0",
-    "author": "Don Withanage",
+    "author": "Twinwave",
     "url": "",
-    "email": "",
+    "email": "support@twinwave.io",
     "created": "2020-11-24T18:14:27Z",
     "categories": [],
     "tags": [],
+    "githubUser": [
+        "twbryan"
+    ],
     "useCases": [],
     "keywords": []
 }
