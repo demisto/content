@@ -1,0 +1,532 @@
+{
+    "id": "Phishing",
+    "version": -1,
+    "sortValues": null,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Phishing",
+    "prevName": "",
+    "color": "#3AD1D6",
+    "sla": 240,
+    "playbookId": "playbook2",
+    "hours": 0,
+    "days": 3,
+    "weeks": 1,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "preProcessingScript": "",
+    "closureScript": "",
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 1,
+    "fromVersion": "6.1.",
+    "layout": "Phishing",
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {
+            "agentid": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "alertid": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "alertname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "app": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "assigneduser": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "assignmentgroup": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "attachment": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "attachmentextension": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "attachmenthash": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "unifiedFileRep"
+                ]
+            },
+            "attachmentid": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "attachmentname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "attachmentsize": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "attachmenttype": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "caller": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "category": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "closenotes": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "closinguserid": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "commandline": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "country": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "criticalassets": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "dbotmirrorid": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "dbotprediction": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "dbottextsuggestionhighlighted": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "destinationhostname": {
+                "extractAsIsIndicatorTypeId": "hostRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "destinationip": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "IPv6",
+                    "ipRep"
+                ]
+            },
+            "destinationnetwork": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "destinationport": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "details": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "detectionurl": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "urlRep"
+                ]
+            },
+            "deviceexternalip": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "devicehash": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "devicelocalip": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "devicemodel": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "devicename": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "droppedcount": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailbcc": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailbody": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailbodyformat": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailbodyhtml": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailcc": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailclientname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailfrom": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailheaders": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailhtml": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailinreplyto": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailkeywords": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailmessageid": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailreceived": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailreplyto": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailreturnpath": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailsenderip": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailsource": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailsubject": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailto": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailtocount": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "emailurlclicked": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "escalation": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "eventid": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "eventtype": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "feedbased": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "filehash": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "unifiedFileRep"
+                ]
+            },
+            "filename": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "filepath": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "filesize": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "firstname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "incomingmirrorerror": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "investigationstage": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "labels": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "lastname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "linkedcount": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "logsource": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "macaddress": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "md5": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "mobiledevicemodel": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "name": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "os": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "osversion": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "outgoingmirrorerror": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "phonenumber": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "pid": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "protocol": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "reporteremailaddress": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "runstatus": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "sha256": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "unifiedFileRep"
+                ]
+            },
+            "sourcebrand": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "sourcehostname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "sourceinstance": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "sourceip": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "IPv6",
+                    "ipRep"
+                ]
+            },
+            "sourcenetwork": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "sourceport": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "sourceusername": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "state": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "subcategory": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "tenantname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "ticketnumber": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "urlsslverification": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "useraccountcontrol": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            }
+        }    
+    }
+}
