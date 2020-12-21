@@ -500,10 +500,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: c65f8ad9-2e55-42d4-8938-9c1f1ae5192a
+    taskid: ff78093a-70f4-4b4b-85d0-295d38234445
     type: playbook
     task:
-      id: c65f8ad9-2e55-42d4-8938-9c1f1ae5192a
+      id: ff78093a-70f4-4b4b-85d0-295d38234445
       version: -1
       name: Isolate Endpoint - Generic
       description: |-
@@ -523,6 +523,14 @@ tasks:
         complex:
           root: Endpoint
           accessor: Hostname
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: foundIncidents.CustomFields.xdralerts.host_name
+                iscontext: true
+          - operator: uniq
       IP:
         complex:
           root: PANWHunting
@@ -1918,86 +1926,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "71":
-    id: "71"
-    taskid: 56592f12-8fd4-4003-83d6-944638144985
-    type: condition
-    task:
-      id: 56592f12-8fd4-4003-83d6-944638144985
-      version: -1
-      name: Found XDR SunBurst SolarStorm incidents?
-      description: "Checks if XDR found compromised hosts"
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "19"
-      "yes":
-      - "73"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: foundIncidents
-                accessor: id
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 510,
-          "y": 1090
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "73":
-    id: "73"
-    taskid: c6be9597-28f8-49c1-8e41-a5509432d6c0
-    type: regular
-    task:
-      id: c6be9597-28f8-49c1-8e41-a5509432d6c0
-      version: -1
-      name: Set XDR compromised hosts to endpoint
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: Endpoint.Hostname
-      stringify: {}
-      value:
-        complex:
-          root: foundIncidents.CustomFields.xdralerts
-          accessor: host_name
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 310,
-          "y": 1280
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "74":
     id: "74"
     taskid: 1cd43e81-11ba-4720-8652-bed6ad0519de
@@ -2013,7 +1941,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "71"
+      - "19"
     scriptarguments:
       details: {}
       fromclosedate: {}
@@ -2057,7 +1985,6 @@ tasks:
       id: 6416c957-edd6-4d51-8bf3-eda76fb0e774
       version: -1
       name: 'Is there additional IOCs? '
-      description: "Checks if there are any additional IOCs in the playbook input"
       type: condition
       iscommand: false
       brand: ""
@@ -2096,16 +2023,14 @@ view: |-
       "43_50_yes": 0.65,
       "50_34_yes": 0.5,
       "50_57_#default#": 0.51,
-      "71_19_#default#": 0.12,
-      "71_73_yes": 0.61,
       "75_45_#default#": 0.23,
       "75_70_yes": 0.65
     },
     "paper": {
       "dimensions": {
         "height": 3445,
-        "width": 3010,
-        "x": 310,
+        "width": 2870,
+        "x": 450,
         "y": -530
       }
     }
@@ -2192,6 +2117,6 @@ inputs:
   description: Additional known IOCs relates to SUNBURST and SolarStorm.
   playbookInputQuery:
 outputs: []
-fromversion: 5.5.0
 tests:
-- No test
+- No tests
+fromversion: 5.5.0

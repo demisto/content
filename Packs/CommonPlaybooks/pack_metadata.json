@@ -295,6 +295,14 @@
         "CrowdStrikeFalconX": {
             "mandatory": false,
             "display_name": "CrowdStrike Falcon X"
+        },
+        "Kenna": {
+            "mandatory": false,
+            "display_name": "Kenna"
+        },
+        "Rapid7_Nexpose": {
+            "mandatory": false,
+            "display_name": "Rapid7 Nexpose"
         }
     }
 }
