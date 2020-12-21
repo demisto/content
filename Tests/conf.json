@@ -1411,11 +1411,6 @@
             "playbookID": "OpenPhish Test Playbook"
         },
         {
-            "integrations": "RSA Archer",
-            "playbookID": "Archer-Test-Playbook",
-            "nightly": true
-        },
-        {
             "integrations": "jira-v2",
             "playbookID": "Jira-v2-Test",
             "timeout": 500
