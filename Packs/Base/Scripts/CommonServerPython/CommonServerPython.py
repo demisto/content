@@ -4808,7 +4808,7 @@ class DemistoHandler(logging.Handler):
         msg = self.format(record)
         try:
             if self.int_logger:
-                self.int_logger.write(msg)
+                self.int_logger(msg)
             else:
                 demisto.debug(msg)
         except Exception:
@@ -4836,7 +4836,7 @@ class DebugLogger(object):
             self.http_client.HTTPConnection.debuglevel = 1
             self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
             setattr(http_client, 'print', self.int_logger.print_override)
-        self.handler = DemistoHandler()
+        self.handler = DemistoHandler(self.int_logger)
         demisto_formatter = logging.Formatter(fmt='%(asctime)s - %(message)s', datefmt=None)
         self.handler.setFormatter(demisto_formatter)
         self.root_logger = logging.getLogger()
