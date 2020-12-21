@@ -80,7 +80,7 @@ class Client(BaseClient):
         else:
             password = credentials.get('password', '')
             auth = None
-            if username is not None and password is not None:
+            if username and password:
                 auth = (username, password)
 
         super().__init__(base_url=url, proxy=proxy, verify=not insecure, auth=auth)

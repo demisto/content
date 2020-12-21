@@ -1,0 +1,199 @@
+{
+  "type": "folder",
+  "id": "0",
+  "name": "All Files",
+  "description": "",
+  "size": 193364590,
+  "path_collection": {
+    "total_count": 0,
+    "entries": []
+  },
+  "created_by": {
+    "type": "user",
+    "id": "",
+    "name": "",
+    "login": ""
+  },
+  "modified_by": {
+    "type": "user",
+    "id": "14342567114",
+    "name": "Andrew Shamah",
+    "login": "ashamah@paloaltonetworks.com"
+  },
+  "owned_by": {
+    "type": "user",
+    "id": "14342567114",
+    "name": "Andrew Shamah",
+    "login": "ashamah@paloaltonetworks.com"
+  },
+  "item_status": "active",
+  "item_collection": {
+    "total_count": 14,
+    "entries": [
+      {
+        "type": "folder",
+        "id": "125959916474",
+        "sequence_id": "0",
+        "etag": "0",
+        "name": "My Box Notes"
+      },
+      {
+        "type": "folder",
+        "id": "126452434994",
+        "sequence_id": "0",
+        "etag": "0",
+        "name": "Sample Testing Folder"
+      },
+      {
+        "type": "folder",
+        "id": "126469445717",
+        "sequence_id": "0",
+        "etag": "0",
+        "name": "Sample Testing Folder test"
+      },
+      {
+        "type": "folder",
+        "id": "127304720432",
+        "sequence_id": "0",
+        "etag": "0",
+        "name": "Sample Testing Folder test1"
+      },
+      {
+        "type": "folder",
+        "id": "127109452066",
+        "sequence_id": "0",
+        "etag": "0",
+        "name": "test-demo name"
+      },
+      {
+        "type": "file",
+        "id": "745868717302",
+        "file_version": {
+          "type": "file_version",
+          "id": "794731944502",
+          "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"
+        },
+        "sequence_id": "2",
+        "etag": "2",
+        "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+        "name": "55555.gif"
+      },
+      {
+        "type": "file",
+        "id": "745851995250",
+        "file_version": {
+          "type": "file_version",
+          "id": "794713426050",
+          "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"
+        },
+        "sequence_id": "0",
+        "etag": "0",
+        "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+        "name": "image.gif"
+      },
+      {
+        "type": "file",
+        "id": "745854929853",
+        "file_version": {
+          "type": "file_version",
+          "id": "794716642653",
+          "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"
+        },
+        "sequence_id": "0",
+        "etag": "0",
+        "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+        "name": "image1.gif"
+      },
+      {
+        "type": "file",
+        "id": "745857164822",
+        "file_version": {
+          "type": "file_version",
+          "id": "794719141622",
+          "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"
+        },
+        "sequence_id": "0",
+        "etag": "0",
+        "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+        "name": "image2.gif"
+      },
+      {
+        "type": "file",
+        "id": "745859107884",
+        "file_version": {
+          "type": "file_version",
+          "id": "794721102684",
+          "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"
+        },
+        "sequence_id": "0",
+        "etag": "0",
+        "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+        "name": "image3.gif"
+      },
+      {
+        "type": "file",
+        "id": "745870218112",
+        "file_version": {
+          "type": "file_version",
+          "id": "794733314512",
+          "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"
+        },
+        "sequence_id": "0",
+        "etag": "0",
+        "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+        "name": "image4.gif"
+      },
+      {
+        "type": "file",
+        "id": "745873525854",
+        "file_version": {
+          "type": "file_version",
+          "id": "794736891054",
+          "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"
+        },
+        "sequence_id": "0",
+        "etag": "0",
+        "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+        "name": "image6_please_work.gif"
+      },
+      {
+        "type": "file",
+        "id": "743439873060",
+        "file_version": {
+          "type": "file_version",
+          "id": "792056280660",
+          "sha1": "533a85c782614a6dfe19b83f7d628466ceb00c39"
+        },
+        "sequence_id": "2",
+        "etag": "2",
+        "sha1": "533a85c782614a6dfe19b83f7d628466ceb00c39",
+        "name": "new-devs-touching-the-build.gif"
+      },
+      {
+        "type": "file",
+        "id": "745898898314",
+        "file_version": {
+          "type": "file_version",
+          "id": "794764999514",
+          "sha1": "bd992f78f1f50b4b424b0633870aca5eed3bedce"
+        },
+        "sequence_id": "4",
+        "etag": "4",
+        "sha1": "bd992f78f1f50b4b424b0633870aca5eed3bedce",
+        "name": "testing event12.gif"
+      }
+    ],
+    "offset": 0,
+    "limit": 100,
+    "order": [
+      {
+        "by": "type",
+        "direction": "ASC"
+      },
+      {
+        "by": "name",
+        "direction": "ASC"
+      }
+    ]
+  }
+}

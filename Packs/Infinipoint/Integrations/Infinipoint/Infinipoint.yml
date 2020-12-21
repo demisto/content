@@ -998,7 +998,7 @@ script:
       description: success
       type: Number
 
-  dockerimage: demisto/pyjwt3:1.0.0.10828
+  dockerimage: demisto/pyjwt3:1.0.0.13142
   isfetch: true
   runonce: false
   script: '-'
