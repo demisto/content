@@ -3268,7 +3268,8 @@
         "PhishlabsIOC_DRP-Test": "Issue 29589",
         "Akamai_WAF-Test": "Issue 31900",
         "FireEye HX Test": "Issue 24935",
-        "Carbon Black Enterprise Protection V2 Test": "Issue 27846"
+        "Carbon Black Enterprise Protection V2 Test": "Issue 27846",
+        "Archer-Test-Playbook": "Issue 26851"
     },
     "skipped_integrations": {
 
