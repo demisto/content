@@ -5,10 +5,9 @@ from Tests.Marketplace.marketplace_services import init_storage_client
 
 
 STORAGE_ID_SET_PATH = 'content/private_id_set.json'
-ARTIFACTS_PATH = '/home/runner/work/content-private/content-private/content/artifacts'
 
 
-def create_empty_id_set_in_artifacts(private_id_set_artifacts_path):
+def create_empty_id_set_in_artifacts(private_id_set_path):
     empty_id_set = {
         "scripts": [],
         "playbooks": [],
@@ -25,11 +24,11 @@ def create_empty_id_set_in_artifacts(private_id_set_artifacts_path):
         "Widgets": [],
         "Mappers": []
     }
-    with open(private_id_set_artifacts_path, 'w') as id_set:
+    with open(private_id_set_path, 'w') as id_set:
         json.dump(empty_id_set, id_set)
 
 
-def file_exists_in_bucket(public_storage_bucket):
+def id_set_file_exists_in_bucket(public_storage_bucket):
     blob = public_storage_bucket.blob(STORAGE_ID_SET_PATH)
     return blob.exists()
 
@@ -44,21 +43,22 @@ def download_private_id_set_from_gcp(public_storage_bucket):
         str: private ID set file full path.
     """
 
-    if not os.path.exists(ARTIFACTS_PATH):
-        os.mkdir(ARTIFACTS_PATH)
+    private_artifacts_path = '/home/runner/work/content-private/content-private/content/artifacts'
+    private_id_set_path = private_artifacts_path + '/private_id_set.json'
 
-    private_id_set_artifacts_path = ARTIFACTS_PATH + '/private_id_set.json'
+    if not os.path.exists(private_artifacts_path):
+        os.mkdir(private_artifacts_path)
 
-    is_private_id_set_file_exist = file_exists_in_bucket(public_storage_bucket)
+    is_private_id_set_file_exist = id_set_file_exists_in_bucket(public_storage_bucket)
 
     if is_private_id_set_file_exist:
         index_blob = public_storage_bucket.blob(STORAGE_ID_SET_PATH)
-        index_blob.download_to_filename(private_id_set_artifacts_path)
+        index_blob.download_to_filename(private_id_set_path)
 
     else:
-        create_empty_id_set_in_artifacts(private_id_set_artifacts_path)
+        create_empty_id_set_in_artifacts(private_id_set_path)
 
-    return private_id_set_artifacts_path if os.path.exists(private_id_set_artifacts_path) else ''
+    return private_id_set_path if os.path.exists(private_id_set_path) else ''
 
 
 def option_handler():
