@@ -178,7 +178,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->✅ Great Success!
+>✅ Success!
 
 ### azure-nsg-security-rules-delete
 ***
