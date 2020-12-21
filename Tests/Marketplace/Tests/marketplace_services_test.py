@@ -4,9 +4,10 @@ import json
 import os
 import random
 from unittest.mock import mock_open
-#from mock_open import MockOpen
+from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
 from distutils.version import LooseVersion
+from freezegun import freeze_time
 
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
     get_higher_server_version, GCPConfig, BucketUploadFlow, PackStatus, load_json, \
@@ -75,10 +76,12 @@ class TestMetadataParsing:
             to XSOAR defaults value of Metadata class.
         """
         parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata={}, pack_content_items={},
-                                                    pack_id='test_pack_id', integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="dummy_server_version",
-                                                    build_number="dummy_build_number", commit_hash="dummy_hash",
-                                                    downloads_count=10)
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="",
+                                                          dependencies_data={},
+                                                          server_min_version="dummy_server_version",
+                                                          build_number="dummy_build_number", commit_hash="dummy_hash",
+                                                          downloads_count=10)
 
         assert parsed_metadata['name'] == "test_pack_id"
         assert parsed_metadata['id'] == "test_pack_id"
@@ -93,20 +96,22 @@ class TestMetadataParsing:
 
     @pytest.mark.parametrize("pack_metadata_input,expected",
                              [({"price": "120"}, 120), ({"price": 120}, 120), ({"price": "FF"}, 0)])
-    def test_parsed_metadata_with_price(self, pack_metadata_input, expected, mocker):
+    def test_parsed_metadata_with_price(self, pack_metadata_input, expected, mocker, dummy_pack):
         """ Price field is not mandatory field and needs to be set to integer value.
 
         """
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        parsed_metadata = Pack._parse_pack_metadata(user_metadata=pack_metadata_input, pack_content_items={},
-                                                    pack_id="test_pack_id", integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="dummy_server_version",
-                                                    build_number="dummy_build_number", commit_hash="dummy_hash",
-                                                    downloads_count=10)
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=pack_metadata_input, pack_content_items={},
+                                                          pack_id="test_pack_id", integration_images=[],
+                                                          author_image="",
+                                                          dependencies_data={},
+                                                          server_min_version="dummy_server_version",
+                                                          build_number="dummy_build_number", commit_hash="dummy_hash",
+                                                          downloads_count=10)
 
         assert parsed_metadata['price'] == expected
 
-    def test_use_case_tag_added_to_metadata(self, dummy_pack_metadata):
+    def test_use_case_tag_added_to_metadata(self, dummy_pack_metadata, dummy_pack):
         """
            Given:
                - Pack metadata file with use case.
@@ -116,11 +121,12 @@ class TestMetadataParsing:
                - Ensure the `Use Case` tag was added to tags.
 
        """
-        parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
-                                                    pack_id='test_pack_id', integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="5.5.0",
-                                                    build_number="dummy_build_number", commit_hash="dummy_commit",
-                                                    downloads_count=10, is_feed_pack=False)
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="",
+                                                          dependencies_data={}, server_min_version="5.5.0",
+                                                          build_number="dummy_build_number", commit_hash="dummy_commit",
+                                                          downloads_count=10, is_feed_pack=False)
 
         assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'Use Case']
 
@@ -128,16 +134,17 @@ class TestMetadataParsing:
                              [(True, ["tag number one", "Tag number two", 'TIM']),
                               (False, ["tag number one", "Tag number two"])
                               ])
-    def test_tim_tag_added_to_feed_pack(self, dummy_pack_metadata, is_feed_pack, tags):
+    def test_tim_tag_added_to_feed_pack(self, dummy_pack_metadata, dummy_pack, is_feed_pack, tags):
         """ Test 'TIM' tag is added if is_feed_pack is True
         """
-        parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
-                                                    pack_id='test_pack_id', integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="5.5.0",
-                                                    build_number="dummy_build_number", commit_hash="dummy_commit",
-                                                    downloads_count=10, is_feed_pack=True)
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="",
+                                                          dependencies_data={}, server_min_version="5.5.0",
+                                                          build_number="dummy_build_number", commit_hash="dummy_commit",
+                                                          downloads_count=10, is_feed_pack=True)
 
-        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'Use Case', 'TIM']
+        assert sorted(parsed_metadata['tags']) == sorted(["tag number one", "Tag number two", 'Use Case', 'TIM'])
 
 
 class TestParsingInternalFunctions:
@@ -216,12 +223,6 @@ class TestParsingInternalFunctions:
         result_certification = Pack._get_certification(support_type="partner", certification="certified")
 
         assert result_certification == Metadata.CERTIFIED
-
-    def test_get_pack_publish_date(self):
-        """
-        """
-        result_date = Pack._get_pack_publish_date(user_metadata=dummy_pack_metadata)
-        assert result_date == '2020-03-07T12:35:55Z'
 
 
 class TestHelperFunctions:
@@ -583,7 +584,7 @@ This is visible
         clean_rn = Pack._clean_release_notes(original_rn)
         assert expected_rn == clean_rn
 
-    def test_create_changelog_entry_new(self):
+    def test_create_changelog_entry_new(self, dummy_pack):
         """
            Given:
                - release notes, display version and build number
@@ -595,14 +596,15 @@ This is visible
         release_notes = "dummy release notes"
         version_display_name = "1.2.3"
         build_number = "5555"
-        version_changelog = Pack._create_changelog_entry(release_notes=release_notes,
-                                                         version_display_name=version_display_name,
-                                                         build_number=build_number, new_version=True)
+        version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                               version_display_name=version_display_name,
+                                                               build_number=build_number, new_version=True,
+                                                               initial_release=False)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
         assert version_changelog['displayName'] == f'{version_display_name} - {build_number}'
 
-    def test_create_changelog_entry_existing(self):
+    def test_create_changelog_entry_existing(self, dummy_pack):
         """
            Given:
                - release notes, display version and build number
@@ -614,12 +616,64 @@ This is visible
         release_notes = "dummy release notes"
         version_display_name = "1.2.3"
         build_number = "5555"
-        version_changelog = Pack._create_changelog_entry(release_notes=release_notes,
-                                                         version_display_name=version_display_name,
-                                                         build_number=build_number, new_version=False)
+        version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                               version_display_name=version_display_name,
+                                                               build_number=build_number, new_version=False,
+                                                               initial_release=False)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
         assert version_changelog['displayName'] == f'{version_display_name} - R{build_number}'
+
+    def test_create_changelog_entry_initial(self, dummy_pack):
+        """
+           Given:
+               - release notes, display version and build number
+           When:
+               - new init changelog entry must created
+           Then:
+               - return changelog entry with release notes and without R letter in display name
+       """
+        release_notes = "dummy release notes"
+        version_display_name = "1.0.0"
+        build_number = "5555"
+        version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                               version_display_name=version_display_name,
+                                                               build_number=build_number, new_version=False,
+                                                               initial_release=True)
+
+        assert version_changelog['releaseNotes'] == "dummy release notes"
+        assert version_changelog['displayName'] == f'{version_display_name} - {build_number}'
+
+    @staticmethod
+    def os_path_join(path, *paths):
+
+        if path == 'exist':
+            return 'test_data/changelog_test_date.json'
+        if path == 'not_exist':
+            return 'test'
+
+    @freeze_time("2020-11-04T13:34:14.75Z")
+    @pytest.mark.parametrize('is_changelog_exist, expected_date', [
+        ('exist', '2020-12-21T12:10:55Z'),
+        ('not_exist', '2020-11-04T13:34:14Z')
+    ])
+    def test_handle_pack_create_date_changelog_exist(self, mocker, dummy_pack, is_changelog_exist, expected_date):
+        """
+           Given:
+               - existing 1.0.0 changelog, pack created_date
+               - not existing 1.0.0 changelog, datetime.utcnow
+           When:
+               - changelog entry already exists
+               - changelog entry not exists
+
+           Then:
+           - return the released field fron the changelog file
+           - return datetime.utcnow
+       """
+        from Tests.Marketplace.marketplace_services import os
+        mocker.patch.object(os.path, 'join', side_effect=self.os_path_join)
+        pack_created_date = dummy_pack._handle_pack_create_date(is_changelog_exist)
+        assert pack_created_date == expected_date
 
 
 class TestImagesUpload:

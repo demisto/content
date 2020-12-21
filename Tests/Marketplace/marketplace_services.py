@@ -194,6 +194,7 @@ class Pack(object):
         self._bucket_url = None  # URL of where the pack was uploaded.
         self._aggregated = False  # weather the pack's rn was aggregated or not.
         self._aggregation_str = ""  # the aggregation string msg when the pack versions are aggregated
+        self._create_date = None
 
     @property
     def name(self):
@@ -358,6 +359,12 @@ class Pack(object):
         """ str: pack aggregated release notes or not.
         """
         return self._aggregation_str
+
+    @property
+    def create_date(self):
+        """ str: pack create date.
+        """
+        return self._create_date
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -558,7 +565,7 @@ class Pack(object):
         pack_metadata['name'] = user_metadata.get('name') or pack_id
         pack_metadata['id'] = pack_id
         pack_metadata['description'] = user_metadata.get('description') or pack_id
-        pack_metadata['created'] = self._get_pack_publish_date(user_metadata)
+        pack_metadata['created'] = self._create_date
         pack_metadata['updated'] = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
         pack_metadata['legacy'] = user_metadata.get('legacy', True)
         pack_metadata['support'] = user_metadata.get('support') or Metadata.XSOAR_SUPPORT
@@ -599,24 +606,6 @@ class Pack(object):
                                                                       dependencies_data)
 
         return pack_metadata
-
-    def _get_pack_publish_date(self, user_metadata):
-        """ Get pack publish date.
-
-        Args:
-            user_metadata (dict): user metadata that was created in pack initialization.
-
-        Returns:
-            datetime: Pack publish date.
-
-        """
-        added_pack_metadata = run_command(f'git diff --diff-filter=A --name-only master '
-                                          f'Packs/{self._pack_name}/{Pack.USER_METADATA}', exit_on_error=False)
-        if added_pack_metadata:
-            return datetime.utcnow().strftime(Metadata.DATE_FORMAT)
-
-        else:
-            return user_metadata.get('created', datetime.utcnow().strftime(Metadata.DATE_FORMAT))
 
     def _load_pack_dependencies(self, index_folder_path, first_level_dependencies, all_level_displayed_dependencies):
         """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
@@ -665,8 +654,8 @@ class Pack(object):
 
         return downloads_count
 
-    @staticmethod
-    def _create_changelog_entry(release_notes, version_display_name, build_number, new_version=True):
+    def _create_changelog_entry(self, release_notes, version_display_name, build_number, new_version=True,
+                                initial_release=False):
         """ Creates dictionary entry for changelog.
 
         Args:
@@ -674,6 +663,7 @@ class Pack(object):
             version_display_name (str): display name version.
             build_number (srt): current build number.
             new_version (bool): whether the entry is new or not. If not new, R letter will be appended to build number.
+            initial_release (bool):
 
         Returns:
             dict: release notes entry of changelog
@@ -683,6 +673,11 @@ class Pack(object):
             return {'releaseNotes': release_notes,
                     'displayName': f'{version_display_name} - {build_number}',
                     'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+
+        elif initial_release:
+            return {'releaseNotes': release_notes,
+                    'displayName': f'{version_display_name} - {build_number}',
+                    'released': self._create_date}
         else:
             return {'releaseNotes': release_notes,
                     'displayName': f'{version_display_name} - R{build_number}',
@@ -1096,17 +1091,19 @@ class Pack(object):
                     else:
                         if latest_release_notes in changelog:
                             logging.info(f"Found existing release notes for version: {latest_release_notes}")
-                            version_changelog = Pack._create_changelog_entry(release_notes=release_notes_lines,
+                            version_changelog = self._create_changelog_entry(release_notes=release_notes_lines,
                                                                              version_display_name=latest_release_notes,
                                                                              build_number=build_number,
-                                                                             new_version=False)
+                                                                             new_version=False,
+                                                                             initial_release=False)
 
                         else:
                             logging.info(f"Created new release notes for version: {latest_release_notes}")
-                            version_changelog = Pack._create_changelog_entry(release_notes=release_notes_lines,
+                            version_changelog = self._create_changelog_entry(release_notes=release_notes_lines,
                                                                              version_display_name=latest_release_notes,
                                                                              build_number=build_number,
-                                                                             new_version=True)
+                                                                             new_version=True,
+                                                                             initial_release=False)
 
                         changelog[latest_release_notes] = version_changelog
                 else:  # will enter only on initial version and release notes folder still was not created
@@ -1116,21 +1113,23 @@ class Pack(object):
                         task_status, not_updated_build = True, True
                         return task_status, not_updated_build
 
-                    changelog[Pack.PACK_INITIAL_VERSION] = Pack._create_changelog_entry(
+                    changelog[Pack.PACK_INITIAL_VERSION] = self._create_changelog_entry(
                         release_notes=self.description,
                         version_display_name=Pack.PACK_INITIAL_VERSION,
                         build_number=build_number,
-                        new_version=False)
+                        new_version=False,
+                        initial_release=False)
 
                     logging.info(f"Found existing release notes for version: {Pack.PACK_INITIAL_VERSION} "
                                  f"in the {self._pack_name} pack.")
 
             elif self._current_version == Pack.PACK_INITIAL_VERSION:
-                version_changelog = Pack._create_changelog_entry(
+                version_changelog = self._create_changelog_entry(
                     release_notes=self.description,
                     version_display_name=Pack.PACK_INITIAL_VERSION,
                     build_number=build_number,
-                    new_version=True
+                    new_version=True,
+                    initial_release=True
                 )
                 changelog = {
                     Pack.PACK_INITIAL_VERSION: version_changelog
@@ -1418,6 +1417,7 @@ class Pack(object):
             if packs_statistic_df is not None:
                 self.downloads_count = self._get_downloads_count(packs_statistic_df)
 
+            self._create_date = self._handle_pack_create_date(index_folder_path)
             formatted_metadata = self._parse_pack_metadata(user_metadata=user_metadata,
                                                            pack_content_items=pack_content_items,
                                                            pack_id=self._pack_name,
@@ -1438,6 +1438,26 @@ class Pack(object):
             logging.exception(f"Failed in formatting {self._pack_name} pack metadata.")
         finally:
             return task_status
+
+    def _handle_pack_create_date(self, index_folder_path):
+        """ Gets the pack created date.
+        Args:
+            index_folder_path (str): downloaded index folder directory path.
+        Returns:
+            datetime: Pack created date.
+
+        """
+        # load changelog from downloaded index
+        changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
+        changelog = {}
+        if os.path.exists(changelog_index_path):
+            try:
+                with open(changelog_index_path, "r") as changelog_file:
+                    changelog = json.load(changelog_file)
+            except json.JSONDecodeError:
+                changelog = {}
+        return changelog.get(Pack.PACK_INITIAL_VERSION, {}).get('released', datetime.utcnow().
+                                                                strftime(Metadata.DATE_FORMAT))
 
     def set_pack_dependencies(self, user_metadata, packs_dependencies_mapping):
         pack_dependencies = packs_dependencies_mapping.get(self._pack_name, {}).get('dependencies', {})
