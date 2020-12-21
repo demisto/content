@@ -2643,8 +2643,6 @@ def main():
         elif command == 'fireeye-hx-get-all-hosts-information':
             get_hosts_information()
     except ValueError as e:
-        LOG(e)
-        LOG.print_log()
         return_error(e)
     finally:
         logout()
