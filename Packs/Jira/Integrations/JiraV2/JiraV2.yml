@@ -79,6 +79,21 @@ configuration:
   name: outgoing_mirror
   required: false
   type: 8
+- additionalinfo: Choose the tag to add to an entry to mirror it as a attachment in
+    Jira.
+  defaultvalue: attachment
+  display: File Entry Tag
+  hidden: false
+  name: file_tag
+  required: false
+  type: 0
+- additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Jira.
+  defaultvalue: comment
+  display: Comment Entry Tag
+  hidden: false
+  name: comment_tag
+  required: false
+  type: 0
 description: Use the Jira integration to manage issues and create Demisto incidents
   from projects, From version XSOAR 6.0 and above mirror issues to existing issue
   incidents in demisto.
@@ -556,16 +571,15 @@ script:
   dockerimage: demisto/oauthlib:1.0.0.14319
   feed: false
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
-
 tests:
 - Jira-v2-Test
 defaultmapperin: classifier-mapper-incoming-JiraV2
