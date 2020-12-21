@@ -174,7 +174,10 @@ class Build:
             The single proxy instance that should be used in this build.
         """
         if not self._proxy:
-            self._proxy = MITMProxy(self.servers[0].host.replace('https://', ''), logging_module=logging)
+            self._proxy = MITMProxy(self.servers[0].host.replace('https://', ''),
+                                    logging_module=logging,
+                                    build_number=self.ci_build_number,
+                                    branch_name=self.branch_name)
         return self._proxy
 
     @staticmethod
@@ -518,7 +521,7 @@ def set_integration_params(build,
             integration['byoi'] = matched_integration_params.get('byoi', True)
             integration['instance_name'] = matched_integration_params.get('instance_name', integration['name'])
             integration['validate_test'] = matched_integration_params.get('validate_test', True)
-            if integration['name'] in build.unmockable_integrations:
+            if integration['name'] not in build.unmockable_integrations:
                 integration['params'].update({'proxy': True})
         logging.debug(f'Configuring integration {integration["name"]}with params: {pformat(integration["params"])}')
 
@@ -1154,23 +1157,11 @@ def instance_testing(build: Build,
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
-        testing_client = build.servers[0].reconnect_client()
         # If there is a failure, __test_integration_instance will print it
         if integration_of_instance not in build.unmockable_integrations and use_mock:
-            logging.debug(f'Integration {integration_of_instance} is mockable, running test-module with mitmproxy')
-            has_mock_file = build.proxy.has_mock_file(integration_of_instance)
-            success = False
-            if has_mock_file:
-                with run_with_mock(build.proxy, integration_of_instance) as result_holder:
-                    success, _ = __test_integration_instance(testing_client, instance)
-                    result_holder[RESULT] = success
-            if not success:
-                logging.debug(f'Playback mode for integration {integration_of_instance} has failed, recording.')
-                with run_with_mock(build.proxy, integration_of_instance, record=True) as result_holder:
-                    success, _ = __test_integration_instance(testing_client, instance)
-                    result_holder[RESULT] = success
-                    logging.debug(f'Record mode for integration {integration_of_instance} has failed.')
+            success = test_integration_with_mock(build, instance, pre_update)
         else:
+            testing_client = build.servers[0].reconnect_client()
             success, _ = __test_integration_instance(testing_client, instance)
         if not success:
             failed_tests.add((instance_name, integration_of_instance))
@@ -1178,6 +1169,40 @@ def instance_testing(build: Build,
             successful_tests.add((instance_name, integration_of_instance))
 
     return successful_tests, failed_tests
+
+
+def test_integration_with_mock(build: Build, instance: dict, pre_update: bool):
+    """
+    Runs 'test-module' for given integration with mitmproxy
+    In case the playback mode fails and this is a pre-update run - a record attempt will be executed.
+    Args:
+        build: An object containing the current build info.
+        instance: A dict containing the instance details
+        pre_update: Whether this instance testing is before or after the content update on the server.
+
+    Returns:
+        The result of running the 'test-module' command for the given integration.
+        If a record was executed - will return the result of the 'test--module' with the record mode only.
+    """
+    testing_client = build.servers[0].reconnect_client()
+    integration_of_instance = instance.get('brand', '')
+    logging.debug(f'Integration {integration_of_instance} is mockable, running test-module with mitmproxy')
+    has_mock_file = build.proxy.has_mock_file(integration_of_instance)
+    success = False
+    if has_mock_file:
+        with run_with_mock(build.proxy, integration_of_instance) as result_holder:
+            success, _ = __test_integration_instance(testing_client, instance)
+            result_holder[RESULT] = success
+            if not success:
+                logging.warning(f'Running test-module for \'{integration_of_instance}\' has failed in playback mode')
+    if not success and pre_update:
+        logging.debug(f'Recording a mock file for integration {integration_of_instance}.')
+        with run_with_mock(build.proxy, integration_of_instance, record=True) as result_holder:
+            success, _ = __test_integration_instance(testing_client, instance)
+            result_holder[RESULT] = success
+            if not success:
+                logging.debug(f'Record mode for integration {integration_of_instance} has failed.')
+    return success
 
 
 def update_content_till_v6(build: Build):
@@ -1385,7 +1410,7 @@ def install_packs_pre_update(build: Build) -> bool:
 
 
 def main():
-    install_logging('Install Content And Configure Integrations On Server.log')
+    install_logging('Install_Content_And_Configure_Integrations_On_Server.log')
     build = Build(options_handler())
 
     configure_servers_and_restart(build)

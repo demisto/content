@@ -37,7 +37,7 @@ try:
 except ModuleNotFoundError:
     from slackclient import SlackClient  # Old slack
 
-from Tests.mock_server import MITMProxy, AMIConnection, run_with_mock, RESULT
+from Tests.mock_server import MITMProxy, run_with_mock, RESULT
 from Tests.test_integration import Docker, check_integration
 from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
 from demisto_sdk.commands.common.constants import FILTER_CONF, PB_Status
@@ -788,7 +788,6 @@ def execute_testing(tests_settings,
 
     proxy = None
     if is_ami:
-        ami = AMIConnection(server_ip)
         proxy = MITMProxy(server_ip, logging_manager, build_number=build_number, branch_name=build_name)
 
     failed_playbooks = []

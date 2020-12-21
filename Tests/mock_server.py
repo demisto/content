@@ -417,10 +417,10 @@ class MITMProxy:
 
     def get_mitmdump_service_status(self) -> None:
         """
-        Safely extract the current mitmdump status and logs it
+        Safely extract the current mitmdump status and last 50 log lines
         """
         try:
-            output = self.ami.check_output('systemctl status mitmdump'.split(), stderr=STDOUT)
+            output = self.ami.check_output('systemctl status mitmdump -n 50 -l'.split(), stderr=STDOUT)
             self.logging_module.debug(f'mitmdump service status output:\n{output.decode()}')
         except CalledProcessError as exc:
             self.logging_module.debug(f'mitmdump service status output:\n{exc.output.decode()}')
