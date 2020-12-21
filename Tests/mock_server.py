@@ -462,7 +462,8 @@ class MITMProxy:
             try:
                 silence_output(self.ami.call,
                                ['mv', repo_problem_keys_path, current_problem_keys_path],
-                               stdout='null')
+                               stdout='null',
+                               stderr='null')
             except CalledProcessError as e:
                 self.logging_module.debug(f'Failed to move problematic_keys.json with exit code {e.returncode}')
 
