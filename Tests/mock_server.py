@@ -225,7 +225,7 @@ class MITMProxy:
         self.logging_module.debug('Pushing new/updated mock files to mock git repo.', real_time=True)
         try:
             output = self.ami.check_output(
-                'cd content-test-data && git pull -r -Xtheirs && git push -f'.split(),
+                'cd content-test-data && git reset --hard && git pull -r -Xtheirs && git push -f'.split(),
                 stderr=STDOUT)
             self.logging_module.debug(f'Pushing mock files output:\n{output.decode()}', real_time=True)
         except CalledProcessError as exc:
