@@ -177,19 +177,16 @@ def test_module(client: Client) -> str:
 
 def main() -> None:
     """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
     """
+    params = demisto.params()
+    api_token = params.get('api_token')
+    base_url = urljoin(params['url'], '/api/v1')
+    alias = params.get('alias')
+    connection_params = params.get('connection_params', '{}')
+    timeout = int(params.get('timeout', DEFAULT_TIMEOUT))
 
-    api_token = demisto.params().get('api_token')
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-    alias = demisto.params().get('alias')
-    connection_params = demisto.params().get('connection_params', '{}')
-    timeout = int(demisto.params().get('timeout', DEFAULT_TIMEOUT)) if demisto.params().get('timeout') else DEFAULT_TIMEOUT
-
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
