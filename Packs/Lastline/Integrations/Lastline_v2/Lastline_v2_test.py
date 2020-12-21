@@ -69,3 +69,7 @@ def test_get_report_context(path):
             json_obj = json_obj.read()
             out_dict = json.loads(json_obj)
         get_report_context(out_dict)
+
+
+def test_credentials_not_part_of_params(mocker):
+    mocker.patch.object(demisto, 'params', return_value=incidents_result)
