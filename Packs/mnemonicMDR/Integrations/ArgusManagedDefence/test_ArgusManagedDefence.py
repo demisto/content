@@ -299,7 +299,7 @@ def test_download_attachment_command_failed(requests_mock):
     requests_mock.get(f"{BASE_URL}{method_url}", content=content, status_code=412)
     args = {"case_id": CASE_ID, "attachment_id": ATTACHMENT_ID}
     with pytest.raises(SystemExit) as method_exit:
-        result = download_attachment_command(args)
+        download_attachment_command(args)
     assert method_exit.type == SystemExit
 
 
