@@ -4,9 +4,6 @@ import argparse
 from Tests.Marketplace.marketplace_services import init_storage_client
 
 
-STORAGE_ID_SET_PATH = 'content/private_id_set.json'
-
-
 def create_empty_id_set_in_artifacts(private_id_set_path):
     empty_id_set = {
         "scripts": [],
@@ -28,8 +25,8 @@ def create_empty_id_set_in_artifacts(private_id_set_path):
         json.dump(empty_id_set, id_set)
 
 
-def id_set_file_exists_in_bucket(public_storage_bucket):
-    blob = public_storage_bucket.blob(STORAGE_ID_SET_PATH)
+def id_set_file_exists_in_bucket(public_storage_bucket, storage_id_set_path):
+    blob = public_storage_bucket.blob(storage_id_set_path)
     return blob.exists()
 
 
@@ -43,16 +40,17 @@ def download_private_id_set_from_gcp(public_storage_bucket):
         str: private ID set file full path.
     """
 
+    storage_id_set_path = 'content/private_id_set.json'
     private_artifacts_path = '/home/runner/work/content-private/content-private/content/artifacts'
     private_id_set_path = private_artifacts_path + '/private_id_set.json'
 
     if not os.path.exists(private_artifacts_path):
         os.mkdir(private_artifacts_path)
 
-    is_private_id_set_file_exist = id_set_file_exists_in_bucket(public_storage_bucket)
+    is_private_id_set_file_exist = id_set_file_exists_in_bucket(public_storage_bucket, storage_id_set_path)
 
     if is_private_id_set_file_exist:
-        index_blob = public_storage_bucket.blob(STORAGE_ID_SET_PATH)
+        index_blob = public_storage_bucket.blob(storage_id_set_path)
         index_blob.download_to_filename(private_id_set_path)
 
     else:
