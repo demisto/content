@@ -2373,6 +2373,7 @@ def fetch_incidents():
         demisto.setLastRun({'min_id': min_id})
 
 
+@logger
 def parse_alert_to_incident(alert):
 
     event_type = alert.get('event_type')
