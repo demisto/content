@@ -96,9 +96,9 @@ args:
   isArray: false
   name: statusScope
   predefined:
-    - All
-    - ClosedOnly
-    - NonClosedOnly
+  - All
+  - ClosedOnly
+  - NonClosedOnly
   required: false
   secret: false
 - auto: PREDEFINED
@@ -108,8 +108,8 @@ args:
   isArray: false
   name: closeAsDuplicate
   predefined:
-    - 'true'
-    - 'false'
+  - 'true'
+  - 'false'
   required: false
   secret: false
 - default: false
@@ -119,33 +119,57 @@ args:
   name: threshold
   required: false
   secret: false
-deprecated: true
-comment: Deprecated. Use the FindDuplicateEmailIncidents script instead.
+- default: false
+  defaultValue: '20'
+  description: Maximum number of duplicate incidents ids to return. Default is 20.
+  isArray: false
+  name: maxIncidentsToReturn
+  required: false
+  secret: false
+comment: Can be used to find duplicate emails for incidents of type Phishing, including  malicious,
+  spam, and legitimate emails.
 commonfields:
-  id: PhishingDedupPreprocessingRule
+  id: FindDuplicateEmailIncidents
   version: -1
 enabled: false
-name: PhishingDedupPreprocessingRule
+name: FindDuplicateEmailIncidents
 outputs:
-  - contextPath: similarIncident.id
-    description: Similar incident ID.
-    type: string
-  - contextPath: isSimilarIncidentFound
-    description: Whether a similar incident was found ("true" or "false").
-    type: boolean
-  - contextPath: similarIncident
-    description: Similar incident.
-    type: unknown
-  - contextPath: similarIncident.name
-    description: Similar incident name.
-    type: string
-  - contextPath: similarIncident.rawId
-    description: Similar incident ID.
-    type: Unknown
-  - contextPath: similarIncident.similarity
-    description: 'Number in range 0-1 which describe the similairty between the existing
+- contextPath: duplicateIncident
+  description: The oldest duplicate incident found with the highest simalirty to the
+    current incdient.
+  type: unknown
+- contextPath: duplicateIncident.id
+  description: Duplicate incident ID.
+  type: string
+- contextPath: duplicateIncident.rawId
+  description: Duplicate incident ID.
+  type: Unknown
+- contextPath: duplicateIncident.name
+  description: Duplicate incident name.
+  type: Unknown
+- contextPath: duplicateIncident.similarity
+  description: 'Number in range 0-1 which describe the similarity between the existing
     incident and the new incident. '
-    type: Unknown
+  type: Unknown
+- contextPath: isDuplicateIncidentFound
+  description: Whether a duplicate incident was found ("true" or "false").
+  type: boolean
+- contextPath: allDuplicateIncidents
+  description: All duplicate incidents found which their simalirty with the new incidnet
+    exceeds the threshold.
+  type: Unknown
+- contextPath: allDuplicateIncidents.id
+  description: A list of all duplicate incidents IDs found.
+  type: Unknown
+- contextPath: allDuplicateIncidents.rawId
+  description: A list of all duplicate incidents IDs found.
+  type: Unknown
+- contextPath: allDuplicateIncidents.name
+  description: A list of all duplicate incidents names found.
+  type: Unknown
+- contextPath: allDuplicateIncidents.similarity
+  description: A list of the simlairty between duplicate incidents and new the incident of all duplicate incidents names found.
+  type: Unknown
 script: '-'
 subtype: python3
 system: false
@@ -154,5 +178,7 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.12410
+dockerimage: demisto/sklearn:1.0.0.14213
+tests:
+- No tests (auto formatted)
 fromversion: 5.0.0
