@@ -21,7 +21,7 @@ configuration:
   name: api_key
   required: true
   type: 4
-- defaultvalue: Low
+- defaultvalue: low
   display: Minimum severity of alerts to fetch
   name: min_severity
   options:
@@ -6745,7 +6745,7 @@ script:
     description: Get mapping fields for mirroring
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/argus-toolbelt:1.0.0.14035
+  dockerimage: demisto/argus-toolbelt:1.0.0.14739
   feed: false
   isfetch: true
   longRunning: false
@@ -6754,9 +6754,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
