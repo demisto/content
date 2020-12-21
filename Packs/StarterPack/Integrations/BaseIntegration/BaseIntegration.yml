@@ -21,25 +21,25 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: [Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]
-display: [Name of the integration as it will appear in the XSOAR UI.]
+description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+display: '[Name of the integration as it will appear in the XSOAR UI.]'
 name: BaseIntegration
 script:
   commands:
   - arguments:
     - default: false
-      description: [Enter a description of the argument, including any important information users need to know, for example, default values.]
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
       isArray: false
       name: dummy
       required: true
       secret: false
     deprecated: false
-    description: [Enter a description of the command, including any important information users need to know, for example required permissions.]
+    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
     execution: false
     name: baseintegration-dummy
     outputs:
     - contextPath: BaseIntegration.Output
-      description: [Enter a description of the data returned in this output.]
+      description: '[Enter a description of the data returned in this output.]'
       type: String
   isfetch: false
   runonce: false
