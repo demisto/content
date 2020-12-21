@@ -21,7 +21,7 @@ configuration:
   name: api_key
   required: true
   type: 4
-- defaultvalue: Low
+- defaultvalue: low
   display: Minimum severity of alerts to fetch
   name: min_severity
   options:
@@ -6690,7 +6690,7 @@ script:
     - contextPath: Argus.ObservationsIP.data.address.address
       description: Observations IP Address Address
       type: String
-  dockerimage: demisto/argus-toolbelt:1.0.0.14035
+  dockerimage: demisto/argus-toolbelt:1.0.0.14739
   feed: false
   isfetch: true
   longRunning: false
