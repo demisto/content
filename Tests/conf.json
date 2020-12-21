@@ -491,7 +491,7 @@
         {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Cortex XDR endpoints health check test",
-            "fromversion": "5.5.0",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Cortex XDR - IOC",
