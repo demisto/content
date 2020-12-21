@@ -756,6 +756,11 @@ class Pack(object):
             shutil.copy(zip_pack_path, new_artefacts)
             shutil.copy(output_file, new_artefacts)  # 'content' to be replaced with correct path
             os.chdir(current_working_dir)
+            cmd = f'ls {new_artefacts}'
+            res = subprocess.call(cmd, shell=True)
+            print(f'\n\nls result is: {res}\n\n')
+            subprocess.call(cmd, shell=True)
+
         except subprocess.CalledProcessError as error:
             print(f"Error while trying to encrypt pack. {error}")
 
