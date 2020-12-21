@@ -120,7 +120,7 @@ args:
   required: false
   secret: false
 deprecated: true
-comment: Deprecated. Use the FindDuplicatePhishingIncidents script instead.
+comment: Deprecated. Use the FindDuplicateEmailIncidents script instead.
 commonfields:
   id: PhishingDedupPreprocessingRule
   version: -1

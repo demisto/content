@@ -144,8 +144,11 @@ outputs:
 - contextPath: duplicateIncident.rawId
   description: Duplicate incident ID.
   type: Unknown
+- contextPath: duplicateIncident.name
+  description: Duplicate incident name.
+  type: Unknown
 - contextPath: duplicateIncident.similarity
-  description: 'Number in range 0-1 which describe the similairty between the existing
+  description: 'Number in range 0-1 which describe the similarity between the existing
     incident and the new incident. '
   type: Unknown
 - contextPath: isDuplicateIncidentFound
@@ -163,6 +166,9 @@ outputs:
   type: Unknown
 - contextPath: allDuplicateIncidents.name
   description: A list of all duplicate incidents names found.
+  type: Unknown
+- contextPath: allDuplicateIncidents.similarity
+  description: A list of the simlairty between duplicate incidents and new the incident of all duplicate incidents names found.
   type: Unknown
 script: '-'
 subtype: python3
