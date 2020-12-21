@@ -648,7 +648,7 @@ This is visible
     def os_path_join(path, *paths):
 
         if path == 'exist':
-            return 'test_data/changelog_test_date.json'
+            return 'Tests/Marketplace/Tests/test_data/changelog_test_date.json'
         if path == 'not_exist':
             return 'test'
 
