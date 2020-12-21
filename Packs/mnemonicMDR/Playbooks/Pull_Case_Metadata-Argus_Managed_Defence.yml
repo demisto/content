@@ -1,6 +1,6 @@
-id: Argus Pull Case
+id: Pull Case Metadata - Argus Managed Defence
 version: -1
-name: Argus Pull Case
+name: Pull Case Metadata - Argus Managed Defence
 description: Pulls metadata, attachments, comments, tags and events related to the
   Argus case for later use.
 starttaskid: "0"
@@ -148,7 +148,7 @@ tasks:
     task:
       id: 6c3a5a67-ea81-4b2d-8702-9d00733ef80b
       version: -1
-      name: Get Events related to event
+      name: Get Events related to case
       description: Fetch events associated with specified case.
       script: ArgusManagedDefence|||argus-get-events-for-case
       type: regular
