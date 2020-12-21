@@ -31,6 +31,13 @@ class Client(BaseClient):
                 method='GET',
                 url_suffix='/policy')
 
+    def set_policy(self, policy_id: str, update_method: str, policy_json: Dict[str, Any]) -> Dict[str, Any]:
+        update_method = update_method.upper()
+        return self._http_request(
+            method=update_method,
+            url_suffix='/policy/{}'.format(policy_id),
+            json_data=policy_json)
+
     def search_events(self, args: Optional[dict]) -> Dict[str, Any]:
         return self._http_request(
             method='POST',
@@ -143,11 +150,13 @@ def gh_search_message_command(client: Client, args: Dict[str, Any]) -> CommandRe
     else:
         events_md = tableToMarkdown("Events", results.get("results", []), fields)
 
+    result = {'Message': results.get("results"), 'SearchCount': results.get("total")}
+
     return CommandResults(
         readable_output=events_md,
-        outputs_prefix='GreatHorn.Message',
+        outputs_prefix='GreatHorn',
         outputs_key_field='eventId',
-        outputs=results.get("results")
+        outputs=result
     )
 
 
@@ -226,6 +235,24 @@ def gh_remediate_message_command(client: Client, args: Dict[str, Any]) -> Comman
         readable_output=human_readable,
         outputs_prefix='GreatHorn.Remediation',
         outputs_key_field='eventId',
+        outputs=results
+    )
+
+
+def gh_set_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    update_method = args.get('updatemethod', "").lower()
+    policy_id = args.get('policiyid', "")
+    policy_json = json.loads(args.get('policyjson', {}))
+    if update_method not in ['patch', 'put']:
+        raise ValueError("Invalid updatemethod specified, please use either put or patch.")
+    results = client.set_policy(policy_id, update_method, policy_json)
+    if results.get("success") is True:
+        human_readable = "Update applied successfully to policy {}".format(args.get("policiyid"))
+    results['id'] = args.get('policiyid')
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='GreatHorn.Policy',
+        outputs_key_field='id',
         outputs=results
     )
 
@@ -384,6 +411,43 @@ def gh_get_message_command(client: Client, args: Dict[str, Any]) -> CommandResul
         )
 
 
+def gh_get_phish_reports_command(client: Client):
+    filter = [
+        {
+            "workflow": "reported phish"
+        }
+    ]
+    results = client.search_events({"filters": filter, "limit": 100})
+    incidents = []
+    for event in results.get("results", []):
+        incident = {}
+        incident['name'] = event.get("subject")
+        incident['occurred'] = event.get("timestamp")
+        incident['rawJSON'] = json.dumps(event)
+        client.remediate_message("review", {"eventId": event.get("eventId", 0)})
+        incidents.append(incident)
+    return incidents
+
+
+def gh_get_quarantine_release_command(client: Client):
+    filter = [
+        {
+            "quarReleaseRequested": "True",
+            "workflow": "unreviewed"
+        }
+    ]
+    results = client.search_events({"filters": filter, "limit": 100})
+    incidents = []
+    for event in results.get("results", []):
+        incident = {}
+        incident['name'] = event.get("subject")
+        incident['occurred'] = event.get("timestamp")
+        incident['rawJSON'] = json.dumps(event)
+        client.remediate_message("review", {"eventId": event.get("eventId", 0)})
+        incidents.append(incident)
+    return incidents
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -395,6 +459,7 @@ def main() -> None:
     """
 
     api_key = demisto.params().get('apikey')
+    fetch_type = demisto.params().get('fetch_type')
 
     # get the service API url
     base_url = urljoin(demisto.params()['url'], demisto.params()['api_version'])
@@ -430,6 +495,9 @@ def main() -> None:
         elif demisto.command() == 'gh-get-policy':
             return_results(gh_get_policy_command(client, demisto.args()))
 
+        elif demisto.command() == 'gh-set-policy':
+            return_results(gh_set_policy_command(client, demisto.args()))
+
         elif demisto.command() == 'gh-remediate-message':
             return_results(gh_remediate_message_command(client, demisto.args()))
 
@@ -438,8 +506,28 @@ def main() -> None:
 
         elif demisto.command() == 'gh-search-message':
             return_results(gh_search_message_command(client, demisto.args()))
-            # demisto.results(demisto.args())
 
+        elif demisto.command() == 'fetch-incidents':
+            if fetch_type is not None:
+                last_run = demisto.getLastRun()
+                demisto.info("GOT LAST RUN: {}".format(last_run))
+                if not last_run.get("counter"):
+                    counter = 0
+                else:
+                    counter = int(last_run.get("counter"))
+                if counter % 3 == 0:
+                    if fetch_type == "phishing":
+                        incidents = gh_get_phish_reports_command(client)
+                    elif fetch_type == "quarantine":
+                        incidents = gh_get_quarantine_release_command(client)
+                    else:
+                        incidents_phish = gh_get_phish_reports_command(client)
+                        incidents_quarantine = gh_get_quarantine_release_command(client)
+                        incidents = incidents_phish
+                        incidents.extend(incidents_quarantine)
+                    demisto.incidents(incidents)
+                counter += 1
+                demisto.setLastRun({'max_phish_id': str(counter)})
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
