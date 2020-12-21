@@ -745,13 +745,16 @@ class Pack(object):
             os.chdir(extract_destination_path)
             new_working_dir = os.getcwd()
             print(f'\n\n\nfull working dir after changing to extract is: {new_working_dir}\n\n\n')
-            shutil.copy(zip_pack_path, 'content') # to be replaced with correct path
             output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
             subprocess.call('chmod +x ./encryptor', shell=True)
             full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "' \
                            f'{encryption_key}"'
+
             subprocess.call(full_command, shell=True)
-            shutil.copy(output_file, 'content')  # 'content' to be replaced with correct path
+            new_artefacts = os.path.join(current_working_dir, 'new_artefacts')
+            os.mkdir(path=new_artefacts)
+            shutil.copy(zip_pack_path, new_artefacts)
+            shutil.copy(output_file, new_artefacts)  # 'content' to be replaced with correct path
             os.chdir(current_working_dir)
         except subprocess.CalledProcessError as error:
             print(f"Error while trying to encrypt pack. {error}")
