@@ -317,7 +317,7 @@ def main():
     }
     api_params.update(demisto.args())
 
-    if not credentials or not credentials.get('identifier') or not credentials.get('password'):
+    if not credentials.get('identifier') or not credentials.get('password'):
         credentials = {}
 
     if not ((params.get('api_key') and params.get('api_token')) or credentials):

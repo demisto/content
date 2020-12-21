@@ -1,6 +1,7 @@
 import pytest
 from Lastline_v2 import *
 
+from CommonServerPython import DemistoException
 
 data_test_hash_type_checker = [
     ('4e492e797ccfc808715c2278484517b1', 'md5'),
@@ -71,5 +72,14 @@ def test_get_report_context(path):
         get_report_context(out_dict)
 
 
+def raise_exception():
+    raise DemistoException('error Missing required field \'uuid\'.')
+
+
 def test_credentials_not_part_of_params(mocker):
-    mocker.patch.object(demisto, 'params', return_value=incidents_result)
+    mocker.patch.object(demisto, 'params', return_value={'url': 'testurl.com',
+                                                         'api_key': 'apikey',
+                                                         'api_token': 'apitoken'})
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(Client, 'get_report', side_effect=raise_exception)
+    assert main() is None
