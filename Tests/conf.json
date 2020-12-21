@@ -2897,6 +2897,10 @@
             "integrations": "IBM Resilient Systems",
             "playbookID": "IBM Resilient Systems Test"
         },
+	{
+            "integrations": "GreatHorn",
+            "playbookID": "TestGreatHornPlaybook"
+        },
         {
             "integrations": [
                 "Prisma Access",
