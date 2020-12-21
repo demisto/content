@@ -7,6 +7,11 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- defaultvalue: MobileIron Core Device Incident
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 - display: Server URL (ex. https://core.mobileiron.com )
   name: url
   required: true
@@ -25,11 +30,6 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- defaultvalue: MobileIron Core Device Incident
-  display: Incident type
-  name: incidentType
-  required: false
-  type: 13
 - defaultvalue: '30'
   display: Fetch Interval (in minutes)
   name: fetch_interval

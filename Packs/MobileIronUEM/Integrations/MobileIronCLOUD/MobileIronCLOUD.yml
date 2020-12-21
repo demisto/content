@@ -7,6 +7,11 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- defaultvalue: MobileIron Cloud Device Incident
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 - display: Server URL (ex. https://eu1.mobileiron.com )
   name: url
   required: true
@@ -15,11 +20,6 @@ configuration:
   name: credentials
   required: true
   type: 9
-- defaultvalue: MobileIron Cloud Device Incident
-  display: Incident type
-  name: incidentType
-  required: false
-  type: 13
 - additionalinfo: Leave empty to automatically fetch the default partition id for
     the configured tenant
   display: Partition ID (leave empty to resolve default)
