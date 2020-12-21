@@ -394,9 +394,8 @@ def __test_integration_instance(client, module_instance, logging_module=logging)
         f'Running "test-module" for instance "{instance_name}" of integration "{integration_of_instance}".')
     for i in range(connection_retries):
         try:
-            # TODO REMOVE THIS AFTER TEST
             response_data, response_code, _ = demisto_client.generic_request_func(self=client, method='POST',
-                                                                                  path='/settings/integration/test/123',
+                                                                                  path='/settings/integration/test/',
                                                                                   body=module_instance,
                                                                                   _request_timeout=120)
             break
@@ -571,7 +570,7 @@ def __create_integration_instance(server, username, password, integration_name, 
     module_instance['id'] = integration_config['id']
 
     # test integration
-    refreshed_client = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
+    refreshed_client = demisto_client.configure(base_url=server, username=username, password='failme', verify_ssl=False)
     if validate_test:
         test_succeed, failure_message = __test_integration_instance(refreshed_client, module_instance, logging_manager)
     else:
