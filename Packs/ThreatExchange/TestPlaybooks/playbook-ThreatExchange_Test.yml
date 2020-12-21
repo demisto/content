@@ -48,7 +48,7 @@ tasks:
     scriptarguments:
       headers: {}
       ip:
-        simple: ${IP}
+        simple: ${ExtractedIndicators.IP}
     separatecontext: false
     view: |-
       {
