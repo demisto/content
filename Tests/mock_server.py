@@ -199,13 +199,13 @@ class MITMProxy:
         script_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'timestamp_replacer.py')
         self.ami.copy_file(script_filepath)
 
-    def commit_mock_file(self):
+    def commit_mock_file(self, folder_name):
         self.logging_module.debug('Committing mock files')
         try:
             output = self.ami.check_output(
                 'cd content-test-data && '
                 'git add * -v && '
-                f'git commit -m "Updated mock files from build number - {self.build_number}" -v'.split(),
+                f'git commit -m "Updated mock files for \'{folder_name}\' from build number - {self.build_number}" -v'.split(),
                 stderr=STDOUT)
             self.logging_module.debug(f'Committing mock files output:\n{output.decode()}')
         except CalledProcessError as exc:
@@ -570,7 +570,7 @@ def run_with_mock(proxy_instance: MITMProxy,
                 proxy_instance.rerecorded_tests.append(playbook_or_integration_id)
                 if proxy_instance.should_update_mock_repo:
                     proxy_instance.logging_module.debug("committing new/updated mock files to mock git repo.")
-                    proxy_instance.commit_mock_file()
+                    proxy_instance.commit_mock_file(playbook_or_integration_id)
             else:
                 proxy_instance.failed_rerecord_count += 1
                 proxy_instance.failed_rerecord_tests.append(playbook_or_integration_id)
