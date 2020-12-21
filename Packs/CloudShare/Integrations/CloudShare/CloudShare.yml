@@ -2682,3 +2682,6 @@ script:
   runonce: false
   subtype: python3
   beta: true
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
