@@ -2390,7 +2390,7 @@ def parse_alert_to_incident(alert):
 
     indicator = ''
     if isinstance(event_values, dict):
-        indicator = event_values.get(event_indicator)
+        indicator = event_values.get(event_indicator, '')
 
     incident_name = '{event_type_parsed}: {indicator}'.format(
         event_type_parsed=re.sub("([a-z])([A-Z])", "\g<1> \g<2>", event_type).title(),
