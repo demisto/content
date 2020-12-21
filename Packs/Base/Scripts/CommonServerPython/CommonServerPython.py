@@ -56,7 +56,6 @@ else:
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
 # pylint: enable=undefined-variable
 
-
 # DEPRECATED - use EntryType enum instead
 entryTypes = {
     'note': 1,
@@ -185,6 +184,7 @@ class DBotScoreType(object):
     DBotScoreType.URL
     DBotScoreType.CVE
     DBotScoreType.ACCOUNT
+    DBotScoreType.CRYPTOCURRENCY
     :return: None
     :rtype: ``None``
     """
@@ -197,6 +197,7 @@ class DBotScoreType(object):
     CIDR = 'cidr',
     DOMAINGLOB = 'domainglob'
     CERTIFICATE = 'certificate'
+    CRYPTOCURRENCY = 'cryptocurrency'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -215,7 +216,8 @@ class DBotScoreType(object):
             DBotScoreType.ACCOUNT,
             DBotScoreType.CIDR,
             DBotScoreType.DOMAINGLOB,
-            DBotScoreType.CERTIFICATE
+            DBotScoreType.CERTIFICATE,
+            DBotScoreType.CRYPTOCURRENCY,
         )
 
 
@@ -963,7 +965,9 @@ def aws_table_to_markdown(response, table_header):
                     response[list(response.keys())[0]], list):
                 if isinstance(response[list(response.keys())[0]], list):
                     list_response = response[list(response.keys())[0]]
-                    if isinstance(list_response[0], str):
+                    if not list_response:
+                        human_readable = tableToMarkdown(table_header, list_response)
+                    elif isinstance(list_response[0], str):
                         human_readable = tableToMarkdown(
                             table_header, response)
                     else:
@@ -1341,7 +1345,49 @@ def appendContext(key, data, dedup=False):
         demisto.setContext(key, data)
 
 
-def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None):
+def url_to_clickable_markdown(data, url_keys):
+    """
+    Turn the given urls fields in to clickable url, used for the markdown table.
+
+    :type data: ``[Union[str, List[Any], Dict[str, Any]]]``
+    :param data: a dictionary or a list containing data with some values that are urls
+
+    :type url_keys: ``List[str]``
+    :param url_keys: the keys of the url's wished to turn clickable
+
+    :return: markdown format for clickable url
+    :rtype: ``[Union[str, List[Any], Dict[str, Any]]]``
+    """
+
+    if isinstance(data, list):
+        data = [url_to_clickable_markdown(item, url_keys) for item in data]
+
+    elif isinstance(data, dict):
+        data = {key: create_clickable_url(value) if key in url_keys else url_to_clickable_markdown(data[key], url_keys)
+                for key, value in data.items()}
+
+    return data
+
+
+def create_clickable_url(url):
+    """
+    Make the given url clickable when in markdown format by concatenating itself, with the proper brackets
+
+    :type url: ``Union[List[str], str]``
+    :param url: the url of interest or a list of urls
+
+    :return: markdown format for clickable url
+    :rtype: ``str``
+
+    """
+    if not url:
+        return None
+    elif isinstance(url, list):
+        return ['[{}]({})'.format(item, item) for item in url]
+    return '[{}]({})'.format(url, url)
+
+
+def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1364,9 +1410,15 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :type metadata: ``str``
        :param metadata: Metadata about the table contents
 
+       :type url_keys: ``list``
+       :param url_keys: a list of keys in the given JSON table that should be turned in to clickable
+
        :return: A string representation of the markdown table
        :rtype: ``str``
     """
+    # Turning the urls in the table to clickable
+    if url_keys:
+        t = url_to_clickable_markdown(t, url_keys)
 
     mdResult = ''
     if name:
@@ -1386,7 +1438,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         headers = [headers]
 
     if not isinstance(t[0], dict):
-        # the table cotains only simple objects (strings, numbers)
+        # the table contains only simple objects (strings, numbers)
         # should be only one header
         if headers and len(headers) > 0:
             header = headers[0]
@@ -2027,7 +2079,7 @@ class Common(object):
 
     class IP(Indicator):
         """
-        IP indicator class - https://xsoar.pan.dev/docs/context-standards-mandatory#ip
+        IP indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#ip
 
         :type ip: ``str``
         :param ip: IP address
@@ -2164,7 +2216,7 @@ class Common(object):
 
     class File(Indicator):
         """
-        File indicator class - https://xsoar.pan.dev/docs/context-standards-mandatory#file
+        File indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#file
         :type name: ``str``
         :param name: The full file name (including file extension).
 
@@ -2314,7 +2366,7 @@ class Common(object):
 
     class CVE(Indicator):
         """
-        CVE indicator class - https://xsoar.pan.dev/docs/context-standards-mandatory#cve
+        CVE indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#cve
         :type id: ``str``
         :param id: The ID of the CVE, for example: "CVE-2015-1653".
         :type cvss: ``str``
@@ -2373,7 +2425,7 @@ class Common(object):
 
     class URL(Indicator):
         """
-        URL indicator - https://xsoar.pan.dev/docs/context-standards-mandatory#url
+        URL indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#url
         :type url: ``str``
         :param url: The URL
 
@@ -2433,7 +2485,7 @@ class Common(object):
 
     class Domain(Indicator):
         """ ignore docstring
-        Domain indicator - https://xsoar.pan.dev/docs/context-standards-mandatory#domain
+        Domain indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#domain
         """
         CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
@@ -2442,7 +2494,7 @@ class Common(object):
                      domain_status=None, name_servers=None,
                      registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
                      registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
-                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None):
+                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None, tags=None):
             self.domain = domain
             self.dns = dns
             self.detection_engines = detection_engines
@@ -2466,6 +2518,7 @@ class Common(object):
             self.admin_email = admin_email
             self.admin_phone = admin_phone
             self.admin_country = admin_country
+            self.tags = tags
 
             self.domain_status = domain_status
             self.name_servers = name_servers
@@ -2538,6 +2591,9 @@ class Common(object):
             if self.name_servers:
                 domain_context['NameServers'] = self.name_servers
                 whois_context['NameServers'] = domain_context['NameServers']
+
+            if self.tags:
+                domain_context['Tags'] = self.tags
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 domain_context['Malicious'] = {
@@ -2693,6 +2749,50 @@ class Common(object):
 
             ret_value = {
                 Common.Account.CONTEXT_PATH: account_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+    class Cryptocurrency(Indicator):
+        """
+        Cryptocurrency indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#cryptocurrency
+        :type address: ``str``
+        :param address: The Cryptocurrency address
+
+        :type address_type: ``str``
+        :param address_type: The Cryptocurrency type - e.g. `bitcoin`.
+
+        :type dbot_score: ``DBotScore``
+        :param dbot_score:  If the address has reputation then create DBotScore object.
+
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'Cryptocurrency(val.Address && val.Address == obj.Address)'
+
+        def __init__(self, address, address_type, dbot_score):
+            self.address = address
+            self.address_type = address_type
+
+            self.dbot_score = dbot_score
+
+        def to_context(self):
+            crypto_context = {
+                'Address': self.address,
+                'AddressType': self.address_type
+            }
+
+            if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
+                crypto_context['Malicious'] = {
+                    'Vendor': self.dbot_score.integration_name,
+                    'Description': self.dbot_score.malicious_description
+                }
+
+            ret_value = {
+                Common.Cryptocurrency.CONTEXT_PATH: crypto_context
             }
 
             if self.dbot_score:
@@ -4708,7 +4808,7 @@ class DemistoHandler(logging.Handler):
         msg = self.format(record)
         try:
             if self.int_logger:
-                self.int_logger.write(msg)
+                self.int_logger(msg)
             else:
                 demisto.debug(msg)
         except Exception:
@@ -4736,7 +4836,7 @@ class DebugLogger(object):
             self.http_client.HTTPConnection.debuglevel = 1
             self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
             setattr(http_client, 'print', self.int_logger.print_override)
-        self.handler = DemistoHandler()
+        self.handler = DemistoHandler(self.int_logger)
         demisto_formatter = logging.Formatter(fmt='%(asctime)s - %(message)s', datefmt=None)
         self.handler.setFormatter(demisto_formatter)
         self.root_logger = logging.getLogger()
@@ -5085,7 +5185,7 @@ if 'requests' in sys.modules:
                           params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                          error_handler=None, **kwargs):
+                          error_handler=None, empty_valid_codes=None, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -5176,6 +5276,11 @@ if 'requests' in sys.modules:
             :type error_handler ``callable``
             :param error_handler: Given an error entery, the error handler outputs the
                 new formatted error message.
+
+            :type empty_valid_codes: ``list``
+            :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
+                can vary)
+
             """
             try:
                 # Replace params if supplied
@@ -5213,7 +5318,9 @@ if 'requests' in sys.modules:
                             err_msg += '\n{}'.format(res.text)
                             raise DemistoException(err_msg, res=res)
 
-                is_response_empty_and_successful = (res.status_code == 204)
+                if not empty_valid_codes:
+                    empty_valid_codes = [204]
+                is_response_empty_and_successful = (res.status_code in empty_valid_codes)
                 if is_response_empty_and_successful and return_empty_response:
                     return res
 
