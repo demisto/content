@@ -67,7 +67,7 @@ def test_get_policy_by_resource_body(mocker, demisto_args, expected_results):
         proxy=False
     )
     m = mocker.patch.object(client, 'http_request', return_value={'properties': 'test'})
-    waf.policy_get_command(client, **demisto_args)
+    waf.policies_get_command(client, **demisto_args)
     assert m.call_args[1].get('url_suffix') == expected_results.get("url_suffix")
     assert m.call_args[1].get('method') == expected_results.get("method")
 

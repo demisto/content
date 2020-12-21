@@ -1,10 +1,10 @@
 category: Network Security
 commonfields:
-  id: Azure Web Application Firewall
+  id: AzureWAF
   version: -1
 configuration:
 - defaultvalue: cf22fd73-29f1-4245-8e16-533704926d20
-  display: Azure Web Application Firewall
+  display: App ID
   hidden: false
   name: app_id
   required: true
@@ -27,23 +27,23 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The Azure WAF (Web Application Firewall) integration provides centralized
-protection of your web applications from common exploits and vulnerabilities. It enables you to control policies that are configured in the Azure Firewall management platform, and allows you to add, delete, or update policies, and also to get details of a specific policy or a list of policies.
+description: |-
+  The Azure WAF (Web Application Firewall) integration provides centralized protection of your web applications from common exploits and vulnerabilities.
+  It enables you to control policies that are configured in the Azure Firewall management platform, and allows you to add, delete, or update policies,
+  and also to get details of a specific policy or a list of policies.
 display: Azure Web Application Firewall
-name: Azure Web Application Firewall
+name: AzureWAF
 script:
   commands:
   - arguments:
     - default: false
-      description: The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve
-      all policies.
+      description: The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies.
       isArray: false
       name: policy_name
       required: false
       secret: false
     - default: false
-      description: The name of the resource group. If not provided, the instance's
-      default resource group name will be used.
+      description: The name of the resource group. If not provided, the instance's default resource group name will be used.
       isArray: false
       name: resource_group_name
       required: false
@@ -69,7 +69,7 @@ script:
     deprecated: false
     description: Retrieves protection policies within a resource group.
     execution: false
-    name: azure-waf-policy-get
+    name: azure-waf-policies-get
     outputs:
     - contextPath: AzureWAF.Policy.name
       description: Resource name.
@@ -186,7 +186,7 @@ script:
     deprecated: false
     description: Retrieves all the WAF policies in a subscription.
     execution: false
-    name: azure-waf-policy-list-all-in-subscription
+    name: azure-waf-policies-list-all-in-subscription
     outputs:
     - contextPath: AzureWAF.Policy.name
       description: Resource name.
@@ -283,15 +283,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve
-      all policies.
+      description: The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies.
       isArray: false
       name: policy_name
       required: true
       secret: false
     - default: false
-      description: The name of the resource group. If not provided, the instance's
-      default resource group name will be used.
+      description: The name of the resource group. If not provided, the instance's default resource group name will be used.
       isArray: false
       name: resource_group_name
       required: false
@@ -434,15 +432,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve
-      all policies.
+      description: The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies.
       isArray: false
       name: policy_name
       required: true
       secret: false
     - default: false
-      description: The name of the resource group. If not provided, the instance's
-      default resource group name will be used.
+      description: The name of the resource group. If not provided, the instance's default resource group name will be used.
       isArray: false
       name: resource_group_name
       required: false
@@ -462,6 +458,10 @@ script:
       Should be used after running the azure_waf-auth-start command.
     execution: false
     name: azure-waf-auth-complete
+  - deprecated: false
+    description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: azure-waf-auth-reset
   - deprecated: false
     description: Tests connectivity to the Azure Web Application Firewall.
     execution: false

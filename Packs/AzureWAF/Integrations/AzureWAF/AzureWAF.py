@@ -131,7 +131,7 @@ def complete_auth(client: AzureWAFClient):
     return '✅ Authorization completed successfully.'
 
 
-def policy_get_command(client: AzureWAFClient, **args) -> CommandResults:
+def policies_get_command(client: AzureWAFClient, **args) -> CommandResults:
     """
     Gets resource group name (or taking instance's default one) and policy name(optional).
     If a policy name provided, Retrieve the policy by name and resource group.
@@ -162,7 +162,7 @@ def policy_get_command(client: AzureWAFClient, **args) -> CommandResults:
                           raw_response=policies)
 
 
-def policy_get_list_by_subscription_command(client: AzureWAFClient, **args: Dict[str, Any]) -> CommandResults:
+def policies_get_list_by_subscription_command(client: AzureWAFClient, **args: Dict[str, Any]) -> CommandResults:
     """
     Retrieve all policies within the subscription id.
     """
@@ -323,19 +323,27 @@ def policies_to_markdown(policies: List[Dict], verbose: bool = False, limit: int
     return md
 
 
+@logger
+def reset_auth(client: AzureWAFClient):
+    set_integration_context({})
+    return CommandResults(readable_output='Authorization was reset successfully. You can now run '
+                                          '**!azure-nsg-auth-start** and **!azure-nsg-auth-complete**.')
+
+
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:
     """main function, parses params and runs command functions"""
     demisto_commands = {
-        'azure-waf-policy-get': policy_get_command,
-        'azure-waf-policy-list-all-in-subscription': policy_get_list_by_subscription_command,
+        'azure-waf-policies-get': policies_get_command,
+        'azure-waf-policies-list-all-in-subscription': policies_get_list_by_subscription_command,
         'azure-waf-policy-upsert': policy_upsert_command,
         'azure-waf-policy-delete': policy_delete_command,
         'azure-waf-auth-start': start_auth,
         'azure-waf-auth-complete': complete_auth,
         'azure-waf-test': test_connection,
+        'azure-waf-auth-reset': reset_auth,
     }
     params = demisto.params()
     command = demisto.command()
