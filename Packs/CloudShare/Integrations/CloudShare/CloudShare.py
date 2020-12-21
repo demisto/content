@@ -1,4 +1,3 @@
-
 import urllib3
 
 import cloudshare
@@ -7,25 +6,21 @@ from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 
-
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 ''' CONSTANTS '''
-
 
 ''' CLIENT CLASS '''
 
 
 class Client():
-    def __init__(self, hostname: str, api_id: str=None, api_key: str=None, verify: bool=True, proxy=False):
+    def __init__(self, hostname: str, api_id: str = None, api_key: str = None, verify: bool = True, proxy=False):
         self.hostname = hostname
         self.apiId = api_id
         self.apiKey = api_key
 
-    def send_request(self, method:str, path:str, queryParams: dict = None, content: dict = None):
+    def send_request(self, method: str, path: str, queryParams: dict = None, content: dict = None):
         res = cloudshare.req(
             hostname=self.hostname,
             method=method,
@@ -1151,7 +1146,6 @@ def get_poc_invitations_command(client, args):
 
 
 def main() -> None:
-
     params = demisto.params()
     args = demisto.args()
     hostname = params.get('hostname')
@@ -1242,12 +1236,11 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-       demisto.error(traceback.format_exc())  # print the traceback
-       return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

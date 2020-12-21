@@ -1,7 +1,6 @@
 commonfields:
   id: CloudShare
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: CloudShare
 display: CloudShare
 category: Utilities
