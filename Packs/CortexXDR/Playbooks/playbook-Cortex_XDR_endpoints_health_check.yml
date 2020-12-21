@@ -1,8 +1,10 @@
+name: Cortex XDR endpoints health check
+id: Cortex XDR endpoints health check
 description: |-
   This playbook will query disconnected/lost Cortex XDR endpoints with a provided last seen time range playbook input.
   The playbook will also generate a CSV report, including a detailed list of the unhealthy endpoints, and send the report to the provided email addresses.
   This playbook also includes an incident type with a dedicated layout to visualize the collected data.
-id: Cortex XDR endpoints health check
+
 inputs:
 - description: Last seen start date range filter in  yyyy-mm-dd format
   key: LastSeenStartDate
@@ -27,7 +29,6 @@ inputs:
     simple: |-
       This message contains an automatically generated report by Cortex XSOAR, including a list of unhealthy and disconnected Cortex XDR endpoints.
       Please investigate and remediate according to the organisation's policy.
-name: Cortex XDR endpoints health check
 outputs: []
 starttaskid: "0"
 tasks:
@@ -810,5 +811,5 @@ view: |-
     }
   }
 tests:
-- No tests (auto formatted)
+- Cortex XDR endpoints health check test
 fromversion: 5.5.0
