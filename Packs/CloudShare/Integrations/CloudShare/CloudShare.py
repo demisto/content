@@ -15,7 +15,7 @@ urllib3.disable_warnings()
 
 
 class Client():
-    def __init__(self, hostname: str, api_id: str = None, api_key: str = None, verify: bool = True, proxy=False):
+    def __init__(self, hostname: str, api_id: str = None, api_key: str = None):
         self.hostname = hostname
         self.apiId = api_id
         self.apiKey = api_key
@@ -171,7 +171,7 @@ def get_classes_command(client, args):
         'class'
     )
     if res.status == 200:
-        md = tableToMarkdown(f'CloudShare classes:', res.content)
+        md = tableToMarkdown('CloudShare classes:', res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Classes",
             outputs_key_field='id',
@@ -190,7 +190,7 @@ def get_class_command(client, args):
         f'class/{classId}'
     )
     if res.status == 200:
-        md = tableToMarkdown(f'CloudShare classes:', res.content)
+        md = tableToMarkdown('CloudShare classes:', res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Classes",
             outputs_key_field='id',
@@ -218,7 +218,7 @@ def delete_class_environments_command(client, args):
     classId = args.get('classId')
     res = client.send_request(
         'DELETE',
-        f'class/actions/deleteallenvironments',
+        'class/actions/deleteallenvironments',
         content={"id": classId}
     )
     if res.status == 200:
@@ -246,7 +246,7 @@ def get_classes_countries_command(client, args):
         queryParams={"fullCountriesList": True}
     )
     if res.status == 200:
-        md = tableToMarkdown(f'CloudShare classes countries:', res.content)
+        md = tableToMarkdown('CloudShare classes countries:', res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Classes.Countries",
             outputs_key_field='code',
@@ -327,7 +327,7 @@ def create_class_command(client, args):
     )
     if res.status == 200:
         res.content.extend(args)
-        md = tableToMarkdown(f'CloudShare create new class:', res.content)
+        md = tableToMarkdown('CloudShare create new class:', res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Classes",
             outputs_key_field='id',
@@ -499,7 +499,7 @@ def get_regions_command(client, args):
         'regions'
     )
     if res.status == 200:
-        md = tableToMarkdown(f'CloudShare regions:', res.content)
+        md = tableToMarkdown('CloudShare regions:', res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Regions",
             outputs_key_field='id',
@@ -517,7 +517,7 @@ def get_timezones_command(client, args):
         'timezones'
     )
     if res.status == 200:
-        md = tableToMarkdown(f'CloudShare timezones:', res.content)
+        md = tableToMarkdown('CloudShare timezones:', res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Timezones",
             outputs_key_field='id',
@@ -538,8 +538,10 @@ def get_envs_command(client, args):
     queryParams = dict()
     if owned or visible:
         owned_visible = list()
-        owned_visible.append('allowned') if owned else None
-        owned_visible.append('allvisible') if visible else None
+        if owned:
+            owned_visible.append('allowned')
+        if visible:
+            owned_visible.append('allvisible')
         queryParams['criteria'] = ','.join(owned_visible) if owned_visible else None
     if owner_email:
         queryParams['ownerEmail'] = owner_email
@@ -622,7 +624,7 @@ def get_env_extended_vanity_command(client, args):
         )
         return_results(command_results)
     else:
-        return_error(f"Error getting extended environment {envId} - {res.content}")
+        return_error(f"Error getting extended environment - {res.content}")
 
 
 def get_env_extended_token_command(client, args):
@@ -633,7 +635,7 @@ def get_env_extended_token_command(client, args):
         queryParams={"sponsoredLoginToken": sponsoredLoginToken}
     )
     if res.status == 200:
-        md = tableToMarkdown('CloudShare Environment {envId}:', res.content)
+        md = tableToMarkdown('CloudShare Environment:', res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Environments",
             outputs_key_field='id',
@@ -642,7 +644,7 @@ def get_env_extended_token_command(client, args):
         )
         return_results(command_results)
     else:
-        return_error(f"Error getting extended environment {envId} - {res.content}")
+        return_error(f"Error getting extended environment - {res.content}")
 
 
 def get_env_multiple_resources_command(client, args):
@@ -747,19 +749,19 @@ def get_env_command(client, args):
         )
         return_results(command_results)
     else:
-        return_error(f"Error suspending environment {envId} - {res.content}")
+        return_error(f"Error suspending environment {envID} - {res.content}")
 
 
 def delete_env_command(client, args):
     envID = args.get('envID')
     res = client.send_request(
         'DELETE',
-        f'envs/{envId}'
+        f'envs/{envID}'
     )
     if res.status == 200:
         return_results(f"CloudShare Environment {envID} deleted successfully")
     else:
-        return_error(f"Error deleting environment {envId} - {res.content}")
+        return_error(f"Error deleting environment {envID} - {res.content}")
 
 
 def create_env_command(client, args):
@@ -1151,8 +1153,6 @@ def main() -> None:
     hostname = params.get('hostname')
     api_id = params.get('api_id')
     api_key = params.get('api_key')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
     handle_proxy()
 
     command = demisto.command()
@@ -1222,9 +1222,7 @@ def main() -> None:
         client = Client(
             hostname,
             api_id=api_id,
-            api_key=api_key,
-            verify=verify_certificate,
-            proxy=proxy
+            api_key=api_key
         )
 
         if demisto.command() == 'test-module':

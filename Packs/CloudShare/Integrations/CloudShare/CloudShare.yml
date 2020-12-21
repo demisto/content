@@ -2,7 +2,7 @@ commonfields:
   id: CloudShare
   version: -1
 name: CloudShare
-display: CloudShare
+display: CloudShare (Beta)
 category: Utilities
 description: Cloudshare integration.
 configuration:
@@ -2080,9 +2080,10 @@ script:
     arguments:
     - name: vmId
       required: true
-      description: "\tThe ID of the VM"
+      description: "The ID of the VM"
     - name: path
       required: true
+      description: "Path in VM"
     outputs:
     - contextPath: CloudShare.VM.Execute.executionId
       description: Execution ID
@@ -2680,7 +2681,7 @@ script:
   dockerimage: demisto/cloudshare:1.0.0.14120
   runonce: false
   subtype: python3
-  beta: true
+beta: true
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
