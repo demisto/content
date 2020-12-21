@@ -735,7 +735,8 @@ class Pack(object):
         finally:
             return task_status
 
-    def encrypt_pack(self, zip_pack_path, pack_name, encryption_key, extract_destination_path):
+    @staticmethod
+    def encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path):
         try:
             shutil.copy('./encryptor', os.path.join(extract_destination_path, 'encryptor'))
             os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
