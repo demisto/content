@@ -1,0 +1,345 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "hidden": false,
+                "id": "zmjvpqxkcs",
+                "name": "XDR unhealthy endpoints",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "zmjvpqxkcs-1vduzkpmlh-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "1cc0c4a0-9bd7-11e9-ba23-8723b1f1df6b",
+                                "index": 0,
+                                "listId": "fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotsource",
+                                "height": 22,
+                                "id": "87e18ad0-9bd7-11e9-ba23-8723b1f1df6b",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "43cfe2d0-9bee-11e9-9a3f-8b4b2158e260",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "20430d90-9bd7-11e9-ba23-8723b1f1df6b",
+                                "index": 3,
+                                "listId": "fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "4fd2b640-a7d6-11e9-8433-9f52f2917950",
+                                "index": 4,
+                                "listId": "fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "930bb7a0-a866-11e9-aeb8-c3448b5d692d",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "42f03130-9bee-11e9-9a3f-8b4b2158e260",
+                                "index": 7,
+                                "listId": "fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "zmjvpqxkcs-1vduzkpmlh-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "readOnly": true,
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": false,
+                                "key": "id",
+                                "width": 110
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "name",
+                                "width": 300
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": false,
+                                "key": "owner",
+                                "width": 160
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "type",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "status",
+                                "width": 80
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "closeNotes",
+                                "width": 300
+                            }
+                        ],
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "zmjvpqxkcs-1vduzkpmlh-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "readOnly": true,
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "zmjvpqxkcs-1vduzkpmlh-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Child Incidents",
+                        "readOnly": true,
+                        "static": false,
+                        "type": "childInv",
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "h": 2,
+                        "hideName": false,
+                        "i": "zmjvpqxkcs-1vduzkpmlh-5cc7f260-ad4f-11e9-a2d3-c520aeb407da",
+                        "items": [
+
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Affected Hosts Count",
+                        "query": "EntryWidgetNumberHostsXDR",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "hideName": false,
+                        "i": "zmjvpqxkcs-1vduzkpmlh-11cd1fd0-ad52-11e9-a2d3-c520aeb407da",
+                        "items": [
+
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Affected Users Count",
+                        "query": "EntryWidgetNumberUsersXDR",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 4,
+                        "i": "zmjvpqxkcs-93bb4a30-42de-11eb-90c6-9596ff5a2455",
+                        "items": [
+
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Unhealthy endpoints report",
+                        "query": {
+                            "categories": [
+
+                            ],
+                            "fromTime": "0001-01-01T00:00:00Z",
+                            "pageSize": 0,
+                            "tags": [
+                                "Endpoint report"
+                            ],
+                            "tagsAndOperator": false,
+                            "usersAndOperator": false
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "zmjvpqxkcs-d6aaba80-42e1-11eb-90c6-9596ff5a2455",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "unhealthyendpoints",
+                                "height": 22,
+                                "id": "d96100e0-42e1-11eb-90c6-9596ff5a2455",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "New Section",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "294c4eca-caf4-429d-8277-56676b7bee9d",
+    "name": "Cotrex XDR endpoints health check",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": ""
+}

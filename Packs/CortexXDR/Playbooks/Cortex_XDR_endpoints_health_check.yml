@@ -1,0 +1,814 @@
+description: |-
+  This playbook will query disconnected/lost Cortex XDR endpoints with a provided last seen time range playbook input.
+  The playbook will also generate a CSV report, including a detailed list of the unhealthy endpoints, and send the report to the provided email addresses.
+  This playbook also includes an incident type with a dedicated layout to visualize the collected data.
+id: Cortex XDR endpoints health check
+inputs:
+- description: Last seen start date range filter in  yyyy-mm-dd format
+  key: LastSeenStartDate
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Last seen end date range filter in  yyyy-mm-dd format
+  key: LastSeenEndDate
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Email addresses to send the disconnected endpoints report.
+  key: Email
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: 'Body for the report email message. '
+  key: MessageBody
+  playbookInputQuery:
+  required: false
+  value:
+    simple: |-
+      This message contains an automatically generated report by Cortex XSOAR, including a list of unhealthy and disconnected Cortex XDR endpoints.
+      Please investigate and remediate according to the organisation's policy.
+name: Cortex XDR endpoints health check
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 925f1b74-3991-4f2e-89e6-a85dbb33c8ce
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 925f1b74-3991-4f2e-89e6-a85dbb33c8ce
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alias_name: {}
+      dist_name: {}
+      endpoint_id_list: {}
+      first_seen_gte: {}
+      first_seen_lte: {}
+      group_name: {}
+      hostname: {}
+      ip_list: {}
+      isolate: {}
+      last_seen_gte:
+        complex:
+          root: inputs.LastSeenStartDate
+          transformers:
+          - args:
+              dayfirst:
+                value:
+                  simple: "false"
+              fuzzy: {}
+              yearfirst:
+                value:
+                  simple: "true"
+            operator: DateStringToISOFormat
+      last_seen_lte:
+        complex:
+          root: inputs.LastSeenEndDate
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: T23:59:59
+            operator: concat
+          - args:
+              add_utc_timezone: {}
+              dayfirst:
+                value:
+                  simple: "false"
+              fuzzy: {}
+              yearfirst:
+                value:
+                  simple: "true"
+            operator: DateStringToISOFormat
+      limit: {}
+      page: {}
+      platform: {}
+      sort_by: {}
+      sort_order: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
+      id: 8b8ff32c-b303-4f8b-86f8-8c10bca53baf
+      iscommand: true
+      name: 'Get XDR unhealthy endpoints '
+      script: '|||xdr-get-endpoints'
+      type: regular
+      version: -1
+    taskid: 8b8ff32c-b303-4f8b-86f8-8c10bca53baf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 205
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      csvArray:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
+              operator: isEqualString
+              right:
+                value:
+                  simple: LOST
+          root: PaloAltoNetworksXDR.Endpoint
+      fileName:
+        simple: Disconnected XDR endpoints.csv
+      headers: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Export given array to csv file
+      id: b433cbc5-c326-479d-8861-417257afe8d6
+      iscommand: false
+      name: Generate a CSV report for unhealthy XDR endpoints
+      script: ExportToCSV
+      tags:
+      - Endpoint report
+      type: regular
+      version: -1
+    taskid: b433cbc5-c326-479d-8861-417257afe8d6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 625
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs:
+        complex:
+          accessor: EntryID
+          root: File
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      from: {}
+      htmlBody:
+        complex:
+          root: inputs.MessageBody
+      replyTo: {}
+      subject:
+        simple: 'CortexXDR Discconcted endpoint '
+      templateParams: {}
+      to:
+        complex:
+          root: inputs.Email
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends mail using Gmail/EWS
+      id: f7b9d030-c6b0-4f55-8250-ab44785ea238
+      iscommand: true
+      name: Mail unhealthy endpoints report
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: f7b9d030-c6b0-4f55-8250-ab44785ea238
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 995
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f8f55d3a-dbc7-4cbb-8fc3-ab9e26aaa9da
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: f8f55d3a-dbc7-4cbb-8fc3-ab9e26aaa9da
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1670
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PaloAltoNetworksXDR.Endpoint
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
+          operator: isEqualString
+          right:
+            value:
+              simple: LOST
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''''''
+      id: f071927f-7367-4e42-8182-facbd054bfc4
+      iscommand: false
+      name: Did unhealthy endpoint found?
+      type: condition
+      version: -1
+    taskid: f071927f-7367-4e42-8182-facbd054bfc4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 380
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      addLabels: {}
+      agentid: {}
+      alertid: {}
+      alertname: {}
+      app: {}
+      appendMultiSelect: {}
+      applicationid: {}
+      applicationname: {}
+      assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      caller: {}
+      categorycount: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      closetime: {}
+      closingreason: {}
+      closinguser: {}
+      cloudservice: {}
+      commandline: {}
+      compliancenotes: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cvssavailabilityrequirement: {}
+      cvsscollateraldamagepotential: {}
+      cvssconfidentialityrequirement: {}
+      cvssintegrityrequirement: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      department: {}
+      dest: {}
+      desthostname: {}
+      destinationgeolocation: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationips: {}
+      destinationipv6: {}
+      destinationmacaddress: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicehash: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      devicetime: {}
+      displayname: {}
+      dnsname: {}
+      dstports: {}
+      duration: {}
+      email: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailhtmlimage: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emaillabels: {}
+      emaillatestmessage: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      errorcode: {}
+      errormessage: {}
+      escalation: {}
+      eventaction: {}
+      eventdescriptions: {}
+      eventid: {}
+      eventnames: {}
+      events: {}
+      eventtype: {}
+      externaladdresses: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstname: {}
+      firstseen: {}
+      followup: {}
+      givenname: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      highlevelcategories: {}
+      hostname: {}
+      hosts: {}
+      id: {}
+      incomingmirrorerror: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastmirroredintime: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      lastupdatetime: {}
+      leadership: {}
+      listofrulesevent: {}
+      location: {}
+      locationregion: {}
+      logsource: {}
+      logsourcename: {}
+      logsourcetype: {}
+      lowlevelcategoriesevents: {}
+      macaddress: {}
+      maliciousbehavior: {}
+      malwarefamily: {}
+      malwarename: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      name: {}
+      numberoflogsources: {}
+      occurred: {}
+      os: {}
+      osversion: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      parentprocessid: {}
+      personalemail: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      postnatdestinationip: {}
+      postnatdestinationport: {}
+      postnatsourceip: {}
+      postnatsourceport: {}
+      prenatdestinationport: {}
+      prenatsourceip: {}
+      prenatsourceport: {}
+      protocol: {}
+      protocolevent: {}
+      protocols: {}
+      quarantined: {}
+      ransomwareapproximatenumberofencryptedendpoints: {}
+      ransomwarecryptocurrencyaddress: {}
+      ransomwarecryptocurrencyaddresstype: {}
+      ransomwaredataencryptionstatus: {}
+      ransomwareemail: {}
+      ransomwareencryptedfileowner: {}
+      ransomwarenote: {}
+      ransomwareonionaddress: {}
+      ransomwarerecoverytool: {}
+      ransomwarestrain: {}
+      rating: {}
+      rawevent: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      samaccountname: {}
+      severity: {}
+      sha256: {}
+      signature: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcegeolocation: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceips: {}
+      sourceipv6: {}
+      sourcemacaddress: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcports: {}
+      srcuser: {}
+      starttime: {}
+      state: {}
+      streetaddress: {}
+      subcategory: {}
+      subtype: {}
+      surname: {}
+      systems: {}
+      technicalowner: {}
+      technicalownercontact: {}
+      technicaluser: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      title: {}
+      trafficdirection: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      unhealthyendpoints: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userid: {}
+      username: {}
+      usernames: {}
+      users: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      workphone: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount:
+        complex:
+          accessor: endpoint_name
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
+              operator: isEqualString
+              right:
+                value:
+                  simple: LOST
+          root: PaloAltoNetworksXDR.Endpoint
+          transformers:
+          - operator: count
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmanualseverity: {}
+      xdrmediumseverityalertcount: {}
+      xdrmodificationtime: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrstatusv2: {}
+      xdrurl: {}
+      xdrusercount:
+        complex:
+          accessor: users
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
+              operator: isEqualString
+              right:
+                value:
+                  simple: LOST
+          root: PaloAltoNetworksXDR.Endpoint
+          transformers:
+          - operator: count
+      zipcode: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: ce5dece1-91d9-4bee-8892-57192e30f5c6
+      iscommand: true
+      name: Count users and hosts
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: ce5dece1-91d9-4bee-8892-57192e30f5c6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1190
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Endpoint Name,Endpoint Status,Endpoint OS,Endpoint ID,Endpoint Last
+          Seen
+      context_path:
+        simple: Unhealthy.Endpoints
+      grid_id:
+        simple: unhealthyendpoints
+      keys:
+        simple: endpoint_name,endpoint_status,os_type,endpoint_id,last_seen
+      overwrite: {}
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: bf16ece1-ed5d-4024-8a61-b5bec89beb23
+      iscommand: false
+      name: Set endpoints grid
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: bf16ece1-ed5d-4024-8a61-b5bec89beb23
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1510
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: Unhealthy.Endpoints
+      stringify: {}
+      value:
+        complex:
+          accessor: Endpoint
+          root: PaloAltoNetworksXDR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 01a42cd5-d671-4754-8bfb-3348da038923
+      iscommand: false
+      name: Set unhealthy endpoints
+      script: Set
+      type: regular
+      version: -1
+    taskid: 01a42cd5-d671-4754-8bfb-3348da038923
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1345
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Email
+          operator: isNotEmpty
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5a3b4da5-eac3-4d96-88ce-48bb64b4bc1a
+      iscommand: false
+      name: Email report?
+      type: condition
+      version: -1
+    taskid: 5a3b4da5-eac3-4d96-88ce-48bb64b4bc1a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 780
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_2_yes": 0.55,
+      "5_4_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1685,
+        "width": 380,
+        "x": 162.5,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
