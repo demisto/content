@@ -32,16 +32,14 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- additionalinfo: 'Set the time frame to get incidents by. Default is 7 days. Other
-    examples: 30 seconds, 1 minute, 4 hours, 2 days...'
+- additionalinfo: 'Set the time frame to get incidents by. Default is 7 days. Other examples: 30 seconds, 1 minute, 4 hours, 2 days...'
   defaultvalue: 7 days
   display: Get incidents from last
   hidden: false
   name: fetchTime
   required: false
   type: 0
-- additionalinfo: Will only fetch incident with a risk higher or equal to the selected
-    value.
+- additionalinfo: Will only fetch incident with a risk higher or equal to the selected value.
   defaultvalue: '1'
   display: Get incidents from risk level
   hidden: false
@@ -59,9 +57,7 @@ configuration:
   - '10'
   required: false
   type: 15
-- additionalinfo: In the Nozomi platform, alerts are single events and incidents are
-    an aggregation of alerts. By default only alerts will be fetched by CORTEX XSOAR,
-    however, if selected, incidents will also be fetched.
+- additionalinfo: In the Nozomi platform, alerts are single events and incidents are an aggregation of alerts. By default only alerts will be fetched by CORTEX XSOAR, however, if selected, incidents will also be fetched.
   display: Fetch also Nozomi incidents
   hidden: false
   name: fecthAlsoIncidents
@@ -76,27 +72,20 @@ script:
   commands:
   - arguments:
     - default: false
-      description: You can add a filter to get exactly the assets you want, to know
-        how to filter assets using the Nozomi query language take a look at the n2os
-        user documentation. For example 'where ip match 10.0.1.10', 'where vendor
-        ==  Selta Telematica S.p.a'
+      description: You can add a filter to get exactly the assets you want, to know how to filter assets using the Nozomi query language take a look at the n2os user documentation. For example 'where ip match 10.0.1.10', 'where vendor ==  Selta Telematica S.p.a'
       isArray: false
       name: filter
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximun number of assets get from Nozomi, can't be bigger than
-        100
+      description: Maximun number of assets get from Nozomi, can't be bigger than 100
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: This command permits you to get some assets from Nozomi, you can
-      use the query filter to to refine your search. With the limits you can decide
-      the max number of assets you can retrieve from Nozomi, the limit can't be bigger
-      than 100.
+    description: This command permits you to get some assets from Nozomi, you can use the query filter to to refine your search. With the limits you can decide the max number of assets you can retrieve from Nozomi, the limit can't be bigger than 100.
     execution: false
     name: nozomi-find-assets
     outputs:
@@ -164,8 +153,7 @@ script:
   - arguments:
     - default: false
       defaultValue: alerts | count
-      description: 'A valid query, to learn how to create a Nozomi query you can take
-        a look into the Nozomi Networks user documentation'
+      description: 'A valid query, to learn how to create a Nozomi query you can take a look into the Nozomi Networks user documentation'
       isArray: false
       name: query
       required: true
@@ -192,8 +180,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: 'True'
-      description: 'This argument permit you to return only the nodes IPs from a mac
-        address of nodes having the status to "confirmed". Default value is True.'
+      description: 'This argument permit you to return only the nodes IPs from a mac address of nodes having the status to "confirmed". Default value is True.'
       isArray: false
       name: only_nodes_confirmed
       predefined:
@@ -212,7 +199,7 @@ script:
     - contextPath: Nozomi.IpByMac.mac
       description: Mac found the ips.
       type: String
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
   longRunning: false
