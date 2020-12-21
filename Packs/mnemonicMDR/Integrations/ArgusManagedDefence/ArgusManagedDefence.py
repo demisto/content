@@ -464,6 +464,7 @@ def download_attachment_command(args: Dict[str, Any]) -> Any:
     except Exception as e:
         return_warning(
             message=str(e),
+            # pylint: disable=no-member
             warning=e.parsed_resp if e.parsed_resp else None,
             exit=True
         )
