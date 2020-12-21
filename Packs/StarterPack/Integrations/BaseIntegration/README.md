@@ -1,7 +1,5 @@
-This is a Base integration README markdown file.
+This README contains the full documentation for your integration.
 
-This contains your integration full documentation.
+You auto-generate this README file from your integration YML file using the `demisto-sdk generate-docs` command.
 
-Auto-generate this file using `demisto-sdk generate-docs` from your integration yml file!
-
-More information here: https://xsoar.pan.dev/docs/integrations/integration-docs
+For more information see the [integration documentation](https://xsoar.pan.dev/docs/integrations/integration-docs).
