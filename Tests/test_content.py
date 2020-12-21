@@ -37,7 +37,7 @@ try:
 except ModuleNotFoundError:
     from slackclient import SlackClient  # Old slack
 
-from Tests.mock_server import MITMProxy, AMIConnection
+from Tests.mock_server import MITMProxy, AMIConnection, run_with_mock, RESULT
 from Tests.test_integration import Docker, check_integration
 from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
 from demisto_sdk.commands.common.constants import FILTER_CONF, PB_Status
@@ -338,40 +338,28 @@ def run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, demis
 def run_and_record(conf_json_test_details, tests_queue, tests_settings, c, demisto_user, demisto_pass,
                    proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
                    test_options, slack, circle_ci, build_number, server_url, build_name):
-    proxy.set_tmp_folder()
-    proxy.start(playbook_id, record=True)
-    succeed = run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, demisto_user, demisto_pass,
-                             failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                             test_message, test_options, slack, circle_ci, build_number, server_url,
-                             build_name, is_mock_run=True)
-    proxy.stop()
-    if succeed:
-        proxy.successful_rerecord_count += 1
-        proxy.clean_mock_file(playbook_id)
-        proxy.move_mock_file_to_repo(playbook_id)
-    else:
-        proxy.failed_rerecord_count += 1
-        proxy.failed_rerecord_tests.append(playbook_id)
-    proxy.set_repo_folder()
+    with run_with_mock(proxy, playbook_id, record=True) as result_holder:
+        succeed = run_test_logic(conf_json_test_details, tests_queue, tests_settings, c, demisto_user, demisto_pass,
+                                 failed_playbooks, integrations, playbook_id, succeed_playbooks,
+                                 test_message, test_options, slack, circle_ci, build_number, server_url,
+                                 build_name, is_mock_run=True)
+        result_holder[RESULT] = succeed
     return succeed
 
 
 def mock_run(conf_json_test_details, tests_queue, tests_settings, c, demisto_user, demisto_pass, proxy,
              failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options,
              slack, circle_ci, build_number, server_url, build_name, start_message):
-    rerecord = False
-
     if proxy.has_mock_file(playbook_id):
         logging_manager.info(f'{start_message} (Mock: Playback)')
-        proxy.start(playbook_id)
         # run test
-        status, _ = check_integration(c, server_url, demisto_user, demisto_pass, integrations,
-                                      playbook_id, logging_manager, test_options,
-                                      is_mock_run=True)
+        with run_with_mock(proxy, playbook_id) as result_holder:
+            status, _ = check_integration(c, server_url, demisto_user, demisto_pass, integrations,
+                                          playbook_id, logging_manager, test_options,
+                                          is_mock_run=True)
+            result_holder[RESULT] = status == PB_Status.COMPLETED
         # use results
-        proxy.stop()
         if status == PB_Status.COMPLETED:
-            proxy.successful_tests_count += 1
             logging_manager.success(f'PASS: {test_message} succeed')
             succeed_playbooks.append(playbook_id)
             logging_manager.info(f'------ Test {test_message} end ------\n')
@@ -388,23 +376,17 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, demisto_use
             failed_playbooks.append(playbook_id)
             logging_manager.info(f'------ Test {test_message} end ------\n')
             return
-        proxy.failed_tests_count += 1
-        proxy.get_mitmdump_service_status()
         logging_manager.warning("Test failed with mock, recording new mock file. (Mock: Recording)")
-        rerecord = True
     else:
         logging_manager.info(f'{start_message} (Mock: Recording)')
 
     # Mock recording - no mock file or playback failure.
     c = demisto_client.configure(base_url=c.api_client.configuration.host,
                                  api_key=c.api_client.configuration.api_key, verify_ssl=False)
-    succeed = run_and_record(conf_json_test_details, tests_queue, tests_settings, c, demisto_user,
-                             demisto_pass, proxy, failed_playbooks, integrations, playbook_id,
-                             succeed_playbooks, test_message, test_options, slack, circle_ci,
-                             build_number, server_url, build_name)
-
-    if rerecord and succeed:
-        proxy.rerecorded_tests.append(playbook_id)
+    run_and_record(conf_json_test_details, tests_queue, tests_settings, c, demisto_user,
+                   demisto_pass, proxy, failed_playbooks, integrations, playbook_id,
+                   succeed_playbooks, test_message, test_options, slack, circle_ci,
+                   build_number, server_url, build_name)
     logging_manager.info(f'------ Test {test_message} end ------\n')
 
 
@@ -808,7 +790,7 @@ def execute_testing(tests_settings,
     if is_ami:
         ami = AMIConnection(server_ip)
         ami.clone_mock_data()
-        proxy = MITMProxy(server_ip, logging_manager)
+        proxy = MITMProxy(server_ip, logging_manager, build_number=build_number, branch_name=build_name)
 
     failed_playbooks = []
     succeed_playbooks = []
@@ -873,10 +855,8 @@ def execute_testing(tests_settings,
                                          skipped_integration, unmockable_integrations)
         if is_ami:
             tests_data_keeper.add_proxy_related_test_data(proxy)
-
-            if build_name == 'master':
-                logging_manager.debug("Pushing new/updated mock files to mock git repo.", real_time=True)
-                ami.upload_mock_files(build_name, build_number)
+            if proxy.should_update_mock_repo:
+                proxy.push_mock_files()
 
         if playbook_skipped_integration and build_name == 'master':
             comment = 'The following integrations are skipped and critical for the test:\n {}'. \
@@ -1367,8 +1347,8 @@ def lock_expired(lock_file: storage.Blob, lock_timeout: str) -> bool:
 
 def main():
     global logging_manager
-    logging_manager = ParallelLoggingManager('Run_Tests.log')
     tests_settings = options_handler()
+    logging_manager = ParallelLoggingManager('Run_Tests.log', real_time_logs_only=not tests_settings.nightly)
     manage_tests(tests_settings)
 
 
