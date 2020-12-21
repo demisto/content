@@ -23,25 +23,18 @@ detaileddescription: |-
 configuration:
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 script:
-  script: >-
+  script: |-
     /*
         params.code = access_code in new integration
     */
-
     var Base = 'https://api.box.com/2.0/';
-
     var BrandData = getBrandContext();
-
     var ContextData = getIntegrationContext();
-
     var CurrentTime = new Date();
-
     var twoGraceMinute = 2 * 60 * 1000;
-
 
     function fileInfoKeysCamelized(old_obj){
         /* Gettin a JSON Object and returning all keys in camelcases and without underscore */
@@ -62,7 +55,6 @@ script:
         return new_obj;
     }
 
-
     var sendRequest = function(method, url, body, token, redirect) {
         if (redirect === undefined){
             redirect = true;
@@ -79,7 +71,6 @@ script:
                 redirect
             );
     }
-
 
     var getNewToken = function() {
         var request = {
@@ -104,7 +95,6 @@ script:
         setIntegrationContext(newResponse);
         return newResponse.access_token;
     }
-
 
     function refreshToken(){
         ContextData = getIntegrationContext();
@@ -139,7 +129,6 @@ script:
         return refreshResponse.access_token;
     }
 
-
     var getToken = function(forceRefresh) {
         var returnToken = '';
         ContextData = getIntegrationContext();
@@ -156,7 +145,6 @@ script:
         return returnToken;
     }
 
-
     var urlDict = {
         'box_get_current_user': 'users/me',
         'box_get_users':'users',
@@ -168,7 +156,6 @@ script:
         'box_files_get_info': 'files/',
         'box_files_upload': 'files/content'
     }
-
 
     var methodDict = {
         'box_get_current_user': 'GET',
@@ -182,7 +169,6 @@ script:
         'box_files_upload': 'POST'
     }
 
-
     var userTableDict = {
         'id':'ID',
         'login':'Username',
@@ -191,7 +177,6 @@ script:
         'status':'Status'
     }
 
-
     var userContextDict = {
         'id':'ID',
         'name':'Display Name',
@@ -199,18 +184,18 @@ script:
         'type':'Groups'
     }
 
-
-
     var encodeBody = function(command, args) {
         if (command === 'box_move_folder') {
             return JSON.stringify({'owned_by': { 'id': args['to_user_id']}});
         }
         if (args && Object.keys(args).length) {
+            if (typeof args.force === 'string') {
+                args.force = args.force === 'true';
+            }
             return JSON.stringify(args);
         }
         return undefined;
     }
-
 
     var getURL = function(command, args) {
         var base = urlDict[command];
@@ -239,7 +224,6 @@ script:
         return base
     }
 
-
     var usersToEc = function(users) {
         var ec={};
         ec.Account=[];
@@ -260,7 +244,6 @@ script:
         }
         return ec;
     }
-
     var usersToMd = function(users,verbose) {
         var md ='';
         if (!users) {
@@ -308,7 +291,6 @@ script:
     };
 
 
-
     function getFileInfo(){
         // Getting file info
         var command = 'box_files_get_info'
@@ -333,7 +315,6 @@ script:
         var ec = null;
         return response;
     }
-
     function getFiles(){
         // Getting file info
         var name = JSON.parse(getFileInfo().Body).name;
@@ -357,11 +338,8 @@ script:
         return {Type: 3, FileID: saveFile(response.Bytes), File: name, Contents: name};
     }
 
-
     // Initialize token
-
     var token = getToken(false);
-
     switch (command) {
         case 'test-module':
             return "Please use box_initiate command to initialize Box's instance.";
@@ -452,17 +430,21 @@ script:
       - "true"
       - "false"
       description: Print verbose data on each user
-    description: Retrieves information about the user who is currently logged in i.e. the user for whom this auth token was generated
+    description: Retrieves information about the user who is currently logged in i.e.
+      the user for whom this auth token was generated
   - name: box_get_users
     arguments:
     - name: filter_term
-      description: A string used to filter the results to only users starting with the filter_term in either the name or the login
+      description: A string used to filter the results to only users starting with
+        the filter_term in either the name or the login
     - name: limit
-      description: The number of records to return. The default is 100 and the max is 1000
+      description: The number of records to return. The default is 100 and the max
+        is 1000
     - name: offset
       description: The record at which to start. The default is 0
     - name: user_type
-      description: The type of user to search for. Valid values are all, external or managed. If nothing is provided, the default behavior will be managed only
+      description: The type of user to search for. Valid values are all, external
+        or managed. If nothing is provided, the default behavior will be managed only
     - name: verbose
       auto: PREDEFINED
       predefined:
@@ -471,14 +453,19 @@ script:
       description: Print verbose data on each user
     outputs:
     - contextPath: Account
-      description: Account information of users returned by query, including ID, name and username
-    description: Returns a list of all users for the Enterprise along with their user_id, public_name, and login
+      description: Account information of users returned by query, including ID, name
+        and username
+    description: Returns a list of all users for the Enterprise along with their user_id,
+      public_name, and login
   - name: box_update_user
     arguments:
     - name: notify
-      description: Whether the user should receive an email when they are rolled out of an enterprise
+      description: Whether the user should receive an email when they are rolled out
+        of an enterprise
     - name: enterprise
-      description: Setting this to null will roll the user out of the enterprise and make them a free user. When passing a null value, do not pass this value as a string
+      description: Setting this to null will roll the user out of the enterprise and
+        make them a free user. When passing a null value, do not pass this value as
+        a string
     - name: name
       description: The name of this user
     - name: role
@@ -494,11 +481,13 @@ script:
     - name: address
       description: The user’s address
     - name: space_amount
-      description: The user’s total available space amount in byte. A value of -1 grants unlimited storage
+      description: The user’s total available space amount in byte. A value of -1
+        grants unlimited storage
     - name: tracking_codes
       description: An array of key/value pairs set by the user’s admin
     - name: can_see_managed_users
-      description: ' boolean Whether this user can see other enterprise users in its contact list'
+      description: ' boolean Whether this user can see other enterprise users in its
+        contact list'
     - name: status
       description: Can be active, inactive, cannot_delete_edit, or cannot_delete_edit_upload
     - name: timezone
@@ -551,9 +540,11 @@ script:
   - name: box_delete_user
     arguments:
     - name: notify
-      description: Determines if the destination user should receive email notification of the transfer
+      description: Determines if the destination user should receive email notification
+        of the transfer
     - name: force
-      description: Whether or not the user should be deleted even if this user still own files
+      description: Whether or not the user should be deleted even if this user still
+        own files
     - name: user_id
       required: true
       default: true
@@ -568,9 +559,13 @@ script:
     - name: to_user_id
       required: true
       description: The ID of the user who the folder will be transferred to
-    description: Moves all of the owned content from within one user’s folder into a new folder in another user’s account. You can move folders across users as long as the you have administrative permissions and the ‘source’ user owns the folders. To move everything from the root folder, use “0” which always represents the root folder of a Box account (Currently only moving of the root folder (0) is supported)
+    description: Moves all of the owned content from within one user’s folder into
+      a new folder in another user’s account. You can move folders across users as
+      long as the you have administrative permissions and the ‘source’ user owns the
+      folders. To move everything from the root folder, use “0” which always represents
+      the root folder of a Box account (Currently only moving of the root folder (0)
+      is supported)
   - name: box_files_get
-    description: getting a file from private Box storage
     arguments:
     - name: file_id
       required: true
@@ -594,6 +589,7 @@ script:
     - contextPath: File.SHA256
       description: SHA256 hash of the file
       type: string
+    description: getting a file from private Box storage
   - name: box_initiate
     arguments:
     - name: access_code
@@ -720,5 +716,5 @@ script:
     description: Getting file info of provided ID
   runonce: false
 tests:
-- No test
+  - No test
 fromversion: 5.0.0

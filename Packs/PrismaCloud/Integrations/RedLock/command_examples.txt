@@ -4,3 +4,5 @@
 !redlock-get-remediation-details alert-id=P-214016
 !redlock-dismiss-alerts dismissal-note="testing" alert-id=P-214016
 !redlock-reopen-alerts alert-id=P-214016
+!redlock-dismiss-alerts alert-id=P-368370 dismissal-note=testing snooze-unit=hour snooze-value=1
+!redlock-get-rql-response rql="config where api.name = 'aws-ec2-describe-instances' as X; config where api.name = 'aws-ec2-describe-security-groups' as Y; config where api.name = 'aws-ec2-describe-vpcs' as Z; filter 'not _Set.intersection($.X.vpcId,$.Y.vpcId) intersects (vpc-5b9a3c33,vpc-b8ba2dd0,vpc-b8ba2dd01)'; show X;"

@@ -99,10 +99,24 @@ def install_logging(log_file_name: str, include_process_name=False) -> str:
     fh.setFormatter(formatter)
     ch.setLevel(logging.INFO)
     fh.setLevel(logging.DEBUG)
-    logging.basicConfig(level=logging.DEBUG,
-                        handlers=[ch, fh],
-                        force=True)
+    configure_root_logger(ch, fh)
     return log_file_path
+
+
+def configure_root_logger(ch: logging.StreamHandler, fh: logging.FileHandler) -> None:
+    """
+    - Configures the root logger with DEBUG level
+    - Removes existing handlers from the root logger and adds the console handler and the file handler.
+    Args:
+        ch: StreamHandler to add to the root logger
+        fh: FileHandler to add to the root logger
+    """
+    logging.root.setLevel(logging.DEBUG)
+    for h in logging.root.handlers[:]:
+        logging.root.removeHandler(h)
+        h.close()
+    logging.root.addHandler(ch)
+    logging.root.addHandler(fh)
 
 
 def install_simple_logging():
@@ -145,6 +159,7 @@ class ParallelLoggingManager:
     >>> logging_manager.critical('critical message', real_time=True)
     >>> logging_manager.success('success message', real_time=True)
     """
+
     def __init__(self, log_file_name):
         """
         Initializes the logging manager:
@@ -172,6 +187,7 @@ class ParallelLoggingManager:
         self.real_time_logger.addHandler(self.file_handler)
         self.real_time_logger.addHandler(self.console_handler)
         self.real_time_logger.setLevel(logging.DEBUG)
+        self.real_time_logger.propagate = False
         self.loggers = {}
         self.listeners = {}
         self.logs_lock = Lock()
@@ -187,8 +203,8 @@ class ParallelLoggingManager:
         log_queue = queue.Queue(-1)
         queue_handler = QueueHandler(log_queue)
         queue_handler.setLevel(logging.DEBUG)
-
         logger = logging.getLogger(thread_name)
+        logger.propagate = False
         logger.setLevel(logging.DEBUG)
         logger.addHandler(queue_handler)
         listener = QueueListener(log_queue, self.console_handler, self.file_handler, respect_handler_level=True)
