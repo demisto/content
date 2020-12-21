@@ -4837,7 +4837,7 @@ class DebugLogger(object):
             self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
             setattr(http_client, 'print', self.int_logger.print_override)
         self.handler = DemistoHandler(self.int_logger)
-        demisto_formatter = logging.Formatter(fmt='%(asctime)s - %(message)s', datefmt=None)
+        demisto_formatter = logging.Formatter(fmt='python logging: %(levelname)s [%(name)s] - %(message)s', datefmt=None)
         self.handler.setFormatter(demisto_formatter)
         self.root_logger = logging.getLogger()
         self.prev_log_level = self.root_logger.getEffectiveLevel()
@@ -4873,6 +4873,7 @@ class DebugLogger(object):
                                                                                             os.environ)
         if hasattr(demisto, 'params'):
             msg += "\n#### Params: {}.".format(json.dumps(demisto.params(), indent=2))
+        msg += "\n#### Args: {}.".format(json.dumps(demisto.args(), indent=2))
         callingContext = demisto.callingContext.get('context', {})
         msg += "\n#### Docker image: [{}]".format(callingContext.get('DockerImage'))
         brand = callingContext.get('IntegrationBrand')
