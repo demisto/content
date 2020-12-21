@@ -459,7 +459,14 @@ def download_attachment_command(args: Dict[str, Any]) -> Any:
     if not attachment_id:
         raise ValueError("attachment id not specified")
 
-    result = download_attachment(caseID=case_id, attachmentID=attachment_id)
+    try:
+        result = download_attachment(caseID=case_id, attachmentID=attachment_id)
+    except Exception as e:
+        return_warning(
+            message=str(e),
+            warning=e.parsed_resp if e.parsed_resp else None,
+            exit=True
+        )
 
     return fileResult(attachment_id, result.content)
 
