@@ -2027,7 +2027,7 @@ tasks:
       page: {}
       query:
         simple: xdralerts.name:"SunBurst Module loaded" or xdralerts.name:"SunBurst
-          domain access" or xdralerts.name:"WildFire Malware"
+          domain access"
       reason: {}
       size: {}
       sort: {}
