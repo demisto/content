@@ -1,6 +1,6 @@
 id: Impossible Traveler_dev
 version: -1
-name: Impossible Traveler
+name: Impossible Traveler_dev
 description: |-
   This playbook investigates an event whereby a user has multiple application login attempts from various locations in a short time period (impossible traveler). The playbook gathers user, timestamp and IP information
   associated with the multiple application login attempts.
@@ -3465,6 +3465,3 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
-fromversion: 5.0.0
-tests:
-- Impossible Traveler - Test
