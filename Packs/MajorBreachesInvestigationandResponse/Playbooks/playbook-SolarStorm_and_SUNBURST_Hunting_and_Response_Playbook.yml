@@ -1985,6 +1985,7 @@ tasks:
       id: 6416c957-edd6-4d51-8bf3-eda76fb0e774
       version: -1
       name: 'Is there additional IOCs? '
+      description: "Checks if there are additional IOCs from the playbook input."
       type: condition
       iscommand: false
       brand: ""
