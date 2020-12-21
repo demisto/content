@@ -71,29 +71,6 @@ Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-2. [Expire a password: ad-expire-password](#expire-a-password)
-4. [Create an AD user: ad-create-user](#create-an-ad-user)
-6. [Perform a search in AD: ad-search](#perform-a-search-in-active-directory)
-8. [Add an AD user or computer to a group: ad-add-to-group](#add-an-ad-user-or-computer-to-a-group)
-10. [Remove an AD user or computer from a group: ad-remove-from-group](#remove-an-ad-user-or-computer-from-a-group)
-12. [Update attributes of an AD user: ad-update-user](#update-attributes-for-an-ad-user)
-14. [Delete an AD user: ad-delete-user](#delete-an-ad-user)
-16. [Create an AD contact: ad-create-contact](#create-an-ad-contact)
-18. [Update attributes of an AD contact: ad-update-contact](#update-attributes-of-an-ad-contact)
-20. [Disable an AD user account: ad-disable-account](#disable-an-ad-user-account)
-22. [Enable an AD user account: ad-enable-account](#enable-an-ad-user-account)
-24. [Unlock an AD user account: ad-unlock-account](#unlock-an-ad-user-account)
-26. [Set a new password for an AD user: ad-set-new-password](#set-a-new-password-for-an-ad-user-account)
-28. [Modify the computer organizational unit in a domain: ad-modify-computer-ou](#modify-the-computer-organizational-unit-in-a-domain)
-30. [Get information for an AD user account: ad-get-user](#get-information-for-an-ad-user-account)
-32. [Get information for a computer account: ad-get-computer](#get-information-for-a-computer-account)
-34. [Get a list of users or computers for a group: ad-get-group-members](#get-a-list-of-users-or-computers-for-a-group)
-36. [Get an AD user, used in the IAM premium pack: get-user](#iam-get-user)
-38. [Create an AD user, used in the IAM premium pack: create-user](#iam-create-user)
-40. [Update an AD user, used in the IAM premium pack: update-user](#iam-update-user)
-42. [Enable an AD user, used in the IAM premium pack: enable-user](#giam-enable-user)
-44. [Diable an AD user, used in the IAM premium pack: disable-user](#iam-diable-user)
-
 ### 1. Expire a password
 
 Expires the password of an Active Directory user.
@@ -741,6 +718,7 @@ Used in the IAM premium pack.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-profile | A User Profile indicator that contains user information, such as name, email address, etc. | Required | 
+| allow-enable | When set to true, after the command execution the status of the user in the 3rd-party integration will be active. | Optional | 
 
 
 #### Context Output
@@ -786,7 +764,7 @@ Used in the IAM premium pack.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-profile | A User Profile indicator that contains user information, such as name, email address, etc. | Required | 
-| create-if-not-exists | When true, the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'. | Optional | 
+| allow-enable | When set to true, after the command execution the status of the user in the 3rd-party integration will be active. | Optional | 
 
 
 #### Context Output
@@ -864,49 +842,7 @@ Used in the IAM premium pack.
 | Active Directory Query | IAM_instance_1 | true | true |  | testdemisto2| testdemisto2@paloaltonetworks.com | status: PROVISIONED<br />created: 2020-10-18T17:54:30.000Z<br />activated: 2020-10-18T17:54:30.000Z<br />statusChanged: 2020-10-18T17:54:30.000Z<br />lastLogin: null<br />lastUpdated: 2020-10-18T17:54:30.000Z<br />passwordChanged: null<br />type: {"id": "oty8zfz6plq7b0r830h7"}<br />profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br />credentials: {"provider": {"type": "Active Directory Query", "name": "Active Directory Query"}}}
 
 
-### 22. Enable an AD user
-
-Enable an active AD user.
-Used in the IAM premium pack.
-
-#### Base Command
-`iam-enable-user`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| user-profile | A User Profile indicator that contains user information, such as name, email address, etc. | Required | 
-| create-if-not-exists | When true, the user will be created when the passed User Profile doesn't exist in AD. Default is 'true'. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| IAM.Vendor.active | Boolean | When true, indicates that the employee's status is active. | 
-| IAM.Vendor.brand | String | Name of the integration. | 
-| IAM.Vendor.details | String | Indicates if the API was successful or provides error information. | 
-| IAM.Vendor.email | String | The email address of the employee. | 
-| IAM.Vendor.errorCode | Number | HTTP error response code. | 
-| IAM.Vendor.errorMessage | String | Reason why the API failed. | 
-| IAM.Vendor.id | String | The employee's user ID in the app. | 
-| IAM.Vendor.instanceName | String | Name of the integration instance. | 
-| IAM.Vendor.success | Boolean | When true, indicates that the command was executed successfully. | 
-| IAM.Vendor.username | String | The employee's username in the app. | 
-| IAM.Vendor.action | String | The command name. | 
-
-#### Command Example
-```
-!iam-enable-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}
-```
-#### Human Readable Output
-
-### Enable User Results
-|brand|instanceName|success|active|id|username|email|details|
-|---|---|---|---|---|---|---|---|
-| Active Directory Query | IAM_instance_1 | true | true |  | testdemisto2| testdemisto2@paloaltonetworks.com | status: PROVISIONED<br />created: 2020-10-18T17:54:30.000Z<br />activated: 2020-10-18T17:54:30.000Z<br />statusChanged: 2020-10-18T17:54:30.000Z<br />lastLogin: null<br />lastUpdated: 2020-10-18T17:54:30.000Z<br />passwordChanged: null<br />type: {"id": "oty8zfz6plq7b0r830h7"}<br />profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br />credentials: {"provider": {"type": "Active Directory Query", "name": "Active Directory Query"}}}
-
-
-### 23. Disable an AD user
+### 22. Disable an AD user
 
 Disable an active AD user.
 Used in the IAM premium pack.
