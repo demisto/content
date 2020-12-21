@@ -2,5 +2,6 @@ To allow access to EWS O365, an administrator has to approve the Demisto app usi
 After authorizing the Demisto app, you will get an ID, Token, and Key, which needs to be added to the integration instance configuration's corresponding fields.
 
 ### Required Permissions for self deployed Azure Application:
-#### Exchange
-* **full_access_as_app** - Application
+#### Office 365 Exchange Online
+* **full_access_as_app** - To add this permission please follow [the official documentation](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-authenticate-an-ews-application-by-using-oauth#configure-for-app-only-authentication)
+as the **Exchange** app permission is unavailable via the Azure portal.
