@@ -6133,8 +6133,6 @@ class IAMUserProfile:
             _user_profile (str): The user profile information.
             _user_profile_delta (str): The user profile delta.
             _vendor_action_results (list): A List of data returned from the vendor.
-    :return: None
-    :rtype: ``None``
     """
 
     INDICATOR_TYPE = 'User Profile'
@@ -6247,9 +6245,26 @@ class IAMUserProfile:
         self._user_profile = demisto.mapObject(app_data, mapper_name, mapping_type)
 
 
+class IAMUserAppData:
+    """ Holds user attributes retrieved from an application. """
+
+    def __init__(self, user_id, username, is_active, app_data):
+        """ The IAMUserAppData c'tor
+
+            :param user_id: (str) The ID of the user.
+            :param username: (str) The username of the user.
+            :param is_active: (bool) Whether or not the user is active in the application.
+            :param app_data: (dict) The full data of the user in the application.
+        """
+        self.id = user_id
+        self.username = username
+        self.is_active = is_active
+        self.full_data = app_data
+
+
 class IAMCommand:
-    def __init__(self, is_create_enabled, is_disable_enabled, is_update_enabled,
-                 create_if_not_exists, mapper_in, mapper_out):
+    def __init__(self, is_create_enabled=True, is_disable_enabled=True, is_update_enabled=True,
+                 create_if_not_exists=True, mapper_in=None, mapper_out=None):
         """ The IAMCommand c'tor
 
         :param is_create_enabled: (bool) Whether or not the `iam-create-user` command is enabled in the instance
@@ -6266,20 +6281,6 @@ class IAMCommand:
         self.mapper_in = mapper_in
         self.mapper_out = mapper_out
 
-    def get_mapping_fields(self, client):
-        """ Creates and returns a GetMappingFieldsResponse object of the user schema in the application
-
-        :param client: (Client) The integration Client object that implements a get_app_fields() method
-        :return: (GetMappingFieldsResponse) An object that represents the user schema
-        """
-        app_fields = client.get_app_fields()
-        incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
-
-        for field, description in app_fields.items():
-            incident_type_scheme.add_field(field, description)
-
-        return GetMappingFieldsResponse([incident_type_scheme])
-
     def get_user(self, client, args):
         """ Searches a user in the application and updates the user profile object with the data.
             If not found, the error details will be resulted instead.
@@ -6291,7 +6292,7 @@ class IAMCommand:
         user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
         try:
             email = user_profile.get_attribute('email')
-            user_id, username, is_active, user_app_data = client.get_user(email)
+            user_app_data = client.get_user(email)
             if not user_app_data:
                 error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
                 user_profile.set_result(action=IAMActions.GET_USER,
@@ -6299,15 +6300,14 @@ class IAMCommand:
                                         error_code=error_code,
                                         error_message=error_message)
             else:
-                user_profile.update_with_app_data(user_app_data, self.mapper_in)
+                user_profile.update_with_app_data(user_app_data.full_data, self.mapper_in)
                 user_profile.set_result(
                     action=IAMActions.GET_USER,
-                    success=True,
-                    active=is_active,
-                    iden=user_id,
+                    active=user_app_data.is_active,
+                    iden=user_app_data.id,
                     email=email,
-                    username=username,
-                    details=user_app_data
+                    username=user_app_data.username,
+                    details=user_app_data.full_data
                 )
 
         except Exception as e:
@@ -6332,23 +6332,22 @@ class IAMCommand:
         else:
             try:
                 email = user_profile.get_attribute('email')
-                user_id, username, is_active, user_app_data = client.get_user(email)
+                user_app_data = client.get_user(email)
                 if not user_app_data:
                     _, error_message = IAMErrors.USER_DOES_NOT_EXIST
                     user_profile.set_result(action=IAMActions.DISABLE_USER,
                                             skip=True,
                                             skip_reason=error_message)
                 else:
-                    if is_active:
-                        user_app_data = client.disable_user(user_id)
+                    if user_app_data.is_active:
+                        user_app_data = client.disable_user(user_app_data.id)
                     user_profile.set_result(
                         action=IAMActions.DISABLE_USER,
-                        success=True,
                         active=False,
-                        iden=user_id,
+                        iden=user_app_data.id,
                         email=email,
-                        username=username,
-                        details=user_app_data
+                        username=user_app_data.username,
+                        details=user_app_data.full_data
                     )
 
             except Exception as e:
@@ -6375,7 +6374,7 @@ class IAMCommand:
         else:
             try:
                 email = user_profile.get_attribute('email')
-                user_id, username, is_active, user_app_data = client.get_user(email)
+                user_app_data = client.get_user(email)
                 if user_app_data:
                     # if user exists, update it
                     user_profile = self.update_user(client, args)
@@ -6385,12 +6384,11 @@ class IAMCommand:
                     created_user = client.create_user(app_profile)
                     user_profile.set_result(
                         action=IAMActions.CREATE_USER,
-                        success=True,
-                        active=is_active,
-                        iden=user_id,
-                        email=user_profile.get_attribute('email'),
-                        username=username,
-                        details=created_user
+                        active=created_user.is_active,
+                        iden=created_user.id,
+                        email=email,
+                        username=created_user.username,
+                        details=created_user.full_data
                     )
 
             except Exception as e:
@@ -6417,22 +6415,21 @@ class IAMCommand:
         else:
             try:
                 email = user_profile.get_attribute('email')
-                user_id, username, is_active, user_app_data = client.get_user(email)
+                user_app_data = client.get_user(email)
                 if user_app_data:
                     app_profile = user_profile.map_object(self.mapper_out)
 
-                    if allow_enable and not is_active:
-                        client.enable_user(user_id)
+                    if allow_enable and not user_app_data.is_active:
+                        client.enable_user(user_app_data.id)
 
-                    user_app_data = client.update_user(user_id, app_profile)
+                    updated_user = client.update_user(user_app_data.id, app_profile)
                     user_profile.set_result(
                         action=IAMActions.UPDATE_USER,
-                        success=True,
-                        active=True if allow_enable else is_active,
-                        iden=user_id,
+                        active=updated_user.is_active,
+                        iden=updated_user.id,
                         email=email,
-                        username=username,
-                        details=user_app_data
+                        username=updated_user.username,
+                        details=updated_user.full_data
                     )
                 else:
                     if self.create_if_not_exists:

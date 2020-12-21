@@ -14,27 +14,26 @@ ERROR_CODES_TO_SKIP = [
 
 
 class Client(BaseClient):
-    """
-    ServiceNow IAM Client class that implements logic to authenticate with the application.
-    """
+    """ A client class that implements logic to authenticate with the application. """
 
     def test(self):
-        """ Tests connectivity to server.
-        """
+        """ Tests connectivity with the application. """
+
         uri = '/test'                                 # TODO: replace to a valid test API endpoint
         self._http_request(method='GET', url_suffix=uri)
 
-    def get_user(self, email):
-        """ Gets the user data from the application by email using REST API
+    def get_user(self, email: str) -> Optional[IAMUserAppData]:
+        """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
+        that holds the user_id, username, is_active and app_data attributes given in the query response.
 
         :type email: ``str``
         :param email: Email address of the user
 
-        :return: A tuple of the user ID, username, activation status and the full user data
-        :rtype: ``Tuple[str, str, str, Dict[str, Any]]``
+        :return: An IAMUserAppData object if user exists, None otherwise.
+        :rtype: ``Optional[IAMUserAppData]``
         """
         uri = '/users'                               # TODO: replace to the correct GET User API endpoint
-        query_params = {'email': email}              # TODO: replace to the correct query parameters
+        query_params = {'email': email}              # TODO: make sure you pass the correct query parameters
 
         res = self._http_request(
             method='GET',
@@ -43,34 +42,39 @@ class Client(BaseClient):
         )
 
         if res and len(res.get('result', [])) == 1:  # TODO: make sure you verify a single result was retrieved
-            user_app_data = res.get('result')[0]     # TODO: then get the user_id, username, is_active and user_app_data
+            user_app_data = res.get('result')[0]     # TODO: get the user_id, username, is_active and user_app_data
 
             user_id = user_app_data.get('user_id')
             is_active = user_app_data.get('active')
             username = user_app_data.get('user_name')
 
-            return user_id, username, is_active, user_app_data
-        return None, None, None, None
+            return IAMUserAppData(user_id, username, is_active, user_app_data)
+        return None
 
-    def create_user(self, user_data):
-        """ Creates a user in the application using REST API
+    def create_user(self, user_data: Dict[str, Any]) -> IAMUserAppData:
+        """ Creates a user in the application using REST API.
 
         :type user_data: ``Dict[str, Any]``
         :param user_data: User data in the application format
 
-        :return: The full created user data
-        :rtype: ``Dict[str, Any]``
+        :return: An IAMUserAppData object that contains the data of the created user in the application.
+        :rtype: ``IAMUserAppData``
         """
-        uri = '/users'
+        uri = '/users'                              # TODO: replace to the correct CREATE User API endpoint
         res = self._http_request(
             method='POST',
             url_suffix=uri,
             json_data=user_data
         )
-        return res.get('result')
+        user_app_data = res.get('result')           # TODO: get the user_id, username, is_active and user_app_data
+        user_id = user_app_data.get('user_id')
+        is_active = user_app_data.get('active')
+        username = user_app_data.get('user_name')
 
-    def update_user(self, user_id, user_data):
-        """ Updates a user in the application using REST API
+        return IAMUserAppData(user_id, username, is_active, user_app_data)
+
+    def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
+        """ Updates a user in the application using REST API.
 
         :type user_id: ``str``
         :param user_id: ID of the user in the application
@@ -78,48 +82,63 @@ class Client(BaseClient):
         :type user_data: ``Dict[str, Any]``
         :param user_data: User data in the application format
 
-        :return: The full updated user data
-        :rtype: ``Dict[str, Any]``
+        :return: An IAMUserAppData object that contains the data of the updated user in the application.
+        :rtype: ``IAMUserAppData``
         """
-        uri = f'/users/{user_id}'
+        uri = f'/users/{user_id}'                   # TODO: replace to the correct UPDATE User API endpoint
         res = self._http_request(
             method='PATCH',
             url_suffix=uri,
             json_data=user_data
         )
-        return res.get('result')
 
-    def enable_user(self, user_id):
-        """ Enables a user in the application using REST API
+        user_app_data = res.get('result')
+        user_id = user_app_data.get('user_id')
+        is_active = user_app_data.get('active')
+        username = user_app_data.get('user_name')
 
-        :type user_id: ``str``
-        :param user_id: ID of the user in the application
+        return IAMUserAppData(user_id, username, is_active, user_app_data)
 
-        :return: The full enabled user data
-        :rtype: ``Dict[str, Any]``
-        """
-        user_data = {'active': True}
-        return self.update_user(user_id, user_data)
-
-    def disable_user(self, user_id):
-        """ Disables a user in the application using REST API
+    def enable_user(self, user_id: str) -> IAMUserAppData:
+        """ Enables a user in the application using REST API.
 
         :type user_id: ``str``
         :param user_id: ID of the user in the application
 
-        :return: The full disabled user data
-        :rtype: ``Dict[str, Any]``
+        :return: An IAMUserAppData object that contains the data of the user in the application.
+        :rtype: ``IAMUserAppData``
         """
-        user_data = {'active': False}
+        # Note: ENABLE user API endpoints might vary between different APIs.
+        # In this example, we use the same endpoint as in update_user() method,
+        # But other APIs might have a unique endpoint for this request.
+
+        user_data = {'active': True}                # TODO: make sure you pass the correct query parameters
         return self.update_user(user_id, user_data)
 
-    def get_app_fields(self):
+    def disable_user(self, user_id: str) -> IAMUserAppData:
+        """ Disables a user in the application using REST API.
+
+        :type user_id: ``str``
+        :param user_id: ID of the user in the application
+
+        :return: An IAMUserAppData object that contains the data of the user in the application.
+        :rtype: ``IAMUserAppData``
+        """
+        # Note: DISABLE user API endpoints might vary between different APIs.
+        # In this example, we use the same endpoint as in update_user() method,
+        # But other APIs might have a unique endpoint for this request.
+
+        user_data = {'active': False}               # TODO: make sure you pass the correct query parameters
+        return self.update_user(user_id, user_data)
+
+    def get_app_fields(self) -> Dict[str, Any]:
         """ Gets a dictionary of the user schema fields in the application and their description.
 
         :return: The user schema fields dictionary
         :rtype: ``Dict[str, str]``
         """
-        uri = '/schema'
+
+        uri = '/schema'                             # TODO: replace to the correct GET Schema API endpoint
         res = self._http_request(
             method='GET',
             url_suffix=uri
@@ -129,7 +148,9 @@ class Client(BaseClient):
         return {field.get('name'): field.get('description') for field in fields}
 
     @staticmethod
-    def handle_exception(user_profile, e, action):
+    def handle_exception(user_profile: IAMUserProfile,
+                         e: Union[DemistoException, Exception],
+                         action: IAMActions):
         """ Handles failed responses from the application API by setting the User Profile object with the result.
             The result entity should contain the following data:
             1. action        (``IAMActions``)       The failed action                       Required
@@ -143,7 +164,7 @@ class Client(BaseClient):
             when a DISABLE action was made on a user which is already disabled and therefore we can't
             perform another DISABLE action.
 
-        :type user_profile: ``Dict[str, Any]``
+        :type user_profile: ``IAMUserProfile``
         :param user_profile: The user profile object
 
         :type e: ``Union[DemistoException, Exception]``
@@ -181,16 +202,16 @@ class Client(BaseClient):
 '''HELPER FUNCTIONS'''
 
 
-def get_error_details(res):
+def get_error_details(res: Dict[str, Any]) -> str:
     """ Parses the error details retrieved from the application and outputs the resulted string.
 
-    Args:
-        res (dict): The data retrieved from the application.
+    :type res: ``Dict[str, Any]``
+    :param res: The error data retrieved from the application.
 
-    Returns:
-        (str) The parsed error details.
+    :return: The parsed error details.
+    :rtype: ``str``
     """
-    message = res.get('error', {}).get('message')
+    message = res.get('error', {}).get('message')   # TODO: make sure you parse the error details correctly
     details = res.get('error', {}).get('detail')
     return f'{message}: {details}'
 
@@ -198,9 +219,26 @@ def get_error_details(res):
 '''COMMAND FUNCTIONS'''
 
 
-def test_module(client):
+def test_module(client: Client):
+    """ Tests connectivity with the client. """
+
     client.test()
     return_results('ok')
+
+
+def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
+    """ Creates and returns a GetMappingFieldsResponse object of the user schema in the application
+
+    :param client: (Client) The integration Client object that implements a get_app_fields() method
+    :return: (GetMappingFieldsResponse) An object that represents the user schema
+    """
+    app_fields = client.get_app_fields()
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
+
+    for field, description in app_fields.items():
+        incident_type_scheme.add_field(field, description)
+
+    return GetMappingFieldsResponse([incident_type_scheme])
 
 
 def main():
@@ -264,7 +302,7 @@ def main():
             test_module(client)
 
         elif command == 'get-mapping-fields':
-            return_results(iam_command.get_mapping_fields(client))
+            return_results(get_mapping_fields(client))
 
     except Exception:
         # For any other integration command exception, return an error

@@ -1,471 +1,319 @@
-"""HelloWorld Integration for Cortex XSOAR - Unit Tests file
+from requests import Response, Session
+from HelloIAMWorld import Client, get_mapping_fields
+from CommonServerPython import IAMCommand, IAMErrors, IAMUserProfile, IAMActions, IAMUserAppData
 
-This file contains the Unit Tests for the HelloWorld Integration based
-on pytest. Cortex XSOAR contribution requirements mandate that every
-integration should have a proper set of unit tests to automatically
-verify that the integration is behaving as expected during CI/CD pipeline.
+APP_USER_OUTPUT = {
+    "user_id": "mock_id",
+    "user_name": "mock_user_name",
+    "first_name": "mock_first_name",
+    "last_name": "mock_last_name",
+    "active": "true",
+    "email": "testdemisto2@paloaltonetworks.com"
+}
 
-Test Execution
---------------
+USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=True, app_data=APP_USER_OUTPUT)
 
-Unit tests can be checked in 3 ways:
-- Using the command `lint` of demisto-sdk. The command will build a dedicated
-  docker instance for your integration locally and use the docker instance to
-  execute your tests in a dedicated docker instance.
-- From the command line using `pytest -v` or `pytest -vv`
-- From PyCharm
+APP_DISABLED_USER_OUTPUT = {
+    "user_id": "mock_id",
+    "user_name": "mock_user_name",
+    "first_name": "mock_first_name",
+    "last_name": "mock_last_name",
+    "active": "false",
+    "email": "testdemisto2@paloaltonetworks.com"
+}
 
-Example with demisto-sdk (from the content root directory):
-demisto-sdk lint -i Packs/HelloWorld/Integrations/HelloWorld
-
-Coverage
---------
-
-There should be at least one unit test per command function. In each unit
-test, the target command function is executed with specific parameters and the
-output of the command function is checked against an expected output.
-
-Unit tests should be self contained and should not interact with external
-resources like (API, devices, ...). To isolate the code from external resources
-you need to mock the API of the external resource using pytest-mock:
-https://github.com/pytest-dev/pytest-mock/
-
-In the following code we configure requests-mock (a mock of Python requests)
-before each test to simulate the API calls to the HelloWorld API. This way we
-can have full control of the API behavior and focus only on testing the logic
-inside the integration code.
-
-We recommend to use outputs from the API calls and use them to compare the
-results when possible. See the ``test_data`` directory that contains the data
-we use for comparison, in order to reduce the complexity of the unit tests and
-avoding to manually mock all the fields.
-
-NOTE: we do not have to import or build a requests-mock instance explicitly.
-requests-mock library uses a pytest specific mechanism to provide a
-requests_mock instance to any function with an argument named requests_mock.
-
-More Details
-------------
-
-More information about Unit Tests in Cortex XSOAR:
-https://xsoar.pan.dev/docs/integrations/unit-testing
-
-"""
-
-import json
-import io
+DISABLED_USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=False, app_data=APP_DISABLED_USER_OUTPUT)
 
 
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
+def mock_client():
+    client = Client(base_url='https://test.com')
+    return client
 
 
-def test_say_hello():
-    """Tests helloworld-say-hello command function.
+def get_outputs_from_user_profile(user_profile):
+    entry_context = user_profile.to_entry()
+    outputs = entry_context.get('Contents')
+    return outputs
 
-    Checks the output of the command function with the expected output.
 
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+def test_get_user_command__existing_user(mocker):
     """
-    from HelloWorld import Client, say_hello_command
-
-    client = Client(base_url='https://test.com/api/v1', verify=False, auth=('test', 'test'))
-    args = {
-        'name': 'Dbot'
-    }
-    response = say_hello_command(client, args)
-
-    assert response.outputs == 'Hello Dbot'
-
-
-def test_start_scan(requests_mock):
-    """Tests helloworld-scan-start command function.
-
-    Configures requests_mock instance to generate the appropriate start_scan
-    API response when the correct start_scan API request is performed. Checks
-    the output of the command function with the expected output.
+    Given:
+        - An app client object
+        - A user-profile argument that contains an email of a user
+    When:
+        - The user exists in the application
+        - Calling function get_user_command
+    Then:
+        - Ensure the resulted User Profile object holds the correct user details
     """
-    from HelloWorld import Client, scan_start_command
+    client = mock_client()
+    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
-    mock_response = {
-        'scan_id': '7a161a3f-8d53-42de-80cd-92fb017c5a12',
-        'status': 'RUNNING'
-    }
-    requests_mock.get('https://test.com/api/v1/start_scan?hostname=example.com', json=mock_response)
+    mocker.patch.object(client, 'get_user', return_value=USER_APP_DATA)
+    mocker.patch.object(IAMUserProfile, 'update_with_app_data', return_value={})
 
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
+    user_profile = IAMCommand().get_user(client, args)
+    outputs = get_outputs_from_user_profile(user_profile)
 
-    args = {
-        'hostname': 'example.com'
-    }
-
-    response = scan_start_command(client, args)
-
-    assert response.outputs_prefix == 'HelloWorld.Scan'
-    assert response.outputs_key_field == 'scan_id'
-    assert response.outputs == {
-        'scan_id': '7a161a3f-8d53-42de-80cd-92fb017c5a12',
-        'status': 'RUNNING',
-        'hostname': 'example.com'
-    }
+    assert outputs.get('action') == IAMActions.GET_USER
+    assert outputs.get('success') is True
+    assert outputs.get('active') is True
+    assert outputs.get('id') == 'mock_id'
+    assert outputs.get('username') == 'mock_user_name'
+    assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
+    assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
 
 
-def test_status_scan(requests_mock):
-    """Tests helloworld-scan-status command function.
-
-    Configures requests_mock instance to generate the appropriate check_scan
-    API responses based on the scan ID provided. For scan_id 100, 300 status
-    should be COMPLETE while for scan ID 200 is RUNNING. Checks the output of
-    the command function with the expected output.
+def test_get_user_command__non_existing_user(mocker):
     """
-    from HelloWorld import Client, scan_status_command
-
-    mock_response = {
-        'scan_id': '100',
-        'status': 'COMPLETE'
-    }
-    requests_mock.get('https://test.com/api/v1/check_scan?scan_id=100', json=mock_response)
-
-    mock_response = {
-        'scan_id': '200',
-        'status': 'RUNNING'
-    }
-    requests_mock.get('https://test.com/api/v1/check_scan?scan_id=200', json=mock_response)
-
-    mock_response = {
-        'scan_id': '300',
-        'status': 'COMPLETE'
-    }
-    requests_mock.get('https://test.com/api/v1/check_scan?scan_id=300', json=mock_response)
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'scan_id': ['100', '200', '300']
-    }
-
-    response = scan_status_command(client, args)
-
-    assert response.outputs_prefix == 'HelloWorld.Scan'
-    assert response.outputs_key_field == 'scan_id'
-    assert response.outputs == [
-        {
-            'scan_id': '100',
-            'status': 'COMPLETE'
-        },
-        {
-            'scan_id': '200',
-            'status': 'RUNNING'
-        },
-        {
-            'scan_id': '300',
-            'status': 'COMPLETE'
-        }
-    ]
-
-
-def test_scan_results(mocker, requests_mock):
-    """Tests helloworld-scan-results command function.
-
-    Configures requests_mock instance to generate the appropriate
-    get_scan_results API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
+    Given:
+        - An app client object
+        - A user-profile argument that contains an email a user
+    When:
+        - The user does not exist in the application
+        - Calling function get_user_command
+    Then:
+        - Ensure the resulted User Profile object holds information about an unsuccessful result.
     """
-    from HelloWorld import Client, scan_results_command
-    from CommonServerPython import Common
+    client = mock_client()
+    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
-    mock_response = util_load_json('test_data/scan_results.json')
-    requests_mock.get('https://test.com/api/v1/get_scan_results?scan_id=100', json=mock_response)
+    mocker.patch.object(client, 'get_user', return_value=None)
 
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
+    user_profile = IAMCommand().get_user(client, args)
+    outputs = get_outputs_from_user_profile(user_profile)
 
-    args = {
-        'scan_id': '100',
-        'format': 'json'
-    }
-
-    response = scan_results_command(client, args)
-
-    assert response[0].outputs == mock_response
-    assert response[0].outputs_prefix == 'HelloWorld.Scan'
-    assert response[0].outputs_key_field == 'scan_id'
-
-    # This command also returns Common.CVE data
-    assert isinstance(response, list)
-    assert len(response) > 1
-    for i in range(1, len(response)):
-        assert isinstance(response[i].indicator, Common.CVE)
+    assert outputs.get('action') == IAMActions.GET_USER
+    assert outputs.get('success') is False
+    assert outputs.get('errorCode') == IAMErrors.USER_DOES_NOT_EXIST[0]
+    assert outputs.get('errorMessage') == IAMErrors.USER_DOES_NOT_EXIST[1]
 
 
-def test_search_alerts(requests_mock):
-    """Tests helloworld-search-alerts command function.
-
-    Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
+def test_get_user_command__bad_response(mocker):
     """
-    from HelloWorld import Client, search_alerts_command
-
-    mock_response = util_load_json('test_data/search_alerts.json')
-    requests_mock.get(
-        'https://test.com/api/v1/get_alerts?alert_status=ACTIVE&severity=Critical&max_results=2&start_time=1581982463',
-        json=mock_response['alerts'])
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'severity': 'Critical',
-        'start_time': 1581982463,
-        'max_results': 2,
-        'status': 'ACTIVE'
-    }
-
-    response = search_alerts_command(client, args)
-
-    # We modify the timestamp from the raw mock_response of the API, because the
-    # integration changes the format from timestamp to ISO8601.
-    mock_response['alerts'][0]['created'] = '2020-02-17T23:34:23.000Z'
-    mock_response['alerts'][1]['created'] = '2020-02-17T23:34:23.000Z'
-
-    assert response.outputs_prefix == 'HelloWorld.Alert'
-    assert response.outputs_key_field == 'alert_id'
-    assert response.outputs == mock_response['alerts']
-
-
-def test_get_alert(requests_mock):
-    """Tests helloworld-get-alert command function.
-
-    Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
+    Given:
+        - An app client object
+        - A user-profile argument that contains an email of a non-existing user in the application
+    When:
+        - Calling function get_user_command
+        - A bad response (500) is returned from the application API
+    Then:
+        - Ensure the resulted User Profile object holds information about the bad response.
     """
-    from HelloWorld import Client, get_alert_command
+    import demistomock as demisto
 
-    mock_response = util_load_json('test_data/get_alert.json')
-    requests_mock.get('https://test.com/api/v1/get_alert_details?alert_id=695b3238-05d6-4934-86f5-9fff3201aeb0',
-                      json=mock_response)
+    client = mock_client()
+    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
+    bad_response = Response()
+    bad_response.status_code = 500
+    bad_response._content = b'{"error": {"detail": "details", "message": "message"}}'
 
-    args = {
-        'alert_id': '695b3238-05d6-4934-86f5-9fff3201aeb0',
-    }
+    mocker.patch.object(demisto, 'error')
+    mocker.patch.object(Session, 'request', return_value=bad_response)
 
-    response = get_alert_command(client, args)
+    user_profile = IAMCommand().get_user(client, args)
+    outputs = get_outputs_from_user_profile(user_profile)
 
-    # We modify the timestamp from the raw mock_response of the API, because the
-    # integration changes the format from timestamp to ISO8601.
-    mock_response['created'] = '2020-04-17T14:43:59.000Z'
-
-    assert response.outputs == mock_response
-    assert response.outputs_prefix == 'HelloWorld.Alert'
-    assert response.outputs_key_field == 'alert_id'
+    assert outputs.get('action') == IAMActions.GET_USER
+    assert outputs.get('success') is False
+    assert outputs.get('errorCode') == 500
+    assert outputs.get('errorMessage') == 'message: details'
 
 
-def test_update_alert_status(requests_mock):
-    """Tests helloworld-update-alert-status command function.
-
-    Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
+def test_create_user_command__success(mocker):
     """
-    from HelloWorld import Client, update_alert_status_command
-
-    mock_response = util_load_json('test_data/update_alert_status.json')
-    requests_mock.get(
-        'https://test.com/api/v1/change_alert_status?alert_id=695b3238-05d6-4934-86f5-9fff3201aeb0&alert_status=CLOSED',
-        json=mock_response)
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'alert_id': '695b3238-05d6-4934-86f5-9fff3201aeb0',
-        'status': 'CLOSED'
-    }
-
-    response = update_alert_status_command(client, args)
-
-    # We modify the timestamp from the raw mock_response of the API, because the
-    # integration changes the format from timestamp to ISO8601.
-    mock_response['updated'] = '2020-04-17T14:45:12.000Z'
-
-    assert response.outputs == mock_response
-    assert response.outputs_prefix == 'HelloWorld.Alert'
-    assert response.outputs_key_field == 'alert_id'
-
-
-def test_ip(requests_mock):
-    """Tests the ip reputation command function.
-
-    Configures requests_mock instance to generate the appropriate
-    ip reputation API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
+    Given:
+        - An app client object
+        - A user-profile argument that contains an email of a non-existing user in the application
+    When:
+        - Calling function create_user_command
+    Then:
+        - Ensure a User Profile object with the user data is returned
     """
-    from HelloWorld import Client, ip_reputation_command
-    from CommonServerPython import Common
+    client = mock_client()
+    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
-    ip_to_check = '151.1.1.1'
-    mock_response = util_load_json('test_data/ip_reputation.json')
-    requests_mock.get(f'http://test.com/api/v1/ip?ip={ip_to_check}',
-                      json=mock_response)
+    mocker.patch.object(client, 'get_user', return_value=None)
+    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
+    mocker.patch.object(client, 'create_user', return_value=USER_APP_DATA)
 
-    client = Client(
-        base_url='http://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authorization': 'Bearer some_api_key'
-        }
-    )
+    user_profile = IAMCommand().create_user(client, args)
+    outputs = get_outputs_from_user_profile(user_profile)
 
-    args = {
-        'ip': ip_to_check,
-        'threshold': 65,
-    }
-
-    response = ip_reputation_command(client, args, 65)
-
-    assert response[0].outputs == mock_response
-    assert response[0].outputs_prefix == 'HelloWorld.IP'
-    assert response[0].outputs_key_field == 'ip'
-
-    # This command also returns Common.IP data
-    assert isinstance(response, list)
-    assert isinstance(response[0].indicator, Common.IP)
-    assert response[0].indicator.ip == ip_to_check
+    assert outputs.get('action') == IAMActions.CREATE_USER
+    assert outputs.get('success') is True
+    assert outputs.get('active') is True
+    assert outputs.get('id') == 'mock_id'
+    assert outputs.get('username') == 'mock_user_name'
+    assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
+    assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
 
 
-def test_domain(requests_mock):
-    """Tests the domain reputation command function.
-
-    Configures requests_mock instance to generate the appropriate
-    domain reputation API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
+def test_create_user_command__user_already_exists(mocker):
     """
-    from HelloWorld import Client, domain_reputation_command
-    from CommonServerPython import Common
-
-    domain_to_check = 'google.com'
-    mock_response = util_load_json('test_data/domain_reputation.json')
-    requests_mock.get(f'http://test.com/api/v1/domain?domain={domain_to_check}',
-                      json=mock_response)
-
-    client = Client(
-        base_url='http://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authorization': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'domain': domain_to_check,
-        'threshold': 65,
-    }
-
-    response = domain_reputation_command(client, args, 65)
-
-    # We modify the timestamps from the raw mock_response of the API, because the
-    # integration changes the format from timestamp to ISO8601.
-    mock_response['expiration_date'] = '2028-09-14T04:00:00.000Z'
-    mock_response['creation_date'] = '1997-09-15T04:00:00.000Z'
-    mock_response['updated_date'] = '2019-09-09T15:39:04.000Z'
-
-    assert response[0].outputs == mock_response
-    assert response[0].outputs_prefix == 'HelloWorld.Domain'
-    assert response[0].outputs_key_field == 'domain'
-
-    # This command also returns Common.Domain data
-    assert isinstance(response, list)
-    assert isinstance(response[0].indicator, Common.Domain)
-    assert response[0].indicator.domain == domain_to_check
-
-
-def test_fetch_incidents(requests_mock):
-    """Tests the fetch-incidents command function.
-
-    Configures requests_mock instance to generate the appropriate
-    get_alert API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
+    Given:
+        - An app client object
+        - A user-profile argument that contains an email of a user
+    When:
+        - The user already exists in the application and disabled
+        - allow-enable argument is false
+        - Calling function create_user_command
+    Then:
+        - Ensure the command is considered successful and the user is still disabled
     """
-    from HelloWorld import Client, fetch_incidents
+    client = mock_client()
+    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}, 'allow-enable': 'false'}
 
-    mock_response = util_load_json('test_data/search_alerts.json')
-    requests_mock.get(
-        'https://test.com/api/v1/get_alerts?alert_status=ACTIVE'
-        '&severity=Low%2CMedium%2CHigh%2CCritical&max_results=2'
-        '&start_time=1581944401', json=mock_response['alerts'])
+    mocker.patch.object(client, 'get_user', return_value=DISABLED_USER_APP_DATA)
+    mocker.patch.object(client, 'update_user', return_value=DISABLED_USER_APP_DATA)
 
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
+    user_profile = IAMCommand().create_user(client, args)
+    outputs = get_outputs_from_user_profile(user_profile)
 
-    last_run = {
-        'last_fetch': 1581944401  # Mon Feb 17 2020
-    }
+    assert outputs.get('action') == IAMActions.UPDATE_USER
+    assert outputs.get('success') is True
+    assert outputs.get('active') is False
+    assert outputs.get('id') == 'mock_id'
+    assert outputs.get('username') == 'mock_user_name'
+    assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
+    assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
 
-    _, new_incidents = fetch_incidents(
-        client=client,
-        max_results=2,
-        last_run=last_run,
-        alert_status='ACTIVE',
-        min_severity='Low',
-        alert_type=None,
-        first_fetch_time='3 days',
-    )
 
-    assert new_incidents == [
-        {
-            'name': 'Hello World Alert 100',
-            'occurred': '2020-02-17T23:34:23.000Z',
-            'rawJSON': json.dumps(mock_response['alerts'][0]),
-            'severity': 4,  # critical, this is XSOAR severity (already converted)
-        },
-        {
-            'name': 'Hello World Alert 200',
-            'occurred': '2020-02-17T23:34:23.000Z',
-            'rawJSON': json.dumps(mock_response['alerts'][1]),
-            'severity': 2,  # medium, this is XSOAR severity (already converted)
-        }
-    ]
+def test_update_user_command__non_existing_user(mocker):
+    """
+    Given:
+        - An app client object
+        - A user-profile argument that contains user data
+    When:
+        - The user does not exist in the application
+        - create-if-not-exists parameter is checked
+        - Create User command is enabled
+        - Calling function update_user_command
+    Then:
+        - Ensure the create action is executed
+        - Ensure a User Profile object with the user data is returned
+    """
+    client = mock_client()
+    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
+
+    mocker.patch.object(client, 'get_user', return_value=None)
+    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
+    mocker.patch.object(client, 'create_user', return_value=USER_APP_DATA)
+
+    user_profile = IAMCommand(create_if_not_exists=True).update_user(client, args)
+    outputs = get_outputs_from_user_profile(user_profile)
+
+    assert outputs.get('action') == IAMActions.CREATE_USER
+    assert outputs.get('success') is True
+    assert outputs.get('active') is True
+    assert outputs.get('id') == 'mock_id'
+    assert outputs.get('username') == 'mock_user_name'
+    assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
+    assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
+
+
+def test_update_user_command__command_is_disabled(mocker):
+    """
+    Given:
+        - An app client object
+        - A user-profile argument that contains user data
+    When:
+        - Update User command is disabled
+        - Calling function update_user_command
+    Then:
+        - Ensure the command is considered successful and skipped
+    """
+    client = mock_client()
+    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
+
+    mocker.patch.object(client, 'get_user', return_value=None)
+    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
+    mocker.patch.object(client, 'update_user', return_value=USER_APP_DATA)
+
+    user_profile = IAMCommand(is_update_enabled=False).update_user(client, args)
+    outputs = get_outputs_from_user_profile(user_profile)
+
+    assert outputs.get('action') == IAMActions.UPDATE_USER
+    assert outputs.get('success') is True
+    assert outputs.get('skipped') is True
+    assert outputs.get('reason') == 'Command is disabled.'
+
+
+def test_update_user_command__allow_enable(mocker):
+    """
+    Given:
+        - An app client object
+        - A user-profile argument that contains user data
+    When:
+        - The user is disabled in the application
+        - allow-enable argument is true
+        - Calling function update_user_command
+    Then:
+        - Ensure the user is enabled at the end of the command execution.
+    """
+    client = mock_client()
+    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'},
+            'allow-enable': 'true'}
+
+    mocker.patch.object(client, 'get_user', return_value=DISABLED_USER_APP_DATA)
+    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
+    mocker.patch.object(client, 'update_user', return_value=USER_APP_DATA)
+
+    user_profile = IAMCommand().update_user(client, args)
+    outputs = get_outputs_from_user_profile(user_profile)
+
+    assert outputs.get('action') == IAMActions.UPDATE_USER
+    assert outputs.get('success') is True
+    assert outputs.get('active') is True
+    assert outputs.get('id') == 'mock_id'
+    assert outputs.get('username') == 'mock_user_name'
+    assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
+    assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
+
+
+def test_disable_user_command__non_existing_user(mocker):
+    """
+    Given:
+        - An app client object
+        - A user-profile argument that contains an email of a user
+    When:
+        - create-if-not-exists parameter is unchecked
+        - The user does not exist in the application
+        - Calling function disable_user_command
+    Then:
+        - Ensure the command is considered successful and skipped
+    """
+    client = mock_client()
+    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
+
+    mocker.patch.object(client, 'get_user', return_value=None)
+
+    user_profile = IAMCommand().disable_user(client, args)
+    outputs = get_outputs_from_user_profile(user_profile)
+
+    assert outputs.get('action') == IAMActions.DISABLE_USER
+    assert outputs.get('success') is True
+    assert outputs.get('skipped') is True
+    assert outputs.get('reason') == IAMErrors.USER_DOES_NOT_EXIST[1]
+
+
+def test_get_mapping_fields_command(mocker):
+    """
+    Given:
+        - An app client object
+    When:
+        - User schema in the application contains the fields 'field1' and 'field2'
+        - Calling function get_mapping_fields_command
+    Then:
+        - Ensure a GetMappingFieldsResponse object that contains the application fields is returned
+    """
+    client = mock_client()
+    mocker.patch.object(client, 'get_app_fields', return_value={'field1': 'desc1', 'field2': 'desc2'})
+
+    mapping_response = get_mapping_fields(client)
+    mapping = mapping_response.extract_mapping()[0]
+
+    assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field1') == 'desc1'
+    assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field2') == 'desc2'
