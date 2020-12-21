@@ -25,7 +25,7 @@ ISSUE_INCIDENT_FIELDS = {'issueId': 'The ID of the issue to edit',
                          'priority': 'A priority name, for example "High" or "Medium".',
                          'dueDate': 'The due date for the issue (in the format 2018-03-11).',
                          'assignee': 'The name of the assignee.',
-                         'status': 'The name of the status.'
+                         'status': 'The name of the status.',
                          }
 BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication with passwords for Jira is no" \
                        " longer supported, please use an API Token or OAuth 1.0"
@@ -322,6 +322,10 @@ def create_incident_from_ticket(issue):
     else:
         issue['mirror_direction'] = None
 
+    issue['mirror_tags'] = [
+        demisto.params().get('comment_tag'),
+        demisto.params().get('file_tag'),
+    ]
     issue['mirror_instance'] = demisto.integrationInstance()
 
     return {
@@ -560,7 +564,7 @@ def get_comments_command(issue_id):
         demisto.results('No comments were found in the ticket')
 
 
-def add_comment_command(issue_id, comment, visibility=''):
+def add_comment(issue_id, comment, visibility=''):
     url = f'rest/api/latest/issue/{issue_id}/comment'
     comment = {
         "body": comment
@@ -570,7 +574,12 @@ def add_comment_command(issue_id, comment, visibility=''):
             "type": "role",
             "value": visibility
         }
-    data = jira_req('POST', url, json.dumps(comment), resp_type='json')
+    return jira_req('POST', url, json.dumps(comment), resp_type='json')
+
+
+def add_comment_command(issue_id, comment, visibility=''):
+
+    data = add_comment(issue_id, comment, visibility)
     md_list = []
     if not isinstance(data, list):
         data = [data]
@@ -758,31 +767,44 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def update_remote_args(delta):
-    pass
-
-
 def update_remote_system_command(args):
     remote_args = UpdateRemoteSystemArgs(args)
+    entries = remote_args.entries
+    remote_id = remote_args.remote_incident_id
+    demisto.info(f' ^^^^^^^^^ entries: {entries}\n')
+    demisto.info(f' ^^^^^^^^^ data: {remote_args.data}\n')
+    demisto.info(f' ^^^^^^^^^ incidentChanged: {remote_args.incident_changed}\n')
+    demisto.info(f' ^^^^^^^^^ remoteId: {remote_id}\n')
     try:
         if remote_args.delta and remote_args.incident_changed:
             demisto.info(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Jira '
-                          f'incident {remote_args.remote_incident_id}')
+                          f'incident {remote_id}')
 
-            demisto.info(f'Sending incident with remote ID [{remote_args.remote_incident_idupdate_remote_system_command}] to Jira\n')
-            edit_issue_command(remote_args.remote_incident_id, **remote_args.delta)
+            edit_issue_command(remote_id, **remote_args.delta)
 
         else:
-            demisto.info(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
+            demisto.info(f'Skipping updating remote incident fields [{remote_id}] '
                           f'as it is not new nor changed')
-
-        return remote_args.remote_incident_id
-
+        if entries:
+            for entry in entries:
+                demisto.info(f'Sending entry {entry.get("id")}, type: {entry.get("type")}')
+                if entry.get('type') == 3:
+                    demisto.info('Add new file\n')
+                    path_res = demisto.getFilePath(entry.get('id'))
+                    full_file_name = path_res.get('name')
+                    file_name, _ = os.path.splitext(full_file_name)
+                    upload_file(entry.get('id'), remote_id, file_name)
+                else:  # handle comments
+                    demisto.info('Add new comment\n')
+                    demisto.info(f' \n \n id: {remote_id}')
+                    demisto.info(f"\n \n content: {str(entry.get('contents', ''))}")
+                    add_comment(remote_id, str(entry.get('contents', '')))
     except Exception as e:
         demisto.info(f"Error in Jira outgoing mirror for incident {remote_args.remote_incident_id} \n"
                       f"Error message: {str(e)}")
-
-        return remote_args.remote_incident_id
+    finally:
+        demisto.info(f' ************now returns: {remote_id}')
+        return remote_id
 
 
 def get_remote_data_command(args) -> GetRemoteDataResponse:
