@@ -790,7 +790,7 @@ def execute_testing(tests_settings,
     if is_ami:
         ami = AMIConnection(server_ip)
         ami.clone_mock_data()
-        proxy = MITMProxy(server_ip, logging_manager)
+        proxy = MITMProxy(server_ip, logging_manager, build_number=build_number, branch_name=build_name)
 
     failed_playbooks = []
     succeed_playbooks = []
@@ -855,10 +855,8 @@ def execute_testing(tests_settings,
                                          skipped_integration, unmockable_integrations)
         if is_ami:
             tests_data_keeper.add_proxy_related_test_data(proxy)
-
-            if build_name == 'master':
-                logging_manager.debug("Pushing new/updated mock files to mock git repo.", real_time=True)
-                ami.upload_mock_files(build_name, build_number)
+            if proxy.should_update_mock_repo:
+                proxy.push_mock_files()
 
         if playbook_skipped_integration and build_name == 'master':
             comment = 'The following integrations are skipped and critical for the test:\n {}'. \
