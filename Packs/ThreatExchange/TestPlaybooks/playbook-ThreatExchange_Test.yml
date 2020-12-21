@@ -48,7 +48,7 @@ tasks:
     scriptarguments:
       headers: {}
       ip:
-        simple: ${IP.Address}
+        simple: ${IP}
     separatecontext: false
     view: |-
       {
