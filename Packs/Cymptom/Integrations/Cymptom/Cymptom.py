@@ -81,7 +81,6 @@ def api_test(client: Client):
     """
     try:
         results = client.api_test()
-        # TODO: Validate api key
     except Exception as e:
         return_error(
             f"There was an error in testing connection to URL: {client._base_url}, API Key: {client._headers['Authorization'].split()[-1]}. "
@@ -168,7 +167,7 @@ def get_users_with_cracked_passwords(client: Client):
     privileged_users = []
     unprivileged_users = []
 
-    privileged = True if args.get("privileged") == "True" else False
+    privileged = argToBoolean(args.get("privileged", "True"))
 
     for mitigation in mitigations_results["mitigations"]:
 

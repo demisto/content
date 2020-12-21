@@ -1,5 +1,8 @@
 Cymptom is a Breach and Attack Simulation solution that revolutionizes the existing approach by transforming attack simulation into a data analysis question. Cymptom agentless scanning brings real-time always-on visibility into the entire security posture.
 This integration was integrated and tested with version xx of Cymptom
+
+This integration was integrated and tested with version 0.3.4 of Cymptom.
+
 ## Configure Cymptom on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
