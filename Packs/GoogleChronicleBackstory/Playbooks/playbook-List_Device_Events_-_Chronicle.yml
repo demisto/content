@@ -2,7 +2,7 @@ id: List Device Events - Chronicle
 version: -1
 name: List Device Events - Chronicle
 description: |-
-  This playbook receives chronicle asset identifier information and gives out a list of events related to each one of them.
+  This playbook receives ChronicleAsset identifier information and provides a list of events related to each one of them.
   Supported integration:
   - Chronicle
 starttaskid: "0"
@@ -66,8 +66,8 @@ tasks:
     task:
       id: 41ee7b16-7816-4c79-8585-263332cf6ab9
       version: -1
-      name: Is there a Hostname associated with the ChronicleAsset?
-      description: Checks if there is a Hostname associated with the ChronicleAsset.
+      name: Is there a hostname associated with the ChronicleAsset?
+      description: Checks if there is a hostname associated with the ChronicleAsset.
       type: condition
       iscommand: false
       brand: ""
@@ -105,9 +105,9 @@ tasks:
     task:
       id: 428f3108-2c45-4e1d-8442-9c1d9ac7c213
       version: -1
-      name: Get the list of events for the IP Address
+      name: Get the list of events for the IP address
       description: Gets the list of events discovered within your enterprise for the
-        specified IP Address within the specified time range.
+        specified IP address within the specified time range.
       script: '|||gcb-list-events'
       type: regular
       iscommand: true
@@ -149,9 +149,9 @@ tasks:
     task:
       id: abcf21df-13fb-4618-84fc-45bbdc354b73
       version: -1
-      name: Get the list of events for the Product ID
+      name: Get the list of events for the product ID
       description: Gets the list of events discovered within your enterprise for the
-        specified Product ID within the specified time range.
+        specified product ID within the specified time range.
       script: '|||gcb-list-events'
       type: regular
       iscommand: true
@@ -193,9 +193,9 @@ tasks:
     task:
       id: 49bc1b9b-140a-4a5f-8c7c-290d2d8890a0
       version: -1
-      name: Get the list of events for the MAC Address
+      name: Get the list of events for the MAC address
       description: Gets the list of events discovered within your enterprise for the
-        specified MAC Address within the specified time range.
+        specified MAC address within the specified time range.
       script: '|||gcb-list-events'
       type: regular
       iscommand: true
@@ -237,7 +237,7 @@ tasks:
     task:
       id: 6a74941f-586b-4452-834a-5e96681d2a30
       version: -1
-      name: Get the list of events for the Hostname
+      name: Get the list of events for the hostname
       description: Gets the list of events discovered within your enterprise for the
         specified hostname within the specified time range.
       script: '|||gcb-list-events'
@@ -281,8 +281,8 @@ tasks:
     task:
       id: 7029544c-817f-45a8-8905-d5209567f3f2
       version: -1
-      name: Is there an IP Address associated with the ChronicleAsset?
-      description: Checks if there is an IP Address associated with the ChronicleAsset.
+      name: Is there an IP address associated with the ChronicleAsset?
+      description: Checks if there is an IP address associated with the ChronicleAsset.
       type: condition
       iscommand: false
       brand: ""
@@ -320,8 +320,8 @@ tasks:
     task:
       id: 23202ff9-f864-485a-8d22-47327d028c4a
       version: -1
-      name: Is there a MAC Address associated with the ChronicleAsset?
-      description: Checks if there is a MAC Address associated with the ChronicleAsset.
+      name: Is there a MAC address associated with the ChronicleAsset?
+      description: Checks if there is a MAC address associated with the ChronicleAsset.
       type: condition
       iscommand: false
       brand: ""
@@ -359,8 +359,8 @@ tasks:
     task:
       id: 26d40f29-7d15-45bc-89df-2e80efc22b4a
       version: -1
-      name: Is there a Product ID associated with the ChronicleAsset?
-      description: Checks if there is a Product ID associated with the ChronicleAsset.
+      name: Is there a product ID associated with the ChronicleAsset?
+      description: Checks if there is a product ID associated with the ChronicleAsset.
       type: condition
       iscommand: false
       brand: ""
@@ -398,9 +398,8 @@ tasks:
     task:
       id: 072bb478-718c-41ae-8ec5-96e853448527
       version: -1
-      name: Is Chronicle integration enabled?
-      description: Checks whether there is an active instance of the Chronicle integration
-        enabled.
+      name: Is the Chronicle integration enabled?
+      description: Checks whether there is an active instance of the Chronicle integration.
       type: condition
       iscommand: false
       brand: ""
@@ -509,22 +508,22 @@ inputs:
 - key: chronicleasset_hostname
   value: {}
   required: false
-  description: The Hostname associated with the ChronicleAsset.
+  description: The hostname associated with the ChronicleAsset.
   playbookInputQuery:
 - key: chronicleasset_ip
   value: {}
   required: false
-  description: The IP Address associated with the ChronicleAsset.
+  description: The IP address associated with the ChronicleAsset.
   playbookInputQuery:
 - key: chronicleasset_mac
   value: {}
   required: false
-  description: The MAC Address associated with the ChronicleAsset.
+  description: The MAC address associated with the ChronicleAsset.
   playbookInputQuery:
 - key: chronicleasset_product_id
   value: {}
   required: false
-  description: The Product ID associated with the ChronicleAsset.
+  description: The product ID associated with the ChronicleAsset.
   playbookInputQuery:
 outputs:
 - contextPath: GoogleChronicleBackstory.Events
