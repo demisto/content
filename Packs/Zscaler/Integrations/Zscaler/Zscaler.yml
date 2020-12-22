@@ -391,7 +391,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to retrieve only customed categories to the War Room. Default
+      description: Whether to retrieve only custom categories to the War Room. Default
         is 'false'.
       isArray: false
       name: custom_categories_only
