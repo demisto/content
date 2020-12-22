@@ -1,0 +1,37 @@
+!tenable-io-list-scans folderId="34" examplelastModificationDate="2020-11-01"
+
+
+!tenable-io-launch-scan scanId="25" scanTargets="10.0.0.1"
+
+
+!tenable-io-get-scan-report scanId="25"
+
+
+!tenable-io-get-vulnerability-details vulnerabilityId="10114"
+
+
+!tenable-io-get-vulnerabilities-by-asset hostname="example.hostname"
+
+
+!tenable-io-get-scan-status scanId="25"
+
+
+!tenable-io-pause-scan scanId="25"
+
+
+!tenable-is-resume-scan scanId="25"
+
+
+!tenable-io-add-tags payload="25"
+
+
+!tenable-io-resume-scans scanIds="25"
+
+
+!tenable-io-pause-scans scanIds="25"
+
+
+!tenable-io-launch-scans scan_ids="25"
+
+
+!tenable-io-check-temaplates 

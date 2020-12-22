@@ -1,54 +1,47 @@
-category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Tenable.io
   version: -1
+name: Tenable.io
+display: Tenable.io
+category: Data Enrichment & Threat Intelligence
+description: A comprehensive asset centric solution to accurately track resources
+  while accommodating dynamic assets such as cloud, mobile devices, containers and
+  web applications.
 configuration:
-- defaultvalue: https://cloud.tenable.com/
-  display: URL
+- display: URL
   name: url
-  required: true
+  defaultvalue: https://cloud.tenable.com/
   type: 0
+  required: true
 - display: Access Key
   name: access-key
-  required: true
   type: 4
+  required: true
 - display: Secret Key
   name: secret-key
-  required: true
   type: 4
+  required: true
 - display: Trust any certificate (not secure)
   name: unsecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-description: A comprehensive asset centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers and web applications.
-display: Tenable.io
-name: Tenable.io
+  required: false
 script:
+  script: ''
+  type: python
   commands:
-  - arguments:
-    - default: false
+  - name: tenable-io-list-scans
+    arguments:
+    - name: folderId
       description: |-
         The ID of the folder whose scans should be listed. Scans are stored
         in specific folders on Tenable. e.g : folderId=8
-      isArray: false
-      name: folderId
-      required: false
-      secret: false
-    - default: false
-      description: |-
-        Limit the results to those that have only changed since this time. Format: YYYY-MM-DD
-      isArray: false
-      name: lastModificationDate
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrive scans from the Tenable platform.
-    execution: false
-    name: tenable-io-list-scans
+    - name: lastModificationDate
+      description: 'Limit the results to those that have only changed since this time.
+        Format: YYYY-MM-DD'
     outputs:
     - contextPath: TenableIO.Scan.Id
       description: The unique id of the scan.
@@ -60,7 +53,8 @@ script:
       description: The targets to be scanned.
       type: string
     - contextPath: TenableIO.Scan.Status
-      description: The status of the scan (completed, aborted, imported, pending, running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
+      description: The status of the scan (completed, aborted, imported, pending,
+        running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
       type: string
     - contextPath: TenableIO.Scan.StartTime
       description: The scheduled start time for the scan.
@@ -92,23 +86,17 @@ script:
     - contextPath: TenableIO.Scan.FolderId
       description: The unique id of the folder where the scan has been stored.
       type: number
-  - arguments:
-    - default: true
-      description: The id of the scan to launch.
-      isArray: false
-      name: scanId
+    description: Retrive scans from the Tenable platform.
+  - name: tenable-io-launch-scan
+    arguments:
+    - name: scanId
       required: true
-      secret: false
-    - default: false
-      description: If specified, these targets will be scanned instead of the default. Value can be an array where each index is a target, or an array with a single index of comma separated targets.
-      isArray: false
-      name: scanTargets
-      required: false
-      secret: false
-    deprecated: false
-    description: Lauch a scan with existing or custom targets. (You can specify custom targets in the arguements of this command.)
-    execution: false
-    name: tenable-io-launch-scan
+      default: true
+      description: The id of the scan to launch.
+    - name: scanTargets
+      description: If specified, these targets will be scanned instead of the default.
+        Value can be an array where each index is a target, or an array with a single
+        index of comma separated targets.
     outputs:
     - contextPath: TenableIO.Scan.Id
       description: The unique id of the scan.
@@ -117,41 +105,33 @@ script:
       description: The targets to be scanned.
       type: string
     - contextPath: TenableIO.Scan.Status
-      description: The status of the scan (completed, aborted, imported, pending, running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
+      description: The status of the scan (completed, aborted, imported, pending,
+        running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
       type: string
-  - arguments:
-    - default: true
-      description: The id of the scan to retrieve.
-      isArray: false
-      name: scanId
+    description: Lauch a scan with existing or custom targets. (You can specify custom
+      targets in the arguements of this command.)
+  - name: tenable-io-get-scan-report
+    arguments:
+    - name: scanId
       required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'no'
-      description: If detailed is true, the report will contain remediations and hosts information as well for the given scan. Otherwise the report will only have vulnerabilities.
-      isArray: false
-      name: detailed
+      default: true
+      description: The id of the scan to retrieve.
+    - name: detailed
+      auto: PREDEFINED
       predefined:
-      - 'yes'
-      - 'no'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'no'
+      - "yes"
+      - "no"
+      description: If detailed is true, the report will contain remediations and hosts
+        information as well for the given scan. Otherwise the report will only have
+        vulnerabilities.
+      defaultValue: "no"
+    - name: info
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
       description: Return the basic details of the given scan.
-      isArray: false
-      name: info
-      predefined:
-      - 'yes'
-      - 'no'
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrive scan-report for the given scan.
-    execution: false
-    name: tenable-io-get-scan-report
+      defaultValue: "no"
     outputs:
     - contextPath: TenableIO.Scan.Id
       description: The unique id of the scan.
@@ -163,7 +143,8 @@ script:
       description: The targets to be scanned.
       type: string
     - contextPath: TenableIO.Scan.Status
-      description: The status of the scan (completed, aborted, imported, pending, running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
+      description: The status of the scan (completed, aborted, imported, pending,
+        running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
       type: string
     - contextPath: TenableIO.Scan.StartTime
       description: The scheduled start time for the scan.
@@ -226,7 +207,8 @@ script:
       description: The unique id of the remediation.
       type: string
     - contextPath: TenableIO.Remediations.Description
-      description: Specific information related to the vulnerability and steps to remedy.
+      description: Specific information related to the vulnerability and steps to
+        remedy.
       type: string
     - contextPath: TenableIO.Remediations.AffectedHosts
       description: The number of hosts affected.
@@ -234,29 +216,29 @@ script:
     - contextPath: TenableIO.Remediations.AssociatedVulnerabilities
       description: The number of vulnerabilities associated with the remedy.
       type: number
-  - arguments:
-    - default: true
-      description: The unique ID of the vulnerability.
-      isArray: false
-      name: vulnerabilityId
+    - contextPath: TenableIO.Assets.Severity
+      description: Overall Severity For the host
+    description: Retrive scan-report for the given scan.
+  - name: tenable-io-get-vulnerability-details
+    arguments:
+    - name: vulnerabilityId
       required: true
-      secret: false
-    deprecated: false
-    description: Retrieve details for the given vulnerability.
-    execution: false
-    name: tenable-io-get-vulnerability-details
+      default: true
+      description: The unique ID of the vulnerability.
     outputs:
     - contextPath: TenableIO.Vulnerabilities.Name
       description: The name of the vulnerability.
       type: string
     - contextPath: TenableIO.Vulnerabilities.Severity
-      description: Integer [0-4] indicating how severe the vulnerability is, where 0 is info only.
+      description: Integer [0-4] indicating how severe the vulnerability is, where
+        0 is info only.
       type: number
     - contextPath: TenableIO.Vulnerabilities.Type
       description: The type of the vulnerability.
       type: string
     - contextPath: TenableIO.Vulnerabilities.Family
-      description: Object containing plugin information such as family, type, and publication and modification dates.
+      description: Object containing plugin information such as family, type, and
+        publication and modification dates.
       type: string
     - contextPath: TenableIO.Vulnerabilities.Description
       description: The description of the vulnerability.
@@ -292,31 +274,19 @@ script:
       description: The Common Vulnerability Scoring System version 3 vector.
       type: string
     - contextPath: TenableIO.Vulnerabilities.Cvss3BaseScore
-      description: The Common Vulnerability Scoring System version 3 allotted base score.
+      description: The Common Vulnerability Scoring System version 3 allotted base
+        score.
       type: string
-  - arguments:
-    - default: false
+    description: Retrieve details for the given vulnerability.
+  - name: tenable-io-get-vulnerabilities-by-asset
+    arguments:
+    - name: hostname
       description: Hostname of the asset.
-      isArray: false
-      name: hostname
-      required: false
-      secret: false
-    - default: false
+    - name: ip
       description: IP of the asset.
-      isArray: false
-      name: ip
-      required: false
-      secret: false
-    - default: false
-      description: The number of days of data prior to and including today that should be returned.
-      isArray: false
-      name: dateRange
-      required: false
-      secret: false
-    deprecated: false
-    description: Get a list of up to 5000 of the vulnerabilities recorded for a given asset.
-    execution: false
-    name: tenable-io-get-vulnerabilities-by-asset
+    - name: dateRange
+      description: The number of days of data prior to and including today that should
+        be returned.
     outputs:
     - contextPath: TenableIO.Assets.Hostname
       description: Hostname of the asset.
@@ -331,7 +301,8 @@ script:
       description: The name of the vulnerability's.
       type: string
     - contextPath: TenableIO.Vulnerabilities.Severity
-      description: Integer [0-4] indicating how severe the vulnerability is, where 0 is info only.
+      description: Integer [0-4] indicating how severe the vulnerability is, where
+        0 is info only.
       type: number
     - contextPath: TenableIO.Vulnerabilities.Family
       description: The vulnerability's family.
@@ -340,21 +311,17 @@ script:
       description: The number of times the vulnerability was found.
       type: number
     - contextPath: TenableIO.Vulnerabilities.VulnerabilityState
-      description: The current state of the reported vulnerability (Active, Fixed, New, etc.)
+      description: The current state of the reported vulnerability (Active, Fixed,
+        New, etc.)
       type: string
-  - arguments:
-    - default: true
-      description: The unique ID of the Scan.
-      isArray: false
-      name: scanId
+    description: Get a list of up to 5000 of the vulnerabilities recorded for a given
+      asset.
+  - name: tenable-io-get-scan-status
+    arguments:
+    - name: scanId
       required: true
-      secret: false
-    deprecated: false
-    description: |-
-      Check the status of a specific scan using its ID. The status can
-      hold following possible values : Running, Completed and Empty (Ready to run).
-    execution: false
-    name: tenable-io-get-scan-status
+      default: true
+      description: The unique ID of the Scan.
     outputs:
     - contextPath: TenableIO.Scan.Id
       description: The unique ID of the scan specified.
@@ -362,13 +329,81 @@ script:
     - contextPath: TenableIO.Scan.Status
       description: The status of the scan specified.
       type: string
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+    description: |-
+      Check the status of a specific scan using its ID. The status can
+      hold following possible values : Running, Completed and Empty (Ready to run).
+  - name: tenable-io-pause-scan
+    arguments:
+    - name: scanId
+      required: true
+      description: The ID of the scan
+    outputs:
+    - contextPath: TenableIO.Scan.Id
+      description: The unique id of the scan.
+    - contextPath: TenableIO.Scan.Status
+      description: The status of the scan (completed, aborted, imported, pending,
+        running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
+    description: Pauses a running scan given the scan ID
+  - name: tenable-io-resume-scan
+    arguments:
+    - name: scanId
+      required: true
+      description: Scan ID to be resumed
+    outputs:
+    - contextPath: TenableIO.Scan.Id
+      description: The unique id of the scan.
+    - contextPath: TenableIO.Scan.Status
+      description: The status of the scan (completed, aborted, imported, pending,
+        running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
+    description: Resumes a paused scan given the scan ID
+  - name: tenable-io-add-tags
+    arguments:
+    - name: payload
+      required: true
+      description: Payload for REST call
+      isArray: true
+    description: Add tags to Tenable tenant
+  - name: tenable-io-resume-scans
+    arguments:
+    - name: scanIds
+      required: true
+      description: Comma separated scan ID's
+      isArray: true
+    description: Resume all scans inputted as an array
+  - name: tenable-io-pause-scans
+    arguments:
+    - name: scanIds
+      required: true
+      description: 'Comma separated Scan ID''s '
+      isArray: true
+    description: Pauses all scans imputted as ana rray
+  - name: tenable-io-launch-scans
+    arguments:
+    - name: scan_ids
+      required: true
+      description: Comma separated list of scan ID's
+    description: Launches multiple scans
+  - name: tenable-io-create-scan
+    arguments:
+    - name: scanSettings
+      required: true
+      description: JSON data to build the scan from
+    outputs:
+    - contextPath: Tenable.IO.NewScan.Id
+      description: ID of the scan that was just created
+      type: string
+    - contextPath: Tenable.IO.NewScan.ScanIds
+      description: List of IDs created
+      type: string
+    description: Creates a new scan from a JSON body
+  - name: tenable-io-check-temaplates
+    arguments: []
+    outputs:
+    - contextPath: templates
+      description: The temaplates
+    description: Returns Info about scan templates
   runonce: false
-  script: '-'
   subtype: python3
-  type: python
+fromversion: 5.0.0
 tests:
 - Tenable.io test
-fromversion: 5.0.0

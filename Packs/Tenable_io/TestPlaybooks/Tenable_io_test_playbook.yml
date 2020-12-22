@@ -1,0 +1,1024 @@
+id: Tenable_io_test_playbook
+version: -1
+name: Tenable_io_test_playbook
+fromversion: 5.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: tenable-io-list-scans
+      description: ''
+      script: '|||tenable-io-list-scans'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Target
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.StartTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.EndTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Scanner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Policy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.CreationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.LastModificationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.FolderId
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: tenable-io-launch-scan
+      description: ''
+      script: '|||tenable-io-launch-scan'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '5'
+    type: condition
+    task:
+      id: '5'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Targets
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Status
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: tenable-io-get-scan-report
+      description: ''
+      script: '|||tenable-io-get-scan-report'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '7'
+    type: condition
+    task:
+      id: '7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Targets
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.StartTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.EndTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Scanner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Policy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Synopsis
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Solution
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.FirstSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.LastSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.VulnerabilityOccurences
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Assets.Hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Assets.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Assets.Critical
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Assets.High
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Assets.Medium
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Assets.Low
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Remediations.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Remediations.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Remediations.AffectedHosts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Remediations.AssociatedVulnerabilities
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Assets.Severity
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '8'
+    type: regular
+    task:
+      id: '8'
+      version: -1
+      name: tenable-io-get-vulnerability-details
+      description: ''
+      script: '|||tenable-io-get-vulnerability-details'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '9'
+    type: condition
+    task:
+      id: '9'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Family
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Synopsis
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Solution
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.FirstSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.LastSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.PublicationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.ModificationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.VulnerabilityOccurences
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.CvssVector
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.CvssBaseScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Cvss3Vector
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Cvss3BaseScore
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '10'
+    type: regular
+    task:
+      id: '10'
+      version: -1
+      name: tenable-io-get-vulnerabilities-by-asset
+      description: ''
+      script: '|||tenable-io-get-vulnerabilities-by-asset'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: '11'
+    type: condition
+    task:
+      id: '11'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Assets.Hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Assets.Vulnerabilities
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.Family
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.VulnerabilityOccurences
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerabilities.VulnerabilityState
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: '12'
+    type: regular
+    task:
+      id: '12'
+      version: -1
+      name: tenable-io-get-scan-status
+      description: ''
+      script: '|||tenable-io-get-scan-status'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: '13'
+    type: condition
+    task:
+      id: '13'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Status
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: '14'
+    type: regular
+    task:
+      id: '14'
+      version: -1
+      name: tenable-io-pause-scan
+      description: ''
+      script: '|||tenable-io-pause-scan'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: '15'
+    taskid: '15'
+    type: condition
+    task:
+      id: '15'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Status
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '16'
+    type: regular
+    task:
+      id: '16'
+      version: -1
+      name: tenable-io-resume-scan
+      description: ''
+      script: '|||tenable-io-resume-scan'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: '17'
+    taskid: '17'
+    type: condition
+    task:
+      id: '17'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Scan.Status
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: '18'
+    type: regular
+    task:
+      id: '18'
+      version: -1
+      name: tenable-io-add-tags
+      description: ''
+      script: '|||tenable-io-add-tags'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: 19
+    taskid: '19'
+    type: regular
+    task:
+      id: '19'
+      version: -1
+      name: tenable-io-resume-scans
+      description: ''
+      script: '|||tenable-io-resume-scans'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '20'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: 20
+    taskid: '20'
+    type: regular
+    task:
+      id: '20'
+      version: -1
+      name: tenable-io-pause-scans
+      description: ''
+      script: '|||tenable-io-pause-scans'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: 21
+    taskid: '21'
+    type: regular
+    task:
+      id: '21'
+      version: -1
+      name: tenable-io-launch-scans
+      description: ''
+      script: '|||tenable-io-launch-scans'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '22'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: 22
+    taskid: '22'
+    type: regular
+    task:
+      id: '22'
+      version: -1
+      name: tenable-io-create-scan
+      description: ''
+      script: '|||tenable-io-create-scan'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: '23'
+    taskid: '23'
+    type: condition
+    task:
+      id: '23'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '24'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tenable.IO.NewScan.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tenable.IO.NewScan.ScanIds
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: 24
+    taskid: '24'
+    type: regular
+    task:
+      id: '24'
+      version: -1
+      name: tenable-io-check-temaplates
+      description: ''
+      script: '|||tenable-io-check-temaplates'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: '25'
+    taskid: '25'
+    type: condition
+    task:
+      id: '25'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: templates
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '26':
+    id: '26'
+    taskid: '26'
+    type: title
+    task:
+      id: '26'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
