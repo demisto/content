@@ -279,21 +279,21 @@ script:
     \   date_str_or_dt=event.get('date', ''),\n            date_format='%Y-%m-%dT%H:%M:%S.000Z')\n\
     \        if last_date < event_date:\n            last_date = event_date\n    \
     \        latest_event = event\n\n    return latest_event\n\n\n''' COMMAND FUNCTIONS\
-    \ '''\n\n\ndef test_module(client: Client, api_key: str, first_fetch:str) -> str:\n\
-    \    \"\"\"Tests API connectivity and authentication'\n\n    Returning 'ok' indicates\
-    \ that the integration works like it is supposed to.\n    Connection to the service\
-    \ is successful.\n    Raises exceptions if something goes wrong.\n\n    :type\
-    \ client: ``Client``\n    :param client: Cognni client to use\n\n    :return:\
-    \ 'ok' if test passed, anything else will fail the test.\n    :rtype: ``str``\n\
-    \    \"\"\"\n    try:\n        answer = ''\n        fetch_key_res = client.fetch_key(api_key)\n\
-    \        access_token = fetch_key_res['token']\n    except Exception as e:\n \
-    \       answer += 'The api key is invalid'\n    try:\n        datetime.datetime.strptime(first_fetch,\
-    \ '%Y-%m-%d')\n    except ValueError:\n        answer += 'Incorrect data format\
-    \ on \"first fetch time\", should be YYYY-MM-DD'\n\n    if not answer:\n     \
-    \   return 'ok'\n    else:\n        return answer\n\n\ndef fetch_incidents(client:\
-    \ Client, last_run: Dict[str, int],\n                    first_fetch_time: Optional[int],\n\
-    \                    events_limit: int,\n                    min_severity: int\n\
-    \                    ) -> Tuple[Dict[str, int], List[dict]]:\n    \"\"\"This function\
+    \ '''\n\n\ndef test_module(client: Client, api_key: str, first_fetch: int) ->\
+    \ str:\n    \"\"\"Tests API connectivity and authentication'\n\n    Returning\
+    \ 'ok' indicates that the integration works like it is supposed to.\n    Connection\
+    \ to the service is successful.\n    Raises exceptions if something goes wrong.\n\
+    \n    :type client: ``Client``\n    :param client: Cognni client to use\n\n  \
+    \  :return: 'ok' if test passed, anything else will fail the test.\n    :rtype:\
+    \ ``str``\n    \"\"\"\n    try:\n        answer = ''\n        client.fetch_key(api_key)\n\
+    \    except ValueError:\n        answer += 'The api key is invalid'\n    try:\n\
+    \        timestamp_to_datestring(timestamp=first_fetch * 1000, date_format=\"\
+    %Y-%m-%d\")\n    except ValueError:\n        answer += 'Incorrect first fetch\
+    \ time format, should be YYYY-MM-DD'\n\n    if not answer:\n        return 'ok'\n\
+    \    else:\n        return answer\n\n\ndef fetch_incidents(client: Client, last_run:\
+    \ Dict[str, int],\n                    first_fetch_time: Optional[int],\n    \
+    \                events_limit: int,\n                    min_severity: int\n \
+    \                   ) -> Tuple[Dict[str, int], List[dict]]:\n    \"\"\"This function\
     \ retrieves new alerts every interval (default is 1 minute).\n\n    This function\
     \ has to implement the logic of making sure that incidents are\n    fetched only\
     \ once and no incidents are missed. By default it's invoked by\n    XSOAR every\
@@ -370,18 +370,20 @@ script:
     \  )\n    assert isinstance(first_fetch_time, int)\n    proxy = demisto.params().get('proxy',\
     \ False)\n\n    demisto.debug(f'Command being called is {demisto.command()}')\n\
     \    try:\n        client = Client(\n            base_url=base_url,\n        \
-    \    verify=verify_certificate,\n            proxy=proxy)\n\n        headers =\
-    \ {\n            'Content-Type': 'application/json',\n        }\n\n        if\
-    \ demisto.command() == 'test-module':\n            # This is the call made when\
-    \ pressing the integration Test button.\n            result = test_module(client,\
-    \ api_key, first_fetch_time)\n            return_results(result)\n        else:\n\
-    \            client = Client(\n                base_url=base_url,\n          \
-    \      verify=verify_certificate,\n                headers=headers,\n        \
-    \        proxy=proxy)\n\n            if demisto.command() == 'fetch-incidents':\n\
-    \                min_severity = demisto.params().get('min_severity', None)\n\n\
-    \                max_fetch = arg_to_int(\n                    arg=demisto.params().get('max_fetch'),\n\
-    \                    arg_name='max_fetch',\n                    required=False\n\
-    \                )\n                if not max_fetch or max_fetch > MAX_EVENTS_TO_FETCH:\n\
+    \    verify=verify_certificate,\n            proxy=proxy)\n\n        if demisto.command()\
+    \ == 'test-module':\n            # This is the call made when pressing the integration\
+    \ Test button.\n            result = test_module(client, api_key, first_fetch_time)\n\
+    \            return_results(result)\n\n        else:\n            fetch_key_res\
+    \ = client.fetch_key(api_key)\n            access_token = fetch_key_res['token']\n\
+    \n            headers = {\n                'Authorization': f'Bearer {access_token}',\n\
+    \                'Content-Type': 'application/json',\n            }\n        \
+    \    client = Client(\n                base_url=base_url,\n                verify=verify_certificate,\n\
+    \                headers=headers,\n                proxy=proxy)\n\n          \
+    \  if demisto.command() == 'fetch-incidents':\n                min_severity =\
+    \ demisto.params().get('min_severity', None)\n\n                max_fetch = arg_to_int(\n\
+    \                    arg=demisto.params().get('max_fetch'),\n                \
+    \    arg_name='max_fetch',\n                    required=False\n             \
+    \   )\n                if not max_fetch or max_fetch > MAX_EVENTS_TO_FETCH:\n\
     \                    max_fetch = MAX_EVENTS_TO_FETCH\n\n                next_run,\
     \ incidents = fetch_incidents(\n                    client=client,\n         \
     \           events_limit=max_fetch,\n                    last_run=demisto.getLastRun(),\

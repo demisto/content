@@ -365,7 +365,7 @@ def find_latest_event(events: Iterable[Dict[str, Any]]) -> Optional[Dict[str, An
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, api_key: str, first_fetch:str) -> str:
+def test_module(client: Client, api_key: str, first_fetch: int) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -380,11 +380,11 @@ def test_module(client: Client, api_key: str, first_fetch:str) -> str:
     """
     try:
         answer = ''
-        fetch_key_res = client.fetch_key(api_key)
+        client.fetch_key(api_key)
     except ValueError:
         answer += 'The api key is invalid'
     try:
-        datetime.datetime.strptime(first_fetch, '%Y-%m-%d')
+        timestamp_to_datestring(timestamp=first_fetch * 1000, date_format="%Y-%m-%d")
     except ValueError:
         answer += 'Incorrect first fetch time format, should be YYYY-MM-DD'
 
