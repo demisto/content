@@ -3,8 +3,8 @@ version: -1
 name: ChronicleAsset Investigation - Chronicle
 description: This playbook receives indicators from its parent playbook, performs
   enrichment and investigation for each one of them, provides an opportunity to isolate
-  and block the Hostname or IP Address associated with the current indicator, and
-  gives out a list of isolated and blocked entities. This playbook also lists out
+  and block the hostname or IP address associated with the current indicator, and
+  gives out a list of isolated and blocked entities. This playbook also lists 
   the events fetched for the asset identifier information associated with the indicator.
 starttaskid: "0"
 tasks:
@@ -108,7 +108,7 @@ tasks:
       version: -1
       name: Clear the list of events associated with the previous indicator from the
         context
-      description: Deletes "GoogleChronicleBackstory.Events" field from the context
+      description: Deletes the "GoogleChronicleBackstory.Events" field from the context
         to clear the events associated with the previous indicator from the context.
       scriptName: DeleteContext
       type: regular
@@ -147,7 +147,7 @@ tasks:
       id: d58e6261-2f7e-42d7-8992-7aab2af9507a
       version: -1
       name: Search ChronicleAsset indicator
-      description: Searches for the indicator associated with the chronicle asset
+      description: Searches for the indicator associated with the Chronicle asset
         value passed as an input to this playbook.
       scriptName: SixgillSearchIndicators
       type: regular
@@ -247,9 +247,8 @@ tasks:
       version: -1
       name: List Device Events - Chronicle
       description: |-
-        This playbook receives chronicle asset identifier information and gives out a list of events related to each one of them.
-        Supported integration:
-        - Chronicle
+        This playbook receives Chronicle asset identifier information and gives out a list of events related to each one of them.
+        Supported integration: Chronicle
       playbookName: List Device Events - Chronicle
       type: playbook
       iscommand: false
@@ -576,7 +575,7 @@ tasks:
       version: -1
       name: Hostname And IP Address Investigation And Remediation - Chronicle
       description: |-
-        This playbook receives ChronicleAsset type of indicators from its parent playbook "ChronicleAsset Investigation - Chronicle", performs enrichment and investigation for each one of them, provides an opportunity to isolate and block the Hostname or IP Address associated with the current indicator, and gives out a list of isolated and blocked entities.
+        This playbook receives the ChronicleAsset type of indicators from its parent playbook "ChronicleAsset Investigation - Chronicle", performs enrichment and investigation for each one of them, provides an opportunity to isolate and block the hostname or IP address associated with the current indicator, and gives out a list of isolated and blocked entities.
       playbookName: Hostname And IP Address Investigation And Remediation - Chronicle
       type: playbook
       iscommand: false
@@ -633,8 +632,8 @@ tasks:
     task:
       id: 67a3bd51-b6ef-46ad-8237-c53ff1f493a1
       version: -1
-      name: Is there a Hostname or an IP Address associated with the ChronicleAsset?
-      description: Checks if there is any Hostname or IP Address associated with the
+      name: Is there a hostname or an IP address associated with the ChronicleAsset?
+      description: Checks if there is any hostname or IP address associated with the
         current ChronicleAsset indicator.
       type: condition
       iscommand: false
@@ -730,7 +729,7 @@ inputs:
       root: incident
       accessor: chronicleassetsupportcontact
   required: false
-  description: The support email address for the chronicle asset.
+  description: The support email address for the Chronicle asset.
   playbookInputQuery:
 - key: auto_block_entities
   value:
@@ -738,9 +737,9 @@ inputs:
       root: incident
       accessor: chronicleautoblockentities
   required: false
-  description: Autoblock the detected suspicious IP Address(es). You can set this
-    as 'Yes' or 'No' manually here or you can set it into a custom incident field
-    'Chronicle Auto Block Entities'.
+  description: Autoblock the detected suspicious IP address(es). You can manually set this
+    as 'Yes' or 'No' here or you can set it in a 
+    'Chronicle Auto Block Entities' custom incident field.
   playbookInputQuery:
 - key: skip_entity_isolation
   value:
@@ -748,8 +747,8 @@ inputs:
       root: incident
       accessor: chronicleskipentityisolation
   required: false
-  description: Skip the isolation of entities. You can set this as 'Yes' or 'No' manually
-    here or you can set it into a custom incident field 'Chronicle Skip Entity Isolation'.
+  description: Skip the isolation of entities. You can manually set this as 'Yes' or 'No' 
+    here or you can set it in a 'Chronicle Auto Block Entities' custom incident field.
   playbookInputQuery:
 outputs:
 - contextPath: IsolatedEntities
