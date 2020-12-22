@@ -1,0 +1,10 @@
+{
+  "failure": {
+    "response": "Description is mandatory",
+    "success": false
+  },
+  "success": {
+    "response": "Uploaded address successfully",
+    "success": true
+  }
+}

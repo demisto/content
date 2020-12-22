@@ -1,2 +1,1 @@
-!fetch-indicators
 !bitcoin-report-address address=1FTJfkSLXj3JoWpW2ZKjk7FdWcTepWGQUC abuser=abuser@abuse.net abuse_type="bitcoin tumbler" description="this is a description of the abuse"

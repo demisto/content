@@ -1,7 +1,9 @@
+# import csv
+# from io import StringIO
+
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from dataclasses import dataclass
 from CSVFeedApiModule import *
+from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -27,37 +29,7 @@ abuse_type_id_to_name: Dict[str, str] = {
     '99': 'other'
 }
 OTHER_ABUSE_TYPE_ID = 99
-REPORT_ADDRESS_PREFIX = '/reports/create'
-
-
-@dataclass
-class _ReportAddressParams:
-    """
-    contains all the parameters required for reporting address post http request
-    Fields:
-        api_token: the api token to connect to Bitcoin Abuse API
-        address: the address of the abuser
-        abuse_type_id: an id which indicates which type of abuse was made
-        abuse_type_other: in case abuse_type_id was other, holds information describing the abuse type
-        abuser: information about the abuser (email, name, ...)
-        description: description of the abuse (may include email sent, etc)
-    """
-    api_token: str
-    address: str
-    abuse_type_id: int
-    abuse_type_other: Optional[str]
-    abuser: str
-    description: str
-
-
-@dataclass
-class _DownloadParams:
-    """
-    contains all the parameters required for downloading csv get http request
-    Fields:
-        api_token: the api token to connect to Bitcoin Abuse API
-    """
-    api_token: str
+REPORT_ADDRESS_SUFFIX = '/reports/create'
 
 
 class BitcoinAbuseClient(BaseClient):
@@ -66,23 +38,53 @@ class BitcoinAbuseClient(BaseClient):
         super().__init__(base_url=SERVER_URL, verify=verify, proxy=proxy)
         self.api_key = api_key
 
-    def report_address(self, report_address_params: _ReportAddressParams) -> Dict:
+    def report_address(self, address: str, abuse_type_id: int, abuse_type_other: Optional[str],
+                       abuser: str, description: str) -> Dict:
         """
         Sends a post request to report an abuse to BitcoinAbuse servers.
 
         Args:
-            report_address_params: _ReportAddressParams contains all the required parameters for report
-            address http post request
+            address: the address of the abuser
+            abuse_type_id: an id which indicates which type of abuse was made
+            abuse_type_other: in case abuse_type_id was other, holds information describing the abuse type
+            abuser: information about the abuser (email, name, ...)
+            description: description of the abuse (may include email sent, etc)
+
         Returns:
             Returns if post request was successful.
         """
         return self._http_request(
             method='POST',
-            url_suffix=REPORT_ADDRESS_PREFIX,
-            params=vars(report_address_params)
+            url_suffix=REPORT_ADDRESS_SUFFIX,
+            params={
+                'api_token': self.api_key,
+                'address': address,
+                'abuse_type_id': abuse_type_id,
+                'abuse_type_other': abuse_type_other,
+                'abuser': abuser,
+                'description': description
+            }
         )
 
-    def download_csv(self, download_params: _DownloadParams) -> str:
+    def download_csv(self) -> str:
+        """
+        Sends a post request to report an abuse to BitcoinAbuse servers.
+
+        Args:
+
+        Returns:
+            Returns response representing the csv file of text if get request was successful.
+        """
+        return self._http_request(
+            method='GET',
+            url_suffix=FEED_ENDPOINT_DAILY,
+            params={
+                'api_token': self.api_key
+            },
+            resp_type='text'
+        )
+
+    def download_csv_new(self, url_interval_suffix: str) -> str:
         """
         Sends a post request to report an abuse to BitcoinAbuse servers.
 
@@ -91,20 +93,23 @@ class BitcoinAbuseClient(BaseClient):
         Returns:
             Returns response representing the csv file of text if get request was successful.
         """
+        params = {
+            'api_token': self.api_key
+        }
         return self._http_request(
             method='GET',
-            url_suffix=FEED_ENDPOINT_DAILY,
-            params=vars(download_params),
+            url_suffix=FEED_ENDPOINT_PREFIX + url_interval_suffix,
+            params=params,
             resp_type='text'
         )
 
 
-def build_fetch_indicators_url_prefix(have_fetched_first_time: bool, feed_interval_prefix_url: str) -> str:
+def build_fetch_indicators_url_suffix(have_fetched_first_time: bool, feed_interval_suffix_url: str) -> str:
     """
 
     Args:
         have_fetched_first_time: bool indicates if a fetch from BitcoinAbuse have been made
-        feed_interval_prefix_url: str the prefix for downloading csv from Bitcoin Abuse
+        feed_interval_suffix_url: str the prefix for downloading csv from Bitcoin Abuse
 
     Returns:
         - if first fetch - returns the feed endpoint prefix concatenated with the first_fetch_interval requested
@@ -114,7 +119,7 @@ def build_fetch_indicators_url_prefix(have_fetched_first_time: bool, feed_interv
         return FEED_ENDPOINT_DAILY
     else:
         demisto.setIntegrationContext({'have_fetched_first_time': True})
-        return FEED_ENDPOINT_PREFIX + feed_interval_prefix_url
+        return FEED_ENDPOINT_PREFIX + feed_interval_suffix_url
 
 
 def _build_fetch_indicators_params(demisto_params: Dict, feed_url_prefix: str) -> Dict:
@@ -172,40 +177,6 @@ def fetch_indicators(demisto_params: Dict, feed_url_prefix: str) -> None:
     feed_main('Bitcoin Abuse Feed', csv_api_params, 'bitcoin')
 
 
-def _build_report_address_params(args: Dict, api_key: str) -> _ReportAddressParams:
-    """
-    Builds the params for reporting an address to Bitcoin Abuse
-    after running some validation on the input
-
-    Args:
-        args: Dict
-        api_key: str
-
-    Returns:
-        report_address_params: _ReportAddressParams if validation succeeded
-        raises DemistoException if validation failed
-
-    """
-
-    abuse_type_id = abuse_type_name_to_id.get(args.get('abuse_type', ''))
-    abuse_type_other = args.get('abuse_type_other')
-
-    if abuse_type_id is None:
-        raise DemistoException('Bitcoin Abuse: invalid type of abuse, please insert a correct abuse type')
-
-    if abuse_type_id == OTHER_ABUSE_TYPE_ID and abuse_type_other is None:
-        raise DemistoException('Bitcoin Abuse: abuse_type_other is mandatory when abuse type is other')
-
-    return _ReportAddressParams(
-        api_token=api_key,
-        address=args.get('address', ''),
-        abuse_type_id=abuse_type_id,
-        abuse_type_other=abuse_type_other,
-        abuser=args.get('abuser', ''),
-        description=args.get('description', '')
-    )
-
-
 def report_address_command(client: BitcoinAbuseClient, args: Dict) -> CommandResults:
     """
     Reports a bitcoin abuse to Bitcoin Abuse integration
@@ -218,16 +189,67 @@ def report_address_command(client: BitcoinAbuseClient, args: Dict) -> CommandRes
         'bitcoin address (address reported) by abuser (abuser reported) was
         reported to BitcoinAbuse API' if http request was successful'
     """
-    report_address_params: _ReportAddressParams = _build_report_address_params(args, client.api_key)
-    response = client.report_address(report_address_params)
-    if response.get('success') is True:
+    abuse_type_id = abuse_type_name_to_id.get(args.get('abuse_type', ''))
+    abuse_type_other = args.get('abuse_type_other')
+    address = args.get('address', '')
+    abuser = args.get('abuser', '')
+
+    if abuse_type_id is None:
+        raise DemistoException('Bitcoin Abuse: invalid type of abuse, please insert a correct abuse type')
+
+    if abuse_type_id == OTHER_ABUSE_TYPE_ID and abuse_type_other is None:
+        raise DemistoException('Bitcoin Abuse: abuse_type_other is mandatory when abuse type is other')
+
+    http_response = client.report_address(address=address,
+                                          abuse_type_id=abuse_type_id,
+                                          abuse_type_other=abuse_type_other,
+                                          abuser=args.get('abuser', ''),
+                                          description=args.get('description', ''))
+
+    if http_response.get('success') is True:
         return CommandResults(
-            readable_output=f'Bitcoin address {report_address_params.address} by abuse bitcoin user {report_address_params.abuser}'
+            readable_output=f'Bitcoin address {address} by abuse bitcoin user {abuser}'
                             f' was reported to BitcoinAbuse API'
         )
     else:
-        fail_reason = response.get('response').get('address')
-        raise DemistoException(f'bitcoin report address did not succeed: {fail_reason}')
+        failure_message = http_response.get('response')
+        raise DemistoException(f'bitcoin report address did not succeed: {failure_message}')
+
+
+def _create_indicator_obj(row: Dict[str, str]):
+    return {
+        'Value': row['address'],
+        'Country Name': row['from_country'],
+        'Creation Date': row['created_at'],
+        'Description': row['description'],
+        'Abuse Type': abuse_type_id_to_name.get(row['abuse_type_id'])
+    }
+
+
+# def _csv_to_indicators(csv_reader):
+#     for fetch_url in first_fetch_urls:
+#         response = client.download_csv_new(fetch_url)
+#         csv_reader = csv.DictReader(StringIO(response))
+#         for row in csv_reader:
+#             indicator_obj = _create_indicator_obj(row)
+#             indicators.append(indicator_obj)
+#         max_id = row['id']
+#         b = 2
+
+
+# def _fetch_indicators_first_time(feed_interval_url_suffix: str, client: BitcoinAbuseClient):
+#     indicators = []
+#     first_fetch_urls = {feed_interval_url_suffix, '30d'}
+#     for fetch_url in first_fetch_urls:
+#         response = client.download_csv_new(fetch_url)
+#         csv_reader = csv.DictReader(StringIO(response))
+#         for row in csv_reader:
+#             indicator_obj = _create_indicator_obj(row)
+#             indicators.append(indicator_obj)
+#         max_id = row['id']
+#         b = 2
+#
+#     demisto.setIntegrationContext({'have_fetched_first_time': True})
 
 
 def main() -> None:
@@ -239,7 +261,7 @@ def main() -> None:
     proxy = params.get('proxy', False)
     api_key = params.get('api_key', '')
     have_fetched_first_time = demisto.getIntegrationContext().get('have_fetched_first_time', False)
-    first_feed_interval_url_prefix = params.get('initial_fetch_interval', '30d')
+    # first_feed_interval_url_suffix = params.get('initial_fetch_interval', '30d')
 
     demisto.debug(f'Bitcoin Abuse: Command being called is {demisto.command()}')
 
@@ -250,13 +272,13 @@ def main() -> None:
     try:
 
         if command == 'test-module':
-            download_params = _DownloadParams(client.api_key)
-            client.download_csv(download_params)
+            client.download_csv()
 
             return_results('ok')
 
         elif command == 'fetch-indicators':
-            feed_url_prefix = build_fetch_indicators_url_prefix(have_fetched_first_time, first_feed_interval_url_prefix)
+            # _fetch_indicators_first_time(first_feed_interval_url_suffix, client)
+            feed_url_prefix = build_fetch_indicators_url_suffix(have_fetched_first_time, first_feed_interval_url_prefix)
             fetch_indicators(params, feed_url_prefix)
 
         elif command == 'bitcoin-report-address':

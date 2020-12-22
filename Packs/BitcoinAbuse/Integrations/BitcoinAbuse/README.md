@@ -25,30 +25,6 @@ Supported Cortex XSOAR versions: 5.5.0 and later.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### fetch-indicators
-***
-Fetches indicators from BitcoinAbuse API
-
-
-#### Base Command
-
-`fetch-indicators`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### bitcoin-report-address
 ***

@@ -20,7 +20,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: The time interval for the first fetch (retroactive).
+- additionalinfo: The time window for the first fetch (retroactive).
   defaultvalue: 30d
   display: First Fetch Time
   name: initial_fetch_interval
@@ -86,7 +86,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+    fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -115,7 +115,7 @@ script:
     - description: Description of the abuse.
       name: description
     - auto: PREDEFINED
-      description: 'Type of abuse. The abuse_type_other field is required when the value of the abuse_type field is other. Possible values are: "ransomware", "darknet market", "bitcoin tumbler", "blackmail scam", "sextortion", and "other".'
+      description: Type of abuse. The "abuse_type_other" field is required when the value of the "abuse_type" field is "other". Possible values are "ransomware", "darknet market", "bitcoin tumber", "blackmail scam", "sextortion", and "other"
       name: abuse_type
       predefined:
       - ransomware
@@ -125,11 +125,11 @@ script:
       - sextortion
       - other
       required: true
-    - description: Description of the abuse type. The abuse_type_other field is required when
-        the value of the abuse_type field is other.
+    - description: Description of the abuse type. The "abuse_type_other" field is required when
+        the value of the "abuse_type" field is "other".
       name: abuse_type_other
-    description: Reports an abuser to the Bitcoin Abuse API. The abuse_type_other field is
-      required when the value of the abuse_type field is other.
+    description: Reports an abuser to Bitcoin Abuse service. 'abuse_type_other' field is
+      required when 'abuse_type' is other
     name: bitcoin-report-address
   dockerimage: demisto/python3:3.8.6.14516
   feed: true

@@ -1,5 +1,5 @@
 id: BitcoinAbuse-test
-version: 4
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: BitcoinAbuse-test
 starttaskid: "0"
@@ -16,7 +16,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     view: |-
       {
@@ -26,7 +26,7 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers: [ ]
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -45,14 +45,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
+      index: { }
+      key: { }
+      keysToKeep: { }
+      subplaybook: { }
     separatecontext: false
     view: |-
       {
@@ -62,7 +62,7 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers: [ ]
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -74,19 +74,19 @@ tasks:
       id: 0de2b8ac-56be-49c8-84b0-08501399e120
       version: -1
       name: Bitcoin Report Address
-      description: Reports an abuser to Bitcoin Abuse API. abuse_type_other field
-        is required when abuse_type is other
+      description: Reports an abuser to Bitcoin Abuse service. 'abuse_type_other' field is
+        required when 'abuse_type' is other
       script: '|||bitcoin-report-address'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       abuse_type:
         simple: bitcoin tumbler
-      abuse_type_other: {}
+      abuse_type_other: { }
       abuser:
         simple: abuser@abuse.net
       address:
@@ -102,7 +102,7 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers: [ ]
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -121,7 +121,7 @@ tasks:
       brand: BitcoinAbuse
     nexttasks:
       '#none#':
-      - "4"
+        - "4"
     separatecontext: false
     view: |-
       {
@@ -131,7 +131,7 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers: [ ]
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -155,7 +155,7 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers: [ ]
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -171,6 +171,6 @@ view: |-
       }
     }
   }
-inputs: []
-outputs: []
+inputs: [ ]
+outputs: [ ]
 fromversion: 5.5.0

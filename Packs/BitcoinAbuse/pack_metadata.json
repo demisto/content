@@ -1,6 +1,6 @@
 {
     "name": "BitcoinAbuse",
-    "description": "BitcoinAbuse Integration Pack",
+    "description": "BitcoinAbuse.com is a public database of bitcoin addresses used by hackers and criminals.",
     "serverMinVersion": "5.5.0",
     "support": "xsoar",
     "currentVersion": "1.0.0",
@@ -13,5 +13,11 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "Cryptocurrency": {
+            "mandatory": false,
+            "display_name": "Cryptocurrency"
+        }
+    }
 }
