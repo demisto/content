@@ -110,7 +110,7 @@ class Client(BaseClient):
                     time.sleep(time_to_wait)
                     demisto.debug('Finished waiting - retrying')
                 elif res.status_code == NOT_FOUND_STATUS_CODE:
-                    demisto.debug(f'Got status code 400 - {str(res.content)}')
+                    demisto.debug(f'Got status code 404 - {str(res.content)}')
                     return {}
             except Exception as e:
                 demisto.debug(f'Got unexpected exception in the API HTTP request - {str(e)}')
