@@ -1,0 +1,280 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Twinwave
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Twinwave API token
+  name: api-token
+  required: true
+  type: 4
+- defaultvalue: "10"
+  display: Number of jobs to first fetch
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: '50'
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: all
+  display: Filter incidents by submission source.
+  name: source
+  options:
+  - all
+  - ui
+  - api
+  required: false
+  type: 15
+- display: Filter UI incidents by username. Exact match only. (Cannot use if source
+    is all or api)
+  name: username
+  required: false
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Stealth mode cybersecurity startup
+display: Twinwave
+name: Twinwave
+script:
+  commands:
+  - arguments:
+    - description: The target URL to visit and analyze. Unlike the UI, the API does
+        not automatically un-defang the submitted URL.
+      name: url
+      required: true
+    - description: 'Array of strings (EngineName). List of engines to be used during
+        the analysis. If you''d like to use the default Engines for your account,
+        omit this field or specify the empty array []. '
+      name: engines
+    - description: 'Optional list of parameters to customize behavior during analysis
+        of the job. (E.g., passwords for archives.) {"archive_document_password":
+        "", "decode_rewritten_urls": "true/false"}'
+      name: parameters
+    - defaultValue: "10"
+      description: The job's priority relative to other jobs. Jobs with a lower priority
+        value are processed before those with a higher value. (e.g., a priority=1
+        job will be processed before a priority=2 job.) Valid priority values are
+        between 1 and 255. You may omit this field, in which case a default priority
+        (10) is used.
+      name: priority
+    - description: An optional profile name that defines the analysis behavior to
+        be used during the analysis for this job. Profiles names map to behaviors
+        like identifying what collection of engines will be used. If no profile name
+        is submitted the system will use the default profile.
+      name: profile
+    description: Submit New URL for Scanning
+    name: twinwave-submit-url
+    outputs:
+    - contextPath: Twinwave.Submissions.JobID
+      description: Job ID
+      type: Unknown
+  - arguments:
+    - name: entry_id
+      required: true
+      description: The entry id of the File.
+    - defaultValue: "10"
+      description: The job's priority relative to other jobs. Jobs with a lower priority
+        value are processed before those with a higher value. (e.g., a priority=1
+        job will be processed before a priority=2 job.) Valid priority values are
+        between 1 and 255. You may omit this field, in which case a default priority
+        (10) is used.
+      name: priority
+    - description: An optional profile name that defines the analysis behavior to
+        be used during the analysis for this job. Profiles names map to behaviors
+        like identifying what collection of engines will be used. If no profile name
+        is submitted the system will use the default profile.
+      name: profile
+    description: Submit File for Scanning
+    name: twinwave-submit-file
+    outputs:
+    - contextPath: Twinwave.Submissions.JobID
+      description: Job ID
+      type: Unknown
+  - arguments: []
+    description: Resubmit a Job
+    name: twinwave-resubmit-job
+    outputs:
+    - contextPath: Twinwave.Submissions.JobID
+      description: Job ID
+      type: Unknown
+  - arguments:
+    - name: job_id
+      required: true
+      description: the job ID
+    description: Get Job Summary
+    name: twinwave-get-job-summary
+    outputs:
+    - contextPath: Twinwave.JobSummary
+      description: Twinwave Job Summary
+      type: Unknown
+    - contextPath: Twinwave.JobSummary.ID
+      description: Job ID
+      type: Unknown
+    - contextPath: Twinwave.JobSummary.Tasks.ID
+      description: Task ID
+      type: Unknown
+    - contextPath: Twinwave.JobSummary.Tasks.JobID
+      description: Job ID associated to the task
+      type: Unknown
+  - arguments:
+    - name: job_id
+      required: true
+      description: The job ID
+    description: Get a Job's Normalized Forensics
+    name: twinwave-get-job-normalized-forensics
+    outputs:
+    - contextPath: Twinwave.JobNormalizedForensics
+      description: Twinwave Job Normalized Forensics
+      type: Unknown
+    - contextPath: Twinwave.JobNormalizedForensics.JobID
+      description: Job ID
+      type: Unknown
+  - arguments:
+    - name: job_id
+      required: true
+      description: The job ID
+    - name: task_id
+      required: true
+      description: The task ID
+    description: Get a Task's Normalized Forensics
+    name: twinwave-get-task-normalized-forensics
+    outputs:
+    - contextPath: Twinwave.TaskNormalizedForensics
+      description: Twinwave Task Normalized Forensics
+      type: Unknown
+    - contextPath: Twinwave.TaskNormalizedForensics.TaskID
+      description: Task ID
+      type: Unknown
+    - contextPath: Twinwave.TaskNormalizedForensics.JobID
+      description: Job ID
+      type: Unknown
+  - arguments:
+    - name: job_id
+      required: true
+      description: The job ID
+    - name: task_id
+      required: true
+      description: The task ID
+    description: Get a Task's Raw Forensics
+    name: twinwave-get-task-raw-forensics
+    outputs:
+    - contextPath: Twinwave.TaskRawForensics
+      description: Twinwave Task Raw Forensics
+      type: Unknown
+    - contextPath: Twinwave.TaskRawForensics.JobID
+      description: Job ID
+      type: Unknown
+    - contextPath: Twinwave.TaskRawForensics.TaskID
+      description: Task ID
+      type: Unknown
+  - arguments:
+    - name: job_id
+      required: true
+      description: The job ID
+    - name: sha256
+      required: true
+      description: The File sha256.
+    description: "Download the Submitted Resource. \n\nDownload a password-protected\
+      \ Zip archive of the Resource. Use the password 'infected' to decrypt the archive.\n\
+      \nAll Resources discovered during the analysis are available for download via\
+      \ this endpoint. To get the list of SHA256s for the Job's Resources, see The\
+      \ Resources array from Get a Job Summary."
+    name: twinwave-download-submitted-resource
+    outputs:
+    - contextPath: File.Name
+      description: Name of the file
+      type: Unknown
+    - contextPath: File.EntryID
+      description: Entry ID of the file
+      type: Unknown
+  - arguments: []
+    description: List Available Engines
+    name: twinwave-get-engines
+    outputs:
+    - contextPath: Twinwave.Engines
+      description: Available Engines
+      type: Unknown
+    - contextPath: Twinwave.Engines.Name
+      description: Name of the engine
+      type: Unknown
+    - contextPath: Twinwave.Engines.DefaultEnabled
+      description: Default Enabled (True/False)
+      type: Unknown
+    - contextPath: Twinwave.Engines.SupportedTypes
+      description: Supported Types
+      type: Unknown
+  - arguments:
+    - description: Specify the string to search for in the specified field. (E.g.
+        .exe or example.com)
+      name: term
+    - description: 'Enum: "filename" "url" "tag" "sha256" "md5"'
+      name: field
+    - description: 'Enum: "exact" "substring"'
+      name: type
+    - description: Specify the maximum number of results to be returned. This has
+        a hard limit of 100; specifying a number greater than that will result in
+        a 400 Bad Request and the search will not be performed.
+      name: count
+    - description: Specify true to only search across Jobs (and their Resources) which
+        have been shared.
+      name: shared_only
+    - description: Specify a username or part of a username (e.g. alice@example.com
+        or alice) to only search across Jobs (and their Resources) submitted by the
+        matching user.
+      name: submitted_by
+    - description: Specify the maximum number of days back to search for results.
+        Specify 0 for no limit. For example, setting this to 7 returns results within
+        the last week
+      name: timeframe
+    - description: The page for which you want results. This defaults to 1 the first
+        page. See HasNext in the response of your search to know whether or not there
+        are more pages for your search criteria.
+      name: page
+    description: Search Across Jobs and Resources
+    name: twinwave-search-across-jobs-and-resources
+    outputs:
+    - contextPath: Twinwave.JobsAndResources
+      description: Jobs and Resources
+      type: Unknown
+    - contextPath: Twinwave.JobsAndResources.Jobs
+      description: Job Details
+      type: Unknown
+    - contextPath: Twinwave.JobsAndResources.Jobs.ID
+      description: Job ID
+      type: Unknown
+  - arguments:
+    - description: |-
+        Throughout the analysis of a Resource, a variety of Artifacts may be generated. These include things like Screenshots, PCAPs, HAR files, etc. This API endpoint generates a temporary URL that can be used to download the contents of an artifact.
+
+        After making a call to this endpoint, the URL field will contain a link to a signed URL for the desired Artifact. This link has a limited lifetime, so upon receiving it, you should immediately make a GET request to retrieve the actual Artifact.
+      name: path
+      required: true
+    description: Get a Temporary Artifact URL
+    name: twinwave-get-temp-artifact-url
+    outputs:
+    - contextPath: Twinwave.TempArtifactURL.URL
+      description: Temporary URL
+      type: Unknown
+  dockerimage: demisto/python3:3.8.6.14516
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
