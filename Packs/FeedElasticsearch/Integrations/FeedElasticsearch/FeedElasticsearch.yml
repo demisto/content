@@ -114,10 +114,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Source field that contains the indicator value in the index
-  display: |-
-    ┉┉┉┉┉ Generic Feed Configuration ┉┉┉┉┉
-
-    Indicator Value Field
+  display: Indicator Value Field
   hidden: false
   name: src_val
   required: false
