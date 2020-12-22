@@ -14,19 +14,19 @@ def get_query_window():
     Check if the user defined the list `EmailCommunicationQueryWindow` to give a custom value for the time to query back
     for related incidents. If yes, use this value, else use the default value of 60 days.
     """
-    user_defined_time = demisto.executeCommand('getList', {'listName': 'EmailCommunicationQueryWindow'})
+    user_defined_time = demisto.executeCommand('getList', {'listName': 'XSOAR - Email Communication Days To Query'})
     if is_error(user_defined_time):
-        demisto.debug('Error occurred while trying to load the EmailCommunicationQueryWindow list. Using the default '
-                      'query time - 60 days')
+        demisto.debug('Error occurred while trying to load the `XSOAR - Email Communication Days To Query` list. Using'
+                      ' the default query time - 60 days')
         return '60 days'
 
     try:
         query_time = user_defined_time[0].get('Contents')
         return f'{int(query_time)} days'
     except ValueError:
-        demisto.error('Invalid input for number of days to query in the EmailCommunicationQueryWindow list. Input '
-                      'should be a number only, representing the number of days to query back.\nUsing the default query'
-                      ' time - 60 days')
+        demisto.error('Invalid input for number of days to query in the `XSOAR - Email Communication Days To Query` '
+                      'list. Input should be a number only, representing the number of days to query back.\nUsing the '
+                      'default query time - 60 days')
         return '60 days'
 
 
@@ -124,8 +124,12 @@ def get_incident_by_query(query):
     Returns:
         dict. The details of all incidents matching the query.
     """
-    # In order to avoid performance issues, query only the incidents that were modified in the last `QUERY_TIME` time:
-    query_from_date = str(parse_date_range(QUERY_TIME)[0])
+    # In order to avoid performance issues, limit the number of days to query back for modified incidents. By default
+    # the limit is 60 days and can be modified by the user by adding a list called
+    # `XSOAR - Email Communication Days To Query` (see README for more information).
+    query_time = get_query_window()
+
+    query_from_date = str(parse_date_range(query_time)[0])
 
     res = demisto.executeCommand("GetIncidentsByQuery", {"query": query, "fromDate": query_from_date,
                                                          "timeField": "modified", "Contents": "id,status"})[0]
@@ -286,8 +290,4 @@ def main():
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    # The time to query back for related incidents. Note that a large number might lead to performance issues.
-    global QUERY_TIME
-    QUERY_TIME = get_query_window()
-
     main()
