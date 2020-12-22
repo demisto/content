@@ -34,7 +34,7 @@ This command returns mitigations recommended by Cymptom
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| timeout | Timeout for operation. | Optional | 
+| timeout | Timeout for operation. Default is 60. | Optional | 
 
 
 #### Context Output
@@ -69,8 +69,8 @@ This command returns users with cracked password
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| timeout | Timeout for operation. | Optional | 
-| privileged | Return only privileged (Domaind Admin or Local Admin) or unprivileged users. | Optional | 
+| timeout | Timeout for operation. Default is 60. | Optional | 
+| privileged | Return only privileged (Domain Admin or Local Admin) or unprivileged users. Default is True. | Optional | 
 
 
 #### Context Output
