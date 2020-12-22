@@ -4,10 +4,6 @@
 The Expanse App for Demisto leverages the Expander API to retrieve network exposures and create incidents in Demisto.  This application also allows for IP, Domain, Certificate, and Behavior enrichment, retrieving assets and exposures information drawn from Expanse’s unparalleled view of the Internet.
 This integration was integrated and tested with Expanse Events API v1, Assets API v2, and Behavior API v1.
 
-## Use Cases
----
-
-
 ## Configure Expanse on Demisto
 ---
 
@@ -953,14 +949,6 @@ expanse-get-domains-for-certificate command
 |---|---|---|
 | california.us.expanse.co, dc.us.expanse.co | *.us.expanse.co | 2 |
 
-## Additional Information
----
-
-## Known Limitations
----
-
-## Troubleshooting
----
 
 ## Contact Details
 ---
