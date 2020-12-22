@@ -315,7 +315,7 @@ references:
         demisto-sdk create-id-set -o ./Tests/id_set.json
 
         # Download private ID set
-        python3 Tests/Marketplace/download_private_id_set.py -b marketplace-dist -s $GCS_PATH
+        gsutil -m cp -r gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/private_id_set.json
 
         # Merge public and private ID sets
         demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $CIRCLE_ARTIFACTS/private_id_set.json -o ./Tests/id_set.json
