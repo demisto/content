@@ -220,7 +220,7 @@ def main():
         query = f'emailmessageid:({refs})'
     try:
         incident_details = get_incident_by_query(query)
-        incidens_id = incident_details['id'
+        incidens_id = incident_details['id']
         update_latest_message_field(incidens_id, email_latest_message)
         check_incident_status(incident_details, incidens_id)
         get_attachments_using_instance(incidens_id, incident.get('labels'))
