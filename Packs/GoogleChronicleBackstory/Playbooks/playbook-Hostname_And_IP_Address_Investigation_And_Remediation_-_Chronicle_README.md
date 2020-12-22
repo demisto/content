@@ -4,22 +4,22 @@ This playbook receives the ChronicleAsset type of indicators from its parent pla
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Endpoint Enrichment - Generic v2.1
-* IP Enrichment - Generic v2
-* Isolate Endpoint - Generic
-* Block IP - Generic v2
+- **Endpoint Enrichment - Generic v2.1**
+- **IP Enrichment - Generic v2**
+- **Isolate Endpoint - Generic**
+- **Block IP - Generic v2**
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-* Set
-* DeleteContext
+- **Set**
+- **DeleteContext**
 
 ### Commands
-* ip
-* setIndicator
-* df-get-asset
+- ***ip***
+- ***setIndicator***
+- ***df-get-asset***
 
 ## Playbook Inputs
 ---
