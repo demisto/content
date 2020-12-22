@@ -39,7 +39,7 @@ tasks:
       name: Create Test Policy
       description: Creates or update policy with specified rule set name within a
         resource group.
-      script: '|||azure-waf-policy-upsert'
+      script: '|||azure-waf-policy-update-or-create'
       type: regular
       iscommand: true
       brand: ""
@@ -130,7 +130,7 @@ tasks:
       name: check if policy created
       description: Retrieves protection policies within a resource group. if policy_name
         not provided, will retrieve all.
-      script: '|||azure-waf-policy-get'
+      script: '|||azure-waf-policies-get'
       type: regular
       iscommand: true
       brand: ""
@@ -189,7 +189,7 @@ tasks:
       version: -1
       name: Delete Test Policy
       description: Deletes Policy.
-      script: '|||azure-waf-policy-delete'
+      script: '|||azure-waf-policies-delete'
       type: regular
       iscommand: true
       brand: ""
