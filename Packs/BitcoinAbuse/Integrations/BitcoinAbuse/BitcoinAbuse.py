@@ -178,8 +178,8 @@ def _add_additional_params(command: str, params: Dict, api_key: str):
     """
 
     if command != 'bitcoin-report-address':
-        first_feed_interval_url_suffix = params.get('initial_fetch_interval', '30d')
-        first_feed_interval_url_suffix = first_fetch_interval_to_url_suffix.get(first_feed_interval_url_suffix)
+        first_feed_interval_url_suffix = params.get('initial_fetch_interval', '30 Days')
+        first_feed_interval_url_suffix = first_fetch_interval_to_url_suffix.get(first_feed_interval_url_suffix, '30d')
         reader_config = {
             'fieldnames': ['id', 'address', 'abuse_type_id', 'abuse_type_other', 'abuser',
                            'description', 'from_country', 'from_country_code', 'created_at'],
