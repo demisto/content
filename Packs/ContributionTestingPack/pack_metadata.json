@@ -1,0 +1,17 @@
+{
+    "name": "Contribution Testing Pack",
+    "description": "This is an updated description.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Octocat Smith",
+    "url": "",
+    "email": "",
+    "created": "2020-12-22T19:44:23Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "xsoar-bot"
+    ]
+}
