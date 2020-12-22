@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Darktrace Model Breach"
+ ],
+ "caseInsensitive": true,
+ "cliName": "darktracemodelpriority",
+ "closeForm": false,
+ "content": true,
+ "description": "Priority of the breached model in Darktrace",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_darktracemodelpriority",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Darktrace Model Priority",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "number",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}
