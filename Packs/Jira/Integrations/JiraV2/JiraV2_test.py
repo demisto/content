@@ -292,15 +292,50 @@ def test_get_incident_entries(mocker):
     """
     from JiraV2 import get_incident_entries
     from test_data.expected_results import GET_JIRA_ISSUE_RES
+    from dateparser import parse
+    import pytz
 
     updated_date = '1996-11-25T16:29:37.277764067Z'
     GET_JIRA_ISSUE_RES['updated'] = updated_date
 
     mocker.patch(
         'JiraV2.get_comments_command',
-        return_value=''
+        return_value=('', '', {'comments': [{'updated': '2071-12-21 12:29:05.529000+00:00'}]})
     )
     mocker.patch(
         'JiraV2.get_new_attachments',
+        return_value='here there is attachment'
+    )
+    res = get_incident_entries(GET_JIRA_ISSUE_RES, parse('2070-11-25T16:29:37.277764067Z').replace(tzinfo=pytz.UTC))
+    assert len(res['comments']) > 0
+    assert res['attachments'] == 'here there is attachment'
+
+
+def test_create_update_incident_from_ticket():
+    from JiraV2 import create_update_incident_from_ticket
+    from test_data.expected_results import GET_JIRA_ISSUE_RES
+    res = create_update_incident_from_ticket(GET_JIRA_ISSUE_RES)
+    assert res['id'] == '17757'
+    assert res['issue']
+    assert list(res['fields'].keys()) == ['assignee', 'priority', 'status', 'project', 'reporter', 'summary', 'description', 'duedate', 'labels', 'updated', 'created', 'lastViewed']
+
+
+def test_update_remote_system(mocker):
+    from JiraV2 import update_remote_system_command
+    from test_data.expected_results import ARGS_FROM_UPDATE_REMOTE_SYS
+
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'getFilePath', return_value={'name': 'file.png'})
+    mocker.patch(
+        'JiraV2.edit_issue_command',
         return_value=''
     )
+    mocker.patch(
+        'JiraV2.upload_file',
+        return_value=''
+    )
+    res = update_remote_system_command(ARGS_FROM_UPDATE_REMOTE_SYS)
+    assert res == '17757'
+
+
