@@ -1,4 +1,4 @@
-Shows a pie chart of the number of events, categorized by its event type, fetched for all the identifiers of the Chronicle asset.
+Displays a pie chart of the number of events, categorized by its event type, fetched for all the identifiers of the ChronicleAsset.
 ## Script Data
 ---
 
