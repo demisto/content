@@ -21,7 +21,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: The time window for the first fetch (retroactive).
-  defaultvalue: 30d
+  defaultvalue: 30 Days
   display: First Fetch Time
   name: initial_fetch_interval
   options:

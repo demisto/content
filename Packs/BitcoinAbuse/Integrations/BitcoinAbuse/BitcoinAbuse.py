@@ -1,4 +1,3 @@
-
 import demistomock as demisto  # noqa: F401
 from CSVFeedApiModule import *
 from CommonServerPython import *  # noqa: F401
@@ -10,6 +9,7 @@ urllib3.disable_warnings()
 SERVER_URL = 'https://www.bitcoinabuse.com/api/'
 FEED_ENDPOINT_SUFFIX = 'download/'
 FEED_ENDPOINT_DAILY_SUFFIX = 'download/1d'
+REPORT_ADDRESS_SUFFIX = 'reports/create'
 abuse_type_name_to_id: Dict[str, int] = {
     'ransomware': 1,
     'darknet market': 2,
@@ -30,7 +30,6 @@ first_fetch_interval_to_url_suffix: Dict[str, str] = {
     'Forever': 'forever',
     '30 Days': '30d'
 }
-REPORT_ADDRESS_SUFFIX = '/reports/create'
 
 
 class BitcoinAbuseClient(Client):
@@ -113,6 +112,7 @@ def fetch_indicators(client: BitcoinAbuseClient) -> None:
     for indicator in indicators:
         indicator_id = int(indicator['rawJSON']['id'])
         if indicator_id not in indicators_ids and indicator_id > highest_fetched_id:
+            indicator['fields']['Cryptocurrency Address Type'] = 'bitcoin'
             indicators_without_duplicates.append(indicator)
             indicators_ids.add(indicator_id)
 
@@ -164,7 +164,7 @@ def report_address_command(client: BitcoinAbuseClient, args: Dict) -> CommandRes
         raise DemistoException(f'bitcoin report address did not succeed: {failure_message}')
 
 
-def _add_additional_params_if_needed(command: str, params: Dict, api_key: str):
+def _add_additional_params(command: str, params: Dict, api_key: str):
     """
 
     Args:
@@ -173,7 +173,7 @@ def _add_additional_params_if_needed(command: str, params: Dict, api_key: str):
         api_key: for Bitcoin Abuse service
 
     Returns:
-        - if command is bitcoin-report-address: returns the params as is
+        - if command is bitcoin-report-address: returns the params enriched with url
         - if command is anything else - enriches params with more required params to CSVFeedApiModule
     """
 
@@ -187,9 +187,10 @@ def _add_additional_params_if_needed(command: str, params: Dict, api_key: str):
             'indicator_type': 'Cryptocurrency Address',
             'mapping': {
                 'Value': ('address', None, 'bitcoin-{}'),
+                'Address': 'address',
                 'Country Name': 'from_country',
                 'Creation Date': 'created_at',
-                'Bitcoin Abuse Description': 'description',
+                'Description': 'description',
                 'Abuse Type': ('abuse_type_id', lambda abuse_type_id: abuse_type_id_to_name.get(abuse_type_id))
             }
         }
@@ -204,6 +205,8 @@ def _add_additional_params_if_needed(command: str, params: Dict, api_key: str):
         params['url'] = urls
         params['feed_url_to_config'] = feed_url_to_config
         params['delimiter'] = ','
+    else:
+        params['url'] = SERVER_URL
 
     return params
 
@@ -211,7 +214,7 @@ def _add_additional_params_if_needed(command: str, params: Dict, api_key: str):
 def main() -> None:
     command = demisto.command()
     api_key = demisto.params().get('api_key', '')
-    params = _add_additional_params_if_needed(command, demisto.params(), api_key)
+    params = _add_additional_params(command, demisto.params(), api_key)
 
     args = demisto.args()
 
