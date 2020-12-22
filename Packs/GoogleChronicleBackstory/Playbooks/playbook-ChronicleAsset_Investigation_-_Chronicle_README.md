@@ -4,18 +4,18 @@ This playbook receives indicators from its parent playbook, performs enrichment 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* List Device Events - Chronicle
-* Hostname And IP Address Investigation And Remediation - Chronicle
+**List Device Events - Chronicle**
+**Hostname And IP Address Investigation And Remediation - Chronicle**
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-* SixgillSearchIndicators
-* DeleteContext
+- **SixgillSearchIndicators**
+- **DeleteContext**
 
 ### Commands
-* setIndicator
+***setIndicator***
 
 ## Playbook Inputs
 ---
