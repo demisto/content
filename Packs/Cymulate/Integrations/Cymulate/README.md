@@ -1,8 +1,3 @@
-## Cymulate Playbook
----
-
-## Use Cases
----
 
 ## Configure Cymulate on Demisto
 ---
