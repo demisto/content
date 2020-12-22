@@ -5,9 +5,6 @@ from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 
-import json
-import shutil
-
 import requests
 
 # Disable insecure warnings
@@ -268,21 +265,20 @@ def submit_file(client, args):
     # validation for priority
     priority = validate_priority(priority)
 
-    try:
-        with open(file_path, 'rb') as file:
-            result = client.submit_file(file_name=file_name, file_obj=file.read(), priority=priority, profile=profile)
+    with open(file_path, 'rb') as file:
+        result = client.submit_file(file_name=file_name, file_obj=file.read(), priority=priority, profile=profile)
 
-        readable_output = '## Submitted File\n'
-        readable_output += tableToMarkdown('Twinwave Submissions', result,
-                                           headers=['JobID'])
+    readable_output = '## Submitted File\n'
+    readable_output += tableToMarkdown('Twinwave Submissions', result,
+                                       headers=['JobID'])
 
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix="Twinwave.Submissions",
-            outputs_key_field='JobID',
-            outputs=result,
-            raw_response=result  # raw response - the original response
-        )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Twinwave.Submissions",
+        outputs_key_field='JobID',
+        outputs=result,
+        raw_response=result  # raw response - the original response
+    )
 
 
 def resubmit_job(client, args):
