@@ -9,10 +9,7 @@ Trigger xMatters workflows and on-call schedules to track down the appropriate r
 
 ### Trigger Event Playbook Example
 
-<kbd>
-   <img src="./Playbooks/xMatters_-_Wait_for_Response.png" />
-</kbd>
-
+![xMatters - Wait For Response Playbook](https://raw.githubusercontent.com/demisto/content/master/Packs/XMatters/Playbooks/xMatters_-_Wait_for_Response.png)
 
 ## Installation Details
 
