@@ -106,7 +106,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: public-dns-get-indicators
-  dockerimage: demisto/netutils:1.0.0.13385
+  dockerimage: demisto/netutils:1.0.0.14492
   feed: true
   isfetch: false
   longRunning: false
