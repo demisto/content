@@ -112,6 +112,8 @@ def test_connection(client: AzureWAFClient, params: Dict):
     if params.get('self_deployed', False) and not params.get('auth_code'):
         return_error('You must enter an authorization code in a self-deployed configuration.')
     client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
+    # should return error if user does not have permissions for the service.
+    client.get_policy_list_by_resource_group_name(client.resource_group_name)
     return '✅ Great Success!'
 
 
@@ -238,14 +240,13 @@ def policy_delete_command(client: AzureWAFClient, **args: Dict[str, str]):
     resource_group_name = str(args.get('resource_group_name', client.resource_group_name))
 
     # policy_path is unique and used as unique id in the product.
-    policy_id = f'{SUBSCRIPTION_PATH.format(client.subscription_id)}/' \
+    policy_id = f'/{SUBSCRIPTION_PATH.format(client.subscription_id)}/' \
                 f'{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}'
     status = client.delete_policy(policy_name, resource_group_name)
     md = ""
     context = None
 
     if status.status_code in [200, 202]:
-        md = f"Policy {policy_name} was deleted successfully."
         old_context = demisto.dt(demisto.context(), f'AzureWAF.Policy(val.id === "{policy_id}")')
 
         # updating the context with deleted policy.
@@ -256,6 +257,8 @@ def policy_delete_command(client: AzureWAFClient, **args: Dict[str, str]):
             context = {
                 'AzureWAF.Policy(val.id === obj.id)': old_context
             }
+
+        md = f"Policy {policy_name} was deleted successfully."
 
     if status.status_code == 204:
         md = f"Policy {policy_name} was not found."
@@ -327,7 +330,7 @@ def policies_to_markdown(policies: List[Dict], verbose: bool = False, limit: int
 def reset_auth(client: AzureWAFClient):
     set_integration_context({})
     return CommandResults(readable_output='Authorization was reset successfully. You can now run '
-                                          '**!azure-nsg-auth-start** and **!azure-nsg-auth-complete**.')
+                                          '**!azure-waf-auth-start** and **!azure-waf-auth-complete**.')
 
 
 ''' MAIN FUNCTION '''
@@ -338,11 +341,11 @@ def main() -> None:
     demisto_commands = {
         'azure-waf-policies-get': policies_get_command,
         'azure-waf-policies-list-all-in-subscription': policies_get_list_by_subscription_command,
-        'azure-waf-policy-upsert': policy_upsert_command,
+        'azure-waf-policy-update-or-create': policy_upsert_command,
         'azure-waf-policy-delete': policy_delete_command,
         'azure-waf-auth-start': start_auth,
         'azure-waf-auth-complete': complete_auth,
-        'azure-waf-test': test_connection,
+        'azure-waf-auth-test': test_connection,
         'azure-waf-auth-reset': reset_auth,
     }
     params = demisto.params()
@@ -363,7 +366,7 @@ def main() -> None:
         if command == 'test-module':
             raise ValueError("Please run `!azure-waf-auth-start` and `!azure-waf-auth-complete` to log in."
                              " For more details press the (?) button.")
-        if command == 'azure-waf-test':
+        if command == 'azure-waf-auth-test':
             return_results(test_connection(client, params))
         else:
             return_results(demisto_commands[command](client, **args))

@@ -338,7 +338,7 @@ script:
     deprecated: false
     description: Creates or updates a policy with a specified rule set name within a resource group.
     execution: false
-    name: azure-waf-policy-upsert
+    name: azure-waf-policy-update-or-create
     outputs:
     - contextPath: AzureWAF.Policy.name
       description: Resource name.
@@ -465,7 +465,7 @@ script:
   - deprecated: false
     description: Tests connectivity to the Azure Web Application Firewall.
     execution: false
-    name: azure-waf-test
+    name: azure-waf-auth-test
   dockerimage: demisto/crypto:1.0.0.14297
   feed: false
   isfetch: false
