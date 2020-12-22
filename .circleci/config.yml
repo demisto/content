@@ -307,19 +307,22 @@ references:
       name: Create ID Set
       when: always
       command: |
-        demisto-sdk create-id-set -o ./Tests/id_set.json
-
         KF=$(mktemp)
         echo "$GCS_MARKET_KEY" > "$KF"
         gcloud auth activate-service-account --key-file="$KF" > auth.out 2>&1
-        gsutil -m cp -r gs://marketplace-dist-private-test/content/id_set_private_test.json $CIRCLE_ARTIFACTS/private_id_set.json
-        gsutil -m cp -r gs://marketplace-dist-private-test/content/id_set_private_test.json $CIRCLE_ARTIFACTS/unified_id_sets.json
-        rm $KF
 
-        demisto-sdk merge-id-sets -i1 $CIRCLE_ARTIFACTS/private_id_set.json -i2 ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/unified_id_sets.json
+        # Create ID set
+        demisto-sdk create-id-set -o ./Tests/id_set.json
+
+        # Download private ID set
+        gsutil -m cp -r gs://marketplace-dist-private-test/content/id_set_private_test.json $CIRCLE_ARTIFACTS/private_id_set.json
+
+        # Merge public and private ID sets to unified ID set
+        demisto-sdk merge-id-sets -i1 $CIRCLE_ARTIFACTS/private_id_set.json -i2 ./Tests/id_set.json -o ./Tests/id_set.json
 
         cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
 
+        rm $KF
   build_content_descriptor: &build_content_descriptor
     run:
       name: Build Content Descriptor
@@ -360,7 +363,7 @@ references:
       name: Calculate Packs Dependencies
       when: always
       command: |
-        python3 ./Tests/Marketplace/packs_dependencies.py -i $CIRCLE_ARTIFACTS/unified_id_sets.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
+        python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
 
   update_tests_step: &update_tests_step
     run:
