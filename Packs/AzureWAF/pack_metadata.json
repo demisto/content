@@ -1,6 +1,6 @@
 {
     "name": "Azure WAF",
-    "description": "TO DO",
+    "description": "Azure Web Application Firewall is used to detect web related attacks targeting your web servers hosted in azure and allow quick respond to threats",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
