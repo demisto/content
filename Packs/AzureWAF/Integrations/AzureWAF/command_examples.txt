@@ -1,5 +1,8 @@
-!azure-waf-policy-upsert policy_name="test_policy" resource_group_name="demisto-sentinel2" location="WestUs" managed_rules="{ \"managedRuleSets\": [{\"ruleSetType\": \"OWASP\",\"ruleSetVersion\": \"3.0\"}]}"
-
-!azure-waf-policy-get limit=2
-
-!azure-waf-policy-list-all-in-subscription limit=2
+!azure-waf-policy-update-or-create policy_name="test_policy" resource_group_name="demisto-sentinel2" location="WestUs" managed_rules="{ \"managedRuleSets\": [{\"ruleSetType\": \"OWASP\",\"ruleSetVersion\": \"3.0\"}]}"
+!azure-waf-policies-get limit=2
+!azure-waf-policy-delete policy_name="test_policy"
+!azure-waf-policies-list-all-in-subscription limit=2
+!azure-waf-auth-start
+!azure-waf-auth-complete
+!azure-waf-auth-reset
+!azure-waf-auth-test
