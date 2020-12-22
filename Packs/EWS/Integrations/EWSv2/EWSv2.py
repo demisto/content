@@ -1845,7 +1845,6 @@ def get_compliance_search(search_name, show_only_recipients):
         return get_cs_error(stderr)
 
     # Get search status
-    demisto.debug(f'Search status: {stdout} - {str(e)}')
     stdout = stdout[len(PASSWORD):]
     stdout = stdout.split('\n', 1)  # type: ignore
 
