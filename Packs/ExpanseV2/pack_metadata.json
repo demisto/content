@@ -1,5 +1,5 @@
 {
-    "name": "Expanse",
+    "name": "Expanse v2",
     "description": "Automate Attack Surface Management to identify Internet assets and misconfigurations with fast remediation via comprehensive integrations and playbooks.",
     "support": "xsoar",
     "currentVersion": "1.0.0",

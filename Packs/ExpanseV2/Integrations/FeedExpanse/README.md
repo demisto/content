@@ -1,5 +1,7 @@
-Use FeedExpanse to retrieve the list of discovered IPs/Domains/Certificates from Expander
-This integration was integrated and tested with version 2 of Expander API
+Use FeedExpanse to retrieve the discovered IPs/Domains/Certificates from Expanse Expander
+
+This integration was developed and tested with version 2 of Expander Asset API
+
 ## Configure FeedExpanse on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

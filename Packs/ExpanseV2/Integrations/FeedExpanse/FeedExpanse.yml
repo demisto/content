@@ -3,9 +3,9 @@ commonfields:
   version: -1
 display: FeedExpanse
 name: FeedExpanse
-category: Utilities
-description: Use FeedExpanse to retrieve the list of discovered IPs/Domains/Certificates
-  from Expander
+category: Data Enrichment & Threat Intelligence
+description: Use FeedExpanse to retrieve the discovered IPs/Domains/Certificates
+  from Expanse Expander
 configuration:
 - defaultvalue: https://expander.expanse.co
   display: Your server URL

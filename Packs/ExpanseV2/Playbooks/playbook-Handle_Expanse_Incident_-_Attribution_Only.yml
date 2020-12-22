@@ -7,6 +7,7 @@ description: |2-
   There are several phases:
   1. Enrichment: all the related information from the incident is extracted and related Indicators (of types IP, CIDR, Domain, DomainGlob, Certificate) are created and enriched.
   2. Validation: the found IP and FQDN are correlated with the information available in other products:
+    - Risky or non-compliant communications to and from the IP with external IPs as flagged in Expanse's Behavior
     - Firewall logs from Cortex Data Lake, Panorama and Splunk
     - User information from Active Directory
     - Public IP address from AWS/GCP/Azure public IP feeds to identify the Public Cloud region and Service (i.e. us-west-1 on AWS EC2)
