@@ -3175,11 +3175,13 @@
         },
         {
             "integrations": "ExpanseV2",
-            "playbookID": "ExpanseV2 Test"
+            "playbookID": "ExpanseV2 Test",
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "FeedExpanse",
-            "playbookID": "Feed Expanse Test"
+            "playbookID": "Feed Expanse Test",
+            "fromversion": "6.0.0"
         }
     ],
     "skipped_tests": {
