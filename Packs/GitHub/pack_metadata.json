@@ -17,6 +17,10 @@
         "IAM-Scim": {
             "mandatory": true,
             "display_name": "IAM Scim"
+        },
+        "IAM": {
+            "mandatory": false,
+            "display_name": "IAM"
         }
     }
 }
