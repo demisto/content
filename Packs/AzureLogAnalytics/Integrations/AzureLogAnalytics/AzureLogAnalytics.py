@@ -151,9 +151,9 @@ def test_connection(client, params):
     try:
         execute_query_command(client, {'query': 'Usage | take 1'})
     except Exception as e:
-        return_error(f'Could not authorize to `api.loganalytics.io` resource. This could be due to one of the following:'
-                     f'\n1. Workspace ID is wrong.'
-                     f'\n2. Missing necessary grant IAM privileges in your workspace to the AAD Application.', e)
+        return_error('Could not authorize to `api.loganalytics.io` resource. This could be due to one of the following:'
+                     '\n1. Workspace ID is wrong.'
+                     '\n2. Missing necessary grant IAM privileges in your workspace to the AAD Application.', e)
     return_outputs('```✅ Success!```')
 
 
