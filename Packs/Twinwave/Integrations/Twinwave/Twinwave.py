@@ -269,12 +269,7 @@ def submit_file(client, args):
     priority = validate_priority(priority)
 
     try:
-        shutil.copy(file_path, file_name)
-    except Exception:
-        raise Exception('Failed to prepare file for upload.')
-
-    try:
-        with open(file_name, 'rb') as file:
+        with open(file_path, 'rb') as file:
             result = client.submit_file(file_name=file_name, file_obj=file.read(), priority=priority, profile=profile)
 
         readable_output = '## Submitted File\n'
@@ -288,9 +283,6 @@ def submit_file(client, args):
             outputs=result,
             raw_response=result  # raw response - the original response
         )
-
-    finally:
-        shutil.rmtree(file_name, ignore_errors=True)
 
 
 def resubmit_job(client, args):
