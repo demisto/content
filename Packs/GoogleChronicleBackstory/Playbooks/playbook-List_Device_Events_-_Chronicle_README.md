@@ -1,6 +1,5 @@
-This playbook receives chronicle asset identifier information and gives out a list of events related to each one of them.
-Supported integration:
-- Chronicle
+This playbook receives ChronicleAsset identifier information and provides a list of events related to each one of them.
+Supported integration: Chronicle
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -9,23 +8,23 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Chronicle
+Chronicle
 
 ### Scripts
-* DeleteContext
+DeleteContext
 
 ### Commands
-* gcb-list-events
+gcb-list-events
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| chronicleasset_hostname | The Hostname associated with the ChronicleAsset. |  | Optional |
-| chronicleasset_ip | The IP Address associated with the ChronicleAsset. |  | Optional |
-| chronicleasset_mac | The MAC Address associated with the ChronicleAsset. |  | Optional |
-| chronicleasset_product_id | The Product ID associated with the ChronicleAsset. |  | Optional |
+| chronicleasset_hostname | The hostname associated with the ChronicleAsset. |  | Optional |
+| chronicleasset_ip | The IP address associated with the ChronicleAsset. |  | Optional |
+| chronicleasset_mac | The MAC address associated with the ChronicleAsset. |  | Optional |
+| chronicleasset_product_id | The product ID associated with the ChronicleAsset. |  | Optional |
 
 ## Playbook Outputs
 ---
