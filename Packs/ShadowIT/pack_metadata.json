@@ -13,15 +13,26 @@
     ],
     "tags": [
         "Security",
-        "Shadow IT",
         "Compliance"
     ],
     "useCases": [
-        "Shadow IT",
         "Compliance"
     ],
     "keywords": [
         "Prisma Cloud",
-        "Public Cloud"
-    ]
+        "Public Cloud",
+	"Expanse",
+	"TIM",
+	"Unsanctioned"
+    ],
+    "dependencies": {
+        "Active_Directory_Query": {
+            "mandatory": false,
+            "display_name": "Active Directory Query"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        }
+    }
 }

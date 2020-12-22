@@ -1,87 +1,220 @@
-id: Handle Shadow IT Incident
-version: -1
-name: Handle Shadow IT Incident
 description: |-
   This Playbook is used to handle a Shadow IT incident. A Shadow IT incident occurs when a resource attributed to the organization that is not sanctioned by IT nor protected by the InfoSec team is found.
 
   This playbook handles the incident by helping the analyst to find the owner of the resource based on existing evidence. The playbook also marks the service indicators (IP or FQDN) with a Shadow IT tag. The possible owner and their manager are notified and onboarding of the asset on Prisma Cloud is triggered through a manual process.
+id: Handle Shadow IT Incident
+inputs:
+- description: Notify user's manager
+  key: Notify Manager
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "Yes"
+- description: Tags to add to indicators to identify potential Shadow IT assets
+  key: ShadowITIndicatorTags
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ShadowIT
+- description: This input is added as prefix to the owner name to build the subject
+    of the email sent to the owner's manager.
+  key: ManagerNotificationSubjectPrefix
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'Shadow IT asset detected - owned by '
+- description: Body of the email to send to the owner's manager.
+  key: ManagerNotificationBody
+  playbookInputQuery:
+  required: false
+  value:
+    simple: |-
+      Dear ${UserManagerDisplayName},
+
+      we detected a Shadow IT service for User ${incident.shadowitaccountownername} who, according to the Company's directory, directly reports to you.
+
+      The service is: ${incident.shadowitip}:${incident.shadowitport} (FQDN: ${incident.shadowitfqdn}), please work with your team and us to resolve this issue.
+
+      Best regards,
+
+      InfoSec team
+name: Handle Shadow IT Incident
+outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c62332a7-64eb-4b82-8011-bdef8c0464d7
-    type: start
-    task:
-      id: c62332a7-64eb-4b82-8011-bdef8c0464d7
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "2"
       - "59"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": -2600
-        }
-      }
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: 54fec135-6d81-4394-8bd5-8554bc2817a7
-    type: collection
-    task:
-      id: 54fec135-6d81-4394-8bd5-8554bc2817a7
-      version: -1
-      name: Collect Service details from Asset owner
-      description: Collect details about a service from the owner of the asset.
-      type: collection
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "41"
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c62332a7-64eb-4b82-8011-bdef8c0464d7
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: c62332a7-64eb-4b82-8011-bdef8c0464d7
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
           "x": 265,
-          "y": -710
+          "y": -2740
         }
       }
-    note: true
+  "1":
     evidencedata:
+      customfields: {}
       description:
         simple: Shadow IT Asset Questionnaire
-      customfields: {}
-    timertriggers: []
+    form:
+      description: |-
+        ## Please urgently fill the form below.
+
+
+        Best regards,
+        **Your Company Infosec Team**
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Do you own this asset? ${incident.shadowitip}:${incident.shadowitport}
+            (${incident.shadowitfqdn})
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Please confirm you are the current owner of this asset
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Is this a service sanctioned by InfoSec?
+        options: []
+        optionsarg:
+        - {}
+        - simple: "No"
+        - simple: "Yes"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Please confirm this service is allowed by InfoSec
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: Is this service being billed to Corporate?
+        options: []
+        optionsarg:
+        - {}
+        - simple: "No"
+        - simple: "Yes"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Please confirm this service is being billed directly to corporate
+          via existing procurement process.
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "3"
+        label: ""
+        labelarg:
+          simple: Does this service host sensitive corporate information?
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Please confirm whether this service hosts sensitive company information.
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "4"
+        label: ""
+        labelarg:
+          simple: What is the purpose of this service?
+        options: []
+        optionsarg:
+        - simple: Marketing
+        - simple: Business Development
+        - simple: Engineering
+        - simple: Sales
+        - simple: Other (please specify in the next question)
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Confirm the purpose of this service
+        type: multiSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "5"
+        label: ""
+        labelarg:
+          simple: If other, please state the purpose of this service.
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: Please state the purpose of this service
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "6"
+        label: ""
+        labelarg:
+          simple: What Provider is this service Hosted on?
+        options: []
+        optionsarg:
+        - simple: Google Cloud Platform
+        - simple: Amazon Web Services
+        - simple: Microsoft Azure
+        - simple: Alibaba Cloud
+        - simple: Oracle Cloud
+        - simple: IBM Cloud
+        - simple: Corporate Network (On Prem)
+        - simple: Other/Unknown
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Please specify the Service Provider
+        type: singleSelect
+      sender: ""
+      title: Shadow IT Information Collection
+      totalanswers: 0
+    id: "1"
     ignoreworker: false
     message:
-      to:
-        complex:
-          root: incident
-          accessor: shadowitaccountowneremail
-      subject:
-        complex:
-          root: incident
-          accessor: shadowitip
-          transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'Shadow IT Detected - please provide details for asset '
-              suffix:
-                iscontext: true
+      bcc:
       body:
         simple: |-
           Dear ${incident.shadowitaccountownername},
@@ -97,249 +230,182 @@ tasks:
 
           Best regards,
           Your Company Infosec Team
-      methods:
-      - email
-      format: ""
-      bcc:
       cc:
         complex:
-          root: incident
           accessor: shadowitoucontactemail
+          root: incident
+      format: ""
+      methods:
+      - email
+      subject:
+        complex:
+          accessor: shadowitip
+          root: incident
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'Shadow IT Detected - please provide details for asset '
+              suffix:
+                iscontext: true
+            operator: concat
       timings:
+        completeafterreplies: 1
         retriescount: 2
         retriesinterval: 360
-        completeafterreplies: 1
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Do you own this asset? ${incident.shadowitip}:${incident.shadowitport}
-            (${incident.shadowitfqdn})
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - {}
-        - simple: "Yes"
-        - simple: "No"
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: Please confirm you are the current owner of this asset
-        readonly: false
-      - id: "1"
-        label: ""
-        labelarg:
-          simple: Is this a service sanctioned by InfoSec?
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - {}
-        - simple: "No"
-        - simple: "Yes"
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: Please confirm this service is allowed by InfoSec
-        readonly: false
-      - id: "2"
-        label: ""
-        labelarg:
-          simple: Is this service being billed to Corporate?
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - {}
-        - simple: "No"
-        - simple: "Yes"
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: Please confirm this service is being billed directly to corporate
-          via existing procurement process.
-        readonly: false
-      - id: "3"
-        label: ""
-        labelarg:
-          simple: Does this service host sensitive corporate information?
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - simple: "Yes"
-        - simple: "No"
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: Please confirm whether this service hosts sensitive company information.
-        readonly: false
-      - id: "4"
-        label: ""
-        labelarg:
-          simple: What is the purpose of this service?
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: multiSelect
-        options: []
-        optionsarg:
-        - simple: Marketing
-        - simple: Business Development
-        - simple: Engineering
-        - simple: Sales
-        - simple: Other (please specify in the next question)
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: Confirm the purpose of this service
-        readonly: false
-      - id: "5"
-        label: ""
-        labelarg:
-          simple: If other, please state the purpose of this service.
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: Please state the purpose of this service
-        readonly: false
-      - id: "6"
-        label: ""
-        labelarg:
-          simple: What Provider is this service Hosted on?
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - simple: Google Cloud Platform
-        - simple: Amazon Web Services
-        - simple: Microsoft Azure
-        - simple: Alibaba Cloud
-        - simple: Oracle Cloud
-        - simple: IBM Cloud
-        - simple: Corporate Network (On Prem)
-        - simple: Other/Unknown
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: Please specify the Service Provider
-        readonly: false
-      title: Shadow IT Information Collection
-      description: |-
-        ## Please urgently fill the form below.
-
-
-        Best regards,
-        **Your Company Infosec Team**
-      sender: ""
-      expired: false
-      totalanswers: 0
-    skipunavailable: false
+      to:
+        complex:
+          accessor: shadowitaccountowneremail
+          root: incident
+    nexttasks:
+      '#none#':
+      - "41"
+    note: true
     quietmode: 0
-  "2":
-    id: "2"
-    taskid: c3f082f4-beca-4a5f-8a33-51d6058a514d
-    type: condition
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: c3f082f4-beca-4a5f-8a33-51d6058a514d
-      version: -1
-      name: Is owner known?
-      description: Check whether the owner of the asset is known.
-      type: condition
-      iscommand: false
       brand: ""
+      description: Collect details about a service from the owner of the asset.
+      id: 54fec135-6d81-4394-8bd5-8554bc2817a7
+      iscommand: false
+      name: Collect Service details from Asset owner
+      type: collection
+      version: -1
+    taskid: 54fec135-6d81-4394-8bd5-8554bc2817a7
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -740
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: shadowitaccountowneremail
+                root: incident
+          operator: isNotEmpty
+      label: "yes"
+    id: "2"
+    ignoreworker: false
     nexttasks:
       '#default#':
       - "57"
       "yes":
       - "9"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: shadowitaccountowneremail
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the owner of the asset is known.
+      id: c3f082f4-beca-4a5f-8a33-51d6058a514d
+      iscommand: false
+      name: Is owner known?
+      type: condition
+      version: -1
+    taskid: c3f082f4-beca-4a5f-8a33-51d6058a514d
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
           "x": 265,
-          "y": -2310
+          "y": -2520
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Potential Asset Owners
     id: "3"
-    taskid: 103928b4-6710-4c5e-82a5-093cd7cfdfb5
-    type: regular
-    task:
-      id: 103928b4-6710-4c5e-82a5-093cd7cfdfb5
-      version: -1
-      name: Print Potential Asset Owners
-      description: Convert an array to a nice table display. Usually, from the context.
-      scriptName: ToTable
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "32"
+    note: true
+    quietmode: 0
     scriptarguments:
       columns: {}
       data:
         complex:
-          root: incident
           accessor: shadowitusersuggestions
+          root: incident
       title:
         simple: Potential Asset Owners
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Convert an array to a nice table display. Usually, from the context.
+      id: 103928b4-6710-4c5e-82a5-093cd7cfdfb5
+      iscommand: false
+      name: Print Potential Asset Owners
+      script: ToTable
+      type: regular
+      version: -1
+    taskid: 103928b4-6710-4c5e-82a5-093cd7cfdfb5
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": -1950
+          "x": 890,
+          "y": -1970
         }
       }
-    note: true
-    evidencedata:
-      description:
-        simple: Potential Asset Owners
-      customfields: {}
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "5":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: shadowitcloudaccounttype
+                root: incident
+          operator: inList
+          right:
+            value:
+              simple: aws,amazon,amazon web services
+      label: AWS
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: shadowitcloudaccounttype
+                root: incident
+          operator: inList
+          right:
+            value:
+              simple: gcp,google,google cloud platform
+      label: GCP
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: shadowitcloudaccounttype
+                root: incident
+          operator: inList
+          right:
+            value:
+              simple: microsoft,azure,microsoft azure,msft
+      label: AZURE
     id: "5"
-    taskid: be2be86f-eefc-4ba6-80b0-346fd15ecbc2
-    type: condition
-    task:
-      id: be2be86f-eefc-4ba6-80b0-346fd15ecbc2
-      version: -1
-      name: Cloud Type
-      description: Select appropriate branch depending on Cloud Provider
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#default#':
       - "12"
@@ -349,132 +415,106 @@ tasks:
       - "13"
       GCP:
       - "14"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: AWS
-      condition:
-      - - operator: inList
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: shadowitcloudaccounttype
-            iscontext: true
-          right:
-            value:
-              simple: aws,amazon,amazon web services
-          ignorecase: true
-    - label: GCP
-      condition:
-      - - operator: inList
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: shadowitcloudaccounttype
-            iscontext: true
-          right:
-            value:
-              simple: gcp,google,google cloud platform
-          ignorecase: true
-    - label: AZURE
-      condition:
-      - - operator: inList
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: shadowitcloudaccounttype
-            iscontext: true
-          right:
-            value:
-              simple: microsoft,azure,microsoft azure,msft
-          ignorecase: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Select appropriate branch depending on Cloud Provider
+      id: be2be86f-eefc-4ba6-80b0-346fd15ecbc2
+      iscommand: false
+      name: Cloud Type
+      type: condition
+      version: -1
+    taskid: be2be86f-eefc-4ba6-80b0-346fd15ecbc2
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 1790
+          "y": 1230
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "6":
     id: "6"
-    taskid: febe61a5-e248-431a-8874-2938f4c8fe76
-    type: regular
-    task:
-      id: febe61a5-e248-431a-8874-2938f4c8fe76
-      version: -1
-      name: Manually handling of Shadow IT incident
-      description: Manually onboard the account in Prisma Cloud
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "11"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manually onboard the account in Prisma Cloud
+      id: febe61a5-e248-431a-8874-2938f4c8fe76
+      iscommand: false
+      name: Manually handling of Shadow IT incident
+      type: regular
+      version: -1
+    taskid: febe61a5-e248-431a-8874-2938f4c8fe76
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 1140,
-          "y": 2170
+          "x": 1080,
+          "y": 1610
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "8":
     id: "8"
-    taskid: c7144f9d-3dc1-4f7c-8bc8-03d5f0d0a10d
-    type: title
-    task:
-      id: c7144f9d-3dc1-4f7c-8bc8-03d5f0d0a10d
-      version: -1
-      name: Done Collecting Information
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "43"
       - "60"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c7144f9d-3dc1-4f7c-8bc8-03d5f0d0a10d
+      iscommand: false
+      name: Done Collecting Information
+      type: title
+      version: -1
+      description: ''
+    taskid: c7144f9d-3dc1-4f7c-8bc8-03d5f0d0a10d
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 930
+          "y": 370
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "9":
     id: "9"
-    taskid: 75ff4859-47b5-4f36-8250-5c23a800b303
-    type: title
-    task:
-      id: 75ff4859-47b5-4f36-8250-5c23a800b303
-      version: -1
-      name: Collect information
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "1"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 75ff4859-47b5-4f36-8250-5c23a800b303
+      iscommand: false
+      name: Collect information
+      type: title
+      version: -1
+      description: ''
+    taskid: 75ff4859-47b5-4f36-8250-5c23a800b303
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -482,359 +522,361 @@ tasks:
           "y": -880
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "10":
     id: "10"
-    taskid: d759f0af-d5d9-4659-8954-b014fcedb1d6
-    type: title
-    task:
-      id: d759f0af-d5d9-4659-8954-b014fcedb1d6
-      version: -1
-      name: Done Prisma Cloud Onboarding
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "11"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d759f0af-d5d9-4659-8954-b014fcedb1d6
+      iscommand: false
+      name: Done Prisma Cloud Onboarding
+      type: title
+      version: -1
+      description: ''
+    taskid: d759f0af-d5d9-4659-8954-b014fcedb1d6
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 3040
+          "y": 1910
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "11":
     id: "11"
-    taskid: 7b12b347-8983-43c7-8a5a-d488a4b0adfb
-    type: title
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ""
       id: 7b12b347-8983-43c7-8a5a-d488a4b0adfb
-      version: -1
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
+      version: -1
       description: ''
-    separatecontext: false
+    taskid: 7b12b347-8983-43c7-8a5a-d488a4b0adfb
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 3350
+          "y": 2780
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "12":
     id: "12"
-    taskid: 7d4195a2-29c8-4e6c-8a28-d99abeb8ef93
-    type: regular
-    task:
-      id: 7d4195a2-29c8-4e6c-8a28-d99abeb8ef93
-      version: -1
-      name: Onboard Cloud Account on Prisma Cloud
-      description: Onboard Cloud Account on Prisma Cloud.
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "10"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Onboard Cloud Account on Prisma Cloud.
+      id: 7d4195a2-29c8-4e6c-8a28-d99abeb8ef93
+      iscommand: false
+      name: Onboard Cloud Account on Prisma Cloud
+      type: regular
+      version: -1
+    taskid: 7d4195a2-29c8-4e6c-8a28-d99abeb8ef93
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
           "x": 675,
-          "y": 2170
+          "y": 1610
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "13":
     id: "13"
-    taskid: 3d9aec16-275c-4ac9-83a0-fba24d610ba0
-    type: regular
-    task:
-      id: 3d9aec16-275c-4ac9-83a0-fba24d610ba0
-      version: -1
-      name: Onboard Azure Cloud Account on Prisma Cloud
-      description: Onboard Azure Cloud Account on Prisma Cloud
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "10"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Onboard Azure Cloud Account on Prisma Cloud
+      id: 3d9aec16-275c-4ac9-83a0-fba24d610ba0
+      iscommand: false
+      name: Onboard Azure Cloud Account on Prisma Cloud
+      type: regular
+      version: -1
+    taskid: 3d9aec16-275c-4ac9-83a0-fba24d610ba0
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 2170
+          "y": 1610
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "14":
     id: "14"
-    taskid: c6a3027c-5332-472d-8ce5-a60b5b01c0ff
-    type: regular
-    task:
-      id: c6a3027c-5332-472d-8ce5-a60b5b01c0ff
-      version: -1
-      name: Onboard GCP Cloud Account on Prisma Cloud
-      description: Onboard GCP Cloud Account on Prisma Cloud.
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -170,
-          "y": 2170
-        }
-      }
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "32":
-    id: "32"
-    taskid: 1e74ea1c-ca9e-427b-825a-9272c786bb88
-    type: collection
-    task:
-      id: 1e74ea1c-ca9e-427b-825a-9272c786bb88
-      version: -1
-      name: Choose Asset Owner
-      description: Ask the Analyst to select the owner of the asset.
-      type: collection
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "33"
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Onboard GCP Cloud Account on Prisma Cloud.
+      id: c6a3027c-5332-472d-8ce5-a60b5b01c0ff
+      iscommand: false
+      name: Onboard GCP Cloud Account on Prisma Cloud
+      type: regular
+      version: -1
+    taskid: c6a3027c-5332-472d-8ce5-a60b5b01c0ff
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": -1790
+          "x": -150,
+          "y": 1610
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-        simple: Analyst
-      subject:
-        simple: 'Shadow IT: Choose asset owner'
-      body:
-        simple: Please choose an asset owner from the list or select add new.
-      methods: []
-      format: ""
-      bcc:
-      cc:
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
+  "32":
     form:
+      description: Choose asset owner from the list or select add new or unknown.
+      expired: false
       questions:
-      - id: "0"
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
         label: ""
         labelarg:
           simple: Choose asset owner
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
         options: []
         optionsarg:
         - complex:
-            root: incident
             accessor: shadowitusersuggestions
+            root: incident
             transformers:
-            - operator: getField
-              args:
+            - args:
                 field:
                   value:
                     simple: name
+              operator: getField
         - simple: ➕ Add New
-        fieldassociated: ""
+        - simple: ❓Unknown
         placeholder: ""
-        tooltip: Choose asset owner from the list or select add new.
         readonly: false
-      title: 'Shadow IT: Choose asset owner'
-      description: Choose asset owner from the list or select add new.
+        required: false
+        tooltip: Choose asset owner from the list or select add new or unknown.
+        type: singleSelect
       sender: ""
-      expired: false
+      title: 'Shadow IT: Choose asset owner'
       totalanswers: 0
-    skipunavailable: false
+    id: "32"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: Please choose an asset owner from the list or select add new or unknown.
+      cc:
+      format: ""
+      methods: []
+      subject:
+        simple: 'Shadow IT: Choose asset owner'
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: Analyst
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
     quietmode: 0
-  "33":
-    id: "33"
-    taskid: 825b872c-02e5-4430-85f1-e9b7d287dce2
-    type: condition
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 825b872c-02e5-4430-85f1-e9b7d287dce2
-      version: -1
-      name: Add new owner?
-      description: Shall we add a new owner for this asset?
-      type: condition
-      iscommand: false
       brand: ""
+      description: Ask the Analyst to select the owner of the asset.
+      id: 0ee52751-eeb3-4347-8aa2-d9d62c7d40f6
+      iscommand: false
+      name: Choose Asset Owner
+      type: collection
+      version: -1
+    taskid: 0ee52751-eeb3-4347-8aa2-d9d62c7d40f6
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": -1800
+        }
+      }
+  "33":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: "0"
+                root: 'Shadow IT: Choose asset owner.Answers'
+          operator: containsString
+          right:
+            value:
+              simple: Add New
+      label: ADD-NEW
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: "0"
+                root: 'Shadow IT: Choose asset owner.Answers'
+          operator: containsString
+          right:
+            value:
+              simple: Unknown
+      label: UNKNOWN
+    id: "33"
+    ignoreworker: false
     nexttasks:
       '#default#':
       - "36"
       ADD-NEW:
       - "34"
-    separatecontext: false
-    conditions:
-    - label: ADD-NEW
-      condition:
-      - - operator: containsString
-          left:
-            value:
-              complex:
-                root: 'Shadow IT: Choose asset owner.Answers'
-                accessor: "0"
-            iscontext: true
-          right:
-            value:
-              simple: Add New
-    view: |-
-      {
-        "position": {
-          "x": 750,
-          "y": -1630
-        }
-      }
+      UNKNOWN:
+      - "42"
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
-  "34":
-    id: "34"
-    taskid: 14a0965f-062a-4515-88a8-ebfc036534ee
-    type: collection
-    task:
-      id: 14a0965f-062a-4515-88a8-ebfc036534ee
-      version: -1
-      name: Insert owner name and email
-      description: Ask the user to provide asset owner's name and email.
-      type: collection
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "35"
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Shall we add a new owner for this asset?
+      id: 1519ee29-a17c-45bc-843e-82cabbb4af1b
+      iscommand: false
+      name: Add new owner?
+      type: condition
+      version: -1
+    taskid: 1519ee29-a17c-45bc-843e-82cabbb4af1b
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
-          "x": 1030,
-          "y": -1440
+          "x": 890,
+          "y": -1650
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-        simple: Analyst
-      subject:
-        simple: 'Shadow IT: Insert asset owner name and email'
-      body:
-        simple: Please Insert asset owner name and email
-      methods: []
-      format: ""
-      bcc:
-      cc:
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
+  "34":
     form:
+      description: Please Insert asset owner name and email.
+      expired: false
       questions:
-      - id: "0"
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
         label: ""
         labelarg:
           simple: Asset owner name
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
         options: []
         optionsarg: []
-        fieldassociated: ""
         placeholder: ""
-        tooltip: Please insert asset owner name.
         readonly: false
-      - id: "1"
+        required: true
+        tooltip: Please insert asset owner name.
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
         label: ""
         labelarg:
           simple: Asset owner email
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
         options: []
         optionsarg: []
-        fieldassociated: ""
         placeholder: ""
-        tooltip: Please insert asset owner n email.
         readonly: false
-      title: 'Shadow IT: Insert asset owner name and email'
-      description: Please Insert asset owner name and email.
+        required: true
+        tooltip: Please insert asset owner n email.
+        type: shortText
       sender: ""
-      expired: false
+      title: 'Shadow IT: Insert asset owner name and email'
       totalanswers: 0
-    skipunavailable: false
+    id: "34"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: Please Insert asset owner name and email
+      cc:
+      format: ""
+      methods: []
+      subject:
+        simple: 'Shadow IT: Insert asset owner name and email'
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: Analyst
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
     quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Ask the user to provide asset owner's name and email.
+      id: 14a0965f-062a-4515-88a8-ebfc036534ee
+      iscommand: false
+      name: Insert owner name and email
+      type: collection
+      version: -1
+    taskid: 14a0965f-062a-4515-88a8-ebfc036534ee
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": -1430
+        }
+      }
   "35":
     id: "35"
-    taskid: 7937518e-9e4d-48e5-88d7-e8acbe77a099
-    type: regular
-    task:
-      id: 7937518e-9e4d-48e5-88d7-e8acbe77a099
-      version: -1
-      name: Set asset owner name and email in incident
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "58"
+    note: false
+    quietmode: 0
     scriptarguments:
       accountid: {}
       accountname: {}
@@ -1020,12 +1062,12 @@ tasks:
       sha256: {}
       shadowitaccountowneremail:
         complex:
-          root: 'Shadow IT: Insert asset owner name and email.Answers'
           accessor: "1"
+          root: 'Shadow IT: Insert asset owner name and email.Answers'
       shadowitaccountownername:
         complex:
-          root: 'Shadow IT: Insert asset owner name and email.Answers'
           accessor: "0"
+          root: 'Shadow IT: Insert asset owner name and email.Answers'
       shadowitbilledtocorp: {}
       shadowitcertificate: {}
       shadowitcloudaccountid: {}
@@ -1113,34 +1155,34 @@ tasks:
       xdrusercount: {}
       zipcode: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 7937518e-9e4d-48e5-88d7-e8acbe77a099
+      iscommand: true
+      name: Set asset owner name and email in incident
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 7937518e-9e4d-48e5-88d7-e8acbe77a099
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 1030,
+          "x": 890,
           "y": -1250
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "36":
     id: "36"
-    taskid: 50b8d3a6-40d9-49d5-8843-1819023d6157
-    type: regular
-    task:
-      id: 50b8d3a6-40d9-49d5-8843-1819023d6157
-      version: -1
-      name: Set asset owner name and email in incident
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "58"
+    note: false
+    quietmode: 0
     scriptarguments:
       accountid: {}
       accountname: {}
@@ -1326,27 +1368,27 @@ tasks:
       sha256: {}
       shadowitaccountowneremail:
         complex:
-          root: incident.shadowitusersuggestions
           filters:
-          - - operator: isEqualString
-              left:
+          - - left:
+                iscontext: true
                 value:
                   simple: incident.shadowitusersuggestions.name
-                iscontext: true
+              operator: isEqualString
               right:
+                iscontext: true
                 value:
                   simple: 'Shadow IT: Choose asset owner.Answers.0'
-                iscontext: true
+          root: incident.shadowitusersuggestions
           transformers:
-          - operator: getField
-            args:
+          - args:
               field:
                 value:
                   simple: email
+            operator: getField
       shadowitaccountownername:
         complex:
-          root: 'Shadow IT: Choose asset owner.Answers'
           accessor: "0"
+          root: 'Shadow IT: Choose asset owner.Answers'
       shadowitbilledtocorp: {}
       shadowitcertificate: {}
       shadowitcloudaccountid: {}
@@ -1437,34 +1479,34 @@ tasks:
       xdrusercount: {}
       zipcode: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 50b8d3a6-40d9-49d5-8843-1819023d6157
+      iscommand: true
+      name: Set asset owner name and email in incident
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 50b8d3a6-40d9-49d5-8843-1819023d6157
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 560,
-          "y": -1250
+          "x": 480,
+          "y": -1430
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "37":
     id: "37"
-    taskid: 2d022bb4-9885-4077-84a4-4ceea9d20e86
-    type: regular
-    task:
-      id: 2d022bb4-9885-4077-84a4-4ceea9d20e86
-      version: -1
-      name: Set Incident Information based on responses
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "39"
+    note: false
+    quietmode: 0
     scriptarguments:
       accountid: {}
       accountname: {}
@@ -1652,11 +1694,10 @@ tasks:
       shadowitaccountownername: {}
       shadowitbilledtocorp:
         complex:
-          root: Shadow IT Information Collection.Answers
           accessor: "2"
+          root: Shadow IT Information Collection.Answers
           transformers:
-          - operator: If-Then-Else
-            args:
+          - args:
               else:
                 value:
                   simple: "false"
@@ -1666,12 +1707,13 @@ tasks:
               then:
                 value:
                   simple: "true"
+            operator: If-Then-Else
       shadowitcertificate: {}
       shadowitcloudaccountid: {}
       shadowitcloudaccounttype:
         complex:
-          root: Shadow IT Information Collection.Answers
           accessor: "6"
+          root: Shadow IT Information Collection.Answers
       shadowitfqdn: {}
       shadowitip: {}
       shadowitorganizationalunit: {}
@@ -1680,17 +1722,16 @@ tasks:
       shadowitport: {}
       shadowitprovider:
         complex:
-          root: Shadow IT Information Collection.Answers
           accessor: "6"
+          root: Shadow IT Information Collection.Answers
       shadowitregion: {}
       shadowitrisk: {}
       shadowitsactionedservice:
         complex:
-          root: Shadow IT Information Collection.Answers
           accessor: "1"
+          root: Shadow IT Information Collection.Answers
           transformers:
-          - operator: If-Then-Else
-            args:
+          - args:
               else:
                 value:
                   simple: "false"
@@ -1700,13 +1741,13 @@ tasks:
               then:
                 value:
                   simple: "true"
+            operator: If-Then-Else
       shadowitsensitivedata:
         complex:
-          root: Shadow IT Information Collection.Answers
           accessor: "3"
+          root: Shadow IT Information Collection.Answers
           transformers:
-          - operator: If-Then-Else
-            args:
+          - args:
               else:
                 value:
                   simple: "false"
@@ -1716,11 +1757,12 @@ tasks:
               then:
                 value:
                   simple: "true"
+            operator: If-Then-Else
       shadowitservice: {}
       shadowitservicepurpose:
         complex:
-          root: Shadow IT Information Collection.Answers
           accessor: "4"
+          root: Shadow IT Information Collection.Answers
       shadowitsource: {}
       shadowitusersuggestions: {}
       shadowusersuggestions: {}
@@ -1796,6 +1838,19 @@ tasks:
       xdrusercount: {}
       zipcode: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 2d022bb4-9885-4077-84a4-4ceea9d20e86
+      iscommand: true
+      name: Set Incident Information based on responses
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 2d022bb4-9885-4077-84a4-4ceea9d20e86
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1803,44 +1858,44 @@ tasks:
           "y": -305
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "39":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: "3"
+                root: Shadow IT Information Collection.Answers
+          operator: isEqualString
+          right:
+            value:
+              simple: "yes"
+      label: "yes"
     id: "39"
-    taskid: 2254a855-4154-4101-8e5e-1f881f19ae40
-    type: condition
-    task:
-      id: 2254a855-4154-4101-8e5e-1f881f19ae40
-      version: -1
-      name: Does the service contain sensitive information?
-      description: Check whether the user confirmed that the service might contain
-        sensitive data.
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#default#':
       - "8"
       "yes":
       - "40"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Shadow IT Information Collection.Answers
-                accessor: "3"
-            iscontext: true
-          right:
-            value:
-              simple: "yes"
-          ignorecase: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the user confirmed that the service might contain
+        sensitive data.
+      id: 2254a855-4154-4101-8e5e-1f881f19ae40
+      iscommand: false
+      name: Does the service contain sensitive information?
+      type: condition
+      version: -1
+    taskid: 2254a855-4154-4101-8e5e-1f881f19ae40
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -1848,27 +1903,14 @@ tasks:
           "y": -80
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "40":
     id: "40"
-    taskid: 279aac1d-499e-4cfb-8ba6-f77f73266e17
-    type: regular
-    task:
-      id: 279aac1d-499e-4cfb-8ba6-f77f73266e17
-      version: -1
-      name: Set Shadow IT Risk and Severity to Critical
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "8"
+    note: false
+    quietmode: 0
     scriptarguments:
       accountid: {}
       accountname: {}
@@ -2145,50 +2187,63 @@ tasks:
       xdrusercount: {}
       zipcode: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 279aac1d-499e-4cfb-8ba6-f77f73266e17
+      iscommand: true
+      name: Set Shadow IT Risk and Severity to Critical
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 279aac1d-499e-4cfb-8ba6-f77f73266e17
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": -30,
-          "y": 170
+          "x": 10,
+          "y": 140
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "41":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: "0"
+                root: Shadow IT Information Collection.Answers
+          operator: isEqualString
+          right:
+            value:
+              simple: "yes"
+      label: "yes"
     id: "41"
-    taskid: dbbfc184-92a9-463a-828a-af7f4b858669
-    type: condition
-    task:
-      id: dbbfc184-92a9-463a-828a-af7f4b858669
-      version: -1
-      name: Did the user confirm they own the asset?
-      description: Check whether the user confirmed to own this asset.
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#default#':
       - "42"
       "yes":
       - "37"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Shadow IT Information Collection.Answers
-                accessor: "0"
-            iscontext: true
-          right:
-            value:
-              simple: "yes"
-          ignorecase: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the user confirmed to own this asset.
+      id: dbbfc184-92a9-463a-828a-af7f4b858669
+      iscommand: false
+      name: Did the user confirm they own the asset?
+      type: condition
+      version: -1
+    taskid: dbbfc184-92a9-463a-828a-af7f4b858669
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -2196,232 +2251,220 @@ tasks:
           "y": -565
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "42":
     id: "42"
-    taskid: 1a980226-1ee9-48ad-88b3-f5eaf0c63b7a
-    type: regular
-    task:
-      id: 1a980226-1ee9-48ad-88b3-f5eaf0c63b7a
-      version: -1
-      name: Find owner and collect information manually
-      description: The analyst must manually investigate this incidentand, find the
-        owner and collect the service information.
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "8"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: The analyst must manually investigate this incidentand, find the
+        owner and collect the service information.
+      id: 1a980226-1ee9-48ad-88b3-f5eaf0c63b7a
+      iscommand: false
+      name: Find owner and collect information manually
+      type: regular
+      version: -1
+    taskid: 1a980226-1ee9-48ad-88b3-f5eaf0c63b7a
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": -360
+          "x": 920,
+          "y": -305
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "43":
     id: "43"
-    taskid: 18bdd6d8-0e6c-4c28-818c-823d1e13530d
-    type: title
-    task:
-      id: 18bdd6d8-0e6c-4c28-818c-823d1e13530d
-      version: -1
-      name: Notify Manager
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "45"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 18bdd6d8-0e6c-4c28-818c-823d1e13530d
+      iscommand: false
+      name: Notify Manager
+      type: title
+      version: -1
+      description: ''
+    taskid: 18bdd6d8-0e6c-4c28-818c-823d1e13530d
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
-          "x": 1660,
-          "y": 1175
+          "x": 1380,
+          "y": 535
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "44":
     id: "44"
-    taskid: 95c3f5c8-c3e9-4a05-8bfd-706372bb128d
-    type: playbook
-    task:
-      id: 95c3f5c8-c3e9-4a05-8bfd-706372bb128d
-      version: -1
-      name: Active Directory - Get User Manager Details
-      playbookName: Active Directory - Get User Manager Details
-      type: playbook
+    ignoreworker: false
+    loop:
+      exitCondition: ""
       iscommand: false
-      brand: ""
-      description: ''
+      max: 100
+      wait: 1
     nexttasks:
       '#none#':
       - "47"
+    note: false
+    quietmode: 0
     scriptarguments:
       UserEmail:
         complex:
-          root: incident
           accessor: shadowitaccountowneremail
+          root: incident
       Username: {}
     separatecontext: true
-    loop:
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Takes an email address or a username of a user account in Active
+        Directory, and returns the email address of the user's manager.
+      id: c9215ec0-15bc-4305-8331-9c2eb42c6ddc
       iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
+      name: Active Directory - Get User Manager Details
+      playbookId: Active Directory - Get User Manager Details
+      type: playbook
+      version: -1
+    taskid: c9215ec0-15bc-4305-8331-9c2eb42c6ddc
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
-          "x": 1660,
-          "y": 1695
+          "x": 1380,
+          "y": 895
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "45":
-    id: "45"
-    taskid: 4787d1bf-bfed-4649-8bd9-c1e53b263e15
-    type: condition
-    task:
-      id: 4787d1bf-bfed-4649-8bd9-c1e53b263e15
-      version: -1
-      name: Shall we notify user's manager?
-      description: Check whether to notify the user's manger.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "44"
-    separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
+    - condition:
+      - - ignorecase: true
           left:
+            iscontext: true
             value:
               complex:
                 root: inputs.Notify Manager
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: "yes"
-          ignorecase: true
+      label: "yes"
+    id: "45"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "44"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether to notify the user's manger.
+      id: 4787d1bf-bfed-4649-8bd9-c1e53b263e15
+      iscommand: false
+      name: Shall we notify user's manager?
+      type: condition
+      version: -1
+    taskid: 4787d1bf-bfed-4649-8bd9-c1e53b263e15
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
-          "x": 1660,
-          "y": 1470
+          "x": 1380,
+          "y": 690
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "46":
     id: "46"
-    taskid: 71fa2a95-60d2-4f94-899b-1bd3f97abd44
-    type: title
-    task:
-      id: 71fa2a95-60d2-4f94-899b-1bd3f97abd44
-      version: -1
-      name: Done Notify Manager
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "11"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 71fa2a95-60d2-4f94-899b-1bd3f97abd44
+      iscommand: false
+      name: Done Notify Manager
+      type: title
+      version: -1
+      description: ''
+    taskid: 71fa2a95-60d2-4f94-899b-1bd3f97abd44
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
-          "x": 1660,
-          "y": 2760
+          "x": 1380,
+          "y": 1485
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "47":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: UserManagerEmail
+          operator: isNotEmpty
+      label: "yes"
     id: "47"
-    taskid: 23b64654-c78b-4b5b-8248-8be07e1c88fb
-    type: condition
-    task:
-      id: 23b64654-c78b-4b5b-8248-8be07e1c88fb
-      version: -1
-      name: Did we find the user's manager?
-      description: Check whether to notify the user's manager.
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#default#':
       - "46"
       "yes":
       - "48"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: UserManagerEmail
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether to notify the user's manager.
+      id: 088ec0c7-b2db-4844-816f-5ab3d138c56a
+      iscommand: false
+      name: Did we find the user's manager?
+      type: condition
+      version: -1
+    taskid: 088ec0c7-b2db-4844-816f-5ab3d138c56a
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
-          "x": 1660,
-          "y": 1910
+          "x": 1380,
+          "y": 1070
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "48":
     id: "48"
-    taskid: 8bfb7c30-98e7-4f7d-87a6-8dfb1bd9610e
-    type: regular
-    task:
-      id: 8bfb7c30-98e7-4f7d-87a6-8dfb1bd9610e
-      version: -1
-      name: Notify User's manager
-      description: Send an email
-      script: '|||send-mail'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "46"
+    note: false
+    quietmode: 0
     scriptarguments:
       additionalHeader: {}
       attachCIDs: {}
@@ -2436,16 +2479,16 @@ tasks:
       replyTo: {}
       subject:
         complex:
-          root: incident
           accessor: shadowitaccountownername
+          root: incident
           transformers:
-          - operator: concat
-            args:
+          - args:
               prefix:
+                iscontext: true
                 value:
                   simple: inputs.ManagerNotificationSubjectPrefix
-                iscontext: true
               suffix: {}
+            operator: concat
       templateParams: {}
       to:
         complex:
@@ -2454,103 +2497,103 @@ tasks:
       transientFileCID: {}
       transientFileContent: {}
     separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Send an email
+      id: 1e66b31c-8a85-45f4-8215-6222d8995b48
+      iscommand: true
+      name: Notify User's manager
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 1e66b31c-8a85-45f4-8215-6222d8995b48
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 1660,
-          "y": 2170
+          "x": 1380,
+          "y": 1300
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "49":
     id: "49"
-    taskid: 2053aac3-a83f-48ca-8ccb-03ae5192d12a
-    type: title
-    task:
-      id: 2053aac3-a83f-48ca-8ccb-03ae5192d12a
-      version: -1
-      name: Tag Shadow IT Indicators
-      description: commands.local.cmd.find.indicators
-      type: title
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "50"
       - "52"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: commands.local.cmd.find.indicators
+      id: 2053aac3-a83f-48ca-8ccb-03ae5192d12a
+      iscommand: false
+      name: Tag Shadow IT Indicators
+      type: title
+      version: -1
+    taskid: 2053aac3-a83f-48ca-8ccb-03ae5192d12a
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
-          "x": -1630,
-          "y": 800
+          "x": -840,
+          "y": -1910
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "50":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: shadowitip
+                root: incident
+          operator: isNotEmpty
+      label: "yes"
     id: "50"
-    taskid: edcc6efa-52a8-4a1a-8fae-448ae56b66ae
-    type: condition
-    task:
-      id: edcc6efa-52a8-4a1a-8fae-448ae56b66ae
-      version: -1
-      name: Is there an IP?
-      description: Check whether an IP address is part of the incident.
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#default#':
       - "54"
       "yes":
       - "51"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: shadowitip
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether an IP address is part of the incident.
+      id: edcc6efa-52a8-4a1a-8fae-448ae56b66ae
+      iscommand: false
+      name: Is there an IP?
+      type: condition
+      version: -1
+    taskid: edcc6efa-52a8-4a1a-8fae-448ae56b66ae
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
-          "x": -2120,
-          "y": 1030
+          "x": -1120,
+          "y": -1680
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "51":
     id: "51"
-    taskid: e3302167-4fa2-4da3-8a2a-2c0cb38f610c
-    type: regular
-    task:
-      id: e3302167-4fa2-4da3-8a2a-2c0cb38f610c
-      version: -1
-      name: Find IP Indicator
-      description: commands.local.cmd.find.indicators
-      script: Builtin|||findIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "54"
+    note: false
+    quietmode: 0
     scriptarguments:
       extend-context:
         simple: ShadowITIndicator=
@@ -2563,77 +2606,77 @@ tasks:
       todate: {}
       value:
         complex:
-          root: incident
           accessor: shadowitip
+          root: incident
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.find.indicators
+      id: e3302167-4fa2-4da3-8a2a-2c0cb38f610c
+      iscommand: true
+      name: Find IP Indicator
+      script: Builtin|||findIndicators
+      type: regular
+      version: -1
+    taskid: e3302167-4fa2-4da3-8a2a-2c0cb38f610c
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": -2120,
-          "y": 1240
+          "x": -1120,
+          "y": -1460
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "52":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: shadowitfqdn
+                root: incident
+          operator: isNotEmpty
+      label: "yes"
     id: "52"
-    taskid: e53839f9-ee2e-40ed-832d-9868ac35bc32
-    type: condition
-    task:
-      id: e53839f9-ee2e-40ed-832d-9868ac35bc32
-      version: -1
-      name: Is there a FQDN?
-      description: Check whether an FQDN was provided with this incident.
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#default#':
       - "54"
       "yes":
       - "53"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: shadowitfqdn
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether an FQDN was provided with this incident.
+      id: e53839f9-ee2e-40ed-832d-9868ac35bc32
+      iscommand: false
+      name: Is there a FQDN?
+      type: condition
+      version: -1
+    taskid: e53839f9-ee2e-40ed-832d-9868ac35bc32
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
-          "x": -1230,
-          "y": 1050
+          "x": -570,
+          "y": -1680
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "53":
     id: "53"
-    taskid: 9a1d5eff-ea82-4920-8589-fef36cb0faf9
-    type: regular
-    task:
-      id: 9a1d5eff-ea82-4920-8589-fef36cb0faf9
-      version: -1
-      name: Find FQDN Indicator
-      description: commands.local.cmd.find.indicators
-      script: Builtin|||findIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "54"
+    note: false
+    quietmode: 0
     scriptarguments:
       extend-context:
         simple: ShadowITIndicator=
@@ -2646,75 +2689,75 @@ tasks:
       todate: {}
       value:
         complex:
-          root: incident
           accessor: shadowitfqdn
+          root: incident
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.find.indicators
+      id: 9a1d5eff-ea82-4920-8589-fef36cb0faf9
+      iscommand: true
+      name: Find FQDN Indicator
+      script: Builtin|||findIndicators
+      type: regular
+      version: -1
+    taskid: 9a1d5eff-ea82-4920-8589-fef36cb0faf9
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": -1230,
-          "y": 1260
+          "x": -570,
+          "y": -1460
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "54":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ShadowITIndicator
+          operator: isNotEmpty
+      label: "yes"
     id: "54"
-    taskid: 0773c6c1-7767-491f-8574-bb0593b0eae6
-    type: condition
-    task:
-      id: 0773c6c1-7767-491f-8574-bb0593b0eae6
-      version: -1
-      name: Are there Shadow IT Indicators?
-      description: Check whether there are indicators labelled Shadow IT.
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#default#':
       - "56"
       "yes":
       - "55"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ShadowITIndicator
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether there are indicators labelled Shadow IT.
+      id: 34df98d3-25c2-4047-80b2-7392ac7bc6e1
+      iscommand: false
+      name: Are there Shadow IT Indicators?
+      type: condition
+      version: -1
+    taskid: 34df98d3-25c2-4047-80b2-7392ac7bc6e1
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
-          "x": -1700,
-          "y": 1480
+          "x": -840,
+          "y": -1240
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "55":
     id: "55"
-    taskid: 86f2fd2c-cfb4-4e9b-8979-402d326edded
-    type: regular
-    task:
-      id: 86f2fd2c-cfb4-4e9b-8979-402d326edded
-      version: -1
-      name: Tag Shadow IT Indicators
-      description: commands.local.cmd.add.values.to.indicator.multi.select.field
-      script: Builtin|||appendIndicatorField
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "56"
+    note: false
+    quietmode: 0
     scriptarguments:
       field:
         simple: tags
@@ -2723,278 +2766,295 @@ tasks:
           root: inputs.ShadowITIndicatorTags
       indicatorsValues:
         complex:
-          root: ShadowITIndicator
           accessor: value
+          root: ShadowITIndicator
           transformers:
           - operator: uniq
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      id: 86f2fd2c-cfb4-4e9b-8979-402d326edded
+      iscommand: true
+      name: Tag Shadow IT Indicators
+      script: Builtin|||appendIndicatorField
+      type: regular
+      version: -1
+    taskid: 86f2fd2c-cfb4-4e9b-8979-402d326edded
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": -2020,
-          "y": 1910
+          "x": -600,
+          "y": -1060
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "56":
     id: "56"
-    taskid: deed11a3-6ba3-4c2c-82f3-86686bc9383d
-    type: title
-    task:
-      id: deed11a3-6ba3-4c2c-82f3-86686bc9383d
-      version: -1
-      name: Done Tagging Shadow IT Indicators
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "11"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: deed11a3-6ba3-4c2c-82f3-86686bc9383d
+      iscommand: false
+      name: Done Tagging Shadow IT Indicators
+      type: title
+      version: -1
+      description: ''
+    taskid: deed11a3-6ba3-4c2c-82f3-86686bc9383d
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
-          "x": -1700,
-          "y": 2490
+          "x": -840,
+          "y": -840
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "57":
     id: "57"
-    taskid: c7736540-a75a-4bef-810c-a3186ea63f52
-    type: title
-    task:
-      id: c7736540-a75a-4bef-810c-a3186ea63f52
-      version: -1
-      name: Identify Owner
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
+      - "65"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c7736540-a75a-4bef-810c-a3186ea63f52
+      iscommand: false
+      name: Identify Owner
+      type: title
+      version: -1
+      description: ''
+    taskid: c7736540-a75a-4bef-810c-a3186ea63f52
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": -2090
+          "x": 890,
+          "y": -2340
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "58":
     id: "58"
-    taskid: cb5ed74c-e836-43b5-8d2f-f0e57832c001
-    type: title
-    task:
-      id: cb5ed74c-e836-43b5-8d2f-f0e57832c001
-      version: -1
-      name: Done Identifying Owner
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "9"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cb5ed74c-e836-43b5-8d2f-f0e57832c001
+      iscommand: false
+      name: Done Identifying Owner
+      type: title
+      version: -1
+      description: ''
+    taskid: cb5ed74c-e836-43b5-8d2f-f0e57832c001
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
-          "x": 560,
+          "x": 480,
           "y": -1070
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "59":
+    defaultassigneecomplex:
+      simple: Analyst
     id: "59"
-    taskid: 43765462-0324-409a-8735-baf5bbcff9f2
-    type: condition
-    task:
-      id: 43765462-0324-409a-8735-baf5bbcff9f2
-      version: -1
-      name: Restrict outgoing traffic to this service?
-      description: Ask the analyst whether to restrict access to this service.
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       ✅ Yes:
       - "49"
       ❌ No:
       - "9"
+    note: false
+    quietmode: 0
     separatecontext: false
-    defaultassigneecomplex:
-      simple: Analyst
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Ask the analyst whether to restrict access to this service.
+      id: 43765462-0324-409a-8735-baf5bbcff9f2
+      iscommand: false
+      name: Restrict outgoing traffic to this service?
+      type: condition
+      version: -1
+    taskid: 43765462-0324-409a-8735-baf5bbcff9f2
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
-          "x": -550,
-          "y": -2240
+          "x": -280,
+          "y": -2520
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "60":
     id: "60"
-    taskid: 200d42d2-080c-4ee7-839d-5d0adb2f6baf
-    type: condition
-    task:
-      id: 200d42d2-080c-4ee7-839d-5d0adb2f6baf
-      version: -1
-      name: Onboard this account on Prisma Cloud?
-      description: Ask the analyst whether to onboard this account on Prisma Cloud.
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       ✅ Yes:
       - "64"
       ❌ No:
       - "6"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Ask the analyst whether to onboard this account on Prisma Cloud.
+      id: 200d42d2-080c-4ee7-839d-5d0adb2f6baf
+      iscommand: false
+      name: Onboard this account on Prisma Cloud?
+      type: condition
+      version: -1
+    taskid: 200d42d2-080c-4ee7-839d-5d0adb2f6baf
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 1290
+          "y": 850
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "63":
     id: "63"
-    taskid: 23641b66-61fd-45de-89e2-4dbbe5d999dd
-    type: regular
-    task:
-      id: 23641b66-61fd-45de-89e2-4dbbe5d999dd
-      version: -1
-      name: Onboard AWS Cloud Account on Prisma Cloud
-      description: Onboard AWS Cloud Account on Prisma Cloud.
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "10"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Onboard AWS Cloud Account on Prisma Cloud.
+      id: 23641b66-61fd-45de-89e2-4dbbe5d999dd
+      iscommand: false
+      name: Onboard AWS Cloud Account on Prisma Cloud
+      type: regular
+      version: -1
+    taskid: 23641b66-61fd-45de-89e2-4dbbe5d999dd
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": -620,
-          "y": 2170
+          "x": -560,
+          "y": 1610
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "64":
     id: "64"
-    taskid: 1863d5ce-2ad4-460d-8270-25abf7248483
-    type: title
-    task:
-      id: 1863d5ce-2ad4-460d-8270-25abf7248483
-      version: -1
-      name: Prisma Cloud Onboarding
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "5"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1863d5ce-2ad4-460d-8270-25abf7248483
+      iscommand: false
+      name: Prisma Cloud Onboarding
+      type: title
+      version: -1
+      description: ''
+    taskid: 1863d5ce-2ad4-460d-8270-25abf7248483
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 1660
+          "y": 1100
         }
       }
-    note: false
-    timertriggers: []
+  "65":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: shadowitusersuggestions
+                root: incident
+          operator: isNotEmpty
+      label: "yes"
+    id: "65"
     ignoreworker: false
-    skipunavailable: false
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "3"
+    note: false
     quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether there are potential owners for this incident to print
+        as a suggestion.
+      id: 7618d961-dd24-4272-88df-b57f1c3849a2
+      iscommand: false
+      name: Do we have suggested owners?
+      type: condition
+      version: -1
+    taskid: 7618d961-dd24-4272-88df-b57f1c3849a2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": -2205
+        }
+      }
+version: -1
 view: |-
   {
     "linkLabelsPosition": {
-      "50_54_#default#": 0.34,
-      "59_49_✅ Yes": 0.1,
-      "59_9_❌ No": 0.21,
+      "33_36_#default#": 0.35,
+      "50_54_#default#": 0.2,
+      "52_54_#default#": 0.23,
+      "59_49_✅ Yes": 0.22,
+      "59_9_❌ No": 0.1,
+      "5_13_AZURE": 0.82,
       "60_6_❌ No": 0.49
     },
     "paper": {
       "dimensions": {
-        "height": 6015,
-        "width": 4160,
-        "x": -2120,
-        "y": -2600
+        "height": 5585,
+        "width": 2880,
+        "x": -1120,
+        "y": -2740
       }
     }
   }
-inputs:
-- key: Notify Manager
-  value:
-    simple: "Yes"
-  required: false
-  description: Notify user's manager
-  playbookInputQuery:
-- key: ShadowITIndicatorTags
-  value:
-    simple: ShadowIT
-  required: false
-  description: Tags to add to indicators to identify potential Shadow IT assets
-  playbookInputQuery:
-- key: ManagerNotificationSubjectPrefix
-  value:
-    simple: 'Shadow IT asset detected - owned by '
-  required: false
-  description: This input is added as prefix to the owner name to build the subject
-    of the email sent to the owner's manager.
-  playbookInputQuery:
-- key: ManagerNotificationBody
-  value:
-    simple: |-
-      Dear ${UserManagerDisplayName},
-
-      we detected a Shadow IT service for User ${incident.shadowitaccountownername} who, according to the Company's directory, directly reports to you.
-
-      The service is: ${shadowitip}:${shadowitport} (${shadowitfqdn}), please work with your team and us to resolve this issue.
-
-      Best regards,
-
-      InfoSec team
-  required: false
-  description: Body of the email to send to the owner's manager.
-  playbookInputQuery:
-outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
