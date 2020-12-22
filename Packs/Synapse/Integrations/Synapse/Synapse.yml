@@ -81,6 +81,15 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: String
     - contextPath: IP.Address
       description: The IP address of the indicator.
       type: string
@@ -120,6 +129,15 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: String
     - contextPath: URL.Data
       description: The data of the URL indicator.
       type: string
@@ -158,6 +176,15 @@ script:
       type: Number
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
       type: String
     - contextPath: Domain.Name
       description: The name of the domain.
@@ -420,7 +447,7 @@ script:
     - contextPath: Synapse.Model.Valu
       description: The given value of the Synapse object type.
       type: String
-  dockerimage: demisto/aiohttp:1.0.0.12410
+  dockerimage: demisto/aiohttp:1.0.0.13810
   feed: false
   isfetch: false
   longRunning: false

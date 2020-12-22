@@ -1,0 +1,155 @@
+{
+ "description": "Maps model breach fields to mappings for use in Integration Playbooks.",
+ "feed": false,
+ "id": "df4dda6f-19a6-4a5a-8e54-fdbe57034349",
+ "mapping": {
+  "Darktrace Model Breach": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Darktrace Comment Count": {
+     "complex": null,
+     "simple": "commentCount"
+    },
+    "Darktrace Device Hostname": {
+     "complex": null,
+     "simple": "device.hostname"
+    },
+    "Darktrace Device ID": {
+     "complex": null,
+     "simple": "device.did"
+    },
+    "Darktrace Device IP": {
+     "complex": null,
+     "simple": "device.ip"
+    },
+    "Darktrace Device Label": {
+     "complex": null,
+     "simple": "device.devicelabel"
+    },
+    "Darktrace Device MAC": {
+     "complex": null,
+     "simple": "device.macaddress"
+    },
+    "Darktrace Device Vendor": {
+     "complex": null,
+     "simple": "device.vendor"
+    },
+    "Darktrace Model Breach": {
+     "complex": null,
+     "simple": "model.description"
+    },
+    "Darktrace Model Breach Description": {
+     "complex": null,
+     "simple": "model.description"
+    },
+    "Darktrace Model Breach ID": {
+     "complex": null,
+     "simple": "pbid"
+    },
+    "Darktrace Model Breach Score": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "score",
+      "transformers": [
+       {
+        "args": {
+         "by": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "100"
+          }
+         }
+        },
+        "operator": "multiply"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Darktrace Model Description": {
+     "complex": null,
+     "simple": "model.description"
+    },
+    "Darktrace Model ID": {
+     "complex": null,
+     "simple": "model.pid"
+    },
+    "Darktrace Model Name": {
+     "complex": null,
+     "simple": "model.name"
+    },
+    "Darktrace Model Priority": {
+     "complex": null,
+     "simple": "model.priority"
+    },
+    "Darktrace Model Tags": {
+     "complex": {
+      "accessor": "tags",
+      "filters": [
+
+      ],
+      "root": "model",
+      "transformers": [
+       {
+        "args": {
+         "separator": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": ","
+          }
+         }
+        },
+        "operator": "join"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Darktrace Model UUID": {
+     "complex": null,
+     "simple": "model.uuid"
+    }
+   }
+  },
+  "dbot_classification_incident_type_all": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "details": {
+     "complex": {
+      "accessor": "description",
+      "filters": [
+
+      ],
+      "root": "model",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "severity": {
+     "complex": {
+      "accessor": "priority",
+      "filters": [
+
+      ],
+      "root": "model",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    }
+   }
+  }
+ },
+ "name": "Darktrace Model Breach Mapper",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}
