@@ -11,8 +11,8 @@ from Tests.scripts.utils.log_util import install_logging
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for instantiating integration instances')
     parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
-                                          '"Demisto 6.0", "Demisto Marketplace". The server url is determined by the'
-                                          ' AMI environment.', default="Demisto Marketplace")
+                                          '"Server 6.0", "Server Master". The server url is determined by the'
+                                          ' AMI environment.', default="Server Master")
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build_number', help='CI job number where the instances were created', required=True)
@@ -23,7 +23,7 @@ def options_handler():
 
 
 def main():
-    install_logging('Install Packs.log')
+    install_logging('Install_Packs.log')
     options = options_handler()
 
     # Get the host by the ami env

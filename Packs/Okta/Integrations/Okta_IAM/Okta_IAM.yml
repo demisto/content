@@ -20,22 +20,22 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Create User Command Enabled
+  display: iam-create-user Command Enabled
   name: create-user-enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Update User Command Enabled
+  display: iam-update-user Command Enabled
   name: update-user-enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Enable/Disable User Commands Enabled
-  name: enable-disable-user-enabled
+  display: iam-disable-user Command Enabled
+  name: disable-user-enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Automatically create user if not found in update and enable commands
+  display: Automatically create user if not found in update command
   name: create-if-not-exists
   required: false
   type: 8
@@ -48,6 +48,43 @@ configuration:
   display: Outgoing Mapper
   name: mapper-out
   required: true
+  type: 0
+- defaultvalue: '50'
+  display: Fetch limit (recommended value is less than 200)
+  name: max_fetch
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 'true'
+  display: Query only application events configured in IAM Configuration
+  additionalinfo: Configure an "IAM - Configuration" incident to specify the Okta apps you wish to sync to XSOAR.
+    Further information about IAM configration is detailed in the Help (the "?" icon).
+  name: auto_generate_query_filter
+  required: false
+  type: 8
+- display: Fetch Query Filter (Okta system log events)
+  additionalinfo: 'Use a query filter expression in SCIM format. Note: make sure the "Query only application events
+    configured in IAM Configuration" is unchecked to use this parameter. See the Help (the "?" icon)
+    to learn more about the filter parameter.'
+  name: fetch_query_filter
+  required: false
+  type: 0
+- defaultvalue: 0 minutes
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
   type: 0
 description: Integrate with Okta's Identity Access Management service to execute CRUD
   operations to employee lifecycle processes.
@@ -62,20 +99,31 @@ script:
       name: user-profile
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: When set to true, after the command execution the status of the user in the 3rd-party
+        integration will be active.
+      isArray: false
+      name: allow-enable
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Creates a user.
     execution: true
     name: iam-create-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Provides the raw data from the 3rd-party integration.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -93,7 +141,7 @@ script:
       description: Name of the integration instance.
       type: string
     - contextPath: IAM.Vendor.success
-      description: If true, the command was executed successfully, otherwise false.
+      description: When true, indicates that the command was executed successfully.
       type: Boolean
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
@@ -105,6 +153,18 @@ script:
       name: user-profile
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: When set to true, after the command execution the status of the user in the 3rd-party
+        integration will be active.
+      isArray: false
+      name: allow-enable
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Updates an existing user with the data passed in the user-profile
       argument.
@@ -112,14 +172,13 @@ script:
     name: iam-update-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Provides the raw data from the 3rd-party integration.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -137,7 +196,7 @@ script:
       description: Name of the integration instance.
       type: string
     - contextPath: IAM.Vendor.success
-      description: If true, the command was executed successfully, otherwise false.
+      description: When true, indicates that the command was executed successfully.
       type: Boolean
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
@@ -155,14 +214,13 @@ script:
     name: iam-get-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Provides the raw data from the 3rd-party integration.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -180,50 +238,7 @@ script:
       description: Name of the integration instance.
       type: string
     - contextPath: IAM.Vendor.success
-      description: If true, the command was executed successfully, otherwise false.
-      type: Boolean
-    - contextPath: IAM.Vendor.username
-      description: The employee's username in the app.
-      type: String
-  - arguments:
-    - default: false
-      description: A User Profile indicator.
-      isArray: false
-      name: user-profile
-      required: true
-      secret: false
-    deprecated: false
-    description: Enables a deprovisioned user.
-    execution: true
-    name: iam-enable-user
-    outputs:
-    - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
-      type: Boolean
-    - contextPath: IAM.Vendor.brand
-      description: Name of the integration.
-      type: String
-    - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
-      type: string
-    - contextPath: IAM.Vendor.email
-      description: The employee's email address.
-      type: String
-    - contextPath: IAM.Vendor.errorCode
-      description: HTTP error response code.
-      type: Number
-    - contextPath: IAM.Vendor.errorMessage
-      description: Reason why the API failed.
-      type: String
-    - contextPath: IAM.Vendor.id
-      description: The employee's user ID in the app.
-      type: String
-    - contextPath: IAM.Vendor.instanceName
-      description: Name of the integration instance.
-      type: string
-    - contextPath: IAM.Vendor.success
-      description: If true, the command was executed successfully, otherwise false.
+      description: When true, indicates that the command was executed successfully.
       type: Boolean
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
@@ -241,14 +256,13 @@ script:
     name: iam-disable-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Provides the raw data from the 3rd-party integration.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -266,26 +280,125 @@ script:
       description: Name of the integration instance.
       type: string
     - contextPath: IAM.Vendor.success
-      description: If true, the command was executed successfully, otherwise false.
+      description: When true, indicates that the command was executed successfully.
       type: Boolean
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
       type: String
   - deprecated: false
-    description: Retrieves a User Profile schema which holds all of the user fields within the application.
-      Used for outgoing-mapping through the Get Schema option.
+    description: Retrieves a User Profile schema which holds all of the user fields
+      within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
+  - arguments:
+    - default: false
+      description: ID of the user for which to get information.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of the application for which to get information.
+      isArray: false
+      name: application_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns information about application's user assignment.
+    execution: false
+    name: okta-get-app-user-assignment
+    outputs:
+    - contextPath: Okta.AppUserAssignment.UserID
+      description: ID of the user.
+      type: string
+    - contextPath: Okta.AppUserAssignment.AppID
+      description: ID of the application.
+      type: string
+    - contextPath: Okta.AppUserAssignment.IsAssigned
+      description: When True, indicates that the user is assigned to the application.
+      type: boolean
+    - contextPath: Okta.AppUserAssignment.ProfileInApp
+      description: The user profile data in the application.
+      type: unknown
+  - arguments:
+    - default: false
+      description: Search for applications by their names.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Page number (0-based).
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of apps to retrieve (maximal value is 200).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of Okta applications data.
+    execution: false
+    name: okta-iam-list-applications
+    outputs:
+    - contextPath: Okta.Application.ID
+      description: ID of the application.
+      type: string
+    - contextPath: Okta.Application.Name
+      description: Name of the application.
+      type: string
+    - contextPath: Okta.Application.Label
+      description: Label of the application.
+      type: string
+    - contextPath: Okta.Application.Logo
+      description: Logo of the application.
+      type: string
+  - arguments:
+    - default: false
+      description: IAM configuration data.
+      isArray: false
+      name: configuration
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates IAM configuration data in the integration context.
+    execution: false
+    name: okta-iam-set-configuration
+  - deprecated: false
+    description: Gets the IAM configuration data from the integration context.
+    execution: false
+    name: okta-iam-get-configuration
+    outputs:
+    - contextPath: Okta.IAMConfiguration.ApplicationID
+      description: An Okta application ID.
+      type: String
+    - contextPath: Okta.IAMConfiguration.Name
+      description: Name of the Okta application.
+      type: String
+    - contextPath: Okta.IAMConfiguration.Label
+      description: Label of the Okta application.
+      type: String
+    - contextPath: Okta.IAMConfiguration.Logo
+      description: Logo of the application.
+      type: String
+    - contextPath: Okta.IAMConfiguration.Instance
+      description: An XSOAR IAM integration instance name.
+      type: String
   dockerimage: demisto/python3:3.8.6.13358
-  isfetch: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  ismappable: true
-  isremotesyncout: true
 tests:
 - No tests
+defaultmapperin: Okta IAM - App Sync (mapper)
+defaultclassifier: Okta IAM - App Sync (classifier)
 fromversion: 6.0.0
