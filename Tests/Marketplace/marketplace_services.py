@@ -753,8 +753,8 @@ class Pack(object):
             subprocess.call(full_command, shell=True)
             new_artefacts = os.path.join(current_working_dir, 'new_artefacts')
             os.mkdir(path=new_artefacts)
-            shutil.copy(zip_pack_path, new_artefacts)
-            shutil.copy(output_file, new_artefacts)  # 'content' to be replaced with correct path
+            shutil.copy(zip_pack_path, os.path.join(new_artefacts, f'{pack_name}_not_encrypted.zip'))
+            shutil.copy(output_file, os.path.join(new_artefacts, f'{pack_name}.zip'))
             os.chdir(current_working_dir)
             cmd = f'ls {new_artefacts}'
             res = subprocess.call(cmd, shell=True)
