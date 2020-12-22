@@ -1,0 +1,39 @@
+args:
+- description: The value to modify
+  name: value
+  required: true
+- description: A JSON dictionary that contains key:value pairs that represent the
+    "Outcome":"Regex".
+  name: json_regex
+comment: |-
+  This transformer will take in a value and transform it based on multiple regular expressions defined in a JSON dictionary structure. The key:value pair of the JSON dictionary should be:
+
+  "desired outcome": "regex to match"
+
+  For example:
+
+  {
+      "Match 1": ".*match 1.*",
+      "Match 2": ".*match 2.*",
+      "Catch all": ".*"
+  }
+
+  The transformer will match in order of dictionary entries.
+commonfields:
+  id: MapRegex
+  version: -1
+dockerimage: demisto/python3:3.8.6.14516
+enabled: true
+name: MapRegex
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- string
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
