@@ -15,8 +15,8 @@ This integration was developed and tested with version 2 of Expander Asset API
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | feed | Fetch indicators | False |
-| maxIndicators | The maximum number of indicators to fetch. | False |
-| minLastObserved | Retrieve indicators observed in the last specified number of days | False |
+| max_fetch | The maximum number of indicators to fetch. | False |
+| min_last_observed | Retrieve indicators observed in the last specified number of days | False |
 | feedExpirationPolicy |  | False |
 | feedExpirationInterval |  | False |
 | feedFetchInterval | Feed Fetch Interval | False |
