@@ -158,14 +158,13 @@ def test_get_modified_remote_data(mocker):
 def test_get_remote_data_when_needs_update(mocker):
     """
     Given:
-        - Jira v2 client
-        - An update for the issue
+        - Information regarding a changed incident in Demisto
 
     When:
-        - Running get-remote-date
+        - Running get-remote-date and the incident needs to be updated
 
     Then:
-        - Verify the `updated` field is set as expected
+        - Returns GetRemoteDataResponse object with the incident's details that needs to be updated
     """
     from JiraV2 import get_remote_data_command
     from test_data.expected_results import GET_JIRA_ISSUE_RES
@@ -192,14 +191,13 @@ def test_get_remote_data_when_needs_update(mocker):
 def test_get_remote_data_when_dont_need_update(mocker):
     """
     Given:
-        - Jira v2 client
-        - An update for the issue
+        - Information regarding a changed incident in Demisto
 
     When:
-        - Running get-remote-date
+        - Running get-remote-date and the incident was already updated
 
     Then:
-        - Verify the `updated` field is set as expected
+        - There aren't change to perform in Demisto
     """
     from JiraV2 import get_remote_data_command
     from test_data.expected_results import GET_JIRA_ISSUE_RES
@@ -225,6 +223,16 @@ def test_get_remote_data_when_dont_need_update(mocker):
 
 
 def test_update_remote_system_delta(mocker):
+    """
+    Given:
+        - Information regarding a changed incident in Demisto
+
+    When:
+        - An incident's summary was changed.
+
+    Then:
+        - The issue in Jira has the new summary.
+    """
     from JiraV2 import update_remote_system_command
     mocker.patch(
         'JiraV2.edit_issue_command',
@@ -243,6 +251,17 @@ def test_get_mapping_fields():
 
 
 def test_get_new_attachment_return_result(mocker):
+    """
+    Given:
+        - attachment related to an issue
+        - The date the incident was last updated
+
+    When:
+        - An incident's attachment was modified\added
+
+    Then:
+        - The updated\new as fileResult
+    """
     from JiraV2 import get_new_attachments
     from test_data.expected_results import JIRA_ATTACHMENT
     from dateparser import parse
@@ -261,6 +280,17 @@ def test_get_new_attachment_return_result(mocker):
 
 
 def test_get_new_attachment_without_return_new_attachment(mocker):
+    """
+    Given:
+        - attachment related to an issue
+        - The date the incident was last updated
+
+    When:
+        - An incident's attachment wasn't modified
+
+    Then:
+        - There is no attachment to update
+    """
     from JiraV2 import get_new_attachments
     from test_data.expected_results import JIRA_ATTACHMENT
     from dateparser import parse
@@ -281,14 +311,14 @@ def test_get_new_attachment_without_return_new_attachment(mocker):
 def test_get_incident_entries(mocker):
     """
     Given:
-        - Jira v2 client
-        - An update for the issue
+        - Jira issue
+        - The date the incident was last updated
 
     When:
-        - Running get-remote-date
+        - An incident's attachment or comments are updated in Jira
 
     Then:
-        - Verify the `updated` field is set as expected
+        - The new entries are returned
     """
     from JiraV2 import get_incident_entries
     from test_data.expected_results import GET_JIRA_ISSUE_RES
@@ -312,6 +342,14 @@ def test_get_incident_entries(mocker):
 
 
 def test_create_update_incident_from_ticket():
+    """
+    Given:
+        - incident
+    When
+        - need to update incident when an issue is modified in Jira
+    Then
+        - The updated incident
+    """
     from JiraV2 import create_update_incident_from_ticket
     from test_data.expected_results import GET_JIRA_ISSUE_RES
     res = create_update_incident_from_ticket(GET_JIRA_ISSUE_RES)
@@ -321,6 +359,14 @@ def test_create_update_incident_from_ticket():
 
 
 def test_update_remote_system(mocker):
+    """
+    Given:
+        - Information regarding a changed incident
+    When
+        - An incident was changed in Demisto
+    Then
+        - The remote system is updated and the incident id returns.
+    """
     from JiraV2 import update_remote_system_command
     from test_data.expected_results import ARGS_FROM_UPDATE_REMOTE_SYS
 
