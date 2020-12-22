@@ -1,0 +1,851 @@
+id: X509Certificate Test Playbook
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: X509Certificate Test Playbook
+description: Test Playbook for X509Certificate Scripts
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0ba97589-575e-4130-8fe5-a51f4831b6e7
+    type: start
+    task:
+      id: 0ba97589-575e-4130-8fe5-a51f4831b6e7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: f17e17ea-c941-4865-853f-c95093597b04
+    type: regular
+    task:
+      id: f17e17ea-c941-4865-853f-c95093597b04
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: cecdcbbd-665b-46e3-8c92-1468d0f47b81
+    type: regular
+    task:
+      id: cecdcbbd-665b-46e3-8c92-1468d0f47b81
+      version: -1
+      name: Create Certificate Indicator
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      certificatenames: {}
+      certificatesignature: {}
+      certificatevalidationchecks: {}
+      city: {}
+      costcenter: {}
+      costcentercode: {}
+      countryname: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      department: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainidnname: {}
+      domainname: {}
+      domainreferringips: {}
+      domainreferringsubnets: {}
+      domainstatus: {}
+      email: {}
+      emailaddress: {}
+      entryid: {}
+      expirationdate: {}
+      extension: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      givenname: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      issuerdn: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      lastseenbysource: {}
+      leadership: {}
+      location: {}
+      locationregion: {}
+      macaddress: {}
+      malwarefamily: {}
+      malwaretypes: {}
+      manageremailaddress: {}
+      managername: {}
+      md5:
+        simple: ${Certificate.MD5}
+      memory: {}
+      merge: {}
+      mobilephone: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      pem:
+        simple: ${Certificate.PEM}
+      personalemail: {}
+      port: {}
+      positivedetections: {}
+      primarymotivation: {}
+      processor: {}
+      processors: {}
+      publickey: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relateToIncident: {}
+      relatedIncidents: {}
+      reportedby: {}
+      reputation: {}
+      seenNow: {}
+      serialnumber: {}
+      service: {}
+      sha1:
+        simple: ${Certificate.SHA1}
+      sha256:
+        simple: ${Certificate.SHA256}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source:
+        simple: DBot
+      sourceTimeStamp: {}
+      sourceoriginalseverity: {}
+      spkisha256: {}
+      ssdeep: {}
+      state: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      streetaddress: {}
+      subdomains: {}
+      subjectalternativenames: {}
+      subjectdn: {}
+      surname: {}
+      tags: {}
+      threattypes: {}
+      title: {}
+      trafficlightprotocol: {}
+      type:
+        simple: Certificate
+      updateddate: {}
+      username: {}
+      validitynotafter: {}
+      validitynotbefore: {}
+      value:
+        simple: ${Certificate.SHA256}
+      workphone: {}
+      xdrstatus: {}
+      zipcode: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: e7d04c4b-8466-452e-853a-539e8aff2c76
+    type: regular
+    task:
+      id: e7d04c4b-8466-452e-853a-539e8aff2c76
+      version: -1
+      name: CertificateExtract
+      description: Extract fields from a certificate file and return the standard
+        context
+      scriptName: CertificateExtract
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      entry_id: {}
+      input: {}
+      pem:
+        simple: |-
+          -----BEGIN CERTIFICATE-----
+          MIIFezCCBGOgAwIBAgISA/JL4oaGczW5OqvCy9cEQqu6MA0GCSqGSIb3DQEBCwUA
+          MEoxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MSMwIQYDVQQD
+          ExpMZXQncyBFbmNyeXB0IEF1dGhvcml0eSBYMzAeFw0yMDExMDgxODE1NDFaFw0y
+          MTAyMDYxODE1NDFaMBQxEjAQBgNVBAMMCSoucGFuLmRldjCCASIwDQYJKoZIhvcN
+          AQEBBQADggEPADCCAQoCggEBANg20WTL+SVHruVKNy0hLNUlOUeK0EDdEV/rwsqk
+          iT3yIASK2AXzaOF3M8TVU6I/xEKVMnEmduxmSKeGIiF8+0ClKaXRGkt6ErVM6G+f
+          HQOAMNYIOmWe199hRFrKKmH/F9ws366vjQMwP7xUwcQPsSKhirz1VoOpYLBgQ8FO
+          F8IWJuad8wiW6qfRZXEUl9Ta4klekG5/Kp3P/pPnNn65rFYrMCcmaSLymdfcyGpV
+          EtipNc8X5zvryZ3q1sNRG05MSNhtN0FtnuRG99oetzjUP/MhiX+6RqbG2Ou33b+A
+          nOPKsTksDNeSNMPJpd/vxYnjzTeISo10+AuXRrpJ2I9nzhECAwEAAaOCAo8wggKL
+          MA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIw
+          DAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQUuENucz/GeiKrE10fxExRWTUydqMwHwYD
+          VR0jBBgwFoAUqEpqYwR93brm0Tm3pkVl7/Oo7KEwbwYIKwYBBQUHAQEEYzBhMC4G
+          CCsGAQUFBzABhiJodHRwOi8vb2NzcC5pbnQteDMubGV0c2VuY3J5cHQub3JnMC8G
+          CCsGAQUFBzAChiNodHRwOi8vY2VydC5pbnQteDMubGV0c2VuY3J5cHQub3JnLzBG
+          BgNVHREEPzA9ggkqLnBhbi5kZXaCJ2RlbWlzdG8uZGV2ZWxvcGVycy5wYWxvYWx0
+          b25ldHdvcmtzLmNvbYIHcGFuLmRldjBMBgNVHSAERTBDMAgGBmeBDAECATA3Bgsr
+          BgEEAYLfEwEBATAoMCYGCCsGAQUFBwIBFhpodHRwOi8vY3BzLmxldHNlbmNyeXB0
+          Lm9yZzCCAQMGCisGAQQB1nkCBAIEgfQEgfEA7wB2AESUZS6w7s6vxEAH2Kj+KMDa
+          5oK+2MsxtT/TM5a1toGoAAABdalJF6wAAAQDAEcwRQIgY7UA7lCiPYQi2OiML/mg
+          Z7LQyFegVH1tX2dBG23D5tgCIQC9c9UX886gpx4ROpDyHdSd+k0a9BR5dDdyPfj0
+          cRm1LgB1AH0+8viP/4hVaCTCwMqeUol5K8UOeAl/LmqXaJl+IvDXAAABdalJF+MA
+          AAQDAEYwRAIgKMtxuyKPcT0QxAJKN0uNl4jcJn0pdBzHqafHQXni9gYCIGqdT8l5
+          3OEkoiQ17boLs4saRFlg2a2zx0cB4jEPg6/eMA0GCSqGSIb3DQEBCwUAA4IBAQBD
+          Gb01zj3OJ5cntlFldFGzlNDMMrsJxYPNZJfjKr/USMZ/OTjN9snr2HvWnhFTrD8L
+          7HxDbYWXt0dMwQZtA0ZIKrlUIZrxhnyPsehYRrKm9+G8X2n/K6vseCwxxTfIlL2R
+          OvmeIWc8NBxJ6bu/s2xIYuIk07fHOpw537pk8NIZnkeOL9VPwKsAgotCyB+6AQ1f
+          raEqZXkLJYnNYoYh24QVrP9RX/wZdPqDaFAAesTRwiSP7EF/jZpDR9qV97wHHf5Y
+          IS4pZ6GLGp6w0cVySp0mZR2yOtMeb64Dj1egdJQEU5HMnoO3OpTu2l3FzqVZ2TkO
+          DFO4KRA2df7pJLNqY7Db
+          -----END CERTIFICATE-----
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 7706e680-e265-47f2-8db0-49ecfafbf11b
+    type: regular
+    task:
+      id: 7706e680-e265-47f2-8db0-49ecfafbf11b
+      version: -1
+      name: Certificate Reputation
+      description: Enrich and calculate reputation of a Certificate indicator.
+      scriptName: CertificateReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      input:
+        simple: ${Certificate.SHA256}
+      update_checks:
+        simple: "true"
+      update_indicator: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 345ed494-22d6-4be2-8c1c-0576fcf6a8c8
+    type: title
+    task:
+      id: 345ed494-22d6-4be2-8c1c-0576fcf6a8c8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 23f7189e-a3c2-4acd-8e77-041a24f27243
+    type: regular
+    task:
+      id: 23f7189e-a3c2-4acd-8e77-041a24f27243
+      version: -1
+      name: Find Indicator
+      description: Gets a list of indicator objects and the associated indicator outputs
+        that match the specified query and filters. The results are returned in a
+        structured data file.
+      scriptName: GetIndicatorsByQuery
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      addRandomSalt: {}
+      dontPopulateFields: {}
+      extend-context:
+        simple: FoundIndicator=.
+      fieldsToHash: {}
+      limit:
+        simple: "1"
+      offset: {}
+      populateFields:
+        simple: id
+      query:
+        complex:
+          root: Certificate
+          accessor: SHA256
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'value:'
+              suffix:
+                value:
+                  simple: ' and -certificatevalidationchecks:"" and type:Certificate'
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: a48bef9e-1759-4365-82ee-450a149b9f65
+    type: condition
+    task:
+      id: a48bef9e-1759-4365-82ee-450a149b9f65
+      version: -1
+      name: Indicator found?
+      description: Check if find indicator found the updated indicator
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: FoundIndicator
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 5e99dadf-b4a8-4a80-84a7-e1e123b38b5d
+    type: regular
+    task:
+      id: 5e99dadf-b4a8-4a80-84a7-e1e123b38b5d
+      version: -1
+      name: Create File
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      data:
+        simple: |-
+          -----BEGIN CERTIFICATE-----
+          MIIGdDCCBVygAwIBAgIIAQ2G6iqf0yAwDQYJKoZIhvcNAQELBQAwgbQxCzAJBgNV
+          BAYTAlVTMRAwDgYDVQQIEwdBcml6b25hMRMwEQYDVQQHEwpTY290dHNkYWxlMRow
+          GAYDVQQKExFHb0RhZGR5LmNvbSwgSW5jLjEtMCsGA1UECxMkaHR0cDovL2NlcnRz
+          LmdvZGFkZHkuY29tL3JlcG9zaXRvcnkvMTMwMQYDVQQDEypHbyBEYWRkeSBTZWN1
+          cmUgQ2VydGlmaWNhdGUgQXV0aG9yaXR5IC0gRzIwHhcNMjAwNTI5MDkzNDA0WhcN
+          MjEwNTI5MDkzNDA0WjBQMSEwHwYDVQQLExhEb21haW4gQ29udHJvbCBWYWxpZGF0
+          ZWQxKzApBgNVBAMMIiouZ3BneXlqZ3l5Zy5ndy5ncGNsb3Vkc2VydmljZS5jb20w
+          ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDcrQMUbheHQYPhUEAP+osO
+          JfmJL+1/bZjOZN5XSw945kzCC3p90E3Sqh0beTn1eJH89j+jGREjnRk/75lEBbQG
+          SMKKstra/zb6iiVkYn7DUTflt0AJVVgsXAQbB9VFLuTcSnOBCqUx+QTDMJR2efH6
+          QsMB4Tln/IKdXiiuzk6hnv1G1CgBVOtlfOuVAEy2luIA49GmO4F4K6aupX2oeWnj
+          eGagWlMjb37Ar0NGA76vSBhJU/jE+1X28FV2kdC5qjC/PP9p04CnbnSm4brReijR
+          bpCzgXNwhfY1hYK9S43S2ywI49OPKjOuu0rvElge311luJED4qxjb2JRx5mDReNB
+          AgMBAAGjggLrMIIC5zAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUFBwMB
+          BggrBgEFBQcDAjAOBgNVHQ8BAf8EBAMCBaAwOAYDVR0fBDEwLzAtoCugKYYnaHR0
+          cDovL2NybC5nb2RhZGR5LmNvbS9nZGlnMnMxLTIwMDAuY3JsMF0GA1UdIARWMFQw
+          SAYLYIZIAYb9bQEHFwEwOTA3BggrBgEFBQcCARYraHR0cDovL2NlcnRpZmljYXRl
+          cy5nb2RhZGR5LmNvbS9yZXBvc2l0b3J5LzAIBgZngQwBAgEwdgYIKwYBBQUHAQEE
+          ajBoMCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5nb2RhZGR5LmNvbS8wQAYIKwYB
+          BQUHMAKGNGh0dHA6Ly9jZXJ0aWZpY2F0ZXMuZ29kYWRkeS5jb20vcmVwb3NpdG9y
+          eS9nZGlnMi5jcnQwHwYDVR0jBBgwFoAUQMK9J47MNIMwojPX+2yz8LQsgM4wTwYD
+          VR0RBEgwRoIiKi5ncGd5eWpneXlnLmd3LmdwY2xvdWRzZXJ2aWNlLmNvbYIgZ3Bn
+          eXlqZ3l5Zy5ndy5ncGNsb3Vkc2VydmljZS5jb20wHQYDVR0OBBYEFG5nHl64lygE
+          t3xHg297lCqhPnanMIIBBAYKKwYBBAHWeQIEAgSB9QSB8gDwAHYA9lyUL9F3MCIU
+          VBgIMJRWjuNNExkzv98MLyALzE7xZOMAAAFyX8ggnwAABAMARzBFAiAWHEdWCSQs
+          8oeWb9HOOjV5zwCirDN7AIaNIzwlZL+CWwIhAKmnXAum7FHu2z65BLqUodFtbD13
+          pWg44Zlf3qAEUnVMAHYAXNxDkv7mq0VEsV6a1FbmEDf71fpH3KFzlLJe5vbHDsoA
+          AAFyX8girQAABAMARzBFAiBYLbE+evWoNDZk0kQEfjTFzCWb/PD+bp7zpzfPodgS
+          VgIhAL3/b3VPsgPbD3iZjbBk7WU8S1J5cI1UDANJGzYZNVySMA0GCSqGSIb3DQEB
+          CwUAA4IBAQAnpbpip1Bl803IUzchh7/hjYu8U0IUNigG08CJo2ZYAIHuAXd4h5s4
+          s7n59KM9oXcCo+jsD4dKGk08r13uMbSScaxQyJI3WNGVIonU8EvkwRmPQra3pLPy
+          UQKMGldJnaUWNkaJ5/Gza/Z8jPg4J+U9OpXMe5NBILEFqCbpF4oZId+BK7D3l6P/
+          QNOfg3wlT0TrwsUxyYVFe0B/5SeM0KRZmz34MZ+jE2mRor87e1JFeD2My2YxUMaA
+          6vGpxPC0KxalQsB7P5A/B5j9Dbf/ATcy7cTqyRXdPr/6cNNzk2SRHXFzx7lHIkWb
+          35JJ9NHFDwQrc2c6YK6xnDUoZUq6lOsi
+          -----END CERTIFICATE-----
+      entryId: {}
+      filename:
+        simple: panw.pem
+      ignore-outputs:
+        simple: "false"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: c14d6bfd-a3ac-4a65-8258-fcf3d373e480
+    type: regular
+    task:
+      id: c14d6bfd-a3ac-4a65-8258-fcf3d373e480
+      version: -1
+      name: CertificateExtract
+      description: Extract fields from a certificate file and return the standard
+        context
+      scriptName: CertificateExtract
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      entry_id:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: panw.pem
+          accessor: EntryID
+      input: {}
+      pem: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: f0729bb4-a84a-45a7-8aed-878a150d76ee
+    type: regular
+    task:
+      id: f0729bb4-a84a-45a7-8aed-878a150d76ee
+      version: -1
+      name: Set Indicator Type
+      description: Change the type of the new Indicators to Certificate. This should
+        not be needed, but it may happen that server autoextracted the sha256s of
+        the certificates into File indicators *before* createNewIndicator was called.
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      certificatenames: {}
+      certificatesignature: {}
+      certificatevalidationchecks: {}
+      city: {}
+      costcenter: {}
+      costcentercode: {}
+      countryname: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      department: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainidnname: {}
+      domainname: {}
+      domainreferringips: {}
+      domainreferringsubnets: {}
+      domainstatus: {}
+      email: {}
+      emailaddress: {}
+      entryid: {}
+      expiration: {}
+      expirationdate: {}
+      extension: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      givenname: {}
+      groups: {}
+      hostname: {}
+      id:
+        simple: ${CreatedIndicator.ID}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      issuerdn: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      lastseenbysource: {}
+      leadership: {}
+      location: {}
+      locationregion: {}
+      macaddress: {}
+      malwarefamily: {}
+      malwaretypes: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      memory: {}
+      mobilephone: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      pem: {}
+      personalemail: {}
+      port: {}
+      positivedetections: {}
+      primarymotivation: {}
+      processor: {}
+      processors: {}
+      publickey: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      serialnumber: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      sourceoriginalseverity: {}
+      spkisha256: {}
+      ssdeep: {}
+      state: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      streetaddress: {}
+      subdomains: {}
+      subjectalternativenames: {}
+      subjectdn: {}
+      surname: {}
+      tags: {}
+      threattypes: {}
+      title: {}
+      trafficlightprotocol: {}
+      type:
+        simple: Certificate
+      updateddate: {}
+      username: {}
+      validitynotafter: {}
+      validitynotbefore: {}
+      value: {}
+      workphone: {}
+      zipcode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: c324a689-c6e6-49fb-83b7-55f080c59fe2
+    type: regular
+    task:
+      id: c324a689-c6e6-49fb-83b7-55f080c59fe2
+      version: -1
+      name: sleep for 30 seconds
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: X509Certificate Test Playbook
+fromversion: 6.0.0
