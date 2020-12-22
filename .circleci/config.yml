@@ -146,8 +146,6 @@ references:
           echo "venv exists (from cache). activating"
           source ./venv/bin/activate
         fi
-        # Install node packages
-        npm install .
         # store in bash env so we load our venv in each step
         echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
         git config diff.renameLimit 6000
@@ -160,6 +158,8 @@ references:
         set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD="
         python --version
         python3 --version
+        node --version
+        npm --version
         demisto-sdk --version
 
   download_configuration: &download_configuration
@@ -1025,6 +1025,12 @@ jobs:
 
                   python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH
                   rm $GCS_PATH
+            - run:
+                name: Validate Premium Packs
+                shell: /bin/bash
+                when: always
+                command: |
+                  ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
       - run:
           name: Slack Notifier
           shell: /bin/bash
