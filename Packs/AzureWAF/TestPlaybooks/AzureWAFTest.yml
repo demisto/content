@@ -189,7 +189,7 @@ tasks:
       version: -1
       name: Delete Test Policy
       description: Deletes Policy.
-      script: '|||azure-waf-policies-delete'
+      script: '|||azure-waf-policy-delete'
       type: regular
       iscommand: true
       brand: ""
