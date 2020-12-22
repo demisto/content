@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
+import requests
 
 # type: ignore
 # flake8: noqa
@@ -81,32 +81,14 @@ def api_test(client: Client):
     """
     try:
         results = client.api_test()
+        if results and results.get("status") == "ok":
+            return return_results('ok')
+        else:
+            return return_error(f"There was an error: {results.get('status', 'Failure')} - {results.get('error')}")
     except Exception as e:
         return_error(
             f"There was an error in testing connection to URL: {client._base_url}, API Key: {client._headers['Authorization'].split()[-1]}. "
             f"Please make sure that the API key is valid and has the right permissions, and that the URL is in the correct form. Error: {str(e)}")
-
-    if results and results.get("status") == "ok":
-        return return_results('ok')
-    else:
-        return return_error("There was an error")
-
-
-def fetch_incidents(client: Client) -> None:
-    """ Fetches incidents from Cymptom's mitigations """
-
-    integration_context = demisto.getIntegrationContext()
-
-    mitigations_results = client.get_mitigations()
-    incidents = []
-    for mitigation in mitigations_results["mitigations"]:
-        incidents.append({
-            "name": mitigation["name"],
-            "rawJSON": json.dumps(mitigation)
-        })
-    demisto.incidents(incidents)
-    integration_context['incidents'] = incidents
-    demisto.setIntegrationContext(integration_context)
 
 
 def get_mitigations(client: Client) -> CommandResults:
@@ -116,6 +98,7 @@ def get_mitigations(client: Client) -> CommandResults:
     args = demisto.args()
     timeout = args.get("timeout", 60)
     state = args.get("state", MitigationsState.open.value)
+    limit = args.get("limit", None)
     timeout = int(timeout)
 
     mitigations_results = client.get_mitigations(timeout=timeout, mitigations_state=state)
@@ -123,7 +106,7 @@ def get_mitigations(client: Client) -> CommandResults:
     table_headers = ["ID", "Name", "Severity Type", "Attack Vectors Use Percentage", "Attack Vectors Count",
                      "Procedures", "Techniques", "Sub Techniques", "References"]
 
-    for mitigation in mitigations_results["mitigations"]:
+    for mitigation in mitigations_results.get("mitigations", {}):
         extended_info = client.get_mitigation_by_id(mitigation["id"])
 
         severity_type = mitigation["severity"]["name"].capitalize()
@@ -131,12 +114,12 @@ def get_mitigations(client: Client) -> CommandResults:
 
         mitigations_formatted.append({"ID": mitigation["id"],
                                       "Name": mitigation["name"],
-                                      "Severity Type": severity_type,
-                                      "Attack Vectors Use Percentage": severity_percentage,
-                                      "Attack Vectors Count": mitigation["vectorCount"],
+                                      "SeverityType": severity_type,
+                                      "AttackVectorsUsePercentage": severity_percentage,
+                                      "AttackVectorsCount": mitigation["vectorCount"],
                                       "Procedures": mitigation["procedures"],
                                       "Techniques": mitigation["mitigations"],
-                                      "Sub Techniques": extended_info["subtechniques"],
+                                      "SubTechniques": extended_info["subtechniques"],
                                       "References": extended_info["references"]})
 
     readable_output = tableToMarkdown('Mitigations', mitigations_formatted, headers=table_headers)
@@ -227,18 +210,17 @@ def main():
     """
     LOG(f'Command being called is: {demisto.command()}')
 
-    base_url = demisto.params()['url']
+    params = demisto.params()
 
-    api_key = demisto.params()['api_key']
+    base_url = params['url']
 
-    # How many time before the first fetch to retrieve incidents
-    first_fetch = demisto.params().get('fetch_time', '3 days').strip()
+    api_key = params['api_key']
 
     # Flag if use server proxy
-    use_proxy = demisto.params().get('proxy', False)
+    use_proxy = params.get('proxy', False)
 
     # Flag if use server 'verification'
-    insecure = demisto.params().get('insecure', False)
+    insecure = params.get('insecure', False)
 
     headers = {
         "Authorization": f"Bearer {api_key}"  # Replace ${token} with the token you have obtained
@@ -248,7 +230,6 @@ def main():
     demisto.debug(" ---- PARAMS -----")
     demisto.debug(f"base_url: {base_url}")
     demisto.debug(f"api_key: {api_key}")
-    demisto.debug(f"first_fetch: {first_fetch}")
     demisto.debug(f"insecure: {insecure}")
     demisto.debug(f"use_proxy: {use_proxy}")
 
@@ -258,10 +239,6 @@ def main():
         # This is the call made when pressing the integration Test button.
         if demisto.command() == 'test-module':
             return api_test(client)
-
-        # Set and define the fetch incidents command to run after activated via integration settings.
-        elif demisto.command() == 'fetch-incidents':
-            fetch_incidents(client)
 
         elif demisto.command() == 'cymptom-get-mitigations':
             return_results(get_mitigations(client))

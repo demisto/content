@@ -79,6 +79,9 @@ script:
     - contextPath: Cymptom.Mitigations.SubTechniques
       description: Sub Techniques relevant for this mitigation
       type: String
+    - contextPath: Cymptom.Mitigations.References
+      description: References relevant for this mitigation
+      type: String
   - arguments:
     - default: true
       defaultValue: "60"
