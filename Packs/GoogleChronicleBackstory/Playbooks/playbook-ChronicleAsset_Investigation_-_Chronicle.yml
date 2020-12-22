@@ -748,7 +748,7 @@ inputs:
       accessor: chronicleskipentityisolation
   required: false
   description: Skip the isolation of entities. You can manually set this as 'Yes' or 'No' 
-    here or you can set it in a 'Chronicle Auto Block Entities' custom incident field.
+    here or you can set it in a 'Chronicle Skip Entity Isolation' custom incident field.
   playbookInputQuery:
 outputs:
 - contextPath: IsolatedEntities
