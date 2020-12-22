@@ -16,21 +16,18 @@ def get_query_window():
     """
     user_defined_time = demisto.executeCommand('getList', {'listName': 'EmailCommunicationQueryWindow'})
     if is_error(user_defined_time):
-        demisto.debug(f'The following error occurred while trying to load the EmailCommunicationQueryWindow list - '
-                      f'{user_defined_time[0].get("Contents")}.\nUsing the default query time - 60 days')
+        demisto.debug('Error occurred while trying to load the EmailCommunicationQueryWindow list. Using the default '
+                      'query time - 60 days')
         return '60 days'
 
     try:
         query_time = user_defined_time[0].get('Contents')
         return f'{int(query_time)} days'
     except ValueError:
-        demisto.debug('Invalid input for number of days to query. Input should be a number only, representing the '
-                      'number of days to query back.\nUsing the default query time - 60 days')
+        demisto.error('Invalid input for number of days to query in the EmailCommunicationQueryWindow list. Input '
+                      'should be a number only, representing the number of days to query back.\nUsing the default query'
+                      ' time - 60 days')
         return '60 days'
-
-
-# The time to query back for related incidents. Note that a large number might lead to performance issues.
-QUERY_TIME = get_query_window()
 
 
 def create_email_html(email_html='', entry_id_list=None):
@@ -289,4 +286,8 @@ def main():
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
+    # The time to query back for related incidents. Note that a large number might lead to performance issues.
+    global QUERY_TIME
+    QUERY_TIME = get_query_window()
+
     main()

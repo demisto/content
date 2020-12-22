@@ -13,7 +13,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_set_email_reply(mocker):
+def test_set_email_reply():
     """Unit test
         Given
         - Email author, email recipients and email cc.
@@ -22,9 +22,7 @@ def test_set_email_reply(mocker):
         Then
         - Validate that the email reply is in the correct format.
         """
-    import PreprocessEmail
     from PreprocessEmail import set_email_reply
-    mocker.patch.object(PreprocessEmail, 'get_query_window', return_value='60 days')
     expected_result = util_open_file('test_data/email_reply.txt')
     result = set_email_reply('test@gmail.com', '["test1@gmail.com"]', 'test2@gmail.com', 'test',
                              [{'name': 'image.png'}])
@@ -64,7 +62,7 @@ EXPECTED_RESULT_3 = """
      (EMAIL_HTML, [], EXPECTED_RESULT_2),
      (EMAIL_HTML, [('image_1.png', '37@119'), ('image_2.png', '38@120')], EXPECTED_RESULT_3)]
 )
-def test_create_email_html(mocker, email_html, entry_id_list, expected):
+def test_create_email_html(email_html, entry_id_list, expected):
     """
         Given
         - The email's Html representation.
@@ -75,14 +73,12 @@ def test_create_email_html(mocker, email_html, entry_id_list, expected):
         Then
         - The images' src attribute would be replaced as expected.
     """
-    import PreprocessEmail
     from PreprocessEmail import create_email_html
-    mocker.patch.object(PreprocessEmail, 'get_query_window', return_value='60 days')
     result = create_email_html(email_html, entry_id_list)
     assert result == expected
 
 
-def test_get_entry_id_list(mocker):
+def test_get_entry_id_list():
     """
         Given
         - List of the email's attachments, List of files of the email's related incident.
@@ -91,7 +87,6 @@ def test_get_entry_id_list(mocker):
         Then
         - Ensures that only the email attachments entry id's were returned and not all files entries.
     """
-    import PreprocessEmail
     from PreprocessEmail import get_entry_id_list
     attachments = [
         {
@@ -162,7 +157,6 @@ def test_get_entry_id_list(mocker):
             "Size": 9580,
             "Type": "PNG image data, 264 x 60, 8-bit/color RGBA, non-interlaced"
         }]
-    mocker.patch.object(PreprocessEmail, 'get_query_window', return_value='60 days')
     expected = [('image_1.png', '35@119'), ('image_2.png', '36@119')]
     assert expected == get_entry_id_list(attachments, files)
 
@@ -223,10 +217,8 @@ def test_main(mocker):
     mocker.patch.object(PreprocessEmail, 'get_attachments_using_instance')
     mocker.patch.object(PreprocessEmail, 'get_incident_related_files', return_value=FILES)
     mocker.patch.object(demisto, 'results')
-    mocker.patch.object(PreprocessEmail, 'get_query_window', return_value='60 days')
     main()
     assert not demisto.results.call_args[0][0]
-    assert False
 
 
 def test_get_email_related_incident_id(mocker):
@@ -240,7 +232,6 @@ def test_get_email_related_incident_id(mocker):
     """
     import PreprocessEmail
     from PreprocessEmail import get_email_related_incident_id
-    mocker.patch.object(PreprocessEmail, 'get_query_window', return_value='60 days')
     mocker.patch.object(PreprocessEmail, 'get_incident_by_query',
                         return_value=[{'emailsubject': 'subject 1', 'id': '1'},
                                       {'emailsubject': 'subject 2', 'id': '2'}])
