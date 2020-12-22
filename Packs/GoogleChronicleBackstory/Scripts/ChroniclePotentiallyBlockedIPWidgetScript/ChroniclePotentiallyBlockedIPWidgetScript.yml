@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - dynamic-indicator-section
-comment: Notifies if the IP Address associated with the ChronicleAsset is potentially
+comment: Notifies if the IP address associated with the ChronicleAsset is potentially
   blocked or not.
 enabled: true
 scripttarget: 0
