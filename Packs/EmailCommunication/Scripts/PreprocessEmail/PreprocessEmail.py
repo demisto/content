@@ -220,18 +220,19 @@ def main():
         query = f'emailmessageid:({refs})'
     try:
         incident_details = get_incident_by_query(query)
-        update_latest_message_field(incident_details['id'], email_latest_message)
-        check_incident_status(incident_details, incident_details['id'])
-        get_attachments_using_instance(incident_details['id'], incident.get('labels'))
+        incidens_id = incident_details['id'
+        update_latest_message_field(incidens_id, email_latest_message)
+        check_incident_status(incident_details, incidens_id)
+        get_attachments_using_instance(incidens_id, incident.get('labels'))
 
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.
         time.sleep(5)
-        files = get_incident_related_files(incident_details['id'])
+        files = get_incident_related_files(incidens_id)
         entry_id_list = get_entry_id_list(attachments, files)
         html_body = create_email_html(email_html, entry_id_list)
 
         email_reply = set_email_reply(email_from, email_to, email_cc, html_body, attachments)
-        add_entries(email_reply, incident_details['id'])
+        add_entries(email_reply, incidens_id)
         # False - to not create new incident
         demisto.results(False)
 
