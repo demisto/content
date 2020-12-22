@@ -152,7 +152,7 @@ def get_reply_body(notes, incident_id, attachments):
         for note in notes:
             note_user = note['Metadata']['user']
             note_userdata = demisto.executeCommand("getUserByUsername", {"username": note_user})
-            user_fullname = dict_safe_get(note_userdata[0], ['Contents', 'name'])
+            user_fullname = dict_safe_get(note_userdata[0], ['Contents', 'name']) or "DBot"
             reply_body += f"{user_fullname}: \n{note['Contents']}\n\n"
             if attachments:
                 attachment_names = [attachment.get('name') for attachment in attachments]

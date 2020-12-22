@@ -1,5 +1,9 @@
 Preprocessing script for Email Communication layout.
-This script checks incoming emails from the incident type. If those emails contain an Incident ID in the email subject, then the preprocessing will not open a new incident for this email. Instead, it will add the email response to the existing incident war room with the  "email-thread" tag.
+This script checks incoming emails and checks if they are a reply to a previously ingested email,
+based on having the incident ID in the subject, or finding the relevant Message ID using the References header.
+
+If found, it will add the email response to the existing incident war room with the  "email-thread" tag,
+otherwise a new incident will be created as normally.
 
 The script is a part of the Email Communication pack.
 

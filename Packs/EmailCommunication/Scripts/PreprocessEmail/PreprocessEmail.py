@@ -3,7 +3,7 @@ from CommonServerPython import *
 import json
 import re
 
-ERROR_TEMPLATE = 'ERROR: PreprocessEmail - {function_name}: {reason}'
+ERROR_TEMPLATE = 'ERROR: PreprocessEmail - {0}: {1}'
 QUOTE_MARKERS = ['<div class="gmail_quote">',
                  '<hr tabindex="-1" style="display:inline-block; width:98%"><div id="divRplyFwdMsg"']
 
@@ -102,7 +102,7 @@ def get_incident_by_query(query):
     Returns:
         dict. Incident details.
     """
-    res = demisto.executeCommand("GetIncidentsByQuery", {"query": query, "Contents": "id,status"})[0]
+    res = demisto.executeCommand("GetIncidentsByQuery", {"query": query, "populateFields": "id,status"})[0]
 
     if is_error(res):
         demisto.results(ERROR_TEMPLATE.format('GetIncidentsByQuery', res['Contents']))
@@ -193,6 +193,12 @@ def update_latest_message_field(incident_id, item_id):
 def main():
     incident = demisto.incident()
     custom_fields = incident.get('CustomFields')
+
+    for label in incident.get('labels', []):
+        if label.get('type') == 'Email/Header/References':
+            email_references = label.get('value').split(",")
+            break
+
     email_from = custom_fields.get('emailfrom')
     email_cc = custom_fields.get('emailcc')
     email_to = custom_fields.get('emailto')
@@ -202,29 +208,37 @@ def main():
     email_latest_message = custom_fields.get('emaillatestmessage')
 
     try:
-        email_related_incident = email_subject.split('#')[1].split()[0]
-        update_latest_message_field(email_related_incident, email_latest_message)
-        query = f"id:{email_related_incident}"
+        id_from_subject = email_subject.split('#')[1].split()[0]
+        query = f"id:{id_from_subject}"
         incident_details = get_incident_by_query(query)
-        check_incident_status(incident_details, email_related_incident)
-        get_attachments_using_instance(email_related_incident, incident.get('labels'))
+        if not incident_details:
+            raise DemistoException("Cannot find incident with query {query}, trying based on email references header")
+    except (DemistoException, IndexError): # cannot find incident based on `#` in subject
+        if not email_references:
+            raise DemistoException("No incident ID or references found")
+        refs = " ".join([f'"{r}"' for r in email_references])
+        query = f'emailmessageid:({refs})'
+    try:
+        incident_details = get_incident_by_query(query)
+        update_latest_message_field(incident_details['id'], email_latest_message)
+        check_incident_status(incident_details, incident_details['id'])
+        get_attachments_using_instance(incident_details['id'], incident.get('labels'))
 
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.
         time.sleep(5)
-        files = get_incident_related_files(email_related_incident)
+        files = get_incident_related_files(incident_details['id'])
         entry_id_list = get_entry_id_list(attachments, files)
         html_body = create_email_html(email_html, entry_id_list)
 
         email_reply = set_email_reply(email_from, email_to, email_cc, html_body, attachments)
-        add_entries(email_reply, email_related_incident)
+        add_entries(email_reply, incident_details['id'])
         # False - to not create new incident
         demisto.results(False)
 
-    except (IndexError, ValueError, DemistoException) as e:
-        # True - For creating new incident
-        demisto.results(True)
-        return_error(f"The PreprocessEmail script has encountered an error:\n {e} \nA new incidents was created.")
-
+    except (KeyError, IndexError, ValueError) as e:
+        demisto.error(f"The PreprocessEmail script has encountered an error:\n {e} \nA new incident will be created.")
+    except DemistoException:
+        demisto.info(f"The PreprocessEmail could not correlate this email as an existing incident, creating a new one.")
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
