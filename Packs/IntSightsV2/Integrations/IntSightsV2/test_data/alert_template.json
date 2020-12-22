@@ -1,0 +1,42 @@
+{
+    "_id": "123456789",
+    "Assets": [
+        {
+            "Type": "CompanyNames",
+            "Value": "Name"
+        }
+    ],
+    "Assignees": [],
+    "Details": {
+        "Type": "Phishing",
+        "SubType": "RegisteredSuspiciousDomain",
+        "Title": "Alert's title",
+        "Description": "Alert's description",
+        "Severity": "High",
+        "Images": [
+            "5b1576593a21b34c6d6e6195"
+        ],
+        "Source": {
+            "Type": "WHOIS servers",
+            "URL": "http://example.com",
+            "Email": "",
+            "NetworkType": "ClearWeb",
+            "Date": "2018-01-10T00:00:00.000Z"
+        },
+        "Tags": [
+            {
+                "CreatedBy": "API",
+                "Name": "Phishing",
+                "_id": "5acda9f68602ef0006b1b593"
+            }
+        ],
+        "RelatedIocs": [
+            "example.com"
+        ]
+    },
+    "FoundDate": "2018-01-01T20:01:27.344Z",
+    "UpdateDate": "2019-01-01T20:01:27.344Z",
+    "TakedownStatus": "NotSent",
+    "IsClosed": "false",
+    "IsFlagged": "false"
+}

@@ -1,0 +1,1950 @@
+id: TestIntSightsV2Playbook
+name: TestIntSightsV2Playbook
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: intsights-get-alert-image
+      description: ''
+      script: '|||intsights-get-alert-image'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: 3
+    taskid: '3'
+    type: regular
+    task:
+      id: '3'
+      version: -1
+      name: intsights-get-alert-activities
+      description: ''
+      script: '|||intsights-get-alert-activities'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: '4'
+    taskid: '4'
+    type: condition
+    task:
+      id: '4'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Activities.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Activities.Initiator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Activities.CreatedDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Activities.UpdateDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Activities.RemediationBlocklistUpdate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Activities.AskTheAnalyst.Replies
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Activities.Mail.Replies
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Activities.ReadBy
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: 5
+    taskid: '5'
+    type: regular
+    task:
+      id: '5'
+      version: -1
+      name: intsights-assign-alert
+      description: ''
+      script: '|||intsights-assign-alert'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: '6'
+    taskid: '6'
+    type: condition
+    task:
+      id: '6'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '7'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Assignees.AssigneeID
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: 7
+    taskid: '7'
+    type: regular
+    task:
+      id: '7'
+      version: -1
+      name: intsights-unassign-alert
+      description: ''
+      script: '|||intsights-unassign-alert'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: '8'
+    taskid: '8'
+    type: condition
+    task:
+      id: '8'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '9'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.ID
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: 9
+    taskid: '9'
+    type: regular
+    task:
+      id: '9'
+      version: -1
+      name: intsights-send-mail
+      description: ''
+      script: '|||intsights-send-mail'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: '10'
+    taskid: '10'
+    type: condition
+    task:
+      id: '10'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '11'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Mail.EmailID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Question
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: 11
+    taskid: '11'
+    type: regular
+    task:
+      id: '11'
+      version: -1
+      name: intsights-ask-the-analyst
+      description: ''
+      script: '|||intsights-ask-the-analyst'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: '12'
+    taskid: '12'
+    type: condition
+    task:
+      id: '12'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '13'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Question
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: 13
+    taskid: '13'
+    type: regular
+    task:
+      id: '13'
+      version: -1
+      name: intsights-add-tag-to-alert
+      description: ''
+      script: '|||intsights-add-tag-to-alert'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: '14'
+    taskid: '14'
+    type: condition
+    task:
+      id: '14'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '15'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Tags.TagName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Tags.ID
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: 15
+    taskid: '15'
+    type: regular
+    task:
+      id: '15'
+      version: -1
+      name: intsights-remove-tag-from-alert
+      description: ''
+      script: '|||intsights-remove-tag-from-alert'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: '16'
+    taskid: '16'
+    type: condition
+    task:
+      id: '16'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '17'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Tags.ID
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: 17
+    taskid: '17'
+    type: regular
+    task:
+      id: '17'
+      version: -1
+      name: intsights-add-comment-to-alert
+      description: ''
+      script: '|||intsights-add-comment-to-alert'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: '18'
+    taskid: '18'
+    type: condition
+    task:
+      id: '18'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '19'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Comment
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: 19
+    taskid: '19'
+    type: regular
+    task:
+      id: '19'
+      version: -1
+      name: intsights-update-alert-severity
+      description: ''
+      script: '|||intsights-update-alert-severity'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '20'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: '20'
+    taskid: '20'
+    type: condition
+    task:
+      id: '20'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '21'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Severity
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: 21
+    taskid: '21'
+    type: regular
+    task:
+      id: '21'
+      version: -1
+      name: intsights-get-alert-by-id
+      description: ''
+      script: '|||intsights-get-alert-by-id'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '22'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: '22'
+    taskid: '22'
+    type: condition
+    task:
+      id: '22'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '23'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.FoundDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.SourceType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.SourceURL
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.SourceEmail
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.SourceNetworkType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.IsClosed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.IsFlagged
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Tags.CreatedBy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Tag.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Tag.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Images
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.TakedownStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.SubType
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: 23
+    taskid: '23'
+    type: regular
+    task:
+      id: '23'
+      version: -1
+      name: intsights-get-ioc-by-value
+      description: ''
+      script: '|||intsights-get-ioc-by-value'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '24'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: '24'
+    taskid: '24'
+    type: condition
+    task:
+      id: '24'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '25'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.FirstSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.LastSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.SourceID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.SourceName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.SourceConfidenceLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.AccountID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Flags.IsInAlexa
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Enrichment.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Enrichment.Data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Malicious.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Malicious.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Malicious.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Malicious.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Malicious.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Malicious.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Malicious.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Malicious.Description
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: 25
+    taskid: '25'
+    type: regular
+    task:
+      id: '25'
+      version: -1
+      name: intsights-get-iocs
+      description: ''
+      script: '|||intsights-get-iocs'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '26'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '26':
+    id: '26'
+    taskid: '26'
+    type: condition
+    task:
+      id: '26'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '27'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.FirstSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.LastSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.SourceID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.SourceName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.SourceConfidenceLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.AccountID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Flags.IsInAlexa
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Enrichment.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Enrichment.Data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Malicious.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Malicious.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Malicious.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Malicious.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Malicious.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Malicious.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Malicious.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Malicious.Description
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '27':
+    id: 27
+    taskid: '27'
+    type: regular
+    task:
+      id: '27'
+      version: -1
+      name: intsights-get-alerts
+      description: ''
+      script: '|||intsights-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '28'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '28':
+    id: '28'
+    taskid: '28'
+    type: condition
+    task:
+      id: '28'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '29'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.FoundDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.SourceType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.SourceURL
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.SourceEmail
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.SourceNetworkType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.IsClosed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.IsFlagged
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Tags.CreatedBy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Tag.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Tag.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Images
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.TakedownStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.SubType
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '29':
+    id: 29
+    taskid: '29'
+    type: regular
+    task:
+      id: '29'
+      version: -1
+      name: intsights-alert-takedown-request
+      description: ''
+      script: '|||intsights-alert-takedown-request'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '30'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '30':
+    id: '30'
+    taskid: '30'
+    type: condition
+    task:
+      id: '30'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '31'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.ID
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 6000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '31':
+    id: 31
+    taskid: '31'
+    type: regular
+    task:
+      id: '31'
+      version: -1
+      name: intsights-get-alert-takedown-status
+      description: ''
+      script: '|||intsights-get-alert-takedown-status'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '32'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '32':
+    id: '32'
+    taskid: '32'
+    type: condition
+    task:
+      id: '32'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '33'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.TakedownStatus
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 6400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '33':
+    id: 33
+    taskid: '33'
+    type: regular
+    task:
+      id: '33'
+      version: -1
+      name: intsights-update-ioc-blocklist-status
+      description: ''
+      script: '|||intsights-update-ioc-blocklist-status'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '34':
+    id: '34'
+    taskid: '34'
+    type: condition
+    task:
+      id: '34'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '35'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Status
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 6800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '35':
+    id: 35
+    taskid: '35'
+    type: regular
+    task:
+      id: '35'
+      version: -1
+      name: intsights-get-ioc-blocklist-status
+      description: ''
+      script: '|||intsights-get-ioc-blocklist-status'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '36'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 7000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '36':
+    id: '36'
+    taskid: '36'
+    type: condition
+    task:
+      id: '36'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '37'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Status
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 7200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '37':
+    id: 37
+    taskid: '37'
+    type: regular
+    task:
+      id: '37'
+      version: -1
+      name: intsights-close-alert
+      description: ''
+      script: '|||intsights-close-alert'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '38'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 7400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '38':
+    id: '38'
+    taskid: '38'
+    type: condition
+    task:
+      id: '38'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '39'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Alerts.Closed.Reason
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 7600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '39':
+    id: 39
+    taskid: '39'
+    type: regular
+    task:
+      id: '39'
+      version: -1
+      name: intsights-mssp-get-sub-accounts
+      description: ''
+      script: '|||intsights-mssp-get-sub-accounts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '40'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 7800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '40':
+    id: '40'
+    taskid: '40'
+    type: condition
+    task:
+      id: '40'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '41'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.MsspAccount.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.MsspAccount.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.MsspAccount.AssetsCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.MsspAccount.AssetLimit
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.MsspAccount.CompanyName
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 8000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '41':
+    id: 41
+    taskid: '41'
+    type: regular
+    task:
+      id: '41'
+      version: -1
+      name: intsights-request-ioc-enrichment
+      description: ''
+      script: '|||intsights-request-ioc-enrichment'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '42'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 8200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '42':
+    id: '42'
+    taskid: '42'
+    type: condition
+    task:
+      id: '42'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '43'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.DNS
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Resolutions
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Subdomains
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS/History
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Malicious
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.IpDetails
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.RelatedHashes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.WHOIS
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Malicious
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.AntivirusDetectedEngines
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.AntivirusDetectionRatio
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.AntivirusDetections
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.AntivirusScanDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.RelatedHashes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Malicious
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.AntivirusDetectedEngines
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.AntivirusDetectionRatio
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.AntivirusDetections
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.AntivirusScanDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Malicious
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.FirstSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.LastSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.RelatedMalwares
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Sources
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.IsKnownIoc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.RelatedThreatActors
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.SystemTags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Tags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.Whitelisted
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IntSights.Iocs.OriginalValue
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 8400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '43':
+    id: '43'
+    taskid: '43'
+    type: title
+    task:
+      id: '43'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 8600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []

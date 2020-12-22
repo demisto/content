@@ -1,0 +1,29 @@
+{
+    "name": "IntSightsV2",
+    "description": "The only all-in-one external threat protection suite designed to neutralize cyberattacks outside the wire",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Konstantin Zelmanovich",
+    "url": "",
+    "email": "support@intsights.com",
+    "created": "2020-12-22T01:18:50Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "constantine19"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        }
+    }
+}

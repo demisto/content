@@ -1,0 +1,23 @@
+{
+    "Value": "value.com",
+    "Type": "Domains",
+    "Severity": {
+        "Value": "High"
+    },
+    "Whitelist": "false",
+    "FirstSeen": "2020-01-01T20:01:27.344Z",
+    "LastSeen": "2020-01-30T16:18:51.148Z",
+    "LastUpdate": "2020-02-21T23:00:51.268Z",
+    "Sources": [
+        {
+            "Name": "AlienVault OTX",
+            "ConfidenceLevel": 3
+        }
+    ],
+    "Tags": [
+        "MyTag_1"
+    ],
+    "SystemTags": [
+        "Phishing"
+    ]
+}
