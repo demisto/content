@@ -26,22 +26,6 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-@mark.parametrize("last_run_iso, now_iso, expected",
-                  [('2020-10-10T10:00:00.000000', '2020-10-10T10:30:00.000000', True),
-                   (None, '2020-10-10T10:30:00.000000', True),
-                   ('2020-10-10T10:00:00.000000', '2020-10-10T10:10:00.000000', False)])
-def test_should_run_fetch_incidents(last_run_iso, now_iso, expected):
-    from MobileIronCLOUD import should_run_fetch_incidents
-    import dateutil.parser
-
-    last_run = {'time': last_run_iso} if last_run_iso else None
-    now_utc = dateutil.parser.parse(now_iso)
-    fetch_interval = 30
-
-    result = should_run_fetch_incidents(last_run, now_utc, fetch_interval)
-    assert result == expected
-
-
 class TestGetPartitionId:
     from MobileIronCLOUD import get_partition_id
 

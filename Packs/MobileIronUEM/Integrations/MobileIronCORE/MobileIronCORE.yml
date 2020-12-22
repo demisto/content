@@ -30,11 +30,6 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- defaultvalue: '30'
-  display: Fetch Interval (in minutes)
-  name: fetch_interval
-  required: true
-  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

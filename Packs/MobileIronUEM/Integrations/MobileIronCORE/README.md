@@ -1,5 +1,5 @@
 MobileIron CORE Integration
-This integration was integrated and tested with version xx of MobileIronCORE
+This integration was integrated and tested with version 11.0.0 of MobileIronCORE
 ## Configure MobileIronCORE on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

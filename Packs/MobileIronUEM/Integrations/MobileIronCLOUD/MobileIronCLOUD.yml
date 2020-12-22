@@ -26,11 +26,6 @@ configuration:
   name: partition_id
   required: false
   type: 0
-- defaultvalue: '30'
-  display: Fetch Interval (in minutes)
-  name: fetch_interval
-  required: true
-  type: 0
 - defaultvalue: '50'
   display: Maximum number of incidents per fetch
   name: max_fetch

@@ -287,49 +287,19 @@ def execute_test_module_command(client: MobileIronCoreClient):
 
 def execute_fetch_incidents_command(client):
     """
-        runs the fetch incidents task. It will check the fetch_interval first before
-        making any API calls to the MobileIron API's
+        runs the fetch incidents task.
 
         :type client: ``Client``
         :param client: MobileIron client to use
     """
     params = demisto.params()
-    last_run = demisto.getLastRun()
-    datetime_now = datetime.utcnow()
-    datetime_now_iso = datetime_now.isoformat()
-    fetch_interval = int(params.get('fetch_interval'))
 
-    demisto.debug(f'MobileIron UEM - last run {last_run} now_utc {datetime_now_iso} fetch_interval {fetch_interval}')
-
-    should_run = should_run_fetch_incidents(last_run, datetime_now, fetch_interval)
-    if should_run:
-        admin_space_id = params.get('admin_space_id')
-        incident_type = params.get('incidentType')
-        max_fetch = min(int(params.get('max_fetch')), 200)
-        incidents = fetch_incidents(client=client, admin_space_id=admin_space_id, incident_type=incident_type,
-                                    max_fetch=max_fetch)
-        demisto.incidents(incidents)
-        demisto.setLastRun({'time': datetime_now_iso})
-    else:
-        demisto.incidents([])
-
-
-def should_run_fetch_incidents(last_run, datetime_now, fetch_interval) -> bool:
-    """
-    will check if fetch incidents should run based on the last time the command ran and comparing the
-    configured fetch_interval
-
-    :return:
-            If the run should be skipped
-        :rtype: ``bool``
-    """
-    if not last_run:
-        return True
-
-    last_run_time = dateutil.parser.parse(last_run['time'])
-    minutes_diff = (datetime_now - last_run_time).total_seconds() / 60.0
-    demisto.debug(f'MobileIron UEM - minutes since last run {minutes_diff}')
-    return minutes_diff >= fetch_interval
+    admin_space_id = params.get('admin_space_id')
+    incident_type = params.get('incidentType')
+    max_fetch = min(int(params.get('max_fetch')), 200)
+    incidents = fetch_incidents(client=client, admin_space_id=admin_space_id, incident_type=incident_type,
+                                max_fetch=max_fetch)
+    demisto.incidents(incidents)
 
 
 def fetch_incidents(client: MobileIronCoreClient, admin_space_id: str,

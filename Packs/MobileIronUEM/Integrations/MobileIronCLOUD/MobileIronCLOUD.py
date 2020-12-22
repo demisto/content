@@ -174,23 +174,6 @@ class MobileIronCloudClient(BaseClient):
 '''HELPER FUNCTIONS'''
 
 
-def should_run_fetch_incidents(last_run, datetime_now, fetch_interval) -> bool:
-    """
-    will check if fetch incidents should run based on the last time the command ran and comparing the
-    configured fetch_interval
-
-    :return:
-            If the run should be skipped
-        :rtype: ``bool``
-    """
-    if not last_run:
-        return True
-
-    last_run_time = dateutil.parser.parse(last_run['time'])
-    minutes_diff = (datetime_now - last_run_time).total_seconds() / 60.0
-    return minutes_diff >= fetch_interval
-
-
 def validate_action_response(response):
     if response['errors'] or response['result'] != 1:
         raise ValueError(f'Failed to perform the action on the device. Got: {response}')
@@ -396,9 +379,7 @@ def fetch_incidents(client: MobileIronCloudClient, partition_id: str,
     """This function returns incidents after analyzing the response data
 
     This function has to implement the logic of making sure that incidents are
-    fetched based on analyzing the response data. By default it's invoked by
-    XSOAR every minute. It will use last_run to save the timestamp of the last
-    incident it processed.
+    fetched based on analyzing the response data.
 
     :type partition_id: ``str``
     :param partition_id: Partition ID of the tenant that contains the device.
@@ -418,7 +399,6 @@ def fetch_incidents(client: MobileIronCloudClient, partition_id: str,
 
     incidents = []
     devices = client.get_devices_data(partition_id=partition_id, query=FETCH_INCIDENTS_QUERY, max_fetch=max_fetch)
-
     for device in devices:
         # Rename keys for device attributes
         message, severity = resolve_device_incident_severity(device)
@@ -437,23 +417,14 @@ def fetch_incidents(client: MobileIronCloudClient, partition_id: str,
 
 
 def execute_fetch_incidents_command(client):
-    last_run = demisto.getLastRun()
-    datetime_now = datetime.utcnow()
-    datetime_now_iso = datetime_now.isoformat()
-
     params = demisto.params()
-    fetch_interval = int(params.get('fetch_interval'))
     max_fetch = min(int(params.get('max_fetch')), 200)
 
-    should_run = should_run_fetch_incidents(last_run, datetime_now, fetch_interval)
-
-    if should_run:
-        partition_id = get_partition_id(client)
-        incident_type = params.get('incidentType')
-        incidents = fetch_incidents(client=client, partition_id=partition_id, incident_type=incident_type,
-                                    max_fetch=max_fetch)
-        demisto.incidents(incidents)
-        demisto.setLastRun({'time': datetime_now_iso})
+    partition_id = get_partition_id(client)
+    incident_type = params.get('incidentType')
+    incidents = fetch_incidents(client=client, partition_id=partition_id, incident_type=incident_type,
+                                max_fetch=max_fetch)
+    demisto.incidents(incidents)
 
 
 '''MAIN FUNCTION'''

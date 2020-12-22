@@ -1,5 +1,5 @@
 MobileIron CLOUD Integration
-This integration was integrated and tested with version xx of MobileIronCLOUD
+
 ## Configure MobileIronCLOUD on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
