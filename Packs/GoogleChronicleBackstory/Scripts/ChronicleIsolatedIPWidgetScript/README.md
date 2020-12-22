@@ -1,4 +1,4 @@
-Notifies if the IP Address associated with the ChronicleAsset is isolated or not.
+Notifies if the IP address associated with the ChronicleAsset is isolated or not.
 ## Script Data
 ---
 
