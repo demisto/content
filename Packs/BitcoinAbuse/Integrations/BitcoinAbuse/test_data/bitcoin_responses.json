@@ -1,6 +1,6 @@
 {
   "failure": {
-    "response": "Description is mandatory",
+    "response": "Server could not process your request",
     "success": false
   },
   "success": {

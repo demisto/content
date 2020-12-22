@@ -1,4 +1,4 @@
-category: Utilities
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: BitcoinAbuse
   version: -1
@@ -96,6 +96,7 @@ configuration:
     - WHITE
   required: false
   type: 15
+  defaultvalue: WHITE
 description: BitcoinAbuse.com is a public database of bitcoin addresses used by hackers
   and criminals.
 display: BitcoinAbuse

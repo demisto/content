@@ -1,5 +1,3 @@
-# import csv
-# from io import StringIO
 
 import demistomock as demisto  # noqa: F401
 from CSVFeedApiModule import *
@@ -10,8 +8,8 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 SERVER_URL = 'https://www.bitcoinabuse.com/api/'
-FEED_ENDPOINT_PREFIX = 'download/'
-FEED_ENDPOINT_DAILY = 'download/1d'
+FEED_ENDPOINT_SUFFIX = 'download/'
+FEED_ENDPOINT_DAILY_SUFFIX = 'download/1d'
 abuse_type_name_to_id: Dict[str, int] = {
     'ransomware': 1,
     'darknet market': 2,
@@ -28,14 +26,13 @@ abuse_type_id_to_name: Dict[str, str] = {
     '5': 'sextortio',
     '99': 'other'
 }
-OTHER_ABUSE_TYPE_ID = 99
 REPORT_ADDRESS_SUFFIX = '/reports/create'
 
 
-class BitcoinAbuseClient(BaseClient):
+class BitcoinAbuseClient(Client):
 
-    def __init__(self, api_key, verify, proxy):
-        super().__init__(base_url=SERVER_URL, verify=verify, proxy=proxy)
+    def __init__(self, params, api_key):
+        super().__init__(**params)
         self.api_key = api_key
 
     def report_address(self, address: str, abuse_type_id: int, abuse_type_other: Optional[str],
@@ -66,80 +63,121 @@ class BitcoinAbuseClient(BaseClient):
             }
         )
 
-    def download_csv(self) -> str:
-        """
-        Sends a post request to report an abuse to BitcoinAbuse servers.
 
-        Args:
+def build_fetch_indicators_url_suffixes(have_fetched_first_time: bool, feed_interval_suffix_url: str) -> set:
+    """Builds the URL suffix fo the fetch. Default is 'FEED_ENDPOINT_DAILY_SUFFIX_SUFFIX' unless this is a first fetch
+    which will be determined by the user parameter - initial_fetch_interval
 
-        Returns:
-            Returns response representing the csv file of text if get request was successful.
-        """
-        return self._http_request(
-            method='GET',
-            url_suffix=FEED_ENDPOINT_DAILY,
-            params={
-                'api_token': self.api_key
-            },
-            resp_type='text'
-        )
-
-    def download_csv_new(self, url_interval_suffix: str) -> str:
-        """
-        Sends a post request to report an abuse to BitcoinAbuse servers.
-
-        Args:
-            download_params: _DownloadParams contains all the required parameters for download get http request
-        Returns:
-            Returns response representing the csv file of text if get request was successful.
-        """
-        params = {
-            'api_token': self.api_key
-        }
-        return self._http_request(
-            method='GET',
-            url_suffix=FEED_ENDPOINT_PREFIX + url_interval_suffix,
-            params=params,
-            resp_type='text'
-        )
-
-
-def build_fetch_indicators_url_suffix(have_fetched_first_time: bool, feed_interval_suffix_url: str) -> str:
-    """
+    - if initial_fetch_interval is 'forever' - then suffixes will include 30d and forever, in order to extract
+      the most updated data by the Bitcoin Abuse service, as 'forever' csv file only updates on 15 of each month
+      (see Complete Download in https://www.bitcoinabuse.com/api-docs)
+    - if initial_fetch_interval is '30d' - suffixes will only include '30d' suffix.
 
     Args:
-        have_fetched_first_time: bool indicates if a fetch from BitcoinAbuse have been made
-        feed_interval_suffix_url: str the prefix for downloading csv from Bitcoin Abuse
+        have_fetched_first_time (bool) indicates if a fetch from BitcoinAbuse have been made
+        feed_interval_suffix_url (str) the suffix for downloading csv from Bitcoin Abuse
 
     Returns:
-        - if first fetch - returns the feed endpoint prefix concatenated with the first_fetch_interval requested
-        - if first fetch was already done - returns the feed endpoint prefix concatenated with 1d fetch prefix
+        - str: URL suffix to be used in the fetch process.
     """
     if have_fetched_first_time:
-        return FEED_ENDPOINT_DAILY
+        return {FEED_ENDPOINT_DAILY_SUFFIX}
     else:
         demisto.setIntegrationContext({'have_fetched_first_time': True})
-        return FEED_ENDPOINT_PREFIX + feed_interval_suffix_url
+        return {FEED_ENDPOINT_SUFFIX + feed_interval_suffix_url, FEED_ENDPOINT_SUFFIX + '30d'}
 
 
-def _build_fetch_indicators_params(demisto_params: Dict, feed_url_prefix: str) -> Dict:
+def fetch_indicators(client: BitcoinAbuseClient) -> None:
     """
-    helper function that builds the params for CSVFeedApiModule to fetch indicators
-
+    Wrapper which calls to CSVFeedApiModule for fetching indicators from Bitcoin Abuse download csv feed.
     Args:
-        demisto_params: Dict
+        client: the client to be used for Bitcoin Abuse Api calls
 
     Returns:
-        csv_api_params: Dict
 
     """
-    params = {k: v for k, v in demisto_params.items() if v is not None}
+    highest_fetched_id = demisto.getIntegrationContext().get('highest_fetched_id', 0)
+    indicators = fetch_indicators_command(
+        client=client,
+        default_indicator_type='Cryptocurrency Address',
+        auto_detect=False,
+        limit=0
+    )
 
-    api_key = demisto_params.get('api_key', '')
-    url = f'{SERVER_URL}{feed_url_prefix}?api_token={api_key}'
+    indicators.append(indicators[0])
 
-    feed_url_to_config = {
-        url: {
+    indicators_without_duplicates = []
+    indicators_ids = set()
+    for indicator in indicators:
+        indicator_id = int(indicator['rawJSON']['id'])
+        if indicator_id not in indicators_ids and indicator_id > highest_fetched_id:
+            indicators_without_duplicates.append(indicator)
+            indicators_ids.add(indicator_id)
+
+    highest_id_fetched_from_indicators = int(indicators[-1]['rawJSON']['id']) if indicators else 0
+    highest_fetched_id = max(highest_fetched_id, highest_id_fetched_from_indicators)
+    demisto.setIntegrationContext({'highest_fetched_id': highest_fetched_id})
+
+    # we submit the indicators in batches
+    for b in batch(indicators_without_duplicates, batch_size=2000):
+        demisto.createIndicators(b)  # type: ignore
+
+
+def report_address_command(client: BitcoinAbuseClient, args: Dict) -> CommandResults:
+    """
+    Reports a bitcoin abuse to Bitcoin Abuse service
+
+    Args:
+        client: BitcoinAbuseClient  used to post abuse to the api
+        args (Dict): Demisto args.
+
+    Returns:
+        str: 'bitcoin address (address reported) by abuser (abuser reported) was
+        reported to BitcoinAbuse API' if http request was successful'
+    """
+    abuse_type_id = abuse_type_name_to_id.get(args.get('abuse_type', ''))
+    abuse_type_other = args.get('abuse_type_other')
+    address = args.get('address', '')
+    abuser = args.get('abuser', '')
+
+    if abuse_type_id is None:
+        raise DemistoException('Bitcoin Abuse: invalid type of abuse, please insert a correct abuse type')
+
+    if abuse_type_id == abuse_type_name_to_id['other'] and abuse_type_other is None:
+        raise DemistoException('Bitcoin Abuse: abuse_type_other is mandatory when abuse type is other')
+
+    http_response = client.report_address(address=address,
+                                          abuse_type_id=abuse_type_id,
+                                          abuse_type_other=abuse_type_other,
+                                          abuser=args.get('abuser', ''),
+                                          description=args.get('description', ''))
+
+    if argToBoolean(http_response.get('success')):
+        return CommandResults(
+            readable_output=f'Bitcoin address {address} by abuse bitcoin user {abuser}'
+                            f' was reported to BitcoinAbuse service'
+        )
+    else:
+        failure_message = http_response.get('response')
+        raise DemistoException(f'bitcoin report address did not succeed: {failure_message}')
+
+
+def _add_additional_params_if_needed(command: str, params: Dict, have_fetched_first_time: bool, api_key: str):
+    """
+
+    Args:
+        command: demisto command requested
+        params: demisto params
+        have_fetched_first_time: indicates if this feed had already been fetched for the first time
+        api_key: for Bitcoin Abuse service
+
+    Returns:
+        - if command is bitcoin-report-address: returns the params as is
+        - if command is anything else - enriches params with more required params to CSVFeedApiModule
+    """
+    if command != 'bitcoin-report-address':
+        first_feed_interval_url_suffix = params.get('initial_fetch_interval', '30d')
+        reader_config = {
             'fieldnames': ['id', 'address', 'abuse_type_id', 'abuse_type_other', 'abuser',
                            'description', 'from_country', 'from_country_code', 'created_at'],
             'skip_first_line': True,
@@ -152,134 +190,37 @@ def _build_fetch_indicators_params(demisto_params: Dict, feed_url_prefix: str) -
                 'Abuse Type': ('abuse_type_id', lambda abuse_type_id: abuse_type_id_to_name.get(abuse_type_id))
             }
         }
-    }
 
-    params['url'] = url
-    params['feed_url_to_config'] = feed_url_to_config
-    params['delimiter'] = ','
+        urls_suffixes = build_fetch_indicators_url_suffixes(have_fetched_first_time, first_feed_interval_url_suffix)
+        urls = [f'{SERVER_URL}{url_suffix}?api_token={api_key}' for url_suffix in urls_suffixes]
+
+        feed_url_to_config = {url: reader_config for url in urls}
+
+        params['url'] = urls
+        params['feed_url_to_config'] = feed_url_to_config
+        params['delimiter'] = ','
 
     return params
 
 
-def fetch_indicators(demisto_params: Dict, feed_url_prefix: str) -> None:
-    """
-    Wrapper which calls to CSVFeedApiModule for fetching indicators from Bitcoin Abuse download csv feed.
-    Args:
-        demisto_params: Dict
-        feed_url_prefix: str the prefix for download csv request
-
-    Returns:
-
-    """
-    csv_api_params = _build_fetch_indicators_params(demisto_params, feed_url_prefix)
-    # Main execution of the CSV API Module.
-    # This function allows to add to or override this execution.
-    feed_main('Bitcoin Abuse Feed', csv_api_params, 'bitcoin')
-
-
-def report_address_command(client: BitcoinAbuseClient, args: Dict) -> CommandResults:
-    """
-    Reports a bitcoin abuse to Bitcoin Abuse integration
-
-    Args:
-        client: BitcoinAbuseClient  used to post abuse to the api
-        args: Dict
-
-    Returns:
-        'bitcoin address (address reported) by abuser (abuser reported) was
-        reported to BitcoinAbuse API' if http request was successful'
-    """
-    abuse_type_id = abuse_type_name_to_id.get(args.get('abuse_type', ''))
-    abuse_type_other = args.get('abuse_type_other')
-    address = args.get('address', '')
-    abuser = args.get('abuser', '')
-
-    if abuse_type_id is None:
-        raise DemistoException('Bitcoin Abuse: invalid type of abuse, please insert a correct abuse type')
-
-    if abuse_type_id == OTHER_ABUSE_TYPE_ID and abuse_type_other is None:
-        raise DemistoException('Bitcoin Abuse: abuse_type_other is mandatory when abuse type is other')
-
-    http_response = client.report_address(address=address,
-                                          abuse_type_id=abuse_type_id,
-                                          abuse_type_other=abuse_type_other,
-                                          abuser=args.get('abuser', ''),
-                                          description=args.get('description', ''))
-
-    if http_response.get('success') is True:
-        return CommandResults(
-            readable_output=f'Bitcoin address {address} by abuse bitcoin user {abuser}'
-                            f' was reported to BitcoinAbuse API'
-        )
-    else:
-        failure_message = http_response.get('response')
-        raise DemistoException(f'bitcoin report address did not succeed: {failure_message}')
-
-
-def _create_indicator_obj(row: Dict[str, str]):
-    return {
-        'Value': row['address'],
-        'Country Name': row['from_country'],
-        'Creation Date': row['created_at'],
-        'Description': row['description'],
-        'Abuse Type': abuse_type_id_to_name.get(row['abuse_type_id'])
-    }
-
-
-# def _csv_to_indicators(csv_reader):
-#     for fetch_url in first_fetch_urls:
-#         response = client.download_csv_new(fetch_url)
-#         csv_reader = csv.DictReader(StringIO(response))
-#         for row in csv_reader:
-#             indicator_obj = _create_indicator_obj(row)
-#             indicators.append(indicator_obj)
-#         max_id = row['id']
-#         b = 2
-
-
-# def _fetch_indicators_first_time(feed_interval_url_suffix: str, client: BitcoinAbuseClient):
-#     indicators = []
-#     first_fetch_urls = {feed_interval_url_suffix, '30d'}
-#     for fetch_url in first_fetch_urls:
-#         response = client.download_csv_new(fetch_url)
-#         csv_reader = csv.DictReader(StringIO(response))
-#         for row in csv_reader:
-#             indicator_obj = _create_indicator_obj(row)
-#             indicators.append(indicator_obj)
-#         max_id = row['id']
-#         b = 2
-#
-#     demisto.setIntegrationContext({'have_fetched_first_time': True})
-
-
 def main() -> None:
     command = demisto.command()
-    params = {k: v for k, v in demisto.params().items() if v is not None}
-    args = demisto.args()
-
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = params.get('proxy', False)
-    api_key = params.get('api_key', '')
     have_fetched_first_time = demisto.getIntegrationContext().get('have_fetched_first_time', False)
-    # first_feed_interval_url_suffix = params.get('initial_fetch_interval', '30d')
+    api_key = demisto.params().get('api_key', '')
+    params = _add_additional_params_if_needed(command, demisto.params(), have_fetched_first_time, api_key)
+
+    args = demisto.args()
 
     demisto.debug(f'Bitcoin Abuse: Command being called is {demisto.command()}')
 
-    client = BitcoinAbuseClient(
-        verify=verify_certificate,
-        proxy=proxy,
-        api_key=api_key)
+    client = BitcoinAbuseClient(params, api_key)
     try:
 
         if command == 'test-module':
-            client.download_csv()
-
-            return_results('ok')
+            feed_main('Bitcoin Abuse Feed', params, 'bitcoin')
 
         elif command == 'fetch-indicators':
-            # _fetch_indicators_first_time(first_feed_interval_url_suffix, client)
-            feed_url_prefix = build_fetch_indicators_url_suffix(have_fetched_first_time, first_feed_interval_url_prefix)
-            fetch_indicators(params, feed_url_prefix)
+            fetch_indicators(client)
 
         elif command == 'bitcoin-report-address':
             return_results(report_address_command(client, args))

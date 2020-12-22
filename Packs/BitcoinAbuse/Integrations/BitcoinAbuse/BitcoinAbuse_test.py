@@ -12,8 +12,11 @@ SERVER_URL = 'https://www.bitcoinabuse.com/api/'
 
 client = BitcoinAbuseClient(
     api_key='',
-    verify=False,
-    proxy=False
+    params={
+        'verify': False,
+        'proxy': False,
+        'url': SERVER_URL
+    }
 )
 
 
@@ -26,9 +29,9 @@ bitcoin_responses = util_load_json('test_data/bitcoin_responses.json')
 report_address_scenarios = util_load_json('test_data/report_command.json')
 successful_bitcoin_report_command_output = 'Bitcoin address 12xfas41 by abuse bitcoin user ' \
                                            'blabla@blabla.net was reported to ' \
-                                           'BitcoinAbuse API'
-failure_bitcoin_report_command_output = 'bitcoin report address did not succeed: response: {}'.format(
-    bitcoin_responses['failure'])
+                                           'BitcoinAbuse service'
+failure_bitcoin_report_command_output = 'bitcoin report address did not succeed: {}'.format(
+    bitcoin_responses['failure']['response'])
 
 
 @pytest.mark.parametrize('response, address_report, expected',
@@ -36,20 +39,17 @@ failure_bitcoin_report_command_output = 'bitcoin report address did not succeed:
                            report_address_scenarios['valid'],
                            successful_bitcoin_report_command_output
                            ),
-                          (bitcoin_responses['failure'],
-                           report_address_scenarios['valid'],
-                           failure_bitcoin_report_command_output),
                           (bitcoin_responses['success'],
                            report_address_scenarios['valid_other'],
                            successful_bitcoin_report_command_output)
                           ])
-def test_report_address_command(requests_mock, response: Dict, address_report: Dict, expected: str):
+def test_report_address_successful_command(requests_mock, response: Dict, address_report: Dict, expected: str):
     """
         Given:
          - Bitcoin address to report
 
         When:
-         - Reporting the address to Bitcoin Abuse Api
+         - Reporting valid address to Bitcoin Abuse Api
 
         Then:
          - When reporting to the API should return failure - the command fails and the correct output is given
@@ -68,10 +68,10 @@ def test_report_address_command(requests_mock, response: Dict, address_report: D
                           (report_address_scenarios['unknown_type'],
                            'Bitcoin Abuse: invalid type of abuse, please insert a correct abuse type')
                           ])
-def test_report_address_command_error_thrown(address_report: Dict, expected: str):
+def test_report_address_command_invalid_arguments(address_report: Dict, expected: str):
     """
        Given:
-        - Illegal bitcoin address report
+        - Invalid bitcoin address report
 
        When:
         - Trying to report the address to Bitcoin Abuse Api
@@ -81,16 +81,34 @@ def test_report_address_command_error_thrown(address_report: Dict, expected: str
         - Ensure the expected error with the expected error message is returned
        """
 
-    try:
+    with pytest.raises(DemistoException, match=expected):
         report_address_command(client, address_report)
-        raise AssertionError('report address command should fail when type is other and no abuse_type_other was given')
-    except DemistoException as error:
-        assert error.message == expected
+
+
+def test_failure_response_from_bitcoin_abuse(requests_mock):
+    """
+       Given:
+        - bitcoin address report
+
+       When:
+        - Trying to report the address to Bitcoin Abuse Api, and receiving a failure response from Bitcoin Abuse service
+
+       Then:
+        - Ensure the command throws an error
+        - Ensure the expected error with the expected error message is returned
+       """
+    requests_mock.post(
+        'https://www.bitcoinabuse.com/api/reports/create',
+        json=bitcoin_responses['failure']
+    )
+    with pytest.raises(DemistoException, match=failure_bitcoin_report_command_output):
+        report_address_command(client, report_address_scenarios['valid'])
 
 
 @pytest.mark.parametrize('have_fetched_first_time, feed_interval_suffix_url, expected',
-                         [(False, '30d', 'download/30d'),
-                          (True, '30d', 'download/1d')])
+                         [(False, '30d', {'download/30d'}),
+                          (False, 'forever', {'download/forever', 'download/30d'}),
+                          (True, '30d', {'download/1d'})])
 def test_url_fetch(have_fetched_first_time: bool, feed_interval_suffix_url: str, expected):
     """
     Given:
@@ -103,4 +121,4 @@ def test_url_fetch(have_fetched_first_time: bool, feed_interval_suffix_url: str,
      - Ensure on first fetch the feed_interval_suffix_url is returned
      - Ensure on any other fetch the daily download suffix is returned
     """
-    assert build_fetch_indicators_url_suffix(have_fetched_first_time, feed_interval_suffix_url) == expected
+    assert build_fetch_indicators_url_suffixes(have_fetched_first_time, feed_interval_suffix_url) == expected
