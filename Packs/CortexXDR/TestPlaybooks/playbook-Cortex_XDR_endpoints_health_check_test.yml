@@ -64,8 +64,8 @@ tasks:
         This playbook also includes an incident type with a dedicated layout to visualize the collected data.
       id: 58fa242a-09de-4f9e-87a8-07f97c62b58d
       iscommand: false
-      name: d5ea74b0-9df5-4b0d-816c-7e0e2b75ef49
-      playbookId: d5ea74b0-9df5-4b0d-816c-7e0e2b75ef49
+      name: Cortex XDR endpoints health check
+      playbookId: Cortex XDR endpoints health check
       type: playbook
       version: -1
     taskid: 58fa242a-09de-4f9e-87a8-07f97c62b58d
