@@ -25,8 +25,8 @@ configuration:
   display: First Fetch Time
   name: initial_fetch_interval
   options:
-  - 30d
-  - forever
+  - 30 Days
+  - Forever
   required: true
   type: 15
 - additionalinfo: Indicators from this integration instance will be marked with this
@@ -64,6 +64,18 @@ configuration:
   - suddenDeath
   required: false
   type: 17
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+    - RED
+    - AMBER
+    - GREEN
+    - WHITE
+  required: false
+  type: 15
+  defaultvalue: WHITE
 - defaultvalue: '1440'
   display: Feed Fetch Interval
   name: feedFetchInterval
@@ -85,27 +97,12 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed.
-  display: Traffic Light Protocol Color
-  name: tlp_color
-  options:
-    - RED
-    - AMBER
-    - GREEN
-    - WHITE
-  required: false
-  type: 15
-  defaultvalue: WHITE
 description: BitcoinAbuse.com is a public database of bitcoin addresses used by hackers
   and criminals.
 display: BitcoinAbuse
 name: BitcoinAbuse
 script:
   commands:
-  - arguments: []
-    description: Fetches indicators from the BitcoinAbuse API.
-    name: fetch-indicators
   - arguments:
     - description: Address of the abuser.
       name: address

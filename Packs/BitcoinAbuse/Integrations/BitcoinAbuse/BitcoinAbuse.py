@@ -26,6 +26,10 @@ abuse_type_id_to_name: Dict[str, str] = {
     '5': 'sextortio',
     '99': 'other'
 }
+first_fetch_interval_to_url_suffix: Dict[str, str] = {
+    'Forever': 'forever',
+    '30 Days': '30d'
+}
 REPORT_ADDRESS_SUFFIX = '/reports/create'
 
 
@@ -162,21 +166,22 @@ def report_address_command(client: BitcoinAbuseClient, args: Dict) -> CommandRes
         raise DemistoException(f'bitcoin report address did not succeed: {failure_message}')
 
 
-def _add_additional_params_if_needed(command: str, params: Dict, have_fetched_first_time: bool, api_key: str):
+def _add_additional_params_if_needed(command: str, params: Dict, api_key: str):
     """
 
     Args:
         command: demisto command requested
         params: demisto params
-        have_fetched_first_time: indicates if this feed had already been fetched for the first time
         api_key: for Bitcoin Abuse service
 
     Returns:
         - if command is bitcoin-report-address: returns the params as is
         - if command is anything else - enriches params with more required params to CSVFeedApiModule
     """
+
     if command != 'bitcoin-report-address':
         first_feed_interval_url_suffix = params.get('initial_fetch_interval', '30d')
+        first_feed_interval_url_suffix = first_fetch_interval_to_url_suffix.get(first_feed_interval_url_suffix)
         reader_config = {
             'fieldnames': ['id', 'address', 'abuse_type_id', 'abuse_type_other', 'abuser',
                            'description', 'from_country', 'from_country_code', 'created_at'],
@@ -190,6 +195,8 @@ def _add_additional_params_if_needed(command: str, params: Dict, have_fetched_fi
                 'Abuse Type': ('abuse_type_id', lambda abuse_type_id: abuse_type_id_to_name.get(abuse_type_id))
             }
         }
+
+        have_fetched_first_time = argToBoolean(demisto.getIntegrationContext().get('have_fetched_first_time', False))
 
         urls_suffixes = build_fetch_indicators_url_suffixes(have_fetched_first_time, first_feed_interval_url_suffix)
         urls = [f'{SERVER_URL}{url_suffix}?api_token={api_key}' for url_suffix in urls_suffixes]
@@ -205,9 +212,8 @@ def _add_additional_params_if_needed(command: str, params: Dict, have_fetched_fi
 
 def main() -> None:
     command = demisto.command()
-    have_fetched_first_time = demisto.getIntegrationContext().get('have_fetched_first_time', False)
     api_key = demisto.params().get('api_key', '')
-    params = _add_additional_params_if_needed(command, demisto.params(), have_fetched_first_time, api_key)
+    params = _add_additional_params_if_needed(command, demisto.params(), api_key)
 
     args = demisto.args()
 

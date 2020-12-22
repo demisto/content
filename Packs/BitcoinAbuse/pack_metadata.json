@@ -14,10 +14,6 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "dependencies": {
-        "Cryptocurrency": {
-            "mandatory": false,
-            "display_name": "Cryptocurrency"
-        }
-    }
+    "dependencies": {},
+    "displayedImages": []
 }
