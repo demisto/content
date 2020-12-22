@@ -318,9 +318,9 @@ references:
         gsutil -m cp -r gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/private_id_set.json
 
         # Merge public and private ID sets to unified ID set
-        demisto-sdk merge-id-sets -i1 $CIRCLE_ARTIFACTS/private_id_set.json -i2 ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/unified_id_set.json
+        demisto-sdk merge-id-sets -i1 $CIRCLE_ARTIFACTS/private_id_set.json -i2 ./Tests/id_set.json -o ./Tests/id_set.json
 
-        cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
+        cp ./Tests/id_set.json $CIRCLE_ARTIFACTS/id_set.json
 
         rm $KF
   build_content_descriptor: &build_content_descriptor
@@ -363,7 +363,7 @@ references:
       name: Calculate Packs Dependencies
       when: always
       command: |
-        python3 ./Tests/Marketplace/packs_dependencies.py -i $CIRCLE_ARTIFACTS/unified_id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
+        python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
 
   update_tests_step: &update_tests_step
     run:
