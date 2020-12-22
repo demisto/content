@@ -213,7 +213,7 @@ def main():
         incident_details = get_incident_by_query(query)
         if not incident_details:
             raise DemistoException("Cannot find incident with query {query}, trying based on email references header")
-    except (DemistoException, IndexError): # cannot find incident based on `#` in subject
+    except (DemistoException, IndexError):  # cannot find incident based on `#` in subject
         if not email_references:
             raise DemistoException("No incident ID or references found")
         refs = " ".join([f'"{r}"' for r in email_references])
@@ -238,7 +238,8 @@ def main():
     except (KeyError, IndexError, ValueError) as e:
         demisto.error(f"The PreprocessEmail script has encountered an error:\n {e} \nA new incident will be created.")
     except DemistoException:
-        demisto.info(f"The PreprocessEmail could not correlate this email as an existing incident, creating a new one.")
+        demisto.info("The PreprocessEmail could not correlate this email as an existing incident, creating a new one.")
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
