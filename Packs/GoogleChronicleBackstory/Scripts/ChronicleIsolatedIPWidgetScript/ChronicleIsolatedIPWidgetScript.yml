@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - dynamic-indicator-section
-comment: Notifies if the IP Address associated with the ChronicleAsset is isolated
+comment: Notifies if the IP address associated with the ChronicleAsset is isolated
   or not.
 enabled: true
 scripttarget: 0
