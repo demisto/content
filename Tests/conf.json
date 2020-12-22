@@ -2059,7 +2059,8 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
-            "memory_threshold": 115
+            "memory_threshold": 115,
+            "pid_threshold": 5
         },
         {
             "playbookID": "Phishing - Core - Test - Incident Starter",
@@ -2071,7 +2072,8 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
-            "memory_threshold": 100
+            "memory_threshold": 100,
+            "pid_threshold": 5
         },
         {
             "integrations": "duo",
