@@ -33,5 +33,5 @@ type: python
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/python3:3.8.6.14516
 runas: DBotRole
