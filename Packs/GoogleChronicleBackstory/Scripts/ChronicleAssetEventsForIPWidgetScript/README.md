@@ -1,4 +1,4 @@
-Shows the list of events fetched for an asset identified as a "ChronicleAsset" type of indicator, when its IP Address is passed as an asset identifier.
+Displays the list of events fetched for an asset identified as a "ChronicleAsset" type of indicator, when its IP address is passed as an asset identifier.
 ## Script Data
 ---
 
@@ -11,7 +11,7 @@ Shows the list of events fetched for an asset identified as a "ChronicleAsset" t
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* gcb-list-events
+***gcb-list-events**
 
 ## Inputs
 ---
