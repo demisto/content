@@ -28,6 +28,35 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Incident data source
+  name: fetch_incidents_type
+  defaultvalue: incidents
+  type: 15
+  required: false
+  options:
+  - incidents
+  - events
+  - incidentevents
+- display: Maximum number of events per fetch.
+  name: max_fetch
+  defaultvalue: "50"
+  type: 0
+  required: false
+- display: Fetch incidents
+  defaultvalue: ""
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  defaultvalue: ""
+  name: incidentType
+  type: 13
+  required: false
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  defaultvalue: 7 days
+  type: 0
+  required: false
 script:
   script: >
     var serverUrl = params.url.replace(/[\/]+$/, '') + '/';
@@ -262,6 +291,116 @@ script:
     };
 
 
+    var parseOffsetDate = function(offset_str) {
+        var range_split = offset_str.trim().split(' ');
+        if (range_split.length != 2){
+            throw 'date_range must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day, etc.)';
+        }
+        var number = parseInt(range_split[0]);
+        var unit = range_split[1].toLowerCase();
+        var d = new Date();
+        if (unit.indexOf('minute') >= 0) {
+            d.setTime(d.getTime() - (number * 60 * 1000));
+        } else if (unit.indexOf('hour') >= 0) {
+            d.setTime(d.getTime() - (number * 60 * 60 * 1000));
+        } else if (unit.indexOf('day') >= 0) {
+            d.setTime(d.getTime() - (number * 24 * 60 * 60 * 1000));
+        } else if (unit.indexOf('month') >= 0) {
+            d.setTime(d.getTime() - (number * 30 * 24 * 60 * 60 * 1000));
+        } else if (unit.indexOf('year') >= 0) {
+            d.setTime(d.getTime() - (number * 365 * 30 * 24 * 60 * 60 * 1000));
+        } else {
+            throw 'The unit of date_range is invalid. Must be minutes, hours, days, months or years.';
+        }
+        return d;
+    };
+
+
+    var getIncidentsFromIncidentsResult = function(res) {
+        return res.map(function(r){
+            return {
+                name: r.summary,
+                rawJSON: JSON.stringify(r)
+            };
+        });
+    };
+
+
+    var getIncidentsFromEventsResult = function(res) {
+        return res.map(function(r){
+            var name;
+            if ('message' in r){
+                name = r.message;
+            } else if ('uuid' in r){
+                name = r.uuid;
+            } else {
+                name = r.type_id;
+            }
+            return {
+                name: name,
+                rawJSON: JSON.stringify(r)
+            };
+        });
+    };
+
+
+    var fetchIncidents = function(type, limit, first_fetch_time) {
+
+        if (type != 'incidents' && type != 'incidentevents' && type != 'events'){
+            throw 'Unknown incident type.';
+        }
+        var DAY_IN_MILLIS = 24*60*60*1000;
+
+        var lastRun = getLastRun();
+        var now = new Date();
+        var endTime = now.toISOString();
+        var startTime;
+        var next = null;
+        var n;
+
+        if (lastRun && lastRun.time && lastRun.time !== '') {
+            startTime = lastRun.time;
+            if (lastRun.next && lastRun.next !== '') {
+                next = lastRun.next;
+
+                if (lastRun.end_time && lastRun.end_time !== '') {
+                        endTime = lastRun.end_time;
+                }
+            }
+        } else if (first_fetch_time) {
+            startTime = parseOffsetDate(first_fetch_time).toISOString();
+        } else {
+            n = now;
+            n.setTime(now.getTime() - 1 * DAY_IN_MILLIS);
+            startTime = n.toISOString();
+        }
+        addTime(p, 'start_time', startTime);
+        addTime(p, 'end_time', endTime);
+        add(p, 'next', next);
+        
+        if (limit) {
+            p.limit = parseInt(limit);
+        }
+        var incidents = [];
+        var res = doReq('POST', type, p);
+        if (res.obj.result && res.obj.result.length !== 0) {
+            if (type == 'incidents') {
+                incidents = incidents.concat(getIncidentsFromIncidentsResult(res.obj.result));
+            } else {
+                incidents = incidents.concat(getIncidentsFromEventsResult(res.obj.result));
+            }
+        }
+        next = 'next' in res.obj ? res.obj.next : null;
+        
+        if (next) {
+            setLastRun({ time: startTime, next: next, end_time: endTime });
+        } else {
+            setLastRun({ time: endTime });
+        }
+        return JSON.stringify(incidents);
+    };
+
+
     // The command input arg holds the command sent from the user.
 
     switch (command) {
@@ -269,6 +408,8 @@ script:
         case 'test-module':
             getAppliances();
             return 'ok';
+        case 'fetch-incidents':
+            return fetchIncidents(params.fetch_incidents_type, params.max_fetch, params.first_fetch);
         case 'satp-appliances':
             return getAppliances();
         case 'satp-command':
@@ -780,4 +921,7 @@ script:
     - contextPath: ATPIncidents.Result.uuid
       description: The GUID assigned for this incident
     description: Query incidents from ATP
+  isfetch: true
+  runonce: false
+  isFetchSamples: true
 fromversion: 5.0.0
