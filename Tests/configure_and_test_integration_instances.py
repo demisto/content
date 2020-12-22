@@ -523,7 +523,9 @@ def set_integration_params(build,
             integration['validate_test'] = matched_integration_params.get('validate_test', True)
             if integration['name'] not in build.unmockable_integrations:
                 integration['params'].update({'proxy': True})
-        logging.debug(f'Configuring integration {integration["name"]}with params: {pformat(integration["params"])}')
+            else:
+                integration['params'].update({'proxy': False})
+        logging.debug(f'Configuring integration "{integration["name"]}" with params: {pformat(integration["params"])}')
 
     return True
 
@@ -1186,7 +1188,7 @@ def test_integration_with_mock(build: Build, instance: dict, pre_update: bool):
     """
     testing_client = build.servers[0].reconnect_client()
     integration_of_instance = instance.get('brand', '')
-    logging.debug(f'Integration {integration_of_instance} is mockable, running test-module with mitmproxy')
+    logging.debug(f'Integration "{integration_of_instance}" is mockable, running test-module with mitmproxy')
     has_mock_file = build.proxy.has_mock_file(integration_of_instance)
     success = False
     if has_mock_file:
@@ -1194,14 +1196,14 @@ def test_integration_with_mock(build: Build, instance: dict, pre_update: bool):
             success, _ = __test_integration_instance(testing_client, instance)
             result_holder[RESULT] = success
             if not success:
-                logging.warning(f'Running test-module for \'{integration_of_instance}\' has failed in playback mode')
+                logging.warning(f'Running test-module for "{integration_of_instance}" has failed in playback mode')
     if not success and pre_update:
-        logging.debug(f'Recording a mock file for integration {integration_of_instance}.')
+        logging.debug(f'Recording a mock file for integration "{integration_of_instance}".')
         with run_with_mock(build.proxy, integration_of_instance, record=True) as result_holder:
             success, _ = __test_integration_instance(testing_client, instance)
             result_holder[RESULT] = success
             if not success:
-                logging.debug(f'Record mode for integration {integration_of_instance} has failed.')
+                logging.debug(f'Record mode for integration "{integration_of_instance}" has failed.')
     return success
 
 
