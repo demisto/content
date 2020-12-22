@@ -10,10 +10,10 @@ ChronicleAsset Investigation - Chronicle
 This playbook does not use any integrations.
 
 ### Scripts
-Set
+**Set**
 
 ### Commands
-send-mail
+***send-mail***
 
 ## Playbook Inputs
 ---
