@@ -18,8 +18,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_HOST = "https://api.twinwave.io"
 API_VERSION = "v1"
 EXPIRE_SECONDS = 86400
-URL_REGEX = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
-            r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
 
 
 class AuthenticationException(Exception):
@@ -237,7 +235,7 @@ def submit_url(client, args):
     priority = validate_priority(priority)
 
     # validate the url
-    regex_matches = re.match(URL_REGEX, url)
+    regex_matches = re.match(urlRegex, url)
     if regex_matches:
         # passing the validated url into the search
         result = client.submit_url(scan_url=regex_matches.group(0), engine_list=engines, parameters=parameters,
