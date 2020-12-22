@@ -1,4 +1,4 @@
-Notifies if the IP Address associated with the ChronicleAsset is potentially blocked or not.
+Notifies if the IP address associated with the ChronicleAsset is potentially blocked or not.
 ## Script Data
 ---
 
