@@ -1,5 +1,5 @@
 Integration with Humio
-This integration was integrated and tested with version xx of Humio
+
 ## Configure Humio on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
