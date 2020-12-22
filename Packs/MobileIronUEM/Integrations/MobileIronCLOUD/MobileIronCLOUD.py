@@ -1,6 +1,5 @@
 from typing import Any, Dict, List, Tuple
 
-import dateutil.parser
 import urllib3
 
 # Disable insecure warnings
