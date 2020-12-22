@@ -6,8 +6,8 @@ script: ''
 type: python
 tags:
 - dynamic-indicator-section
-comment: Shows the list of events fetched for an asset identified as a "ChronicleAsset"
-  type of indicator, when its Product ID is passed as an asset identifier.
+comment: Displays the list of events fetched for an asset identified as a "ChronicleAsset"
+  type of indicator, when its product ID is passed as an asset identifier.
 enabled: true
 scripttarget: 0
 subtype: python3
