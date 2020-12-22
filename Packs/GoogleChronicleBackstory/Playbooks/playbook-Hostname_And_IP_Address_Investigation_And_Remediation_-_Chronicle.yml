@@ -2,7 +2,7 @@ id: Hostname And IP Address Investigation And Remediation - Chronicle
 version: -1
 name: Hostname And IP Address Investigation And Remediation - Chronicle
 description: |-
-  This playbook receives ChronicleAsset type of indicators from its parent playbook "ChronicleAsset Investigation - Chronicle", performs enrichment and investigation for each one of them, provides an opportunity to isolate and block the Hostname or IP Address associated with the current indicator, and gives out a list of isolated and blocked entities.
+  This playbook receives ChronicleAsset type of indicators from its parent playbook "ChronicleAsset Investigation - Chronicle", performs enrichment and investigation for each one of them, provides an opportunity to isolate and block the hostname or IP address associated with the current indicator, and provides a list of isolated and blocked entities.
 starttaskid: "0"
 tasks:
   "0":
@@ -106,7 +106,7 @@ tasks:
       id: 36db4968-fd5d-4392-89dc-32b95e7c2e23
       version: -1
       name: Get Asset Enrichment from RiskIQ Digital Footprint
-      description: Retrieves the asset details for the specified IP Address from the
+      description: Retrieves the asset details for the specified IP address from the
         RiskIQ Digital Footprint inventory.
       script: '|||df-get-asset'
       type: regular
@@ -150,7 +150,7 @@ tasks:
       id: 86801ba1-7980-444b-8e5d-515fd562a873
       version: -1
       name: Get Asset Enrichment from RiskIQ Digital Footprint
-      description: Retrieves the asset details for the specified Host from the RiskIQ
+      description: Retrieves the asset details for the specified host from the RiskIQ
         Digital Footprint inventory.
       script: '|||df-get-asset'
       type: regular
@@ -252,7 +252,7 @@ tasks:
       id: 4bcf2b68-4294-42ee-82df-2be344fb1040
       version: -1
       name: Isolate the Hostname
-      description: Asks the user if the Hostname associated with the Chronicle Asset
+      description: Asks the user if the hostname associated with the ChronicleAsset
         should be isolated.
       type: collection
       iscommand: false
@@ -279,8 +279,8 @@ tasks:
       subject:
         simple: 'Chronicle XSOAR: Isolate the Hostname - ${inputs.chronicleasset_hostname}'
       body:
-        simple: 'Please redirect to the following link in order to decide if the Hostname:
-          ${inputs.chronicleasset_hostname} should be isolated or not.'
+        simple: 'Redirect to the following link in order to decide if the hostname:
+          ${inputs.chronicleasset_hostname} should be isolated.'
       methods:
       - email
       format: ""
@@ -295,7 +295,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: 'Do you want to isolate the Hostname: ${inputs.chronicleasset_hostname}?'
+          simple: 'Do you want to isolate the hostname: ${inputs.chronicleasset_hostname}?'
         required: false
         gridcolumns: []
         defaultrows: []
@@ -305,10 +305,10 @@ tasks:
         - "Yes"
         fieldassociated: ""
         placeholder: ""
-        tooltip: Select Yes to isolate the Hostname, no otherwise.
+        tooltip: Select "Yes" to isolate the hostname, otherwise select "No".
         readonly: false
       title: Isolate the Hostname
-      description: Please select Yes to isolate the mentioned Hostname, no otherwise.
+      description: Select "Yes" to isolate the mentioned hostname, otherwise select "No".
       sender: ""
       expired: false
       totalanswers: 0
@@ -415,10 +415,10 @@ tasks:
       description: |-
         Enrich IP addresses using one or more integrations.
 
-        - Resolve IP addresses to hostnames (DNS)
-        - Provide threat information
-        - Separate internal and external IP addresses
-        - For internal IP addresses, get host information
+        - Resolve IP addresses to hostnames (DNS).
+        - Provide threat information.
+        - Separate internal and external IP addresses.
+        - For internal IP addresses, get host information.
       playbookName: IP Enrichment - Generic v2
       type: playbook
       iscommand: false
@@ -460,7 +460,7 @@ tasks:
       id: 091fd85c-3d1d-4b83-8f0c-2d04d20a613f
       version: -1
       name: Isolate the IP Address
-      description: Asks the user if the fetched IP Address should be isolated.
+      description: Asks the user if the fetched IP address should be isolated.
       type: collection
       iscommand: false
       brand: ""
@@ -486,8 +486,8 @@ tasks:
       subject:
         simple: 'Chronicle XSOAR: Isolate the IP Address - ${inputs.chronicleasset_ip}'
       body:
-        simple: 'Please redirect to the following link in order to decide if the IP
-          Address: ${inputs.chronicleasset_ip} should be isolated or not.'
+        simple: 'Redirect to the following link in order to decide if the IP
+          address: ${inputs.chronicleasset_ip} should be isolated.'
       methods:
       - email
       format: ""
@@ -502,7 +502,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: 'Do you want to isolate the IP Address: ${inputs.chronicleasset_ip}?'
+          simple: 'Do you want to isolate the IP address: ${inputs.chronicleasset_ip}?'
         required: false
         gridcolumns: []
         defaultrows: []
@@ -512,10 +512,10 @@ tasks:
         - "Yes"
         fieldassociated: ""
         placeholder: ""
-        tooltip: Select Yes to isolate the IP Address, no otherwise.
+        tooltip: Select "Yes" to isolate the IP address, otherwise select "No".
         readonly: false
       title: Isolate the IP Address
-      description: Please select Yes to isolate the mentioned IP Address, no otherwise.
+      description: Select "Yes" to isolate the mentioned IP address, otherwise select "No".
       sender: ""
       expired: false
       totalanswers: 0
@@ -528,8 +528,8 @@ tasks:
     task:
       id: 125de4f2-4cdc-4de4-88f0-61665b8afa6a
       version: -1
-      name: Is the user willing to isolate the IP Address?
-      description: Checks if the user wants to isolate the IP Address.
+      name: Is the user willing to isolate the IP address?
+      description: Checks if the user wants to isolate the IP address.
       type: condition
       iscommand: false
       brand: ""
@@ -574,7 +574,7 @@ tasks:
       version: -1
       name: Block IP - Generic v2
       description: |-
-        This playbook blocks malicious IPs using all integrations that are enabled.
+        This playbook blocks malicious IP addresses using all integrations that are enabled.
 
         Supported integrations for this playbook:
         * Check Point Firewall
@@ -628,7 +628,7 @@ tasks:
     task:
       id: 6a937b7e-c5af-412a-8918-50065492eee4
       version: -1
-      name: Add the Hostname to the list of the isolated entities
+      name: Add the hostname to the list of the isolated entities
       description: Adds the hostname to the list of the isolated entities.
       scriptName: Set
       type: regular
@@ -667,8 +667,8 @@ tasks:
     task:
       id: 3f3c3c41-b9b6-45dd-8d2f-bc039715de3f
       version: -1
-      name: Add the IP Address to the list of the isolated entities
-      description: Adds the IP Address to the list of the isolated entities.
+      name: Add the IP address to the list of the isolated entities
+      description: Adds the IP address to the list of the isolated entities.
       scriptName: Set
       type: regular
       iscommand: false
@@ -822,8 +822,8 @@ tasks:
     task:
       id: 144815b6-042b-42e8-8b3a-3c0c48b49d62
       version: -1
-      name: Set the Chronicle Isolated Host field to Yes
-      description: Sets the Chronicle Isolated Host indicator field to Yes.
+      name: Set the Chronicle Isolated Host field to "Yes"
+      description: Sets the Chronicle Isolated Host indicator field to "Yes".
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -1039,7 +1039,7 @@ tasks:
       id: 929000ab-93fb-4ff0-899e-dec49d81a71a
       version: -1
       name: Block the IP Address
-      description: Asks the user if the IP Address should be blocked.
+      description: Asks the user if the IP address should be blocked.
       type: collection
       iscommand: false
       brand: ""
@@ -1063,10 +1063,10 @@ tasks:
         complex:
           root: inputs.chronicleasset_support_contact
       subject:
-        simple: 'Chronicle XSOAR: Block the IP Address - ${inputs.chronicleasset_ip}'
+        simple: 'Chronicle XSOAR: Block the IP address - ${inputs.chronicleasset_ip}'
       body:
-        simple: 'Please redirect to the following link in order to decide if the IP
-          Address: ${inputs.chronicleasset_ip} should be blocked or not.'
+        simple: 'Redirect to the following link in order to decide if the IP
+          address: ${inputs.chronicleasset_ip} should be blocked.'
       methods:
       - email
       format: ""
@@ -1081,7 +1081,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: 'Do you want to block the IP Address: ${inputs.chronicleasset_ip}?'
+          simple: 'Do you want to block the IP address: ${inputs.chronicleasset_ip}?'
         required: false
         gridcolumns: []
         defaultrows: []
@@ -1091,10 +1091,10 @@ tasks:
         - "Yes"
         fieldassociated: ""
         placeholder: ""
-        tooltip: Select Yes to block the IP Address, no otherwise.
+        tooltip: Select "Yes" to block the IP address, otherwise select "No".
         readonly: false
       title: Block the IP Address
-      description: Please select Yes to block the mentioned IP Address, no otherwise.
+      description: Select "Yes" to block the mentioned IP address, otherwise select "No".
       sender: ""
       expired: false
       totalanswers: 0
@@ -1107,8 +1107,8 @@ tasks:
     task:
       id: cd2a3b25-9666-4ad1-8f04-ff9210916570
       version: -1
-      name: Is the user willing to block the IP Address?
-      description: Checks if the user wants to block the IP Address.
+      name: Is the user willing to block the IP address?
+      description: Checks if the user wants to block the IP address.
       type: condition
       iscommand: false
       brand: ""
@@ -1151,8 +1151,8 @@ tasks:
     task:
       id: ab528cb9-327a-4d1f-8dfe-b74001497a7b
       version: -1
-      name: Add the IP Address to the list of potentially blocked IPs
-      description: Adds the IP Address to the list of potentially blocked IPs.
+      name: Add the IP address to the list of potentially blocked IP addresses
+      description: Adds the IP address to the list of potentially blocked IP addresses.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1248,9 +1248,9 @@ tasks:
     task:
       id: d2a5a1bb-0c81-42b0-8c30-cc51b62cfcec
       version: -1
-      name: Set the Chronicle Potentially Blocked IP Address field to Yes
+      name: Set the Chronicle Potentially Blocked IP Address field to "Yes"
       description: Sets the Chronicle Potentially Blocked IP Address indicator field
-        to Yes.
+        to "Yes".
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -1464,8 +1464,8 @@ tasks:
     task:
       id: 317772b8-6e2f-457e-8328-37279b0e52a1
       version: -1
-      name: Set the Chronicle Isolated IP Address field to Yes
-      description: Sets the Chronicle Isolated IP Address indicator field to Yes.
+      name: Set the Chronicle Isolated IP Address field to "Yes"
+      description: Sets the Chronicle Isolated IP Address indicator field to "Yes".
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -1680,8 +1680,8 @@ tasks:
     task:
       id: 4d9b7ea4-ca90-4f9c-8d26-d81452403729
       version: -1
-      name: Set the Chronicle Isolated IP Address field to No
-      description: Sets the Chronicle Isolated IP Address indicator field to No.
+      name: Set the Chronicle Isolated IP Address field to "No"
+      description: Sets the Chronicle Isolated IP Address indicator field to "No".
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -1897,9 +1897,9 @@ tasks:
     task:
       id: 712b6334-ca92-4d5f-877d-02d8612bf13f
       version: -1
-      name: Set the Chronicle Potentially Blocked IP Address field to No
+      name: Set the Chronicle Potentially Blocked IP Address field to "No"
       description: Sets the Chronicle Potentially Blocked IP Address indicator field
-        to No.
+        to "No".
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -2114,8 +2114,8 @@ tasks:
     task:
       id: 6e7d7c85-e41d-4842-88b5-5c2adbd74152
       version: -1
-      name: Set the Chronicle Isolated Host field to No
-      description: Sets the Chronicle Isolated Host indicator field to No.
+      name: Set the Chronicle Isolated Host field to "No"
+      description: Sets the Chronicle Isolated Host indicator field to "No".
       script: Builtin|||setIndicator
       type: regular
       iscommand: true
@@ -2330,8 +2330,8 @@ tasks:
     task:
       id: 1a6596a1-1cf8-446b-8d86-6420e1776dbd
       version: -1
-      name: Is there a Hostname associated with the ChronicleAsset?
-      description: Checks if there is a Hostname associated with the ChronicleAsset.
+      name: Is there a hostname associated with the ChronicleAsset?
+      description: Checks if there is a hostname associated with the ChronicleAsset.
       type: condition
       iscommand: false
       brand: ""
@@ -2485,8 +2485,8 @@ tasks:
     task:
       id: 250c6f2e-ba2d-4c37-8836-abb2f4522f22
       version: -1
-      name: Is there an IP Address associated with the ChronicleAsset?
-      description: Checks if there is an IP Address associated with the ChronicleAsset.
+      name: Is there an IP address associated with the ChronicleAsset?
+      description: Checks if there is an IP address associated with the ChronicleAsset.
       type: condition
       iscommand: false
       brand: ""
@@ -2525,10 +2525,10 @@ tasks:
     task:
       id: 39ec1619-1194-4fe1-8dcd-3019dd376719
       version: -1
-      name: Clear the previous user response for blocking the IP Address from the
+      name: Clear the previous user response for blocking the IP address from the
         context
       description: Deletes the "Block the IP Address" key from the context in order
-        to clear the previous user response for blocking the IP Address.
+        to clear the previous user response for blocking the IP address.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -2565,10 +2565,10 @@ tasks:
     task:
       id: fe661155-45df-4666-8a2d-687eb7397e5b
       version: -1
-      name: Clear the previous user response for isolating the IP Address from the
+      name: Clear the previous user response for isolating the IP address from the
         context
       description: Deletes the "Isolate the IP Address" key from the context in order
-        to clear the previous user response for isolating the IP Address.
+        to clear the previous user response for isolating the IP address.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -2605,9 +2605,9 @@ tasks:
     task:
       id: 8a06b909-6a0e-4530-8e61-215e125a9658
       version: -1
-      name: Clear the previous user response for isolating the Hostname from the context
+      name: Clear the previous user response for isolating the hostname from the context
       description: Deletes the "Isolate the Hostname" key from the context in order
-        to clear the previous user response for isolating the Hostname.
+        to clear the previous user response for isolating the hostname.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -2677,7 +2677,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: Determines if the IP Address is isolated or not.
+      description: Determines if the IP address is isolated.
     nexttasks:
       '#default#':
       - "56"
@@ -2731,7 +2731,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: Determines if the Hostname is isolated or not.
+      description: Determines if the hostname is isolated.
     nexttasks:
       '#default#':
       - "59"
@@ -2887,9 +2887,9 @@ tasks:
     task:
       id: e04b567d-7e0c-447c-8460-cecc3d5b48c4
       version: -1
-      name: Is there an integration for blocking the IP Address enabled?
+      name: Is there an enabled integration for blocking the IP address?
       description: Checks whether there is an active instance of any integration that
-        can be used to block the IP Address.
+        can be used to block the IP address.
       type: condition
       iscommand: false
       brand: ""
@@ -3181,12 +3181,12 @@ inputs:
 - key: chronicleasset_hostname
   value: {}
   required: false
-  description: The Hostname associated with the ChronicleAsset.
+  description: The hostname associated with the ChronicleAsset.
   playbookInputQuery:
 - key: chronicleasset_ip
   value: {}
   required: false
-  description: The IP Address associated with the ChronicleAsset.
+  description: The IP address associated with the ChronicleAsset.
   playbookInputQuery:
 - key: chronicleasset_support_contact
   value:
@@ -3194,7 +3194,7 @@ inputs:
       root: incident
       accessor: chronicleassetsupportcontact
   required: false
-  description: The support email address for the chronicle asset.
+  description: The support email address for the ChronicleAsset.
   playbookInputQuery:
 - key: auto_block_entities
   value:
@@ -3202,9 +3202,8 @@ inputs:
       root: incident
       accessor: chronicleautoblockentities
   required: false
-  description: Autoblock the detected suspicious IP Address(es). You can set this
-    as 'Yes' or 'No' manually here or you can set it into a custom incident field
-    'Chronicle Auto Block Entities'.
+  description: Autoblock the detected suspicious IP Address(es). You can manually set this
+    as "Yes" or "No" here or you can set it in a 'Chronicle Auto Block Entities' custom incident field.
   playbookInputQuery:
 - key: skip_entity_isolation
   value:
@@ -3212,8 +3211,8 @@ inputs:
       root: incident
       accessor: chronicleskipentityisolation
   required: false
-  description: Skip the isolation of entities. You can set this as 'Yes' or 'No' manually
-    here or you can set it into a custom incident field 'Chronicle Skip Entity Isolation'.
+  description: Skip the isolation of entities. You can manually set this as "Yes" or "No" 
+    here or you can set it in a 'Chronicle Skip Entity Isolation' custom incident field.
   playbookInputQuery:
 outputs:
 - contextPath: IsolatedEntities
