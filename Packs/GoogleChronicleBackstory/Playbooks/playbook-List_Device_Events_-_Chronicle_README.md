@@ -8,13 +8,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-Chronicle
+**Chronicle**
 
 ### Scripts
-DeleteContext
+**DeleteContext**
 
 ### Commands
-gcb-list-events
+***gcb-list-events***
 
 ## Playbook Inputs
 ---
