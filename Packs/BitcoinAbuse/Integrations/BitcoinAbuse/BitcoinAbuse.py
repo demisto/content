@@ -108,8 +108,6 @@ def fetch_indicators(client: BitcoinAbuseClient) -> None:
         limit=0
     )
 
-    indicators.append(indicators[0])
-
     indicators_without_duplicates = []
     indicators_ids = set()
     for indicator in indicators:
