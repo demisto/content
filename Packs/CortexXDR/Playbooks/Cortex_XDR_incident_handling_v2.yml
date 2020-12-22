@@ -1,14 +1,16 @@
 id: Cortex XDR incident handling v2
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cortex XDR incident handling v2
 description: "This playbook is triggered by fetching a Palo Alto Networks Cortex XDR\
   \ incident.\nThe playbook syncs and updates new XDR alerts that construct the incident\
   \ and triggers a sub-playbook to handle each alert by type.\nThen, the playbook\
   \ performs enrichment on the incident's indicators and hunting for related IOCs.\n\
   Based on the severity, it lets the analyst decide whether to continue to the remediation\
-  \ stage or close the investigation as a false positive. \nAfter the remediation, if\
-  \ there are no new alerts, the playbook stops the alert sync and closes the XDR incident\
-  \ and investigation."
+  \ stage or close the investigation as a false positive. \nAfter the remediation,\
+  \ if there are no new alerts, the playbook stops the alert sync and closes the XDR\
+  \ incident and investigation."
 starttaskid: "0"
 tasks:
   "0":
@@ -102,7 +104,7 @@ tasks:
       id: 6c507e81-addc-440c-81a4-1c57f97e676a
       version: -1
       name: Are there new un-handled alerts?
-      description: "Check if there are new un-handled alerts."
+      description: Check if there are new un-handled alerts.
       type: condition
       iscommand: false
       brand: ""
@@ -148,12 +150,12 @@ tasks:
       id: a2a6f137-d2dd-4cd4-80e1-4f6511fb5a4c
       version: -1
       name: Cortex XDR - Sync Alerts
-      description: Syncs a single incident between Cortex XSOAR and Cortex XDR. This script always
-        uses the xdr-get-incident-extra-data command and outputs to the context the
-        entire incident JSON. When the incident is updated in Cortex XDR, the Cortex XSOAR incident
-        is updated accordingly and the default playbook reruns. When an incident
-        is updated in Cortex XSOAR, the script will execute the xdr-update-incident command
-        and update the incident in Cortex XDR.
+      description: Syncs a single incident between Cortex XSOAR and Cortex XDR. This
+        script always uses the xdr-get-incident-extra-data command and outputs to
+        the context the entire incident JSON. When the incident is updated in Cortex
+        XDR, the Cortex XSOAR incident is updated accordingly and the default playbook
+        reruns. When an incident is updated in Cortex XSOAR, the script will execute
+        the xdr-update-incident command and update the incident in Cortex XDR.
       scriptName: XDRSyncScript
       type: regular
       iscommand: false
@@ -240,17 +242,18 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: e495004a-cc3e-4fd8-8a5c-041e8e5a2f7a
+    taskid: 7d3abb8c-9abc-4a5a-83fd-e02ddc1a0adc
     type: playbook
     task:
-      id: e495004a-cc3e-4fd8-8a5c-041e8e5a2f7a
+      id: 7d3abb8c-9abc-4a5a-83fd-e02ddc1a0adc
       version: -1
       name: Cortex XDR Alerts Handling
+      description: "This playbook is used to loop over every alert in a Cortex XDR\
+        \ incident. \nSupported alert categories:\n- Malware\n- Port Scan"
       playbookName: Cortex XDR Alerts Handling
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -263,6 +266,9 @@ tasks:
         complex:
           root: PaloAltoNetworksXDR
           accessor: Incident.incident_id
+      internalRanges:
+        complex:
+          root: inputs.InternalRange
     separatecontext: false
     loop:
       iscommand: false
@@ -316,8 +322,8 @@ tasks:
       version: -1
       name: Cortex XDR - close incident
       description: Updates one or more fields of a specified incident. Missing fields
-        are ignored. To remove the assignment for an incident, pass a null value
-        in the assignee email argument.
+        are ignored. To remove the assignment for an incident, pass a null value in
+        the assignee email argument.
       script: Cortex XDR - IR|||xdr-update-incident
       type: regular
       iscommand: true
@@ -495,7 +501,7 @@ tasks:
       id: 89e6afb5-1da9-4446-855e-d5d34ef0deba
       version: -1
       name: Manual malware analysis and forensics
-      description: "Manual malware analysis and forensics by the analyst."
+      description: Manual malware analysis and forensics by the analyst.
       type: regular
       iscommand: false
       brand: ""
@@ -523,7 +529,7 @@ tasks:
       id: f8f7e19f-a7f8-4638-8466-30a21096ebca
       version: -1
       name: Auto remediation?
-      description: "Should the playbook perform auto-remediation or manual remediation?"
+      description: Should the playbook perform auto-remediation or manual remediation?
       type: condition
       iscommand: false
       brand: ""
@@ -564,7 +570,7 @@ tasks:
       id: bc6cf7eb-f224-4f3b-8ba4-7894a063beda
       version: -1
       name: Manual remediation
-      description: "Manual remediation by the analyst."
+      description: Manual remediation by the analyst.
       type: regular
       iscommand: false
       brand: ""
@@ -592,7 +598,7 @@ tasks:
       id: c4f4ee4f-86d8-40ae-8512-62fedce1d77f
       version: -1
       name: Continue investigation?
-      description: "Continue investigation?"
+      description: Continue investigation?
       type: condition
       iscommand: false
       brand: ""
@@ -622,7 +628,7 @@ tasks:
       id: 8a3ed2d1-85c2-45dc-8fff-f6af952ab540
       version: -1
       name: Manual - continue investigation for new alerts
-      description: "Manual - continue investigation for new alerts."
+      description: Manual - continue investigation for new alerts.
       type: regular
       iscommand: false
       brand: ""
@@ -818,7 +824,7 @@ tasks:
       id: 26c62802-b143-4bbc-8283-5cb9240fe5d0
       version: -1
       name: Hunt for related IOCs?
-      description: "Run hunting playbook to find related IOCs?"
+      description: Run hunting playbook to find related IOCs?
       type: condition
       iscommand: false
       brand: ""
@@ -826,7 +832,7 @@ tasks:
       '#default#':
       - "23"
       "yes":
-      - "34"
+      - "54"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -853,124 +859,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "34":
-    id: "34"
-    taskid: 6c63da52-3e6e-426e-8c10-b361829c26bd
-    type: playbook
-    task:
-      id: 6c63da52-3e6e-426e-8c10-b361829c26bd
-      version: -1
-      name: PANW - Hunting and threat detection by indicator type V2
-      description: "Integrations list: Cortex (Traps, PAN-OS, Analytics)\nThis is\
-        \ a multipurpose playbook used for hunting and threat detection. The playbook\
-        \ receives inputs based on hashes, IP addresses, or domain names provided\
-        \ manually or from outputs by other playbooks. \nWith the received indicators,\
-        \ the playbook leverages Palo Alto Cortex data received by products such as\
-        \ Traps, Analytics and Pan-OS to search for IP addresses and hosts related\
-        \ to that specific hash. \nThe output provided by the playbook facilitates\
-        \ pivoting searches for possibly affected hosts, IP addresses, or users."
-      playbookName: PANW - Hunting and threat detection by indicator type V2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      IPAddresses:
-        complex:
-          root: IP
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: IP.Malicious
-                iscontext: true
-          accessor: Address
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip
-                iscontext: true
-          - operator: uniq
-      InternalRange:
-        complex:
-          root: inputs.InternalRange
-      MD5:
-        complex:
-          root: File
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: File.Malicious
-                iscontext: true
-          accessor: MD5
-      SHA1:
-        complex:
-          root: File
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: File.Malicious
-                iscontext: true
-          accessor: SHA1
-      SHA256:
-        complex:
-          root: File
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: File.Malicious
-                iscontext: true
-          accessor: SHA256
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
-                iscontext: true
-          - operator: uniq
-      URLDomain:
-        complex:
-          root: Domain
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: Domain.Malicious
-                iscontext: true
-          accessor: Name
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_domain
-                iscontext: true
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 530,
-          "y": 1570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
   "35":
     id: "35"
@@ -1111,7 +999,7 @@ tasks:
       id: 5cedbf5c-e00f-4ef0-88eb-292752ca5102
       version: -1
       name: Continue to Remediation or close as false positive?
-      description: "Continue to Remediation or close the investigation as false positive?"
+      description: Continue to Remediation or close the investigation as false positive?
       type: condition
       iscommand: false
       brand: ""
@@ -1262,7 +1150,7 @@ tasks:
       id: 825644a1-b3c7-41c1-8a87-1407188feca0
       version: -1
       name: Link similar incidents?
-      description: "Link similar incidents?"
+      description: Link similar incidents?
       type: condition
       iscommand: false
       brand: ""
@@ -1369,7 +1257,7 @@ tasks:
       id: 07335e9a-0e8b-4d79-89fa-2121b6585b26
       version: -1
       name: Similar incidents found?
-      description: "Were any similar incidents found?"
+      description: Were any similar incidents found?
       type: condition
       iscommand: false
       brand: ""
@@ -1413,7 +1301,7 @@ tasks:
       id: abc5dc8c-2591-4e4b-85f9-a48ad624ec76
       version: -1
       name: Close as duplicate?
-      description: "Close the incident as duplicate?"
+      description: Close the incident as duplicate?
       type: condition
       iscommand: false
       brand: ""
@@ -1655,7 +1543,7 @@ tasks:
       id: ea8cab41-5994-4c0f-8cd2-89a16880c8e1
       version: -1
       name: Manually block ports used for exploitation on the scanned host.
-      description: "Manually block ports used for exploitation on the scanned host."
+      description: Manually block ports used for exploitation on the scanned host.
       type: regular
       iscommand: false
       brand: ""
@@ -1683,7 +1571,7 @@ tasks:
       id: b1972e80-05b7-4890-859b-a0feaca1b35d
       version: -1
       name: Was there a port scan alert investigated?
-      description: "Was there a port scan alert investigated as a part of the incident?"
+      description: Was there a port scan alert investigated as a part of the incident?
       type: condition
       iscommand: false
       brand: ""
@@ -1722,7 +1610,7 @@ tasks:
       id: 3002aab6-d3df-4e8b-8730-3330984beca4
       version: -1
       name: Block ports?
-      description: "Is port blocking required?"
+      description: Is port blocking required?
       type: condition
       iscommand: false
       brand: ""
@@ -1757,13 +1645,128 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "54":
+    id: "54"
+    taskid: 58caa8f8-d6fb-4eff-8d5a-8ed4cd5e99f0
+    type: playbook
+    task:
+      id: 58caa8f8-d6fb-4eff-8d5a-8ed4cd5e99f0
+      version: -1
+      name: Palo Alto Networks - Hunting And Threat Detection
+      playbookName: Palo Alto Networks - Hunting And Threat Detection
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      IPAddresses:
+        complex:
+          root: IP
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: IP.Malicious
+                iscontext: true
+          accessor: Address
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip
+          - operator: uniq
+      InternalDomainName:
+        complex:
+          root: inputs.InternalDomainName
+      InternalHostRegex:
+        complex:
+          root: inputs.InternalHostRegex
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+      MD5:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: MD5
+      SHA1:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: SHA256
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
+          - operator: uniq
+      URLDomain:
+        complex:
+          root: Domain
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Malicious
+                iscontext: true
+          accessor: Name
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_domain
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "11_13_#default#": 0.55,
       "30_13_no": 0.38,
       "33_23_#default#": 0.53,
-      "33_34_yes": 0.44,
       "37_7_CONTINUE": 0.77,
       "43_2_#default#": 0.32,
       "44_2_no": 0.31,
@@ -1798,6 +1801,7 @@ inputs:
     simple: "Yes"
   required: false
   description: This input indicates whether the playbook will link similar incidents.
+    To link similar incidents you must enable Demisto REST API integration.
     Specify Yes/No.
   playbookInputQuery:
 - key: Hunting
@@ -1833,6 +1837,23 @@ inputs:
   required: false
   description: CSV of DN names of critical Active Directory groups. This will affect
     the severity calculated for this incident.
+  playbookInputQuery:
+- key: InternalDomainName
+  value: {}
+  required: false
+  description: The organization's internal domain name. This is provided for the
+    ***IsInternalHostName*** script that checks if the detected host names are internal or external
+    if the hosts contain the internal domains suffix. For example, demisto.com. If
+    there is more than one domain, use the | character to separate values such as
+    (demisto.com|test.com)
+  playbookInputQuery:
+- key: InternalHostRegex
+  value: {}
+  required: false
+  description: This is provided for the ***IsInternalHostName*** script that checks if the
+    detected host names are internal or external if the hosts match the organization's
+    naming convention. For example, the host testpc1 will have the following regex
+    \w{6}\d{1}
   playbookInputQuery:
 outputs: []
 tests:
