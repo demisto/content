@@ -290,19 +290,6 @@ def test_download_attachment_command(requests_mock):
     assert result["File"] == ATTACHMENT_ID
 
 
-def test_download_attachment_command_failed(requests_mock):
-    from ArgusManagedDefence import download_attachment_command
-
-    with open("argus_json/argus_case_attachment.json", "rb") as file:
-        content = file.read()
-    method_url = f"/cases/v2/case/{CASE_ID}/attachments/{ATTACHMENT_ID}/download"
-    requests_mock.get(f"{BASE_URL}{method_url}", content=content, status_code=412)
-    args = {"case_id": CASE_ID, "attachment_id": ATTACHMENT_ID}
-    with pytest.raises(SystemExit) as method_exit:
-        download_attachment_command(args)
-    assert method_exit.type == SystemExit
-
-
 def test_edit_comment_command(requests_mock):
     from ArgusManagedDefence import edit_comment_command
 
