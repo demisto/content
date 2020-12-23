@@ -30,8 +30,8 @@ FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 BYTE_CREDS = '{name}:{password}'.format(name=CLIENT_ID, password=SECRET).encode('utf-8')
 # Headers to be sent in requests
 HEADERS = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
+    # 'Content-Type': 'application/json',
+    # 'Accept': 'application/json',
     'Authorization': 'Basic {}'.format(base64.b64encode(BYTE_CREDS).decode())
 }
 # Note: True life time of token is actually 30 mins
@@ -216,7 +216,15 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                 LOG(err_msg)
                 token = get_token(new_token=True)
                 headers['Authorization'] = 'Bearer {}'.format(token)
-                return http_request(method, url_suffix, params, data, headers, safe, get_token_flag=False)
+                return http_request(
+                    method=method,
+                    url_suffix=url_suffix,
+                    params=params,
+                    data=data,
+                    headers=headers,
+                    safe=safe,
+                    get_token_flag=False
+                )
             elif safe:
                 return None
             return_error(err_msg)
