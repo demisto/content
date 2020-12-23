@@ -259,8 +259,9 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
             except Exception:
                 field_value = raw_json[field]  # type: ignore
 
-        fields_mapping[key] = formatter_string.format(field_value) if formatter_string else field_value
+        field_value = formatter_string.format(field_value) if formatter_string else field_value
         field_value = field_mapper_function(field_value) if field_mapper_function else field_value
+        fields_mapping[key] = field_value
 
         if key in ['firstseenbysource', 'lastseenbysource']:
             fields_mapping[key] = date_format_parsing(fields_mapping[key])
