@@ -1,6 +1,5 @@
 # flake8: noqa
 from Cymptom import Client, get_mitigations, api_test, get_users_with_cracked_passwords
-
 # Mocked access credentials
 MOCK_BASE_URL = "https://api.fake.cymptom.com/api/"
 MOCK_API_KEY = "test-test-test"
@@ -214,7 +213,8 @@ MOCK_GET_MITIGATIONS_RESPONSE = [
                                                  {'name': 'Password Spraying-5772', 'state': 'open'},
                                                  {'name': 'Password Spraying-5689', 'state': 'open'}],
      'Techniques': ['User Account Management', 'Multi-factor Authentication', 'Account Use Policies',
-                    'Password Policies'], 'Sub Techniques': [{'id': 356, 'name': 'Password Guessing', 'details': {
+                    'Password Policies'],
+     'Sub Techniques': [{'id': 356, 'name': 'Password Guessing', 'details': {
         'description': 'Adversaries with no prior knowledge of legitimate credentials within the system or environment may guess passwords to attempt access to accounts. Without knowledge of the password for an account, an adversary may opt to systematically guess the password using a repetitive or iterative mechanism. An adversary may guess login credentials without prior knowledge of system or environment passwords during an operation by using a list of common passwords. Password guessing may or may not take into account the target\'s policies on password complexity or use policies that may lock accounts out after a number of failed attempts.\n\nGuessing passwords can be a risky option because it could cause numerous authentication failures and account lockouts, depending on the organization\'s login failure policies. (Citation: Cylance Cleaver)\n\nTypically, management services over commonly used ports are used when guessing passwords. Commonly targeted services include the following:\n\n* SSH (22/TCP)\n* Telnet (23/TCP)\n* FTP (21/TCP)\n* NetBIOS / SMB / Samba (139/TCP & 445/TCP)\n* LDAP (389/TCP)\n* Kerberos (88/TCP)\n* RDP / Terminal Services (3389/TCP)\n* HTTP/HTTP Management Services (80/TCP & 443/TCP)\n* MSSQL (1433/TCP)\n* Oracle (1521/TCP)\n* MySQL (3306/TCP)\n* VNC (5900/TCP)\n\nIn addition to management services, adversaries may "target single sign-on (SSO) and cloud-based applications utilizing federated authentication protocols," as well as externally facing email applications, such as Office 365.(Citation: US-CERT TA18-068A 2018)\n\nIn default environments, LDAP and Kerberos connection attempts are less likely to trigger events over SMB, which creates Windows "logon failure" event ID 4625.',
         'metadata': {'tactics': ['Credential Access'], 'technique': 'Brute Force',
                      'malwares': ['China Chopper', 'Pony', 'SpeakUp', 'Emotet', 'Xbash'], 'tools': [],
@@ -397,9 +397,14 @@ def test_api_test(requests_mock):
 
 def test_get_mitigations(requests_mock):
     create_mitigations_requests_mocks(requests_mock)
-    assert get_mitigations(client=client).outputs == MOCK_GET_MITIGATIONS_RESPONSE
+    outputs = get_mitigations(client=client).outputs
+    assert len(outputs) == 1
+    assert len(outputs[0]["Procedures"]) == 4
+    assert len(outputs[0]["Techniques"]) == 4
+    assert len(outputs[0]["SubTechniques"]) == 4
 
 
 def test_get_users_with_cracked_passwords(requests_mock):
     create_mitigations_requests_mocks(requests_mock)
     assert get_users_with_cracked_passwords(client=client).outputs == [{'Username': 'amber'}]
+
