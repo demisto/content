@@ -1840,7 +1840,7 @@ def certificate_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
         return result
 
     indicators: List[Dict[str, Any]] = []
-    result_outputs = cast(List[Dict[str, Any]], result.outputs)  # we keep mypy happy
+    result_outputs = cast(List[Dict[str, Any]], result[0].outputs)  # we keep mypy happy
     for certificate in result_outputs:
         ec_sha256 = certificate.get('certificate', {}).get('pemSha256')
         if ec_sha256 is None:

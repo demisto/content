@@ -1419,7 +1419,6 @@ def test_certificate_command(requests_mock, mocker):
     MOCK_CERT_HASH = 'mRi21v8MwFzvzjB1abEnKw=='
 
     mock_certificate_data = util_load_json("test_data/expanse_certificate.json")
-    mock_indicators_data = util_load_json("test_data/expanse_certcommand_indicators.json")
     mock_ioc_data = util_load_json("test_data/expanse_certcommand_ioc.json")
     mock_result_data = util_load_json("test_data/expanse_certificate_stdctx.json")
 
@@ -1431,7 +1430,6 @@ def test_certificate_command(requests_mock, mocker):
     )
 
     mocker.patch('ExpanseV2.demisto.searchIndicators', return_value={'iocs': mock_ioc_data})
-    ci_mock = mocker.patch('ExpanseV2.demisto.createIndicators')
 
     result = certificate_command(client, {'certificate': mock_ioc_data[0]['CustomFields']['sha256']})
     first = result[0].to_context()
