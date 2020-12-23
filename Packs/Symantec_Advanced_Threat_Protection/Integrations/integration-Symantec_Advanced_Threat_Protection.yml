@@ -57,6 +57,11 @@ configuration:
   defaultvalue: 7 days
   type: 0
   required: false
+- display: Query string for fetch incidents
+  defaultvalue: ""
+  name: fetch_incidents_query
+  type: 0
+  required: false
 script:
   script: >
     var serverUrl = params.url.replace(/[\/]+$/, '') + '/';
@@ -344,7 +349,7 @@ script:
     };
 
 
-    var fetchIncidents = function(type, limit, first_fetch_time) {
+    var fetchIncidents = function(type, query, limit, first_fetch_time) {
 
         if (type != 'incidents' && type != 'incidentevents' && type != 'events'){
             throw 'Unknown incident type.';
@@ -374,6 +379,8 @@ script:
             n.setTime(now.getTime() - 1 * DAY_IN_MILLIS);
             startTime = n.toISOString();
         }
+        var p = {verb: 'query'};
+        add(p, 'where', query);
         addTime(p, 'start_time', startTime);
         addTime(p, 'end_time', endTime);
         add(p, 'next', next);
@@ -409,7 +416,7 @@ script:
             getAppliances();
             return 'ok';
         case 'fetch-incidents':
-            return fetchIncidents(params.fetch_incidents_type, params.max_fetch, params.first_fetch);
+            return fetchIncidents(params.fetch_incidents_type, params.fetch_incidents_query, params.max_fetch, params.first_fetch);
         case 'satp-appliances':
             return getAppliances();
         case 'satp-command':
