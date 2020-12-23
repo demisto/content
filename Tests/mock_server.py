@@ -82,7 +82,6 @@ class AMIConnection:
     REMOTE_MACHINE_USER = 'ec2-user'
     REMOTE_HOME = f'/home/{REMOTE_MACHINE_USER}/'
     LOCAL_SCRIPTS_DIR = '/home/circleci/project/Tests/scripts/'
-    CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
 
     def __init__(self, public_ip):
         self.public_ip = public_ip
@@ -148,9 +147,6 @@ class AMIConnection:
         silence_output(self.check_call, ['chmod', '+x', remote_script_path], stdout='null')
         silence_output(self.check_call, [remote_script_path] + list(args), stdout='null')
 
-    def clone_mock_data(self):
-        self.run_script(self.CLONE_MOCKS_SCRIPT)
-
 
 class MITMProxy:
     """Manager for MITM Proxy and the mock file structure.
@@ -199,13 +195,13 @@ class MITMProxy:
         script_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'timestamp_replacer.py')
         self.ami.copy_file(script_filepath)
 
-    def commit_mock_file(self):
+    def commit_mock_file(self, folder_name):
         self.logging_module.debug('Committing mock files')
         try:
             output = self.ami.check_output(
                 'cd content-test-data && '
                 'git add * -v && '
-                f'git commit -m "Updated mock files from build number - {self.build_number}" -v'.split(),
+                f'git commit -m "Updated mock files for \'{folder_name}\' from build number - {self.build_number}" -v'.split(),
                 stderr=STDOUT)
             self.logging_module.debug(f'Committing mock files output:\n{output.decode()}')
         except CalledProcessError as exc:
@@ -225,7 +221,7 @@ class MITMProxy:
         self.logging_module.debug('Pushing new/updated mock files to mock git repo.', real_time=True)
         try:
             output = self.ami.check_output(
-                'cd content-test-data && git pull -r -Xtheirs && git push -f'.split(),
+                'cd content-test-data && git reset --hard && git pull -r -Xtheirs && git push -f'.split(),
                 stderr=STDOUT)
             self.logging_module.debug(f'Pushing mock files output:\n{output.decode()}', real_time=True)
         except CalledProcessError as exc:
@@ -383,7 +379,7 @@ class MITMProxy:
             self.logging_module.debug('"problematic_keys.json" dictionary values were empty - '
                                       'no data to whitewash from the mock file.')
 
-    def start(self, playbook_or_integration_id, path=None, record=False):
+    def start(self, playbook_or_integration_id, path=None, record=False) -> None:
         """Start the proxy process and direct traffic through it.
 
         Args:
@@ -421,10 +417,10 @@ class MITMProxy:
 
     def get_mitmdump_service_status(self) -> None:
         """
-        Safely extract the current mitmdump status and logs it
+        Safely extract the current mitmdump status and last 50 log lines
         """
         try:
-            output = self.ami.check_output('systemctl status mitmdump'.split(), stderr=STDOUT)
+            output = self.ami.check_output('systemctl status mitmdump -n 50 -l'.split(), stderr=STDOUT)
             self.logging_module.debug(f'mitmdump service status output:\n{output.decode()}')
         except CalledProcessError as exc:
             self.logging_module.debug(f'mitmdump service status output:\n{exc.output.decode()}')
@@ -466,7 +462,8 @@ class MITMProxy:
             try:
                 silence_output(self.ami.call,
                                ['mv', repo_problem_keys_path, current_problem_keys_path],
-                               stdout='null')
+                               stdout='null',
+                               stderr='null')
             except CalledProcessError as e:
                 self.logging_module.debug(f'Failed to move problematic_keys.json with exit code {e.returncode}')
 
@@ -570,7 +567,7 @@ def run_with_mock(proxy_instance: MITMProxy,
                 proxy_instance.rerecorded_tests.append(playbook_or_integration_id)
                 if proxy_instance.should_update_mock_repo:
                     proxy_instance.logging_module.debug("committing new/updated mock files to mock git repo.")
-                    proxy_instance.commit_mock_file()
+                    proxy_instance.commit_mock_file(playbook_or_integration_id)
             else:
                 proxy_instance.failed_rerecord_count += 1
                 proxy_instance.failed_rerecord_tests.append(playbook_or_integration_id)
