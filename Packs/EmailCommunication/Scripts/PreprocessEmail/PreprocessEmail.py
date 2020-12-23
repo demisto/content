@@ -11,8 +11,8 @@ QUOTE_MARKERS = ['<div class="gmail_quote">',
 
 def get_query_window():
     """
-    Check if the user defined the list `EmailCommunicationQueryWindow` to give a custom value for the time to query back
-    for related incidents. If yes, use this value, else use the default value of 60 days.
+    Check if the user defined the list `XSOAR - Email Communication Days To Query` to give a custom value for the time
+    to query back for related incidents. If yes, use this value, else use the default value of 60 days.
     """
     user_defined_time = demisto.executeCommand('getList', {'listName': 'XSOAR - Email Communication Days To Query'})
     if is_error(user_defined_time):
