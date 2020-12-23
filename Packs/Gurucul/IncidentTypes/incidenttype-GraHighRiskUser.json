@@ -20,5 +20,15 @@
 	"system": false,
 	"version": -1,
 	"weeks": 0,
-	"weeksR": 0
+	"weeksR": 0,
+	"packID": "",
+	"itemVersion": "",
+	"fromServerVersion": "",
+	"toServerVersion": "",
+	"vcShouldIgnore": false,
+	"vcShouldKeepItemLegacyProdMachine": false,
+	"commitMessage": "",
+	"shouldCommit": false,
+	"prevName": "GraHighRiskUser",
+	"layout": ""
 }

@@ -1,7 +1,6 @@
 commonfields:
   id: Gurucul-GRA
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Gurucul-GRA
 display: Gurucul-GRA (Community Contribution)
 category: Analytics & SIEM
@@ -754,7 +753,10 @@ script:
       description: Anomaly Name
       type: string
     description: Retrieve Detailed Information for a Given User
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.6.14516
   isfetch: true
   runonce: false
   subtype: python3
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

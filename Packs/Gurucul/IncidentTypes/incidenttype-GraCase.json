@@ -12,7 +12,7 @@
 	"id": "GraCase",
 	"locked": false,
 	"name": "GraCase",
-	"playbookId": "GraCases",
+	"playbookId": "GraCase",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,
@@ -20,5 +20,15 @@
 	"system": false,
 	"version": -1,
 	"weeks": 0,
-	"weeksR": 0
+	"weeksR": 0,
+	"packID": "",
+	"itemVersion": "",
+	"fromServerVersion": "",
+	"toServerVersion": "",
+	"vcShouldIgnore": false,
+	"vcShouldKeepItemLegacyProdMachine": false,
+	"commitMessage": "",
+	"shouldCommit": false,
+	"prevName": "GraCase",
+	"layout": ""
 }
