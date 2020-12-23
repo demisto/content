@@ -36,4 +36,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Prisma Cloud - Find Public Cloud Resource by Public IP](https://raw.githubusercontent.com/demisto/content/852016ad0103ba42e8b5c8f596246fd14a4e7a90/doc_files/Prisma_Cloud_-_Find_Public_Cloud_Resource_by_Public_IP.png)
+![Prisma Cloud - Find Public Cloud Resource by Public IP](https://raw.githubusercontent.com/demisto/content/852016ad0103ba42e8b5c8f596246fd14a4e7a90/Packs/PrismaCloud/doc_files/Prisma_Cloud_-_Find_Public_Cloud_Resource_by_Public_IP.png)
