@@ -33,7 +33,9 @@ configuration:
   required: false
   type: 0
 - defaultvalue: unresolved
-  display: 'A comma-separated list of alert states to filter by in fetch incidents command. Possible options are: unresolved, in progress, resolved or suppressed. Empty list won''t filter the incidents by state.'
+  display: 'A comma-separated list of alert states to filter by in fetch incidents
+    command. Possible options are: unresolved, in progress, resolved or suppressed.
+    Empty list won''t filter the incidents by state.'
   name: filter_alerts_by_state
   options:
   - unresolved
@@ -42,7 +44,8 @@ configuration:
   - suppressed
   required: false
   type: 16
-description: Use the Tanium Threat Response integration to manage endpoints processes, evidence, alerts, files, snapshots, and connections.
+description: Use the Tanium Threat Response integration to manage endpoints processes,
+  evidence, alerts, files, snapshots, and connections.
 display: Tanium Threat Response
 name: Tanium Threat Response
 script:
@@ -66,7 +69,8 @@ script:
       description: The date at which this intel was first added to the system.
       type: Date
     - contextPath: Tanium.IntelDoc.Description
-      description: The description of the intel, as declared in the document or as updated by a user.
+      description: The description of the intel, as declared in the document or as
+        updated by a user.
       type: String
     - contextPath: Tanium.IntelDoc.ID
       description: The unique identifier for this intel in this instance of the system.
@@ -75,7 +79,8 @@ script:
       description: The IDs of all labels applied to this intel.
       type: Number
     - contextPath: Tanium.IntelDoc.Name
-      description: The name of the intel, as declared in the document or as updated by a user.
+      description: The name of the intel, as declared in the document or as updated
+        by a user.
       type: String
     - contextPath: Tanium.IntelDoc.UnresolvedAlertCount
       description: The number of unresolved alerts that currently exist for this intel.
@@ -110,7 +115,8 @@ script:
       description: The date at which this intel was first added to the system.
       type: Date
     - contextPath: Tanium.IntelDoc.Description
-      description: The description of the intel, as declared in the document or as updated by a user.
+      description: The description of the intel, as declared in the document or as
+        updated by a user.
       type: String
     - contextPath: Tanium.IntelDoc.ID
       description: The unique identifier for this intel in this instance of the system.
@@ -119,7 +125,8 @@ script:
       description: The IDs of all labels applied to this intel.
       type: Number
     - contextPath: Tanium.IntelDoc.Name
-      description: The name of the intel, as declared in the document or as updated by a user.
+      description: The name of the intel, as declared in the document or as updated
+        by a user.
       type: String
     - contextPath: Tanium.IntelDoc.UnresolvedAlertCount
       description: The number of unresolved alerts that currently exist for this intel.
@@ -185,7 +192,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Filter alerts by the specified state. Can be "Unresolved", "In Progress", "Ignored", or "Resolved".
+      description: Filter alerts by the specified state. Can be "Unresolved", "In
+        Progress", "Ignored", or "Resolved".
       isArray: false
       name: state
       predefined:
@@ -216,7 +224,8 @@ script:
       description: The last time the alert state was updated.
       type: Date
     - contextPath: Tanium.Alert.State
-      description: The current state of the alert. For example, "unresolved", "inprogress", and so on.
+      description: The current state of the alert. For example, "unresolved", "inprogress",
+        and so on.
       type: String
     - contextPath: Tanium.Alert.ComputerIpAddress
       description: The IP address of the computer that generated the alert.
@@ -293,7 +302,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The new state for the alert. Can be "Unresolved", "In Progress", "Ignored", or "Resolved".
+      description: The new state for the alert. Can be "Unresolved", "In Progress",
+        "Ignored", or "Resolved".
       isArray: false
       name: state
       predefined:
@@ -392,6 +402,16 @@ script:
       name: connection-name
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to skipping validation on connection name
+      isArray: false
+      name: skip_conn_name_validation
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Captures a new snapshot by connection name.
     execution: false
@@ -408,6 +428,16 @@ script:
       isArray: false
       name: snapshot-id
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to skipping validation on connection name
+      isArray: false
+      name: skip_conn_name_validation
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
       secret: false
     deprecated: false
     description: Deletes a snapshot by connection name and snapshot ID.
@@ -426,7 +456,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of local snapshots to return. The default value is 50.
+      description: The maximum number of local snapshots to return. The default value
+        is 50.
       isArray: false
       name: limit
       required: false
@@ -509,7 +540,8 @@ script:
       description: Whether it is a remote connection.
       type: Boolean
     - contextPath: Tanium.Connection.State
-      description: Current connection state. Can be "closed", "pending", "active", "timeout", or "migrating".
+      description: Current connection state. Can be "closed", "pending", "active",
+        "timeout", or "migrating".
       type: String
     - contextPath: Tanium.Connection.Deleted
       description: Whether the connection has been deleted.
@@ -530,6 +562,16 @@ script:
       name: connection-name
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to skipping validation on connection name
+      isArray: false
+      name: skip_conn_name_validation
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Returns a connection object based on connection name.
     execution: false
@@ -545,7 +587,8 @@ script:
       description: Whether it is a remote connection.
       type: Boolean
     - contextPath: Tanium.Connection.State
-      description: Current connection state. Can be "closed", "pending", "active", "timeout", or "migrating".
+      description: Current connection state. Can be "closed", "pending", "active",
+        "timeout", or "migrating".
       type: String
     - contextPath: Tanium.Connection.Deleted
       description: Whether the connection has been deleted.
@@ -593,6 +636,16 @@ script:
       name: connection-timeout
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to skipping validation on connection name
+      isArray: false
+      name: skip_conn_name_validation
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Creates a local or remote connection.
     execution: false
@@ -603,6 +656,16 @@ script:
       isArray: false
       name: connection-name
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to skipping validation on connection name
+      isArray: false
+      name: skip_conn_name_validation
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
       secret: false
     deprecated: false
     description: Deletes a connection by connection name.
@@ -645,7 +708,8 @@ script:
       description: The unique identifier for this label.
       type: Number
     - contextPath: Tanium.Label.IndicatorCount
-      description: The number of indicator-based intel documents associated with this label, not including Tanium Signals.
+      description: The number of indicator-based intel documents associated with this
+        label, not including Tanium Signals.
       type: Number
     - contextPath: Tanium.Label.Name
       description: The display name of the label.
@@ -654,7 +718,8 @@ script:
       description: The number of Tanium Signal documents associated with this label.
       type: Number
     - contextPath: Tanium.Label.UpdatedAt
-      description: The date when this label was last updated, not including the intel and signal counts.
+      description: The date when this label was last updated, not including the intel
+        and signal counts.
       type: Date
   - arguments:
     - default: false
@@ -678,7 +743,8 @@ script:
       description: The unique identifier for this label.
       type: Number
     - contextPath: Tanium.Label.IndicatorCount
-      description: The number of indicator-based intel documents associated with this label, not including Tanium Signals.
+      description: The number of indicator-based intel documents associated with this
+        label, not including Tanium Signals.
       type: Number
     - contextPath: Tanium.Label.Name
       description: The display name of the label.
@@ -687,7 +753,8 @@ script:
       description: The number of Tanium Signal documents associated with this label.
       type: Number
     - contextPath: Tanium.Label.UpdatedAt
-      description: The date this label was last updated, not including the intel and signal counts.
+      description: The date this label was last updated, not including the intel and
+        signal counts.
       type: Date
   - arguments:
     - default: false
@@ -784,7 +851,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: combined
-      description: The type of event. Can be "File", "Network", "Registry", "Process", "Driver", "Security", "Combined", "DNS", or "Image". The default is "Combined".
+      description: The type of event. Can be "File", "Network", "Registry", "Process",
+        "Driver", "Security", "Combined", "DNS", or "Image". The default is "Combined".
       isArray: false
       name: event-type
       predefined:
@@ -814,7 +882,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Advanced search that filters according to event fields. For example: [[''process_id'', ''gt'', ''30''], [''username'', ''ne'', ''administrator'']]. Optional fields: process_id, process_name, process_hash, process_command_line, username, process_name, create_time (UTC). Optional operators: eq (equals), ne (does not equal); for integers/date: gt (greater than), gte (greater than or equals), ls (less than), lse (less than or equals); for strings: co (contains), nc (does not contain). '
+      description: 'Advanced search that filters according to event fields. For example:
+        [[''process_id'', ''gt'', ''30''], [''username'', ''ne'', ''administrator'']].
+        Optional fields: process_id, process_name, process_hash, process_command_line,
+        username, process_name, create_time (UTC). Optional operators: eq (equals),
+        ne (does not equal); for integers/date: gt (greater than), gte (greater than
+        or equals), ls (less than), lse (less than or equals); for strings: co (contains),
+        nc (does not contain). '
       isArray: false
       name: filter
       required: false
@@ -831,15 +905,30 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of fields to sort on prefixed by +/- for ascending or descending and ordered by priority left to right. Optional fields: process_id, process_name, process_hash, process_command_line, username, process_name, create_time (UTC).'
+      description: 'A comma-separated list of fields to sort on prefixed by +/- for
+        ascending or descending and ordered by priority left to right. Optional fields:
+        process_id, process_name, process_hash, process_command_line, username, process_name,
+        create_time (UTC).'
       isArray: false
       name: sort
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of fields on which to search. Optional fields: process_id, process_name, process_hash, process_command_line, username, process_name, create_time.'
+      description: 'A comma-separated list of fields on which to search. Optional
+        fields: process_id, process_name, process_hash, process_command_line, username,
+        process_name, create_time.'
       isArray: false
       name: fields
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to skipping validation on connection name
+      isArray: false
+      name: skip_conn_name_validation
+      predefined:
+        - 'True'
+        - 'False'
       required: false
       secret: false
     deprecated: false
@@ -969,7 +1058,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the metadata of a file download. You must supply either the `path` or `id` agument for the command to run successfully.
+    description: Gets the metadata of a file download. You must supply either the
+      `path` or `id` agument for the command to run successfully.
     execution: false
     name: tanium-tr-get-file-download-info
     outputs:
@@ -1034,6 +1124,16 @@ script:
       name: ptid
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to skipping validation on connection name
+      isArray: false
+      name: skip_conn_name_validation
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Get information for a process.
     execution: false
@@ -1093,6 +1193,16 @@ script:
       name: offset
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to skipping validation on connection name
+      isArray: false
+      name: skip_conn_name_validation
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Gets the events for a process.
     execution: false
@@ -1126,6 +1236,16 @@ script:
       name: ptid
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to skipping validation on connection name
+      isArray: false
+      name: skip_conn_name_validation
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Gets the children of this process instance.
     execution: false
@@ -1158,6 +1278,16 @@ script:
       isArray: false
       name: ptid
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to skipping validation on connection name
+      isArray: false
+      name: skip_conn_name_validation
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
       secret: false
     deprecated: false
     description: Gets information for the parent process.
@@ -1204,6 +1334,16 @@ script:
       name: ptid
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to skipping validation on connection name
+      isArray: false
+      name: skip_conn_name_validation
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Gets the parent process tree for the process instance.
     execution: false
@@ -1240,6 +1380,16 @@ script:
       name: ptid
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to skipping validation on connection name
+      isArray: false
+      name: skip_conn_name_validation
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Gets the process tree for the process instance.
     execution: false
@@ -1266,7 +1416,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of evidences to return. The default value is 50.
+      description: The maximum number of evidences to return. The default value is
+        50.
       isArray: false
       name: limit
       required: false
@@ -1279,7 +1430,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of fields by which to sort, using +/- prefixes for ascending/descending, in order of priority (left to right).
+      description: A comma-separated list of fields by which to sort, using +/- prefixes
+        for ascending/descending, in order of priority (left to right).
       isArray: false
       name: sort
       required: false
@@ -1386,6 +1538,16 @@ script:
       name: ptid
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to skipping validation on connection name
+      isArray: false
+      name: skip_conn_name_validation
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Creates an evidence.
     execution: false
@@ -1420,6 +1582,16 @@ script:
       isArray: false
       name: connection-name
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to skipping validation on connection name
+      isArray: false
+      name: skip_conn_name_validation
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
       secret: false
     deprecated: false
     description: Requests a new file download.
@@ -1486,6 +1658,16 @@ script:
       name: offset
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to skipping validation on connection name
+      isArray: false
+      name: skip_conn_name_validation
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Gets a list of files in the given directory.
     execution: false
@@ -1530,6 +1712,16 @@ script:
       name: path
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to skipping validation on connection name
+      isArray: false
+      name: skip_conn_name_validation
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Gets information about a file from a remote connection.
     execution: false
@@ -1569,6 +1761,16 @@ script:
       name: path
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to skipping validation on connection name
+      isArray: false
+      name: skip_conn_name_validation
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Deletes a file from the given endpoint.
     execution: false
@@ -1598,7 +1800,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The event categories to retrieve. Can be "File", "DNS", "Registry", "Network", "Image", or "Process".
+      description: The event categories to retrieve. Can be "File", "DNS", "Registry",
+        "Network", "Image", or "Process".
       isArray: false
       name: category
       predefined:
@@ -1622,6 +1825,16 @@ script:
       description: Offset to start getting the events. The default is 0.
       isArray: false
       name: offset
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to skipping validation on connection name
+      isArray: false
+      name: skip_conn_name_validation
+      predefined:
+        - 'True'
+        - 'False'
       required: false
       secret: false
     deprecated: false
@@ -1684,6 +1897,7 @@ script:
       description: The date of the download request.
       type: Date
   dockerimage: demisto/python3:3.8.6.12176
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false

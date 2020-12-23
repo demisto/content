@@ -478,19 +478,20 @@ def state_params_suffix(alerts_states_to_retrieve):
     return '&'.join(['state=' + state.lower() for state in alerts_states_to_retrieve])
 
 
-def validate_connection_name(client, arg_input):
+def validate_connection_name(client, arg_input, skip='False'):
     """ Tanium API's connection-name parameter is case sensitive - this function queries for the user input
     and returns the precise string to use in the API, or raises a ValueError if doesn't exist.
 
     Args:
         client: (Client) the client class object.
         arg_input: (str) the user input for a command's connection name argument.
+        skip: (bool) Whether to skipping validation
 
     Returns:
         (str) The precise connection name.
 
     """
-    if arg_input.startswith('local-'):  # don't check snapshots
+    if arg_input.startswith('local-') or skip == 'True':  # don't check snapshots
         return arg_input
     if is_ip_valid(arg_input):
         # if input is IP, try with the format a-b-c-d first because it will replace the IP with the real connection name
@@ -501,11 +502,9 @@ def validate_connection_name(client, arg_input):
         if results and len(results) == 1:
             return results[0]
     results = client.do_request('GET', f'/plugin/products/trace/computers?name={arg_input}')
-    demisto.log(results)
-    return arg_input
-    # if results and len(results) == 1 and results[0].lower() == arg_input.lower():
-    #     return results[0]
-    # raise ValueError('The specified connection name does not exist.')
+    if results and len(results) == 1 and results[0].lower() == arg_input.lower():
+        return results[0]
+    raise ValueError('The specified connection name does not exist.')
 
 
 def test_module(client, data_args):
@@ -639,13 +638,15 @@ def get_snapshots(client, data_args):
 
 
 def create_snapshot(client, data_args):
-    con_name = validate_connection_name(client, data_args.get('connection-name'))
+    con_name = validate_connection_name(client, data_args.get('connection-name'),
+                                        data_args.get('skip_conn_name_validation', 'False'))
     client.do_request('POST', f'/plugin/products/trace/conns/{con_name}/snapshots', resp_type='content')
     return f"Initiated snapshot creation request for {con_name}.", {}, {}
 
 
 def delete_snapshot(client, data_args):
-    con_name = validate_connection_name(client, data_args.get('connection-name'))
+    con_name = validate_connection_name(client, data_args.get('connection-name'),
+                                        data_args.get('skip_conn_name_validation', 'False'))
     snapshot_id = data_args.get('snapshot-id')
     client.do_request('DELETE', f'/plugin/products/trace/conns/{con_name}/snapshots/{snapshot_id}', resp_type='content')
     context = {
@@ -706,7 +707,8 @@ def get_connections(client, data_args):
 
 
 def get_connection(client, data_args):
-    conn_name = validate_connection_name(client, data_args.get('connection-name'))
+    conn_name = validate_connection_name(client, data_args.get('connection-name'),
+                                         data_args.get('skip_conn_name_validation', 'False'))
     raw_response = client.do_request('GET', '/plugin/products/trace/conns')
     connection_raw_response: dict = {}
     found = False
@@ -732,7 +734,8 @@ def get_connection(client, data_args):
 def create_connection(client, data_args):
     remote = bool(data_args.get('remote'))
     dst_type = data_args.get('destination-type')
-    dst = validate_connection_name(client, data_args.get('destination'))
+    dst = validate_connection_name(client, data_args.get('destination'),
+                                   data_args.get('skip_conn_name_validation', 'False'))
     conn_timeout = data_args.get('connection-timeout')
 
     body = {
@@ -749,7 +752,8 @@ def create_connection(client, data_args):
 
 
 def delete_connection(client, data_args):
-    conn_name = validate_connection_name(client, data_args.get('connection-name'))
+    conn_name = validate_connection_name(client, data_args.get('connection-name'),
+                                         data_args.get('skip_conn_name_validation', 'False'))
     client.do_request('DELETE', '/plugin/products/trace/conns/{conn_name}', resp_type='text')
     context = {
         'Name': conn_name,
@@ -837,7 +841,8 @@ def filter_to_tanium_api_syntax(filter_str):
 def get_events_by_connection(client, data_args):
     limit = int(data_args.get('limit'))
     offset = int(data_args.get('offset'))
-    connection = validate_connection_name(client, data_args.get('connection-name'))
+    connection = validate_connection_name(client, data_args.get('connection-name'),
+                                          data_args.get('skip_conn_name_validation', 'False'))
     sort = data_args.get('sort')
     fields = data_args.get('fields')
     event_type = data_args.get('event-type').lower()
@@ -895,7 +900,8 @@ def get_file_download_info(client, data_args):
 
 
 def get_process_info(client, data_args):
-    conn_name = validate_connection_name(client, data_args.get('connection-name'))
+    conn_name = validate_connection_name(client, data_args.get('connection-name'),
+                                         data_args.get('skip_conn_name_validation', 'False'))
     ptid = data_args.get('ptid')
     raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/processes/{ptid}')
     process = get_process_item(raw_response)
@@ -912,7 +918,8 @@ def get_process_info(client, data_args):
 def get_events_by_process(client, data_args):
     limit = int(data_args.get('limit'))
     offset = int(data_args.get('offset'))
-    conn_name = validate_connection_name(client, data_args.get('connection-name'))
+    conn_name = validate_connection_name(client, data_args.get('connection-name'),
+                                         data_args.get('skip_conn_name_validation', 'False'))
     ptid = data_args.get('ptid')
     raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/processevents/{ptid}',
                                      params={'limit': limit, 'offset': offset})
@@ -931,7 +938,8 @@ def get_events_by_process(client, data_args):
 
 
 def get_process_children(client, data_args):
-    conn_name = validate_connection_name(client, data_args.get('connection-name'))
+    conn_name = validate_connection_name(client, data_args.get('connection-name'),
+                                         data_args.get('skip_conn_name_validation', 'False'))
     ptid = data_args.get('ptid')
     raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/processtrees/{ptid}/children')
 
@@ -951,7 +959,8 @@ def get_process_children(client, data_args):
 
 
 def get_parent_process(client, data_args):
-    conn_name = validate_connection_name(client, data_args.get('connection-name'))
+    conn_name = validate_connection_name(client, data_args.get('connection-name'),
+                                         data_args.get('skip_conn_name_validation', 'False'))
     ptid = data_args.get('ptid')
     raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/parentprocesses/{ptid}')
     process = get_process_item(raw_response)
@@ -966,7 +975,8 @@ def get_parent_process(client, data_args):
 
 
 def get_parent_process_tree(client, data_args):
-    conn_name = validate_connection_name(client, data_args.get('connection-name'))
+    conn_name = validate_connection_name(client, data_args.get('connection-name'),
+                                         data_args.get('skip_conn_name_validation', 'False'))
     ptid = data_args.get('ptid')
     raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/parentprocesstrees/{ptid}')
 
@@ -998,7 +1008,8 @@ def get_parent_process_tree(client, data_args):
 
 
 def get_process_tree(client, data_args):
-    conn_name = validate_connection_name(client, data_args.get('connection-name'))
+    conn_name = validate_connection_name(client, data_args.get('connection-name'),
+                                         data_args.get('skip_conn_name_validation', 'False'))
     ptid = data_args.get('ptid')
     raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/processtrees/{ptid}')
 
@@ -1069,7 +1080,8 @@ def get_evidence(client, data_args):
 
 
 def create_evidence(client, data_args):
-    conn_name = validate_connection_name(client, data_args.get('connection-name'))
+    conn_name = validate_connection_name(client, data_args.get('connection-name'),
+                                         data_args.get('skip_conn_name_validation', 'False'))
     ptid = data_args.get('ptid')
 
     params = {'match': 'all', 'f1': 'process_table_id', 'o1': 'eq', 'v1': ptid}
@@ -1104,7 +1116,8 @@ def delete_evidence(client, data_args):
 
 
 def request_file_download(client, data_args):
-    con_name = validate_connection_name(client, data_args.get('connection-name'))
+    con_name = validate_connection_name(client, data_args.get('connection-name'),
+                                        data_args.get('skip_conn_name_validation', 'False'))
     path = data_args.get('path')
 
     # context object will help us to verify the request has succeed in the download file playbook.
@@ -1174,7 +1187,8 @@ def delete_file_download(client, data_args):
 
 
 def list_files_in_dir(client, data_args):
-    con_name = validate_connection_name(client, data_args.get('connection-name'))
+    con_name = validate_connection_name(client, data_args.get('connection-name'),
+                                        data_args.get('skip_conn_name_validation', 'False'))
     dir_path_name = data_args.get('path')
     dir_path = urllib.parse.quote(dir_path_name, safe='')
     limit = int(data_args.get('limit'))
@@ -1198,7 +1212,8 @@ def list_files_in_dir(client, data_args):
 
 
 def get_file_info(client, data_args):
-    con_name = validate_connection_name(client, data_args.get('connection-name'))
+    con_name = validate_connection_name(client, data_args.get('connection-name'),
+                                        data_args.get('skip_conn_name_validation', 'False'))
     path_name = data_args.get('path')
     path = urllib.parse.quote(path_name, safe='')
 
@@ -1214,7 +1229,8 @@ def get_file_info(client, data_args):
 
 
 def delete_file_from_endpoint(client, data_args):
-    con_name = validate_connection_name(client, data_args.get('connection-name'))
+    con_name = validate_connection_name(client, data_args.get('connection-name'),
+                                        data_args.get('skip_conn_name_validation', 'False'))
     path = urllib.parse.quote(data_args.get('path'))
     client.do_request('DELETE', f'/plugin/products/trace/filedownloads/{con_name}/{path}', resp_type='text')
     context = {
@@ -1227,7 +1243,8 @@ def delete_file_from_endpoint(client, data_args):
 
 
 def get_process_timeline(client, data_args):
-    con_name = validate_connection_name(client, data_args.get('connection-name'))
+    con_name = validate_connection_name(client, data_args.get('connection-name'),
+                                        data_args.get('skip_conn_name_validation', 'False'))
     ptid = data_args.get('ptid')
     category = data_args.get('category')
     limit = int(data_args.get('limit'))
