@@ -82,7 +82,6 @@ class AMIConnection:
     REMOTE_MACHINE_USER = 'ec2-user'
     REMOTE_HOME = f'/home/{REMOTE_MACHINE_USER}/'
     LOCAL_SCRIPTS_DIR = '/home/circleci/project/Tests/scripts/'
-    CLONE_MOCKS_SCRIPT = 'clone_mocks.sh'
 
     def __init__(self, public_ip):
         self.public_ip = public_ip
@@ -147,9 +146,6 @@ class AMIConnection:
 
         silence_output(self.check_call, ['chmod', '+x', remote_script_path], stdout='null')
         silence_output(self.check_call, [remote_script_path] + list(args), stdout='null')
-
-    def clone_mock_data(self):
-        self.run_script(self.CLONE_MOCKS_SCRIPT)
 
 
 class MITMProxy:
@@ -383,7 +379,7 @@ class MITMProxy:
             self.logging_module.debug('"problematic_keys.json" dictionary values were empty - '
                                       'no data to whitewash from the mock file.')
 
-    def start(self, playbook_or_integration_id, path=None, record=False):
+    def start(self, playbook_or_integration_id, path=None, record=False) -> None:
         """Start the proxy process and direct traffic through it.
 
         Args:
@@ -421,10 +417,10 @@ class MITMProxy:
 
     def get_mitmdump_service_status(self) -> None:
         """
-        Safely extract the current mitmdump status and logs it
+        Safely extract the current mitmdump status and last 50 log lines
         """
         try:
-            output = self.ami.check_output('systemctl status mitmdump'.split(), stderr=STDOUT)
+            output = self.ami.check_output('systemctl status mitmdump -n 50 -l'.split(), stderr=STDOUT)
             self.logging_module.debug(f'mitmdump service status output:\n{output.decode()}')
         except CalledProcessError as exc:
             self.logging_module.debug(f'mitmdump service status output:\n{exc.output.decode()}')
@@ -466,7 +462,8 @@ class MITMProxy:
             try:
                 silence_output(self.ami.call,
                                ['mv', repo_problem_keys_path, current_problem_keys_path],
-                               stdout='null')
+                               stdout='null',
+                               stderr='null')
             except CalledProcessError as e:
                 self.logging_module.debug(f'Failed to move problematic_keys.json with exit code {e.returncode}')
 
