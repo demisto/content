@@ -2,9 +2,9 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import requests
 
-# type: ignore
-# flake8: noqa
-# mypy: ignore-errors
+## type: ignore
+## flake8: noqa
+## mypy: ignore-errors
 
 
 # Imports
