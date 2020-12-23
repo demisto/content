@@ -602,6 +602,7 @@ def long_running_loop():
     while True:
         error = ''
         try:
+            demisto.debug("long_running_loop is running now")
             check_for_mirrors()
             check_for_answers()
         except requests.exceptions.ConnectionError as e:
@@ -1905,7 +1906,7 @@ def long_running_main():
     """
     Starts the long running thread.
     """
-    asyncio.run(start_listening())
+    asyncio.run(start_listening(), debug=True)
 
 
 def init_globals(command_name: str = ''):
@@ -1971,6 +1972,8 @@ def main():
     """
     Main
     """
+    logging.basicConfig(level=logging.DEBUG)
+    logging.getLogger('asyncio').addHandler(DemistoHandler())
     if is_debug_mode():
         os.environ['PYTHONASYNCIODEBUG'] = "1"
 
