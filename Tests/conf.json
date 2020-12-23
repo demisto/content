@@ -22,6 +22,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "AzureWAF",
+            "playbookID": "Azure WAF - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "GoogleCalendar",
             "playbookID": "GoogleCalendar-Test",
             "fromversion": "5.0.0"
@@ -263,6 +268,7 @@
             "playbookID": "AzureFeed - Test",
             "fromversion": "5.5.0"
         },
+
         {
             "playbookID": "CreateIndicatorFromSTIXTest",
             "fromversion": "5.0.0"
@@ -2059,7 +2065,8 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
-            "memory_threshold": 115
+            "memory_threshold": 115,
+            "pid_threshold": 5
         },
         {
             "playbookID": "Phishing - Core - Test - Incident Starter",
@@ -2071,7 +2078,8 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
-            "memory_threshold": 100
+            "memory_threshold": 100,
+            "pid_threshold": 5
         },
         {
             "integrations": "duo",
@@ -3227,8 +3235,6 @@
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
         "Google Chronicle Backstory Asset - Test": "Issue 26460",
         "HybridAnalysis-Test": "Issue 26599",
-        "Tenable.io test": "Issue 26727",
-        "Tenable.io Scan Test": "Issue 26727",
         "ThreatConnect v2 - Test": "Issue 26782",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
