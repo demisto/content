@@ -308,6 +308,16 @@ class FeedIndicatorType(object):
             return None
 
 
+def is_debug_mode():
+    """Return if this script/command was passed debug-mode=true option
+
+    :return: true if debug-mode is enabled
+    :rtype: ``bool``
+    """
+    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
+    return hasattr(demisto, 'is_debug') and demisto.is_debug
+
+
 def auto_detect_indicator_type(indicator_value):
     """
       Infer the type of the indicator.
@@ -1025,11 +1035,12 @@ class IntegrationLogger(object):
       :rtype: ``None``
     """
 
-    def __init__(self):
+    def __init__(self, debug_logging = False):
         self.messages = []  # type: list
         self.write_buf = []  # type: list
         self.replace_strs = []  # type: list
         self.buffering = True
+        self.debug_logging = debug_logging
         # if for some reason you don't want to auto add credentials.password to replace strings
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
         if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')):
@@ -1069,6 +1080,8 @@ class IntegrationLogger(object):
         text = self.encode(message)
         if self.buffering:
             self.messages.append(text)
+            if self.debug_logging:
+                demisto.debug(text)
         else:
             demisto.info(text)
 
@@ -1101,7 +1114,8 @@ class IntegrationLogger(object):
             text = 'Full Integration Log:\n' + '\n'.join(self.messages)
             if verbose:
                 demisto.log(text)
-            demisto.info(text)
+            if not self.debug_logging:  # we don't print out if in debug_logging as already all message where printed
+                demisto.info(text)
             self.messages = []
 
     def write(self, msg):
@@ -1141,7 +1155,7 @@ a logger for python integrations:
 use LOG(<message>) to add a record to the logger (message can be any object with __str__)
 use LOG.print_log() to display all records in War-Room and server log.
 """
-LOG = IntegrationLogger()
+LOG = IntegrationLogger(debug_logging=is_debug_mode())
 
 
 def formatAllArgs(args, kwds):
@@ -4783,16 +4797,6 @@ def is_demisto_version_ge(version, build_number=''):
         if version >= "5.0.0":
             return False
         raise
-
-
-def is_debug_mode():
-    """Return if this script/command was passed debug-mode=true option
-
-    :return: true if debug-mode is enabled
-    :rtype: ``bool``
-    """
-    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
-    return hasattr(demisto, 'is_debug') and demisto.is_debug
 
 
 class DemistoHandler(logging.Handler):
