@@ -143,8 +143,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2030,
-          "y": 3000
+          "x": 1490,
+          "y": 2660
         }
       }
     note: false
@@ -168,8 +168,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2030,
-          "y": 3160
+          "x": 1490,
+          "y": 2850
         }
       }
     note: false
@@ -249,13 +249,12 @@ tasks:
       - "42"
       - "52"
       - "58"
-      - "83"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1490,
-          "y": 1830
+          "x": 1500,
+          "y": 1450
         }
       }
     note: false
@@ -265,15 +264,13 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 915d6f50-e12b-4526-8582-8fcb4f78d60e
+    taskid: 1b3f1aa9-8a28-4fba-8554-e3381dee3420
     type: regular
     task:
-      id: 915d6f50-e12b-4526-8582-8fcb4f78d60e
+      id: 1b3f1aa9-8a28-4fba-8554-e3381dee3420
       version: -1
       name: Investigate further
-      description: "Further investigate the incident (endpoints, the entry point,\
-        \ etc').\nIf Expanse found SolarWinds C2 connection, investigate the internal\
-        \ server too. "
+      description: Further investigate the incident (endpoints, the entry point, etc')
       type: regular
       iscommand: false
       brand: ""
@@ -284,8 +281,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2030,
-          "y": 2840
+          "x": 1490,
+          "y": 2475
         }
       }
     note: false
@@ -312,8 +309,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2030,
-          "y": 2705
+          "x": 1490,
+          "y": 2340
         }
       }
     note: false
@@ -352,8 +349,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1490,
-          "y": 2130
+          "x": 1940,
+          "y": 1725
         }
       }
     note: false
@@ -492,8 +489,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 2405
+          "x": 450,
+          "y": 1935
         }
       }
     note: false
@@ -556,8 +553,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1020,
-          "y": 2490
+          "x": 1240,
+          "y": 2160
         }
       }
     note: false
@@ -637,8 +634,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2280,
-          "y": 1975
+          "x": 2690,
+          "y": 1590
         }
       }
     note: false
@@ -691,8 +688,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 2130
+          "x": 980,
+          "y": 1750
         }
       }
     note: false
@@ -717,7 +714,6 @@ tasks:
       - "31"
       - "32"
       - "67"
-      - "81"
     separatecontext: false
     view: |-
       {
@@ -955,8 +951,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": 2310
+          "x": 980,
+          "y": 1985
         }
       }
     note: false
@@ -966,10 +962,10 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: 5de14f19-0ba4-453f-8d0d-8c463aedb20a
+    taskid: 109ea258-a3fe-4e0b-89ea-ded7ae7c6845
     type: playbook
     task:
-      id: 5de14f19-0ba4-453f-8d0d-8c463aedb20a
+      id: 109ea258-a3fe-4e0b-89ea-ded7ae7c6845
       version: -1
       name: Block Indicators - Generic v2
       description: |+
@@ -989,8 +985,7 @@ tasks:
       - "24"
     scriptarguments:
       AutoCommit:
-        complex:
-          root: inputs.AutoCommit
+        simple: "No"
       CustomBlockRule:
         simple: "True"
       CustomURLCategory:
@@ -1010,9 +1005,7 @@ tasks:
                 iscontext: true
       IPBlacklistMiner: {}
       IPListName: {}
-      LogForwarding:
-        complex:
-          root: inputs.LogForwarding
+      LogForwarding: {}
       MD5:
         complex:
           root: File
@@ -1031,9 +1024,7 @@ tasks:
         simple: Demisto Remediation - URL EDL
       Username: {}
       categories: {}
-      device-group:
-        complex:
-          root: inputs.DeviceGroup
+      device-group: {}
       type: {}
     separatecontext: false
     loop:
@@ -1044,8 +1035,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2510,
-          "y": 2310
+          "x": 2940,
+          "y": 1905
         }
       }
     note: false
@@ -1072,8 +1063,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 1975
+          "x": 980,
+          "y": 1590
         }
       }
     note: false
@@ -1256,8 +1247,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1490,
-          "y": 2310
+          "x": 1940,
+          "y": 1905
         }
       }
     note: false
@@ -1440,8 +1431,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1490,
-          "y": 2490
+          "x": 1940,
+          "y": 2090
         }
       }
     note: false
@@ -1484,8 +1475,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2280,
-          "y": 2120
+          "x": 2690,
+          "y": 1725
         }
       }
     note: false
@@ -1512,8 +1503,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2040,
-          "y": 2310
+          "x": 2450,
+          "y": 1905
         }
       }
     note: false
@@ -1540,8 +1531,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 600,
-          "y": 2490
+          "x": 740,
+          "y": 2160
         }
       }
     note: false
@@ -1568,8 +1559,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1490,
-          "y": 1975
+          "x": 1940,
+          "y": 1590
         }
       }
     note: false
@@ -1994,7 +1985,7 @@ tasks:
       id: 6416c957-edd6-4d51-8bf3-eda76fb0e774
       version: -1
       name: 'Is there additional IOCs? '
-      description: Checks if there are additional IOCs from the playbook input.
+      description: "Checks if there are additional IOCs from the playbook input."
       type: condition
       iscommand: false
       brand: ""
@@ -2025,497 +2016,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "76":
-    id: "76"
-    taskid: 7d54b4ae-c05a-4d7c-8ac0-959bbf6fa5b3
-    type: regular
-    task:
-      id: 7d54b4ae-c05a-4d7c-8ac0-959bbf6fa5b3
-      version: -1
-      name: Expense search for SolarStorm Issues
-      description: Retrieve issues
-      script: '|||expanse-get-issues'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      activity_status: {}
-      assignee: {}
-      business_unit: {}
-      content_search: {}
-      created_after: {}
-      created_before: {}
-      domain_search: {}
-      inet_search: {}
-      issue_type:
-        simple: Insecure SolarWinds Orion Platform, SolarWinds Orion Platform
-      limit: {}
-      modified_after: {}
-      modified_before: {}
-      port_number: {}
-      priority: {}
-      progress_status: {}
-      provider: {}
-      sort: {}
-      tag: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 3360,
-          "y": 1350
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "77":
-    id: "77"
-    taskid: 6aa4ecce-c1f2-4f1e-8642-cab9e08e8dd0
-    type: regular
-    task:
-      id: 6aa4ecce-c1f2-4f1e-8642-cab9e08e8dd0
-      version: -1
-      name: Expense get list of risky flows
-      description: List risk rules from Expanse Behavior.
-      script: '|||expanse-list-risk-rules'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "78"
-    scriptarguments:
-      limit: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 3790,
-          "y": 1190
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "78":
-    id: "78"
-    taskid: 09109ac5-3873-4c7b-8d2f-005819676fba
-    type: condition
-    task:
-      id: 09109ac5-3873-4c7b-8d2f-005819676fba
-      version: -1
-      name: Found flows relate to SolarWind?
-      description: Checks if Expanse found risky flows relate to SolarWinds C2
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "19"
-      "yes":
-      - "79"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: Expanse.RiskRule
-                accessor: abbreviatedName
-            iscontext: true
-          right:
-            value:
-              simple: SolarWinds C2
-    view: |-
-      {
-        "position": {
-          "x": 3790,
-          "y": 1350
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "79":
-    id: "79"
-    taskid: 9862b71d-40f7-4d69-8a8a-159a27d3c1f2
-    type: regular
-    task:
-      id: 9862b71d-40f7-4d69-8a8a-159a27d3c1f2
-      version: -1
-      name: Expanse get SolarWind risky flows
-      description: Retrieve risky flows detected by Expanse Behavior.
-      script: '|||expanse-get-risky-flows'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "89"
-    scriptarguments:
-      created_after: {}
-      created_before: {}
-      internal_ip_range: {}
-      limit: {}
-      risk_rule:
-        complex:
-          root: Expanse.RiskRule
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: Expanse.RiskRule.abbreviatedName
-                iscontext: true
-              right:
-                value:
-                  simple: SolarWinds C2
-          accessor: id
-      tag_names: {}
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 4140,
-          "y": 1520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "81":
-    id: "81"
-    taskid: d077c127-226e-431e-8486-8d16baa634a6
-    type: title
-    task:
-      id: d077c127-226e-431e-8486-8d16baa634a6
-      version: -1
-      name: Expanse Search
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "90"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 3590,
-          "y": 770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "83":
-    id: "83"
-    taskid: 72de5ac0-fcfa-43d6-885f-76d3c9f817bb
-    type: title
-    task:
-      id: 72de5ac0-fcfa-43d6-885f-76d3c9f817bb
-      version: -1
-      name: Block Access to SolarWinds
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "84"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 3030,
-          "y": 1975
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "84":
-    id: "84"
-    taskid: f140a9d5-c6f5-40e3-8160-96d1bbf7e46a
-    type: condition
-    task:
-      id: f140a9d5-c6f5-40e3-8160-96d1bbf7e46a
-      version: -1
-      name: Found SolarWinds server?
-      description: Checks if Expanse found SolarWinds server
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "24"
-      "yes":
-      - "85"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Expanse.Issue
-                accessor: ip
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 3030,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "85":
-    id: "85"
-    taskid: 17a4172f-4050-41a8-88cd-ab7b22eaf400
-    type: condition
-    task:
-      id: 17a4172f-4050-41a8-88cd-ab7b22eaf400
-      version: -1
-      name: Block SolarWinds Server Automatically?
-      description: Checks if the SolarWinds server should be block automatically from the playbook input
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "86"
-      "yes":
-      - "87"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoBlockSolarWindsServer
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 3290,
-          "y": 2310
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "86":
-    id: "86"
-    taskid: 5f091703-1630-4781-839b-77c8b525cc6e
-    type: regular
-    task:
-      id: 5f091703-1630-4781-839b-77c8b525cc6e
-      version: -1
-      name: Manual block SolarWinds server
-      description: To protect your network, block the internet facing SolarWinds server
-        until patch.
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 3290,
-          "y": 2490
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "87":
-    id: "87"
-    taskid: b8433bf7-1788-495a-8240-0958496ad927
-    type: playbook
-    task:
-      id: b8433bf7-1788-495a-8240-0958496ad927
-      version: -1
-      name: Block IP - Generic v2
-      playbookName: Block IP - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      AutoCommit:
-        complex:
-          root: inputs.AutoCommit
-      CustomBlockRule:
-        simple: "True"
-      DAG: {}
-      EDLServerIP: {}
-      IP:
-        complex:
-          root: Expanse.Issue
-          accessor: ip
-      IPBlacklistMiner: {}
-      IPListName: {}
-      LogForwarding:
-        complex:
-          root: inputs.LogForwarding
-      StaticAddressGroup: {}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 3740,
-          "y": 2490
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "89":
-    id: "89"
-    taskid: 3b3ec9c2-0455-4d4c-8578-120f9d6ec4e2
-    type: regular
-    task:
-      id: 3b3ec9c2-0455-4d4c-8578-120f9d6ec4e2
-      version: -1
-      name: 'Add indicator of the C2 Address '
-      description: commands.local.cmd.extract.indicators
-      script: Builtin|||extractIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      entryID: {}
-      filePath: {}
-      investigationID: {}
-      text:
-        complex:
-          root: Expanse.RiskyFlow
-          accessor: externalAddress
-          transformers:
-          - operator: uniq
-    reputationcalc: 2
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 4140,
-          "y": 1660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "90":
-    id: "90"
-    taskid: 9b7aec71-0f58-4d7c-8d61-b85d8f52f681
-    type: condition
-    task:
-      id: 9b7aec71-0f58-4d7c-8d61-b85d8f52f681
-      version: -1
-      name: 'Is Expanse enabled?'
-      description: Checks if Expanse V2 integraion enabled
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "19"
-      "yes":
-      - "76"
-      - "77"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Expanse V2
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 3590,
-          "y": 920
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 system: true
 view: |-
   {
@@ -2525,17 +2025,13 @@ view: |-
       "50_34_yes": 0.5,
       "50_57_#default#": 0.51,
       "75_45_#default#": 0.23,
-      "75_70_yes": 0.65,
-      "78_19_#default#": 0.1,
-      "84_24_#default#": 0.12,
-      "84_85_yes": 0.47,
-      "90_19_#default#": 0.1
+      "75_70_yes": 0.65
     },
     "paper": {
       "dimensions": {
-        "height": 3755,
-        "width": 4240,
-        "x": 280,
+        "height": 3445,
+        "width": 2870,
+        "x": 450,
         "y": -530
       }
     }
@@ -2621,35 +2117,8 @@ inputs:
   required: false
   description: Additional known IOCs relates to SUNBURST and SolarStorm.
   playbookInputQuery:
-- key: LogForwarding
-  value: {}
-  required: false
-  description: PAN-OS Log Forwarding Profile Name
-  playbookInputQuery:
-- key: AutoCommit
-  value:
-    simple: "No"
-  required: false
-  description: |-
-    This input establishes whether to commit the configuration automatically in PAN-OS.
-    Yes - Commit automatically.
-    No - Commit manually.
-  playbookInputQuery:
-- key: AutoBlockSolarWindsServer
-  value:
-    simple: "False"
-  required: false
-  description: |-
-    This input establishes whether to block the SolarWinds server automatically in PAN-OS.
-    True - Commit automatically.
-    False - Commit manually.
-  playbookInputQuery:
-- key: DeviceGroup
-  value: {}
-  required: false
-  description: 'Target Device Group (Panorama only) '
-  playbookInputQuery:
 outputs: []
 tests:
 - No tests
-fromversion: 6.0.0
+fromversion: 5.5.0
+toersion: 5.9.9
