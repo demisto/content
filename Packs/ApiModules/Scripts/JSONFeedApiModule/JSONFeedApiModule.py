@@ -130,7 +130,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
 
     for service_name, items in feeds_results.items():
         feed_config = client.feed_name_to_config.get(service_name, {})
-        indicator_field = feed_config.get('indicator', 'indicator')
+        indicator_field = feed_config.get('indicator') if feed_config.get('indicator') else 'indicator'
         indicator_type = feed_config.get('indicator_type', indicator_type)
         use_prefix_flat = feed_config.get('flat_json_with_prefix', False)
         use_with_flatten = False
