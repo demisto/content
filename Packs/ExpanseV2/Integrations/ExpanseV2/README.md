@@ -1,6 +1,8 @@
-The Expanse V2 integration for Cortex XSOAR leverages the Expander API to create incidents from Expanse issues. It also leverages Expanse's unparalleled view of the Internet to enrich IPs, domains and certificates using information from assets discovered by Expanse Expander and risky flow detected by Expanse Behavior.
+The Expanse v2 integration for Cortex XSOAR leverages the Expander API to create incidents from Expanse issues. It also leverages Expanse's unparalleled view of the Internet to enrich IPs, domains and certificates using information from assets discovered by Expanse Expander and risky flow detected by Expanse Behavior.
 
 This integration was developed and tested with Expanse Expander and Behavior.
+
+Expanse is a Palo Alto Networks company.
 
 Supported Cortex XSOAR versions: 6.0.0 and later.
 

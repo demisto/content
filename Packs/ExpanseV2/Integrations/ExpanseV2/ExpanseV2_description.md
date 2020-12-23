@@ -1,4 +1,4 @@
-## Expanse V2 Instance Configuration
+## Expanse v2 Instance Configuration
 
 ### Basic Information
 

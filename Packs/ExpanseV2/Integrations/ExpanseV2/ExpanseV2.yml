@@ -110,7 +110,7 @@ configuration:
   name: sync_tags
   required: false
   type: 0
-description: The Expanse V2 integration for Cortex XSOAR leverages the Expander API to create incidents from Expanse issues. It also leverages Expanse's unparalleled view of the Internet to enrich IPs, domains and certificates using information from assets discovered by Expanse Expander and risky flow detected by Expanse Behavior.
+description: The Expanse v2 integration for Cortex XSOAR leverages the Expander API to create incidents from Expanse issues. It also leverages Expanse's unparalleled view of the Internet to enrich IPs, domains and certificates using information from assets discovered by Expanse Expander and risky flows detected by Expanse Behavior.
 display: Expanse v2
 name: ExpanseV2
 script:
