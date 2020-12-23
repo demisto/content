@@ -33,6 +33,24 @@ def test_validate_result():
     assert result == 'Command has been executed successfully'
 
 
+def test_replace_keys_in_data():
+    from MobileIronCORE import replace_problematic_character_keys
+
+    start_data = util_load_json('test_data/test_data_replace_characters.json')
+    clean_data = util_load_json('test_data/test_data_replace_characters_clean.json')
+    result = replace_problematic_character_keys(start_data)
+    assert json.dumps(result) == json.dumps(clean_data)
+
+
+def test_replace_keys_in_list_of_data():
+    from MobileIronCORE import replace_problematic_character_keys
+
+    start_data = [util_load_json('test_data/test_data_replace_characters.json')]
+    clean_data = [util_load_json('test_data/test_data_replace_characters_clean.json')]
+    result = replace_problematic_character_keys(start_data)
+    assert json.dumps(result) == json.dumps(clean_data)
+
+
 def test_validate_result_error():
     from MobileIronCORE import validate_action_response
 
@@ -70,7 +88,7 @@ def test_execute_test_module_command(client, requests_mock):
     requests_mock.get(f'{MOCK_URL}/api/v2/ping', json=mock_response)
 
     result = execute_test_module_command(client)
-    assert result is 'ok'
+    assert result == 'ok'
 
 
 def test_execute_get_devices_data_command(mocker):
@@ -94,7 +112,7 @@ def test_execute_get_devices_data_command(mocker):
                                                     max_fetch=1000,
                                                     fields=f'{STANDARD_DEVICE_FIELDS},common.other')
     assert result.outputs_prefix == 'MobileIronCore.Device'
-    assert result.outputs_key_field == 'common.id'
+    assert result.outputs_key_field == 'common_id'
     assert result.outputs == []
 
 
@@ -107,7 +125,7 @@ def test_execute_get_device_by_uuid_command(client, mocker, requests_mock):
 
     result = execute_get_device_by_field_command(client, field_name='device_uuid', field_value='device_uuid_value')
     assert result.outputs_prefix == 'MobileIronCore.Device'
-    assert result.outputs_key_field == 'common.id'
+    assert result.outputs_key_field == 'common_id'
     assert result.outputs is not None
 
 

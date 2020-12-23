@@ -191,13 +191,13 @@
   "MobileIron Core Device Incident": {
    "dontMapEventToLabels": false,
    "internalMapping": {
-    "Compliance State": {
+    "MobileIron Compliance State": {
      "complex": {
       "accessor": "",
       "filters": [
 
       ],
-      "root": "common\\.compliant",
+      "root": "common_compliant",
       "transformers": [
        {
         "args": {
@@ -229,73 +229,77 @@
      },
      "simple": ""
     },
-    "Device ID": {
+    "MobileIron Device ID": {
      "complex": null,
-     "simple": "common\\.id"
+     "simple": "common_id"
     },
-    "Device Model": {
+    "MobileIron Device Model": {
      "complex": null,
-     "simple": "common\\.model"
+     "simple": "common_model"
     },
-    "Device Owner": {
+    "MobileIron Device Owner": {
      "complex": null,
-     "simple": "common\\.owner"
+     "simple": "common_owner"
     },
-    "Device Registration Status": {
+    "MobileIron Device Registration Status": {
      "complex": null,
-     "simple": "common\\.status"
+     "simple": "common_status"
     },
-    "Device Registration Timestamp": {
+    "MobileIron Device Registration Timestamp": {
      "complex": null,
-     "simple": "common\\.registration_date"
+     "simple": "common_registration_date"
     },
-    "Device UUID": {
+    "MobileIron Device UUID": {
      "complex": null,
-     "simple": "common\\.uuid"
+     "simple": "common_uuid"
     },
-    "Device User ID": {
+    "MobileIron Device User ID": {
      "complex": null,
-     "simple": "user\\.user_id"
+     "simple": "user_user_id"
     },
-    "IMEI": {
+    "MobileIron IMEI": {
      "complex": null,
-     "simple": "common\\.imei"
+     "simple": "common_imei"
     },
-    "IMSI": {
+    "MobileIron IMSI": {
      "complex": null,
-     "simple": "common\\.imsi"
+     "simple": "common_imsi"
     },
-    "Is Device Quarantined?": {
+    "MobileIron Is Device Quarantined?": {
      "complex": null,
-     "simple": "common\\.quarantined"
+     "simple": "common_quarantined"
     },
-    "Last Check-in Timestamp": {
+    "MobileIron Last Check-in Timestamp": {
      "complex": null,
-     "simple": "common\\.last_connected_at"
+     "simple": "common_last_connected_at"
     },
-    "MAC Address": {
+    "MobileIron MAC Address": {
      "complex": null,
-     "simple": "common\\.wifi_mac_address"
+     "simple": "common_wifi_mac_address"
     },
-    "Manufacturer": {
+    "MobileIron Manufacturer": {
      "complex": null,
-     "simple": "common\\.manufacturer"
+     "simple": "common_manufacturer"
     },
-    "Platform": {
+    "MobileIron Platform": {
      "complex": null,
-     "simple": "common\\.platform"
+     "simple": "common_platform"
     },
-    "Security State": {
+    "OS": {
      "complex": null,
-     "simple": "common\\.security_state"
+     "simple": "common_platform"
     },
-    "Source Username": {
+    "MobileIron Security State": {
      "complex": null,
-     "simple": "user\\.display_name"
+     "simple": "common_security_state"
     },
-    "User Email Address": {
+    "MobileIron Source Username": {
      "complex": null,
-     "simple": "user\\.email_address"
+     "simple": "user_display_name"
+    },
+    "MobileIron User Email Address": {
+     "complex": null,
+     "simple": "user_email_address"
     }
    }
   }

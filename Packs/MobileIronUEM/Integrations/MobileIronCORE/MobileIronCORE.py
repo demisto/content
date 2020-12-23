@@ -10,6 +10,9 @@ urllib3.disable_warnings()
 
 '''Constants'''
 
+PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']', ' ']
+REPLACE_WITH = '_'
+
 STANDARD_DEVICE_FIELDS = ','.join(['common.uuid', 'common.compliant', 'common.id', 'common.imei', 'common.imsi',
                                    'common.last_connected_at', 'user.sam_account_name',
                                    'common.manufacturer', 'common.model', 'common.quarantined_reasons',
@@ -49,7 +52,7 @@ class MobileIronCoreClient(BaseClient):
             :return: the complete API response
             :rtype: ``Dict``
         """
-        return self._http_request(
+        response = self._http_request(
             method='GET',
             url_suffix='/api/v2/devices',
             params={
@@ -59,6 +62,8 @@ class MobileIronCoreClient(BaseClient):
                 'limit': per_page,
                 'offset': page
             })
+
+        return replace_problematic_character_keys(response)
 
     def get_devices_data(self, admin_space_id: str, query: str = None, fields: str = None, max_fetch: int = None) -> \
             List[Any]:
@@ -204,6 +209,39 @@ class MobileIronCoreClient(BaseClient):
         )
 
 
+def replace_problematic_characters_in_dict(data):
+    for key in list(data.keys()):
+        value = data.pop(key)
+        value = replace_problematic_character_keys(value)
+        for character in PROBLEMATIC_CHARACTERS:
+            key = key.replace(character, REPLACE_WITH)
+        data[key] = value
+    return data
+
+
+def replace_problematic_characters_in_list(data):
+    return list(map(lambda item: replace_problematic_character_keys(item), data))
+
+
+def replace_problematic_character_keys(data):
+    """
+    Used to replace all the characters in the keys in the JSON responses from Core that cause issues due to problematic
+    characters in the system.
+
+    Typical naming on Core:
+     common.id -> common_id
+     ios.iPhone MAC_ADDRESS_EN0 -> ios_iPhone_MAC_ADDRESS_EN0
+
+    :return: a cleaned version of the data with the same type
+
+    """
+    if isinstance(data, list):
+        return replace_problematic_characters_in_list(data)
+    if isinstance(data, dict):
+        return replace_problematic_characters_in_dict(data)
+    return data
+
+
 def resolve_device_incident_severity(device_info: Dict[str, Any]) -> Tuple[str, int]:
     """
         Gets the severity based on following conditions
@@ -215,12 +253,12 @@ def resolve_device_incident_severity(device_info: Dict[str, Any]) -> Tuple[str, 
         return param: returns severity to be set on the incident
     """
 
-    security_state = device_info['common.security_state']
+    security_state = device_info['common_security_state']
     if security_state != 'Ok':
         return f'Security State - {security_state}', SEVERITY_CRITICAL
-    elif not device_info['common.compliant']:
+    elif not device_info['common_compliant']:
         return 'Non-Compliant device', SEVERITY_HIGH
-    elif device_info['common.quarantined']:
+    elif device_info['common_quarantined']:
         return 'Quarantined device', SEVERITY_LOW
 
     raise ValueError('Unable to determine severity. The device does not contain any fields which indicate an issue')
@@ -388,7 +426,7 @@ def execute_get_device_by_field_command(client: MobileIronCoreClient, field_name
 
     return CommandResults(
         outputs_prefix='MobileIronCore.Device',
-        outputs_key_field='common.id',
+        outputs_key_field='common_id',
         outputs=device
     )
 
@@ -427,7 +465,7 @@ def execute_get_devices_data_command(client: MobileIronCoreClient, query: str) -
     return CommandResults(
         # readable_output=readable_output,
         outputs_prefix='MobileIronCore.Device',
-        outputs_key_field='common.id',
+        outputs_key_field='common_id',
         outputs=devices_data_response
     )
 

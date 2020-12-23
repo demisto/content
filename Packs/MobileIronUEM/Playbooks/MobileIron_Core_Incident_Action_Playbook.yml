@@ -1,6 +1,16 @@
 description: General Incident Actions Playbook
 id: MobileIron Core Incident Action Playbook
-inputs: []
+inputs:
+- description: This is the default subject for the send message action
+  key: subject
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: This is the default message for the send message action
+  key: message
+  playbookInputQuery:
+  required: true
+  value: {}
 name: MobileIron Core Incident Action Playbook
 outputs: []
 starttaskid: "0"
@@ -17,58 +27,19 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 584f748b-7a91-4ceb-815e-3e73e4e11ba5
+      id: 0d9dca9a-8a86-42bb-8d9f-681196bbbac5
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 584f748b-7a91-4ceb-815e-3e73e4e11ba5
+    taskid: 0d9dca9a-8a86-42bb-8d9f-681196bbbac5
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1985,
           "y": 50
-        }
-      }
-  "3":
-    id: "3"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "15"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      device_id:
-        simple: ${incident.deviceid}
-      message:
-        simple: Enter message
-      push_message:
-        simple: pns
-      subject:
-        simple: Enter Subject
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: This command is used to send a message to the particular device
-        based on device id
-      id: bd88fb18-5af1-4733-8d31-f489d582c1eb
-      iscommand: true
-      name: Send Message
-      script: '|||mobileiron-core-send-message'
-      type: regular
-      version: -1
-    taskid: bd88fb18-5af1-4733-8d31-f489d582c1eb
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 920,
-          "y": 545
         }
       }
   "4":
@@ -81,27 +52,27 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_id:
-        simple: ${incident.deviceid}
+        simple: ${incident.mobileirondeviceid}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: This command is used to update OS to the particular device based
         on device id
-      id: 7f3feb91-a06f-40d4-8425-be556c43685b
+      id: f9004505-81b5-44c2-8dc1-59f920e51320
       iscommand: true
       name: Update OS
       script: '|||mobileiron-core-update-os'
       type: regular
       version: -1
-    taskid: 7f3feb91-a06f-40d4-8425-be556c43685b
+    taskid: f9004505-81b5-44c2-8dc1-59f920e51320
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 4790,
-          "y": 545
+          "x": 4380,
+          "y": 710
         }
       }
   "5":
@@ -114,27 +85,27 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_id:
-        simple: ${incident.deviceid}
+        simple: ${incident.mobileirondeviceid}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: This command is used to unlock device to the particular device
         based on device id
-      id: 7b8613a9-d085-4061-89b4-7c71be769dc0
+      id: 381e8709-21e4-4707-8e08-23a43e50e0a7
       iscommand: true
       name: Unlock Device  Only
       script: '|||mobileiron-core-unlock-device-only'
       type: regular
       version: -1
-    taskid: 7b8613a9-d085-4061-89b4-7c71be769dc0
+    taskid: 381e8709-21e4-4707-8e08-23a43e50e0a7
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1780,
-          "y": 545
+          "x": 3380,
+          "y": 880
         }
       }
   "6":
@@ -147,27 +118,27 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_id:
-        simple: ${incident.deviceid}
+        simple: ${incident.mobileirondeviceid}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: This command is used to enable voice roaming to the particular
         device based on device id
-      id: 9547f22c-c93e-4e3b-8494-555ddcd85447
+      id: 7ee075a1-eba5-4b47-803f-6dcadfaaac69
       iscommand: true
       name: Enable Voice Roaming
       script: '|||mobileiron-core-enable-voice-roaming'
       type: regular
       version: -1
-    taskid: 9547f22c-c93e-4e3b-8494-555ddcd85447
+    taskid: 7ee075a1-eba5-4b47-803f-6dcadfaaac69
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 3930,
-          "y": 545
+          "x": 3840,
+          "y": 880
         }
       }
   "7":
@@ -180,27 +151,27 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_id:
-        simple: ${incident.deviceid}
+        simple: ${incident.mobileirondeviceid}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: This command is used to disable voice roaming to the particular
         device based on device id
-      id: b6da523f-8948-491d-89a5-ac17b8fc3645
+      id: c6808865-a274-4669-8cf9-e66719a3c859
       iscommand: true
       name: Disable Voice Roaming
       script: '|||mobileiron-core-disable-voice-roaming'
       type: regular
       version: -1
-    taskid: b6da523f-8948-491d-89a5-ac17b8fc3645
+    taskid: c6808865-a274-4669-8cf9-e66719a3c859
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 4360,
-          "y": 545
+          "x": 4485,
+          "y": 1055
         }
       }
   "8":
@@ -213,27 +184,27 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_id:
-        simple: ${incident.deviceid}
+        simple: ${incident.mobileirondeviceid}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: This command is used to enable personal hotspot to the particular
         device based on device id
-      id: d9bd8d2a-f521-4343-8e87-3a5aa22e506e
+      id: af6fa0d7-77c6-4fa3-83d8-379e78e2f61e
       iscommand: true
       name: Enable Personal Hotspot
       script: '|||mobileiron-core-enable-personal-hotspot'
       type: regular
       version: -1
-    taskid: d9bd8d2a-f521-4343-8e87-3a5aa22e506e
+    taskid: af6fa0d7-77c6-4fa3-83d8-379e78e2f61e
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 3500,
-          "y": 545
+          "x": 4865,
+          "y": 880
         }
       }
   "9":
@@ -246,27 +217,27 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_id:
-        simple: ${incident.deviceid}
+        simple: ${incident.mobileirondeviceid}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: This command is used to disable personal hotspot to the particular
         device based on device id
-      id: 0949ce15-b632-4dd8-8d32-6f8cb5bf8a35
+      id: 55e44f67-af5e-42d2-8c4d-4b362ab3867d
       iscommand: true
       name: Disable Personal Hotspot
       script: '|||mobileiron-core-disable-personal-hotspot'
       type: regular
       version: -1
-    taskid: 0949ce15-b632-4dd8-8d32-6f8cb5bf8a35
+    taskid: 55e44f67-af5e-42d2-8c4d-4b362ab3867d
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 3070,
-          "y": 545
+          "x": 4410,
+          "y": 880
         }
       }
   "10":
@@ -274,31 +245,31 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "15"
+      - "26"
     note: false
     quietmode: 0
     scriptarguments:
       device_id:
-        simple: ${incident.deviceid}
+        simple: ${incident.mobileirondeviceid}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: This command is used to unlock app connect container to the particular
         device based on device id
-      id: 20e90d47-cfa1-487d-8bf8-9f71c44d0919
+      id: 97bf0174-dda2-409c-8953-3920c25f3ef1
       iscommand: true
       name: Unlock App Connect Container
       script: '|||mobileiron-core-unlock-app-connect-container'
       type: regular
       version: -1
-    taskid: 20e90d47-cfa1-487d-8bf8-9f71c44d0919
+    taskid: 97bf0174-dda2-409c-8953-3920c25f3ef1
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1350,
+          "x": 1770,
           "y": 545
         }
       }
@@ -307,32 +278,32 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "15"
+      - "25"
     note: false
     quietmode: 0
     scriptarguments:
       device_id:
-        simple: ${incident.deviceid}
+        simple: ${incident.mobileirondeviceid}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: This command is used to retire device to the particular device
         based on device id
-      id: abb89236-fe3f-43cf-8769-e2ed2fa949a2
+      id: 0dae4269-d22f-47cf-88ed-3a3cdd4614c3
       iscommand: true
       name: Retire Device
       script: '|||mobileiron-core-retire-device'
       type: regular
       version: -1
-    taskid: abb89236-fe3f-43cf-8769-e2ed2fa949a2
+    taskid: 0dae4269-d22f-47cf-88ed-3a3cdd4614c3
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 920,
+          "y": 670
         }
       }
   "12":
@@ -340,32 +311,32 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "15"
+      - "25"
     note: false
     quietmode: 0
     scriptarguments:
       device_id:
-        simple: ${incident.deviceid}
+        simple: ${incident.mobileirondeviceid}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: This command is used to wipe device to the particular device based
         on device id
-      id: c4188137-8f13-46cf-855f-3f702b35b9e7
+      id: 1931dcf3-9121-422e-8c7d-4d41c3f344e6
       iscommand: true
       name: Wipe Device
       script: '|||mobileiron-core-wipe-device'
       type: regular
       version: -1
-    taskid: c4188137-8f13-46cf-855f-3f702b35b9e7
+    taskid: 1931dcf3-9121-422e-8c7d-4d41c3f344e6
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 2210,
-          "y": 545
+          "x": 695,
+          "y": 840
         }
       }
   "13":
@@ -373,31 +344,31 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "15"
+      - "25"
     note: false
     quietmode: 0
     scriptarguments:
       device_id:
-        simple: ${incident.deviceid}
+        simple: ${incident.mobileirondeviceid}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: This command is used to retire device to the particular device
         based on device id
-      id: 21f278e0-8026-4438-86c1-c53d4cf37e70
+      id: a99d98ee-75c2-4bbd-8eb9-068cc888c4bc
       iscommand: true
       name: Force Checkin
       script: '|||mobileiron-core-force-checkin'
       type: regular
       version: -1
-    taskid: 21f278e0-8026-4438-86c1-c53d4cf37e70
+    taskid: a99d98ee-75c2-4bbd-8eb9-068cc888c4bc
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 660,
           "y": 545
         }
       }
@@ -421,20 +392,20 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.close.inv
-      id: 7bcd43ae-0480-47f9-84be-7538288709f4
+      id: 8ea83951-e2f3-444c-8d81-241796e6187c
       iscommand: true
       name: CLOSE
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 7bcd43ae-0480-47f9-84be-7538288709f4
+    taskid: 8ea83951-e2f3-444c-8d81-241796e6187c
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 3060,
-          "y": 720
+          "x": 4135,
+          "y": 1255
         }
       }
   "16":
@@ -447,27 +418,27 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_id:
-        simple: ${incident.deviceid}
+        simple: ${incident.mobileirondeviceid}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: This command is used to enable data roaming to the particular device
         based on device id
-      id: b961a110-1d02-4e61-8963-72a2c0dcde6f
+      id: 72292fe2-9399-49de-8e5c-18b3a8d71caa
       iscommand: true
       name: Enable Data Roaming
       script: '|||mobileiron-core-enable-data-roaming'
       type: regular
       version: -1
-    taskid: b961a110-1d02-4e61-8963-72a2c0dcde6f
+    taskid: 72292fe2-9399-49de-8e5c-18b3a8d71caa
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 2640,
-          "y": 545
+          "x": 4810,
+          "y": 710
         }
       }
   "17":
@@ -480,27 +451,27 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_id:
-        simple: ${incident.deviceid}
+        simple: ${incident.mobileirondeviceid}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: This command is used to disable data roaming to the particular
         device based on device id
-      id: d207c463-68b6-4ed9-84f8-57c6b7c68634
+      id: 9a0c7872-5e10-4b11-84b1-00aad05dbe4c
       iscommand: true
       name: Disable Data Roaming
       script: '|||mobileiron-core-disable-data-roaming'
       type: regular
       version: -1
-    taskid: d207c463-68b6-4ed9-84f8-57c6b7c68634
+    taskid: 9a0c7872-5e10-4b11-84b1-00aad05dbe4c
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 5220,
-          "y": 545
+          "x": 3780,
+          "y": 1055
         }
       }
   "19":
@@ -541,18 +512,18 @@ tasks:
     task:
       brand: ""
       description: Verify device platform
-      id: 17d0d065-8a45-4686-803d-98f69193adbc
+      id: b316ef90-7be7-4134-82b1-5e143680da7c
       iscommand: false
       name: Verify Platform
       type: condition
       version: -1
-    taskid: 17d0d065-8a45-4686-803d-98f69193adbc
+    taskid: b316ef90-7be7-4134-82b1-5e143680da7c
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 1985,
           "y": 195
         }
       }
@@ -560,18 +531,18 @@ tasks:
     id: "20"
     ignoreworker: false
     nexttasks:
-      Force Checkin:
-      - "13"
-      Retire Device:
-      - "11"
-      SEND Message:
-      - "3"
+      FORCE CHECKIN:
+      - "30"
+      RETIRE DEVICE:
+      - "29"
+      SEND MESSAGE:
+      - "32"
+      UNLOCK DEVICE ONLY:
+      - "27"
       Unlock App Connect Container:
       - "10"
-      Unlock Device:
-      - "5"
-      Wipe Device:
-      - "12"
+      WIPE DEVICE:
+      - "28"
     note: false
     quietmode: 0
     separatecontext: false
@@ -579,18 +550,18 @@ tasks:
     task:
       brand: ""
       description: Android specific actions
-      id: e97ac258-3de4-460c-8047-4a118edf4e60
+      id: 23e41d5b-7d9d-472d-8223-d8a85b0f3891
       iscommand: false
       name: Android Actions
       type: condition
       version: -1
-    taskid: e97ac258-3de4-460c-8047-4a118edf4e60
+    taskid: 23e41d5b-7d9d-472d-8223-d8a85b0f3891
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 1985,
           "y": 370
         }
       }
@@ -610,18 +581,18 @@ tasks:
       - "8"
       Enable Voice Roaming:
       - "6"
-      Force Checkin:
-      - "13"
-      Retire Device:
-      - "11"
-      Send Message:
-      - "3"
+      FORCE CHECKIN:
+      - "34"
+      RETIRE DEVICE:
+      - "36"
+      SEND MESSAGE:
+      - "35"
       Unlock Device:
       - "5"
       Update OS:
       - "4"
-      Wipe Device:
-      - "12"
+      WIPE DEVICE:
+      - "33"
     note: false
     quietmode: 0
     separatecontext: false
@@ -629,18 +600,18 @@ tasks:
     task:
       brand: ""
       description: iOS specific actions
-      id: d98b12c3-9da0-4645-892f-b42523a82ce3
+      id: 6e2b859e-cbf8-4a8b-8c59-5b0a702a22b4
       iscommand: false
       name: iOS Actions
       type: condition
       version: -1
-    taskid: d98b12c3-9da0-4645-892f-b42523a82ce3
+    taskid: 6e2b859e-cbf8-4a8b-8c59-5b0a702a22b4
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 2855,
+          "x": 4135,
           "y": 370
         }
       }
@@ -652,8 +623,8 @@ tasks:
       - "13"
       Retire Device:
       - "11"
-      Send Message:
-      - "3"
+      SEND MESSAGE:
+      - "31"
       Wipe Device:
       - "12"
     note: false
@@ -663,19 +634,445 @@ tasks:
     task:
       brand: ""
       description: Actions related to other devices
-      id: d7d8bd01-320e-4ea3-8179-031caedc8d28
+      id: 3c3e73a0-7355-461e-8d07-a8d95462df50
       iscommand: false
-      name: Other Device Actions
+      name: General Device Actions
       type: condition
       version: -1
-    taskid: d7d8bd01-320e-4ea3-8179-031caedc8d28
+    taskid: 3c3e73a0-7355-461e-8d07-a8d95462df50
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 695,
           "y": 370
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: bc8deed1-c8ac-46a2-8ded-f07d79a73c6d
+      iscommand: true
+      name: CLOSE
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: bc8deed1-c8ac-46a2-8ded-f07d79a73c6d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1055
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 06f93975-577c-4809-8f22-895476ab6b82
+      iscommand: true
+      name: CLOSE
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 06f93975-577c-4809-8f22-895476ab6b82
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1985,
+          "y": 1160
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${incident.mobileirondeviceid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This command is used to unlock device to the particular device
+        based on device id
+      id: 7d1fb79f-0554-419c-8fb8-0a3e368d1dc2
+      iscommand: true
+      name: Unlock Device  Only
+      script: '|||mobileiron-core-unlock-device-only'
+      type: regular
+      version: -1
+    taskid: 7d1fb79f-0554-419c-8fb8-0a3e368d1dc2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 545
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${incident.mobileirondeviceid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This command is used to wipe device to the particular device based
+        on device id
+      id: 2d60c6ce-9c10-4f3d-8759-1a2ac3476e01
+      iscommand: true
+      name: Wipe Device
+      script: '|||mobileiron-core-wipe-device'
+      type: regular
+      version: -1
+    taskid: 2d60c6ce-9c10-4f3d-8759-1a2ac3476e01
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2405,
+          "y": 685
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${incident.mobileirondeviceid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This command is used to retire device to the particular device
+        based on device id
+      id: 107ec769-fca2-4c1f-85bd-1a6ebdd8e1ac
+      iscommand: true
+      name: Retire Device
+      script: '|||mobileiron-core-retire-device'
+      type: regular
+      version: -1
+    taskid: 107ec769-fca2-4c1f-85bd-1a6ebdd8e1ac
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1535,
+          "y": 685
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${incident.mobileirondeviceid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This command is used to retire device to the particular device
+        based on device id
+      id: ec6b6d30-16bc-4c2d-894e-0d78be21353a
+      iscommand: true
+      name: Force Checkin
+      script: '|||mobileiron-core-force-checkin'
+      type: regular
+      version: -1
+    taskid: ec6b6d30-16bc-4c2d-894e-0d78be21353a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1975,
+          "y": 685
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${incident.mobileirondeviceid}
+      message:
+        simple: ${inputs.message}
+      message_type:
+        simple: pns
+      push_message:
+        simple: pns
+      subject:
+        simple: ${inputs.subject}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This command is used to send a message to the particular device
+        based on device id
+      id: 77bba84d-59f5-4ec5-8eca-d7158d168a9f
+      iscommand: true
+      name: Send Message
+      script: '|||mobileiron-core-send-message'
+      type: regular
+      version: -1
+    taskid: 77bba84d-59f5-4ec5-8eca-d7158d168a9f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 670
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${incident.mobileirondeviceid}
+      message:
+        simple: ${inputs.message}
+      message_type:
+        simple: pns
+      push_message:
+        simple: pns
+      subject:
+        simple: ${inputs.subject}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This command is used to send a message to the particular device
+        based on device id
+      id: 1bb5eba9-5792-4d33-87f7-a1f8015553ff
+      iscommand: true
+      name: Send Message
+      script: '|||mobileiron-core-send-message'
+      type: regular
+      version: -1
+    taskid: 1bb5eba9-5792-4d33-87f7-a1f8015553ff
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1850,
+          "y": 840
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${incident.mobileirondeviceid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This command is used to wipe device to the particular device based
+        on device id
+      id: fc9b7b53-b08b-4cf5-86b5-9601cc8f7370
+      iscommand: true
+      name: Wipe Device
+      script: '|||mobileiron-core-wipe-device'
+      type: regular
+      version: -1
+    taskid: fc9b7b53-b08b-4cf5-86b5-9601cc8f7370
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 3920,
+          "y": 530
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${incident.mobileirondeviceid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This command is used to retire device to the particular device
+        based on device id
+      id: 9b136bba-af4f-48e5-889c-5d8d025582a7
+      iscommand: true
+      name: Force Checkin
+      script: '|||mobileiron-core-force-checkin'
+      type: regular
+      version: -1
+    taskid: 9b136bba-af4f-48e5-889c-5d8d025582a7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 4350,
+          "y": 530
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${incident.mobileirondeviceid}
+      message:
+        simple: ${inputs.message}
+      message_type:
+        simple: pns
+      push_message:
+        simple: pns
+      subject:
+        simple: ${inputs.subject}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This command is used to send a message to the particular device
+        based on device id
+      id: 85203d8f-2789-4c14-881d-cfff91fbc94e
+      iscommand: true
+      name: Send Message
+      script: '|||mobileiron-core-send-message'
+      type: regular
+      version: -1
+    taskid: 85203d8f-2789-4c14-881d-cfff91fbc94e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 3460,
+          "y": 710
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${incident.mobileirondeviceid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This command is used to retire device to the particular device
+        based on device id
+      id: 28e4453c-bdbb-4297-8df1-036372c910d1
+      iscommand: true
+      name: Retire Device
+      script: '|||mobileiron-core-retire-device'
+      type: regular
+      version: -1
+    taskid: 28e4453c-bdbb-4297-8df1-036372c910d1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 3890,
+          "y": 710
         }
       }
 version: -1
@@ -683,20 +1080,16 @@ view: |-
   {
     "linkLabelsPosition": {
       "19_21_iOS": 0.74,
-      "20_13_Force Checkin": 0.33,
-      "20_5_Unlock Device": 0.54,
-      "21_11_Retire Device": 0.16,
       "21_17_Disable Data Roaming": 0.88,
       "21_5_Unlock Device": 0.84,
       "21_7_Disable Voice Roaming": 0.89,
-      "24_13_Force Checkin": 0.26,
-      "24_3_Send Message": 0.11
+      "24_13_Force Checkin": 0.26
     },
     "paper": {
       "dimensions": {
-        "height": 765,
-        "width": 5550,
-        "x": 50,
+        "height": 1300,
+        "width": 4795,
+        "x": 450,
         "y": 50
       }
     }

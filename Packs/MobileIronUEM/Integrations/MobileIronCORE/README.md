@@ -241,38 +241,38 @@ This command is used to get a list of devices matching the provided query
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MobileIronCore.Device.common.model | String | Model | 
-| MobileIronCore.Device.common.os_version | String | OS Version | 
-| MobileIronCore.Device.common.platform | String | Platform Name | 
-| MobileIronCore.Device.common.status | String | Status | 
-| MobileIronCore.Device.common.imei | String | IMEI | 
-| MobileIronCore.Device.common.platform | String | Platform | 
-| MobileIronCore.Device.common.security_state | String | Security State | 
-| MobileIronCore.Device.user.display_name | String | Display Name | 
-| MobileIronCore.Device.common.last_connected_at | Date | Last Connected At | 
-| MobileIronCore.Device.common.uuid | String | Device UUID | 
-| MobileIronCore.Device.common.quarantined | Boolean | Quarantined | 
-| MobileIronCore.Device.common.id | Number | Device ID | 
-| MobileIronCore.Device.common.imsi | String | IMSI | 
-| MobileIronCore.Device.common.owner | String | Device Owner | 
-| MobileIronCore.Device.user.email_address | String | User Email Address | 
-| MobileIronCore.Device.common.manufacturer | String | Manufacturer | 
-| MobileIronCore.Device.common.compliant | Boolean | Compliant | 
-| MobileIronCore.Device.user.user_id | String | User ID | 
-| MobileIronCore.Device.common.registration_date | Date | Registration Date | 
-| MobileIronCore.Device.common.wifi_mac_address | String | Wifi MAC Address | 
-| MobileIronCore.Device.common.noncompliance_reasons | String | Non compliance Reasons | 
-| MobileIronCore.Device.ios.iPhone UDID | String | iPhone UDID | 
-| MobileIronCore.Device.ios.iPhone MAC_ADDRESS_EN0 | String | IPhone MAC Address EN0 | 
-| MobileIronCore.Device.ios.Current MCC | String | Current MCC | 
-| MobileIronCore.Device.common.current_country_code | String | Current country code | 
-| MobileIronCore.Device.user.sam_account_name | String | SAM account name | 
-| MobileIronCore.Device.common.current_country_name | String | Current country name | 
-| MobileIronCore.Device.common.home_country_name | String | Home country name | 
-| MobileIronCore.Device.common.home_country_code | String | Home country code | 
-| MobileIronCore.Device.common.device_is_compromised | Boolean | True if device is compromised | 
-| MobileIronCore.Device.common.SerialNumber | String | Device serial number | 
-| MobileIronCore.Device.common.mdm_managed | Boolean | Device is MDM managed | 
+| MobileIronCore.Device.common_model | String | Model | 
+| MobileIronCore.Device.common_os_version | String | OS Version | 
+| MobileIronCore.Device.common_platform | String | Platform Name | 
+| MobileIronCore.Device.common_status | String | Status | 
+| MobileIronCore.Device.common_imei | String | IMEI | 
+| MobileIronCore.Device.common_platform | String | Platform | 
+| MobileIronCore.Device.common_security_state | String | Security State | 
+| MobileIronCore.Device.user_display_name | String | Display Name | 
+| MobileIronCore.Device.common_last_connected_at | Date | Last Connected At | 
+| MobileIronCore.Device.common_uuid | String | Device UUID | 
+| MobileIronCore.Device.common_quarantined | Boolean | Quarantined | 
+| MobileIronCore.Device.common_id | Number | Device ID | 
+| MobileIronCore.Device.common_imsi | String | IMSI | 
+| MobileIronCore.Device.common_owner | String | Device Owner | 
+| MobileIronCore.Device.user_email_address | String | User Email Address | 
+| MobileIronCore.Device.common_manufacturer | String | Manufacturer | 
+| MobileIronCore.Device.common_compliant | Boolean | Compliant | 
+| MobileIronCore.Device.user_user_id | String | User ID | 
+| MobileIronCore.Device.common_registration_date | Date | Registration Date | 
+| MobileIronCore.Device.common_wifi_mac_address | String | Wifi MAC Address | 
+| MobileIronCore.Device.common_noncompliance_reasons | String | Non compliance Reasons | 
+| MobileIronCore.Device.ios_iPhone_UDID | String | iPhone UDID | 
+| MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0 | String | IPhone MAC Address EN0 | 
+| MobileIronCore.Device.ios_Current_MCC | String | Current MCC | 
+| MobileIronCore.Device.common_current_country_code | String | Current country code | 
+| MobileIronCore.Device.user_sam_account_name | String | SAM account name | 
+| MobileIronCore.Device.common_current_country_name | String | Current country name | 
+| MobileIronCore.Device.common_home_country_name | String | Home country name | 
+| MobileIronCore.Device.common_home_country_code | String | Home country code | 
+| MobileIronCore.Device.common_device_is_compromised | Boolean | True if device is compromised | 
+| MobileIronCore.Device.common_SerialNumber | String | Device serial number | 
+| MobileIronCore.Device.common_mdm_managed | Boolean | Device is MDM managed | 
 
 
 #### Command Example
@@ -284,32 +284,32 @@ This command is used to get a list of devices matching the provided query
     "MobileIronCore": {
         "Device": [
             {
-              "common.wifi_mac_address": "",
-              "common.noncompliance_reasons": [
+              "common_wifi_mac_address": "",
+              "common_noncompliance_reasons": [
                 "DEVICE_ADMIN_DEACTIVE"
               ],
-              "ios.iPhone UDID": "",
-              "common.device_is_compromised": false,
-              "common.SerialNumber": "",
-              "common.mdm_managed": false,
-              "common.model": "Pixel",
-              "common.os_version": "10.0",
-              "common.status": "ACTIVE",
-              "common.imei": "",
-              "common.platform": "Android",
-              "common.security_state": "Ok",
-              "user.display_name": "*****",
-              "common.last_connected_at": "2020-11-09T07:38:22.000Z",
-              "common.uuid": "",
-              "common.quarantined": false,
-              "common.id": 3,
-              "common.imsi": "*****",
-              "common.owner": "COMPANY",
-              "user.email_address": "*****",
-              "common.manufacturer": "Google",
-              "common.compliant": false,
-              "user.user_id": "*****",
-              "common.registration_date": "2020-10-29T14:11:39.000Z"
+              "ios_iPhone_UDID": "",
+              "common_device_is_compromised": false,
+              "common_SerialNumber": "",
+              "common_mdm_managed": false,
+              "common_model": "Pixel",
+              "common_os_version": "10.0",
+              "common_status": "ACTIVE",
+              "common_imei": "",
+              "common_platform": "Android",
+              "common_security_state": "Ok",
+              "user_display_name": "*****",
+              "common_last_connected_at": "2020-11-09T07:38:22.000Z",
+              "common_uuid": "",
+              "common_quarantined": false,
+              "common_id": 3,
+              "common_imsi": "*****",
+              "common_owner": "COMPANY",
+              "user_email_address": "*****",
+              "common_manufacturer": "Google",
+              "common_compliant": false,
+              "user_user_id": "*****",
+              "common_registration_date": "2020-10-29T14:11:39.000Z"
             }
         ]
     }
@@ -337,38 +337,38 @@ This command is used to get a single device based on the device uuid
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MobileIronCore.Device.common.model | String | Model | 
-| MobileIronCore.Device.common.os_version | String | OS Version | 
-| MobileIronCore.Device.common.platform | String | Platform Name | 
-| MobileIronCore.Device.common.status | String | Status | 
-| MobileIronCore.Device.common.imei | String | IMEI | 
-| MobileIronCore.Device.common.platform | String | Platform | 
-| MobileIronCore.Device.common.security_state | String | Security State | 
-| MobileIronCore.Device.user.display_name | String | Display Name | 
-| MobileIronCore.Device.common.last_connected_at | Date | Last Connected At | 
-| MobileIronCore.Device.common.uuid | String | Device UUID | 
-| MobileIronCore.Device.common.quarantined | Boolean | Quarantined | 
-| MobileIronCore.Device.common.id | Number | Device ID | 
-| MobileIronCore.Device.common.imsi | String | IMSI | 
-| MobileIronCore.Device.common.owner | String | Device Owner | 
-| MobileIronCore.Device.user.email_address | String | User Email Address | 
-| MobileIronCore.Device.common.manufacturer | String | Manufacturer | 
-| MobileIronCore.Device.common.compliant | Boolean | Compliant | 
-| MobileIronCore.Device.user.user_id | String | User ID | 
-| MobileIronCore.Device.common.registration_date | Date | Registration Date | 
-| MobileIronCore.Device.common.wifi_mac_address | String | Wifi MAC Address | 
-| MobileIronCore.Device.common.noncompliance_reasons | String | Non compliance Reasons | 
-| MobileIronCore.Device.ios.iPhone UDID | String | iPhone UDID | 
-| MobileIronCore.Device.ios.iPhone MAC_ADDRESS_EN0 | String | IPhone MAC Address EN0 | 
-| MobileIronCore.Device.ios.Current MCC | String | Current MCC | 
-| MobileIronCore.Device.common.current_country_code | String | Current country code | 
-| MobileIronCore.Device.user.sam_account_name | String | SAM account name | 
-| MobileIronCore.Device.common.current_country_name | String | Current country name | 
-| MobileIronCore.Device.common.home_country_name | String | Home country name | 
-| MobileIronCore.Device.common.home_country_code | String | Home country code | 
-| MobileIronCore.Device.common.device_is_compromised | Boolean | True if device is compromised | 
-| MobileIronCore.Device.common.SerialNumber | String | Device serial number | 
-| MobileIronCore.Device.common.mdm_managed | Boolean | Device is MDM managed | 
+| MobileIronCore.Device.common_model | String | Model | 
+| MobileIronCore.Device.common_os_version | String | OS Version | 
+| MobileIronCore.Device.common_platform | String | Platform Name | 
+| MobileIronCore.Device.common_status | String | Status | 
+| MobileIronCore.Device.common_imei | String | IMEI | 
+| MobileIronCore.Device.common_platform | String | Platform | 
+| MobileIronCore.Device.common_security_state | String | Security State | 
+| MobileIronCore.Device.user_display_name | String | Display Name | 
+| MobileIronCore.Device.common_last_connected_at | Date | Last Connected At | 
+| MobileIronCore.Device.common_uuid | String | Device UUID | 
+| MobileIronCore.Device.common_quarantined | Boolean | Quarantined | 
+| MobileIronCore.Device.common_id | Number | Device ID | 
+| MobileIronCore.Device.common_imsi | String | IMSI | 
+| MobileIronCore.Device.common_owner | String | Device Owner | 
+| MobileIronCore.Device.user_email_address | String | User Email Address | 
+| MobileIronCore.Device.common_manufacturer | String | Manufacturer | 
+| MobileIronCore.Device.common_compliant | Boolean | Compliant | 
+| MobileIronCore.Device.user_user_id | String | User ID | 
+| MobileIronCore.Device.common_registration_date | Date | Registration Date | 
+| MobileIronCore.Device.common_wifi_mac_address | String | Wifi MAC Address | 
+| MobileIronCore.Device.common_noncompliance_reasons | String | Non compliance Reasons | 
+| MobileIronCore.Device.ios_iPhone_UDID | String | iPhone UDID | 
+| MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0 | String | IPhone MAC Address EN0 | 
+| MobileIronCore.Device.ios_Current_MCC | String | Current MCC | 
+| MobileIronCore.Device.common_current_country_code | String | Current country code | 
+| MobileIronCore.Device.user_sam_account_name | String | SAM account name | 
+| MobileIronCore.Device.common_current_country_name | String | Current country name | 
+| MobileIronCore.Device.common_home_country_name | String | Home country name | 
+| MobileIronCore.Device.common_home_country_code | String | Home country code | 
+| MobileIronCore.Device.common_device_is_compromised | Boolean | True if device is compromised | 
+| MobileIronCore.Device.common_SerialNumber | String | Device serial number | 
+| MobileIronCore.Device.common_mdm_managed | Boolean | Device is MDM managed | 
 
 
 #### Command Example
@@ -379,32 +379,32 @@ This command is used to get a single device based on the device uuid
 {
     "MobileIronCore": {
         "Device": {
-          "common.wifi_mac_address": "",
-          "common.noncompliance_reasons": [
+          "common_wifi_mac_address": "",
+          "common_noncompliance_reasons": [
             "DEVICE_ADMIN_DEACTIVE"
           ],
-          "ios.iPhone UDID": "",
-          "common.device_is_compromised": false,
-          "common.SerialNumber": "",
-          "common.mdm_managed": false,
-          "common.model": "Pixel",
-          "common.os_version": "10.0",
-          "common.status": "ACTIVE",
-          "common.imei": "",
-          "common.platform": "Android",
-          "common.security_state": "Ok",
-          "user.display_name": "*****",
-          "common.last_connected_at": "2020-11-09T07:38:22.000Z",
-          "common.uuid": "",
-          "common.quarantined": false,
-          "common.id": 3,
-          "common.imsi": "*****",
-          "common.owner": "COMPANY",
-          "user.email_address": "*****",
-          "common.manufacturer": "Google",
-          "common.compliant": false,
-          "user.user_id": "*****",
-          "common.registration_date": "2020-10-29T14:11:39.000Z"
+          "ios_iPhone_UDID": "",
+          "common_device_is_compromised": false,
+          "common_SerialNumber": "",
+          "common_mdm_managed": false,
+          "common_model": "Pixel",
+          "common_os_version": "10.0",
+          "common_status": "ACTIVE",
+          "common_imei": "",
+          "common_platform": "Android",
+          "common_security_state": "Ok",
+          "user_display_name": "*****",
+          "common_last_connected_at": "2020-11-09T07:38:22.000Z",
+          "common_uuid": "",
+          "common_quarantined": false,
+          "common_id": 3,
+          "common_imsi": "*****",
+          "common_owner": "COMPANY",
+          "user_email_address": "*****",
+          "common_manufacturer": "Google",
+          "common_compliant": false,
+          "user_user_id": "*****",
+          "common_registration_date": "2020-10-29T14:11:39.000Z"
         }
     }
 }
@@ -429,38 +429,38 @@ This command is used to get a single device based on the device serial number
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MobileIronCore.Device.common.model | String | Model | 
-| MobileIronCore.Device.common.os_version | String | OS Version | 
-| MobileIronCore.Device.common.platform | String | Platform Name | 
-| MobileIronCore.Device.common.status | String | Status | 
-| MobileIronCore.Device.common.imei | String | IMEI | 
-| MobileIronCore.Device.common.platform | String | Platform | 
-| MobileIronCore.Device.common.security_state | String | Security State | 
-| MobileIronCore.Device.user.display_name | String | Display Name | 
-| MobileIronCore.Device.common.last_connected_at | Date | Last Connected At | 
-| MobileIronCore.Device.common.uuid | String | Device UUID | 
-| MobileIronCore.Device.common.quarantined | Boolean | Quarantined | 
-| MobileIronCore.Device.common.id | Number | Device ID | 
-| MobileIronCore.Device.common.imsi | String | IMSI | 
-| MobileIronCore.Device.common.owner | String | Device Owner | 
-| MobileIronCore.Device.user.email_address | String | User Email Address | 
-| MobileIronCore.Device.common.manufacturer | String | Manufacturer | 
-| MobileIronCore.Device.common.compliant | Boolean | Compliant | 
-| MobileIronCore.Device.user.user_id | String | User ID | 
-| MobileIronCore.Device.common.registration_date | Date | Registration Date | 
-| MobileIronCore.Device.common.wifi_mac_address | String | Wifi MAC Address | 
-| MobileIronCore.Device.common.noncompliance_reasons | String | Non compliance Reasons | 
-| MobileIronCore.Device.ios.iPhone UDID | String | iPhone UDID | 
-| MobileIronCore.Device.ios.iPhone MAC_ADDRESS_EN0 | String | IPhone MAC Address EN0 | 
-| MobileIronCore.Device.ios.Current MCC | String | Current MCC | 
-| MobileIronCore.Device.common.current_country_code | String | Current country code | 
-| MobileIronCore.Device.user.sam_account_name | String | SAM account name | 
-| MobileIronCore.Device.common.current_country_name | String | Current country name | 
-| MobileIronCore.Device.common.home_country_name | String | Home country name | 
-| MobileIronCore.Device.common.home_country_code | String | Home country code | 
-| MobileIronCore.Device.common.device_is_compromised | Boolean | True if device is compromised | 
-| MobileIronCore.Device.common.SerialNumber | String | Device serial number | 
-| MobileIronCore.Device.common.mdm_managed | Boolean | Device is MDM managed | 
+| MobileIronCore.Device.common_model | String | Model | 
+| MobileIronCore.Device.common_os_version | String | OS Version | 
+| MobileIronCore.Device.common_platform | String | Platform Name | 
+| MobileIronCore.Device.common_status | String | Status | 
+| MobileIronCore.Device.common_imei | String | IMEI | 
+| MobileIronCore.Device.common_platform | String | Platform | 
+| MobileIronCore.Device.common_security_state | String | Security State | 
+| MobileIronCore.Device.user_display_name | String | Display Name | 
+| MobileIronCore.Device.common_last_connected_at | Date | Last Connected At | 
+| MobileIronCore.Device.common_uuid | String | Device UUID | 
+| MobileIronCore.Device.common_quarantined | Boolean | Quarantined | 
+| MobileIronCore.Device.common_id | Number | Device ID | 
+| MobileIronCore.Device.common_imsi | String | IMSI | 
+| MobileIronCore.Device.common_owner | String | Device Owner | 
+| MobileIronCore.Device.user_email_address | String | User Email Address | 
+| MobileIronCore.Device.common_manufacturer | String | Manufacturer | 
+| MobileIronCore.Device.common_compliant | Boolean | Compliant | 
+| MobileIronCore.Device.user_user_id | String | User ID | 
+| MobileIronCore.Device.common_registration_date | Date | Registration Date | 
+| MobileIronCore.Device.common_wifi_mac_address | String | Wifi MAC Address | 
+| MobileIronCore.Device.common_noncompliance_reasons | String | Non compliance Reasons | 
+| MobileIronCore.Device.ios_iPhone_UDID | String | iPhone UDID | 
+| MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0 | String | IPhone MAC Address EN0 | 
+| MobileIronCore.Device.ios_Current_MCC | String | Current MCC | 
+| MobileIronCore.Device.common_current_country_code | String | Current country code | 
+| MobileIronCore.Device.user_sam_account_name | String | SAM account name | 
+| MobileIronCore.Device.common_current_country_name | String | Current country name | 
+| MobileIronCore.Device.common_home_country_name | String | Home country name | 
+| MobileIronCore.Device.common_home_country_code | String | Home country code | 
+| MobileIronCore.Device.common_device_is_compromised | Boolean | True if device is compromised | 
+| MobileIronCore.Device.common_SerialNumber | String | Device serial number | 
+| MobileIronCore.Device.common_mdm_managed | Boolean | Device is MDM managed | 
 
 
 #### Command Example
@@ -472,32 +472,32 @@ This command is used to get a single device based on the device serial number
 {
     "MobileIronCore": {
         "Device": {
-          "common.wifi_mac_address": "",
-          "common.noncompliance_reasons": [
+          "common_wifi_mac_address": "",
+          "common_noncompliance_reasons": [
             "DEVICE_ADMIN_DEACTIVE"
           ],
-          "ios.iPhone UDID": "",
-          "common.device_is_compromised": false,
-          "common.SerialNumber": "",
-          "common.mdm_managed": false,
-          "common.model": "Pixel",
-          "common.os_version": "10.0",
-          "common.status": "ACTIVE",
-          "common.imei": "",
-          "common.platform": "Android",
-          "common.security_state": "Ok",
-          "user.display_name": "*****",
-          "common.last_connected_at": "2020-11-09T07:38:22.000Z",
-          "common.uuid": "",
-          "common.quarantined": false,
-          "common.id": 3,
-          "common.imsi": "*****",
-          "common.owner": "COMPANY",
-          "user.email_address": "*****",
-          "common.manufacturer": "Google",
-          "common.compliant": false,
-          "user.user_id": "*****",
-          "common.registration_date": "2020-10-29T14:11:39.000Z"
+          "ios_iPhone_UDID": "",
+          "common_device_is_compromised": false,
+          "common_SerialNumber": "",
+          "common_mdm_managed": false,
+          "common_model": "Pixel",
+          "common_os_version": "10.0",
+          "common_status": "ACTIVE",
+          "common_imei": "",
+          "common_platform": "Android",
+          "common_security_state": "Ok",
+          "user_display_name": "*****",
+          "common_last_connected_at": "2020-11-09T07:38:22.000Z",
+          "common_uuid": "",
+          "common_quarantined": false,
+          "common_id": 3,
+          "common_imsi": "*****",
+          "common_owner": "COMPANY",
+          "user_email_address": "*****",
+          "common_manufacturer": "Google",
+          "common_compliant": false,
+          "user_user_id": "*****",
+          "common_registration_date": "2020-10-29T14:11:39.000Z"
         }
     }
 }
@@ -524,38 +524,38 @@ This command is used to get a single device based on the device wifi mac address
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MobileIronCore.Device.common.model | String | Model | 
-| MobileIronCore.Device.common.os_version | String | OS Version | 
-| MobileIronCore.Device.common.platform | String | Platform Name | 
-| MobileIronCore.Device.common.status | String | Status | 
-| MobileIronCore.Device.common.imei | String | IMEI | 
-| MobileIronCore.Device.common.platform | String | Platform | 
-| MobileIronCore.Device.common.security_state | String | Security State | 
-| MobileIronCore.Device.user.display_name | String | Display Name | 
-| MobileIronCore.Device.common.last_connected_at | Date | Last Connected At | 
-| MobileIronCore.Device.common.uuid | String | Device UUID | 
-| MobileIronCore.Device.common.quarantined | Boolean | Quarantined | 
-| MobileIronCore.Device.common.id | Number | Device ID | 
-| MobileIronCore.Device.common.imsi | String | IMSI | 
-| MobileIronCore.Device.common.owner | String | Device Owner | 
-| MobileIronCore.Device.user.email_address | String | User Email Address | 
-| MobileIronCore.Device.common.manufacturer | String | Manufacturer | 
-| MobileIronCore.Device.common.compliant | Boolean | Compliant | 
-| MobileIronCore.Device.user.user_id | String | User ID | 
-| MobileIronCore.Device.common.registration_date | Date | Registration Date | 
-| MobileIronCore.Device.common.wifi_mac_address | String | Wifi MAC Address | 
-| MobileIronCore.Device.common.noncompliance_reasons | String | Non compliance Reasons | 
-| MobileIronCore.Device.ios.iPhone UDID | String | iPhone UDID | 
-| MobileIronCore.Device.ios.iPhone MAC_ADDRESS_EN0 | String | IPhone MAC Address EN0 | 
-| MobileIronCore.Device.ios.Current MCC | String | Current MCC | 
-| MobileIronCore.Device.common.current_country_code | String | Current country code | 
-| MobileIronCore.Device.user.sam_account_name | String | SAM account name | 
-| MobileIronCore.Device.common.current_country_name | String | Current country name | 
-| MobileIronCore.Device.common.home_country_name | String | Home country name | 
-| MobileIronCore.Device.common.home_country_code | String | Home country code | 
-| MobileIronCore.Device.common.device_is_compromised | Boolean | True if device is compromised | 
-| MobileIronCore.Device.common.SerialNumber | String | Device serial number | 
-| MobileIronCore.Device.common.mdm_managed | Boolean | Device is MDM managed | 
+| MobileIronCore.Device.common_model | String | Model | 
+| MobileIronCore.Device.common_os_version | String | OS Version | 
+| MobileIronCore.Device.common_platform | String | Platform Name | 
+| MobileIronCore.Device.common_status | String | Status | 
+| MobileIronCore.Device.common_imei | String | IMEI | 
+| MobileIronCore.Device.common_platform | String | Platform | 
+| MobileIronCore.Device.common_security_state | String | Security State | 
+| MobileIronCore.Device.user_display_name | String | Display Name | 
+| MobileIronCore.Device.common_last_connected_at | Date | Last Connected At | 
+| MobileIronCore.Device.common_uuid | String | Device UUID | 
+| MobileIronCore.Device.common_quarantined | Boolean | Quarantined | 
+| MobileIronCore.Device.common_id | Number | Device ID | 
+| MobileIronCore.Device.common_imsi | String | IMSI | 
+| MobileIronCore.Device.common_owner | String | Device Owner | 
+| MobileIronCore.Device.user_email_address | String | User Email Address | 
+| MobileIronCore.Device.common_manufacturer | String | Manufacturer | 
+| MobileIronCore.Device.common_compliant | Boolean | Compliant | 
+| MobileIronCore.Device.user_user_id | String | User ID | 
+| MobileIronCore.Device.common_registration_date | Date | Registration Date | 
+| MobileIronCore.Device.common_wifi_mac_address | String | Wifi MAC Address | 
+| MobileIronCore.Device.common_noncompliance_reasons | String | Non compliance Reasons | 
+| MobileIronCore.Device.ios_iPhone_UDID | String | iPhone UDID | 
+| MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0 | String | IPhone MAC Address EN0 | 
+| MobileIronCore.Device.ios_Current_MCC | String | Current MCC | 
+| MobileIronCore.Device.common_current_country_code | String | Current country code | 
+| MobileIronCore.Device.user_sam_account_name | String | SAM account name | 
+| MobileIronCore.Device.common_current_country_name | String | Current country name | 
+| MobileIronCore.Device.common_home_country_name | String | Home country name | 
+| MobileIronCore.Device.common_home_country_code | String | Home country code | 
+| MobileIronCore.Device.common_device_is_compromised | Boolean | True if device is compromised | 
+| MobileIronCore.Device.common_SerialNumber | String | Device serial number | 
+| MobileIronCore.Device.common_mdm_managed | Boolean | Device is MDM managed | 
 
 
 #### Command Example
@@ -567,32 +567,32 @@ This command is used to get a single device based on the device wifi mac address
 {
     "MobileIronCore": {
         "Device": {
-          "common.wifi_mac_address": "",
-          "common.noncompliance_reasons": [
+          "common_wifi_mac_address": "",
+          "common_noncompliance_reasons": [
             "DEVICE_ADMIN_DEACTIVE"
           ],
-          "ios.iPhone UDID": "",
-          "common.device_is_compromised": false,
-          "common.SerialNumber": "",
-          "common.mdm_managed": false,
-          "common.model": "Pixel",
-          "common.os_version": "10.0",
-          "common.status": "ACTIVE",
-          "common.imei": "",
-          "common.platform": "Android",
-          "common.security_state": "Ok",
-          "user.display_name": "*****",
-          "common.last_connected_at": "2020-11-09T07:38:22.000Z",
-          "common.uuid": "",
-          "common.quarantined": false,
-          "common.id": 3,
-          "common.imsi": "*****",
-          "common.owner": "COMPANY",
-          "user.email_address": "*****",
-          "common.manufacturer": "Google",
-          "common.compliant": false,
-          "user.user_id": "*****",
-          "common.registration_date": "2020-10-29T14:11:39.000Z"
+          "ios_iPhone_UDID": "",
+          "common_device_is_compromised": false,
+          "common_SerialNumber": "",
+          "common_mdm_managed": false,
+          "common_model": "Pixel",
+          "common_os_version": "10.0",
+          "common_status": "ACTIVE",
+          "common_imei": "",
+          "common_platform": "Android",
+          "common_security_state": "Ok",
+          "user_display_name": "*****",
+          "common_last_connected_at": "2020-11-09T07:38:22.000Z",
+          "common_uuid": "",
+          "common_quarantined": false,
+          "common_id": 3,
+          "common_imsi": "*****",
+          "common_owner": "COMPANY",
+          "user_email_address": "*****",
+          "common_manufacturer": "Google",
+          "common_compliant": false,
+          "user_user_id": "*****",
+          "common_registration_date": "2020-10-29T14:11:39.000Z"
         }
     }
 }
@@ -617,38 +617,38 @@ This command is used to get a single device based on the device ip
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MobileIronCore.Device.common.model | String | Model | 
-| MobileIronCore.Device.common.os_version | String | OS Version | 
-| MobileIronCore.Device.common.platform | String | Platform Name | 
-| MobileIronCore.Device.common.status | String | Status | 
-| MobileIronCore.Device.common.imei | String | IMEI | 
-| MobileIronCore.Device.common.platform | String | Platform | 
-| MobileIronCore.Device.common.security_state | String | Security State | 
-| MobileIronCore.Device.user.display_name | String | Display Name | 
-| MobileIronCore.Device.common.last_connected_at | Date | Last Connected At | 
-| MobileIronCore.Device.common.uuid | String | Device UUID | 
-| MobileIronCore.Device.common.quarantined | Boolean | Quarantined | 
-| MobileIronCore.Device.common.id | Number | Device ID | 
-| MobileIronCore.Device.common.imsi | String | IMSI | 
-| MobileIronCore.Device.common.owner | String | Device Owner | 
-| MobileIronCore.Device.user.email_address | String | User Email Address | 
-| MobileIronCore.Device.common.manufacturer | String | Manufacturer | 
-| MobileIronCore.Device.common.compliant | Boolean | Compliant | 
-| MobileIronCore.Device.user.user_id | String | User ID | 
-| MobileIronCore.Device.common.registration_date | Date | Registration Date | 
-| MobileIronCore.Device.common.wifi_mac_address | String | Wifi MAC Address | 
-| MobileIronCore.Device.common.noncompliance_reasons | String | Non compliance Reasons | 
-| MobileIronCore.Device.ios.iPhone UDID | String | iPhone UDID | 
-| MobileIronCore.Device.ios.iPhone MAC_ADDRESS_EN0 | String | IPhone MAC Address EN0 | 
-| MobileIronCore.Device.ios.Current MCC | String | Current MCC | 
-| MobileIronCore.Device.common.current_country_code | String | Current country code | 
-| MobileIronCore.Device.user.sam_account_name | String | SAM account name | 
-| MobileIronCore.Device.common.current_country_name | String | Current country name | 
-| MobileIronCore.Device.common.home_country_name | String | Home country name | 
-| MobileIronCore.Device.common.home_country_code | String | Home country code | 
-| MobileIronCore.Device.common.device_is_compromised | Boolean | True if device is compromised | 
-| MobileIronCore.Device.common.SerialNumber | String | Device serial number | 
-| MobileIronCore.Device.common.mdm_managed | Boolean | Device is MDM managed | 
+| MobileIronCore.Device.common_model | String | Model | 
+| MobileIronCore.Device.common_os_version | String | OS Version | 
+| MobileIronCore.Device.common_platform | String | Platform Name | 
+| MobileIronCore.Device.common_status | String | Status | 
+| MobileIronCore.Device.common_imei | String | IMEI | 
+| MobileIronCore.Device.common_platform | String | Platform | 
+| MobileIronCore.Device.common_security_state | String | Security State | 
+| MobileIronCore.Device.user_display_name | String | Display Name | 
+| MobileIronCore.Device.common_last_connected_at | Date | Last Connected At | 
+| MobileIronCore.Device.common_uuid | String | Device UUID | 
+| MobileIronCore.Device.common_quarantined | Boolean | Quarantined | 
+| MobileIronCore.Device.common_id | Number | Device ID | 
+| MobileIronCore.Device.common_imsi | String | IMSI | 
+| MobileIronCore.Device.common_owner | String | Device Owner | 
+| MobileIronCore.Device.user_email_address | String | User Email Address | 
+| MobileIronCore.Device.common_manufacturer | String | Manufacturer | 
+| MobileIronCore.Device.common_compliant | Boolean | Compliant | 
+| MobileIronCore.Device.user_user_id | String | User ID | 
+| MobileIronCore.Device.common_registration_date | Date | Registration Date | 
+| MobileIronCore.Device.common_wifi_mac_address | String | Wifi MAC Address | 
+| MobileIronCore.Device.common_noncompliance_reasons | String | Non compliance Reasons | 
+| MobileIronCore.Device.ios_iPhone_UDID | String | iPhone UDID | 
+| MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0 | String | IPhone MAC Address EN0 | 
+| MobileIronCore.Device.ios_Current_MCC | String | Current MCC | 
+| MobileIronCore.Device.common_current_country_code | String | Current country code | 
+| MobileIronCore.Device.user_sam_account_name | String | SAM account name | 
+| MobileIronCore.Device.common_current_country_name | String | Current country name | 
+| MobileIronCore.Device.common_home_country_name | String | Home country name | 
+| MobileIronCore.Device.common_home_country_code | String | Home country code | 
+| MobileIronCore.Device.common_device_is_compromised | Boolean | True if device is compromised | 
+| MobileIronCore.Device.common_SerialNumber | String | Device serial number | 
+| MobileIronCore.Device.common_mdm_managed | Boolean | Device is MDM managed | 
 
 
 #### Command Example
@@ -660,32 +660,32 @@ This command is used to get a single device based on the device ip
 {
     "MobileIronCore": {
         "Device": {
-          "common.wifi_mac_address": "",
-          "common.noncompliance_reasons": [
+          "common_wifi_mac_address": "",
+          "common_noncompliance_reasons": [
             "DEVICE_ADMIN_DEACTIVE"
           ],
-          "ios.iPhone UDID": "",
-          "common.device_is_compromised": false,
-          "common.SerialNumber": "",
-          "common.mdm_managed": false,
-          "common.model": "Pixel",
-          "common.os_version": "10.0",
-          "common.status": "ACTIVE",
-          "common.imei": "",
-          "common.platform": "Android",
-          "common.security_state": "Ok",
-          "user.display_name": "*****",
-          "common.last_connected_at": "2020-11-09T07:38:22.000Z",
-          "common.uuid": "",
-          "common.quarantined": false,
-          "common.id": 3,
-          "common.imsi": "*****",
-          "common.owner": "COMPANY",
-          "user.email_address": "*****",
-          "common.manufacturer": "Google",
-          "common.compliant": false,
-          "user.user_id": "*****",
-          "common.registration_date": "2020-10-29T14:11:39.000Z"
+          "ios_iPhone_UDID": "",
+          "common_device_is_compromised": false,
+          "common_SerialNumber": "",
+          "common_mdm_managed": false,
+          "common_model": "Pixel",
+          "common_os_version": "10.0",
+          "common_status": "ACTIVE",
+          "common_imei": "",
+          "common_platform": "Android",
+          "common_security_state": "Ok",
+          "user_display_name": "*****",
+          "common_last_connected_at": "2020-11-09T07:38:22.000Z",
+          "common_uuid": "",
+          "common_quarantined": false,
+          "common_id": 3,
+          "common_imsi": "*****",
+          "common_owner": "COMPANY",
+          "user_email_address": "*****",
+          "common_manufacturer": "Google",
+          "common_compliant": false,
+          "user_user_id": "*****",
+          "common_registration_date": "2020-10-29T14:11:39.000Z"
         }
     }
 }

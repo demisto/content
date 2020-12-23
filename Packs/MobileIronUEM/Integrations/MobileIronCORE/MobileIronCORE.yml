@@ -258,100 +258,100 @@ script:
     execution: false
     name: mobileiron-core-get-devices-data
     outputs:
-    - contextPath: MobileIronCore.Device.common.model
+    - contextPath: MobileIronCore.Device.common_model
       description: Model
       type: String
-    - contextPath: MobileIronCore.Device.common.os_version
+    - contextPath: MobileIronCore.Device.common_os_version
       description: OS Version
       type: String
-    - contextPath: MobileIronCore.Device.common.platform
+    - contextPath: MobileIronCore.Device.common_platform
       description: Platform Name
       type: String
-    - contextPath: MobileIronCore.Device.common.status
+    - contextPath: MobileIronCore.Device.common_status
       description: Status
       type: String
-    - contextPath: MobileIronCore.Device.common.imei
+    - contextPath: MobileIronCore.Device.common_imei
       description: IMEI
       type: String
-    - contextPath: MobileIronCore.Device.common.platform
+    - contextPath: MobileIronCore.Device.common_platform
       description: Platform
       type: String
-    - contextPath: MobileIronCore.Device.common.security_state
+    - contextPath: MobileIronCore.Device.common_security_state
       description: Security State
       type: String
-    - contextPath: MobileIronCore.Device.user.display_name
+    - contextPath: MobileIronCore.Device.user_display_name
       description: Display Name
       type: String
-    - contextPath: MobileIronCore.Device.common.last_connected_at
+    - contextPath: MobileIronCore.Device.common_last_connected_at
       description: Last Connected At
       type: Date
-    - contextPath: MobileIronCore.Device.common.uuid
+    - contextPath: MobileIronCore.Device.common_uuid
       description: Device UUID
       type: String
-    - contextPath: MobileIronCore.Device.common.quarantined
+    - contextPath: MobileIronCore.Device.common_quarantined
       description: Quarantined
       type: Boolean
-    - contextPath: MobileIronCore.Device.common.id
+    - contextPath: MobileIronCore.Device.common_id
       description: Device ID
       type: Number
-    - contextPath: MobileIronCore.Device.common.imsi
+    - contextPath: MobileIronCore.Device.common_imsi
       description: IMSI
       type: String
-    - contextPath: MobileIronCore.Device.common.owner
+    - contextPath: MobileIronCore.Device.common_owner
       description: Device Owner
       type: String
-    - contextPath: MobileIronCore.Device.user.email_address
+    - contextPath: MobileIronCore.Device.user_email_address
       description: User Email Address
       type: String
-    - contextPath: MobileIronCore.Device.common.manufacturer
+    - contextPath: MobileIronCore.Device.common_manufacturer
       description: Manufacturer
       type: String
-    - contextPath: MobileIronCore.Device.common.compliant
+    - contextPath: MobileIronCore.Device.common_compliant
       description: Compliant
       type: Boolean
-    - contextPath: MobileIronCore.Device.user.user_id
+    - contextPath: MobileIronCore.Device.user_user_id
       description: User ID
       type: String
-    - contextPath: MobileIronCore.Device.common.registration_date
+    - contextPath: MobileIronCore.Device.common_registration_date
       description: Registration Date
       type: Date
-    - contextPath: MobileIronCore.Device.common.wifi_mac_address
+    - contextPath: MobileIronCore.Device.common_wifi_mac_address
       description: Wifi MAC Address
       type: String
-    - contextPath: MobileIronCore.Device.common.noncompliance_reasons
+    - contextPath: MobileIronCore.Device.common_noncompliance_reasons
       description: Non compliance Reasons
       type: String
-    - contextPath: MobileIronCore.Device.ios.iPhone UDID
+    - contextPath: MobileIronCore.Device.ios_iPhone_UDID
       description: iPhone UDID
       type: String
-    - contextPath: MobileIronCore.Device.ios.iPhone MAC_ADDRESS_EN0
+    - contextPath: MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0
       description: IPhone MAC Address EN0
       type: String
-    - contextPath: MobileIronCore.Device.ios.Current MCC
+    - contextPath: MobileIronCore.Device.ios_Current_MCC
       description: Current MCC
       type: String
-    - contextPath: MobileIronCore.Device.common.current_country_code
+    - contextPath: MobileIronCore.Device.common_current_country_code
       description: Current country code
       type: String
-    - contextPath: MobileIronCore.Device.user.sam_account_name
+    - contextPath: MobileIronCore.Device.user_sam_account_name
       description: SAM account name
       type: String
-    - contextPath: MobileIronCore.Device.common.current_country_name
+    - contextPath: MobileIronCore.Device.common_current_country_name
       description: Current country name
       type: String
-    - contextPath: MobileIronCore.Device.common.home_country_name
+    - contextPath: MobileIronCore.Device.common_home_country_name
       description: Home country name
       type: String
-    - contextPath: MobileIronCore.Device.common.home_country_code
+    - contextPath: MobileIronCore.Device.common_home_country_code
       description: Home country code
       type: String
-    - contextPath: MobileIronCore.Device.common.device_is_compromised
+    - contextPath: MobileIronCore.Device.common_device_is_compromised
       description: True if device is compromised
       type: Boolean
-    - contextPath: MobileIronCore.Device.common.SerialNumber
+    - contextPath: MobileIronCore.Device.common_SerialNumber
       description: Device serial number
       type: String
-    - contextPath: MobileIronCore.Device.common.mdm_managed
+    - contextPath: MobileIronCore.Device.common_mdm_managed
       description: Device is MDM managed
       type: Boolean
   - arguments:
@@ -372,100 +372,100 @@ script:
     execution: false
     name: mobileiron-core-get-device-by-uuid
     outputs:
-    - contextPath: MobileIronCore.Device.common.model
+    - contextPath: MobileIronCore.Device.common_model
       description: Model
       type: String
-    - contextPath: MobileIronCore.Device.common.os_version
+    - contextPath: MobileIronCore.Device.common_os_version
       description: OS Version
       type: String
-    - contextPath: MobileIronCore.Device.common.platform
+    - contextPath: MobileIronCore.Device.common_platform
       description: Platform Name
       type: String
-    - contextPath: MobileIronCore.Device.common.status
+    - contextPath: MobileIronCore.Device.common_status
       description: Status
       type: String
-    - contextPath: MobileIronCore.Device.common.imei
+    - contextPath: MobileIronCore.Device.common_imei
       description: IMEI
       type: String
-    - contextPath: MobileIronCore.Device.common.platform
+    - contextPath: MobileIronCore.Device.common_platform
       description: Platform
       type: String
-    - contextPath: MobileIronCore.Device.common.security_state
+    - contextPath: MobileIronCore.Device.common_security_state
       description: Security State
       type: String
-    - contextPath: MobileIronCore.Device.user.display_name
+    - contextPath: MobileIronCore.Device.user_display_name
       description: Display Name
       type: String
-    - contextPath: MobileIronCore.Device.common.last_connected_at
+    - contextPath: MobileIronCore.Device.common_last_connected_at
       description: Last Connected At
       type: Date
-    - contextPath: MobileIronCore.Device.common.uuid
+    - contextPath: MobileIronCore.Device.common_uuid
       description: Device UUID
       type: String
-    - contextPath: MobileIronCore.Device.common.quarantined
+    - contextPath: MobileIronCore.Device.common_quarantined
       description: Quarantined
       type: Boolean
-    - contextPath: MobileIronCore.Device.common.id
+    - contextPath: MobileIronCore.Device.common_id
       description: Device ID
       type: Number
-    - contextPath: MobileIronCore.Device.common.imsi
+    - contextPath: MobileIronCore.Device.common_imsi
       description: IMSI
       type: String
-    - contextPath: MobileIronCore.Device.common.owner
+    - contextPath: MobileIronCore.Device.common_owner
       description: Device Owner
       type: String
-    - contextPath: MobileIronCore.Device.user.email_address
+    - contextPath: MobileIronCore.Device.user_email_address
       description: User Email Address
       type: String
-    - contextPath: MobileIronCore.Device.common.manufacturer
+    - contextPath: MobileIronCore.Device.common_manufacturer
       description: Manufacturer
       type: String
-    - contextPath: MobileIronCore.Device.common.compliant
+    - contextPath: MobileIronCore.Device.common_compliant
       description: Compliant
       type: Boolean
-    - contextPath: MobileIronCore.Device.user.user_id
+    - contextPath: MobileIronCore.Device.user_user_id
       description: User ID
       type: String
-    - contextPath: MobileIronCore.Device.common.registration_date
+    - contextPath: MobileIronCore.Device.common_registration_date
       description: Registration Date
       type: Date
-    - contextPath: MobileIronCore.Device.common.wifi_mac_address
+    - contextPath: MobileIronCore.Device.common_wifi_mac_address
       description: Wifi MAC Address
       type: String
-    - contextPath: MobileIronCore.Device.common.noncompliance_reasons
+    - contextPath: MobileIronCore.Device.common_noncompliance_reasons
       description: Non compliance Reasons
       type: String
-    - contextPath: MobileIronCore.Device.ios.iPhone UDID
+    - contextPath: MobileIronCore.Device.ios_iPhone_UDID
       description: iPhone UDID
       type: String
-    - contextPath: MobileIronCore.Device.ios.iPhone MAC_ADDRESS_EN0
+    - contextPath: MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0
       description: IPhone MAC Address EN0
       type: String
-    - contextPath: MobileIronCore.Device.ios.Current MCC
+    - contextPath: MobileIronCore.Device.ios_Current_MCC
       description: Current MCC
       type: String
-    - contextPath: MobileIronCore.Device.common.current_country_code
+    - contextPath: MobileIronCore.Device.common_current_country_code
       description: Current country code
       type: String
-    - contextPath: MobileIronCore.Device.user.sam_account_name
+    - contextPath: MobileIronCore.Device.user_sam_account_name
       description: SAM account name
       type: String
-    - contextPath: MobileIronCore.Device.common.current_country_name
+    - contextPath: MobileIronCore.Device.common_current_country_name
       description: Current country name
       type: String
-    - contextPath: MobileIronCore.Device.common.home_country_name
+    - contextPath: MobileIronCore.Device.common_home_country_name
       description: Home country name
       type: String
-    - contextPath: MobileIronCore.Device.common.home_country_code
+    - contextPath: MobileIronCore.Device.common_home_country_code
       description: Home country code
       type: String
-    - contextPath: MobileIronCore.Device.common.device_is_compromised
+    - contextPath: MobileIronCore.Device.common_device_is_compromised
       description: True if device is compromised
       type: Boolean
-    - contextPath: MobileIronCore.Device.common.SerialNumber
+    - contextPath: MobileIronCore.Device.common_SerialNumber
       description: Device serial number
       type: String
-    - contextPath: MobileIronCore.Device.common.mdm_managed
+    - contextPath: MobileIronCore.Device.common_mdm_managed
       description: Device is MDM managed
       type: Boolean
   - arguments:
@@ -487,100 +487,100 @@ script:
     execution: false
     name: mobileiron-core-get-device-by-serial
     outputs:
-    - contextPath: MobileIronCore.Device.common.model
+    - contextPath: MobileIronCore.Device.common_model
       description: Model
       type: String
-    - contextPath: MobileIronCore.Device.common.os_version
+    - contextPath: MobileIronCore.Device.common_os_version
       description: OS Version
       type: String
-    - contextPath: MobileIronCore.Device.common.platform
+    - contextPath: MobileIronCore.Device.common_platform
       description: Platform Name
       type: String
-    - contextPath: MobileIronCore.Device.common.status
+    - contextPath: MobileIronCore.Device.common_status
       description: Status
       type: String
-    - contextPath: MobileIronCore.Device.common.imei
+    - contextPath: MobileIronCore.Device.common_imei
       description: IMEI
       type: String
-    - contextPath: MobileIronCore.Device.common.platform
+    - contextPath: MobileIronCore.Device.common_platform
       description: Platform
       type: String
-    - contextPath: MobileIronCore.Device.common.security_state
+    - contextPath: MobileIronCore.Device.common_security_state
       description: Security State
       type: String
-    - contextPath: MobileIronCore.Device.user.display_name
+    - contextPath: MobileIronCore.Device.user_display_name
       description: Display Name
       type: String
-    - contextPath: MobileIronCore.Device.common.last_connected_at
+    - contextPath: MobileIronCore.Device.common_last_connected_at
       description: Last Connected At
       type: Date
-    - contextPath: MobileIronCore.Device.common.uuid
+    - contextPath: MobileIronCore.Device.common_uuid
       description: Device UUID
       type: String
-    - contextPath: MobileIronCore.Device.common.quarantined
+    - contextPath: MobileIronCore.Device.common_quarantined
       description: Quarantined
       type: Boolean
-    - contextPath: MobileIronCore.Device.common.id
+    - contextPath: MobileIronCore.Device.common_id
       description: Device ID
       type: Number
-    - contextPath: MobileIronCore.Device.common.imsi
+    - contextPath: MobileIronCore.Device.common_imsi
       description: IMSI
       type: String
-    - contextPath: MobileIronCore.Device.common.owner
+    - contextPath: MobileIronCore.Device.common_owner
       description: Device Owner
       type: String
-    - contextPath: MobileIronCore.Device.user.email_address
+    - contextPath: MobileIronCore.Device.user_email_address
       description: User Email Address
       type: String
-    - contextPath: MobileIronCore.Device.common.manufacturer
+    - contextPath: MobileIronCore.Device.common_manufacturer
       description: Manufacturer
       type: String
-    - contextPath: MobileIronCore.Device.common.compliant
+    - contextPath: MobileIronCore.Device.common_compliant
       description: Compliant
       type: Boolean
-    - contextPath: MobileIronCore.Device.user.user_id
+    - contextPath: MobileIronCore.Device.user_user_id
       description: User ID
       type: String
-    - contextPath: MobileIronCore.Device.common.registration_date
+    - contextPath: MobileIronCore.Device.common_registration_date
       description: Registration Date
       type: Date
-    - contextPath: MobileIronCore.Device.common.wifi_mac_address
+    - contextPath: MobileIronCore.Device.common_wifi_mac_address
       description: Wifi MAC Address
       type: String
-    - contextPath: MobileIronCore.Device.common.noncompliance_reasons
+    - contextPath: MobileIronCore.Device.common_noncompliance_reasons
       description: Non compliance Reasons
       type: String
-    - contextPath: MobileIronCore.Device.ios.iPhone UDID
+    - contextPath: MobileIronCore.Device.ios_iPhone_UDID
       description: iPhone UDID
       type: String
-    - contextPath: MobileIronCore.Device.ios.iPhone MAC_ADDRESS_EN0
+    - contextPath: MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0
       description: IPhone MAC Address EN0
       type: String
-    - contextPath: MobileIronCore.Device.ios.Current MCC
+    - contextPath: MobileIronCore.Device.ios_Current_MCC
       description: Current MCC
       type: String
-    - contextPath: MobileIronCore.Device.common.current_country_code
+    - contextPath: MobileIronCore.Device.common_current_country_code
       description: Current country code
       type: String
-    - contextPath: MobileIronCore.Device.user.sam_account_name
+    - contextPath: MobileIronCore.Device.user_sam_account_name
       description: SAM account name
       type: String
-    - contextPath: MobileIronCore.Device.common.current_country_name
+    - contextPath: MobileIronCore.Device.common_current_country_name
       description: Current country name
       type: String
-    - contextPath: MobileIronCore.Device.common.home_country_name
+    - contextPath: MobileIronCore.Device.common_home_country_name
       description: Home country name
       type: String
-    - contextPath: MobileIronCore.Device.common.home_country_code
+    - contextPath: MobileIronCore.Device.common_home_country_code
       description: Home country code
       type: String
-    - contextPath: MobileIronCore.Device.common.device_is_compromised
+    - contextPath: MobileIronCore.Device.common_device_is_compromised
       description: True if device is compromised
       type: Boolean
-    - contextPath: MobileIronCore.Device.common.SerialNumber
+    - contextPath: MobileIronCore.Device.common_SerialNumber
       description: Device serial number
       type: String
-    - contextPath: MobileIronCore.Device.common.mdm_managed
+    - contextPath: MobileIronCore.Device.common_mdm_managed
       description: Device is MDM managed
       type: Boolean
   - arguments:
@@ -602,100 +602,100 @@ script:
     execution: false
     name: mobileiron-core-get-device-by-mac
     outputs:
-    - contextPath: MobileIronCore.Device.common.model
+    - contextPath: MobileIronCore.Device.common_model
       description: Model
       type: String
-    - contextPath: MobileIronCore.Device.common.os_version
+    - contextPath: MobileIronCore.Device.common_os_version
       description: OS Version
       type: String
-    - contextPath: MobileIronCore.Device.common.platform
+    - contextPath: MobileIronCore.Device.common_platform
       description: Platform Name
       type: String
-    - contextPath: MobileIronCore.Device.common.status
+    - contextPath: MobileIronCore.Device.common_status
       description: Status
       type: String
-    - contextPath: MobileIronCore.Device.common.imei
+    - contextPath: MobileIronCore.Device.common_imei
       description: IMEI
       type: String
-    - contextPath: MobileIronCore.Device.common.platform
+    - contextPath: MobileIronCore.Device.common_platform
       description: Platform
       type: String
-    - contextPath: MobileIronCore.Device.common.security_state
+    - contextPath: MobileIronCore.Device.common_security_state
       description: Security State
       type: String
-    - contextPath: MobileIronCore.Device.user.display_name
+    - contextPath: MobileIronCore.Device.user_display_name
       description: Display Name
       type: String
-    - contextPath: MobileIronCore.Device.common.last_connected_at
+    - contextPath: MobileIronCore.Device.common_last_connected_at
       description: Last Connected At
       type: Date
-    - contextPath: MobileIronCore.Device.common.uuid
+    - contextPath: MobileIronCore.Device.common_uuid
       description: Device UUID
       type: String
-    - contextPath: MobileIronCore.Device.common.quarantined
+    - contextPath: MobileIronCore.Device.common_quarantined
       description: Quarantined
       type: Boolean
-    - contextPath: MobileIronCore.Device.common.id
+    - contextPath: MobileIronCore.Device.common_id
       description: Device ID
       type: Number
-    - contextPath: MobileIronCore.Device.common.imsi
+    - contextPath: MobileIronCore.Device.common_imsi
       description: IMSI
       type: String
-    - contextPath: MobileIronCore.Device.common.owner
+    - contextPath: MobileIronCore.Device.common_owner
       description: Device Owner
       type: String
-    - contextPath: MobileIronCore.Device.user.email_address
+    - contextPath: MobileIronCore.Device.user_email_address
       description: User Email Address
       type: String
-    - contextPath: MobileIronCore.Device.common.manufacturer
+    - contextPath: MobileIronCore.Device.common_manufacturer
       description: Manufacturer
       type: String
-    - contextPath: MobileIronCore.Device.common.compliant
+    - contextPath: MobileIronCore.Device.common_compliant
       description: Compliant
       type: Boolean
-    - contextPath: MobileIronCore.Device.user.user_id
+    - contextPath: MobileIronCore.Device.user_user_id
       description: User ID
       type: String
-    - contextPath: MobileIronCore.Device.common.registration_date
+    - contextPath: MobileIronCore.Device.common_registration_date
       description: Registration Date
       type: Date
-    - contextPath: MobileIronCore.Device.common.wifi_mac_address
+    - contextPath: MobileIronCore.Device.common_wifi_mac_address
       description: Wifi MAC Address
       type: String
-    - contextPath: MobileIronCore.Device.common.noncompliance_reasons
+    - contextPath: MobileIronCore.Device.common_noncompliance_reasons
       description: Non compliance Reasons
       type: String
-    - contextPath: MobileIronCore.Device.ios.iPhone UDID
+    - contextPath: MobileIronCore.Device.ios_iPhone_UDID
       description: iPhone UDID
       type: String
-    - contextPath: MobileIronCore.Device.ios.iPhone MAC_ADDRESS_EN0
+    - contextPath: MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0
       description: IPhone MAC Address EN0
       type: String
-    - contextPath: MobileIronCore.Device.ios.Current MCC
+    - contextPath: MobileIronCore.Device.ios_Current_MCC
       description: Current MCC
       type: String
-    - contextPath: MobileIronCore.Device.common.current_country_code
+    - contextPath: MobileIronCore.Device.common_current_country_code
       description: Current country code
       type: String
-    - contextPath: MobileIronCore.Device.user.sam_account_name
+    - contextPath: MobileIronCore.Device.user_sam_account_name
       description: SAM account name
       type: String
-    - contextPath: MobileIronCore.Device.common.current_country_name
+    - contextPath: MobileIronCore.Device.common_current_country_name
       description: Current country name
       type: String
-    - contextPath: MobileIronCore.Device.common.home_country_name
+    - contextPath: MobileIronCore.Device.common_home_country_name
       description: Home country name
       type: String
-    - contextPath: MobileIronCore.Device.common.home_country_code
+    - contextPath: MobileIronCore.Device.common_home_country_code
       description: Home country code
       type: String
-    - contextPath: MobileIronCore.Device.common.device_is_compromised
+    - contextPath: MobileIronCore.Device.common_device_is_compromised
       description: True if device is compromised
       type: Boolean
-    - contextPath: MobileIronCore.Device.common.SerialNumber
+    - contextPath: MobileIronCore.Device.common_SerialNumber
       description: Device serial number
       type: String
-    - contextPath: MobileIronCore.Device.common.mdm_managed
+    - contextPath: MobileIronCore.Device.common_mdm_managed
       description: Device is MDM managed
       type: Boolean
   - arguments:
@@ -716,103 +716,103 @@ script:
     execution: false
     name: mobileiron-core-get-device-by-ip
     outputs:
-    - contextPath: MobileIronCore.Device.common.model
+    - contextPath: MobileIronCore.Device.common_model
       description: Model
       type: String
-    - contextPath: MobileIronCore.Device.common.os_version
+    - contextPath: MobileIronCore.Device.common_os_version
       description: OS Version
       type: String
-    - contextPath: MobileIronCore.Device.common.platform
+    - contextPath: MobileIronCore.Device.common_platform
       description: Platform Name
       type: String
-    - contextPath: MobileIronCore.Device.common.status
+    - contextPath: MobileIronCore.Device.common_status
       description: Status
       type: String
-    - contextPath: MobileIronCore.Device.common.imei
+    - contextPath: MobileIronCore.Device.common_imei
       description: IMEI
       type: String
-    - contextPath: MobileIronCore.Device.common.platform
+    - contextPath: MobileIronCore.Device.common_platform
       description: Platform
       type: String
-    - contextPath: MobileIronCore.Device.common.security_state
+    - contextPath: MobileIronCore.Device.common_security_state
       description: Security State
       type: String
-    - contextPath: MobileIronCore.Device.user.display_name
+    - contextPath: MobileIronCore.Device.user_display_name
       description: Display Name
       type: String
-    - contextPath: MobileIronCore.Device.common.last_connected_at
+    - contextPath: MobileIronCore.Device.common_last_connected_at
       description: Last Connected At
       type: Date
-    - contextPath: MobileIronCore.Device.common.uuid
+    - contextPath: MobileIronCore.Device.common_uuid
       description: Device UUID
       type: String
-    - contextPath: MobileIronCore.Device.common.quarantined
+    - contextPath: MobileIronCore.Device.common_quarantined
       description: Quarantined
       type: Boolean
-    - contextPath: MobileIronCore.Device.common.id
+    - contextPath: MobileIronCore.Device.common_id
       description: Device ID
       type: Number
-    - contextPath: MobileIronCore.Device.common.imsi
+    - contextPath: MobileIronCore.Device.common_imsi
       description: IMSI
       type: String
-    - contextPath: MobileIronCore.Device.common.owner
+    - contextPath: MobileIronCore.Device.common_owner
       description: Device Owner
       type: String
-    - contextPath: MobileIronCore.Device.user.email_address
+    - contextPath: MobileIronCore.Device.user_email_address
       description: User Email Address
       type: String
-    - contextPath: MobileIronCore.Device.common.manufacturer
+    - contextPath: MobileIronCore.Device.common_manufacturer
       description: Manufacturer
       type: String
-    - contextPath: MobileIronCore.Device.common.compliant
+    - contextPath: MobileIronCore.Device.common_compliant
       description: Compliant
       type: Boolean
-    - contextPath: MobileIronCore.Device.user.user_id
+    - contextPath: MobileIronCore.Device.user_user_id
       description: User ID
       type: String
-    - contextPath: MobileIronCore.Device.common.registration_date
+    - contextPath: MobileIronCore.Device.common_registration_date
       description: Registration Date
       type: Date
-    - contextPath: MobileIronCore.Device.common.wifi_mac_address
+    - contextPath: MobileIronCore.Device.common_wifi_mac_address
       description: Wifi MAC Address
       type: String
-    - contextPath: MobileIronCore.Device.common.noncompliance_reasons
+    - contextPath: MobileIronCore.Device.common_noncompliance_reasons
       description: Non compliance Reasons
       type: String
-    - contextPath: MobileIronCore.Device.ios.iPhone UDID
+    - contextPath: MobileIronCore.Device.ios_iPhone_UDID
       description: iPhone UDID
       type: String
-    - contextPath: MobileIronCore.Device.ios.iPhone MAC_ADDRESS_EN0
+    - contextPath: MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0
       description: IPhone MAC Address EN0
       type: String
-    - contextPath: MobileIronCore.Device.ios.Current MCC
+    - contextPath: MobileIronCore.Device.ios_Current_MCC
       description: Current MCC
       type: String
-    - contextPath: MobileIronCore.Device.common.current_country_code
+    - contextPath: MobileIronCore.Device.common_current_country_code
       description: Current country code
       type: String
-    - contextPath: MobileIronCore.Device.user.sam_account_name
+    - contextPath: MobileIronCore.Device.user_sam_account_name
       description: SAM account name
       type: String
-    - contextPath: MobileIronCore.Device.common.current_country_name
+    - contextPath: MobileIronCore.Device.common_current_country_name
       description: Current country name
       type: String
-    - contextPath: MobileIronCore.Device.common.home_country_name
+    - contextPath: MobileIronCore.Device.common_home_country_name
       description: Home country name
       type: String
-    - contextPath: MobileIronCore.Device.common.home_country_code
+    - contextPath: MobileIronCore.Device.common_home_country_code
       description: Home country code
       type: String
-    - contextPath: MobileIronCore.Device.common.device_is_compromised
+    - contextPath: MobileIronCore.Device.common_device_is_compromised
       description: True if device is compromised
       type: Boolean
-    - contextPath: MobileIronCore.Device.common.SerialNumber
+    - contextPath: MobileIronCore.Device.common_SerialNumber
       description: Device serial number
       type: String
-    - contextPath: MobileIronCore.Device.common.mdm_managed
+    - contextPath: MobileIronCore.Device.common_mdm_managed
       description: Device is MDM managed
       type: Boolean
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: true
   longRunning: false
