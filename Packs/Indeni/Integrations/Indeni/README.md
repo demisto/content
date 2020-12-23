@@ -417,16 +417,3 @@ Gets the notes from issue
 |This issue is currently been handled by Demisto|2020-02-04T21:13:59.000Z|
 |This issue is currently been handled by Demisto|2020-01-31T20:16:49.000Z|
 |Issue created.|2019-10-07T19:55:41.000Z|
-
-
-## Additional Information
----
-
-## Known Limitations
----
-
-## Troubleshooting
----
-
-
-
