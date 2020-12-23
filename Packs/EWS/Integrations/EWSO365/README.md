@@ -51,10 +51,10 @@ The EWS integration can be used for the following use cases.
 ## Authentication
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
-### Required Permissions for self deployed Azure Application:
+### Required Permissions for self deployed Azure Applications
 #### Office 365 Exchange Online
-* **full_access_as_app** - To add this permission please follow [the official documentation](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-authenticate-an-ews-application-by-using-oauth#configure-for-app-only-authentication)
-as the **Exchange** app permission is unavailable via the Azure portal.
+**full_access_as_app** - To set this permission follow [the Microsoft documentation](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-authenticate-an-ews-application-by-using-oauth#configure-for-app-only-authentication).
+You can't manage the **Office 365 Exchange Online** app permissions via the Azure portal.
 
 ## Fetched Incidents Data
 
