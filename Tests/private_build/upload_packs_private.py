@@ -474,13 +474,8 @@ def main():
     # finished iteration over content packs
     if is_private_build:
         delete_public_packs_from_index(index_folder_path)
-        upload_index_to_storage(index_folder_path, extract_destination_path, private_index_blob, build_number,
-                                private_packs,
-                                current_commit_hash, index_generation, is_private_build)
-
-    else:
         upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
-                                current_commit_hash, index_generation)
+                                current_commit_hash, index_generation, is_private_build)
 
     # upload id_set.json to bucket
     upload_id_set(default_storage_bucket, id_set_path)
