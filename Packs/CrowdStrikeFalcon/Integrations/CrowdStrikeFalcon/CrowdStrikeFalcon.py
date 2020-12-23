@@ -30,8 +30,8 @@ FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 BYTE_CREDS = '{name}:{password}'.format(name=CLIENT_ID, password=SECRET).encode('utf-8')
 # Headers to be sent in requests
 HEADERS = {
-    # 'Content-Type': 'application/json',
-    # 'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
     'Authorization': 'Basic {}'.format(base64.b64encode(BYTE_CREDS).decode())
 }
 # Note: True life time of token is actually 30 mins
