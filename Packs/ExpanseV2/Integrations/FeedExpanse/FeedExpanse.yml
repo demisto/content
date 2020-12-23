@@ -1,10 +1,10 @@
 commonfields:
   id: FeedExpanse
   version: -1
-display: FeedExpanse
+display: Expanse Expander Feed
 name: FeedExpanse
 category: Data Enrichment & Threat Intelligence
-description: Use FeedExpanse to retrieve the discovered IPs/Domains/Certificates
+description: Use this feed to retrieve the discovered IPs/Domains/Certificates from Expanse Expander asset database.
   from Expanse Expander
 configuration:
 - defaultvalue: https://expander.expanse.co
