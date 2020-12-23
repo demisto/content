@@ -41,4 +41,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![PAN-OS - Block Destination Service](https://raw.githubusercontent.com/demisto/content/8d80d2e630f4a6aafd1fb1a27102d14565d429b1/Packs/PAN-OS/doc_files/PAN-OS_-_Block_Destination_Service.png)
+![PAN-OS - Block Destination Service](https://raw.githubusercontent.com/demisto/content/1b140ddaaa1b90326c5730d197304cb9d4f88217/Packs/PAN-OS/doc_files/PAN-OS_-_Block_Destination_Service.png)
