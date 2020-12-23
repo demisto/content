@@ -2,7 +2,6 @@
 ---
 
 Use the Cisco Firepower integration for unified management of firewalls, application control, intrusion prevention, URL filtering, and advanced malware protection.
-This integration was integrated and tested with version xx of Cisco Firepower
 
 Supports FMC 6.2.3 and above
 

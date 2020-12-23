@@ -297,11 +297,12 @@ class MsClient:
         cmd_url = f'/alerts/{alert_id}'
         return self.ms_client.http_request(method='PATCH', url_suffix=cmd_url, json_data=json_data)
 
-    def get_advanced_hunting(self, query):
+    def get_advanced_hunting(self, query: str, timeout: int) -> dict:
         """Retrieves results according to query.
 
         Args:
             query (str): Query to do advanced hunting on
+            timeout (int): Connection timeout
 
         Returns:
             dict. Advanced hunting results
@@ -310,7 +311,7 @@ class MsClient:
         json_data = {
             'Query': query
         }
-        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data, timeout=timeout)
 
     def create_alert(self, machine_id, severity, title, description, event_time, report_id, rec_action, category):
         """Creates new Alert on top of Event.
@@ -1117,8 +1118,9 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
     Returns:
         (str, dict, dict). Human readable, context, raw response
     """
-    query = args.get('query')
-    response = client.get_advanced_hunting(query)
+    query = args.get('query', '')
+    timeout = int(args.get('timeout', 10))
+    response = client.get_advanced_hunting(query, timeout)
     results = response.get('Results')
     if isinstance(results, list) and len(results) == 1:
         report_id = results[0].get('ReportId')

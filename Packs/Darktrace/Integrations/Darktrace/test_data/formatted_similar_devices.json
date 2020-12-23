@@ -1,0 +1,44 @@
+{
+   "did":1,
+   "devices":[
+      {
+         "did":823,
+         "score":99,
+         "macaddress":"00:00:00:00:00:00",
+         "vendor":"",
+         "ip":"10.0.0.1",
+         "ips":[
+            {
+               "ip":"10.0.0.1",
+               "timems":1599804000000,
+               "time":"2020-09-11 06:00:00",
+               "sid":114
+            }
+         ],
+         "sid":114,
+         "hostname":"ip-10-0-0-1",
+         "firstSeen":"2020-08-07T00:06:40.000Z",
+         "lastSeen":"2020-09-11T06:55:34.000Z",
+         "typename":"server",
+         "typelabel":"Server"
+      },
+      {
+         "did":3,
+         "score":99,
+         "ip":"10.0.0.1",
+         "ips":[
+            {
+               "ip":"10.0.0.1",
+               "timems":1599804000000,
+               "time":"2020-09-11 06:00:00",
+               "sid":1
+            }
+         ],
+         "sid":1,
+         "firstSeen":"2020-06-09T19:19:32.000Z",
+         "lastSeen":"2020-09-11T06:28:10.000Z",
+         "typename":"server",
+         "typelabel":"Server"
+      }
+   ]
+}

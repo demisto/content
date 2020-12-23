@@ -46,9 +46,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.12.0"
+      CONTENT_VERSION: "20.12.1"
       SERVER_VERSION: "6.0.0"
-      GIT_SHA1: "c49eabe52f748c4e2a3a5bdd1ab64ccf3c12a83b" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "758aee8a0dc3e5c905ebbab94a91bb4bf7931cf5" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -133,7 +133,11 @@ references:
         echo "=== sourcing $BASH_ENV ==="
         source $BASH_ENV
         sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS/
+
+        # Creating new clean logs folder
+        rm -rf $CIRCLE_ARTIFACTS/logs
         mkdir -p $CIRCLE_ARTIFACTS/logs
+
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/lastest_server_build_scripts/*
         chmod +x ./Tests/Marketplace/*
@@ -146,8 +150,6 @@ references:
           echo "venv exists (from cache). activating"
           source ./venv/bin/activate
         fi
-        # Install node packages
-        npm install .
         # store in bash env so we load our venv in each step
         echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
         git config diff.renameLimit 6000
@@ -160,6 +162,8 @@ references:
         set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD="
         python --version
         python3 --version
+        node --version
+        npm --version
         demisto-sdk --version
 
   download_configuration: &download_configuration
@@ -188,10 +192,10 @@ references:
                 export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
             elif [ -n "${INSTANCE_TESTS}" ] ;
               then
-                export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
+                export IFRA_ENV_TYPE="Server 5.5" # disable-secrets-detection
             elif [[ -n "${CONTRIB_BRANCH}" || -n "${DEMISTO_SDK_NIGHTLY}" ]] ;
               then
-                export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
+                export IFRA_ENV_TYPE="Server Master" # disable-secrets-detection
             elif [ -n "${BUCKET_UPLOAD}" ] ;
               then
                 export IFRA_ENV_TYPE="Bucket-Upload" # disable-secrets-detection
@@ -230,13 +234,8 @@ references:
         python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
 
         export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
-        zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
-        rm -f $CIRCLE_ARTIFACTS/server*.log
-        if [ -f $CIRCLE_ARTIFACTS/logs/Run_Tests.log ];
-        then
-            zip -P $PSWD $CIRCLE_ARTIFACTS/logs/Run_Tests.zip $CIRCLE_ARTIFACTS/logs/Run_Tests.log
-            rm -f $CIRCLE_ARTIFACTS/logs/Run_Tests.log
-        fi
+        zip -P $PSWD -j $CIRCLE_ARTIFACTS/Logs.zip $CIRCLE_ARTIFACTS/server*.log $CIRCLE_ARTIFACTS/logs/* || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
+        rm -f $CIRCLE_ARTIFACTS/server*.log $CIRCLE_ARTIFACTS/logs/Run_Tests.log $CIRCLE_ARTIFACTS/logs/Install_Content_And_Configure_Integrations_On_Server.log
       when: always
 
   persist_to_workspace: &persist_to_workspace
@@ -380,8 +379,7 @@ references:
             name: Comment on the contribution Pull Request
             when: always
             command: |
-              # Demisto Marketplace refers to Server Master
-              SERVER_URL=$(jq -r 'select(.[].Role == "Demisto Marketplace") | .[].InstanceDNS' ./env_results.json)
+              SERVER_URL=$(jq -r 'select(.[].Role == "Server Master") | .[].InstanceDNS' ./env_results.json)
               python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
 
   upload_entities_to_cortex_xsoar: &upload_entities_to_cortex_xsoar
@@ -443,19 +441,19 @@ references:
         requires:
           - Run Unit Testing And Lint
           - Run Validations
-    - Install Packs in Demisto 6_0:
+    - Install Packs in Server 6_0:
         context: bucket_upload_env
         requires:
           - Create Instances
-    - Install Packs in Demisto Marketplace - Master:
+    - Install Packs in Server Master:
         context: bucket_upload_env
         requires:
           - Create Instances
     - Upload Packs To Marketplace:
         context: bucket_upload_env
         requires:
-          - Install Packs in Demisto 6_0
-          - Install Packs in Demisto Marketplace - Master
+          - Install Packs in Server 6_0
+          - Install Packs in Server Master
 
   check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
     when:
@@ -485,7 +483,7 @@ references:
       command: |
         if ./Tests/scripts/is_ami.sh ;
           then
-            python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
+            python3 ./Tests/scripts/wait_until_server_ready.py "Server Master"
         else
             python3 ./Tests/scripts/wait_until_server_ready.py "master"
         fi
@@ -702,9 +700,9 @@ jobs:
                 name: Collect Instance Role And Check If Instance Was Created
                 when: always
                 command: |
-                  echo 'export INSTANCE_ROLE="Demisto GA"' >> $BASH_ENV
-                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto GA"')
-                  echo "Demisto GA filter=$TEMP"
+                  echo 'export INSTANCE_ROLE="Server 5.0"' >> $BASH_ENV
+                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Server 5.0"')
+                  echo "Server 5.0 filter=$TEMP"
                   if [[ "$TEMP" == "true" ]];
                     then
                       echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
@@ -775,9 +773,9 @@ jobs:
                 name: Collect Instance Role And Check If Instance Was Created
                 when: always
                 command: |
-                  echo 'export INSTANCE_ROLE="Demisto PreGA"' >> $BASH_ENV
-                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto PreGA"')
-                  echo "Demisto PreGA filter=$TEMP"
+                  echo 'export INSTANCE_ROLE="Server 5.5"' >> $BASH_ENV
+                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Server 5.5"')
+                  echo "Server 5.5 filter=$TEMP"
                   if [[ "$TEMP" == "true" ]];
                     then
                       echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
@@ -848,9 +846,9 @@ jobs:
                 name: Collect Instance Role And Check If Instance Was Created
                 when: always
                 command: |
-                  echo 'export INSTANCE_ROLE="Demisto 6.0"' >> $BASH_ENV
-                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto 6.0"')
-                  echo "Demisto PreGA filter=$TEMP"
+                  echo 'export INSTANCE_ROLE="Server 6.0"' >> $BASH_ENV
+                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Server 6.0"')
+                  echo "Server 6.0 filter=$TEMP"
                   if [[ "$TEMP" == "true" ]];
                     then
                       echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
@@ -875,7 +873,7 @@ jobs:
                   fi
                   ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
             - run:
-                name: Run Tests - Demisto 6.0
+                name: Run Tests - Server 6.0
                 shell: /bin/bash
                 when: always
                 no_output_timeout: 5h
@@ -913,9 +911,9 @@ jobs:
           name: Collect Instance Role And Check If Instance Was Created
           when: always
           command: |
-            echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
-            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
-            echo "Demisto Marketplace filter=$TEMP"
+            echo 'export INSTANCE_ROLE="Server Master"' >> $BASH_ENV
+            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Server Master"')
+            echo "Server Master filter=$TEMP"
             if [[ "$TEMP" == "true" || -n "${NIGHTLY}" ]];
               then
                 echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
@@ -1026,6 +1024,12 @@ jobs:
 
                   python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH
                   rm $GCS_PATH
+            - run:
+                name: Validate Premium Packs
+                shell: /bin/bash
+                when: always
+                command: |
+                  ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
       - run:
           name: Slack Notifier
           shell: /bin/bash
@@ -1054,8 +1058,8 @@ jobs:
               echo "Skipping, contributor branch not given."
               exit 0
             fi
-            python3 ./Tests/scripts/wait_until_server_ready.py "Demisto PreGA"
-            echo 'export INSTANCE_ROLE="Demisto PreGA"' >> $BASH_ENV
+            python3 ./Tests/scripts/wait_until_server_ready.py "Server 5.5"
+            echo 'export INSTANCE_ROLE="Server 5.5"' >> $BASH_ENV
             source $BASH_ENV
       - run:
           name: Instance Test
@@ -1115,7 +1119,7 @@ jobs:
       - run:
           name: Wait until server ready
           command: |
-            python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
+            python3 ./Tests/scripts/wait_until_server_ready.py "Server Master"
       - run:
           name: Set Environment Variables
           command: |
@@ -1159,7 +1163,7 @@ jobs:
             ./Tests/scripts/slack_notifier.sh 'sdk_run_against_failed_steps' ./env_results.json
           when: always
 
-  Install Packs in Demisto 6_0:
+  Install Packs in Server 6_0:
     <<: *container_config
     resource_class: medium
     <<: *environment
@@ -1172,14 +1176,14 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
-            python3 ./Tests/scripts/wait_until_server_ready.py "Demisto 6.0"
+            python3 ./Tests/scripts/wait_until_server_ready.py "Server 6.0"
       - run:
           name: Install Packs
           shell: /bin/bash
           when: always
           no_output_timeout: 5h
           command: |
-            echo 'export INSTANCE_ROLE="Demisto 6.0"' >> $BASH_ENV
+            echo 'export INSTANCE_ROLE="Server 6.0"' >> $BASH_ENV
             source $BASH_ENV
             ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
             exit $RETVAL
@@ -1195,7 +1199,7 @@ jobs:
       - *destroy_instances
       - *store_artifacts
 
-  Install Packs in Demisto Marketplace - Master:
+  Install Packs in Server Master:
     <<: *container_config
     resource_class: medium
     <<: *environment
@@ -1210,7 +1214,7 @@ jobs:
           when: always
           no_output_timeout: 5h
           command: |
-            echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
+            echo 'export INSTANCE_ROLE="Server Master"' >> $BASH_ENV
             source $BASH_ENV
             ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
             exit $RETVAL
