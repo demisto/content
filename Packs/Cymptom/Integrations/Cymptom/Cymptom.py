@@ -98,8 +98,8 @@ def get_mitigations(client: Client) -> CommandResults:
     mitigations_results = client.get_mitigations(timeout=timeout, mitigations_state=state)
 
     mitigations_formatted = []
-    table_headers = ["ID", "Name", "Severity Type", "Attack Vectors Use Percentage", "Attack Vectors Count",
-                     "Procedures", "Techniques", "Sub Techniques", "References"]
+    table_headers = ["ID", "Name", "SeverityType", "AttackVectorsUsePercentage", "AttackVectorsCount",
+                     "Procedures", "Techniques", "SubTechniques", "References"]
 
     for mitigation in mitigations_results.get("mitigations", {}):
         extended_info = client.get_mitigation_by_id(mitigation["id"])
