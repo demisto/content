@@ -6,7 +6,7 @@ import requests
 import traceback
 from asyncio import Event, create_task, sleep, run, wait_for, TimeoutError
 from contextlib import asynccontextmanager
-from aiohttp import ClientSession, TCPConnector
+from aiohttp import ClientSession, TCPConnector, ClientTimeout
 from typing import Dict, AsyncGenerator, AsyncIterator
 from collections import deque
 from random import uniform
@@ -22,6 +22,7 @@ OK_STATUS_CODE = 200
 CREATED_STATUS_CODE = 201
 UNAUTHORIZED_STATUS_CODE = 401
 TOO_MANY_REQUESTS_STATUS_CODE = 429
+NOT_FOUND_STATUS_CODE = 404
 
 
 class Client(BaseClient):
@@ -75,7 +76,8 @@ class Client(BaseClient):
                         OK_STATUS_CODE,
                         CREATED_STATUS_CODE,
                         UNAUTHORIZED_STATUS_CODE,
-                        TOO_MANY_REQUESTS_STATUS_CODE
+                        TOO_MANY_REQUESTS_STATUS_CODE,
+                        NOT_FOUND_STATUS_CODE,
                     ),
                 )
                 if res.ok:
@@ -107,6 +109,9 @@ class Client(BaseClient):
                     )
                     time.sleep(time_to_wait)
                     demisto.debug('Finished waiting - retrying')
+                elif res.status_code == NOT_FOUND_STATUS_CODE:
+                    demisto.debug(f'Got status code 404 - {str(res.content)}')
+                    return {}
             except Exception as e:
                 demisto.debug(f'Got unexpected exception in the API HTTP request - {str(e)}')
 
@@ -173,7 +178,13 @@ class EventStream:
                 demisto.debug('Starting stream refresh')
                 try:
                     response = await client.refresh_stream_session(self.refresh_token)
-                    demisto.debug(f'Refresh stream response: {response}')
+                    if not response:
+                        # Should get here in case we got 404 from the refresh stream query
+                        demisto.debug('Clearing refresh stream URL to trigger stream discovery.')
+                        client.refresh_stream_url = ''
+                        raise RuntimeError()
+                    else:
+                        demisto.debug(f'Refresh stream response: {response}')
                 except Exception as e:
                     demisto.updateModuleHealth('Failed refreshing stream session, will retry in 30 seconds.')
                     demisto.debug(f'Failed refreshing stream session: {e}')
@@ -189,10 +200,14 @@ class EventStream:
                 demisto.debug('Finished stream discovery')
                 resources = discover_stream_response.get('resources', [])
                 if not resources:
+                    # If we got here we will either timeout on the event 10 seconds timeout (from fetch_event)
+                    # or we are discovering a stream after we failed to refresh a stream cause we got 404
                     demisto.updateModuleHealth('Did not discover event stream resources, verify the App ID is not used'
                                                ' in another integration instance')
                     demisto.error(f'Did not discover event stream resources - {str(discover_stream_response)}')
-                    return
+                    await sleep(10)
+                    demisto.debug('Done sleeping for 10 seconds, will try to discover stream again.')
+                    continue
                 resource = resources[0]
                 self.data_feed_url = resource.get('dataFeedURL')
                 demisto.debug(f'Discovered data feed URL: {self.data_feed_url}')
@@ -209,7 +224,7 @@ class EventStream:
                 await sleep(30)
 
     async def fetch_event(
-            self, first_fetch_time: datetime, initial_offset: int = 0, event_type: str = ''
+            self, first_fetch_time: datetime, initial_offset: int = 0, event_type: str = '', sock_read: int = 120
     ) -> AsyncGenerator[Dict, None]:
         """Retrieves events from a CrowdStrike Falcon stream starting from given offset.
 
@@ -217,6 +232,7 @@ class EventStream:
             first_fetch_time (datetime): The start time to fetch from retroactively for the first fetch.
             initial_offset (int): Stream offset to start the fetch from.
             event_type (str): Stream event type to fetch.
+            sock_read (int) Client session sock read timeout.
 
         Yields:
             AsyncGenerator[Dict, None]: Event fetched from the stream.
@@ -244,7 +260,7 @@ class EventStream:
                         'Connection': 'keep-alive'
                     },
                     trust_env=self.proxy,
-                    timeout=None
+                    timeout=ClientTimeout(total=None, connect=60, sock_connect=60, sock_read=sock_read)
                 ) as session:
                     try:
                         integration_context = get_integration_context()
@@ -254,7 +270,7 @@ class EventStream:
                         async with session.get(
                             self.data_feed_url,
                             params={'offset': offset, 'eventType': event_type},
-                            timeout=None
+                            timeout=ClientTimeout(total=None, connect=60, sock_connect=60, sock_read=sock_read)
                         ) as res:
                             demisto.updateModuleHealth('')
                             demisto.debug(f'Fetched event: {res.content}')
@@ -432,7 +448,8 @@ async def long_running_loop(
         proxy: bool,
         incident_type: str,
         first_fetch_time: datetime,
-        store_samples: bool = False
+        store_samples: bool = False,
+        sock_read: int = 120,
 ) -> None:
     """Connects to a CrowdStrike Falcon stream and fetches events from it in a loop.
 
@@ -448,6 +465,7 @@ async def long_running_loop(
         incident_type (str): Type of incident to create.
         store_samples (bool): Whether to store sample events in the integration context or not.
         first_fetch_time (datetime): The start time to fetch from retroactively for the first fetch.
+        sock_read (int) Client session sock read timeout.
 
     Returns:
         None: No data returned.
@@ -459,7 +477,7 @@ async def long_running_loop(
             stream.set_refresh_token(refresh_token)
             demisto.debug('Finished initializing refresh token, starting fetch events loop')
             async for event in stream.fetch_event(
-                    first_fetch_time=first_fetch_time, initial_offset=offset, event_type=event_type
+                    first_fetch_time=first_fetch_time, initial_offset=offset, event_type=event_type, sock_read=sock_read
             ):
                 event_metadata = event.get('metadata', {})
                 event_type = event_metadata.get('eventType', '')
@@ -580,6 +598,7 @@ def main():
     app_id = params.get('app_id') or 'Demisto'
     if not re.match(r'^[A-Za-z0-9]{0,32}$', app_id):
         raise ValueError('App ID is invalid: Must be a max. of 32 alphanumeric characters (a-z, A-Z, 0-9).')
+    sock_read = int(params.get('sock_read_timeout', 120))
 
     stream = EventStream(base_url=base_url, app_id=app_id, verify_ssl=verify_ssl, proxy=proxy)
 
@@ -591,7 +610,7 @@ def main():
         elif demisto.command() == 'long-running-execution':
             run(long_running_loop(
                 base_url, client_id, client_secret, stream, offset, event_type, verify_ssl, proxy, incident_type,
-                first_fetch_time, store_samples
+                first_fetch_time, store_samples, sock_read
             ))
         elif demisto.command() == 'fetch-incidents':
             fetch_samples()
