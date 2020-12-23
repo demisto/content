@@ -622,7 +622,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - *restore_cache
+#      - *restore_cache
       - *prepare_environment
       - *get_contribution_pack
       - *add_ssh_keys
