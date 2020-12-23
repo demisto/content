@@ -14,7 +14,7 @@ BASE_TEST_PARAMS = {
     'credentials': {'identifier': 'bad', 'password': 'bad'}
 }
 
-RETURN_ERROR_TARGET = 'Active_Directory_Query.return_error'
+RETURN_ERROR_TARGET = 'Active_Directory_Query1.return_error'
 
 
 def test_bad_host_no_ssl(mocker):
