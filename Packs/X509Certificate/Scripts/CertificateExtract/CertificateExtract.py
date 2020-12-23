@@ -461,7 +461,7 @@ def certificate_extract_command(args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs=None,
-        indicators=[standard_context],
+        indicators=standard_context,
         ignore_auto_extract=True
     )
 
