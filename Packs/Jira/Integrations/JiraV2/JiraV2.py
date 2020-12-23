@@ -757,6 +757,11 @@ def get_incident_entries(issue, incident_modified_date):
 
 
 def get_mapping_fields_command() -> GetMappingFieldsResponse:
+    """
+     this command pulls the remote schema for the different incident types, and their associated incident fields,
+     from the remote system.
+    :return: A list of keys you want to map
+    """
     jira_incident_type_scheme = SchemeTypeMapping(type_name=JIRA_INCIDENT_TYPE_NAME)
     for argument, description in ISSUE_INCIDENT_FIELDS.items():
         jira_incident_type_scheme.add_field(name=argument, description=description)
@@ -768,6 +773,17 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 
 
 def update_remote_system_command(args):
+    """ Mirror-out data that is in Demito into Jira issue
+
+    Notes:
+        1. Documentation on mirroring - https://xsoar.pan.dev/docs/integrations/mirroring_integration
+
+    Args:
+        args: A dictionary contains the next data regarding a modified incident: data, entries, incident_changed, remote_incident_id, inc_status, delta
+
+
+    Returns: The incident id that was modified.
+    """
     remote_args = UpdateRemoteSystemArgs(args)
     entries = remote_args.entries
     remote_id = remote_args.remote_incident_id
@@ -814,8 +830,9 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
         1. Documentation on mirroring - https://xsoar.pan.dev/docs/integrations/mirroring_integration
 
     Args:
-        id: Remote incident id.
-        lastUpdate: Server last sync time with remote server.
+        args:
+            id: Remote incident id.
+            lastUpdate: Server last sync time with remote server.
 
     Returns:
         GetRemoteDataResponse: Structured incident response.
