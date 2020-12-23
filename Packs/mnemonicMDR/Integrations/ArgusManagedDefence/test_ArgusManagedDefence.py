@@ -1,5 +1,4 @@
 import json
-import pytest
 
 BASE_URL = "https://api.mnemonic.no"
 CASE_ID = 1337
