@@ -39,4 +39,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex XDR endpoints health check](Insert the link to your image here)
+![Cortex XDR endpoints health check](https://raw.githubusercontent.com/demisto/content/5d3d94d8397e1400927ae4f3940ee74cfdc01575/Packs/CortexXDR/doc_files/Cortex_XDR_endpoints_health_check.png)
