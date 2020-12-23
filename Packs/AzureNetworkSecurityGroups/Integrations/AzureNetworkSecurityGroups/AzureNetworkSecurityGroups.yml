@@ -151,7 +151,7 @@ script:
     deprecated: false
     description: Delete a security rule.
     execution: false
-    name: azure-nsg-security-rules-delete
+    name: azure-nsg-security-rule-delete
   - arguments:
     - default: false
       description: The name of the security group.
@@ -252,7 +252,7 @@ script:
     deprecated: false
     description: Create a security rule.
     execution: false
-    name: azure-nsg-security-rules-create
+    name: azure-nsg-security-rule-create
     outputs:
     - contextPath: AzureNSG.Rule.name
       description: The rule's name.
@@ -402,7 +402,7 @@ script:
     deprecated: false
     description: Update a security rule. If one does not exist, it will be created.
     execution: false
-    name: azure-nsg-security-rules-update
+    name: azure-nsg-security-rule-update
     outputs:
     - contextPath: AzureNSG.Rule.name
       description: The rule's name.
@@ -469,7 +469,7 @@ script:
     deprecated: false
     description: Get a specific rule.
     execution: false
-    name: azure-nsg-security-rules-get
+    name: azure-nsg-security-rule-get
     outputs:
     - contextPath: AzureNSG.Rule.name
       description: The rule's name.

@@ -197,8 +197,6 @@ def create_rule_command(client: AzureNSGClient, security_group_name: str, securi
     # The reason for using 'Any' as default instead of '*' is to adhere to the standards in the UI.
     properties = {
         "protocol": '*' if protocol == 'Any' else protocol,
-        "sourceAddressPrefix": '*' if source == 'Any' else source,
-        "destinationAddressPrefix": '*' if destination == 'Any' else destination,
         "access": action,
         "priority": priority,
         "direction": direction,
@@ -214,6 +212,18 @@ def create_rule_command(client: AzureNSGClient, security_group_name: str, securi
         properties['destinationPortRanges'] = dest_ports_list
     else:
         properties['destinationPortRange'] = destination_ports
+
+    source_list = argToList(source)
+    if len(source_list) > 1:
+        properties["sourceAddressPrefixes"] = source_list
+    else:
+        properties["sourceAddressPrefix"] = '*' if source == 'Any' else source
+
+    dest_list = argToList(destination)
+    if len(dest_list) > 1:
+        properties["destinationAddressPrefixes"] = dest_list
+    else:
+        properties["destinationAddressPrefix"] = '*' if destination == 'Any' else destination
 
     if description:
         properties['description'] = description
@@ -245,29 +255,56 @@ def update_rule_command(client: AzureNSGClient, security_group_name: str, securi
 
     rule = client.get_rule(security_group_name, security_rule_name)
     properties = rule.get('properties')
+    properties_keys = list(properties.keys())
 
     updated_properties = assign_params(protocol='*' if protocol == 'Any' else protocol,
-                                       sourceAddressPrefix='*' if source == 'Any' else source,
-                                       destinationAddressPrefix='*' if destination == 'Any' else destination,
                                        access=action, priority=priority,
                                        direction=direction, description=description)
     if source_ports:
         source_ports_list = argToList(source_ports)
         if len(source_ports_list) > 1:
-            properties.pop("sourcePortRange")  # Can't supply both sourcePortRange and sourcePortRanges
+            if "sourcePortRange" in properties_keys:
+                properties.pop("sourcePortRange")  # Can't supply both sourcePortRange and sourcePortRanges
             updated_properties["sourcePortRanges"] = source_ports_list
         else:
-            properties.pop("sourcePortRanges")  # Can't supply both sourcePortRange and sourcePortRanges
+            if "sourcePortRanges" in properties_keys:
+                properties.pop("sourcePortRanges")  # Can't supply both sourcePortRange and sourcePortRanges
             updated_properties["sourcePortRange"] = source_ports
 
     if destination_ports:
         dest_ports_list = argToList(destination_ports)
         if len(dest_ports_list) > 1:
-            properties.pop("destinationPortRange")  # Can't supply both destinationPortRange and destinationPortRanges
+            if "destinationPortRange" in properties_keys:
+                properties.pop("destinationPortRange")  # Can't supply both destinationPortRange, destinationPortRanges
             updated_properties['destinationPortRanges'] = dest_ports_list
         else:
-            properties.pop("destinationPortRanges")  # Can't supply both destinationPortRange and destinationPortRanges
+            if "destinationPortRanges" in properties_keys:
+                properties.pop("destinationPortRanges")  # Can't supply both destinationPortRange, destinationPortRanges
             updated_properties['destinationPortRange'] = destination_ports
+
+    if destination:
+        dest_list = argToList(destination)
+        if len(dest_list) > 1:
+            if "destinationAddressPrefix" in properties_keys:
+                properties.pop("destinationAddressPrefix")  # Can't supply both destinationAddressPrefix and
+                # destinationAddressPrefix
+            updated_properties['destinationAddressPrefixes'] = dest_list
+        else:
+            if "destinationAddressPrefixes" in properties_keys:
+                properties.pop("destinationAddressPrefixes")  # Can't supply both
+                # destinationAddressPrefixes, destinationAddressPrefixes
+            updated_properties['destinationAddressPrefix'] = '*' if destination == 'Any' else destination
+
+    if source:
+        source_list = argToList(source)
+        if len(source_list) > 1:
+            if "sourceAddressPrefix" in properties_keys:
+                properties.pop("sourceAddressPrefix")  # Can't supply both sourceAddressPrefixes, sourceAddressPrefix
+            updated_properties['sourceAddressPrefixes'] = source_list
+        else:
+            if "sourceAddressPrefixes" in properties_keys:
+                properties.pop("sourceAddressPrefixes")  # Can't supply both sourceAddressPrefixes, sourceAddressPrefix
+            updated_properties['sourceAddressPrefix'] = '*' if source == 'Any' else source
 
     properties.update(updated_properties)
 
@@ -286,8 +323,6 @@ def get_rule_command(client: AzureNSGClient, security_group_name: str, security_
 
 @logger
 def test_connection(client: AzureNSGClient, params: dict) -> str:
-    if params.get('self_deployed', False) and not params.get('auth_code'):
-        return_error('You must enter an authorization code in a self-deployed configuration.')
     client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     return '✅ Success!'
 
@@ -334,17 +369,17 @@ def main() -> None:
         commands = {
             'azure-nsg-security-groups-list': list_groups_command,
             'azure-nsg-security-rules-list': list_rules_command,
-            'azure-nsg-security-rules-delete': delete_rule_command,
-            'azure-nsg-security-rules-create': create_rule_command,
-            'azure-nsg-security-rules-update': update_rule_command,
-            'azure-nsg-security-rules-get': get_rule_command,
+            'azure-nsg-security-rule-delete': delete_rule_command,
+            'azure-nsg-security-rule-create': create_rule_command,
+            'azure-nsg-security-rule-update': update_rule_command,
+            'azure-nsg-security-rule-get': get_rule_command,
             'azure-nsg-auth-start': start_auth,
             'azure-nsg-auth-complete': complete_auth,
             'azure-nsg-auth-reset': reset_auth,
         }
         if command == 'test-module':
-            raise ValueError("Please run `!azure-nsg-auth-start` and `!azure-nsg-auth-complete` to log in."
-                             " For more details press the (?) button.")
+            return_error("Please run `!azure-nsg-auth-start` and `!azure-nsg-auth-complete` to log in."
+                         " For more details press the (?) button.")
 
         if command == 'azure-nsg-auth-test':
             return_results(test_connection(client, params))

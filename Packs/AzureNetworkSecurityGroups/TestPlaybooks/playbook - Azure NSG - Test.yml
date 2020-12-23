@@ -147,7 +147,7 @@ tasks:
       version: -1
       name: Delete Rule
       description: Delete a security rule
-      script: '|||azure-nsg-security-rules-delete'
+      script: '|||azure-nsg-security-rule-delete'
       type: regular
       iscommand: true
       brand: ""
@@ -181,7 +181,7 @@ tasks:
       version: -1
       name: Create Rule
       description: Create a security rule
-      script: '|||azure-nsg-security-rules-create'
+      script: '|||azure-nsg-security-rule-create'
       type: regular
       iscommand: true
       brand: ""
@@ -229,7 +229,7 @@ tasks:
       version: -1
       name: Update Rule
       description: Update a security rule. If one does not exist, it'll be created.
-      script: '|||azure-nsg-security-rules-update'
+      script: '|||azure-nsg-security-rule-update'
       type: regular
       iscommand: true
       brand: ""
@@ -274,7 +274,7 @@ tasks:
       version: -1
       name: Get Rule
       description: Get a specific rule
-      script: '|||azure-nsg-security-rules-get'
+      script: '|||azure-nsg-security-rule-get'
       type: regular
       iscommand: true
       brand: ""
@@ -308,7 +308,7 @@ tasks:
       version: -1
       name: Delete rule
       description: Delete a security rule
-      script: '|||azure-nsg-security-rules-delete'
+      script: '|||azure-nsg-security-rule-delete'
       type: regular
       iscommand: true
       brand: ""
