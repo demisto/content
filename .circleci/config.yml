@@ -495,7 +495,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - *restore_cache
+    #  - *restore_cache
       - *prepare_environment
       - save_cache:
           paths:
@@ -513,7 +513,7 @@ jobs:
     steps:
       - *attach_workspace
       - setup_remote_docker
-      - *restore_cache
+    #  - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
       - *infrastructure_testing
@@ -538,7 +538,7 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - *restore_cache
+    #  - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
       - *secrets
@@ -609,7 +609,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - *restore_cache
+   #   - *restore_cache
       - *prepare_environment
       - *get_contribution_pack
       - *add_ssh_keys
@@ -693,7 +693,7 @@ jobs:
               - << pipeline.parameters.non_ami_run >>
           steps:
             - *attach_workspace
-            - *restore_cache
+      #      - *restore_cache
             - *add_ssh_keys
             - *prepare_environment
             - run:
@@ -1084,7 +1084,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - *restore_cache
+  #    - *restore_cache
       - *prepare_environment
       - *secrets
       - *update_tests_step
@@ -1112,7 +1112,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - *restore_cache
+    #  - *restore_cache
       - *prepare_environment
       - *download_configuration
       - *create_instance
