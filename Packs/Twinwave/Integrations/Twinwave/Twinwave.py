@@ -1,4 +1,3 @@
-from typing import Union
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -382,8 +381,7 @@ def get_job_summary(client, args):
     """
     job_id = args.get('job_id')
     result = client.get_job(job_id=job_id)
-    indicators: List[Union[Common.File, Common.URL]] = []
-
+    command_results = []
     # Setting the DbotScore
     twinwave_score = round(float(result.get('Score')) * 100, 2)
     if twinwave_score >= 70:
@@ -428,8 +426,10 @@ def get_job_summary(client, args):
                 size=size,
                 dbot_score=dbot_score
             )
-
-            indicators.append(file)
+            command_results.append(CommandResults(
+                readable_output=tableToMarkdown("New file indicator was added", file.to_context()),
+                indicator=file
+            ))
         # Adding the SHA256 to the Result
         result['SHA256'] = submission.get('SHA256')
         result['DisplayScore'] = twinwave_score
@@ -461,8 +461,10 @@ def get_job_summary(client, args):
                 dbot_score=dbot_score
             )
 
-            indicators.append(url)
-
+            command_results.append(CommandResults(
+                readable_output=tableToMarkdown("New URL indicator was added", url.to_context()),
+                indicator=url
+            ))
         # Adding the URL to the Result
         result['URL'] = submission.get('Name')
         # Adding the DisplayScore to the result
@@ -470,15 +472,14 @@ def get_job_summary(client, args):
         readable_output += tableToMarkdown('Twinwave Job Summary', result,
                                            headers=['ID', 'URL', 'State', 'DisplayScore',
                                                     'ResourceCount', 'CreatedAt'])
-
-    return CommandResults(
+    command_results.append(CommandResults(
         readable_output=readable_output,
         outputs_prefix="Twinwave.JobSummary",
         outputs_key_field='ID',
         outputs=result,
         raw_response=result,  # raw response - the original response
-        indicators=indicators
-    )
+    ))
+    return command_results
 
 
 def get_job_normalized_forensics(client, args):
