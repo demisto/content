@@ -36,4 +36,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Prisma Cloud - Find AWS Resource by FQDN](https://raw.githubusercontent.com/demisto/content/8d80d2e630f4a6aafd1fb1a27102d14565d429b1/Packs/PrismaCloud/Playbooks/playbook-Prisma_Cloud_-_Find_AWS_Resource_by_FQDN.png)
+![Prisma Cloud - Find AWS Resource by FQDN](https://raw.githubusercontent.com/demisto/content/852016ad0103ba42e8b5c8f596246fd14a4e7a90/doc_files/Prisma_Cloud_-_Find_AWS_Resource_by_FQDN.png)
