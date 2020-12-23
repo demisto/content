@@ -3223,8 +3223,6 @@
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
         "Google Chronicle Backstory Asset - Test": "Issue 26460",
         "HybridAnalysis-Test": "Issue 26599",
-        "Tenable.io test": "Issue 26727",
-        "Tenable.io Scan Test": "Issue 26727",
         "ThreatConnect v2 - Test": "Issue 26782",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
