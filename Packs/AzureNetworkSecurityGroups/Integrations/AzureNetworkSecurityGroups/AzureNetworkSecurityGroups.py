@@ -158,8 +158,8 @@ def list_rules_command(client: AzureNSGClient, security_group_name: str, limit: 
         a list of  rules for the security group
     """
     security_groups = argToList(security_group_name)
-    rules_limit = arg_to_number(limit)
-    rules_offset = arg_to_number(offset) - 1  # As offset will start at 1
+    rules_limit = int(limit)
+    rules_offset = int(offset) - 1  # As offset will start at 1
     rules: List = list()
     for group in security_groups:
         rules_returned = client.list_rules(group)
