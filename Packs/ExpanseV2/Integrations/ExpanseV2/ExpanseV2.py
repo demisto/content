@@ -640,10 +640,9 @@ def timestamp_us_to_datestring_utc(ts: int, date_format: str = DATE_FORMAT) -> s
     return ds
 
 
-def format_cidr_data(cidrs: List[Dict[str, Any]]) -> CommandResults:
+def format_cidr_data(cidrs: List[Dict[str, Any]]) -> List[CommandResults]:
     cidr_data_list: List[Dict[str, Any]] = []
-    cidr_standard_list: List[DBotScoreOnlyIndicator] = []
-
+    command_results = []
     for cidr_data in cidrs:
         cidr_data['cidr'] = ','.join(range_to_cidrs(cidr_data['startAddress'], cidr_data['endAddress'])) if (
             'startAddress' in cidr_data
@@ -667,18 +666,19 @@ def format_cidr_data(cidrs: List[Dict[str, Any]]) -> CommandResults:
                 score=Common.DBotScore.NONE
             )
         )
-        cidr_standard_list.append(cidr_standard_context)
-
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown("New CIDR indicator was found", cidr_standard_context.to_context()),
+            indicator=cidr_standard_context
+        ))
     readable_output = tableToMarkdown(
         'Expanse IP Range List', cidr_data_list) if len(cidr_standard_list) > 0 else "## No IP Ranges found"
-
-    return CommandResults(
+    command_results.append(CommandResults(
         readable_output=readable_output,
         outputs_prefix='Expanse.IPRange',
         outputs_key_field='id',
         outputs=cidr_data_list if len(cidr_data_list) > 0 else None,
-        indicators=cidr_standard_list if len(cidr_standard_list) > 0 else None
-    )
+    ))
+    return command_results
 
 
 def find_indicator_md5_by_hash(h: str) -> Optional[str]:
@@ -704,10 +704,9 @@ def find_indicator_md5_by_hash(h: str) -> Optional[str]:
     return custom_fields.get('md5')
 
 
-def format_domain_data(domains: List[Dict[str, Any]]) -> CommandResults:
-    domain_standard_list: List[Common.Domain] = []
+def format_domain_data(domains: List[Dict[str, Any]]) -> List[CommandResults]:
     domain_data_list: List[Dict[str, Any]] = []
-
+    command_results = []
     for domain_data in domains:
         if not isinstance(domain_data, dict) or 'domain' not in domain_data:
             continue
@@ -761,8 +760,10 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> CommandResults:
             ),
             **whois_args
         )
-        domain_standard_list.append(domain_standard_context)
-
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown("New Domain indicator was found", domain_standard_context.to_context()),
+            indicator=domain_standard_context
+        ))
         domain_context_excluded_fields: List[str] = []
         domain_data_list.append({
             k: domain_data[k]
@@ -771,21 +772,19 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> CommandResults:
 
     readable_output = tableToMarkdown(
         'Expanse Domain List', domain_data_list) if len(domain_data_list) > 0 else "## No Domains found"
-
-    return CommandResults(
+    command_results.append(CommandResults(
         readable_output=readable_output,
         outputs_prefix='Expanse.Domain',
         outputs_key_field='domain',
         outputs=domain_data_list if len(domain_data_list) > 0 else None,
-        indicators=domain_standard_list if len(domain_standard_list) > 0 else None
-    )
+    ))
+    return command_results
 
 
-def format_certificate_data(certificates: List[Dict[str, Any]]) -> CommandResults:
-    certificate_standard_list: List[Common.Indicator] = []
+def format_certificate_data(certificates: List[Dict[str, Any]]) -> List[CommandResults)]:
     certificate_data_list: List[Dict[str, Any]] = []
     certificate_context_excluded_fields: List[str] = []
-
+    command_results = []
     for certificate in certificates:
         expanse_certificate = certificate.get('certificate')
         if expanse_certificate is None:
@@ -843,8 +842,11 @@ def format_certificate_data(certificates: List[Dict[str, Any]]) -> CommandResult
                 score=Common.DBotScore.NONE
             )
         )
-        certificate_standard_list.append(certificate_standard_context)
-
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown("New Certificate indicator was found",
+                                            certificate_standard_context.to_context),
+            indicator=certificate_standard_context,
+        ))
         # Expanse Context
         certificate_data_list.append({
             k: certificate[k]
@@ -853,15 +855,14 @@ def format_certificate_data(certificates: List[Dict[str, Any]]) -> CommandResult
 
     readable_output = tableToMarkdown(
         'Expanse Certificate List', certificate_data_list) if len(certificate_data_list) > 0 else "## No Certificates found"
-
-    return CommandResults(
+    command_results.append(CommandResults(
         readable_output=readable_output,
         outputs_prefix='Expanse.Certificate',
         outputs_key_field='id',
         outputs=certificate_data_list if len(certificate_data_list) > 0 else None,
-        indicators=certificate_standard_list if len(certificate_standard_list) > 0 else None,
         ignore_auto_extract=True,
-    )
+    ))
+    return command_results
 
 
 """ COMMAND FUNCTIONS """
@@ -1708,7 +1709,7 @@ def get_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResu
     return format_certificate_data(certificates=cert_data)
 
 
-def get_associated_domains_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_associated_domains_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     cn_search = args.get('common_name')
     ip_search = args.get('ip')
 
@@ -1779,26 +1780,19 @@ def get_associated_domains_command(client: Client, args: Dict[str, Any]) -> Comm
         list(matching_domains.values()) if len(matching_domains) > 0 else "## No Domains found",
         headers=['name', 'IP', 'certificate']
     )
-
-    return CommandResults(
+    for d in matching_domains.keys():
+        indicator = Common.Domain(d, Common.DBotScore(d, DBotScoreType.DOMAIN, "ExpanseV2", Common.DBotScore.NONE))
+        command_results(CommandResults(
+            readable_output=tableToMarkdown("New Domain indicator was found.", indicator.to_context()),
+            indicator=indicator
+        ))
+    command_results.append(CommandResults(
         readable_output=readable_output,
         outputs_prefix='Expanse.AssociatedDomain',
         outputs_key_field='name',
         outputs=list(
-            matching_domains.values()) if len(matching_domains) > 0 else None,
-        indicators=[
-            Common.Domain(
-                d,
-                Common.DBotScore(
-                    d,
-                    DBotScoreType.DOMAIN,
-                    "ExpanseV2",
-                    Common.DBotScore.NONE
-                )
-            ) for d in matching_domains.keys()
-        ] if len(matching_domains) > 0 else None,
-    )
-
+            matching_domains.values()) if len(matching_domains) > 0 else None,))
+    return command_results
 
 def certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     hashes = argToList(args.get('certificate'))
@@ -1926,7 +1920,7 @@ def domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return format_domain_data(domain_data)
 
 
-def ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('ip(s) not specified')
@@ -1935,9 +1929,8 @@ def ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if len(ips) > MAX_RESULTS:
         ips = ips[:MAX_RESULTS]
 
-    ip_standard_list: List[Common.IP] = []
     ip_data_list: List[Dict[str, Any]] = []
-
+    command_results = []
     for ip in ips:
         ip_data = next(client.get_ips(params={'inetSearch': f"{ip}", "limit": 1}), None)
         if ip_data is None:
@@ -1955,8 +1948,10 @@ def ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             ),
             hostname=ip_data.get('domain', None)
         )
-        ip_standard_list.append(ip_standard_context)
-
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown("New IP indicator was found", ip_standard_context.to_context()),
+            indicator=ip_standard_context
+        ))
         ip_context_excluded_fields: List[str] = []
         ip_data_list.append({
             k: ip_data[k]
@@ -1965,14 +1960,13 @@ def ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     readable_output = tableToMarkdown(
         'Expanse IP List', ip_data_list) if len(ip_data_list) > 0 else "## No IPs found"
-
-    return CommandResults(
+    command_results.append(CommandResults(
         readable_output=readable_output,
         outputs_prefix='Expanse.IP',
         outputs_key_field=['ip', 'type', 'assetKey', 'assetType'],
         outputs=ip_data_list if len(ip_data_list) > 0 else None,
-        indicators=ip_standard_list if len(ip_standard_list) > 0 else None
-    )
+    ))
+    return command_results
 
 
 def cidr_command(client: Client, args: Dict[str, Any]) -> CommandResults:
