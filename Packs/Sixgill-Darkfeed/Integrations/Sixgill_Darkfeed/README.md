@@ -114,4 +114,3 @@ There is no context output for this command.
 ## Additional Information
 Contact us: sales@cybersixgill.com
 
-## Known Limitations
