@@ -2066,7 +2066,7 @@
                 "Rasterize"
             ],
             "memory_threshold": 115,
-            "pid_threshold": 5
+            "pid_threshold": 60
         },
         {
             "playbookID": "Phishing - Core - Test - Incident Starter",
@@ -2079,7 +2079,7 @@
                 "Rasterize"
             ],
             "memory_threshold": 100,
-            "pid_threshold": 5
+            "pid_threshold": 60
         },
         {
             "integrations": "duo",
