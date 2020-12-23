@@ -53,8 +53,6 @@ from argus_api.api.reputation.v1.observation import (
     fetch_observations_for_i_p,
 )
 
-from argus_api.exceptions.http import ArgusException
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
