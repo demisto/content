@@ -26,7 +26,6 @@ import ipaddress
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
-
 """ CONSTANTS """
 
 TOKEN_DURATION = 7200
@@ -86,7 +85,7 @@ PRIORITY_SEVERITY_MAP = {
     'Low': 1,  # low severity
     'Medium': 2,  # medium severity
     'High': 3,  # high severity
-    'Critical': 4   # critical severity
+    'Critical': 4  # critical severity
 }
 
 SEVERITY_PRIORITY_MAP = {v: k for k, v in PRIORITY_SEVERITY_MAP.items()}
@@ -101,7 +100,7 @@ class Client(BaseClient):
     """Client class to interact with the Expanse API"""
 
     def __init__(
-        self, base_url: str, api_key: str, verify: bool, proxy: bool, **kwargs
+            self, base_url: str, api_key: str, verify: bool, proxy: bool, **kwargs
     ):
         self.api_key = api_key
         hdr = {
@@ -153,10 +152,10 @@ class Client(BaseClient):
 
         stored_token = demisto.getIntegrationContext()
         if (
-            isinstance(stored_token, dict)
-            and "token" in stored_token
-            and "expires" in stored_token
-            and current_utc_timestamp < int(stored_token["expires"])
+                isinstance(stored_token, dict)
+                and "token" in stored_token
+                and "expires" in stored_token
+                and current_utc_timestamp < int(stored_token["expires"])
         ):
             self._headers['Authorization'] = f'JWT {stored_token["token"]}'
         else:
@@ -299,7 +298,8 @@ class Client(BaseClient):
             demisto.debug(f'get_asset_details: unsupported asset type {asset_type}')
         return data
 
-    def manage_asset_tags(self, asset_type: str, operation_type: str, asset_id: str, tag_ids: List[str]) -> Dict[str, Any]:
+    def manage_asset_tags(self, asset_type: str, operation_type: str, asset_id: str, tag_ids: List[str]) -> Dict[
+        str, Any]:
         endpoint_base = asset_type if asset_type == "ip-range" else f"assets/{asset_type}"
 
         data: Dict = {"operations": [{
@@ -414,7 +414,8 @@ class Client(BaseClient):
         )
 
     def get_risky_flows(self, limit: int, created_before: Optional[str], created_after: Optional[str],
-                        internal_ip_range: Optional[str], risk_rule: Optional[str], tag_names: Optional[str]) -> Iterator[Any]:
+                        internal_ip_range: Optional[str], risk_rule: Optional[str], tag_names: Optional[str]) -> \
+    Iterator[Any]:
 
         params = {
             "page[limit]": limit,
@@ -483,11 +484,11 @@ class Client(BaseClient):
                 if a.get('assetType') == 'IpRange':
                     # for IP Range collect relatedRegistrarInformation.registryEntities.formattedName
                     if (
-                        (rri := details.get('relatedRegistrationInformation'))
-                        and isinstance(rri, list)
-                        and isinstance(rri[0], dict)
-                        and (re := rri[0].get('registryEntities'))
-                        and isinstance(re, list)
+                            (rri := details.get('relatedRegistrationInformation'))
+                            and isinstance(rri, list)
+                            and isinstance(rri[0], dict)
+                            and (re := rri[0].get('registryEntities'))
+                            and isinstance(re, list)
                     ):
                         ml_feature_list.extend(set(r['formattedName'] for r in re if 'formattedName' in r))
 
@@ -504,17 +505,17 @@ class Client(BaseClient):
                 elif a.get('assetType') == "Domain":
                     # for Domain collect domain, name servers, registrant and admin name/organization
                     if (
-                        (whois := details.get('whois'))
-                        and isinstance(whois, list)
-                        and isinstance(whois[0], dict)
+                            (whois := details.get('whois'))
+                            and isinstance(whois, list)
+                            and isinstance(whois[0], dict)
                     ):
                         if (x := whois[0].get('domain')):
                             ml_feature_list.append(x)
 
                         # nameServers
                         if (
-                            (ns := whois[0].get('nameServers'))
-                            and isinstance(ns, list)
+                                (ns := whois[0].get('nameServers'))
+                                and isinstance(ns, list)
                         ):
                             ml_feature_list.extend(ns)
 
@@ -541,6 +542,7 @@ class DBotScoreOnlyIndicator(Common.Indicator):
     """
     This class represents a generic indicator and is used only to return DBotScore
     """
+
     def __init__(self, dbot_score: Common.DBotScore):
         self.dbot_score = dbot_score
 
@@ -578,7 +580,8 @@ def range_to_cidrs(start: str, end: str) -> Iterator[str]:
         raise ValueError(f'Invalid IP address in range: {str(e)}')
 
 
-def check_int(arg: Any, arg_name: str, min_val: int = None, max_val: int = None, required: bool = False) -> Optional[int]:
+def check_int(arg: Any, arg_name: str, min_val: int = None, max_val: int = None, required: bool = False) -> Optional[
+    int]:
     """Converts a string argument to a Python int
     This function is used to quickly validate an argument provided and convert
     it into an ``int`` type. It will throw a ValueError if the input is invalid
@@ -645,8 +648,8 @@ def format_cidr_data(cidrs: List[Dict[str, Any]]) -> List[CommandResults]:
     command_results = []
     for cidr_data in cidrs:
         cidr_data['cidr'] = ','.join(range_to_cidrs(cidr_data['startAddress'], cidr_data['endAddress'])) if (
-            'startAddress' in cidr_data
-            and 'endAddress' in cidr_data
+                'startAddress' in cidr_data
+                and 'endAddress' in cidr_data
         ) else None
 
         if not cidr_data['cidr']:
@@ -670,10 +673,7 @@ def format_cidr_data(cidrs: List[Dict[str, Any]]) -> List[CommandResults]:
             readable_output=tableToMarkdown("New CIDR indicator was found", cidr_standard_context.to_context()),
             indicator=cidr_standard_context
         ))
-    readable_output = tableToMarkdown(
-        'Expanse IP Range List', cidr_data_list) if len(cidr_standard_list) > 0 else "## No IP Ranges found"
     command_results.append(CommandResults(
-        readable_output=readable_output,
         outputs_prefix='Expanse.IPRange',
         outputs_key_field='id',
         outputs=cidr_data_list if len(cidr_data_list) > 0 else None,
@@ -827,7 +827,8 @@ def format_certificate_data(certificates: List[Dict[str, Any]]) -> List[CommandR
                 length=expanse_certificate.get('publicKeyBits'),
                 modulus=':'.join([ec_modulus[i:i + 2] for i in range(0, len(ec_modulus), 2)]) if ec_modulus else None,
                 exponent=expanse_certificate.get('publicKeyRsaExponent'),
-                publickey=':'.join([ec_publickey[i:i + 2] for i in range(0, len(ec_publickey), 2)]) if ec_publickey else None
+                publickey=':'.join(
+                    [ec_publickey[i:i + 2] for i in range(0, len(ec_publickey), 2)]) if ec_publickey else None
             ),
             spki_sha256=base64.urlsafe_b64decode(ec_spki).hex() if ec_spki else None,
             signature_algorithm=expanse_certificate.get('signatureAlgorithm'),
@@ -844,7 +845,7 @@ def format_certificate_data(certificates: List[Dict[str, Any]]) -> List[CommandR
         )
         command_results.append(CommandResults(
             readable_output=tableToMarkdown("New Certificate indicator was found",
-                                            certificate_standard_context.to_context),
+                                            certificate_standard_context.to_context()),
             indicator=certificate_standard_context,
         ))
         # Expanse Context
@@ -854,7 +855,8 @@ def format_certificate_data(certificates: List[Dict[str, Any]]) -> List[CommandR
         })
 
     readable_output = tableToMarkdown(
-        'Expanse Certificate List', certificate_data_list) if len(certificate_data_list) > 0 else "## No Certificates found"
+        'Expanse Certificate List', certificate_data_list) if len(
+        certificate_data_list) > 0 else "## No Certificates found"
     command_results.append(CommandResults(
         readable_output=readable_output,
         outputs_prefix='Expanse.Certificate',
@@ -893,7 +895,6 @@ def test_module(client: Client) -> str:
 
 
 def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     total_results, max_page_size = calculate_limits(args.get('limit', None))
 
     provider = ','.join(argToList(args.get('provider')))
@@ -971,7 +972,6 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def get_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     if not (issue_id := args.get('issue_id')):
         raise ValueError('issue_id not specified')
 
@@ -1069,7 +1069,6 @@ def get_issue_comments_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 
 def update_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     if not (issue_id := args.get('issue_id')):
         raise ValueError('issue_id not specified')
 
@@ -1196,18 +1195,18 @@ def fetch_incidents(client: Client, max_incidents: int,
 
         # add issue specific information to ml key
         if (
-            (provider := issue.get('providers'))
-            and isinstance(provider, list)
-            and 'name' in provider[0]
+                (provider := issue.get('providers'))
+                and isinstance(provider, list)
+                and 'name' in provider[0]
         ):
             ml_feature_list.append(provider[0].get('name'))
         if (
-            (latest_evidence := issue.get('latestEvidence'))
-            and isinstance(latest_evidence, dict)
+                (latest_evidence := issue.get('latestEvidence'))
+                and isinstance(latest_evidence, dict)
         ):
             if (
-                (geolocation := latest_evidence.get('geolocation'))
-                and isinstance(geolocation, dict)
+                    (geolocation := latest_evidence.get('geolocation'))
+                    and isinstance(geolocation, dict)
             ):
                 for f in ['countryCode', 'city']:
                     if (x := geolocation.get(f)):
@@ -1234,7 +1233,8 @@ def fetch_incidents(client: Client, max_incidents: int,
 
 
 def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: bool = False,
-                            incoming_tags: Optional[List[str]] = [], mirror_details: bool = False) -> GetRemoteDataResponse:
+                            incoming_tags: Optional[List[str]] = [],
+                            mirror_details: bool = False) -> GetRemoteDataResponse:
     parsed_args = GetRemoteDataArgs(args)
     issue_updates: List[Dict[str, Any]] = sorted(
         islice(
@@ -1264,9 +1264,9 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
         updated_field = ISSUE_UPDATE_TYPES[update_type]
         previous_value = update.get('previousValue')
         update_user = update['user']['username'] if (
-            'user' in update
-            and isinstance(update['user'], dict)
-            and 'username' in update['user']
+                'user' in update
+                and isinstance(update['user'], dict)
+                and 'username' in update['user']
         ) else 'Unknown user'
 
         # handle incoming comment
@@ -1305,7 +1305,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
 
         # handle issue closure
         elif update_type == 'ProgressStatus' and new_value in ISSUE_PROGRESS_STATUS_CLOSED:
-            close_reason = EXPANSE_RESOLVEDSTATUS_TO_XSOAR[new_value] if new_value in EXPANSE_RESOLVEDSTATUS_TO_XSOAR else 'Other'
+            close_reason = EXPANSE_RESOLVEDSTATUS_TO_XSOAR[
+                new_value] if new_value in EXPANSE_RESOLVEDSTATUS_TO_XSOAR else 'Other'
             resolve_comment = latest_comment['value'] if 'value' in latest_comment else ''
             demisto.debug(f'Closing Expanse issue {parsed_args.remote_incident_id}')
             new_entries.append({
@@ -1552,7 +1553,7 @@ def get_iprange_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
             )
         )
 
-    return(format_cidr_data(outputs))
+    return (format_cidr_data(outputs))
 
 
 def get_domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
@@ -1604,7 +1605,8 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
 
     dns_resolution_status = args.get('has_dns_resolution')
     if dns_resolution_status is not None:
-        params['dnsResolutionStatus'] = "HAS_DNS_RESOLUTION" if argToBoolean(dns_resolution_status) else "NO_DNS_RESOLUTION"
+        params['dnsResolutionStatus'] = "HAS_DNS_RESOLUTION" if argToBoolean(
+            dns_resolution_status) else "NO_DNS_RESOLUTION"
 
     service_status = args.get('has_active_service')
     if service_status is not None:
@@ -1712,7 +1714,7 @@ def get_certificate_command(client: Client, args: Dict[str, Any]) -> List[Comman
 def get_associated_domains_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     cn_search = args.get('common_name')
     ip_search = args.get('ip')
-
+    command_results = []
     if ip_search is not None and cn_search is not None:
         raise ValueError("only one of common_name and ip arguments should be specified")
 
@@ -1782,7 +1784,7 @@ def get_associated_domains_command(client: Client, args: Dict[str, Any]) -> List
     )
     for d in matching_domains.keys():
         indicator = Common.Domain(d, Common.DBotScore(d, DBotScoreType.DOMAIN, "ExpanseV2", Common.DBotScore.NONE))
-        command_results(CommandResults(
+        command_results.append(CommandResults(
             readable_output=tableToMarkdown("New Domain indicator was found.", indicator.to_context()),
             indicator=indicator
         ))
@@ -1791,8 +1793,9 @@ def get_associated_domains_command(client: Client, args: Dict[str, Any]) -> List
         outputs_prefix='Expanse.AssociatedDomain',
         outputs_key_field='name',
         outputs=list(
-            matching_domains.values()) if len(matching_domains) > 0 else None,))
+            matching_domains.values()) if len(matching_domains) > 0 else None, ))
     return command_results
+
 
 def certificate_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     hashes = argToList(args.get('certificate'))
@@ -1833,7 +1836,7 @@ def certificate_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
 
     # XXX - this is a workaround to the lack of the possibility of extending mapper
     # of standard Indicator Types. We need to call createIndicator to set custom fields
-    if not set_expanse_fields or result.outputs is None:
+    if not set_expanse_fields or (result and result[0].outputs is None):
         return result
 
     indicators: List[Dict[str, Any]] = []
@@ -2246,7 +2249,6 @@ def main() -> None:
 
 
 """ ENTRY POINT """
-
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
