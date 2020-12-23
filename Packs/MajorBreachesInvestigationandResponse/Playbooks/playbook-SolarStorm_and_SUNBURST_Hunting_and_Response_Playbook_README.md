@@ -64,4 +64,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![SolarStorm and SUNBURST Hunting and Response Playbook](Insert the link to your image here)
+![SolarStorm and SUNBURST Hunting and Response Playbook](https://raw.githubusercontent.com/demisto/content/500110f4d131c9e0deab6a868b5654e653785c90/Packs/MajorBreachesInvestigationandResponse/doc_files/SolarStorm_and_SUNBURST_Hunting_and_Response_Playbook_V6.png)
