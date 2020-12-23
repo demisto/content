@@ -52,13 +52,13 @@ description: Cognni Integration
 detaileddescription: "## Cognni\r\n\r\nCognni adds meaning to information events,\
   \ enabling autonomous detection and investigation of information security incidents.\
   \ Cognni's integration empowers Palo Alto customers with Information Intelligence\
-  \ capabilities.\r\n\r\n### Glossary\r\n**Risk** - Risk is the possibility of something\
-  \ bad happening. Incidents are aggregated as risks grouped by entities.\r\n**Exposure\
-  \ (Incident)** - An information exposure is the intentional or unintentional disclosure\
-  \ of information.\r\n**Entity** - A person, organization, folder, device or other\
-  \ object in the system that has it's own separate existence.\r\n**Activity (Event)**\
-  \ - Data about user, system and policy actions and events.\r\n**Content** - The\
-  \ information resides inside the files, messages, emails or records."
+  \ capabilities.\r\n\r\n\r\nStep 1: Get API Key from Cognni\r\n\r\n1. Send an email\
+  \ to successteam@cognni.ai requesting an API Key for your Demisto integration \r\
+  \n2. Receive an email with the API Key\r\n3. Copy the API Key. \r\n\r\nStep 2: Add\
+  \ the API Key to Demisto \r\n1. Visit demisto.com\r\n2. Login to Demisto using your\
+  \ credentials\r\n3. In the side bar, select Settings > Integrations.\r\n4. Under\
+  \ Utilities, select Cognni\r\n5. Select the relevant instance\r\n6. Paste the API\
+  \ Key from Step 1 into the API Key bar.\r\n7. Select Done."
 display: Cognni
 name: Cognni
 script:
@@ -139,7 +139,7 @@ script:
     - contextPath: Cognni.insights.severity
       description: severity
       type: Number
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: true
   longRunning: false
