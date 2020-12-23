@@ -573,7 +573,7 @@ def list_devices_command(client: Client, args: Dict) -> Union[CommandResults, st
         outputs=devices,
         readable_output=readable_output,
         raw_response=result,
-        indicators=[endpoint]
+        indicator=endpoint
     )
     return results
 
