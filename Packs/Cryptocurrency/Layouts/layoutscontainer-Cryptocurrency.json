@@ -1,440 +1,441 @@
 {
-	"close": null,
-	"description": "",
-	"details": null,
-	"detailsV2": null,
-	"edit": null,
-	"fromServerVersion": "",
-	"group": "indicator",
-	"id": "96c3012c-9ac7-464e-8d48-5a01d5165c32",
-	"indicatorsDetails": {
-		"TypeName": "",
-		"tabs": [
-			{
-				"id": "default-main",
-				"name": "Info",
-				"sections": [
-					{
-						"h": 6,
-						"i": "default-main-comments",
-						"maxW": 3,
-						"moved": false,
-						"name": "Comments",
-						"static": false,
-						"type": "comments",
-						"w": 1,
-						"x": 2,
-						"y": 8
-					},
-					{
-						"h": 2,
-						"hideName": true,
-						"i": "default-main-relatedIncidents",
-						"maxW": 3,
-						"moved": false,
-						"name": "Related Incidents",
-						"static": false,
-						"type": "relatedIncidents",
-						"w": 2,
-						"x": 0,
-						"y": 6
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "indicatortype",
-								"height": 22,
-								"id": "indicator-type",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "expiration",
-								"height": 22,
-								"id": "indicator-expiration",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "timestamp",
-								"height": 22,
-								"id": "indicator-timestamp",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "cryptocurrencyaddresstype",
-								"height": 22,
-								"id": "942b2cc0-2834-11eb-825a-1db518e7104a",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "countryname",
-								"height": 22,
-								"id": "708163d0-4520-11eb-bc7a-e1bc2f118d45",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "modified",
-								"height": 22,
-								"id": "indicator-modified",
-								"index": 6,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"moved": false,
-						"name": "Basic Information",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 1
-					},
-					{
-						"displayType": "ROW",
-						"h": 3,
-						"i": "default-main-indicatorTimeline",
-						"maxW": 3,
-						"moved": false,
-						"name": "Timeline",
-						"static": false,
-						"type": "indicatorTimeline",
-						"w": 1,
-						"x": 2,
-						"y": 5
-					},
-					{
-						"h": 1,
-						"hideName": true,
-						"i": "default-main-reputationStatus",
-						"maxW": 3,
-						"moved": false,
-						"name": "Reputation Status",
-						"static": false,
-						"type": "reputationStatus",
-						"w": 1,
-						"x": 1,
-						"y": 0
-					},
-					{
-						"h": 1,
-						"hideName": true,
-						"i": "default-main-expirationStatus",
-						"maxW": 3,
-						"moved": false,
-						"name": "Expiration Status",
-						"static": false,
-						"type": "expirationStatus",
-						"w": 1,
-						"x": 0,
-						"y": 0
-					},
-					{
-						"h": 2,
-						"i": "default-main-reputationSources",
-						"maxW": 3,
-						"moved": false,
-						"name": "Reputation",
-						"static": false,
-						"type": "reputationSources",
-						"w": 1,
-						"x": 1,
-						"y": 1
-					},
-					{
-						"h": 3,
-						"i": "default-main-sources",
-						"maxW": 3,
-						"moved": false,
-						"name": "Sources Data",
-						"static": false,
-						"type": "sources",
-						"w": 2,
-						"x": 0,
-						"y": 8
-					},
-					{
-						"displayType": "ROW",
-						"h": 1,
-						"i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039b",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "firstseen",
-								"height": 22,
-								"id": "indicator-first-seen",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "lastseen",
-								"height": 22,
-								"id": "indicator-last-seen",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"moved": false,
-						"name": "Related Incidents",
-						"static": false,
-						"w": 2,
-						"x": 0,
-						"y": 5
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "default-main-3df99950-4520-11eb-bc7a-e1bc2f118d45",
-						"items": [
-							{
-								"dropEffect": "move",
-								"endCol": 4,
-								"fieldId": "description",
-								"height": 44,
-								"id": "4a7a2140-4520-11eb-bc7a-e1bc2f118d45",
-								"index": 0,
-								"listId": "default-main-3df99950-4520-11eb-bc7a-e1bc2f118d45",
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Description",
-						"static": false,
-						"w": 2,
-						"x": 0,
-						"y": 3
-					},
-					{
-						"displayType": "ROW",
-						"h": 1,
-						"hideName": false,
-						"i": "default-main-39b83760-4526-11eb-ad20-11f087344e50",
-						"items": [
-							{
-								"args": {},
-								"endCol": 1,
-								"fieldId": "",
-								"height": 44,
-								"id": "8be1b1b0-4526-11eb-ad20-11f087344e50",
-								"index": 0,
-								"name": "Enrich indicator",
-								"scriptId": "Builtin|||enrichIndicators",
-								"sectionItemType": "button",
-								"startCol": 0
-							},
-							{
-								"args": {},
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "",
-								"height": 44,
-								"id": "952ed400-4526-11eb-ad20-11f087344e50",
-								"index": 1,
-								"listId": "default-main-39b83760-4526-11eb-ad20-11f087344e50",
-								"name": "Expire indicator",
-								"scriptId": "Builtin|||expireIndicators",
-								"sectionItemType": "button",
-								"startCol": 1
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Actions",
-						"static": false,
-						"w": 1,
-						"x": 2,
-						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "default-main-a7bd7fe0-4526-11eb-ad20-11f087344e50",
-						"items": [
-							{
-								"args": {
-									"field": {
-										"simple": "tags"
-									}
-								},
-								"endCol": 1,
-								"fieldId": "",
-								"height": 44,
-								"id": "b501f410-4526-11eb-ad20-11f087344e50",
-								"index": 0,
-								"name": "Add tags",
-								"scriptId": "Builtin|||appendIndicatorField",
-								"sectionItemType": "button",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "trafficlightprotocol",
-								"height": 22,
-								"id": "08d59bf0-4527-11eb-ad20-11f087344e50",
-								"index": 1,
-								"listId": "default-main-a7bd7fe0-4526-11eb-ad20-11f087344e50",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "tags",
-								"height": 22,
-								"id": "19e87d40-4527-11eb-ad20-11f087344e50",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"args": {
-									"field": {
-										"simple": "tags"
-									}
-								},
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "",
-								"height": 44,
-								"id": "c8efe1d0-4526-11eb-ad20-11f087344e50",
-								"index": 0,
-								"listId": "default-main-a7bd7fe0-4526-11eb-ad20-11f087344e50",
-								"name": "Remove tags",
-								"scriptId": "Builtin|||removeIndicatorField",
-								"sectionItemType": "button",
-								"startCol": 1
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Tags and TLP",
-						"static": false,
-						"w": 1,
-						"x": 2,
-						"y": 1
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "default-main-37eb9840-4527-11eb-ad20-11f087344e50",
-						"items": [
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "assigneduser",
-								"height": 22,
-								"id": "43380d00-4527-11eb-ad20-11f087344e50",
-								"index": 0,
-								"listId": "default-main-37eb9840-4527-11eb-ad20-11f087344e50",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "assignedrole",
-								"height": 22,
-								"id": "486bd680-4527-11eb-ad20-11f087344e50",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Assignee",
-						"static": false,
-						"w": 1,
-						"x": 2,
-						"y": 3
-					}
-				],
-				"type": "custom"
-			},
-			{
-				"hidden": false,
-				"id": "lkddep3o3f",
-				"name": "Additional Details",
-				"sections": [
-					{
-						"displayType": "ROW",
-						"h": 9,
-						"i": "lkddep3o3f-27940e50-ba17-11ea-96e1-0b84fdedf11e",
-						"items": null,
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Extended Details",
-						"static": false,
-						"type": "extendedDetails",
-						"w": 2,
-						"x": 0,
-						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 9,
-						"i": "lkddep3o3f-28a72c00-ba17-11ea-96e1-0b84fdedf11e",
-						"items": null,
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Custom Details",
-						"static": false,
-						"type": "customDetails",
-						"w": 1,
-						"x": 2,
-						"y": 0
-					}
-				],
-				"type": "custom"
-			}
-		]
-	},
-	"indicatorsQuickView": null,
-	"itemVersion": "1.0.0",
-	"locked": false,
-	"mobile": null,
-	"name": "Cryptocurrency",
-	"packID": "",
-	"propagationLabels": [],
-	"quickView": null,
-	"system": false,
-	"toServerVersion": "",
-	"version": -1
+  "close": null,
+  "details": null,
+  "detailsV2": null,
+  "edit": null,
+  "fromServerVersion": "",
+  "group": "indicator",
+  "id": "Cryptocurrency",
+  "indicatorsQuickView": null,
+  "itemVersion": "1.0.0",
+  "locked": false,
+  "mobile": null,
+  "packID": "",
+  "propagationLabels": [],
+  "quickView": null,
+  "toServerVersion": "",
+  "indicatorsDetails": {
+    "TypeName": "",
+    "tabs": [
+      {
+        "id": "default-main",
+        "name": "Info",
+        "sections": [
+          {
+            "h": 6,
+            "i": "default-main-comments",
+            "maxW": 3,
+            "moved": false,
+            "name": "Comments",
+            "static": false,
+            "type": "comments",
+            "w": 1,
+            "x": 2,
+            "y": 8
+          },
+          {
+            "h": 2,
+            "hideName": true,
+            "i": "default-main-relatedIncidents",
+            "maxW": 3,
+            "moved": false,
+            "name": "Related Incidents",
+            "static": false,
+            "type": "relatedIncidents",
+            "w": 2,
+            "x": 0,
+            "y": 6
+          },
+          {
+            "displayType": "ROW",
+            "h": 2,
+            "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+            "items": [
+              {
+                "endCol": 2,
+                "fieldId": "indicatortype",
+                "height": 22,
+                "id": "indicator-type",
+                "index": 0,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "expiration",
+                "height": 22,
+                "id": "indicator-expiration",
+                "index": 1,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "timestamp",
+                "height": 22,
+                "id": "indicator-timestamp",
+                "index": 2,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "cryptocurrencyaddresstype",
+                "height": 22,
+                "id": "942b2cc0-2834-11eb-825a-1db518e7104a",
+                "index": 4,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "countryname",
+                "height": 22,
+                "id": "708163d0-4520-11eb-bc7a-e1bc2f118d45",
+                "index": 5,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "modified",
+                "height": 22,
+                "id": "indicator-modified",
+                "index": 6,
+                "sectionItemType": "field",
+                "startCol": 0
+              }
+            ],
+            "maxW": 3,
+            "moved": false,
+            "name": "Basic Information",
+            "static": false,
+            "w": 1,
+            "x": 0,
+            "y": 1
+          },
+          {
+            "displayType": "ROW",
+            "h": 3,
+            "i": "default-main-indicatorTimeline",
+            "maxW": 3,
+            "moved": false,
+            "name": "Timeline",
+            "static": false,
+            "type": "indicatorTimeline",
+            "w": 1,
+            "x": 2,
+            "y": 5
+          },
+          {
+            "h": 1,
+            "hideName": true,
+            "i": "default-main-reputationStatus",
+            "maxW": 3,
+            "moved": false,
+            "name": "Reputation Status",
+            "static": false,
+            "type": "reputationStatus",
+            "w": 1,
+            "x": 1,
+            "y": 0
+          },
+          {
+            "h": 1,
+            "hideName": true,
+            "i": "default-main-expirationStatus",
+            "maxW": 3,
+            "moved": false,
+            "name": "Expiration Status",
+            "static": false,
+            "type": "expirationStatus",
+            "w": 1,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "h": 2,
+            "i": "default-main-reputationSources",
+            "maxW": 3,
+            "moved": false,
+            "name": "Reputation",
+            "static": false,
+            "type": "reputationSources",
+            "w": 1,
+            "x": 1,
+            "y": 1
+          },
+          {
+            "h": 3,
+            "i": "default-main-sources",
+            "maxW": 3,
+            "moved": false,
+            "name": "Sources Data",
+            "static": false,
+            "type": "sources",
+            "w": 2,
+            "x": 0,
+            "y": 8
+          },
+          {
+            "displayType": "ROW",
+            "h": 1,
+            "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039b",
+            "items": [
+              {
+                "endCol": 2,
+                "fieldId": "firstseen",
+                "height": 22,
+                "id": "indicator-first-seen",
+                "index": 0,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "lastseen",
+                "height": 22,
+                "id": "indicator-last-seen",
+                "index": 1,
+                "sectionItemType": "field",
+                "startCol": 0
+              }
+            ],
+            "maxW": 3,
+            "moved": false,
+            "name": "Related Incidents",
+            "static": false,
+            "w": 2,
+            "x": 0,
+            "y": 5
+          },
+          {
+            "displayType": "ROW",
+            "h": 2,
+            "hideName": false,
+            "i": "default-main-3df99950-4520-11eb-bc7a-e1bc2f118d45",
+            "items": [
+              {
+                "dropEffect": "move",
+                "endCol": 4,
+                "fieldId": "description",
+                "height": 44,
+                "id": "4a7a2140-4520-11eb-bc7a-e1bc2f118d45",
+                "index": 0,
+                "listId": "default-main-3df99950-4520-11eb-bc7a-e1bc2f118d45",
+                "sectionItemType": "field",
+                "startCol": 0
+              }
+            ],
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "Description",
+            "static": false,
+            "w": 2,
+            "x": 0,
+            "y": 3
+          },
+          {
+            "displayType": "ROW",
+            "h": 1,
+            "hideName": false,
+            "i": "default-main-39b83760-4526-11eb-ad20-11f087344e50",
+            "items": [
+              {
+                "args": {},
+                "endCol": 1,
+                "fieldId": "",
+                "height": 44,
+                "id": "8be1b1b0-4526-11eb-ad20-11f087344e50",
+                "index": 0,
+                "name": "Enrich indicator",
+                "scriptId": "Builtin|||enrichIndicators",
+                "sectionItemType": "button",
+                "startCol": 0
+              },
+              {
+                "args": {},
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "",
+                "height": 44,
+                "id": "952ed400-4526-11eb-ad20-11f087344e50",
+                "index": 1,
+                "listId": "default-main-39b83760-4526-11eb-ad20-11f087344e50",
+                "name": "Expire indicator",
+                "scriptId": "Builtin|||expireIndicators",
+                "sectionItemType": "button",
+                "startCol": 1
+              }
+            ],
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "Actions",
+            "static": false,
+            "w": 1,
+            "x": 2,
+            "y": 0
+          },
+          {
+            "displayType": "ROW",
+            "h": 2,
+            "hideName": false,
+            "i": "default-main-a7bd7fe0-4526-11eb-ad20-11f087344e50",
+            "items": [
+              {
+                "args": {
+                  "field": {
+                    "simple": "tags"
+                  }
+                },
+                "endCol": 1,
+                "fieldId": "",
+                "height": 44,
+                "id": "b501f410-4526-11eb-ad20-11f087344e50",
+                "index": 0,
+                "name": "Add tags",
+                "scriptId": "Builtin|||appendIndicatorField",
+                "sectionItemType": "button",
+                "startCol": 0
+              },
+              {
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "trafficlightprotocol",
+                "height": 22,
+                "id": "08d59bf0-4527-11eb-ad20-11f087344e50",
+                "index": 1,
+                "listId": "default-main-a7bd7fe0-4526-11eb-ad20-11f087344e50",
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "tags",
+                "height": 22,
+                "id": "19e87d40-4527-11eb-ad20-11f087344e50",
+                "index": 2,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "args": {
+                  "field": {
+                    "simple": "tags"
+                  }
+                },
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "",
+                "height": 44,
+                "id": "c8efe1d0-4526-11eb-ad20-11f087344e50",
+                "index": 0,
+                "listId": "default-main-a7bd7fe0-4526-11eb-ad20-11f087344e50",
+                "name": "Remove tags",
+                "scriptId": "Builtin|||removeIndicatorField",
+                "sectionItemType": "button",
+                "startCol": 1
+              }
+            ],
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "Tags and TLP",
+            "static": false,
+            "w": 1,
+            "x": 2,
+            "y": 1
+          },
+          {
+            "displayType": "ROW",
+            "h": 2,
+            "hideName": false,
+            "i": "default-main-37eb9840-4527-11eb-ad20-11f087344e50",
+            "items": [
+              {
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "assigneduser",
+                "height": 22,
+                "id": "43380d00-4527-11eb-ad20-11f087344e50",
+                "index": 0,
+                "listId": "default-main-37eb9840-4527-11eb-ad20-11f087344e50",
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "assignedrole",
+                "height": 22,
+                "id": "486bd680-4527-11eb-ad20-11f087344e50",
+                "index": 1,
+                "sectionItemType": "field",
+                "startCol": 0
+              }
+            ],
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "Assignee",
+            "static": false,
+            "w": 1,
+            "x": 2,
+            "y": 3
+          }
+        ],
+        "type": "custom"
+      },
+      {
+        "hidden": false,
+        "id": "lkddep3o3f",
+        "name": "Additional Details",
+        "sections": [
+          {
+            "displayType": "ROW",
+            "h": 9,
+            "i": "lkddep3o3f-27940e50-ba17-11ea-96e1-0b84fdedf11e",
+            "items": null,
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "Extended Details",
+            "static": false,
+            "type": "extendedDetails",
+            "w": 2,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "displayType": "ROW",
+            "h": 9,
+            "i": "lkddep3o3f-28a72c00-ba17-11ea-96e1-0b84fdedf11e",
+            "items": null,
+            "maxW": 3,
+            "minH": 1,
+            "minW": 1,
+            "moved": false,
+            "name": "Custom Details",
+            "static": false,
+            "type": "customDetails",
+            "w": 1,
+            "x": 2,
+            "y": 0
+          }
+        ],
+        "type": "custom"
+      }
+    ]
+  },
+  "name": "Cryptocurrency",
+  "system": false,
+  "version": -1,
+  "fromVersion": "6.0.0",
+  "description": ""
 }
