@@ -135,7 +135,7 @@ List all rules of the specified security groups.
             "priority": 3323,
             "protocol": "*",
             "provisioningState": "Succeeded",
-            "sourceAddressPrefix": "8.1.2.3",
+            "sourceAddressPrefix": "8.8.8.8",
             "sourceAddressPrefixes": [],
             "sourcePortRanges": [
                 "1",
@@ -153,7 +153,7 @@ List all rules of the specified security groups.
 >### Rules in alerts-nsg
 >|access|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRanges|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Allow | 1.1.1.1 | * | Inbound | W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow | wow | 3323 | * | Succeeded | 8.1.2.3 | 1,<br/>2,<br/>3 | Microsoft.Network/networkSecurityGroups/securityRules |
+>| Allow | 1.1.1.1 | * | Inbound | W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow | wow | 3323 | * | Succeeded | 8.8.8.8 | 1,<br/>2,<br/>3 | Microsoft.Network/networkSecurityGroups/securityRules |
 
 
 ### azure-nsg-auth-test
@@ -433,7 +433,7 @@ Get a specific rule.
             "priority": 3323,
             "protocol": "*",
             "provisioningState": "Succeeded",
-            "sourceAddressPrefix": "8.1.2.3",
+            "sourceAddressPrefix": "8.8.8.8",
             "sourceAddressPrefixes": [],
             "sourcePortRanges": [
                 "1",
@@ -451,7 +451,7 @@ Get a specific rule.
 >### Rules wow
 >|access|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRanges|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Allow | 1.1.1.1 | * | Inbound | W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow | wow | 3323 | * | Succeeded | 8.1.2.3 | 1,<br/>2,<br/>3 | Microsoft.Network/networkSecurityGroups/securityRules |
+>| Allow | 1.1.1.1 | * | Inbound | W/"fdba51cf-46b3-44af-8da5-16666aa578cc" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/wow | wow | 3323 | * | Succeeded | 8.8.8.8 | 1,<br/>2,<br/>3 | Microsoft.Network/networkSecurityGroups/securityRules |
 
 
 ### azure-nsg-auth-start
