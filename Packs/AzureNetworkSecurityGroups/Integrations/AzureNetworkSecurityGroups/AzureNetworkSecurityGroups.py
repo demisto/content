@@ -255,7 +255,6 @@ def update_rule_command(client: AzureNSGClient, security_group_name: str, securi
 
     rule = client.get_rule(security_group_name, security_rule_name)
     properties = rule.get('properties')
-    properties_keys = list(properties.keys())
 
     updated_properties = assign_params(protocol='*' if protocol == 'Any' else protocol,
                                        access=action, priority=priority,
@@ -282,11 +281,11 @@ def update_rule_command(client: AzureNSGClient, security_group_name: str, securi
         dest_list = argToList(destination)
         if len(dest_list) > 1:
             properties.pop("destinationAddressPrefix", None)  # Can't supply both destinationAddressPrefix and
-                # destinationAddressPrefix
+            # destinationAddressPrefix
             updated_properties['destinationAddressPrefixes'] = dest_list
         else:
             properties.pop("destinationAddressPrefixes", None)  # Can't supply both
-                # destinationAddressPrefixes, destinationAddressPrefixes
+            # destinationAddressPrefixes, destinationAddressPrefixes
             updated_properties['destinationAddressPrefix'] = '*' if destination == 'Any' else destination
 
     if source:
