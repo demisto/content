@@ -3175,6 +3175,16 @@
             "integrations": "Public DNS Feed",
             "playbookID": "Public_DNS_Feed_Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "ExpanseV2",
+            "playbookID": "ExpanseV2 Test",
+            "fromversion": "6.0.0"
+        },
+        {
+            "integrations": "FeedExpanse",
+            "playbookID": "Feed Expanse Test",
+            "fromversion": "6.0.0"
         }
     ],
     "skipped_tests": {
