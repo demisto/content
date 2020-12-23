@@ -1,5 +1,5 @@
 {
- "TypeName": "ChronicleAsset",
+ "TypeName": "ChronicleAsset Indicator",
  "kind": "indicatorsDetails",
  "layout": {
   "TypeName": "",
@@ -397,10 +397,10 @@
     "type": "custom"
    }
   ],
-  "typeId": "ChronicleAsset",
+  "typeId": "ChronicleAsset Indicator",
   "version": -1
  },
- "typeId": "ChronicleAsset",
+ "typeId": "ChronicleAsset Indicator",
  "version": -1,
  "toVersion": "5.9.9",
  "fromVersion": "5.0.0",
