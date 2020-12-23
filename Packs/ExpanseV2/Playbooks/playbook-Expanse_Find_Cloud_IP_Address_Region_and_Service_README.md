@@ -37,4 +37,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Expanse Find Cloud IP Address Region and Service](https://raw.githubusercontent.com/demisto/content/cfcd4dbc38cc4ec560202da62750c73c9452b553/Packs/ExpanseV2/Playbooks/playbook-Expanse_Find_Cloud_IP_Address_Region_and_Service.png)
+![Expanse Find Cloud IP Address Region and Service](https://raw.githubusercontent.com/demisto/content/d0830e20f52f390a75c5ac3752f52c9df7ab77f1/Packs/ExpanseV2/doc_files/Expanse_Find_Cloud_IP_Address_Region_and_Service.png)
