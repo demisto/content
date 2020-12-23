@@ -1,3 +1,5 @@
+from typing import Dict, Set
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import requests
@@ -7,13 +9,11 @@ import requests
 
 from enum import Enum
 
-from typing import Dict
-
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-headers = {}
+headers: Dict[str, str] = {}
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
@@ -82,9 +82,10 @@ def api_test(client: Client):
         else:
             return return_error(f"There was an error: {results.get('status', 'Failure')} - {results.get('error')}")
     except Exception as e:
-        return_error(
-            f"There was an error in testing connection to URL: {client._base_url}, API Key: {client._headers['Authorization'].split()[-1]}. "
-            f"Please make sure that the API key is valid and has the right permissions, and that the URL is in the correct form. Error: {str(e)}")
+        return_error(f"There was an error in testing connection to URL: {client._base_url},"
+            		f"API Key: {client._headers['Authorization'].split()[-1]}. "
+            		f"Please make sure that the API key is valid and has the right permissions, "
+            		f"and that the URL is in the correct form. Error: {str(e)}")
 
 
 def get_mitigations(client: Client) -> CommandResults:
@@ -140,8 +141,8 @@ def get_users_with_cracked_passwords(client: Client):
     mitigations_results = client.get_mitigations(timeout=timeout)
     users_formatted = []
     table_headers = ["Username"]
-    procedures_ids = set()
-    mitigation_id = None
+    procedures_ids: Set[str] = set()
+    mitigation_id: int = None
     privileged_users = []
     unprivileged_users = []
 
@@ -150,7 +151,7 @@ def get_users_with_cracked_passwords(client: Client):
     for mitigation in mitigations_results["mitigations"]:
 
         if mitigation["name"] == "Brute Force":
-            mitigation_id: int = mitigation["id"]
+            mitigation_id = mitigation["id"]
             break
 
     if mitigation_id:
