@@ -24,7 +24,7 @@ class AzureNSGClient:
     def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
-            integration_context = demisto.getIntegrationContext()
+            integration_context = get_integration_context()
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/' \
@@ -158,8 +158,8 @@ def list_rules_command(client: AzureNSGClient, security_group_name: str, limit: 
         a list of  rules for the security group
     """
     security_groups = argToList(security_group_name)
-    rules_limit = int(limit)
-    rules_offset = int(offset) - 1  # As offset will start at 1
+    rules_limit = arg_to_number(limit)
+    rules_offset = arg_to_number(offset) - 1  # As offset will start at 1
     rules: List = list()
     for group in security_groups:
         rules_returned = client.list_rules(group)
@@ -263,47 +263,39 @@ def update_rule_command(client: AzureNSGClient, security_group_name: str, securi
     if source_ports:
         source_ports_list = argToList(source_ports)
         if len(source_ports_list) > 1:
-            if "sourcePortRange" in properties_keys:
-                properties.pop("sourcePortRange")  # Can't supply both sourcePortRange and sourcePortRanges
+            properties.pop("sourcePortRange", None)  # Can't supply both sourcePortRange and sourcePortRanges
             updated_properties["sourcePortRanges"] = source_ports_list
         else:
-            if "sourcePortRanges" in properties_keys:
-                properties.pop("sourcePortRanges")  # Can't supply both sourcePortRange and sourcePortRanges
+            properties.pop("sourcePortRanges", None)  # Can't supply both sourcePortRange and sourcePortRanges
             updated_properties["sourcePortRange"] = source_ports
 
     if destination_ports:
         dest_ports_list = argToList(destination_ports)
         if len(dest_ports_list) > 1:
-            if "destinationPortRange" in properties_keys:
-                properties.pop("destinationPortRange")  # Can't supply both destinationPortRange, destinationPortRanges
+            properties.pop("destinationPortRange", None)  # Can't supply both destinationPortRange,destinationPortRanges
             updated_properties['destinationPortRanges'] = dest_ports_list
         else:
-            if "destinationPortRanges" in properties_keys:
-                properties.pop("destinationPortRanges")  # Can't supply both destinationPortRange, destinationPortRanges
+            properties.pop("destinationPortRanges", None)  # Can't supply destinationPortRange and destinationPortRanges
             updated_properties['destinationPortRange'] = destination_ports
 
     if destination:
         dest_list = argToList(destination)
         if len(dest_list) > 1:
-            if "destinationAddressPrefix" in properties_keys:
-                properties.pop("destinationAddressPrefix")  # Can't supply both destinationAddressPrefix and
+            properties.pop("destinationAddressPrefix", None)  # Can't supply both destinationAddressPrefix and
                 # destinationAddressPrefix
             updated_properties['destinationAddressPrefixes'] = dest_list
         else:
-            if "destinationAddressPrefixes" in properties_keys:
-                properties.pop("destinationAddressPrefixes")  # Can't supply both
+            properties.pop("destinationAddressPrefixes", None)  # Can't supply both
                 # destinationAddressPrefixes, destinationAddressPrefixes
             updated_properties['destinationAddressPrefix'] = '*' if destination == 'Any' else destination
 
     if source:
         source_list = argToList(source)
         if len(source_list) > 1:
-            if "sourceAddressPrefix" in properties_keys:
-                properties.pop("sourceAddressPrefix")  # Can't supply both sourceAddressPrefixes, sourceAddressPrefix
+            properties.pop("sourceAddressPrefix", None)  # Can't supply both sourceAddressPrefixes, sourceAddressPrefix
             updated_properties['sourceAddressPrefixes'] = source_list
         else:
-            if "sourceAddressPrefixes" in properties_keys:
-                properties.pop("sourceAddressPrefixes")  # Can't supply both sourceAddressPrefixes, sourceAddressPrefix
+            properties.pop("sourceAddressPrefixes", None)  # Can't supply both sourceAddressPrefixes,sourceAddressPrefix
             updated_properties['sourceAddressPrefix'] = '*' if source == 'Any' else source
 
     properties.update(updated_properties)
