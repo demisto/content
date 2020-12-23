@@ -1,0 +1,12 @@
+{
+	"category": "",
+	"dataType": "scripts",
+	"id": "Yearly Time Spent (In Months)",
+	"isPredefined": false,
+	"name": "Yearly Time Spent (In Months)",
+	"description": "Details of the time spent on content tasks (in months)",
+	"query": "WidgetContentDevTimeCycle",
+	"version": -1,
+	"widgetType": "pie",
+  	"fromVersion": "6.0.0"
+}
