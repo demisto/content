@@ -157,6 +157,7 @@ class Client(BaseClient):
                 skip_first_line = self.feed_url_to_config.get(url, {}).get('skip_first_line', False)
             else:
                 fieldnames = self.fieldnames
+                skip_first_line = False
             if self.ignore_regex is not None:
                 response = filter(  # type: ignore
                     lambda x: self.ignore_regex.match(x) is None,  # type: ignore
@@ -239,8 +240,11 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
         formatter_string = None
         field_mapper_function = None
 
+        # case 'value_from_feed', regex_string_extractor, string_formatter
         if isinstance(field, tuple) and len(field) == 3:
             field, regex_extractor, formatter_string = field
+
+        # case 'value_from_feed', 'field_mapper_function'
         elif isinstance(field, tuple) and len(field) == 2:
             field, field_mapper_function = field
 
@@ -255,8 +259,8 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
             except Exception:
                 field_value = raw_json[field]  # type: ignore
 
-        field_value = field_mapper_function(field_value) if field_mapper_function else field_value
         fields_mapping[key] = formatter_string.format(field_value) if formatter_string else field_value
+        field_value = field_mapper_function(field_value) if field_mapper_function else field_value
 
         if key in ['firstseenbysource', 'lastseenbysource']:
             fields_mapping[key] = date_format_parsing(fields_mapping[key])

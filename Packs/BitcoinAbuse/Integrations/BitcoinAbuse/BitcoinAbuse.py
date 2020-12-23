@@ -90,6 +90,26 @@ def build_fetch_indicators_url_suffixes(have_fetched_first_time: bool, feed_inte
         return {FEED_ENDPOINT_SUFFIX + feed_interval_suffix_url, FEED_ENDPOINT_SUFFIX + '30d'}
 
 
+def _assure_valid_response(indicators) -> None:
+    """
+    Receives the indicators fetched from Bitcoin Abuse service, and checks if
+    the response received is valid
+    when an incorrect api key is inserted, Bitcoin Abuse returns response of
+    their login endpoint
+
+    this function checks if the received response was the html page, and throws
+    DemistoException to inform the user of incorrect api key
+
+    Args:
+        indicators: the array of indicators fetched
+
+    Returns:
+
+    """
+    if indicators and '<html lang="en">' == indicators[0]['value']:
+        raise DemistoException('api token inserted is not valid')
+
+
 def fetch_indicators(client: BitcoinAbuseClient) -> None:
     """
     Wrapper which calls to CSVFeedApiModule for fetching indicators from Bitcoin Abuse download csv feed.
@@ -100,23 +120,22 @@ def fetch_indicators(client: BitcoinAbuseClient) -> None:
 
     """
     highest_fetched_id = demisto.getIntegrationContext().get('highest_fetched_id', 0)
-    indicators = fetch_indicators_command(
-        client=client,
-        default_indicator_type='Cryptocurrency Address',
-        auto_detect=False,
-        limit=0
-    )
+    indicators = _fetch_indicators_from_bitcoin_abuse(client)
 
+    _assure_valid_response(indicators)
     indicators_without_duplicates = []
     indicators_ids = set()
     for indicator in indicators:
-        indicator_id = int(indicator['rawJSON']['id'])
-        if indicator_id not in indicators_ids and indicator_id > highest_fetched_id:
-            indicator['fields']['Cryptocurrency Address Type'] = 'bitcoin'
-            indicators_without_duplicates.append(indicator)
-            indicators_ids.add(indicator_id)
+        try:
+            indicator_id = int(indicator['rawJSON']['id'])
+            if indicator_id not in indicators_ids and indicator_id > highest_fetched_id:
+                indicator['fields']['Cryptocurrency Address Type'] = 'bitcoin'
+                indicators_without_duplicates.append(indicator)
+                indicators_ids.add(indicator_id)
+        except ValueError:
+            pass
 
-    highest_id_fetched_from_indicators = int(indicators[-1]['rawJSON']['id']) if indicators else 0
+    highest_id_fetched_from_indicators = max(indicators_ids) if indicators_ids else 0
     highest_fetched_id = max(highest_fetched_id, highest_id_fetched_from_indicators)
     demisto.setIntegrationContext({'highest_fetched_id': highest_fetched_id})
 
@@ -164,6 +183,23 @@ def report_address_command(client: BitcoinAbuseClient, args: Dict) -> CommandRes
         raise DemistoException(f'bitcoin report address did not succeed: {failure_message}')
 
 
+def _fetch_indicators_from_bitcoin_abuse(client: BitcoinAbuseClient) -> List[Dict]:
+    """
+
+    Args:
+        client:
+
+    Returns:
+
+    """
+    return fetch_indicators_command(
+        client=client,
+        default_indicator_type='Cryptocurrency Address',
+        auto_detect=False,
+        limit=0
+    )
+
+
 def _add_additional_params(command: str, params: Dict, api_key: str):
     """
 
@@ -178,7 +214,7 @@ def _add_additional_params(command: str, params: Dict, api_key: str):
     """
 
     if command != 'bitcoin-report-address':
-        first_feed_interval_url_suffix = params.get('initial_fetch_interval', '30 Days')
+        first_feed_interval_url_suffix = params.get('initial_fetch_interval')
         first_feed_interval_url_suffix = first_fetch_interval_to_url_suffix.get(first_feed_interval_url_suffix, '30d')
         reader_config = {
             'fieldnames': ['id', 'address', 'abuse_type_id', 'abuse_type_other', 'abuser',
@@ -224,7 +260,8 @@ def main() -> None:
     try:
 
         if command == 'test-module':
-            feed_main('Bitcoin Abuse Feed', params, 'bitcoin')
+            _assure_valid_response(_fetch_indicators_from_bitcoin_abuse(client))
+            demisto.results('ok')
 
         elif command == 'fetch-indicators':
             fetch_indicators(client)
