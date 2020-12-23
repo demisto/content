@@ -781,7 +781,7 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> List[CommandResults]:
     return command_results
 
 
-def format_certificate_data(certificates: List[Dict[str, Any]]) -> List[CommandResults)]:
+def format_certificate_data(certificates: List[Dict[str, Any]]) -> List[CommandResults]:
     certificate_data_list: List[Dict[str, Any]] = []
     certificate_context_excluded_fields: List[str] = []
     command_results = []
@@ -1511,7 +1511,7 @@ def manage_asset_tags_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
-def get_iprange_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_iprange_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     include = handle_iprange_include(args.pop('include', None), 'include')
     id_: Optional[str] = args.pop('id', None)
 
@@ -1555,7 +1555,7 @@ def get_iprange_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return(format_cidr_data(outputs))
 
 
-def get_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     domain: Optional[str] = args.pop('domain', None)
     last_observed_date: Optional[str] = args.pop('last_observed_date', None)
 
@@ -1626,7 +1626,7 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return format_domain_data(domain_data)
 
 
-def get_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_certificate_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     md5_hash: Optional[str] = args.pop('md5_hash', None)
     last_observed_date: Optional[str] = args.pop('last_observed_date', None)
 
@@ -1794,7 +1794,7 @@ def get_associated_domains_command(client: Client, args: Dict[str, Any]) -> List
             matching_domains.values()) if len(matching_domains) > 0 else None,))
     return command_results
 
-def certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def certificate_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     hashes = argToList(args.get('certificate'))
     if len(hashes) == 0:
         raise ValueError('certificate hash(es) not specified')
@@ -1897,7 +1897,7 @@ def certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return result
 
 
-def domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     # XXX - implement feed related indicators using recentIPs
     domains = argToList(args.get('domain'))
     if len(domains) == 0:
@@ -1969,7 +1969,7 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return command_results
 
 
-def cidr_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def cidr_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     cidrs = argToList(args.get('cidr'))
     if len(cidrs) == 0:
         raise ValueError('cidr(s) not specified')
