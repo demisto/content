@@ -218,9 +218,10 @@ def ip_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             invalid_ips.append(ip_address)
 
     if invalid_ips:
-        return_warning('The following IP Addresses were found invalid: {}'.format(', '.join(invalid_ips)))
+        return_warning('The following IP Addresses were found invalid: {}'.format(', '.join(invalid_ips)),
+                       exit=len(invalid_ips) == len(ip_addresses_array))
 
-    enhanced = argToBoolean(args.get('enhanced'))
+    enhanced = argToBoolean(args.get('enhanced', False))
     response = client.get_ip_details(ip_addresses_array, enhanced)
     ip_list = response.get("data", {}).get("results", {})
     ip_data_list, ip_standard_list = [], []
@@ -263,9 +264,10 @@ def domain_details_command(client: Client, args: Dict[str, Any]) -> CommandResul
             invalid_domains.append(domain)
 
     if invalid_domains:
-        return_warning('The following Domains were found invalid: {}'.format(', '.join(invalid_domains)))
+        return_warning('The following Domains were found invalid: {}'.format(', '.join(invalid_domains)),
+                       exit=len(invalid_domains) == len(domain_array))
 
-    enhanced = argToBoolean(args.get('enhanced'))
+    enhanced = argToBoolean(args.get('enhanced', False))
     response = client.get_domain_details(domain_array, enhanced)
     domain_list = response.get("data", {}).get("results", {})
     domain_data_list, domain_standard_list = [], []
@@ -307,9 +309,10 @@ def url_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         if not REGEX_MAP['url'].match(url):
             invalid_urls.append(url)
     if invalid_urls:
-        return_warning('The following URLs were found invalid: {}'.format(', '.join(invalid_urls)))
+        return_warning('The following URLs were found invalid: {}'.format(', '.join(invalid_urls)),
+                       exit=len(invalid_urls) == len(url_array))
 
-    enhanced = argToBoolean(args.get('enhanced'))
+    enhanced = argToBoolean(args.get('enhanced', False))
     response = client.get_url_details(url_array, enhanced)
     url_list = response.get("data", {}).get("results", {})
     url_data_list, url_standard_list = [], []
@@ -351,9 +354,10 @@ def file_details_command(client: Client, args: Dict[str, Any]) -> CommandResults
             invalid_hashes.append(file)
 
     if invalid_hashes:
-        return_warning('The following Hashes were found invalid: {}'.format(', '.join(invalid_hashes)))
+        return_warning('The following Hashes were found invalid: {}'.format(', '.join(invalid_hashes)),
+                       exit=len(invalid_hashes) == len(file_array))
 
-    enhanced = argToBoolean(args.get('enhanced'))
+    enhanced = argToBoolean(args.get('enhanced', False))
     response = client.get_file_details(file_array, enhanced)
     file_list = response.get("data", {}).get("results", {})
     file_data_list, file_standard_list = [], []
@@ -389,8 +393,7 @@ def main() -> None:
     access_id = demisto.params().get('access_id')
     secret_key = demisto.params().get('secret_key')
     verify = demisto.params().get('insecure')
-    proxy = demisto.params().get('proxy', False)
-    proxies = handle_proxy() if proxy else {}
+    proxies = handle_proxy(proxy_param_name="proxy")
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
