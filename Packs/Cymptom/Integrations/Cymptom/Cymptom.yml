@@ -98,7 +98,7 @@ script:
     - contextPath: Cymptom.CrackedUsers.Username
       description: Username of users with cracked passwords
       type: String
-  dockerimage: demisto/python3:3.7.5.3471
+  dockerimage: demisto/python3:3.8.6.14516
   runonce: false
   script: ''
   subtype: python3
