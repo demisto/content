@@ -1,4 +1,4 @@
-!ip ip="151.106.3.179" enhanced=True
-!domain domain="internal-www.fireeye.com" enhanced=True
-!url url=" https://covidfake1911.com" enhanced=True
+!ip ip="8.8.8.8" enhanced=True
+!domain domain="google.com" enhanced=True
+!url url="https://www.test.com/" enhanced=True
 !file file="4ebb2b00a11f9361cf3757e96f14ad4b" enhanced=True
