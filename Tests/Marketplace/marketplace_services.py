@@ -738,6 +738,14 @@ class Pack(object):
     @staticmethod
     def encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path):
         try:
+            current_working_dir = os.getcwd()
+            new_artefacts = os.path.join(current_working_dir, 'weird_test')
+            print("doing ls at start to see what is in the folder")
+            cmd = f'ls {new_artefacts}'
+            subprocess.call(cmd, shell=True)
+        except Exception as e:
+            print(f"ls failed. error is: {str(e)}")
+        try:
             shutil.copy('./encryptor', os.path.join(extract_destination_path, 'encryptor'))
             os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
             current_working_dir = os.getcwd()
@@ -751,8 +759,15 @@ class Pack(object):
                            f'{encryption_key}"'
 
             subprocess.call(full_command, shell=True)
-            new_artefacts = os.path.join(current_working_dir, 'new_artefacts')
-            os.mkdir(path=new_artefacts)
+            new_artefacts = os.path.join(current_working_dir, 'weird_test')
+            try:
+                print("Making artefacts dir with weird test name")
+                os.mkdir(path=new_artefacts)
+                print("DONE artefacts dir with weird test name")
+            except Exception as e:
+                print(f"failed artefacts due to {str(e)}.\n doing ls")
+                cmd = f'ls {new_artefacts}'
+                subprocess.call(cmd, shell=True)
             shutil.copy(zip_pack_path, os.path.join(new_artefacts, f'{pack_name}_not_encrypted.zip'))
             shutil.copy(output_file, os.path.join(new_artefacts, f'{pack_name}.zip'))
             os.chdir(current_working_dir)
