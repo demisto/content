@@ -2,7 +2,7 @@
     "name": "Carbon Black Cloud Enterprise EDR",
     "description": "Advanced threat hunting and incident response solution.",
     "support": "xsoar",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

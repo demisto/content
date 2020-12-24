@@ -3,12 +3,27 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Tripwire",
+            "playbookID": "TestplaybookTripwire",
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "Generic Polling Test",
             "timeout": 250
         },
         {
+            "integrations": "Cisco Umbrella Enforcement",
+            "playbookID": "Cisco Umbrella Enforcement-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "GSuiteAdmin",
             "playbookID": "GSuiteAdmin-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "AzureWAF",
+            "playbookID": "Azure WAF - Test",
             "fromversion": "5.0.0"
         },
         {
@@ -45,6 +60,17 @@
             "integrations": "CrowdStrike Falcon Intel v2",
             "playbookID": "CrowdStrike Falcon Intel v2 - Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "SecurityAndCompliance",
+            "playbookID": "O365-SecurityAndCompliance-Test",
+            "fromversion": "5.5.0",
+            "timeout": 700
+        },
+        {
+            "integrations": "SecurityIntelligenceServicesFeed",
+            "playbookID": "SecurityIntelligenceServicesFeed - Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Majestic Million",
@@ -156,7 +182,6 @@
             "fromversion": "5.0.0",
             "timeout": 2000
         },
-
         {
             "integrations": "Cisco Firepower",
             "playbookID": "Cisco Firepower - Test",
@@ -243,6 +268,7 @@
             "playbookID": "AzureFeed - Test",
             "fromversion": "5.5.0"
         },
+
         {
             "playbookID": "CreateIndicatorFromSTIXTest",
             "fromversion": "5.0.0"
@@ -346,6 +372,10 @@
         {
             "integrations": "Maltiverse",
             "playbookID": "Maltiverse Test"
+        },
+        {
+            "integrations": "Box v2",
+            "playbookID": "BoxV2_TestPlaybook"
         },
         {
             "integrations": "MicrosoftGraphMail",
@@ -461,7 +491,8 @@
         {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook",
-            "fromversion": "4.1.0"
+            "fromversion": "4.1.0",
+            "timeout": 500
         },
         {
             "integrations": "Cortex XDR - IOC",
@@ -654,6 +685,16 @@
             "instance_names": "snow_basic_auth",
             "fromversion": "6.0.0",
             "timeout": 500
+        },
+        {
+            "integrations": "ServiceNow CMDB",
+            "playbookID": "ServiceNow_CMDB_Test",
+            "instance_names": "snow_cmdb_basic_auth"
+        },
+        {
+            "integrations": "ServiceNow CMDB",
+            "playbookID": "ServiceNow_CMDB_OAuth_Test",
+            "instance_names": "snow_cmdb_oauth"
         },
         {
             "integrations": "ExtraHop v2",
@@ -1376,11 +1417,6 @@
             "playbookID": "OpenPhish Test Playbook"
         },
         {
-            "integrations": "RSA Archer",
-            "playbookID": "Archer-Test-Playbook",
-            "nightly": true
-        },
-        {
             "integrations": "jira-v2",
             "playbookID": "Jira-v2-Test",
             "timeout": 500
@@ -2029,7 +2065,8 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
-            "memory_threshold": 115
+            "memory_threshold": 115,
+            "pid_threshold": 60
         },
         {
             "playbookID": "Phishing - Core - Test - Incident Starter",
@@ -2041,7 +2078,8 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
-            "memory_threshold": 100
+            "memory_threshold": 100,
+            "pid_threshold": 60
         },
         {
             "integrations": "duo",
@@ -2211,6 +2249,12 @@
         {
             "integrations": "TAXII 2 Feed",
             "playbookID": "TAXII 2 Feed Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "iDefense Feed",
+            "playbookID": "Feed iDefense Test",
+            "memory_threshold": 100,
             "fromversion": "5.5.0"
         },
         {
@@ -3126,6 +3170,21 @@
         {
             "integrations": "Cryptocurrency",
             "playbookID": "Cryptocurrency-Test"
+        },
+        {
+            "integrations": "Public DNS Feed",
+            "playbookID": "Public_DNS_Feed_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "ExpanseV2",
+            "playbookID": "ExpanseV2 Test",
+            "fromversion": "6.0.0"
+        },
+        {
+            "integrations": "FeedExpanse",
+            "playbookID": "Feed Expanse Test",
+            "fromversion": "6.0.0"
         }
     ],
     "skipped_tests": {
@@ -3176,8 +3235,6 @@
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
         "Google Chronicle Backstory Asset - Test": "Issue 26460",
         "HybridAnalysis-Test": "Issue 26599",
-        "Tenable.io test": "Issue 26727",
-        "Tenable.io Scan Test": "Issue 26727",
         "ThreatConnect v2 - Test": "Issue 26782",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
@@ -3214,11 +3271,13 @@
         "PhishLabsIOC TestPlaybook": "Issue 30874",
         "Test-VulnDB": "Issue 30875",
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
-        "urlscan_malicious_Test": "Issue 20111",
-        "Test-Detonate URL - Crowdstrike": "Issue 30879",
         "nexpose_test": "Issue 31019",
         "CuckooTest": "Issue 25601",
-        "Cisco Umbrella Test": "Issue 24338"
+        "Cisco Umbrella Test": "Issue 24338",
+        "PhishlabsIOC_DRP-Test": "Issue 29589",
+        "Akamai_WAF-Test": "Issue 31900",
+        "Carbon Black Enterprise Protection V2 Test": "Issue 27846",
+        "Archer-Test-Playbook": "Issue 26851"
     },
     "skipped_integrations": {
 
@@ -3232,6 +3291,7 @@
         "Fidelis Elevate Network": "Issue 26453",
         "CrowdStrike Falcon X": "Issue 26209",
         "ArcSight Logger": "Issue 24303",
+        "Sophos Central": "No instance",
         "MxToolBox": "No instance",
         "Prisma Access": "Instance will be provided soon by Lior and Prasen - Issue 27112",
         "AlphaSOC Network Behavior Analytics": "No instance",
@@ -3304,11 +3364,12 @@
         "AWS - Athena - Beta": "Issue 19834",
         "SNDBOX": "Issue 28826",
         "Workday": "License expired Issue: 29595",
+        "FireEyeFeed": "License expired Issue: 31838",
 
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-
+        "Infoblox": "Unstable instance, issue 25651",
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
@@ -3341,6 +3402,12 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "QRadar_v2": "Test playbook 'test playbook - QRadarCorrelations' has multiple branches",
+        "CloudConvert": "has a command that uploads a file (!cloudconvert-upload)",
+        "EWS v2": "Fetches bytes data (!ews-get-items-from-folder)",
+        "jira-v2": "has a command that uploads a file ( !jira-issue-upload-file)",
+        "Rundeck": "has a command that uploads a file (!rundeck-adhoc-script-run)",
+        "ServiceDeskPlus": "Playbook uses a random string and verifying the response contain it",
         "Feodo Tracker IP Blocklist Feed": "test-module downloads a file",
         "McAfee Advanced Threat Defense": "has a command that uploads file (!atd-file-upload)",
         "Symantec Messaging Gateway": "Test playbook uses a random string",
@@ -3357,6 +3424,7 @@
         "Mail Listener v2": "Integration has no proxy checkbox",
         "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
         "AWS - Security Hub": "Issue 24926",
+        "SecurityAndCompliance": "Integration doesn't support proxy",
         "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
