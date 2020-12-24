@@ -1,6 +1,6 @@
-This playbook returns a file sample correlating to a hash in the war-room using the following sub-playbooks:
-- Get binary file by MD5 hash from Carbon Black telemetry data. - VMware Carbon Black EDR v2.
-- Get the threat (file) attached to a specific SHA256 hash- Cylance Protect v2.
+This playbook returns a file sample correlating to a hash in the War Room using the following sub-playbooks:
+- Get binary file by MD5 hash from Carbon Black telemetry data - VMware Carbon Black EDR v2.
+- Get the threat (file) attached to a specific SHA256 hash - Cylance Protect v2.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
