@@ -1852,7 +1852,7 @@ def get_compliance_search(search_name, show_only_recipients):
 
     # Parse search results from script output if the search has completed. Output to warroom as table.
     if stdout[0] == 'Completed':
-        try:
+        if stdout[1]:
             res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))
             res = map(lambda x: {k: v for k, v in (s.split(': ') for s in x)}, res)
             entry = {
@@ -1873,11 +1873,16 @@ def get_compliance_search(search_name, show_only_recipients):
 
             entry['HumanReadable'] = tableToMarkdown('Office 365 Compliance search results', res,
                                                      ['Location', 'Item count', 'Total size'])
-            results.append(entry)
+        else:
+            entry = {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': stdout,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': "The compliance search didn't return any results."
+            }
 
-        except Exception:
-            return "The compliance search didn't return any results."
-
+        results.append(entry)
     return results
 
 
