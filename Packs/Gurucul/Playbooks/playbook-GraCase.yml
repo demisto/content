@@ -3,7 +3,7 @@ version: -1
 fromversion: 5.0.0
 name: GraCase
 starttaskid: "0"
-description: GraCase
+description: Playbook for fetching cases assosiated to high risk users.
 tasks:
   "0":
     id: "0"
