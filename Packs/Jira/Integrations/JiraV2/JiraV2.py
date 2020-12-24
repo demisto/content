@@ -294,7 +294,9 @@ def create_incident_from_ticket(issue):
         {'type': 'reporteremail', 'value': str(demisto.get(issue, 'fields.reporter.emailAddress'))},
         {'type': 'created', 'value': str(demisto.get(issue, 'fields.created'))},
         {'type': 'summary', 'value': str(demisto.get(issue, 'fields.summary'))},
-        {'type': 'description', 'value': str(demisto.get(issue, 'fields.description'))}
+        {'type': 'description', 'value': str(demisto.get(issue, 'fields.description'))},
+        {'type': 'attachments', 'value': str(demisto.get(issue, 'fields.attachments'))},
+        {'type': 'comments', 'value': str(demisto.get(issue, 'fields.comments'))},
     ]
 
     name = demisto.get(issue, 'fields.summary')
@@ -561,7 +563,7 @@ def get_comments_command(issue_id):
         return human_readable, outputs, contents
 
     else:
-        demisto.results('No comments were found in the ticket')
+        return 'No comments were found in the ticket', None, None
 
 
 def add_comment(issue_id, comment, visibility=''):
@@ -692,6 +694,17 @@ def test_module() -> str:
     return 'ok'
 
 
+def get_entries_for_fetched_incident(ticket_id):
+    entries = {'comments': [], 'attachments': []}
+    try:
+        _, _, raw_response = get_issue(issue_id=ticket_id)
+        entries = get_incident_entries(raw_response, '', False)
+    except Exception as e:
+        demisto.error(f'could not get attachments for {ticket_id} while fetch this incident')
+    finally:
+        return entries
+
+
 def fetch_incidents(query, id_offset, fetch_by_created=None, **_):
     last_run = demisto.getLastRun()
     demisto.debug(f"last_run: {last_run}" if last_run else 'last_run is empty')
@@ -711,6 +724,9 @@ def fetch_incidents(query, id_offset, fetch_by_created=None, **_):
         curr_id = id_offset
         for ticket in res.get('issues'):
             ticket_id = int(ticket.get("id"))
+            entries = get_entries_for_fetched_incident(ticket_id)
+            ticket['fields']['comments'] = entries['comments']
+            ticket['fields']['attachments'] = entries['attachments']
             if ticket_id == curr_id:
                 continue
             id_offset = max(int(id_offset), ticket_id)
@@ -720,37 +736,56 @@ def fetch_incidents(query, id_offset, fetch_by_created=None, **_):
     return incidents
 
 
-def get_new_attachments(attachments, incident_modified_date):
+def get_attachment_data(attachment):
+    attachment_url = f"secure{attachment['content'].split('/secure')[-1]}"
+    filename = attachment_url.split("/")[-1]
+    attachments_zip = jira_req(method='GET', resource_url=attachment_url).content
+    return filename, attachments_zip
+
+
+def get_attachments(attachments, incident_modified_date, only_new=True):
     file_results = []
     # list of all attachments
     if attachments:
-        for attachment in attachments:
-            attachment_modified_date: datetime = parse(
-                str(dict_safe_get(attachment, ['created'], "", str))
-            ).replace(tzinfo=pytz.UTC)
-            if incident_modified_date <= attachment_modified_date:
-                attachment_url = f"secure{attachment['content'].split('/secure')[-1]}"
-                filename = attachment_url.split("/")[-1]
-                attachments_zip = jira_req(method='GET', resource_url=attachment_url).content
+        if not only_new:
+            for attachment in attachments:
+                filename, attachments_zip = get_attachment_data(attachment)
                 file_results.append(fileResult(filename=filename, data=attachments_zip))
+        else:
+            for attachment in attachments:
+                attachment_modified_date: datetime = parse(
+                    str(dict_safe_get(attachment, ['created'], "", str))
+                ).replace(tzinfo=pytz.UTC)
+                if incident_modified_date <= attachment_modified_date:
+                    filename, attachments_zip = get_attachment_data(attachment)
+                    file_results.append(fileResult(filename=filename, data=attachments_zip))
     return file_results
 
 
-def get_incident_entries(issue, incident_modified_date):
-    entries = {'comments': [], 'attachments': []}
-    command_output = get_comments_command(issue['id'])
-    if command_output:
-        raw_comments_content = command_output[2]
-        comments = raw_comments_content['comments']
+def get_comments(comments,incident_modified_date,  only_new=True):
+    if not only_new:
+        return comments
+    else:
+        returned_comments = []
         for comment in comments:
             comment_modified_date: datetime = parse(
                 str(dict_safe_get(comment, ['updated'], "", str))
             ).replace(tzinfo=pytz.UTC)
             if incident_modified_date <= comment_modified_date:
-                entries['comments'].append(comment)
+                returned_comments.append(comment)
+        return returned_comments
+
+
+def get_incident_entries(issue, incident_modified_date, only_new=True):
+    entries = {'comments': [], 'attachments': []}
+    _, _, comments_content = get_comments_command(issue['id'])
+    if comments_content:
+        raw_comments_content = comments_content
+        commands = get_comments(raw_comments_content.get('comments', []), incident_modified_date, only_new)
+        entries['comments'] = commands
     attachments = demisto.get(issue, 'fields.attachment')
     if attachments:
-        file_results = get_new_attachments(attachments, incident_modified_date)
+        file_results = get_attachments(attachments, incident_modified_date, only_new)
         if file_results:
             entries['attachments'] = file_results
     return entries
@@ -908,7 +943,8 @@ def main():
             return_outputs(human_readable, outputs, raw_response)
 
         elif demisto.command() == 'jira-get-comments':
-            return_results(get_comments_command(**snakify(demisto.args())))
+            human_readable, outputs, raw_response = get_comments_command(**snakify(demisto.args()))
+            return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
         elif demisto.command() == 'jira-issue-add-comment':
             add_comment_command(**snakify(demisto.args()))

@@ -180,7 +180,7 @@ def test_get_remote_data_when_needs_update(mocker):
         return_value=''
     )
     mocker.patch(
-        'JiraV2.get_new_attachments',
+        'JiraV2.get_attachments',
         return_value=''
     )
     res = get_remote_data_command({'id': '15', 'lastUpdate': '0'})
@@ -213,7 +213,7 @@ def test_get_remote_data_when_dont_need_update(mocker):
         return_value=''
     )
     mocker.patch(
-        'JiraV2.get_new_attachments',
+        'JiraV2.get_attachments',
         return_value=''
     )
 
@@ -262,7 +262,7 @@ def test_get_new_attachment_return_result(mocker):
     Then:
         - The updated\new as fileResult
     """
-    from JiraV2 import get_new_attachments
+    from JiraV2 import get_attachments
     from test_data.expected_results import JIRA_ATTACHMENT
     from dateparser import parse
     import pytz
@@ -275,7 +275,7 @@ def test_get_new_attachment_return_result(mocker):
         'JiraV2.jira_req',
         return_value=file_content
     )
-    res = get_new_attachments(JIRA_ATTACHMENT, parse('1996-11-25T16:29:37.277764067Z').replace(tzinfo=pytz.UTC))
+    res = get_attachments(JIRA_ATTACHMENT, parse('1996-11-25T16:29:37.277764067Z').replace(tzinfo=pytz.UTC))
     assert res[0]['File'] == 'download.png'
 
 
@@ -291,7 +291,7 @@ def test_get_new_attachment_without_return_new_attachment(mocker):
     Then:
         - There is no attachment to update
     """
-    from JiraV2 import get_new_attachments
+    from JiraV2 import get_attachments
     from test_data.expected_results import JIRA_ATTACHMENT
     from dateparser import parse
     import pytz
@@ -304,7 +304,7 @@ def test_get_new_attachment_without_return_new_attachment(mocker):
         'JiraV2.jira_req',
         return_value=file_content
     )
-    res = get_new_attachments(JIRA_ATTACHMENT, parse('2070-11-25T16:29:37.277764067Z').replace(tzinfo=pytz.UTC))
+    res = get_attachments(JIRA_ATTACHMENT, parse('2070-11-25T16:29:37.277764067Z').replace(tzinfo=pytz.UTC))
     assert res == []
 
 
@@ -333,7 +333,7 @@ def test_get_incident_entries(mocker):
         return_value=('', '', {'comments': [{'updated': '2071-12-21 12:29:05.529000+00:00'}]})
     )
     mocker.patch(
-        'JiraV2.get_new_attachments',
+        'JiraV2.get_attachments',
         return_value='here there is attachment'
     )
     res = get_incident_entries(GET_JIRA_ISSUE_RES, parse('2070-11-25T16:29:37.277764067Z').replace(tzinfo=pytz.UTC))
