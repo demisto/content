@@ -2,9 +2,9 @@ id: Cortex XDR endpoints health check
 version: -1
 name: Cortex XDR endpoints health check
 description: |-
-  This playbook will query disconnected/lost Cortex XDR endpoints with a provided last seen time range playbook input.
-  The playbook will also generate a CSV report, including a detailed list of the unhealthy endpoints, and send the report to the provided email addresses.
-  This playbook also includes an incident type with a dedicated layout to visualize the collected data.
+  This playbook queries disconnected/lost Cortex XDR endpoints with a provided last seen time range playbook input.
+  The playbook generates a CSV report, including a detailed list of the unhealthy endpoints, and sends the report to the provided email addresses.
+  The playbook includes an incident type with a dedicated layout to visualize the collected data.
 starttaskid: "0"
 tasks:
   "0":
@@ -44,8 +44,8 @@ tasks:
       name: 'Get XDR unhealthy endpoints '
       description: Gets a list of endpoints, according to the passed filters. If there
         are no filters, all endpoints are returned. Filtering by multiple fields will
-        be concatenated using AND condition (OR is not supported). Maximum result
-        set size is 100. Offset is the zero-based number of endpoint from the start
+        be concatenated using the AND condition (OR is not supported). The maximum result
+        set size is 100. Offset is the zero-based number of the endpoint from the start
         of the result set (start by counting from 0).
       script: '|||xdr-get-endpoints'
       type: regular
@@ -96,7 +96,7 @@ tasks:
       id: b433cbc5-c326-479d-8861-417257afe8d6
       version: -1
       name: Generate a CSV report for unhealthy XDR endpoints
-      description: Export given array to csv file
+      description: Export the given array to a CSV file.
       tags:
       - Endpoint report
       scriptName: ExportToCSV
@@ -143,7 +143,7 @@ tasks:
       id: f7b9d030-c6b0-4f55-8250-ab44785ea238
       version: -1
       name: Mail unhealthy endpoints report
-      description: Sends mail using Gmail/EWS
+      description: Sends an mail using Gmail/EWS.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -221,7 +221,7 @@ tasks:
     task:
       id: f071927f-7367-4e42-8182-facbd054bfc4
       version: -1
-      name: Did unhealthy endpoint found?
+      name: Was an unhealthy endpoint found?
       description: ''''''
       type: condition
       iscommand: false
@@ -268,7 +268,7 @@ tasks:
       id: ce5dece1-91d9-4bee-8892-57192e30f5c6
       version: -1
       name: Count users and hosts
-      description: commands.local.cmd.set.incident
+      description: Count the users and hosts involved in the incidents and insert the amount in the incident field,
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -632,7 +632,7 @@ tasks:
       id: bf16ece1-ed5d-4024-8a61-b5bec89beb23
       version: -1
       name: Set endpoints grid
-      description: Creates a Grid table from items or key-value pairs.
+      description: Creates a grid table from items or key-value pairs.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -776,7 +776,7 @@ inputs:
   value: {}
   required: false
   description: "Last seen end date, in relative timestamp - \"1 Day\" or  \"7 days\"\
-    \ \nfor the current day use \"0 days\""
+    \ \nFor the current day use \"0 days\""
   playbookInputQuery:
 - key: Email
   value: {}
@@ -787,7 +787,7 @@ inputs:
   value:
     simple: |-
       This message contains an automatically generated report by Cortex XSOAR, including a list of unhealthy and disconnected Cortex XDR endpoints.
-      Please investigate and remediate according to the organisation's policy.
+      Please investigate and remediate according to the organization's policy.
   required: false
   description: 'Body for the report email message. '
   playbookInputQuery:
