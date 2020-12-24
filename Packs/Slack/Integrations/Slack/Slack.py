@@ -1536,7 +1536,7 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
     if message:
         body['text'] = message
     if blocks:
-        block_list = json.loads(blocks)
+        block_list = json.loads(blocks, strict=False)
         body['blocks'] = block_list
     if thread_id:
         body['thread_ts'] = thread_id
