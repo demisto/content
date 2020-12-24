@@ -3180,6 +3180,16 @@
             "integrations": "BitcoinAbuse",
             "playbookID": "BitcoinAbuse-test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "ExpanseV2",
+            "playbookID": "ExpanseV2 Test",
+            "fromversion": "6.0.0"
+        },
+        {
+            "integrations": "FeedExpanse",
+            "playbookID": "Feed Expanse Test",
+            "fromversion": "6.0.0"
         }
     ],
     "skipped_tests": {
@@ -3266,7 +3276,6 @@
         "PhishLabsIOC TestPlaybook": "Issue 30874",
         "Test-VulnDB": "Issue 30875",
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
-        "urlscan_malicious_Test": "Issue 20111",
         "Test-Detonate URL - Crowdstrike": "Issue 30879",
         "nexpose_test": "Issue 31019",
         "CuckooTest": "Issue 25601",
