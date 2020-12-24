@@ -130,9 +130,9 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
 
     for service_name, items in feeds_results.items():
         feed_config = client.feed_name_to_config.get(service_name, {})
-        indicator_field = feed_config.get('indicator') if feed_config.get('indicator') else 'indicator'
-        indicator_type = feed_config.get('indicator_type', indicator_type)
-        use_prefix_flat = feed_config.get('flat_json_with_prefix', False)
+        indicator_field = str(feed_config.get('indicator') if feed_config.get('indicator') else 'indicator')
+        indicator_type = str(feed_config.get('indicator_type', indicator_type))
+        use_prefix_flat = bool(feed_config.get('flat_json_with_prefix', False))
         use_with_flatten = False
 
         for item in items:
@@ -164,7 +164,6 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             indicator['value'] = indicator_value
             attributes['value'] = indicator_value
 
-            print("######### JAS ##########" + str(indicator))
             if mapping:
                 for map_key in mapping:
                     if map_key in attributes:
@@ -179,7 +178,6 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
 
             indicator['rawJSON'] = item
 
-            print("###############JAS#############\n" + str(indicators))
             indicators.append(indicator)
             if limit and len(indicators) % limit == 0:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
