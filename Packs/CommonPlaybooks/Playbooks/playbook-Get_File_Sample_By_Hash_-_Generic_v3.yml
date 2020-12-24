@@ -2,9 +2,9 @@ id: Get File Sample By Hash - Generic v3
 version: -1
 name: Get File Sample By Hash - Generic v3
 description: |-
-  This playbook returns a file sample correlating to a hash in the war-room using the following sub-playbooks:
-  - Get binary file by MD5 hash from Carbon Black telemetry data. - VMware Carbon Black EDR v2.
-  - Get the threat (file) attached to a specific SHA256 hash- Cylance Protect v2.
+  'This playbook returns a file sample correlating to a hash in the War Room using the following sub-playbooks:'
+  - Get binary file by MD5 hash from Carbon Black telemetry data - VMware Carbon Black EDR v2.
+  - Get the threat (file) attached to a specific SHA256 hash - Cylance Protect v2.
 starttaskid: "0"
 tasks:
   "0":
@@ -68,8 +68,8 @@ tasks:
       id: a88a3bd6-0201-4203-8e8b-b3962ed19718
       version: -1
       name: Get File Sample By Hash - Cylance Protect v2
-      description: This playbook returns a file sample to the war-room given the file's
-        SHA256 hash, using Cylance Protect v2 integration.
+      description: This playbook returns a file sample to the War Room given the file's
+        SHA256 hash, using the Cylance Protect v2 integration.
       playbookName: Get File Sample By Hash - Cylance Protect v2
       type: playbook
       iscommand: false
@@ -106,9 +106,9 @@ tasks:
     task:
       id: ae94bf0f-480b-4cc7-8cb1-d44313763369
       version: -1
-      name: Get binary file from Carbon Black by MD5 hash
-      description: 'This playbook retrieve binary file by MD5 hash from Carbon Black
-        telemetry data.   '
+      name: Get the binary file from Carbon Black by its MD5 hash
+      description: This playbook retrieves the binary file by its MD5 hash from Carbon Black
+        telemetry data.
       playbookName: Get binary file from Carbon Black by MD5 hash
       type: playbook
       iscommand: false
