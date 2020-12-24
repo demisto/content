@@ -9,9 +9,9 @@ tasks:
     id: "0"
     taskid: d7f86e61-f72e-41dd-8539-5f02963f98a0
     type: start
-    description: start playbook
     task:
       id: d7f86e61-f72e-41dd-8539-5f02963f98a0
+      description: start playbook
       version: -1
       name: ""
       iscommand: false
