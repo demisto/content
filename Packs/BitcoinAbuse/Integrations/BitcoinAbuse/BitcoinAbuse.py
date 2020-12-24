@@ -90,7 +90,7 @@ def build_fetch_indicators_url_suffixes(have_fetched_first_time: bool, feed_inte
         return {FEED_ENDPOINT_SUFFIX + feed_interval_suffix_url, FEED_ENDPOINT_SUFFIX + '30d'}
 
 
-def _assure_valid_response(indicators) -> None:
+def _assure_valid_response(indicators: List[Dict]) -> None:
     """
     Receives the indicators fetched from Bitcoin Abuse service, and checks if
     the response received is valid
@@ -214,7 +214,7 @@ def _add_additional_params(command: str, params: Dict, api_key: str):
     """
 
     if command != 'bitcoin-report-address':
-        first_feed_interval_url_suffix = params.get('initial_fetch_interval')
+        first_feed_interval_url_suffix = params.get('initial_fetch_interval', '30 Days')
         first_feed_interval_url_suffix = first_fetch_interval_to_url_suffix.get(first_feed_interval_url_suffix, '30d')
         reader_config = {
             'fieldnames': ['id', 'address', 'abuse_type_id', 'abuse_type_other', 'abuser',
