@@ -1,4 +1,4 @@
-This playbook returns a file sample correlating to a path into the war-room using the following sub-playbooks:
+This playbook returns a file sample correlating to a path into the War Room using the following sub-playbooks:
 inputs:
 1) Get File Sample From Path - D2.
 2) Get File Sample From Path - VMware Carbon Black EDR (Live Response API).
