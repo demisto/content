@@ -24,9 +24,9 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | MD5 | The MD5 hash value for the file to retrieve. |  | Optional |
-| SHA256 | The SHA256 hash value for the file to retrieve.. |  | Optional |
+| SHA256 | The SHA256 hash value for the file to retrieve. |  | Optional |
 | Hostname | Hostname of the machine on which the file is located. |  | Optional |
-| Path | The path of the file to retrieve.<br/>For example:<br/>C:\\users\\folder\\file.txt |  | Optional |
+| Path | The path of the file to retrieve.<br/>For example:<br/>C:\\users\\folder\\file.txt. |  | Optional |
 | UseD2 | Determines whether a D2 agent will be used to retrieve the file.<br/>Options:<br/>no \(default\)<br/>yes | no | Optional |
 | Agent_ID | The ID of the agent in the relevant integration \(such as EDR\). |  | Optional |
 
