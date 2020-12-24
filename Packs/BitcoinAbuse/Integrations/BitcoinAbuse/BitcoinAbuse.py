@@ -44,11 +44,11 @@ class BitcoinAbuseClient(Client):
         Sends a post request to report an abuse to BitcoinAbuse servers.
 
         Args:
-            address: the address of the abuser
-            abuse_type_id: an id which indicates which type of abuse was made
-            abuse_type_other: in case abuse_type_id was other, holds information describing the abuse type
-            abuser: information about the abuser (email, name, ...)
-            description: description of the abuse (may include email sent, etc)
+            address (str): the address of the abuser
+            abuse_type_id (int): an id which indicates which type of abuse was made
+            abuse_type_other (Optional[str]): in case abuse_type_id was other, holds information describing the abuse type
+            abuser (str): information about the abuser (email, name, ...)
+            description (str): description of the abuse (may include email sent, etc)
 
         Returns:
             Returns if post request was successful.
@@ -71,10 +71,10 @@ def build_fetch_indicators_url_suffixes(have_fetched_first_time: bool, feed_inte
     """Builds the URL suffix fo the fetch. Default is 'FEED_ENDPOINT_DAILY_SUFFIX_SUFFIX' unless this is a first fetch
     which will be determined by the user parameter - initial_fetch_interval
 
-    - if initial_fetch_interval is 'forever' - then suffixes will include 30d and forever, in order to extract
+    - If initial_fetch_interval is 'forever' - then suffixes will include 30d and forever, in order to extract
       the most updated data by the Bitcoin Abuse service, as 'forever' csv file only updates on 15 of each month
       (see Complete Download in https://www.bitcoinabuse.com/api-docs)
-    - if initial_fetch_interval is '30d' - suffixes will only include '30d' suffix.
+    - If initial_fetch_interval is '30d' - suffixes will only include '30d' suffix.
 
     Args:
         have_fetched_first_time (bool) indicates if a fetch from BitcoinAbuse have been made
@@ -97,14 +97,15 @@ def _assure_valid_response(indicators: List[Dict]) -> None:
     When an incorrect api key is inserted, Bitcoin Abuse returns response of
     their login page
 
-    this function checks if the received response was the login page, and throws
-    DemistoException to inform the user of incorrect api key
+    this function checks if the api key given is incorrect by checking if the received
+    response was the login page.
+    Throws DemistoException to inform the user of incorrect api key
 
     Args:
-        indicators: the array of indicators fetched
+        indicators (List[Dict]): the array of indicators fetched
 
     Returns:
-
+        - Throws DemistoException incase an incorrect api key was given
     """
     if indicators and '<html lang="en">' == indicators[0]['value']:
         raise DemistoException('api token inserted is not valid')
@@ -114,7 +115,7 @@ def fetch_indicators(client: BitcoinAbuseClient) -> None:
     """
     Wrapper which calls to CSVFeedApiModule for fetching indicators from Bitcoin Abuse download csv feed.
     Args:
-        client: the client to be used for Bitcoin Abuse Api calls
+        client (BitcoinAbuseClient): The client to be used for Bitcoin Abuse Api calls
 
     Returns:
 
@@ -149,7 +150,7 @@ def report_address_command(client: BitcoinAbuseClient, args: Dict) -> CommandRes
     Reports a bitcoin abuse to Bitcoin Abuse service
 
     Args:
-        client: BitcoinAbuseClient  used to post abuse to the api
+        client (BitcoinAbuseClient):  used to post abuse to the api
         args (Dict): Demisto args.
 
     Returns:
@@ -190,7 +191,7 @@ def _fetch_indicators_from_bitcoin_abuse(client: BitcoinAbuseClient) -> List[Dic
         client (BitcoinAbuseClient): used to get csv from Bitcoin Abuse service
 
     Returns:
-        list of all the indicators that have been fetched
+        List of all the indicators that have been fetched
     """
     return fetch_indicators_command(
         client=client,
@@ -205,13 +206,13 @@ def _add_additional_params(command: str, params: Dict, api_key: str):
     Checks which command is being performed and adds additional params if needed
     in order to perform the command successfully
     Args:
-        command: demisto command requested
-        params: demisto params
-        api_key: for Bitcoin Abuse service
+        command (str): Demisto command requested
+        params (Dict): Demisto params
+        api_key (str): For Bitcoin Abuse service
 
     Returns:
-        - if command is bitcoin-report-address: returns the params enriched with url
-        - if command is anything else - enriches params with more required params to
+        - If command is bitcoin-report-address: returns the params enriched with url
+        - If command is anything else - enriches params with more required params to
           CSVFeedApiModule fetch_indicators_command
     """
 
