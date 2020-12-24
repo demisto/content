@@ -93,11 +93,11 @@ def build_fetch_indicators_url_suffixes(have_fetched_first_time: bool, feed_inte
 def _assure_valid_response(indicators: List[Dict]) -> None:
     """
     Receives the indicators fetched from Bitcoin Abuse service, and checks if
-    the response received is valid
-    when an incorrect api key is inserted, Bitcoin Abuse returns response of
-    their login endpoint
+    the response received is valid.
+    When an incorrect api key is inserted, Bitcoin Abuse returns response of
+    their login page
 
-    this function checks if the received response was the html page, and throws
+    this function checks if the received response was the login page, and throws
     DemistoException to inform the user of incorrect api key
 
     Args:
@@ -185,12 +185,12 @@ def report_address_command(client: BitcoinAbuseClient, args: Dict) -> CommandRes
 
 def _fetch_indicators_from_bitcoin_abuse(client: BitcoinAbuseClient) -> List[Dict]:
     """
-
+    Wrapper function that calls fetch_indicators_command
     Args:
-        client:
+        client (BitcoinAbuseClient): used to get csv from Bitcoin Abuse service
 
     Returns:
-
+        list of all the indicators that have been fetched
     """
     return fetch_indicators_command(
         client=client,
@@ -202,7 +202,8 @@ def _fetch_indicators_from_bitcoin_abuse(client: BitcoinAbuseClient) -> List[Dic
 
 def _add_additional_params(command: str, params: Dict, api_key: str):
     """
-
+    Checks which command is being performed and adds additional params if needed
+    in order to perform the command successfully
     Args:
         command: demisto command requested
         params: demisto params
@@ -210,7 +211,8 @@ def _add_additional_params(command: str, params: Dict, api_key: str):
 
     Returns:
         - if command is bitcoin-report-address: returns the params enriched with url
-        - if command is anything else - enriches params with more required params to CSVFeedApiModule
+        - if command is anything else - enriches params with more required params to
+          CSVFeedApiModule fetch_indicators_command
     """
 
     if command != 'bitcoin-report-address':
