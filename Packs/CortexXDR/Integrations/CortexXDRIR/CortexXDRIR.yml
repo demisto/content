@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Cortex XDR - IR Context
+  id: Cortex XDR - IR
   version: -1
 configuration:
 - display: Fetch incidents
@@ -80,8 +80,8 @@ configuration:
   type: 8
 description: Cortex XDR is the world's first detection and response app that natively
   integrates network, endpoint, and cloud data to stop sophisticated attacks.
-display: Palo Alto Networks Cortex XDR - Investigation and Response Context Outputs
-name: Cortex XDR - IR Context
+display: Palo Alto Networks Cortex XDR - Investigation and Response
+name: Cortex XDR - IR
 script:
   commands:
   - arguments:
@@ -1016,6 +1016,12 @@ script:
       type: String
     - contextPath: Endpoint.OS
       description: Endpoint OS.
+      type: String
+    - contextPath: Account.Username
+      description: The username in the relevant system.
+      type: String
+    - contextPath: Account.Domain
+      description: The domain of the account.
       type: String
   - deprecated: false
     description: Gets a list of all the agent versions to use for creating a distribution

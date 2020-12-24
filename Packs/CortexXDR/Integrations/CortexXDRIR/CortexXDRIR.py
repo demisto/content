@@ -1251,7 +1251,8 @@ def create_context_from_network_artifacts(network_artifacts, ip_context):
     if network_artifacts:
         for artifact in network_artifacts:
             if artifact.get('network_domain'):
-                domain_context.append({
+                domain_context.append(
+                    {
                         'Name': artifact.get('network_domain')
                     }
                 )
@@ -1272,8 +1273,7 @@ def create_context_from_network_artifacts(network_artifacts, ip_context):
 def get_indicators_context(incident):
     file_context = []
     process_context = []
-    domain_context = {}
-    ip_context = []
+    ip_context: List[Any] = []
     for alert in incident.get('alerts'):
         # file context
         file_details = {
@@ -1460,6 +1460,20 @@ def arg_to_int(arg, arg_name: str, required: bool = False):
     return ValueError(f'Invalid number: "{arg_name}"')
 
 
+def create_account_context(endpoints):
+    account_context = []
+    for endpoint in endpoints:
+        domain = endpoint.get('domain')
+        if domain:
+            for user in endpoint.get('users', []):
+                account_context.append({
+                    'Username': user,
+                    'Domain': domain
+                })
+
+    return account_context
+
+
 def get_endpoints_command(client, args):
     page_number = arg_to_int(
         arg=args.get('page'),
@@ -1526,10 +1540,16 @@ def get_endpoints_command(client, args):
             sort_by_first_seen=sort_by_first_seen,
             sort_by_last_seen=sort_by_last_seen
         )
+    context = {
+        f'{INTEGRATION_CONTEXT_BRAND}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
+        'Endpoint(val.ID == obj.ID)': return_endpoint_standard_context(endpoints)
+    }
+    account_context = create_account_context(endpoints)
+    if account_context:
+        context[Common.Account.CONTEXT_PATH] = account_context
     return (
         tableToMarkdown('Endpoints', endpoints),
-        {f'{INTEGRATION_CONTEXT_BRAND}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
-         'Endpoint(val.ID == obj.ID)': return_endpoint_standard_context(endpoints)},
+        context,
         endpoints
     )
 
