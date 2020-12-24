@@ -1852,7 +1852,7 @@ def get_compliance_search(search_name, show_only_recipients):
 
     # Parse search results from script output if the search has completed. Output to warroom as table.
     if stdout[0] == 'Completed':
-        if stdout[1]:
+        if stdout[1] and stdout[1] != '{}':
             res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))
             res = map(lambda x: {k: v for k, v in (s.split(': ') for s in x)}, res)
             entry = {
