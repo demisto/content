@@ -1,0 +1,17 @@
+{
+    "name": "Arrays_to_Dictionary",
+    "description": "This is an automation script which is used in a playbook called Parse_CSV_URL . It has a part where we are getting couple of lists . So this script is taking all those lists and combining it in the form of dictionary .  \nWe can convert any number of lists into dictionary using this script. ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "shubgwal-gif",
+    "url": "",
+    "email": "",
+    "created": "2020-12-24T15:47:08Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "shubgwal-gif"
+    ]
+}

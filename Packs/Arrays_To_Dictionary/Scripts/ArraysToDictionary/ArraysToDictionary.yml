@@ -1,0 +1,39 @@
+args:
+- description: array containing list of elements
+  isArray: true
+  name: Arraylist1
+  required: true
+- description: array containing list of elements
+  name: Arraylist2
+  required: true
+- description: 'array containing list of clean engines '
+  name: Arraylist3
+  required: true
+- description: 'Array list containing list of malware engines '
+  name: Arraylist4
+  required: true
+- description: 'Array list containing list of unrated engines '
+  name: Arraylist5
+comment: Conversion of List to Dictionary
+commonfields:
+  id: Arrays_to_Dictionary
+  version: -1
+dockerimage: demisto/python3:3.8.6.14516
+enabled: true
+name: Arrays_to_Dictionary
+outputs:
+- contextPath: DictionaryOfLists
+  description: Dictionary containing lists
+  type: Unknown
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utilities
+timeout: 180ns
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
