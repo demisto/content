@@ -1,3 +1,5 @@
+import time
+from threading import Thread
 import pytest
 import demistomock as demisto
 import json
@@ -34,10 +36,21 @@ def test_continue_on_blacklisted_error_arg(mocker, requests_mock, continue_on_bl
 
 
 def test_endless_loop_on_failed_response(requests_mock, mocker):
+    """
+    Given
+    - Some uuid
+    When
+    - Running format results on it
+    Then
+    - Assert it does not enter an endless loop
+    """
     from UrlScan import format_results
     mocker.patch(RETURN_ERROR_TARGET)
 
     with open('./test_data/capitalne.json', 'r') as f:
         response_data = json.loads(f.read())
     requests_mock.get(RESULT_URL + 'uuid', status_code=200, json=response_data)
-    format_results('uuid')
+    thread = Thread(target=format_results, args=('uuid', ))
+    thread.start()
+    time.sleep(10)
+    assert not thread.is_alive(), 'format_results method have probably entered an endless loop'

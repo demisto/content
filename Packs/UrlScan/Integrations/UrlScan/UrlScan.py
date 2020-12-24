@@ -41,8 +41,8 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
-    LOG('requesting https request with method: {}, url: {}, data: {}'.format(method, BASE_URL + url_suffix, json))
-    LOG.print_log()
+    demisto.debug(
+        'requesting https request with method: {}, url: {}, data: {}'.format(method, BASE_URL + url_suffix, json))
     r = requests.request(
         method,
         BASE_URL + url_suffix,
@@ -130,26 +130,22 @@ def poll(target, step, args=(), kwargs=None, timeout=60,
     # According to the doc - The most efficient approach would be to wait at least 10 seconds before starting to poll
     time.sleep(10)
     while True:
-        LOG('Number of Polling attempts: {}'.format(tries))
-        LOG.print_log()
+        demisto.debug('Number of Polling attempts: {}'.format(tries))
         try:
             val = target(*args, **kwargs)
             last_item = val
         except ignore_exceptions as e:
             last_item = e
-            LOG('Polling request failed with exception {}'.format(str(e)))
-            LOG.print_log()
+            demisto.debug('Polling request failed with exception {}'.format(str(e)))
         else:
             if check_success(val):
                 return val
-        LOG('Polling request returned False')
-        LOG.print_log()
+        demisto.debug('Polling request returned False')
         values.put(last_item)
         tries += 1
         if max_time is not None and time.time() >= max_time:
             demisto.results('The operation timed out. Please try again with a longer timeout period.')
-            LOG('The operation timed out.')
-            LOG.print_log()
+            demisto.debug('The operation timed out.')
             return False
         time.sleep(step)  # pylint: disable=sleep-exists
         step = step_function(step)
@@ -177,8 +173,7 @@ def urlscan_submit_url():
 
 def format_results(uuid):
     response = urlscan_submit_request(uuid)
-    LOG('urlscan_submit_request response: {}'.format(response))
-    LOG.print_log()
+    demisto.debug('urlscan_submit_request response: {}'.format(response))
     scan_data = response.get('data', {})
     scan_lists = response.get('lists', {})
     scan_tasks = response.get('task', {})
@@ -550,7 +545,9 @@ def format_http_transaction_list():
 
 
 """COMMAND FUNCTIONS"""
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+
+
+def main():
     try:
         handle_proxy()
         if demisto.command() == 'test-module':
@@ -575,3 +572,7 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
         LOG(e)
         LOG.print_log(False)
         return_error(e.message)
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
