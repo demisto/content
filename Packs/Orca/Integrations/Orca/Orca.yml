@@ -76,6 +76,10 @@ script:
     - contextPath: Orca.Manager.Cve
       description: CVEs of asset
       type: String
+  - deprecated: false
+    description: fetches orca alerts
+    execution: false
+    name: fetch-incidents
   dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: true
@@ -85,8 +89,8 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- No tests
 defaultmapperin: HelloWorld-mapper
 defaultclassifier: HelloWorld
 fromversion: 5.0.0
-tests:
-- No tests

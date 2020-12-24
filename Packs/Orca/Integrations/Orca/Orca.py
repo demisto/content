@@ -2,13 +2,14 @@ from typing import Any, Dict, Union
 from CommonServerPython import *
 
 ORCA_API_DNS_NAME = "https://orcadeveden-internal-dev.orcasecurity.net/api"
+DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class OrcaClient:
     def __init__(self, client: BaseClient):
         self.client = client
 
-    def get_alerts(self, alert_type:str) -> Union[List[Dict[str, Any]], str]:
+    def get_alerts(self, alert_type:Optional[str]=None) -> Union[List[Dict[str, Any]], str]:
         demisto.debug("get_alerts, enter")
         url_suffix = "/alerts"
         if alert_type:
@@ -76,6 +77,28 @@ def main() -> None:
         asset = orca_client.get_cves(asset_unique_id=demisto.args()['asset_unique_id'])
         return_results(asset)
 
+    if command == "fetch-incidents":
+        demisto.debug("fetch-incidents called")
+        if demisto.getLastRun().get('lastRun'):
+            demisto.log("not first run, returning")
+            # only first run is relevant, other incidents are dynamically pushed from Kafka
+            return
+
+        alerts = orca_client.get_alerts()
+        if not alerts:
+            return
+
+        incidents = []
+        for alert in alerts:
+            incident = {
+                'name': f"Orca Cloud Incident: {alert.get('state').get('alert_id')}.",
+                'occurred': datetime_to_string(datetime.strptime(alert.get('state').get('last_seen'), "%Y-%m-%dT%H:%M:%S%z").isoformat()),
+                'rawJSON': json.dumps(alert)
+            }
+            incidents.append(incident)
+
+        demisto.incidents(incidents)
+        demisto.setLastRun({'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)})
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
