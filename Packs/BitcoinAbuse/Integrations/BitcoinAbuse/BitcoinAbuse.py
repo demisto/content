@@ -226,7 +226,7 @@ def _add_additional_params(command: str, params: Dict, api_key: str):
             'indicator_type': 'Cryptocurrency Address',
             'mapping': {
                 'Value': ('address', None, 'bitcoin-{}'),
-                'Address': 'address',
+                'Raw Address': 'address',
                 'Country Name': 'from_country',
                 'Creation Date': 'created_at',
                 'Description': 'description',
