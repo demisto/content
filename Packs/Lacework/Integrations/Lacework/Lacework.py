@@ -76,6 +76,7 @@ def format_compliance_data(compliance_data, rec_id):
 
         # If the user wants to filter on a recommendation ID
         if rec_id:
+            rec_id = argToList(rec_id)
             # Iterate through all recommendations, removing irrelevant ones
             for recommendation in compliance_data["recommendations"][:]:
                 if recommendation["REC_ID"] not in rec_id:
@@ -111,7 +112,7 @@ def get_aws_compliance_assessment():
     """
 
     account_id = demisto.args().get('account_id')
-    rec_id = argToList(demisto.args().get('rec_id'))
+    rec_id = demisto.args().get('rec_id')
     report_type = demisto.args().get('report_type', 'AWS_CIS_S3')
 
     response = lacework_client.compliance.get_latest_aws_report(account_id,
@@ -129,7 +130,7 @@ def get_azure_compliance_assessment():
 
     tenant_id = demisto.args().get('tenant_id')
     subscription_id = demisto.args().get('subscription_id')
-    rec_id = argToList(demisto.args().get('rec_id'))
+    rec_id = demisto.args().get('rec_id')
     report_type = demisto.args().get('report_type', 'AZURE_CIS')
 
     response = lacework_client.compliance.get_latest_azure_report(tenant_id,
@@ -148,7 +149,7 @@ def get_gcp_compliance_assessment():
 
     organization_id = demisto.args().get('organization_id')
     project_id = demisto.args().get('project_id')
-    rec_id = argToList(demisto.args().get('rec_id'))
+    rec_id = demisto.args().get('rec_id')
     report_type = demisto.args().get('report_type', 'GCP_CIS')
 
     response = lacework_client.compliance.get_latest_gcp_report(organization_id,
