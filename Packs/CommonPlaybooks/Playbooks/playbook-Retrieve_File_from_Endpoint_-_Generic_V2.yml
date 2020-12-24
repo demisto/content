@@ -2,7 +2,7 @@ id: Retrieve File from Endpoint - Generic V2
 version: -1
 name: Retrieve File from Endpoint - Generic V2
 description: |-
-  This playbook retrieves a file sample from an endpoint using the following playbooks:
+  'This playbook retrieves a file sample from an endpoint using the following playbooks:'
   - Get File Sample From Path - Generic v2.
   - Get File Sample By Hash - Generic v3.
 starttaskid: "0"
@@ -69,9 +69,9 @@ tasks:
       version: -1
       name: Get File Sample By Hash - Generic v3
       description: |-
-        This playbook returns a file sample correlating to a hash in the war-room using the following sub-playbooks:
-        - Get binary file by MD5 hash from Carbon Black telemetry data. - VMware Carbon Black EDR v2.
-        - Get the threat (file) attached to a specific SHA256 hash- Cylance Protect v2.
+        'This playbook returns a file sample correlating to a hash in the War Room using the following sub-playbooks:'
+        - Get binary file by MD5 hash from Carbon Black telemetry data - VMware Carbon Black EDR v2.
+        - Get the threat (file) attached to a specific SHA256 hash - Cylance Protect v2.
       playbookName: Get File Sample By Hash - Generic v3
       type: playbook
       iscommand: false
@@ -113,7 +113,7 @@ tasks:
       version: -1
       name: Get File Sample From Path - Generic V2
       description: |
-        This playbook returns a file sample correlating to a path into the war-room using the following sub-playbooks:
+        This playbook returns a file sample correlating to a path into the War Rom using the following sub-playbooks:
         inputs:
         1) Get File Sample From Path - D2.
         2) Get File Sample From Path - VMware Carbon Black EDR (Live Response API).
@@ -176,7 +176,7 @@ inputs:
 - key: SHA256
   value: {}
   required: false
-  description: The SHA256 hash value for the file to retrieve..
+  description: The SHA256 hash value for the file to retrieve.
   playbookInputQuery:
 - key: Hostname
   value: {}
