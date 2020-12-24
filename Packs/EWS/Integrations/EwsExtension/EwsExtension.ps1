@@ -3,9 +3,9 @@
 
 $script:INTEGRATION_NAME = "EWS extension"
 $script:COMMAND_PREFIX = "ews"
-$script:INTEGRATION_ENTRY_CONTEX = "EWS"
-$script:JUNK_RULE_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEX.Rule.Junk(val.Email && val.Email == obj.Email)"
-$script:MESSAGE_TRACE_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEX.MessageTrace(val.MessageId && val.MessageId == obj.MessageId)"
+$script:INTEGRATION_ENTRY_CONTEXT = "EWS"
+$script:JUNK_RULE_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEXT.Rule.Junk(val.Email && val.Email == obj.Email)"
+$script:MESSAGE_TRACE_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEXT.MessageTrace(val.MessageId && val.MessageId == obj.MessageId)"
 
 
 #### HELPER FUNCTIONS ####
@@ -75,7 +75,7 @@ function CreateNewSession {
     return $session
     <#
         .DESCRIPTION
-        Creates new pssession using Oauth2.0 method.
+        Creates new PSSession using Oauth2.0 method.
 
         .PARAMETER uri
         Exchange Online uri.
@@ -109,7 +109,7 @@ function CreateNewSession {
 }
 
 
-function ParseJunkRulesToEntyContext([PSObject]$raw_response){
+function ParseJunkRulesToEntryContext([PSObject]$raw_response){
     return @{
         $script:JUNK_RULE_ENTRY_CONTEXT= @{
             "MailboxOwnerId" = $raw_response.MailboxOwnerId
@@ -131,7 +131,7 @@ function ParseJunkRulesToEntyContext([PSObject]$raw_response){
         Junk rules raw response.
 
         .EXAMPLE
-        ParseJunkRulesToEntyContext $raw_reponse
+        ParseJunkRulesToEntryContext $raw_reponse
 
         .OUTPUTS
         PSObject - entry context.
@@ -139,7 +139,7 @@ function ParseJunkRulesToEntyContext([PSObject]$raw_response){
 }
 
 
-function ParseMessageTraceToEntyContext([PSObject]$raw_response){
+function ParseMessageTraceToEntryContext([PSObject]$raw_response){
     $entry_context  = @{}
     if ($raw_response)
     {
@@ -174,7 +174,7 @@ function ParseMessageTraceToEntyContext([PSObject]$raw_response){
         Message trace raw response.
 
         .EXAMPLE
-        ParseMessageTraceToEntyContext $raw_reponse
+        ParseMessageTraceToEntryContext $raw_response
 
         .OUTPUTS
         PSObject - entry context.
@@ -212,7 +212,7 @@ class OAuth2DeviceCodeClient {
             OAuth2DeviceCodeClient manage state of OAuth2.0 device-code flow described in https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code.
 
             .DESCRIPTION
-            Its not recomended to create an object using the constructor, Use static method CreateClientFromIntegrationContext() instead.
+            Its not recommended to create an object using the constructor, Use static method CreateClientFromIntegrationContext() instead.
 
             OAuth2DeviceCodeClient states are:
                 1. Getting device-code (Will be used in stage 2) and user-code (Will be used by the user to authorize permissions) from Microsoft application.
@@ -233,22 +233,22 @@ class OAuth2DeviceCodeClient {
             Opaque string, Issued if the original scope parameter included offline_access. (Valid for 90 days)
 
             .PARAMETER access_token_expires_in
-            Number of seconds before the included access token is valid for. (Usally - 60 minutes)
+            Number of seconds before the included access token is valid for. (Usually - 60 minutes)
 
             .PARAMETER access_token_creation_time
             Unix time of access token creation (Used for knowing when to refresh the token).
 
             .PARAMETER access_token_expires_in
-            Number of seconds before the included access token is valid for. (Usally - 60 minutes)
+            Number of seconds before the included access token is valid for. (Usually - 60 minutes)
 
             .PARAMETER insecure
-            Wheter to trust any TLS/SSL Certificate) or not.
+            Whether to trust any TLS/SSL Certificate) or not.
 
             .PARAMETER proxy
-            Wheter to user system proxy configuration or not.
+            Whether to user system proxy configuration or not.
 
             .NOTES
-            1. Application id - a0c73c16-a7e3-4564-9a95-2bdf47383716 , This is well-known application publicly managed by Microsoft and will not work in on-premise enviorment.
+            1. Application id - a0c73c16-a7e3-4564-9a95-2bdf47383716 , This is well-known application publicly managed by Microsoft and will not work in on-premise environment.
 
             .LINK
             https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code
@@ -328,10 +328,10 @@ class OAuth2DeviceCodeClient {
         catch {
             $response_body = ConvertFrom-Json $_.ErrorDetails.Message
             if ($response_body.error -eq "authorization_pending" -or $response_body.error -eq "invalid_grant") {
-                $error_details = "Please run command !ews-start-auth , before running this command."
+                $error_details = "Please run command !$script:COMMAND_PREFIX-auth-start , before running this command."
             }
             elseif ($response_body.error -eq "expired_token") {
-                $error_details = "At least $($this.access_token_expires_in) seconds have passed from executing !ews-start-auth, Please run the ***ews-start-auth*** command again."
+                $error_details = "At least $($this.access_token_expires_in) seconds have passed from executing !$script:COMMAND_PREFIX-auth-start, Please run the ***$script:COMMAND_PREFIX-auth-start*** command again."
             } else {
                 $error_details = $response_body
             }
@@ -378,7 +378,7 @@ class OAuth2DeviceCodeClient {
         catch {
             $response_body = ConvertFrom-Json $_.ErrorDetails.Message
             if ($response_body.error -eq "invalid_grant") {
-                $error_details = "Please login to grant account permissions (After 90 days grant is expired) !ews-start-auth."
+                $error_details = "Please login to grant account permissions (After 90 days grant is expired) !$script:COMMAND_PREFIX-auth-start."
             }
             else {
                 $error_details = $response_body
@@ -873,7 +873,7 @@ function GetJunkRulesCommand([ExchangeOnlineClient]$client, [hashtable]$kwargs) 
     $raw_response = $client.GetJunkRules($kwargs.mailbox)
     $md_columns = $raw_response | Select-Object -Property BlockedSendersAndDomains, TrustedSendersAndDomains, ContactsTrusted, TrustedListsOnly, Enabled
     $human_readable = TableToMarkdown $md_columns  "$script:INTEGRATION_NAME - '$($kwargs.mailbox)' Junk rules"
-    $entry_context = ParseJunkRulesToEntyContext $raw_response $kwargs.mailbox
+    $entry_context = ParseJunkRulesToEntryContext $raw_response $kwargs.mailbox
 
     return $human_readable, $entry_context, $raw_response
 }
@@ -944,7 +944,7 @@ function GetMessageTraceCommand([ExchangeOnlineClient]$client, [hashtable]$kwarg
                                             $kwargs.message_trace_id, $kwargs.page, $kwargs.page_size, $kwargs.start_date,
                                             $kwargs.end_date, $kwargs.status)
 
-    $entry_context = ParseMessageTraceToEntyContext $raw_response
+    $entry_context = ParseMessageTraceToEntryContext $raw_response
     if ($entry_context.($script:MESSAGE_TRACE_ENTRY_CONTEXT)){
         $human_readable = TableToMarkdown $entry_context.($script:MESSAGE_TRACE_ENTRY_CONTEXT)  "$script:INTEGRATION_NAME - Messages trace"
     }

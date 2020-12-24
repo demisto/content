@@ -36,7 +36,7 @@ script:
     arguments:
     - name: mailbox
       required: true
-      description: ID of the mailbox for which to get junk rules. Junk rules are rules .
+      description: ID of the mailbox for which to get junk rules.
     description: Gets junk rules for the specified mailbox.
     outputs:
       - contextPath: EWS.Rule.Junk.BlockedSendersAndDomains
@@ -58,7 +58,7 @@ script:
         description: 'Mail box owner ID.'
         type: String
       - contextPath: EWS.Rule.Junk.TrustedListsOnly
-        description: 'If true, only a list defined in the  trusted lists are trusted.'
+        description: 'If true, only a list defined in the trusted lists are trusted.'
         type: Boolean
       - contextPath: EWS.Rule.Junk.TrustedRecipientsAndDomains
         description: 'List of trusted recipients and domains.'
