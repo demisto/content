@@ -21,6 +21,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '50'
+  display: Max Fetch
   name: max_fetch
   required: false
   type: 0
