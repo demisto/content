@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response APIVersion="1702.1" IPS_CAT_VER="1">
+  <Login>
+    <status>Authentication Successful</status>
+  </Login>
+  <ApplicationFilterPolicy transactionid="">
+    <Status code="200">Configuration applied successfully.</Status>
+  </ApplicationFilterPolicy>
+</Response>

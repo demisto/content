@@ -1,0 +1,4166 @@
+category: Network Security
+commonfields:
+  id: sophos_firewall
+  version: -1
+configuration:
+- additionalinfo: 'Server URL used to enter Sophos XG Firewall webconsole. e.g: https://ip:port/'
+  display: Server URL
+  name: server_url
+  required: true
+  type: 8
+- display: User Credentials
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: On-Premise firewall by Sophos
+display: Sophos Firewall
+name: sophos_firewall
+script:
+  commands:
+  - arguments:
+    - default: true
+      defaultValue: '0'
+      description: 'Provide the start index for the rules you would like to list.
+        e.g: 5'
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: "Provide the end index for the rules you would like to list. e.g:\
+        \ 20"
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    deprecated: false
+    description: 'List all firewall rules. IMPORTANT: listing start at 0 (not 1!)'
+    execution: false
+    name: sophos-firewall-rule-list
+    outputs:
+    - contextPath: SophosFirewall.SecurityPolicy.Name
+      description: Name of the rule.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.Description
+      description: Description of the rule.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.Status
+      description: Status of the rule.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.PolicyType
+      description: Policy type of the rule.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.IPFamily
+      description: IPv4/IPv6
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.AttachIdentity
+      description: Rule attach identity status.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.Action
+      description: Current rule action.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.LogTraffic
+      description: Rule traffic logging code.
+      type: Number
+  - arguments:
+    - default: false
+      description: Name of the rule to get
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a single firewall rule by name.
+    execution: false
+    name: sophos-firewall-rule-get
+    outputs:
+    - contextPath: SophosFirewall.SecurityPolicy.Name
+      description: Name of the rule.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.Description
+      description: Description of the rule.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.Status
+      description: Status of the rule.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.PolicyType
+      description: Policy type of the rule.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.IPFamily
+      description: IPv4/IPv6
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.AttachIdentity
+      description: Rule attach identity status.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.Action
+      description: Current rule action.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.LogTraffic
+      description: Rule traffic logging code.
+      type: Number
+  - arguments:
+    - default: false
+      description: Name of the new rule.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the new rule.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Enable
+      description: Is the rule enabled or disabled.
+      isArray: false
+      name: status
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: IPv4
+      description: Are the IPs v4 or v6.
+      isArray: false
+      name: ip_family
+      predefined:
+      - IPv4
+      - IPv6
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Should the rule be at the top or bottom of the list? before or\
+        \ after a specific rule? IMPORTANT: If before/after is chosen - provide the\
+        \ position_policy_name pramater."
+      isArray: false
+      name: position
+      predefined:
+      - top
+      - bottom
+      - after
+      - before
+      required: true
+      secret: false
+    - default: false
+      description: "The name of the policy that the rule should be created before/after\
+        \ . REQUIRED: When the position is before/after"
+      isArray: false
+      name: position_policy_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of the new rule (policy).
+      isArray: false
+      name: policy_type
+      predefined:
+      - User
+      - Network
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Source zones to add to the rule.
+      isArray: true
+      name: source_zones
+      predefined:
+      - Any
+      - LAN
+      - WAN
+      - VPN
+      - DMZ
+      - WiFi
+      required: false
+      secret: false
+    - default: false
+      description: Source networks to add to the rule.
+      isArray: true
+      name: source_networks
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Destination zones to add to the rule.
+      isArray: true
+      name: destination_zones
+      predefined:
+      - Any
+      - LAN
+      - WAN
+      - VPN
+      - DMZ
+      - WiFi
+      required: false
+      secret: false
+    - default: false
+      description: Destination networks to add to the rule.
+      isArray: true
+      name: destination_networks
+      required: false
+      secret: false
+    - default: false
+      description: Destination services to add to the rule.
+      isArray: true
+      name: services
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Select Schedule for the Rule. IMPORTANT: Creating a new schedule
+        is available on web console'
+      isArray: false
+      name: schedule
+      predefined:
+      - All the time
+      - Work hours (5 Day week)
+      - Work hours (6 Day week)
+      - All Time on Weekdays
+      - All Time on Weekends
+      - All Time on Sunday
+      - All Days 10:00 to 19:00
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Enable traffic logging for the policy.
+      isArray: false
+      name: log_traffic
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: "Enable to check whether the specified user/user group from the\
+        \ selected zone is allowed to access the selected service or not. IMPORTANT:\
+        \ when enabling match_identity - members parameter is required."
+      isArray: false
+      name: match_identity
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: "Select to accept traffic from unknown users. Captive portal page\
+        \ is displayed to the user where the user can login to access the Internet.\
+        \ IMPORTANT: MatchIdentity must be Enabled. PARAMETER OF: UserPolicy"
+      isArray: false
+      name: show_captive_portal
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - default: false
+      description: "An existing user(s) or group(s) to add to the rule. REQUIRED:\
+        \ when match_identity is enabled. "
+      isArray: true
+      name: members
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Drop
+      description: Specify action for the rule traffic.
+      isArray: false
+      name: action
+      predefined:
+      - Accept
+      - Reject
+      - Drop
+      required: false
+      secret: false
+    - default: false
+      description: Select DSCP Marking to classify flow of packets based on Traffic
+        Shaping policy.
+      isArray: false
+      name: dscp_marking
+      required: false
+      secret: false
+    - default: false
+      description: "Specify the Primary Gateway. Applicable only in case of Multiple\
+        \ Gateways."
+      isArray: false
+      name: primary_gateway
+      required: false
+      secret: false
+    - default: false
+      description: "Specify the Backup Gateway. Applicable only in case of Multiple\
+        \ Gateways."
+      isArray: false
+      name: backup_gateway
+      required: false
+      secret: false
+    - default: true
+      defaultValue: Allow All
+      description: Select Application Filter Policy for the rule.
+      isArray: false
+      name: application_control
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Revoke
+      description: "Select to limit the bandwidth for the applications categorized\
+        \ under the Application Category. this tag is only appliacable only when\
+        \ any application_control is selected."
+      isArray: false
+      name: application_based_qos_policy
+      predefined:
+      - Apply
+      - Revoke
+      required: false
+      secret: false
+    - default: true
+      defaultValue: Allow All
+      description: Select Web Filter Policy for the rule.
+      isArray: false
+      name: web_filter
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Revoke
+      description: "Select to limit bandwidth for the URLs categorized under the Web\
+        \ category. this tag is only appliacable only when any web_filteris selected."
+      isArray: false
+      name: web_category_base_qos_policy
+      predefined:
+      - Apply
+      - Revoke
+      required: false
+      secret: false
+    - default: true
+      defaultValue: None
+      description: Select Traffic Shaping policy for the rule.
+      isArray: false
+      name: traffic_shapping_policy
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Select to enable virus and spam scanning for HTTP protocol.
+      isArray: false
+      name: scan_http
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Select to enable virus and spam scanning for HTTPS protocol.
+      isArray: false
+      name: scan_https
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Select to enable sandstorm analysis.
+      isArray: false
+      name: sandstorm
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Ensure Google websites user HTTP/s instead of QUICK QUIC
+      isArray: false
+      name: block_quick_quic
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Enable/Disable scanning of FTP traffic.
+      isArray: false
+      name: scan_ftp
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Select to exclude user's network traffic from data accounting.
+        This option is available only if the parameter 'Match rule-based on user identity'
+        is enabled.
+      isArray: false
+      name: data_accounting
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Enable
+      description: Enable to apply NAT Policy.
+      isArray: false
+      name: rewrite_source_address
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Select internet scheme to apply user based Web Filter Policy for
+        the rule.
+      isArray: false
+      name: web_filter_internet_scheme
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Select internet scheme to apply user based Application Filter Policy
+        for the rule.
+      isArray: false
+      name: application_control_internet_scheme
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Enable/Disable overriding gateway of default nat policy
+      isArray: false
+      name: override_gateway_default_nat_policy
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Enable/Disable source security heartbeat
+      isArray: false
+      name: source_security_heartbeat
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Enable/Disable destination security heartbeat
+      isArray: false
+      name: destination_security_heartbeat
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - default: true
+      defaultValue: MASQ
+      description: Select the NAT Policy to be applied.
+      isArray: false
+      name: outbound_address
+      required: false
+      secret: false
+    - default: true
+      defaultValue: No Restriction
+      description: Select minimum source HB permitted
+      isArray: false
+      name: minimum_source_hb_permitted
+      required: false
+      secret: false
+    - default: true
+      defaultValue: No Restriction
+      description: "Select minimum destination HB permitted"
+      isArray: false
+      name: minimum_destination_hb_permitted
+      required: false
+      secret: false
+    - default: true
+      defaultValue: generalpolicy
+      description: Select IPS policy for the rule.
+      isArray: false
+      name: intrusion_prevention
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a new firewall rule.
+    execution: false
+    name: sophos-firewall-rule-add
+    outputs:
+    - contextPath: SophosFirewall.SecurityPolicy.Name
+      description: Name of the rule.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.Description
+      description: Description of the rule.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.Status
+      description: Status of the rule.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.PolicyType
+      description: Policy type of the rule.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.IPFamily
+      description: IPv4/IPv6
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.AttachIdentity
+      description: Rule attach identity status.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.Action
+      description: Current rule action.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.LogTraffic
+      description: Rule traffic logging code.
+      type: Number
+  - arguments:
+    - default: false
+      description: Name of the new rule.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the new rule.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Enable
+      description: Is the rule enabled or disabled.
+      isArray: false
+      name: status
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: IPv4
+      description: Are the IPs v4 or v6.
+      isArray: false
+      name: ip_family
+      predefined:
+      - IPv4
+      - IPv6
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Should the rule be at the top or bottom of the list? before or\
+        \ after a specific rule? IMPORTANT: If before/after is chosen - provide the\
+        \ position_policy_name pramater."
+      isArray: false
+      name: position
+      predefined:
+      - top
+      - bottom
+      - after
+      - before
+      required: false
+      secret: false
+    - default: false
+      description: "The name of the policy that the rule should be created before/after\
+        \ . REQUIRED: When the position is before/after"
+      isArray: false
+      name: position_policy_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of the new rule (policy).
+      isArray: false
+      name: policy_type
+      predefined:
+      - User
+      - Network
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Source zones to add to the rule.
+      isArray: true
+      name: source_zones
+      predefined:
+      - Any
+      - LAN
+      - WAN
+      - VPN
+      - DMZ
+      - WiFi
+      required: false
+      secret: false
+    - default: false
+      description: Source networks to add to the rule.
+      isArray: true
+      name: source_networks
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Destination zones to add to the rule.
+      isArray: true
+      name: destination_zones
+      predefined:
+      - Any
+      - LAN
+      - WAN
+      - VPN
+      - DMZ
+      - WiFi
+      required: false
+      secret: false
+    - default: false
+      description: Destination networks to add to the rule.
+      isArray: true
+      name: destination_networks
+      required: false
+      secret: false
+    - default: false
+      description: Destination services to add to the rule.
+      isArray: true
+      name: services
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Select Schedule for the Rule. IMPORTANT: Creating a new schedule
+        is available on web console'
+      isArray: false
+      name: schedule
+      predefined:
+      - All the time
+      - Work hours (5 Day week)
+      - Work hours (6 Day week)
+      - All Time on Weekdays
+      - All Time on Weekends
+      - All Time on Sunday
+      - All Days 10:00 to 19:00
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Enable traffic logging for the policy.
+      isArray: false
+      name: log_traffic
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: "Enable to check whether the specified user/user group from the\
+        \ selected zone is allowed to access the selected service or not. IMPORTANT:\
+        \ when enabling match_identity - members parameter is required."
+      isArray: false
+      name: match_identity
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: "Select to accept traffic from unknown users. Captive portal page\
+        \ is displayed to the user where the user can login to access the Internet.\
+        \ IMPORTANT: MatchIdentity must be Enabled. PARAMETER OF: UserPolicy"
+      isArray: false
+      name: show_captive_portal
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - default: false
+      description: "An existing user(s) or group(s) to add to the rule. REQUIRED:\
+        \ when match_identity is enabled. "
+      isArray: true
+      name: members
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Drop
+      description: Specify action for the rule traffic.
+      isArray: false
+      name: action
+      predefined:
+      - Accept
+      - Reject
+      - Drop
+      required: false
+      secret: false
+    - default: false
+      description: Select DSCP Marking to classify flow of packets based on Traffic
+        Shaping policy.
+      isArray: false
+      name: dscp_marking
+      required: false
+      secret: false
+    - default: false
+      description: "Specify the Primary Gateway. Applicable only in case of Multiple\
+        \ Gateways."
+      isArray: false
+      name: primary_gateway
+      required: false
+      secret: false
+    - default: false
+      description: "Specify the Backup Gateway. Applicable only in case of Multiple\
+        \ Gateways."
+      isArray: false
+      name: backup_gateway
+      required: false
+      secret: false
+    - default: true
+      defaultValue: Allow All
+      description: Select Application Filter Policy for the rule.
+      isArray: false
+      name: application_control
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Revoke
+      description: "Select to limit the bandwidth for the applications categorized\
+        \ under the Application Category. this tag is only appliacable only when\
+        \ any application_control is selected."
+      isArray: false
+      name: application_based_qos_policy
+      predefined:
+      - Apply
+      - Revoke
+      required: false
+      secret: false
+    - default: true
+      defaultValue: Allow All
+      description: Select Web Filter Policy for the rule.
+      isArray: false
+      name: web_filter
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Revoke
+      description: "Select to limit bandwidth for the URLs categorized under the Web\
+        \ category. this tag is only appliacable only when any web_filteris selected."
+      isArray: false
+      name: web_category_base_qos_policy
+      predefined:
+      - Apply
+      - Revoke
+      required: false
+      secret: false
+    - default: true
+      defaultValue: None
+      description: Select Traffic Shaping policy for the rule.
+      isArray: false
+      name: traffic_shapping_policy
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Select to enable virus and spam scanning for HTTP protocol.
+      isArray: false
+      name: scan_http
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Select to enable virus and spam scanning for HTTPS protocol.
+      isArray: false
+      name: scan_https
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Select to enable sandstorm analysis.
+      isArray: false
+      name: sandstorm
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Ensure Google websites user HTTP/s instead of QUICK QUIC
+      isArray: false
+      name: block_quick_quic
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Enable/Disable scanning of FTP traffic.
+      isArray: false
+      name: scan_ftp
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Select to exclude user's network traffic from data accounting.
+        This option is available only if the parameter 'Match rule-based on user identity'
+        is enabled.
+      isArray: false
+      name: data_accounting
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Enable
+      description: Enable to apply NAT Policy.
+      isArray: false
+      name: rewrite_source_address
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Select internet scheme to apply user based Web Filter Policy for
+        the rule.
+      isArray: false
+      name: web_filter_internet_scheme
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Select internet scheme to apply user based Application Filter Policy
+        for the rule.
+      isArray: false
+      name: application_control_internet_scheme
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Enable/Disable overriding gateway of default nat policy
+      isArray: false
+      name: override_gateway_default_nat_policy
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Enable/Disable source security heartbeat
+      isArray: false
+      name: source_security_heartbeat
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Disable
+      description: Enable/Disable destination security heartbeat
+      isArray: false
+      name: destination_security_heartbeat
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - default: true
+      defaultValue: MASQ
+      description: Select the NAT Policy to be applied.
+      isArray: false
+      name: outbound_address
+      required: false
+      secret: false
+    - default: true
+      defaultValue: No Restriction
+      description: Select minimum source HB permitted
+      isArray: false
+      name: minimum_source_hb_permitted
+      required: false
+      secret: false
+    - default: true
+      defaultValue: No Restriction
+      description: "Select minimum destination HB permitted"
+      isArray: false
+      name: minimum_destination_hb_permitted
+      required: false
+      secret: false
+    - default: true
+      defaultValue: generalpolicy
+      description: Select IPS policy for the rule.
+      isArray: false
+      name: intrusion_prevention
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an existing firewall rule.
+    execution: false
+    name: sophos-firewall-rule-update
+    outputs:
+    - contextPath: SophosFirewall.SecurityPolicy.Name
+      description: Name of the rule.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.Description
+      description: Description of the rule.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.Status
+      description: Status of the rule.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.PolicyType
+      description: Policy type of the rule.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.IPFamily
+      description: IPv4/IPv6
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.AttachIdentity
+      description: Rule attach identity status.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.Action
+      description: Current rule action.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.LogTraffic
+      description: Rule traffic logging code.
+      type: Number
+  - arguments:
+    - default: false
+      description: Name of the rule.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an existing firewall rule.
+    execution: false
+    name: sophos-firewall-rule-delete
+    outputs:
+    - contextPath: SophosFirewall.SecurityPolicy.Name
+      description: Name of the rule.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicy.IsDeleted
+      description: Whether or not the rule is deleted.
+      type: String
+  - arguments:
+    - default: true
+      defaultValue: '0'
+      description: 'Provide the start index for the rules you would like to list.
+        e.g: 5'
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: "Provide the end index for the rules you would like to list. e.g:\
+        \ 20"
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    deprecated: false
+    description: "List all firewall rule groups. IMPORTANT: listing start at 0 (not\
+      \ 1!)"
+    execution: false
+    name: sophos-firewall-rule-group-list
+    outputs:
+    - contextPath: SophosFirewall.SecurityPolicyGroup.Name
+      description: Name of the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.Description
+      description: Description of the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.SecurityPolicyList.SecurityPolicy
+      description: Rules contained inside the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.SourceZones.Zone
+      description: Source zone in the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.DestinationZones.Zone
+      description: Destination zone in the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.PolicyType
+      description: Type of the rules in the group.
+      type: Number
+  - arguments:
+    - default: false
+      description: Name of the firewall rule group
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a single firewall rule group by name.
+    execution: false
+    name: sophos-firewall-rule-group-get
+    outputs:
+    - contextPath: SophosFirewall.SecurityPolicyGroup.Name
+      description: Name of the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.Description
+      description: Description of the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.SecurityPolicyList.SecurityPolicy
+      description: Rules contained inside the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.SourceZones.Zone
+      description: Source zone in the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.DestinationZones.Zone
+      description: Destination zone in the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.PolicyType
+      description: Type of the rules in the group.
+      type: Number
+  - arguments:
+    - default: false
+      description: Name of the rule group.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the rule group.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of the rules (policies) inside.
+      isArray: false
+      name: policy_type
+      predefined:
+      - Any
+      - User/network rule
+      - Network rule
+      - User rule
+      - Business application rule
+      required: false
+      secret: false
+    - default: false
+      description: Rules contained inside the group.
+      isArray: true
+      name: rules
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Source zones contained in the group.
+      isArray: true
+      name: source_zones
+      predefined:
+      - Any
+      - LAN
+      - WAN
+      - VPN
+      - DMZ
+      - WiFi
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Destination zones contained in the group.
+      isArray: true
+      name: destination_zones
+      predefined:
+      - Any
+      - LAN
+      - WAN
+      - VPN
+      - DMZ
+      - WiFi
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a new firewall rule group.
+    execution: false
+    name: sophos-firewall-rule-group-add
+    outputs:
+    - contextPath: SophosFirewall.SecurityPolicyGroup.Name
+      description: Name of the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.Description
+      description: Description of the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.SecurityPolicyList.SecurityPolicy
+      description: Rules contained inside the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.SourceZones.Zone
+      description: Source zone in the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.DestinationZones.Zone
+      description: Destination zone in the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.PolicyType
+      description: Type of the rules in the group.
+      type: Number
+  - arguments:
+    - default: false
+      description: Name of the rule group.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the rule group.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of the rules (policies) inside.
+      isArray: false
+      name: policy_type
+      predefined:
+      - Any
+      - User/network rule
+      - Network rule
+      - User rule
+      - Business application rule
+      required: false
+      secret: false
+    - default: false
+      description: Rules contained inside the group.
+      isArray: true
+      name: rules
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Source zones contained in the group.
+      isArray: true
+      name: source_zones
+      predefined:
+      - Any
+      - LAN
+      - WAN
+      - VPN
+      - DMZ
+      - WiFi
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Destination zones contained in the group.
+      isArray: true
+      name: destination_zones
+      predefined:
+      - Any
+      - LAN
+      - WAN
+      - VPN
+      - DMZ
+      - WiFi
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an existing firewall rule group.
+    execution: false
+    name: sophos-firewall-rule-group-update
+    outputs:
+    - contextPath: SophosFirewall.SecurityPolicyGroup.Name
+      description: Name of the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.Description
+      description: Description of the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.SecurityPolicyList.SecurityPolicy
+      description: Rules contained inside the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.SourceZones.Zone
+      description: Source zone in the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.DestinationZones.Zone
+      description: Destination zone in the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.PolicyType
+      description: Type of the rules in the group.
+      type: Number
+  - arguments:
+    - default: false
+      description: Name of the group.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an existing firewall group.
+    execution: false
+    name: sophos-firewall-rule-group-delete
+    outputs:
+    - contextPath: SophosFirewall.SecurityPolicyGroup.Name
+      description: Name of the group.
+      type: String
+    - contextPath: SophosFirewall.SecurityPolicyGroup.IsDeleted
+      description: Whether or not the group is deleted.
+      type: String
+  - arguments:
+    - default: true
+      defaultValue: '0'
+      description: 'Provide the start index for the rules you would like to list.
+        e.g: 5'
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: "Provide the end index for the rules you would like to list. e.g:\
+        \ 20"
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    deprecated: false
+    description: "List all URL groups. IMPORTANT: listing start at 0 (not 1!)"
+    execution: false
+    name: sophos-firewall-url-group-list
+    outputs:
+    - contextPath: SophosFirewall.WebFilterURLGroup.Name
+      description: Name of the URL group.
+      type: String
+    - contextPath: SophosFirewall.WebFilterURLGroup.Description
+      description: Description of the URL group.
+      type: String
+    - contextPath: SophosFirewall.WebFilterURLGroup.URLlist.URL
+      description: URL contained inside the group.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the group.
+      isArray: true
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a single URL group by name.
+    execution: false
+    name: sophos-firewall-url-group-get
+    outputs:
+    - contextPath: SophosFirewall.WebFilterURLGroup.Name
+      description: Name of the URL group.
+      type: String
+    - contextPath: SophosFirewall.WebFilterURLGroup.Description
+      description: Description of the URL group.
+      type: String
+    - contextPath: SophosFirewall.WebFilterURLGroup.URLlist.URL
+      description: URL contained inside the group.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the group.
+      isArray: true
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the group.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: URLs to add to the group.
+      isArray: true
+      name: urls
+      required: true
+      secret: false
+    deprecated: false
+    description: Add a new URL group.
+    execution: false
+    name: sophos-firewall-url-group-add
+    outputs:
+    - contextPath: SophosFirewall.WebFilterURLGroup.Name
+      description: Name of the URL group.
+      type: String
+    - contextPath: SophosFirewall.WebFilterURLGroup.Description
+      description: Description of the URL group.
+      type: String
+    - contextPath: SophosFirewall.WebFilterURLGroup.URLlist.URL
+      description: URL contained inside the group.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the group.
+      isArray: true
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the group.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: URLs to add to the group.
+      isArray: true
+      name: urls
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an existing URL group.
+    execution: false
+    name: sophos-firewall-url-group-update
+    outputs:
+    - contextPath: SophosFirewall.WebFilterURLGroup.Name
+      description: Name of the URL group.
+      type: String
+    - contextPath: SophosFirewall.WebFilterURLGroup.Description
+      description: Description of the URL group.
+      type: String
+    - contextPath: SophosFirewall.WebFilterURLGroup.URLlist.URL
+      description: URL contained inside the group.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the group(s).
+      isArray: true
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an existing URL group or groups.
+    execution: false
+    name: sophos-firewall-url-group-delete
+    outputs:
+    - contextPath: SophosFirewall.WebFilterURLGroup.Name
+      description: Name of the URL group.
+      type: String
+    - contextPath: SophosFirewall.WebFilterURLGroup.IsDeleted
+      description: Whether or not the URL group is deleted.
+      type: String
+  - arguments:
+    - default: true
+      defaultValue: '0'
+      description: 'Provide the start index for the rules you would like to list.
+        e.g: 5'
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: "Provide the end index for the rules you would like to list. e.g:\
+        \ 20"
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    deprecated: false
+    description: "List all IP hosts. IMPORTANT: listing start at 0 (not 1!)"
+    execution: false
+    name: sophos-firewall-ip-host-list
+    outputs:
+    - contextPath: SophosFirewall.IPHost.Name
+      description: Name of the IP host.
+      type: String
+    - contextPath: SophosFirewall.IPHost.IPFamily
+      description: is the host in IPv4 or IPv6.
+      type: String
+    - contextPath: SophosFirewall.IPHost.HostType
+      description: Type of the host.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the IP host.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a single IP host by name.
+    execution: false
+    name: sophos-firewall-ip-host-get
+    outputs:
+    - contextPath: SophosFirewall.IPHost.Name
+      description: Name of the IP host.
+      type: String
+    - contextPath: SophosFirewall.IPHost.IPFamily
+      description: is the host in IPv4 or IPv6.
+      type: String
+    - contextPath: SophosFirewall.IPHost.HostType
+      description: Type of the host.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the IP host.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of the host.
+      isArray: false
+      name: host_type
+      predefined:
+      - IP
+      - Network
+      - IPRange
+      - IPList
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: IPv4
+      description: Is the IP in IPv4 or IPv6.
+      isArray: false
+      name: ip_family
+      predefined:
+      - IPv4
+      - IPv6
+      required: false
+      secret: false
+    - default: false
+      description: IP address if IP or network was the chosen type.
+      isArray: false
+      name: ip_address
+      required: false
+      secret: false
+    - default: false
+      description: Subnet mask if network was the chosen type.
+      isArray: false
+      name: subnet_mask
+      required: false
+      secret: false
+    - default: false
+      description: Start of the IP range if IPRange was chosen.
+      isArray: false
+      name: start_ip
+      required: false
+      secret: false
+    - default: false
+      description: End of the IP range if IPRange was chosen.
+      isArray: false
+      name: end_ip
+      required: false
+      secret: false
+    - default: false
+      description: List of IP addresses if IPList was chosen.
+      isArray: true
+      name: ip_addresses
+      required: false
+      secret: false
+    - default: false
+      description: Select the Host Group to which the Host belongs.
+      isArray: true
+      name: host_group
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a new IP host.
+    execution: false
+    name: sophos-firewall-ip-host-add
+    outputs:
+    - contextPath: SophosFirewall.IPHost.Name
+      description: Name of the IP host.
+      type: String
+    - contextPath: SophosFirewall.IPHost.IPFamily
+      description: is the host in IPv4 or IPv6.
+      type: String
+    - contextPath: SophosFirewall.IPHost.HostType
+      description: Type of the host.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the IP host.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of the host.
+      isArray: false
+      name: host_type
+      predefined:
+      - IP
+      - Network
+      - IPRange
+      - IPList
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: IPv4
+      description: Is the IP in IPv4 or IPv6.
+      isArray: false
+      name: ip_family
+      predefined:
+      - IPv4
+      - IPv6
+      required: false
+      secret: false
+    - default: false
+      description: IP address if IP or network was the chosen type.
+      isArray: false
+      name: ip_address
+      required: false
+      secret: false
+    - default: false
+      description: Subnet mask if network was the chosen type.
+      isArray: false
+      name: subnet_mask
+      required: false
+      secret: false
+    - default: false
+      description: Start of the IP range if IPRange was chosen.
+      isArray: false
+      name: start_ip
+      required: false
+      secret: false
+    - default: false
+      description: End of the IP range if IPRange was chosen.
+      isArray: false
+      name: end_ip
+      required: false
+      secret: false
+    - default: false
+      description: List of IP addresses if IPList was chosen.
+      isArray: true
+      name: ip_addresses
+      required: false
+      secret: false
+    - default: false
+      description: Select the Host Group to which the Host belongs.
+      isArray: true
+      name: host_group
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an existing IP host.
+    execution: false
+    name: sophos-firewall-ip-host-update
+    outputs:
+    - contextPath: SophosFirewall.IPHost.Name
+      description: Name of the IP host.
+      type: String
+    - contextPath: SophosFirewall.IPHost.IPFamily
+      description: is the host in IPv4 or IPv6.
+      type: String
+    - contextPath: SophosFirewall.IPHost.HostType
+      description: Type of the host.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the host.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an existing IP host.
+    execution: false
+    name: sophos-firewall-ip-host-delete
+    outputs:
+    - contextPath: SophosFirewall.IPHost.Name
+      description: Name of the IP host.
+      type: String
+    - contextPath: SophosFirewall.IPHost.IsDeleted
+      description: Whether or not the IP host is deleted.
+      type: String
+  - arguments:
+    - default: true
+      defaultValue: '0'
+      description: 'Provide the start index for the rules you would like to list.
+        e.g: 5'
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: "Provide the end index for the rules you would like to list. e.g:\
+        \ 20"
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    deprecated: false
+    description: "List all IP host groups. IMPORTANT: listing start at 0 (not 1!)"
+    execution: false
+    name: sophos-firewall-ip-host-group-list
+    outputs:
+    - contextPath: SophosFirewall.IPHostGroup.Name
+      description: Name of the IP host group.
+      type: String
+    - contextPath: SophosFirewall.IPHostGroup.description
+      description: Description of the IP host group.
+      type: String
+    - contextPath: SophosFirewall.IPHostGroup.HostList.Host
+      description: Host contained inside the host group.
+      type: String
+    - contextPath: SophosFirewall.IPHostGroup.IPFamily
+      description: IP family of the host group (IPv4 / IPv6)
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the IP host group.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a single IP host group by name.
+    execution: false
+    name: sophos-firewall-ip-host-group-get
+    outputs:
+    - contextPath: SophosFirewall.IPHostGroup.Name
+      description: Name of the IP host group.
+      type: String
+    - contextPath: SophosFirewall.IPHostGroup.description
+      description: Description of the IP host group.
+      type: String
+    - contextPath: SophosFirewall.IPHostGroup.HostList.Host
+      description: Host contained inside the host group.
+      type: String
+    - contextPath: SophosFirewall.IPHostGroup.IPFamily
+      description: IP family of the host group (IPv4 / IPv6)
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the IP host group.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the IP host group.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Is the IP group in IPv4 or IPv6.
+      isArray: false
+      name: ip_family
+      predefined:
+      - IPv4
+      - IPv6
+      required: false
+      secret: false
+    - default: false
+      description: IP hosts contained in the group. Must be hosts already existing
+        in the system.
+      isArray: true
+      name: hosts
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a new IP host group.
+    execution: false
+    name: sophos-firewall-ip-host-group-add
+    outputs:
+    - contextPath: SophosFirewall.IPHostGroup.Name
+      description: Name of the IP host group.
+      type: String
+    - contextPath: SophosFirewall.IPHostGroup.description
+      description: Description of the IP host group.
+      type: String
+    - contextPath: SophosFirewall.IPHostGroup.HostList.Host
+      description: Host contained inside the host group.
+      type: String
+    - contextPath: SophosFirewall.IPHostGroup.IPFamily
+      description: IP family of the host group (IPv4 / IPv6)
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the IP host group.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the IP host group.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Is the IP group in IPv4 or IPv6.
+      isArray: false
+      name: ip_family
+      predefined:
+      - IPv4
+      - IPv6
+      required: false
+      secret: false
+    - default: false
+      description: IP hosts contained in the group. Must be hosts already existing
+        in the system
+      isArray: true
+      name: hosts
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an existing IP host group.
+    execution: false
+    name: sophos-firewall-ip-host-group-update
+    outputs:
+    - contextPath: SophosFirewall.IPHostGroup.Name
+      description: Name of the IP host group.
+      type: String
+    - contextPath: SophosFirewall.IPHostGroup.description
+      description: Description of the IP host group.
+      type: String
+    - contextPath: SophosFirewall.IPHostGroup.HostList.Host
+      description: Host contained inside the host group.
+      type: String
+    - contextPath: SophosFirewall.IPHostGroup.IPFamily
+      description: IP family of the host group (IPv4 / IPv6)
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the group.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an existing IP host group.
+    execution: false
+    name: sophos-firewall-ip-host-group-delete
+    outputs:
+    - contextPath: SophosFirewall.IPHostGroup.Name
+      description: Name of the IP host group.
+      type: String
+    - contextPath: SophosFirewall.IPHostGroup.IsDeleted
+      description: Whether or not the IP host group is deleted.
+      type: String
+  - arguments:
+    - default: true
+      defaultValue: '0'
+      description: 'Provide the start index for the rules you would like to list.
+        e.g: 5'
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: "Provide the end index for the rules you would like to list. e.g:\
+        \ 20"
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    deprecated: false
+    description: "List all firewall services. IMPORTANT: listing start at 0 (not\
+      \ 1!)"
+    execution: false
+    name: sophos-firewall-services-list
+    outputs:
+    - contextPath: SophosFirewall.Services.Name
+      description: Name of the firewall service.
+      type: String
+    - contextPath: SophosFirewall.Services.Type
+      description: Type of the firewall service.
+      type: String
+    - contextPath: SophosFirewall.Services.ServiceDetails.ServiceDetail
+      description: Details about the service.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the firewall service.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a single service by name.
+    execution: false
+    name: sophos-firewall-services-get
+    outputs:
+    - contextPath: SophosFirewall.Services.Name
+      description: Name of the firewall service.
+      type: String
+    - contextPath: SophosFirewall.Services.Type
+      description: Type of the firewall service.
+      type: String
+    - contextPath: SophosFirewall.Services.ServiceDetails.ServiceDetail
+      description: Details about the service.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the firewall service.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of service
+      isArray: false
+      name: service_type
+      predefined:
+      - TCPorUDP
+      - IP
+      - ICMP
+      - ICMPv6
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Select Protocol for the service if service_type is TCPorUDP"
+      isArray: false
+      name: protocol
+      predefined:
+      - TCP
+      - UDP
+      required: false
+      secret: false
+    - default: false
+      description: "Source port if service_type is TCPorUDP"
+      isArray: false
+      name: source_port
+      required: false
+      secret: false
+    - default: false
+      description: "Destination port if service_type is TCPorUDP"
+      isArray: false
+      name: destination_port
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Protocol name if service_type is IP "
+      isArray: false
+      name: protocol_name
+      predefined:
+      - HOPOPT
+      - ICMP
+      - IGMPGGP
+      - IP
+      - ST
+      - TCP
+      - CBT
+      - EGP
+      - IGP
+      - BBN-RCC-MON
+      - NVP-II
+      - PUP
+      - ARGUS
+      - EMCON
+      - XNET
+      - CHAOS
+      - UDP
+      - MUX
+      - DCN-MEAS
+      - HMP
+      - PRM
+      - XNS-IDP
+      - TRUNK-1
+      - TRUNK-2
+      - LEAF-1
+      - LEAF-2
+      - RDP
+      - IRTP
+      - ISO-TP4
+      - NETBLT
+      - MFE-NSP
+      - MERIT-INP
+      - DCCP
+      - 3PC
+      - IDPRXTP
+      - DDP
+      - IDPR-CMTP
+      - TP++
+      - IL
+      - IPv6
+      - SDRP
+      - IPv6-Route
+      - IPv6-Frag
+      - IDRP
+      - RSVP
+      - GRE
+      - DSR
+      - BNA
+      - ESP
+      - AH
+      - I-NLSP
+      - SWIPE
+      - NARP
+      - MOBILE
+      - TLSP
+      - SKIP
+      - IPv6-ICMP
+      - IPv6-NoNxt
+      - IPv6-Opts
+      - IPProto61
+      - CFTP
+      - IPProto63
+      - SAT-EXPAK
+      - KRYPTOLAN
+      - RVD
+      - IPPC
+      - IPProto68
+      - SAT-MON
+      - VISA
+      - IPCV
+      - CPNX
+      - CPHB
+      - WSN
+      - PVP
+      - BR-SAT-MON
+      - SUN-ND
+      - WB-MON
+      - WB-EXPAK
+      - ISO-IP
+      - VMTP
+      - SECURE-VMTP
+      - VINES
+      - TTP
+      - NSFNET-IGP
+      - DGP
+      - TCF
+      - EIGRP
+      - OSPFIGP
+      - Sprite-RPC
+      - LARP
+      - MTP
+      - '25'
+      - IPIP
+      - MICP
+      - SCC-SP
+      - ETHERIP
+      - ENCAP
+      - IPProto99
+      - GMTP
+      - IFMP
+      - PNNI
+      - PIM
+      - ARIS
+      - SCPS
+      - QNX
+      - A
+      - N
+      - IPComp
+      - SNP
+      - Compaq-Peer
+      - IPX-in-IP
+      - VRRP
+      - PGM
+      - IPProto114
+      - L2TP
+      - DDX
+      - IATP
+      - STP
+      - SRP
+      - UTI
+      - SMP
+      - SM
+      - PTP
+      - ISIS
+      - FIRE
+      - CRTP
+      - CRUDP
+      - SSCOPMCE
+      - IPLT
+      - SPS
+      - PIPE
+      - SCTP
+      - FC
+      - RSVP-E2E-IGNORE
+      - IPProto135
+      - UDPLite
+      - MPLS-in-IP
+      - manet
+      - HIP
+      - Shim6
+      - WESP
+      - ROHC
+      - IPProto143
+      - IPProto144
+      - IPProto145
+      - IPProto146
+      - IPProto147
+      - IPProto148
+      - IPProto149
+      - IPProto150
+      - IPProto151
+      - IPProto152
+      - IPProto153
+      - IPProto154
+      - IPProto155
+      - IPProto156
+      - IPProto157
+      - IPProto158
+      - IPProto159
+      - IPProto160
+      - IPProto161
+      - IPProto162
+      - IPProto163
+      - IPProto164
+      - IPProto165
+      - IPProto166
+      - IPProto167
+      - IPProto168
+      - IPProto169
+      - IPProto170
+      - IPProto171
+      - IPProto172
+      - IPProto173
+      - IPProto174
+      - IPProto175
+      - IPProto176
+      - IPProto177
+      - IPProto178
+      - IPProto179
+      - IPProto180
+      - IPProto181
+      - IPProto182
+      - IPProto183
+      - IPProto184
+      - IPProto185
+      - IPProto186
+      - IPProto187
+      - IPProto188
+      - IPProto189
+      - IPProto190
+      - IPProto191
+      - IPProto192
+      - IPProto193
+      - IPProto194
+      - IPProto195
+      - IPProto196
+      - IPProto197
+      - IPProto198
+      - IPProto199
+      - IPProto200
+      - IPProto201
+      - IPProto202
+      - IPProto203
+      - IPProto204
+      - IPProto205
+      - IPProto206
+      - IPProto207
+      - IPProto208
+      - IPProto209
+      - IPProto210
+      - IPProto211
+      - IPProto212
+      - IPProto213
+      - IPProto214
+      - IPProto215
+      - IPProto216
+      - IPProto217
+      - IPProto218
+      - IPProto219
+      - IPProto220
+      - IPProto221
+      - IPProto222
+      - IPProto223
+      - IPProto224
+      - IPProto225
+      - IPProto226
+      - IPProto227
+      - IPProto228
+      - IPProto229
+      - IPProto230
+      - IPProto231
+      - IPProto232
+      - IPProto233
+      - IPProto234
+      - IPProto235
+      - IPProto236
+      - IPProto237
+      - IPProto238
+      - IPProto239
+      - IPProto240
+      - IPProto241
+      - IPProto242
+      - IPProto243
+      - IPProto244
+      - IPProto245
+      - IPProto246
+      - IPProto247
+      - IPProto248
+      - IPProto249
+      - IPProto250
+      - IPProto251
+      - IPProto252
+      - IPProto253
+      - IPProto254
+      - IPProto255
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "ICMP type if service_type is ICMP"
+      isArray: false
+      name: icmp_type
+      predefined:
+      - Echo Reply
+      - Destination Unreachable
+      - Source Quench
+      - Redirect
+      - Alternate Host Address
+      - Echo
+      - Router Advertisement
+      - Router Selection
+      - Time Exceeded
+      - Parameter Problem
+      - Timestamp
+      - Timestamp Reply
+      - Information Request
+      - Information Reply
+      - Address Mask Request
+      - Address Mask Reply
+      - Traceroute
+      - Datagram Conversion Error
+      - Mobile Host Redirect
+      - IPv6 Where-Are-You
+      - IPv6 I-Am-Here
+      - Mobile Registration Request
+      - Mobile Registration Reply
+      - Domain Name Request
+      - Domain Name Reply
+      - SKIP
+      - Photuris
+      - Any Type
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "ICMP code if service_type is ICMP"
+      isArray: false
+      name: icmp_code
+      predefined:
+      - '0'
+      - '-1'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+      - '8'
+      - '9'
+      - '10'
+      - '11'
+      - '12'
+      - '13'
+      - '14'
+      - '15'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: ICMPv6 type if service_type is ICMPv6
+      isArray: false
+      name: icmp_v6_type
+      predefined:
+      - Destination Unreachable
+      - Packet Too Big
+      - Time Exceeded
+      - Parameter Problem
+      - Private experimentation
+      - Private experimentation
+      - Echo Request
+      - Echo Reply
+      - Multicast Listener Query
+      - Multicast Listener Report
+      - Multicast Listener Done
+      - Router Solicitation
+      - Router Advertisement
+      - Neighbor Solicitation
+      - Neighbor Advertisement
+      - Redirect Message
+      - Router Renumbering
+      - ICMP Node Information Query
+      - ICMP Node Information Response
+      - Inverse Neighbor Discovery Solicitation Message
+      - Inverse Neighbor Discovery Advertisement Message
+      - Version 2 Multicast Listener Report
+      - Home Agent Address Discovery Request Message
+      - Home Agent Address Discovery Reply Message
+      - Mobile Prefix Solicitation
+      - Mobile Prefix Advertisement
+      - Certification Path Solicitation Message
+      - Certification Path Advertisement Message
+      - ICMP messages utilized by experimental mobility protocols such as Seamoby
+      - Multicast Router Advertisement
+      - Multicast Router Solicitation
+      - Multicast Router Termination
+      - FMIPv6 Messages
+      - RPL Control Message
+      - ILNPv6 Locator Update Message
+      - Duplicate Address Request
+      - Duplicate Address Confirmation
+      - Private experimentation
+      - Private experimentation
+      - Any Type
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: ICMPv6 code if service_type is ICMPv6
+      isArray: false
+      name: icmp_v6_code
+      predefined:
+      - '0'
+      - '-1'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+      - '8'
+      - '9'
+      - '10'
+      - '11'
+      - '12'
+      - '13'
+      - '14'
+      - '15'
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a new firewall service.
+    execution: false
+    name: sophos-firewall-services-add
+    outputs:
+    - contextPath: SophosFirewall.Services.Name
+      description: Name of the firewall service.
+      type: String
+    - contextPath: SophosFirewall.Services.Type
+      description: Type of the firewall service.
+      type: String
+    - contextPath: SophosFirewall.Services.ServiceDetails.ServiceDetail
+      description: Details about the service.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the firewall service.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of service
+      isArray: false
+      name: service_type
+      predefined:
+      - TCPorUDP
+      - IP
+      - ICMP
+      - ICMPv6
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Select Protocol for the service if service_type is TCPorUDP"
+      isArray: false
+      name: protocol
+      predefined:
+      - TCP
+      - UDP
+      required: false
+      secret: false
+    - default: false
+      description: "Source port if service_type is TCPorUDP"
+      isArray: false
+      name: source_port
+      required: false
+      secret: false
+    - default: false
+      description: "Destination port if service_type is TCPorUDP"
+      isArray: false
+      name: destination_port
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Protocol name if service_type is IP "
+      isArray: false
+      name: protocol_name
+      predefined:
+      - HOPOPT
+      - ICMP
+      - IGMPGGP
+      - IP
+      - ST
+      - TCP
+      - CBT
+      - EGP
+      - IGP
+      - BBN-RCC-MON
+      - NVP-II
+      - PUP
+      - ARGUS
+      - EMCON
+      - XNET
+      - CHAOS
+      - UDP
+      - MUX
+      - DCN-MEAS
+      - HMP
+      - PRM
+      - XNS-IDP
+      - TRUNK-1
+      - TRUNK-2
+      - LEAF-1
+      - LEAF-2
+      - RDP
+      - IRTP
+      - ISO-TP4
+      - NETBLT
+      - MFE-NSP
+      - MERIT-INP
+      - DCCP
+      - 3PC
+      - IDPRXTP
+      - DDP
+      - IDPR-CMTP
+      - TP++
+      - IL
+      - IPv6
+      - SDRP
+      - IPv6-Route
+      - IPv6-Frag
+      - IDRP
+      - RSVP
+      - GRE
+      - DSR
+      - BNA
+      - ESP
+      - AH
+      - I-NLSP
+      - SWIPE
+      - NARP
+      - MOBILE
+      - TLSP
+      - SKIP
+      - IPv6-ICMP
+      - IPv6-NoNxt
+      - IPv6-Opts
+      - IPProto61
+      - CFTP
+      - IPProto63
+      - SAT-EXPAK
+      - KRYPTOLAN
+      - RVD
+      - IPPC
+      - IPProto68
+      - SAT-MON
+      - VISA
+      - IPCV
+      - CPNX
+      - CPHB
+      - WSN
+      - PVP
+      - BR-SAT-MON
+      - SUN-ND
+      - WB-MON
+      - WB-EXPAK
+      - ISO-IP
+      - VMTP
+      - SECURE-VMTP
+      - VINES
+      - TTP
+      - NSFNET-IGP
+      - DGP
+      - TCF
+      - EIGRP
+      - OSPFIGP
+      - Sprite-RPC
+      - LARP
+      - MTP
+      - '25'
+      - IPIP
+      - MICP
+      - SCC-SP
+      - ETHERIP
+      - ENCAP
+      - IPProto99
+      - GMTP
+      - IFMP
+      - PNNI
+      - PIM
+      - ARIS
+      - SCPS
+      - QNX
+      - A
+      - N
+      - IPComp
+      - SNP
+      - Compaq-Peer
+      - IPX-in-IP
+      - VRRP
+      - PGM
+      - IPProto114
+      - L2TP
+      - DDX
+      - IATP
+      - STP
+      - SRP
+      - UTI
+      - SMP
+      - SM
+      - PTP
+      - ISIS
+      - FIRE
+      - CRTP
+      - CRUDP
+      - SSCOPMCE
+      - IPLT
+      - SPS
+      - PIPE
+      - SCTP
+      - FC
+      - RSVP-E2E-IGNORE
+      - IPProto135
+      - UDPLite
+      - MPLS-in-IP
+      - manet
+      - HIP
+      - Shim6
+      - WESP
+      - ROHC
+      - IPProto143
+      - IPProto144
+      - IPProto145
+      - IPProto146
+      - IPProto147
+      - IPProto148
+      - IPProto149
+      - IPProto150
+      - IPProto151
+      - IPProto152
+      - IPProto153
+      - IPProto154
+      - IPProto155
+      - IPProto156
+      - IPProto157
+      - IPProto158
+      - IPProto159
+      - IPProto160
+      - IPProto161
+      - IPProto162
+      - IPProto163
+      - IPProto164
+      - IPProto165
+      - IPProto166
+      - IPProto167
+      - IPProto168
+      - IPProto169
+      - IPProto170
+      - IPProto171
+      - IPProto172
+      - IPProto173
+      - IPProto174
+      - IPProto175
+      - IPProto176
+      - IPProto177
+      - IPProto178
+      - IPProto179
+      - IPProto180
+      - IPProto181
+      - IPProto182
+      - IPProto183
+      - IPProto184
+      - IPProto185
+      - IPProto186
+      - IPProto187
+      - IPProto188
+      - IPProto189
+      - IPProto190
+      - IPProto191
+      - IPProto192
+      - IPProto193
+      - IPProto194
+      - IPProto195
+      - IPProto196
+      - IPProto197
+      - IPProto198
+      - IPProto199
+      - IPProto200
+      - IPProto201
+      - IPProto202
+      - IPProto203
+      - IPProto204
+      - IPProto205
+      - IPProto206
+      - IPProto207
+      - IPProto208
+      - IPProto209
+      - IPProto210
+      - IPProto211
+      - IPProto212
+      - IPProto213
+      - IPProto214
+      - IPProto215
+      - IPProto216
+      - IPProto217
+      - IPProto218
+      - IPProto219
+      - IPProto220
+      - IPProto221
+      - IPProto222
+      - IPProto223
+      - IPProto224
+      - IPProto225
+      - IPProto226
+      - IPProto227
+      - IPProto228
+      - IPProto229
+      - IPProto230
+      - IPProto231
+      - IPProto232
+      - IPProto233
+      - IPProto234
+      - IPProto235
+      - IPProto236
+      - IPProto237
+      - IPProto238
+      - IPProto239
+      - IPProto240
+      - IPProto241
+      - IPProto242
+      - IPProto243
+      - IPProto244
+      - IPProto245
+      - IPProto246
+      - IPProto247
+      - IPProto248
+      - IPProto249
+      - IPProto250
+      - IPProto251
+      - IPProto252
+      - IPProto253
+      - IPProto254
+      - IPProto255
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "ICMP type if service_type is ICMP"
+      isArray: false
+      name: icmp_type
+      predefined:
+      - Echo Reply
+      - Destination Unreachable
+      - Source Quench
+      - Redirect
+      - Alternate Host Address
+      - Echo
+      - Router Advertisement
+      - Router Selection
+      - Time Exceeded
+      - Parameter Problem
+      - Timestamp
+      - Timestamp Reply
+      - Information Request
+      - Information Reply
+      - Address Mask Request
+      - Address Mask Reply
+      - Traceroute
+      - Datagram Conversion Error
+      - Mobile Host Redirect
+      - IPv6 Where-Are-You
+      - IPv6 I-Am-Here
+      - Mobile Registration Request
+      - Mobile Registration Reply
+      - Domain Name Request
+      - Domain Name Reply
+      - SKIP
+      - Photuris
+      - Any Type
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "ICMP code if service_type is ICMP"
+      isArray: false
+      name: icmp_code
+      predefined:
+      - '0'
+      - '-1'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+      - '8'
+      - '9'
+      - '10'
+      - '11'
+      - '12'
+      - '13'
+      - '14'
+      - '15'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: ICMPv6 type if service_type is ICMPv6
+      isArray: false
+      name: icmp_v6_type
+      predefined:
+      - Destination Unreachable
+      - Packet Too Big
+      - Time Exceeded
+      - Parameter Problem
+      - Private experimentation
+      - Private experimentation
+      - Echo Request
+      - Echo Reply
+      - Multicast Listener Query
+      - Multicast Listener Report
+      - Multicast Listener Done
+      - Router Solicitation
+      - Router Advertisement
+      - Neighbor Solicitation
+      - Neighbor Advertisement
+      - Redirect Message
+      - Router Renumbering
+      - ICMP Node Information Query
+      - ICMP Node Information Response
+      - Inverse Neighbor Discovery Solicitation Message
+      - Inverse Neighbor Discovery Advertisement Message
+      - Version 2 Multicast Listener Report
+      - Home Agent Address Discovery Request Message
+      - Home Agent Address Discovery Reply Message
+      - Mobile Prefix Solicitation
+      - Mobile Prefix Advertisement
+      - Certification Path Solicitation Message
+      - Certification Path Advertisement Message
+      - ICMP messages utilized by experimental mobility protocols such as Seamoby
+      - Multicast Router Advertisement
+      - Multicast Router Solicitation
+      - Multicast Router Termination
+      - FMIPv6 Messages
+      - RPL Control Message
+      - ILNPv6 Locator Update Message
+      - Duplicate Address Request
+      - Duplicate Address Confirmation
+      - Private experimentation
+      - Private experimentation
+      - Any Type
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: ICMPv6 code if service_type is ICMPv6
+      isArray: false
+      name: icmp_v6_code
+      predefined:
+      - '0'
+      - '-1'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+      - '8'
+      - '9'
+      - '10'
+      - '11'
+      - '12'
+      - '13'
+      - '14'
+      - '15'
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an existing firewall service.
+    execution: false
+    name: sophos-firewall-services-update
+    outputs:
+    - contextPath: SophosFirewall.Services.Name
+      description: Name of the firewall service.
+      type: String
+    - contextPath: SophosFirewall.Services.Type
+      description: Type of the firewall service.
+      type: String
+    - contextPath: SophosFirewall.Services.ServiceDetails.ServiceDetail
+      description: Details about the service.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the service.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an existing firewall service.
+    execution: false
+    name: sophos-firewall-services-delete
+    outputs:
+    - contextPath: SophosFirewall.Services.Name
+      description: Name of the firewall service.
+      type: String
+    - contextPath: SophosFirewall.Services.IsDeleted
+      description: Whether or not the firewall service is deleted.
+      type: String
+  - arguments:
+    - default: true
+      defaultValue: '0'
+      description: 'Provide the start index for the rules you would like to list.
+        e.g: 5'
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: "Provide the end index for the rules you would like to list. e.g:\
+        \ 20"
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    deprecated: false
+    description: "List all users. IMPORTANT: listing start at 0 (not 1!)"
+    execution: false
+    name: sophos-firewall-user-list
+    outputs:
+    - contextPath: SophosFirewall.User.Name
+      description: Name of the user.
+      type: String
+    - contextPath: SophosFirewall.User.Username
+      description: Username of the user.
+      type: String
+    - contextPath: SophosFirewall.User.Description
+      description: "Description of the user."
+      type: String
+    - contextPath: SophosFirewall.User.EmailList.EmailID
+      description: Email of the user.
+      type: String
+    - contextPath: SophosFirewall.User.Group
+      description: Group of the user.
+      type: String
+    - contextPath: SophosFirewall.User.UserType
+      description: User type of the user.
+      type: String
+    - contextPath: SophosFirewall.User.Status
+      description: Status of the user.
+      type: String
+  - arguments:
+    - default: false
+      description: name of the user
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a single user by name.
+    execution: false
+    name: sophos-firewall-user-get
+    outputs:
+    - contextPath: SophosFirewall.User.Name
+      description: Name of the user.
+      type: String
+    - contextPath: SophosFirewall.User.Username
+      description: Username of the user.
+      type: String
+    - contextPath: SophosFirewall.User.Description
+      description: "Description of the user."
+      type: String
+    - contextPath: SophosFirewall.User.EmailList.EmailID
+      description: Email of the user.
+      type: String
+    - contextPath: SophosFirewall.User.Group
+      description: Group of the user.
+      type: String
+    - contextPath: SophosFirewall.User.UserType
+      description: User type of the user.
+      type: String
+    - contextPath: SophosFirewall.User.Status
+      description: Status of the user.
+      type: String
+  - arguments:
+    - default: false
+      description: username of the user
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: name of the user
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: description of the user
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: email of the user
+      isArray: false
+      name: email
+      required: true
+      secret: false
+    - default: true
+      defaultValue: Guest Group
+      description: "group of the user. "
+      isArray: false
+      name: group
+      required: false
+      secret: false
+    - default: false
+      description: the password of the user.
+      isArray: false
+      name: password
+      required: true
+      secret: true
+    - auto: PREDEFINED
+      default: true
+      defaultValue: User
+      description: the type of the user.
+      isArray: false
+      name: user_type
+      predefined:
+      - Administrator
+      - User
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'profile of the admin if user_type is admin. IMPORTANT: you can
+        add more types on the web console'
+      isArray: false
+      name: profile
+      predefined:
+      - Administrator
+      - Crypto Admin
+      - Security Admin
+      - Audit Admin
+      - HAProfile
+      required: false
+      secret: false
+    - default: true
+      defaultValue: Unlimited Internet Access
+      description: Select the Surfing Quota Policy.
+      isArray: false
+      name: surfing_quota_policy
+      required: false
+      secret: false
+    - default: true
+      defaultValue: Allowed all the time
+      description: Select the Access Time Policy
+      isArray: false
+      name: access_time_policy
+      required: false
+      secret: false
+    - default: true
+      defaultValue: No Policy Applied
+      description: Select SSL VPN policy
+      isArray: false
+      name: ssl_vpn_policy
+      required: false
+      secret: false
+    - default: true
+      defaultValue: No Policy Applied
+      description: Select clientlesspolicy policy
+      isArray: false
+      name: clientless_policy
+      required: false
+      secret: false
+    - default: true
+      defaultValue: 100 MB Total Data Transfer policy
+      description: Select the Data Transfer Policy
+      isArray: false
+      name: data_transfer_policy
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Enable
+      description: Enable Simultaneous Logins Global
+      isArray: false
+      name: simultaneous_logins_global
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - default: true
+      defaultValue: All The Time
+      description: "Select Schedule for appliance access. IMPORTANT: This option\
+        \ is available only for Administrators"
+      isArray: false
+      name: schedule_for_appliance_access
+      required: false
+      secret: false
+    - default: true
+      defaultValue: High Guarantee User
+      description: Select the QoS Policy
+      isArray: false
+      name: qos_policy
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: UserGroupNode
+      description: Select login restriction option
+      isArray: false
+      name: login_restriction
+      predefined:
+      - AnyNode
+      - UserGroupNode
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a new user.
+    execution: false
+    name: sophos-firewall-user-add
+    outputs:
+    - contextPath: SophosFirewall.User.Name
+      description: Name of the user.
+      type: String
+    - contextPath: SophosFirewall.User.Username
+      description: Username of the user.
+      type: String
+    - contextPath: SophosFirewall.User.Description
+      description: "Description of the user."
+      type: String
+    - contextPath: SophosFirewall.User.EmailList.EmailID
+      description: Email of the user.
+      type: String
+    - contextPath: SophosFirewall.User.Group
+      description: Group of the user.
+      type: String
+    - contextPath: SophosFirewall.User.UserType
+      description: User type of the user.
+      type: String
+    - contextPath: SophosFirewall.User.Status
+      description: Status of the user.
+      type: String
+  - arguments:
+    - default: false
+      description: username of the user
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: name of the user
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: description of the user
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: email of the user
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    - default: true
+      defaultValue: Guest Group
+      description: "group of the user. "
+      isArray: false
+      name: group
+      required: false
+      secret: false
+    - default: false
+      description: the password of the user.
+      isArray: false
+      name: password
+      required: false
+      secret: true
+    - auto: PREDEFINED
+      default: true
+      defaultValue: User
+      description: the type of the user.
+      isArray: false
+      name: user_type
+      predefined:
+      - Administrator
+      - User
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'profile of the admin if user_type is admin. IMPORTANT: you can
+        add more types on the web console'
+      isArray: false
+      name: profile
+      predefined:
+      - Administrator
+      - Crypto Admin
+      - Security Admin
+      - Audit Admin
+      - HAProfile
+      required: false
+      secret: false
+    - default: true
+      defaultValue: Unlimited Internet Access
+      description: Select the Surfing Quota Policy.
+      isArray: false
+      name: surfing_quota_policy
+      required: false
+      secret: false
+    - default: true
+      defaultValue: Allowed all the time
+      description: Select the Access Time Policy
+      isArray: false
+      name: access_time_policy
+      required: false
+      secret: false
+    - default: true
+      defaultValue: No Policy Applied
+      description: Select SSL VPN policy
+      isArray: false
+      name: ssl_vpn_policy
+      required: false
+      secret: false
+    - default: true
+      defaultValue: No Policy Applied
+      description: Select clientlesspolicy policy
+      isArray: false
+      name: clientless_policy
+      required: false
+      secret: false
+    - default: true
+      defaultValue: 100 MB Total Data Transfer policy
+      description: Select the Data Transfer Policy
+      isArray: false
+      name: data_transfer_policy
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Enable
+      description: Enable Simultaneous Logins Global
+      isArray: false
+      name: simultaneous_logins_global
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - default: true
+      defaultValue: All The Time
+      description: "Select Schedule for appliance access. IMPORTANT: This option\
+        \ is available only for Administrators"
+      isArray: false
+      name: schedule_for_appliance_access
+      required: false
+      secret: false
+    - default: true
+      defaultValue: High Guarantee User
+      description: Select the QoS Policy
+      isArray: false
+      name: qos_policy
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: UserGroupNode
+      description: Select login restriction option
+      isArray: false
+      name: login_restriction
+      predefined:
+      - AnyNode
+      - UserGroupNode
+      required: false
+      secret: false
+    deprecated: false
+    description: Update a user.
+    execution: false
+    name: sophos-firewall-user-update
+    outputs:
+    - contextPath: SophosFirewall.User.Name
+      description: Name of the user.
+      type: String
+    - contextPath: SophosFirewall.User.Username
+      description: Username of the user.
+      type: String
+    - contextPath: SophosFirewall.User.Description
+      description: "Description of the user."
+      type: String
+    - contextPath: SophosFirewall.User.EmailList.EmailID
+      description: Email of the user.
+      type: String
+    - contextPath: SophosFirewall.User.Group
+      description: Group of the user.
+      type: String
+    - contextPath: SophosFirewall.User.UserType
+      description: User type of the user.
+      type: String
+    - contextPath: SophosFirewall.User.Status
+      description: Status of the user.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the user.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an existing user.
+    execution: false
+    name: sophos-firewall-user-delete
+    outputs:
+    - contextPath: SophosFirewall.User.Name
+      description: Name of the user.
+      type: String
+    - contextPath: SophosFirewall.User.IsDeleted
+      description: Whether or not the user is deleted.
+      type: String
+  - arguments:
+    - default: true
+      defaultValue: '0'
+      description: 'Provide the start index for the rules you would like to list.
+        e.g: 5'
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: "Provide the end index for the rules you would like to list. e.g:\
+        \ 20"
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    deprecated: false
+    description: "List all app policies. IMPORTANT: listing start at 0 (not 1!)"
+    execution: false
+    name: sophos-firewall-app-policy-list
+    outputs:
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.Name
+      description: Name of the firewall app policy.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.Description
+      description: Description of the firewall app policy.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.MicroAppSupport
+      description: Does the policy support microapps.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.DefaultAction
+      description: Default action the policy executes.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.RuleList.Rule
+      description: Rules details
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the policy.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a single app policy by name.
+    execution: false
+    name: sophos-firewall-app-policy-get
+    outputs:
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.Name
+      description: Name of the firewall app policy.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.Description
+      description: Description of the firewall app policy.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.MicroAppSupport
+      description: Does the policy support microapps.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.DefaultAction
+      description: Default action the policy executes.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.RuleList.Rule
+      description: Rules details
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the policy.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the policy.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Is microapp support enabled.
+      isArray: false
+      name: micro_app_support
+      predefined:
+      - true
+      - false
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Default action for the policy.
+      isArray: false
+      name: default_action
+      predefined:
+      - Allow
+      - Deny
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Is the rule a select all rule.
+      isArray: false
+      name: select_all
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - default: false
+      description: Categories to add to the rule.
+      isArray: true
+      name: categories
+      required: false
+      secret: false
+    - default: false
+      description: Risks to add to the rule.
+      isArray: true
+      name: risks
+      required: false
+      secret: false
+    - default: false
+      description: Applications to add to the rule.
+      isArray: true
+      name: applications
+      required: false
+      secret: false
+    - default: false
+      description: Characteristics to add to the rule.
+      isArray: true
+      name: characteristics
+      required: false
+      secret: false
+    - default: false
+      description: Technologies to add to the rule.
+      isArray: true
+      name: technologies
+      required: false
+      secret: false
+    - default: false
+      description: Classifications to add to the rule.
+      isArray: true
+      name: classifications
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Action for the rule.
+      isArray: false
+      name: action
+      predefined:
+      - Allow
+      - Deny
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Select Schedule for the Rule. IMPORTANT: Creating a new schedule
+        is available on web console'
+      isArray: false
+      name: schedule
+      predefined:
+      - All the time
+      - Work hours (5 Day week)
+      - Work hours (6 Day week)
+      - All Time on Weekdays
+      - All Time on Weekends
+      - All Time on Sunday
+      - All Days 10:00 to 19:00
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a new app policy.
+    execution: false
+    name: sophos-firewall-app-policy-add
+    outputs:
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.Name
+      description: Name of the firewall app policy.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.Description
+      description: Description of the firewall app policy.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.MicroAppSupport
+      description: Does the policy support microapps.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.DefaultAction
+      description: Default action the policy executes.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.RuleList.Rule
+      description: Rules details
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the policy.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the policy.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Is microapp support enabled.
+      isArray: false
+      name: micro_app_support
+      predefined:
+      - true
+      - false
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Default action for the policy.
+      isArray: false
+      name: default_action
+      predefined:
+      - Allow
+      - Deny
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Is the rule a select all rule.
+      isArray: false
+      name: select_all
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - default: false
+      description: Categories to add to the rule.
+      isArray: true
+      name: categories
+      required: false
+      secret: false
+    - default: false
+      description: Risks to add to the rule.
+      isArray: true
+      name: risks
+      required: false
+      secret: false
+    - default: false
+      description: Applications to add to the rule.
+      isArray: true
+      name: applications
+      required: false
+      secret: false
+    - default: false
+      description: Characteristics to add to the rule.
+      isArray: true
+      name: characteristics
+      required: false
+      secret: false
+    - default: false
+      description: Technologies to add to the rule.
+      isArray: true
+      name: technologies
+      required: false
+      secret: false
+    - default: false
+      description: Classifications to add to the rule.
+      isArray: true
+      name: classifications
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Action for the rule.
+      isArray: false
+      name: action
+      predefined:
+      - Allow
+      - Deny
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Select Schedule for the Rule. IMPORTANT: Creating a new schedule
+        is available on web console'
+      isArray: false
+      name: schedule
+      predefined:
+      - All the time
+      - Work hours (5 Day week)
+      - Work hours (6 Day week)
+      - All Time on Weekdays
+      - All Time on Weekends
+      - All Time on Sunday
+      - All Days 10:00 to 19:00
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an existing app policy.
+    execution: false
+    name: sophos-firewall-app-policy-update
+    outputs:
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.Name
+      description: Name of the firewall app policy.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.Description
+      description: Description of the firewall app policy.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.MicroAppSupport
+      description: Does the policy support microapps.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.DefaultAction
+      description: Default action the policy executes.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.RuleList.Rule
+      description: Rules details
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the policy.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an existing app policy.
+    execution: false
+    name: sophos-firewall-app-policy-delete
+    outputs:
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.Name
+      description: Name of the firewall app policy.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterPolicy.IsDeleted
+      description: Whether or not the firewall app policy is deleted.
+      type: String
+  - arguments:
+    - default: true
+      defaultValue: '0'
+      description: 'Provide the start index for the rules you would like to list.
+        e.g: 5'
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: "Provide the end index for the rules you would like to list. e.g:\
+        \ 20"
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    deprecated: false
+    description: "List all app filter categories. IMPORTANT: listing start at 0 (not\
+      \ 1!)"
+    execution: false
+    name: sophos-firewall-app-category-list
+    outputs:
+    - contextPath: SophosFirewall.ApplicationFilterCategory.Name
+      description: Name of the app category.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterCategory.Description
+      description: Description of the app category.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterCategory.QoSPolicy
+      description: QoS policy of the category.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterCategory.BandwidthUsageType
+      description: Bandwidth usage type of the category.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the app category.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a single app filter category by name.
+    execution: false
+    name: sophos-firewall-app-category-get
+    outputs:
+    - contextPath: SophosFirewall.ApplicationFilterCategory.Name
+      description: Name of the app category.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterCategory.Description
+      description: Description of the app category.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterCategory.QoSPolicy
+      description: QoS policy of the category.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterCategory.BandwidthUsageType
+      description: Bandwidth usage type of the category.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the app category.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The description of the category
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: QoS policy of the category.
+      isArray: false
+      name: qos_policy
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an existing app filter category.
+    execution: false
+    name: sophos-firewall-app-category-update
+    outputs:
+    - contextPath: SophosFirewall.ApplicationFilterCategory.Name
+      description: Name of the app category.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterCategory.Description
+      description: Description of the app category.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterCategory.QoSPolicy
+      description: QoS policy of the category.
+      type: String
+    - contextPath: SophosFirewall.ApplicationFilterCategory.BandwidthUsageType
+      description: Bandwidth usage type of the category.
+      type: String
+  - arguments:
+    - default: true
+      defaultValue: '0'
+      description: 'Provide the start index for the rules you would like to list.
+        e.g: 5'
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: "Provide the end index for the rules you would like to list. e.g:\
+        \ 20"
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    deprecated: false
+    description: "List all web filter policies. IMPORTANT: listing start at 0 (not\
+      \ 1!)"
+    execution: false
+    name: sophos-firewall-web-filter-list
+    outputs:
+    - contextPath: SophosFirewall.WebFilterPolicy.Name
+      description: Name of the policy.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.DefaultAction
+      description: Default action for the web filter policy.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.Description
+      description: Description of the rule.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.EnableReporting
+      description: Does the policy report events.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.DownloadFileSizeRestriction
+      description: Maximum file size that can be downloaded.
+      type: Number
+    - contextPath: SophosFirewall.WebFilterPolicy.DownloadFileSizeRestrictionEnabled
+      description: Is the file size restriction active.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.RuleList.Rule
+      description: Rule list information.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the policy
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a single web filter policy by name.
+    execution: false
+    name: sophos-firewall-web-filter-get
+    outputs:
+    - contextPath: SophosFirewall.WebFilterPolicy.Name
+      description: Name of the policy.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.DefaultAction
+      description: Default action for the web filter policy.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.Description
+      description: Description of the rule.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.EnableReporting
+      description: Does the policy report events.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.DownloadFileSizeRestriction
+      description: Maximum file size that can be downloaded.
+      type: Number
+    - contextPath: SophosFirewall.WebFilterPolicy.DownloadFileSizeRestrictionEnabled
+      description: Is the file size restriction active.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.RuleList.Rule
+      description: Rule list information.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the policy
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the policy.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Default action for the policy.
+      isArray: false
+      name: default_action
+      predefined:
+      - Allow
+      - Deny
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Should the max download file size be enabled.
+      isArray: false
+      name: download_file_size_restriction_enabled
+      predefined:
+      - '0'
+      - '1'
+      required: false
+      secret: false
+    - default: false
+      description: Max file size to enable downloading in MB.
+      isArray: false
+      name: download_file_size_restriction
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Enable to specify domains allowed to access google service
+      isArray: false
+      name: goog_app_domain_list_enabled
+      predefined:
+      - '0'
+      - '1'
+      required: false
+      secret: false
+    - default: false
+      description: Specify domains allowed to access google service.
+      isArray: false
+      name: goog_app_domain_list
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Enable YouTube Restricted Mode to restrict the content that is
+        accessible.
+      isArray: false
+      name: youtube_filter_enabled
+      predefined:
+      - '0'
+      - '1'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Adjust the policy used for YouTube Restricted Mode.
+      isArray: false
+      name: youtube_filter_is_strict
+      predefined:
+      - '0'
+      - '1'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Enable to block websites containing pornography and explicit sexual
+        content from appearing in the search results of Google, Yahoo, Bing search
+        results.
+      isArray: false
+      name: enforce_safe_search
+      predefined:
+      - '0'
+      - '1'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Further limit inappropriate content by enforcing search engine
+        filters for Creative Commons licensed images.
+      isArray: false
+      name: enforce_image_licensing
+      predefined:
+      - '0'
+      - '1'
+      required: false
+      secret: false
+    - default: false
+      description: URL Groups to block\allow\warn\log
+      isArray: false
+      name: url_group_names
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Choose action for http
+      isArray: false
+      name: http_action
+      predefined:
+      - Deny
+      - Allow
+      - Warn
+      - Log
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Choose action for https
+      isArray: false
+      name: https_action
+      predefined:
+      - Deny
+      - Allow
+      - Warn
+      - Log
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Select Schedule for the Rule. IMPORTANT: Creating a new schedule
+        is available on web console'
+      isArray: false
+      name: schedule
+      predefined:
+      - All the time
+      - Work hours (5 Day week)
+      - Work hours (6 Day week)
+      - All Time on Weekdays
+      - All Time on Weekends
+      - All Time on Sunday
+      - All Days 10:00 to 19:00
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: Enable policy rule
+      isArray: false
+      name: policy_rule_enabled
+      predefined:
+      - '1'
+      - '0'
+      required: false
+      secret: false
+    - description: Choose users which this rule will apply on
+      isArray: false
+      name: user_names
+      required: false
+      secret: false
+    - description: 'CCL names. REQUIRED: when ccl_rule_enabled is ON'
+      isArray: false
+      name: ccl_names
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: 'Enable CCL rule. IMPORTANT: if enabled - ccl_name is requierd.'
+      isArray: false
+      name: ccl_rule_enabled
+      predefined:
+      - '1'
+      - '0'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: Enable following HTTP action
+      isArray: false
+      name: follow_http_action
+      predefined:
+      - '1'
+      - '0'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Enable
+      description: Select to enable reporting of policy.
+      isArray: false
+      name: enable_reporting
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a new web filter policy.
+    execution: false
+    name: sophos-firewall-web-filter-add
+    outputs:
+    - contextPath: SophosFirewall.WebFilterPolicy.Name
+      description: Name of the policy.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.DefaultAction
+      description: Default action for the web filter policy.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.Description
+      description: Description of the rule.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.EnableReporting
+      description: Does the policy report events.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.DownloadFileSizeRestriction
+      description: Maximum file size that can be downloaded.
+      type: Number
+    - contextPath: SophosFirewall.WebFilterPolicy.DownloadFileSizeRestrictionEnabled
+      description: Is the file size restriction active.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.RuleList.Rule
+      description: Rule list information.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the policy
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the policy.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Default action for the policy.
+      isArray: false
+      name: default_action
+      predefined:
+      - Allow
+      - Deny
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Should the max download file size be enabled.
+      isArray: false
+      name: download_file_size_restriction_enabled
+      predefined:
+      - '0'
+      - '1'
+      required: false
+      secret: false
+    - default: false
+      description: Max file size to enable downloading in MB.
+      isArray: false
+      name: download_file_size_restriction
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Enable to specify domains allowed to access google service
+      isArray: false
+      name: goog_app_domain_list_enabled
+      predefined:
+      - '0'
+      - '1'
+      required: false
+      secret: false
+    - default: false
+      description: Specify domains allowed to access google service.
+      isArray: false
+      name: goog_app_domain_list
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Enable YouTube Restricted Mode to restrict the content that is
+        accessible.
+      isArray: false
+      name: youtube_filter_enabled
+      predefined:
+      - '0'
+      - '1'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Adjust the policy used for YouTube Restricted Mode.
+      isArray: false
+      name: youtube_filter_is_strict
+      predefined:
+      - '0'
+      - '1'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Enable to block websites containing pornography and explicit sexual
+        content from appearing in the search results of Google, Yahoo, Bing search
+        results.
+      isArray: false
+      name: enforce_safe_search
+      predefined:
+      - '0'
+      - '1'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Further limit inappropriate content by enforcing search engine
+        filters for Creative Commons licensed images.
+      isArray: false
+      name: enforce_image_licensing
+      predefined:
+      - '0'
+      - '1'
+      required: false
+      secret: false
+    - default: false
+      description: URL Groups to block\allow\warn\log
+      isArray: false
+      name: url_group_names
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Choose action for http
+      isArray: false
+      name: http_action
+      predefined:
+      - Deny
+      - Allow
+      - Warn
+      - Log
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Choose action for https
+      isArray: false
+      name: https_action
+      predefined:
+      - Deny
+      - Allow
+      - Warn
+      - Log
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Select Schedule for the Rule. IMPORTANT: Creating a new schedule
+        is available on web console'
+      isArray: false
+      name: schedule
+      predefined:
+      - All the time
+      - Work hours (5 Day week)
+      - Work hours (6 Day week)
+      - All Time on Weekdays
+      - All Time on Weekends
+      - All Time on Sunday
+      - All Days 10:00 to 19:00
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: Enable policy rule
+      isArray: false
+      name: policy_rule_enabled
+      predefined:
+      - '1'
+      - '0'
+      required: false
+      secret: false
+    - description: Choose users which this rule will apply on
+      isArray: false
+      name: user_names
+      required: false
+      secret: false
+    - description: 'CCL names. REQUIRED: when ccl_rule_enabled is ON'
+      isArray: false
+      name: ccl_names
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: 'Enable CCL rule. IMPORTANT: if enabled - ccl_name is requierd.'
+      isArray: false
+      name: ccl_rule_enabled
+      predefined:
+      - '1'
+      - '0'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: Enable following HTTP action
+      isArray: false
+      name: follow_http_action
+      predefined:
+      - '1'
+      - '0'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Enable
+      description: Select to enable reporting of policy.
+      isArray: false
+      name: enable_reporting
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an existing web filter policy.
+    execution: false
+    name: sophos-firewall-web-filter-update
+    outputs:
+    - contextPath: SophosFirewall.WebFilterPolicy.Name
+      description: Name of the policy.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.DefaultAction
+      description: Default action for the web filter policy.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.Description
+      description: Description of the rule.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.EnableReporting
+      description: Does the policy report events.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.DownloadFileSizeRestriction
+      description: Maximum file size that can be downloaded.
+      type: Number
+    - contextPath: SophosFirewall.WebFilterPolicy.DownloadFileSizeRestrictionEnabled
+      description: Is the file size restriction active.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.RuleList.Rule
+      description: Rule list information.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the policy.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an existing web filter policy.
+    execution: false
+    name: sophos-firewall-web-filter-delete
+    outputs:
+    - contextPath: SophosFirewall.WebFilterPolicy.Name
+      description: Name of the policy.
+      type: String
+    - contextPath: SophosFirewall.WebFilterPolicy.IsDeleted
+      description: Whether or not the policy was deleted.
+      type: String
+  dockerimage: demisto/python3:3.8.3.8715
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python

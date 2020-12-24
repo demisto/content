@@ -1,0 +1,797 @@
+id: 8463857c-c101-4aba-8f5a-27e133494ed9
+version: 27
+vcShouldKeepItemLegacyProdMachine: false
+name: Sophos Firewall - Block URL
+description: "this playbook add the URL to the Default Block URL Policy (the target
+  policy can be changed as requested).\n\nPre-Requisite : \n\n1)Create a web policy
+  rule which refers to the URL group you specified on the inputs of the playbook.\n2)Create
+  a new firewall rule and assign the web policy to the one created on the previous
+  step.\n "
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 47dd3fe8-c292-42a5-8401-253c591df573
+    type: start
+    task:
+      id: 47dd3fe8-c292-42a5-8401-253c591df573
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": -600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 3616e83d-3e81-477d-8c6f-236df5edbf21
+    type: condition
+    task:
+      id: 3616e83d-3e81-477d-8c6f-236df5edbf21
+      version: -1
+      name: Check if Sophos Firewall Enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: sophos_firewall
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": -450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: d1a15b59-9684-4095-883f-8f43154201c9
+    type: title
+    task:
+      id: d1a15b59-9684-4095-883f-8f43154201c9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 78f190df-9dfa-4f5f-80ee-2ce403816c42
+    type: regular
+    task:
+      id: 78f190df-9dfa-4f5f-80ee-2ce403816c42
+      version: -1
+      name: Print Alert to Analyst
+      description: Prints text to war room (Markdown supported)
+      tags:
+      - Sophos-Firewall
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      value:
+        simple: '"Sophos Firewall is not configured properly"'
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: a3f2a4b7-a1e7-4c9e-8278-6adb6eef1c86
+    type: collection
+    task:
+      id: a3f2a4b7-a1e7-4c9e-8278-6adb6eef1c86
+      version: -1
+      name: Ask for Analyst Action
+      description: Prints text to war room (Markdown supported)
+      tags:
+      - SophosErrors
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      value:
+        simple: '"Sophos Firewall is not configured properly"'
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Analyst Alert
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Is Sophos firewall enabled?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: URL blocking failed
+      description: Sophos firewall instance may be disabled - please check configuration
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    formDisplay:
+      headerbackgroundcolor: ""
+      headerfontcolor: ""
+      sender: ""
+      bodybackgroundcolor: ""
+      bodyfontcolor: ""
+      submitbuttonbackgroundcolor: ""
+      submitbuttonfontcolor: ""
+      submittext: ""
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 38ce7a43-f6b5-4a3d-8ae3-bf4eb0612ad1
+    type: condition
+    task:
+      id: 38ce7a43-f6b5-4a3d-8ae3-bf4eb0612ad1
+      version: -1
+      name: Analyst Alert
+      description: Prints text to war room (Markdown supported)
+      tags:
+      - SophosErrors
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      "yes":
+      - "21"
+    scriptarguments:
+      value:
+        simple: '"Sophos Firewall is not configured properly"'
+    continueonerror: true
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URL blocking failed.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    formDisplay:
+      headerbackgroundcolor: ""
+      headerfontcolor: ""
+      sender: ""
+      bodybackgroundcolor: ""
+      bodyfontcolor: ""
+      submitbuttonbackgroundcolor: ""
+      submitbuttonfontcolor: ""
+      submittext: ""
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 86fb35d9-e23c-4266-8d27-dc0cde782294
+    type: condition
+    task:
+      id: 86fb35d9-e23c-4266-8d27-dc0cde782294
+      version: -1
+      name: Is there any URL recieved?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 2dc6c2d1-71f6-4478-897e-a6c7cc8905bd
+    type: collection
+    task:
+      id: 2dc6c2d1-71f6-4478-897e-a6c7cc8905bd
+      version: -1
+      name: Analyst Alert
+      description: Prints text to war room (Markdown supported)
+      tags:
+      - SophosErrors
+      type: collection
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: '"Sophos Firewall is not configured properly"'
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Analyst Alert
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Please provide the URL required to be blocked?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: No URL was recieved
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    formDisplay:
+      headerbackgroundcolor: ""
+      headerfontcolor: ""
+      sender: ""
+      bodybackgroundcolor: ""
+      bodyfontcolor: ""
+      submitbuttonbackgroundcolor: ""
+      submitbuttonfontcolor: ""
+      submittext: ""
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: ee6fc40a-8d09-4969-8734-91cf504289f2
+    type: regular
+    task:
+      id: ee6fc40a-8d09-4969-8734-91cf504289f2
+      version: -1
+      name: Check if URL policy Exists
+      description: Get a single URL group by name.
+      script: '|||sophos-firewall-url-group-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      name:
+        simple: ${inputs.URLBlockList}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: e4e146e3-6cff-4796-8740-20bdcc5c8bba
+    type: condition
+    task:
+      id: e4e146e3-6cff-4796-8740-20bdcc5c8bba
+      version: -1
+      name: Is Error?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "14"
+      "yes":
+      - "22"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 69c0c167-f3a3-45e1-8830-94be651ad149
+    type: regular
+    task:
+      id: 69c0c167-f3a3-45e1-8830-94be651ad149
+      version: -1
+      name: Print "URL successfully Added"
+      description: Prints text to war room (Markdown supported)
+      tags:
+      - Sophos-Firewall
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      value:
+        simple: '"URL added successfully to URL Policy"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -690,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: a3f8a8d8-43da-46e8-83a5-9936152b1811
+    type: title
+    task:
+      id: a3f8a8d8-43da-46e8-83a5-9936152b1811
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 96a7471f-f68e-40f7-8aeb-a0effa22f1af
+    type: regular
+    task:
+      id: 96a7471f-f68e-40f7-8aeb-a0effa22f1af
+      version: -1
+      name: Update URL List
+      description: Update an existing URL group.
+      script: '|||sophos-firewall-url-group-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      description: {}
+      extend-context:
+        simple: extend-context="status1=Response.WebFilterURLGroup.Status.@code"
+      ignore-outputs:
+        simple: "true"
+      name:
+        simple: ${inputs.URLBlockList}
+      urls:
+        simple: ${inputs.url}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 14550d6b-210f-48de-818b-ff2673b3ba69
+    type: condition
+    task:
+      id: 14550d6b-210f-48de-818b-ff2673b3ba69
+      version: -1
+      name: Is Error?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "12"
+      "yes":
+      - "20"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 0212c02e-397c-4200-8f4f-8ed20fd4ad09
+    type: collection
+    task:
+      id: 0212c02e-397c-4200-8f4f-8ed20fd4ad09
+      version: -1
+      name: Ask for Analyst Action
+      description: Prints text to war room (Markdown supported)
+      tags:
+      - SophosErrors
+      type: collection
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: '"Sophos Firewall is not configured properly"'
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Analyst Alert
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Please Review the Error.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Completed
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Sophos Firewall Error
+      description: Please Review the Error Received ${Response.message}
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    formDisplay:
+      headerbackgroundcolor: ""
+      headerfontcolor: ""
+      sender: ""
+      bodybackgroundcolor: ""
+      bodyfontcolor: ""
+      submitbuttonbackgroundcolor: ""
+      submitbuttonfontcolor: ""
+      submittext: ""
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: b5f34eac-647b-4e59-8d02-a0dc6b65579a
+    type: condition
+    task:
+      id: b5f34eac-647b-4e59-8d02-a0dc6b65579a
+      version: -1
+      name: Check if Sophos Firewall Enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: sophos_firewall
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 615151b9-58ee-41d9-8e9f-3a8b584992a6
+    type: regular
+    task:
+      id: 615151b9-58ee-41d9-8e9f-3a8b584992a6
+      version: -1
+      name: Check if URL policy Exists
+      description: Add a new URL group.
+      script: '|||sophos-firewall-url-group-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      description: {}
+      ignore-outputs:
+        simple: "false"
+      name:
+        simple: ${inputs.URLBlockList}
+      urls:
+        simple: ${inputs.url}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -640,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2405,
+        "width": 2130,
+        "x": -690,
+        "y": -600
+      }
+    }
+  }
+inputs:
+- key: url
+  value: {}
+  required: true
+  description: Array of URL required to blocked
+  playbookInputQuery: null
+- key: URLBlockList
+  value:
+    simple: Blocked URLs for Default Policy
+  required: false
+  description: "the given URL will  be added to the following URL Group. \nthis parameter
+    can be changed as required."
+  playbookInputQuery: null
+outputs: []

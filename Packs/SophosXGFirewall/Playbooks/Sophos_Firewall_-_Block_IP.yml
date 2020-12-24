@@ -1,0 +1,819 @@
+id: b9ff938b-ec31-4110-88d3-390274746097
+version: 34
+vcShouldKeepItemLegacyProdMachine: false
+name: Sophos Firewall - Block IP
+description: |-
+  this playbook adds the IP to a pre-configured Firewall Rule (the target firewall rule can be changed as requested).
+  Pre-Requisite :
+  1) Create an IP Host Group.
+  2) Create a firewall rule which refers to the IP Host Group created on the previous step  .
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 47dd3fe8-c292-42a5-8401-253c591df573
+    type: start
+    task:
+      id: 47dd3fe8-c292-42a5-8401-253c591df573
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 51f18e52-b8fd-4523-850e-ccec64f70d71
+    type: condition
+    task:
+      id: 51f18e52-b8fd-4523-850e-ccec64f70d71
+      version: -1
+      name: Check if Sophos Firewall Enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: sophos_firewall
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: d1a15b59-9684-4095-883f-8f43154201c9
+    type: title
+    task:
+      id: d1a15b59-9684-4095-883f-8f43154201c9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 78f190df-9dfa-4f5f-80ee-2ce403816c42
+    type: regular
+    task:
+      id: 78f190df-9dfa-4f5f-80ee-2ce403816c42
+      version: -1
+      name: Print Alert to Analyst
+      description: Prints text to war room (Markdown supported)
+      tags:
+      - Sophos-Firewall
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      value:
+        simple: '"Sophos Firewall is not configured properly"'
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": -590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: a3f2a4b7-a1e7-4c9e-8278-6adb6eef1c86
+    type: collection
+    task:
+      id: a3f2a4b7-a1e7-4c9e-8278-6adb6eef1c86
+      version: -1
+      name: Ask for Analyst Action
+      description: Prints text to war room (Markdown supported)
+      tags:
+      - SophosErrors
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      value:
+        simple: '"Sophos Firewall is not configured properly"'
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": -440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Analyst Alert
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Is Sophos firewall enabled?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: URL blocking failed
+      description: Sophos firewall instance may be disabled - please check configuration
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    formDisplay:
+      headerbackgroundcolor: ""
+      headerfontcolor: ""
+      sender: ""
+      bodybackgroundcolor: ""
+      bodyfontcolor: ""
+      submitbuttonbackgroundcolor: ""
+      submitbuttonfontcolor: ""
+      submittext: ""
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: f376b4a5-b30a-4cd8-8c6f-6997b945aa32
+    type: condition
+    task:
+      id: f376b4a5-b30a-4cd8-8c6f-6997b945aa32
+      version: -1
+      name: Analyst Alert
+      description: Prints text to war room (Markdown supported)
+      tags:
+      - SophosErrors
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      "yes":
+      - "21"
+    scriptarguments:
+      value:
+        simple: '"Sophos Firewall is not configured properly"'
+    continueonerror: true
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URL blocking failed.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": -300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    formDisplay:
+      headerbackgroundcolor: ""
+      headerfontcolor: ""
+      sender: ""
+      bodybackgroundcolor: ""
+      bodyfontcolor: ""
+      submitbuttonbackgroundcolor: ""
+      submitbuttonfontcolor: ""
+      submittext: ""
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: e1d5038f-dcd1-4eac-855a-84719edf3bcc
+    type: condition
+    task:
+      id: e1d5038f-dcd1-4eac-855a-84719edf3bcc
+      version: -1
+      name: Is there any IP recieved?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.IP
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: inputs.IP
+                      iscontext: true
+                - - operator: match
+                    left:
+                      value:
+                        simple: inputs.IP
+                      iscontext: true
+                    right:
+                      value:
+                        simple: \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 06046360-a681-4e21-80dc-386d480c7705
+    type: regular
+    task:
+      id: 06046360-a681-4e21-80dc-386d480c7705
+      version: -1
+      name: Add IP Host Object
+      description: Add a new IP host.
+      script: '|||sophos-firewall-ip-host-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      end_ip: {}
+      host_group:
+        simple: ${inputs.IPHostGroup}
+      host_type:
+        simple: IP
+      ip_address:
+        complex:
+          root: inputs.IP
+      ip_addresses: {}
+      ip_family:
+        simple: IPv4
+      name:
+        simple: ${inputs.IP}
+      start_ip: {}
+      subnet_mask: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: e4e146e3-6cff-4796-8740-20bdcc5c8bba
+    type: condition
+    task:
+      id: e4e146e3-6cff-4796-8740-20bdcc5c8bba
+      version: -1
+      name: Is Error?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "14"
+      "yes":
+      - "9"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 36704868-b64a-4131-8169-026e3255d09c
+    type: regular
+    task:
+      id: 36704868-b64a-4131-8169-026e3255d09c
+      version: -1
+      name: Print "IP successfully Added"
+      description: Prints text to war room (Markdown supported)
+      tags:
+      - Sophos-Firewall
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      value:
+        simple: '"IP added successfully to IP Policy"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: a3f8a8d8-43da-46e8-83a5-9936152b1811
+    type: title
+    task:
+      id: a3f8a8d8-43da-46e8-83a5-9936152b1811
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 1578982d-fb0d-4330-8b06-8b5757c441a3
+    type: regular
+    task:
+      id: 1578982d-fb0d-4330-8b06-8b5757c441a3
+      version: -1
+      name: Update IP Host Object
+      description: Update an existing IP host.
+      script: '|||sophos-firewall-ip-host-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      end_ip: {}
+      host_group:
+        simple: ${inputs.IPHostGroup}
+      host_type:
+        simple: IP
+      ip_address:
+        complex:
+          root: inputs.IP
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+              right:
+                value:
+                  simple: \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}
+      ip_addresses: {}
+      ip_family:
+        simple: IPv4
+      name:
+        simple: ${inputs.IP}
+      start_ip: {}
+      subnet_mask: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 14550d6b-210f-48de-818b-ff2673b3ba69
+    type: condition
+    task:
+      id: 14550d6b-210f-48de-818b-ff2673b3ba69
+      version: -1
+      name: Is Error?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "12"
+      "yes":
+      - "17"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 78857fa1-957d-4653-8aaf-d5c232e269a2
+    type: collection
+    task:
+      id: 78857fa1-957d-4653-8aaf-d5c232e269a2
+      version: -1
+      name: Analyst Alert
+      description: Prints text to war room (Markdown supported)
+      tags:
+      - SophosErrors
+      type: collection
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: '"Sophos Firewall is not configured properly"'
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Analyst Alert
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Please Check Error Code
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Completed
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Sophos-Error
+      description: 'Please Check Error Code '
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    formDisplay:
+      headerbackgroundcolor: ""
+      headerfontcolor: ""
+      sender: ""
+      bodybackgroundcolor: ""
+      bodyfontcolor: ""
+      submitbuttonbackgroundcolor: ""
+      submitbuttonfontcolor: ""
+      submittext: ""
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: f1b7318c-9627-4291-8241-7bc1f135fed4
+    type: condition
+    task:
+      id: f1b7318c-9627-4291-8241-7bc1f135fed4
+      version: -1
+      name: Check if Sophos Firewall Enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: sophos_firewall
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 38d2e0e9-b553-4e9a-8bde-f4b554311898
+    type: title
+    task:
+      id: 38d2e0e9-b553-4e9a-8bde-f4b554311898
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 784c1b14-c779-4a4a-8b62-0c4a6eab88a4
+    type: regular
+    task:
+      id: 784c1b14-c779-4a4a-8b62-0c4a6eab88a4
+      version: -1
+      name: Print Alert to Analyst
+      description: Prints text to war room (Markdown supported)
+      tags:
+      - Sophos-Firewall
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      value:
+        simple: '"Given IP Is Incorrect"'
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 35a9cc20-0f7b-4a71-8164-26ec8a06c04a
+    type: regular
+    task:
+      id: 35a9cc20-0f7b-4a71-8164-26ec8a06c04a
+      version: -1
+      name: Check if IP policy Exists
+      description: Get a single IP host by name.
+      script: '|||sophos-firewall-ip-host-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      name:
+        simple: ${inputs.IP}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2255,
+        "width": 1820,
+        "x": -160,
+        "y": -840
+      }
+    }
+  }
+inputs:
+- key: IP
+  value: {}
+  required: true
+  description: Array of IP required to blocked
+  playbookInputQuery: null
+- key: IPHostGroup
+  value:
+    simple: Blocked by Playbook
+  required: false
+  description: IP Host Group which was pre-configured for the purpose of using this
+    playbook in order to block one or more IP addressed.
+  playbookInputQuery: null
+outputs: []
+sourceplaybookid: 8463857c-c101-4aba-8f5a-27e133494ed9

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response APIVersion="1702.1" IPS_CAT_VER="1">
+  <Login>
+    <status>Authentication Successful</status>
+  </Login>
+  <SecurityPolicyGroup transactionid="">
+    <Name>Traffic to Internal Zones</Name>
+    <Description>To LAN, WiFi, VPN, DMZ. Firewall rules with the destination zone as LAN, WiFi, VPN, DMZ would be added to this group on the first match basis if user selects automatic grouping option. This is the default group.</Description>
+    <SecurityPolicyList>
+      <SecurityPolicy>Some rule</SecurityPolicy>
+      <SecurityPolicy>fhfhfg</SecurityPolicy>
+      <SecurityPolicy>jfhjhg</SecurityPolicy>
+      <SecurityPolicy>ghjghjghhjghjgh</SecurityPolicy>
+      <SecurityPolicy>x</SecurityPolicy>
+    </SecurityPolicyList>
+    <DestinationZones>
+      <Zone>LAN</Zone>
+      <Zone>DMZ</Zone>
+      <Zone>VPN</Zone>
+      <Zone>WiFi</Zone>
+    </DestinationZones>
+    <Policytype>Any</Policytype>
+  </SecurityPolicyGroup>
+  <SecurityPolicyGroup transactionid="">
+    <Name>Traffic to DMZ</Name>
+    <Description>Inbound traffic to DMZ. Firewall rules with the destination zone as DMZ would be added to this group on the first match basis if user selects automatic grouping option. This is the default group.</Description>
+    <SecurityPolicyList>
+      <SecurityPolicy>[example] Traffic to DMZ</SecurityPolicy>
+    </SecurityPolicyList>
+    <DestinationZones>
+      <Zone>DMZ</Zone>
+    </DestinationZones>
+    <Policytype>Any</Policytype>
+  </SecurityPolicyGroup>
+  <SecurityPolicyGroup transactionid="">
+    <Name>Traffic to WAN</Name>
+    <Description>Outbound traffic to WAN. Firewall rules with the destination zone as WAN would be added to this group on the first match basis if user selects automatic grouping option. This is the default group.</Description>
+    <SecurityPolicyList>
+      <SecurityPolicy>[example] Traffic to WAN</SecurityPolicy>
+    </SecurityPolicyList>
+    <DestinationZones>
+      <Zone>WAN</Zone>
+    </DestinationZones>
+    <Policytype>Any</Policytype>
+  </SecurityPolicyGroup>
+  <SecurityPolicyGroup transactionid="">
+    <Name>hi</Name>
+    <Description/>
+    <Policytype>Any</Policytype>
+  </SecurityPolicyGroup>
+</Response>

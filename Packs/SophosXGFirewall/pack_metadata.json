@@ -1,0 +1,16 @@
+{
+    "name": "Sophos XG Firewall",
+    "description": "Sophos XG Firewall is on-premise firewall by Sophos",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-12-24T12:30:00Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

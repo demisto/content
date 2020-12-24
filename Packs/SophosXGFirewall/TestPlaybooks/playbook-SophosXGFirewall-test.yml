@@ -1,0 +1,3398 @@
+id: playbook-SophosXGFirewall-test
+name: playbook-SophosXGFirewall-test
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: sophos-firewall-rule-list
+      description: ''
+      script: '|||sophos-firewall-rule-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.PolicyType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.IPFamily
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.AttachIdentity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.Action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.LogTraffic
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: sophos-firewall-rule-get
+      description: ''
+      script: '|||sophos-firewall-rule-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '5'
+    type: condition
+    task:
+      id: '5'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.PolicyType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.IPFamily
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.AttachIdentity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.Action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.LogTraffic
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: sophos-firewall-rule-add
+      description: ''
+      script: '|||sophos-firewall-rule-add'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '7'
+    type: condition
+    task:
+      id: '7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.PolicyType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.IPFamily
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.AttachIdentity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.Action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.LogTraffic
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '8'
+    type: regular
+    task:
+      id: '8'
+      version: -1
+      name: sophos-firewall-rule-update
+      description: ''
+      script: '|||sophos-firewall-rule-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '9'
+    type: condition
+    task:
+      id: '9'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.PolicyType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.IPFamily
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.AttachIdentity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.Action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.LogTraffic
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '10'
+    type: regular
+    task:
+      id: '10'
+      version: -1
+      name: sophos-firewall-rule-delete
+      description: ''
+      script: '|||sophos-firewall-rule-delete'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: '11'
+    type: condition
+    task:
+      id: '11'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicy.IsDeleted
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: '12'
+    type: regular
+    task:
+      id: '12'
+      version: -1
+      name: sophos-firewall-rule-group-list
+      description: ''
+      script: '|||sophos-firewall-rule-group-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: '13'
+    type: condition
+    task:
+      id: '13'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.SecurityPolicyList.SecurityPolicy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.SourceZones.Zone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.DestinationZones.Zone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.PolicyType
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: '14'
+    type: regular
+    task:
+      id: '14'
+      version: -1
+      name: sophos-firewall-rule-group-get
+      description: ''
+      script: '|||sophos-firewall-rule-group-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: '15'
+    taskid: '15'
+    type: condition
+    task:
+      id: '15'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.SecurityPolicyList.SecurityPolicy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.SourceZones.Zone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.DestinationZones.Zone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.PolicyType
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '16'
+    type: regular
+    task:
+      id: '16'
+      version: -1
+      name: sophos-firewall-rule-group-add
+      description: ''
+      script: '|||sophos-firewall-rule-group-add'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: '17'
+    taskid: '17'
+    type: condition
+    task:
+      id: '17'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.SecurityPolicyList.SecurityPolicy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.SourceZones.Zone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.DestinationZones.Zone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.PolicyType
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: '18'
+    type: regular
+    task:
+      id: '18'
+      version: -1
+      name: sophos-firewall-rule-group-update
+      description: ''
+      script: '|||sophos-firewall-rule-group-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: '19'
+    taskid: '19'
+    type: condition
+    task:
+      id: '19'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.SecurityPolicyList.SecurityPolicy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.SourceZones.Zone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.DestinationZones.Zone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.PolicyType
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: 20
+    taskid: '20'
+    type: regular
+    task:
+      id: '20'
+      version: -1
+      name: sophos-firewall-rule-group-delete
+      description: ''
+      script: '|||sophos-firewall-rule-group-delete'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: '21'
+    taskid: '21'
+    type: condition
+    task:
+      id: '21'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.SecurityPolicyGroup.IsDeleted
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: 22
+    taskid: '22'
+    type: regular
+    task:
+      id: '22'
+      version: -1
+      name: sophos-firewall-url-group-list
+      description: ''
+      script: '|||sophos-firewall-url-group-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: '23'
+    taskid: '23'
+    type: condition
+    task:
+      id: '23'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '24'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterURLGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterURLGroup.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterURLGroup.URLlist.URL
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: 24
+    taskid: '24'
+    type: regular
+    task:
+      id: '24'
+      version: -1
+      name: sophos-firewall-url-group-get
+      description: ''
+      script: '|||sophos-firewall-url-group-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: '25'
+    taskid: '25'
+    type: condition
+    task:
+      id: '25'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterURLGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterURLGroup.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterURLGroup.URLlist.URL
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '26':
+    id: 26
+    taskid: '26'
+    type: regular
+    task:
+      id: '26'
+      version: -1
+      name: sophos-firewall-url-group-add
+      description: ''
+      script: '|||sophos-firewall-url-group-add'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '27':
+    id: '27'
+    taskid: '27'
+    type: condition
+    task:
+      id: '27'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '28'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterURLGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterURLGroup.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterURLGroup.URLlist.URL
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '28':
+    id: 28
+    taskid: '28'
+    type: regular
+    task:
+      id: '28'
+      version: -1
+      name: sophos-firewall-url-group-update
+      description: ''
+      script: '|||sophos-firewall-url-group-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '29':
+    id: '29'
+    taskid: '29'
+    type: condition
+    task:
+      id: '29'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '30'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterURLGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterURLGroup.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterURLGroup.URLlist.URL
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '30':
+    id: 30
+    taskid: '30'
+    type: regular
+    task:
+      id: '30'
+      version: -1
+      name: sophos-firewall-url-group-delete
+      description: ''
+      script: '|||sophos-firewall-url-group-delete'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '31'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '31':
+    id: '31'
+    taskid: '31'
+    type: condition
+    task:
+      id: '31'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '32'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterURLGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterURLGroup.IsDeleted
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 6200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '32':
+    id: 32
+    taskid: '32'
+    type: regular
+    task:
+      id: '32'
+      version: -1
+      name: sophos-firewall-ip-host-list
+      description: ''
+      script: '|||sophos-firewall-ip-host-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '33'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '33':
+    id: '33'
+    taskid: '33'
+    type: condition
+    task:
+      id: '33'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '34'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHost.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHost.IPFamily
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHost.HostType
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 6600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '34':
+    id: 34
+    taskid: '34'
+    type: regular
+    task:
+      id: '34'
+      version: -1
+      name: sophos-firewall-ip-host-get
+      description: ''
+      script: '|||sophos-firewall-ip-host-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '35'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '35':
+    id: '35'
+    taskid: '35'
+    type: condition
+    task:
+      id: '35'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '36'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHost.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHost.IPFamily
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHost.HostType
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 7000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '36':
+    id: 36
+    taskid: '36'
+    type: regular
+    task:
+      id: '36'
+      version: -1
+      name: sophos-firewall-ip-host-add
+      description: ''
+      script: '|||sophos-firewall-ip-host-add'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '37'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 7200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '37':
+    id: '37'
+    taskid: '37'
+    type: condition
+    task:
+      id: '37'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '38'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHost.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHost.IPFamily
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHost.HostType
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 7400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '38':
+    id: 38
+    taskid: '38'
+    type: regular
+    task:
+      id: '38'
+      version: -1
+      name: sophos-firewall-ip-host-update
+      description: ''
+      script: '|||sophos-firewall-ip-host-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '39'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 7600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '39':
+    id: '39'
+    taskid: '39'
+    type: condition
+    task:
+      id: '39'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '40'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHost.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHost.IPFamily
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHost.HostType
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 7800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '40':
+    id: 40
+    taskid: '40'
+    type: regular
+    task:
+      id: '40'
+      version: -1
+      name: sophos-firewall-ip-host-delete
+      description: ''
+      script: '|||sophos-firewall-ip-host-delete'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '41'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 8000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '41':
+    id: '41'
+    taskid: '41'
+    type: condition
+    task:
+      id: '41'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '42'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHost.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHost.IsDeleted
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 8200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '42':
+    id: 42
+    taskid: '42'
+    type: regular
+    task:
+      id: '42'
+      version: -1
+      name: sophos-firewall-ip-host-group-list
+      description: ''
+      script: '|||sophos-firewall-ip-host-group-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '43'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 8400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '43':
+    id: '43'
+    taskid: '43'
+    type: condition
+    task:
+      id: '43'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '44'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHostGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHostGroup.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHostGroup.HostList.Host
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHostGroup.IPFamily
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 8600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '44':
+    id: 44
+    taskid: '44'
+    type: regular
+    task:
+      id: '44'
+      version: -1
+      name: sophos-firewall-ip-host-group-get
+      description: ''
+      script: '|||sophos-firewall-ip-host-group-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '45'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 8800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '45':
+    id: '45'
+    taskid: '45'
+    type: condition
+    task:
+      id: '45'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '46'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHostGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHostGroup.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHostGroup.HostList.Host
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHostGroup.IPFamily
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 9000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '46':
+    id: 46
+    taskid: '46'
+    type: regular
+    task:
+      id: '46'
+      version: -1
+      name: sophos-firewall-ip-host-group-add
+      description: ''
+      script: '|||sophos-firewall-ip-host-group-add'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '47'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 9200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '47':
+    id: '47'
+    taskid: '47'
+    type: condition
+    task:
+      id: '47'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '48'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHostGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHostGroup.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHostGroup.HostList.Host
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHostGroup.IPFamily
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 9400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '48':
+    id: 48
+    taskid: '48'
+    type: regular
+    task:
+      id: '48'
+      version: -1
+      name: sophos-firewall-ip-host-group-update
+      description: ''
+      script: '|||sophos-firewall-ip-host-group-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '49'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 9600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '49':
+    id: '49'
+    taskid: '49'
+    type: condition
+    task:
+      id: '49'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '50'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHostGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHostGroup.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHostGroup.HostList.Host
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHostGroup.IPFamily
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 9800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '50':
+    id: 50
+    taskid: '50'
+    type: regular
+    task:
+      id: '50'
+      version: -1
+      name: sophos-firewall-ip-host-group-delete
+      description: ''
+      script: '|||sophos-firewall-ip-host-group-delete'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '51'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 10000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '51':
+    id: '51'
+    taskid: '51'
+    type: condition
+    task:
+      id: '51'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '52'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHostGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.IPHostGroup.IsDeleted
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 10200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '52':
+    id: 52
+    taskid: '52'
+    type: regular
+    task:
+      id: '52'
+      version: -1
+      name: sophos-firewall-services-list
+      description: ''
+      script: '|||sophos-firewall-services-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '53'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 10400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '53':
+    id: '53'
+    taskid: '53'
+    type: condition
+    task:
+      id: '53'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '54'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.Services.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.Services.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.Services.ServiceDetails.ServiceDetail
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 10600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '54':
+    id: 54
+    taskid: '54'
+    type: regular
+    task:
+      id: '54'
+      version: -1
+      name: sophos-firewall-services-get
+      description: ''
+      script: '|||sophos-firewall-services-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '55'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 10800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '55':
+    id: '55'
+    taskid: '55'
+    type: condition
+    task:
+      id: '55'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '56'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.Services.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.Services.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.Services.ServiceDetails.ServiceDetail
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 11000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '56':
+    id: 56
+    taskid: '56'
+    type: regular
+    task:
+      id: '56'
+      version: -1
+      name: sophos-firewall-services-add
+      description: ''
+      script: '|||sophos-firewall-services-add'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '57'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 11200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '57':
+    id: '57'
+    taskid: '57'
+    type: condition
+    task:
+      id: '57'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '58'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.Services.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.Services.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.Services.ServiceDetails.ServiceDetail
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 11400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '58':
+    id: 58
+    taskid: '58'
+    type: regular
+    task:
+      id: '58'
+      version: -1
+      name: sophos-firewall-services-update
+      description: ''
+      script: '|||sophos-firewall-services-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '59'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 11600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '59':
+    id: '59'
+    taskid: '59'
+    type: condition
+    task:
+      id: '59'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '60'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.Services.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.Services.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.Services.ServiceDetails.ServiceDetail
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 11800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '60':
+    id: 60
+    taskid: '60'
+    type: regular
+    task:
+      id: '60'
+      version: -1
+      name: sophos-firewall-services-delete
+      description: ''
+      script: '|||sophos-firewall-services-delete'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '61'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 12000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '61':
+    id: '61'
+    taskid: '61'
+    type: condition
+    task:
+      id: '61'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '62'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.Services.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.Services.IsDeleted
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 12200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '62':
+    id: 62
+    taskid: '62'
+    type: regular
+    task:
+      id: '62'
+      version: -1
+      name: sophos-firewall-user-list
+      description: ''
+      script: '|||sophos-firewall-user-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '63'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 12400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '63':
+    id: '63'
+    taskid: '63'
+    type: condition
+    task:
+      id: '63'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '64'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.EmailList.EmailID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Group
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.UserType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Status
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 12600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '64':
+    id: 64
+    taskid: '64'
+    type: regular
+    task:
+      id: '64'
+      version: -1
+      name: sophos-firewall-user-get
+      description: ''
+      script: '|||sophos-firewall-user-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '65'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 12800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '65':
+    id: '65'
+    taskid: '65'
+    type: condition
+    task:
+      id: '65'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '66'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.EmailList.EmailID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Group
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.UserType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Status
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 13000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '66':
+    id: 66
+    taskid: '66'
+    type: regular
+    task:
+      id: '66'
+      version: -1
+      name: sophos-firewall-user-add
+      description: ''
+      script: '|||sophos-firewall-user-add'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '67'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 13200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '67':
+    id: '67'
+    taskid: '67'
+    type: condition
+    task:
+      id: '67'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '68'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.EmailList.EmailID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Group
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.UserType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Status
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 13400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '68':
+    id: 68
+    taskid: '68'
+    type: regular
+    task:
+      id: '68'
+      version: -1
+      name: sophos-firewall-user-update
+      description: ''
+      script: '|||sophos-firewall-user-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '69'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 13600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '69':
+    id: '69'
+    taskid: '69'
+    type: condition
+    task:
+      id: '69'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '70'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.EmailList.EmailID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Group
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.UserType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Status
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 13800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '70':
+    id: 70
+    taskid: '70'
+    type: regular
+    task:
+      id: '70'
+      version: -1
+      name: sophos-firewall-user-delete
+      description: ''
+      script: '|||sophos-firewall-user-delete'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '71'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 14000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '71':
+    id: '71'
+    taskid: '71'
+    type: condition
+    task:
+      id: '71'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '72'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.User.IsDeleted
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 14200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '72':
+    id: 72
+    taskid: '72'
+    type: regular
+    task:
+      id: '72'
+      version: -1
+      name: sophos-firewall-app-policy-list
+      description: ''
+      script: '|||sophos-firewall-app-policy-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '73'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 14400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '73':
+    id: '73'
+    taskid: '73'
+    type: condition
+    task:
+      id: '73'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '74'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.MicroAppSupport
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.DefaultAction
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.RuleList.Rule
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 14600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '74':
+    id: 74
+    taskid: '74'
+    type: regular
+    task:
+      id: '74'
+      version: -1
+      name: sophos-firewall-app-policy-get
+      description: ''
+      script: '|||sophos-firewall-app-policy-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '75'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 14800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '75':
+    id: '75'
+    taskid: '75'
+    type: condition
+    task:
+      id: '75'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '76'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.MicroAppSupport
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.DefaultAction
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.RuleList.Rule
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 15000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '76':
+    id: 76
+    taskid: '76'
+    type: regular
+    task:
+      id: '76'
+      version: -1
+      name: sophos-firewall-app-policy-add
+      description: ''
+      script: '|||sophos-firewall-app-policy-add'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '77'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 15200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '77':
+    id: '77'
+    taskid: '77'
+    type: condition
+    task:
+      id: '77'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '78'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.MicroAppSupport
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.DefaultAction
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.RuleList.Rule
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 15400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '78':
+    id: 78
+    taskid: '78'
+    type: regular
+    task:
+      id: '78'
+      version: -1
+      name: sophos-firewall-app-policy-update
+      description: ''
+      script: '|||sophos-firewall-app-policy-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '79'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 15600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '79':
+    id: '79'
+    taskid: '79'
+    type: condition
+    task:
+      id: '79'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '80'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.MicroAppSupport
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.DefaultAction
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.RuleList.Rule
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 15800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '80':
+    id: 80
+    taskid: '80'
+    type: regular
+    task:
+      id: '80'
+      version: -1
+      name: sophos-firewall-app-policy-delete
+      description: ''
+      script: '|||sophos-firewall-app-policy-delete'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '81'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 16000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '81':
+    id: '81'
+    taskid: '81'
+    type: condition
+    task:
+      id: '81'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '82'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterPolicy.IsDeleted
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 16200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '82':
+    id: 82
+    taskid: '82'
+    type: regular
+    task:
+      id: '82'
+      version: -1
+      name: sophos-firewall-app-category-list
+      description: ''
+      script: '|||sophos-firewall-app-category-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '83'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 16400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '83':
+    id: '83'
+    taskid: '83'
+    type: condition
+    task:
+      id: '83'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '84'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterCategory.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterCategory.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterCategory.QoSPolicy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterCategory.BandwidthUsageType
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 16600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '84':
+    id: 84
+    taskid: '84'
+    type: regular
+    task:
+      id: '84'
+      version: -1
+      name: sophos-firewall-app-category-get
+      description: ''
+      script: '|||sophos-firewall-app-category-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '85'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 16800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '85':
+    id: '85'
+    taskid: '85'
+    type: condition
+    task:
+      id: '85'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '86'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterCategory.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterCategory.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterCategory.QoSPolicy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterCategory.BandwidthUsageType
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 17000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '86':
+    id: 86
+    taskid: '86'
+    type: regular
+    task:
+      id: '86'
+      version: -1
+      name: sophos-firewall-app-category-update
+      description: ''
+      script: '|||sophos-firewall-app-category-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '87'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 17200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '87':
+    id: '87'
+    taskid: '87'
+    type: condition
+    task:
+      id: '87'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '88'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterCategory.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterCategory.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterCategory.QoSPolicy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.ApplicationFilterCategory.BandwidthUsageType
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 17400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '88':
+    id: 88
+    taskid: '88'
+    type: regular
+    task:
+      id: '88'
+      version: -1
+      name: sophos-firewall-web-filter-list
+      description: ''
+      script: '|||sophos-firewall-web-filter-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '89'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 17600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '89':
+    id: '89'
+    taskid: '89'
+    type: condition
+    task:
+      id: '89'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '90'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.DefaultAction
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.EnableReporting
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.DownloadFileSizeRestriction
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.DownloadFileSizeRestrictionEnabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.RuleList.Rule
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 17800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '90':
+    id: 90
+    taskid: '90'
+    type: regular
+    task:
+      id: '90'
+      version: -1
+      name: sophos-firewall-web-filter-get
+      description: ''
+      script: '|||sophos-firewall-web-filter-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '91'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 18000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '91':
+    id: '91'
+    taskid: '91'
+    type: condition
+    task:
+      id: '91'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '92'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.DefaultAction
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.EnableReporting
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.DownloadFileSizeRestriction
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.DownloadFileSizeRestrictionEnabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.RuleList.Rule
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 18200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '92':
+    id: 92
+    taskid: '92'
+    type: regular
+    task:
+      id: '92'
+      version: -1
+      name: sophos-firewall-web-filter-add
+      description: ''
+      script: '|||sophos-firewall-web-filter-add'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '93'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 18400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '93':
+    id: '93'
+    taskid: '93'
+    type: condition
+    task:
+      id: '93'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '94'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.DefaultAction
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.EnableReporting
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.DownloadFileSizeRestriction
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.DownloadFileSizeRestrictionEnabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.RuleList.Rule
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 18600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '94':
+    id: 94
+    taskid: '94'
+    type: regular
+    task:
+      id: '94'
+      version: -1
+      name: sophos-firewall-web-filter-update
+      description: ''
+      script: '|||sophos-firewall-web-filter-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '95'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 18800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '95':
+    id: '95'
+    taskid: '95'
+    type: condition
+    task:
+      id: '95'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '96'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.DefaultAction
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.EnableReporting
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.DownloadFileSizeRestriction
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.DownloadFileSizeRestrictionEnabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.RuleList.Rule
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 19000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '96':
+    id: 96
+    taskid: '96'
+    type: regular
+    task:
+      id: '96'
+      version: -1
+      name: sophos-firewall-web-filter-delete
+      description: ''
+      script: '|||sophos-firewall-web-filter-delete'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '97'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 19200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '97':
+    id: '97'
+    taskid: '97'
+    type: condition
+    task:
+      id: '97'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '98'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SophosFirewall.WebFilterPolicy.IsDeleted
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 19400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '98':
+    id: '98'
+    taskid: '98'
+    type: title
+    task:
+      id: '98'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 19600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []

@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response APIVersion="1702.1" IPS_CAT_VER="1">
+  <Login>
+    <status>Authentication Successful</status>
+  </Login>
+  <User transactionid="">
+    <Username>user1</Username>
+    <Name>user</Name>
+    <Password passwordform="encrypt">A8DFE8F6454F585D404E04435416C95E</Password>
+    <Description>user1 desc</Description>
+    <UserType>User</UserType>
+    <EmailList>
+      <EmailID>shiratg@qmasters.co</EmailID>
+    </EmailList>
+    <Group>Open Group</Group>
+    <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
+    <AccessTimePolicy>Allowed all the time</AccessTimePolicy>
+    <DataTransferPolicy>100 MB Total Data Transfer policy</DataTransferPolicy>
+    <QoSPolicy>High Guarantee User</QoSPolicy>
+    <SSLVPNPolicy>No Policy Applied</SSLVPNPolicy>
+    <ClientlessPolicy>No Policy Applied</ClientlessPolicy>
+    <Status>Active</Status>
+    <L2TP>Disable</L2TP>
+    <PPTP>Disable</PPTP>
+    <CISCO>Disable</CISCO>
+    <QuarantineDigest>Disable</QuarantineDigest>
+    <MACBinding>Disable</MACBinding>
+    <LoginRestriction>UserGroupNode</LoginRestriction>
+    <ScheduleForApplianceAccess>All The Time</ScheduleForApplianceAccess>
+    <LoginRestrictionForAppliance/>
+    <IsEncryptCert>Disable</IsEncryptCert>
+    <SimultaneousLoginsGlobal>Enable</SimultaneousLoginsGlobal>
+  </User>
+  <User transactionid="">
+    <Username>user new</Username>
+    <Name>user_new</Name>
+    <Password passwordform="encrypt">0488F379742662C337D2FB1BDD1F08D9</Password>
+    <Description/>
+    <UserType>User</UserType>
+    <EmailList>
+      <EmailID>shiratg@qmasters.co</EmailID>
+    </EmailList>
+    <Group>Open Group</Group>
+    <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
+    <AccessTimePolicy>Allowed all the time</AccessTimePolicy>
+    <DataTransferPolicy>100 MB Total Data Transfer policy</DataTransferPolicy>
+    <QoSPolicy>High Guarantee User</QoSPolicy>
+    <SSLVPNPolicy>sg</SSLVPNPolicy>
+    <ClientlessPolicy>No Policy Applied</ClientlessPolicy>
+    <Status>Active</Status>
+    <L2TP>Disable</L2TP>
+    <PPTP>Disable</PPTP>
+    <CISCO>Disable</CISCO>
+    <QuarantineDigest>Disable</QuarantineDigest>
+    <MACBinding>Disable</MACBinding>
+    <LoginRestriction>UserGroupNode</LoginRestriction>
+    <ScheduleForApplianceAccess>All The Time</ScheduleForApplianceAccess>
+    <LoginRestrictionForAppliance/>
+    <IsEncryptCert>Disable</IsEncryptCert>
+    <SimultaneousLoginsGlobal>Enable</SimultaneousLoginsGlobal>
+  </User>
+  <User transactionid="">
+    <Username>raz</Username>
+    <Name>raz</Name>
+    <Password passwordform="encrypt">0488F379742662C337D2FB1BDD1F08D9</Password>
+    <Description/>
+    <UserType>User</UserType>
+    <EmailList>
+      <EmailID>shiratg@qmasters.co</EmailID>
+    </EmailList>
+    <Group>Open Group</Group>
+    <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
+    <AccessTimePolicy>Allowed all the time</AccessTimePolicy>
+    <DataTransferPolicy>100 MB Total Data Transfer policy</DataTransferPolicy>
+    <QoSPolicy>High Guarantee User</QoSPolicy>
+    <SSLVPNPolicy>sg</SSLVPNPolicy>
+    <ClientlessPolicy>No Policy Applied</ClientlessPolicy>
+    <Status>Active</Status>
+    <L2TP>Disable</L2TP>
+    <PPTP>Disable</PPTP>
+    <CISCO>Disable</CISCO>
+    <QuarantineDigest>Disable</QuarantineDigest>
+    <MACBinding>Disable</MACBinding>
+    <LoginRestriction>UserGroupNode</LoginRestriction>
+    <ScheduleForApplianceAccess>All The Time</ScheduleForApplianceAccess>
+    <LoginRestrictionForAppliance/>
+    <IsEncryptCert>Disable</IsEncryptCert>
+    <SimultaneousLoginsGlobal>Enable</SimultaneousLoginsGlobal>
+  </User>
+  <User transactionid="">
+    <Username>user3</Username>
+    <Name>user3</Name>
+    <Password passwordform="encrypt">0488F379742662C337D2FB1BDD1F08D9</Password>
+    <Description/>
+    <UserType>User</UserType>
+    <EmailList>
+      <EmailID>shiratg@qmasters.co</EmailID>
+    </EmailList>
+    <Group>Open Group</Group>
+    <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
+    <AccessTimePolicy>Allowed all the time</AccessTimePolicy>
+    <DataTransferPolicy>100 MB Total Data Transfer policy</DataTransferPolicy>
+    <QoSPolicy>High Guarantee User</QoSPolicy>
+    <SSLVPNPolicy>sg</SSLVPNPolicy>
+    <ClientlessPolicy>No Policy Applied</ClientlessPolicy>
+    <Status>Active</Status>
+    <L2TP>Disable</L2TP>
+    <PPTP>Disable</PPTP>
+    <CISCO>Disable</CISCO>
+    <QuarantineDigest>Disable</QuarantineDigest>
+    <MACBinding>Disable</MACBinding>
+    <LoginRestriction>UserGroupNode</LoginRestriction>
+    <ScheduleForApplianceAccess>All The Time</ScheduleForApplianceAccess>
+    <LoginRestrictionForAppliance/>
+    <IsEncryptCert>Disable</IsEncryptCert>
+    <SimultaneousLoginsGlobal>Enable</SimultaneousLoginsGlobal>
+  </User>
+  <User transactionid="">
+    <Username>user4</Username>
+    <Name>user3</Name>
+    <Password passwordform="encrypt">0488F379742662C337D2FB1BDD1F08D9</Password>
+    <Description/>
+    <UserType>User</UserType>
+    <EmailList>
+      <EmailID>shiratg@qmasters.co</EmailID>
+    </EmailList>
+    <Group>Open Group</Group>
+    <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
+    <AccessTimePolicy>Allowed all the time</AccessTimePolicy>
+    <DataTransferPolicy>100 MB Total Data Transfer policy</DataTransferPolicy>
+    <QoSPolicy>High Guarantee User</QoSPolicy>
+    <SSLVPNPolicy>sg</SSLVPNPolicy>
+    <ClientlessPolicy>No Policy Applied</ClientlessPolicy>
+    <Status>Active</Status>
+    <L2TP>Disable</L2TP>
+    <PPTP>Disable</PPTP>
+    <CISCO>Disable</CISCO>
+    <QuarantineDigest>Disable</QuarantineDigest>
+    <MACBinding>Disable</MACBinding>
+    <LoginRestriction>UserGroupNode</LoginRestriction>
+    <ScheduleForApplianceAccess>All The Time</ScheduleForApplianceAccess>
+    <LoginRestrictionForAppliance/>
+    <IsEncryptCert>Disable</IsEncryptCert>
+    <SimultaneousLoginsGlobal>Enable</SimultaneousLoginsGlobal>
+  </User>
+  <User transactionid="">
+    <Username>x</Username>
+    <Name>x</Name>
+    <Password passwordform="encrypt">A8DFE8F6454F585D404E04435416C95E</Password>
+    <Description>x</Description>
+    <UserType>User</UserType>
+    <EmailList>
+      <EmailID>123@gmail.com</EmailID>
+    </EmailList>
+    <Group>Open Group</Group>
+    <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
+    <AccessTimePolicy>Allowed all the time</AccessTimePolicy>
+    <DataTransferPolicy>100 MB Total Data Transfer policy</DataTransferPolicy>
+    <QoSPolicy>High Guarantee User</QoSPolicy>
+    <SSLVPNPolicy>sg</SSLVPNPolicy>
+    <ClientlessPolicy>No Policy Applied</ClientlessPolicy>
+    <Status>Active</Status>
+    <L2TP>Disable</L2TP>
+    <PPTP>Disable</PPTP>
+    <CISCO>Disable</CISCO>
+    <QuarantineDigest>Disable</QuarantineDigest>
+    <MACBinding>Disable</MACBinding>
+    <LoginRestriction>UserGroupNode</LoginRestriction>
+    <ScheduleForApplianceAccess>All The Time</ScheduleForApplianceAccess>
+    <LoginRestrictionForAppliance/>
+    <IsEncryptCert>Disable</IsEncryptCert>
+    <SimultaneousLoginsGlobal>Enable</SimultaneousLoginsGlobal>
+  </User>
+  <User transactionid="">
+    <Username>user11</Username>
+    <Name>user3</Name>
+    <Password passwordform="encrypt">0488F379742662C337D2FB1BDD1F08D9</Password>
+    <Description/>
+    <UserType>User</UserType>
+    <EmailList>
+      <EmailID>xxx@gmail.com</EmailID>
+    </EmailList>
+    <Group>Guest Group</Group>
+    <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
+    <AccessTimePolicy>Allowed all the time</AccessTimePolicy>
+    <DataTransferPolicy>100 MB Total Data Transfer policy</DataTransferPolicy>
+    <QoSPolicy>High Guarantee User</QoSPolicy>
+    <SSLVPNPolicy>No Policy Applied</SSLVPNPolicy>
+    <ClientlessPolicy>No Policy Applied</ClientlessPolicy>
+    <Status>Active</Status>
+    <L2TP>Disable</L2TP>
+    <PPTP>Disable</PPTP>
+    <CISCO>Disable</CISCO>
+    <QuarantineDigest>Disable</QuarantineDigest>
+    <MACBinding>0</MACBinding>
+    <LoginRestriction>UserGroupNode</LoginRestriction>
+    <ScheduleForApplianceAccess>All The Time</ScheduleForApplianceAccess>
+    <LoginRestrictionForAppliance/>
+    <IsEncryptCert>Disable</IsEncryptCert>
+    <SimultaneousLoginsGlobal>Enable</SimultaneousLoginsGlobal>
+  </User>
+  <User transactionid="">
+    <Username>user12</Username>
+    <Name>user3</Name>
+    <Password passwordform="encrypt">0488F379742662C337D2FB1BDD1F08D9</Password>
+    <Description/>
+    <UserType>User</UserType>
+    <EmailList>
+      <EmailID>xxx@gmail.com</EmailID>
+    </EmailList>
+    <Group>Guest Group</Group>
+    <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
+    <AccessTimePolicy>Allowed all the time</AccessTimePolicy>
+    <DataTransferPolicy>100 MB Total Data Transfer policy</DataTransferPolicy>
+    <QoSPolicy>High Guarantee User</QoSPolicy>
+    <SSLVPNPolicy>No Policy Applied</SSLVPNPolicy>
+    <ClientlessPolicy>No Policy Applied</ClientlessPolicy>
+    <Status>Active</Status>
+    <L2TP>Disable</L2TP>
+    <PPTP>Disable</PPTP>
+    <CISCO>Disable</CISCO>
+    <QuarantineDigest>Disable</QuarantineDigest>
+    <MACBinding>0</MACBinding>
+    <LoginRestriction>UserGroupNode</LoginRestriction>
+    <ScheduleForApplianceAccess>All The Time</ScheduleForApplianceAccess>
+    <LoginRestrictionForAppliance/>
+    <IsEncryptCert>Disable</IsEncryptCert>
+    <SimultaneousLoginsGlobal>Enable</SimultaneousLoginsGlobal>
+  </User>
+  <User transactionid="">
+    <Username>user13</Username>
+    <Name>user3</Name>
+    <Password passwordform="encrypt">0488F379742662C337D2FB1BDD1F08D9</Password>
+    <Description/>
+    <UserType>User</UserType>
+    <EmailList>
+      <EmailID>xxx@gmail.com</EmailID>
+    </EmailList>
+    <Group>Guest Group</Group>
+    <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
+    <AccessTimePolicy>Allowed all the time</AccessTimePolicy>
+    <DataTransferPolicy>100 MB Total Data Transfer policy</DataTransferPolicy>
+    <QoSPolicy>High Guarantee User</QoSPolicy>
+    <SSLVPNPolicy>No Policy Applied</SSLVPNPolicy>
+    <ClientlessPolicy>No Policy Applied</ClientlessPolicy>
+    <Status>Active</Status>
+    <L2TP>Disable</L2TP>
+    <PPTP>Disable</PPTP>
+    <CISCO>Disable</CISCO>
+    <QuarantineDigest>Disable</QuarantineDigest>
+    <MACBinding>0</MACBinding>
+    <LoginRestriction>UserGroupNode</LoginRestriction>
+    <ScheduleForApplianceAccess>All The Time</ScheduleForApplianceAccess>
+    <LoginRestrictionForAppliance/>
+    <IsEncryptCert>Disable</IsEncryptCert>
+    <SimultaneousLoginsGlobal>Enable</SimultaneousLoginsGlobal>
+  </User>
+  <User transactionid="">
+    <Username>user14</Username>
+    <Name>user3</Name>
+    <Password passwordform="encrypt">0488F379742662C337D2FB1BDD1F08D9</Password>
+    <Description/>
+    <UserType>User</UserType>
+    <EmailList>
+      <EmailID>xxx@gmail.com</EmailID>
+    </EmailList>
+    <Group>Guest Group</Group>
+    <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
+    <AccessTimePolicy>Allowed all the time</AccessTimePolicy>
+    <DataTransferPolicy>100 MB Total Data Transfer policy</DataTransferPolicy>
+    <QoSPolicy>High Guarantee User</QoSPolicy>
+    <SSLVPNPolicy>No Policy Applied</SSLVPNPolicy>
+    <ClientlessPolicy>No Policy Applied</ClientlessPolicy>
+    <Status>Active</Status>
+    <L2TP>Disable</L2TP>
+    <PPTP>Disable</PPTP>
+    <CISCO>Disable</CISCO>
+    <QuarantineDigest>Disable</QuarantineDigest>
+    <MACBinding>0</MACBinding>
+    <LoginRestriction>UserGroupNode</LoginRestriction>
+    <ScheduleForApplianceAccess>All The Time</ScheduleForApplianceAccess>
+    <LoginRestrictionForAppliance/>
+    <IsEncryptCert>Disable</IsEncryptCert>
+    <SimultaneousLoginsGlobal>Enable</SimultaneousLoginsGlobal>
+  </User>
+  <User transactionid="">
+    <Username>user5</Username>
+    <Name>user3</Name>
+    <Password passwordform="encrypt">0488F379742662C337D2FB1BDD1F08D9</Password>
+    <Description/>
+    <UserType>User</UserType>
+    <EmailList>
+      <EmailID>xxx@gmail.com</EmailID>
+    </EmailList>
+    <Group>Guest Group</Group>
+    <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
+    <AccessTimePolicy>Allowed all the time</AccessTimePolicy>
+    <DataTransferPolicy>100 MB Total Data Transfer policy</DataTransferPolicy>
+    <QoSPolicy>High Guarantee User</QoSPolicy>
+    <SSLVPNPolicy>No Policy Applied</SSLVPNPolicy>
+    <ClientlessPolicy>No Policy Applied</ClientlessPolicy>
+    <Status>Active</Status>
+    <L2TP>Disable</L2TP>
+    <PPTP>Disable</PPTP>
+    <CISCO>Disable</CISCO>
+    <QuarantineDigest>Disable</QuarantineDigest>
+    <MACBinding>Disable</MACBinding>
+    <LoginRestriction>UserGroupNode</LoginRestriction>
+    <ScheduleForApplianceAccess>All The Time</ScheduleForApplianceAccess>
+    <LoginRestrictionForAppliance/>
+    <IsEncryptCert>Disable</IsEncryptCert>
+    <SimultaneousLoginsGlobal>Enable</SimultaneousLoginsGlobal>
+  </User>
+  <User transactionid="">
+    <Username>user7</Username>
+    <Name>user3</Name>
+    <Password passwordform="encrypt">0488F379742662C337D2FB1BDD1F08D9</Password>
+    <Description/>
+    <UserType>User</UserType>
+    <EmailList>
+      <EmailID>xxx@gmail.com</EmailID>
+    </EmailList>
+    <Group>Guest Group</Group>
+    <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
+    <AccessTimePolicy>Allowed all the time</AccessTimePolicy>
+    <DataTransferPolicy>100 MB Total Data Transfer policy</DataTransferPolicy>
+    <QoSPolicy>High Guarantee User</QoSPolicy>
+    <SSLVPNPolicy>No Policy Applied</SSLVPNPolicy>
+    <ClientlessPolicy>No Policy Applied</ClientlessPolicy>
+    <Status>Active</Status>
+    <L2TP>Disable</L2TP>
+    <PPTP>Disable</PPTP>
+    <CISCO>Disable</CISCO>
+    <QuarantineDigest>Disable</QuarantineDigest>
+    <MACBinding>Disable</MACBinding>
+    <LoginRestriction>UserGroupNode</LoginRestriction>
+    <ScheduleForApplianceAccess>All The Time</ScheduleForApplianceAccess>
+    <LoginRestrictionForAppliance/>
+    <IsEncryptCert>Disable</IsEncryptCert>
+    <SimultaneousLoginsGlobal>Enable</SimultaneousLoginsGlobal>
+  </User>
+  <User transactionid="">
+    <Username>user8</Username>
+    <Name>user3</Name>
+    <Password passwordform="encrypt">0488F379742662C337D2FB1BDD1F08D9</Password>
+    <Description/>
+    <UserType>User</UserType>
+    <EmailList>
+      <EmailID>xxx@gmail.com</EmailID>
+    </EmailList>
+    <Group>Guest Group</Group>
+    <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
+    <AccessTimePolicy>Allowed all the time</AccessTimePolicy>
+    <DataTransferPolicy>100 MB Total Data Transfer policy</DataTransferPolicy>
+    <QoSPolicy/>
+    <SSLVPNPolicy>No Policy Applied</SSLVPNPolicy>
+    <ClientlessPolicy>No Policy Applied</ClientlessPolicy>
+    <Status>Active</Status>
+    <L2TP>Disable</L2TP>
+    <PPTP>Disable</PPTP>
+    <CISCO>Disable</CISCO>
+    <QuarantineDigest>Disable</QuarantineDigest>
+    <MACBinding>Disable</MACBinding>
+    <LoginRestriction>UserGroupNode</LoginRestriction>
+    <ScheduleForApplianceAccess>All The Time</ScheduleForApplianceAccess>
+    <LoginRestrictionForAppliance/>
+    <IsEncryptCert>Disable</IsEncryptCert>
+    <SimultaneousLoginsGlobal>Enable</SimultaneousLoginsGlobal>
+  </User>
+  <User transactionid="">
+    <Username>user10</Username>
+    <Name>user3</Name>
+    <Password passwordform="encrypt">0488F379742662C337D2FB1BDD1F08D9</Password>
+    <Description/>
+    <UserType>User</UserType>
+    <EmailList>
+      <EmailID>xxx@gmail.com</EmailID>
+    </EmailList>
+    <Group>Guest Group</Group>
+    <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
+    <AccessTimePolicy>Allowed all the time</AccessTimePolicy>
+    <DataTransferPolicy>100 MB Total Data Transfer policy</DataTransferPolicy>
+    <QoSPolicy>High Guarantee User</QoSPolicy>
+    <SSLVPNPolicy>No Policy Applied</SSLVPNPolicy>
+    <ClientlessPolicy>No Policy Applied</ClientlessPolicy>
+    <Status>Active</Status>
+    <L2TP>Disable</L2TP>
+    <PPTP>Disable</PPTP>
+    <CISCO>Disable</CISCO>
+    <QuarantineDigest>Disable</QuarantineDigest>
+    <MACBinding>Disable</MACBinding>
+    <LoginRestriction>UserGroupNode</LoginRestriction>
+    <ScheduleForApplianceAccess>All The Time</ScheduleForApplianceAccess>
+    <LoginRestrictionForAppliance/>
+    <IsEncryptCert>Disable</IsEncryptCert>
+    <SimultaneousLoginsGlobal>Enable</SimultaneousLoginsGlobal>
+  </User>
+  <User transactionid="">
+    <Username>sg</Username>
+    <Name>sg</Name>
+    <Password passwordform="encrypt">0488F379742662C337D2FB1BDD1F08D9</Password>
+    <Description>This is sg desc</Description>
+    <UserType>Administrator</UserType>
+    <EmailList>
+      <EmailID>shiratg@qmasters.co</EmailID>
+    </EmailList>
+    <Group>Guest Group</Group>
+    <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
+    <AccessTimePolicy>Allowed all the time</AccessTimePolicy>
+    <DataTransferPolicy>100 MB Total Data Transfer policy</DataTransferPolicy>
+    <QoSPolicy>Moderate Limited User</QoSPolicy>
+    <SSLVPNPolicy>No Policy Applied</SSLVPNPolicy>
+    <ClientlessPolicy>No Policy Applied</ClientlessPolicy>
+    <Status>Active</Status>
+    <L2TP>Disable</L2TP>
+    <PPTP>Disable</PPTP>
+    <CISCO>Disable</CISCO>
+    <QuarantineDigest>Disable</QuarantineDigest>
+    <MACBinding>Disable</MACBinding>
+    <LoginRestriction>UserGroupNode</LoginRestriction>
+    <ScheduleForApplianceAccess>All The Time</ScheduleForApplianceAccess>
+    <LoginRestrictionForAppliance>AnyNode</LoginRestrictionForAppliance>
+    <IsEncryptCert>Disable</IsEncryptCert>
+    <SimultaneousLoginsGlobal>Enable</SimultaneousLoginsGlobal>
+    <Profile>Administrator</Profile>
+  </User>
+  <User transactionid="">
+    <Username>hgjghj</Username>
+    <Name>hgjghj</Name>
+    <Password passwordform="encrypt">A8DFE8F6454F585D404E04435416C95E</Password>
+    <Description>gfhfgfg</Description>
+    <UserType>User</UserType>
+    <EmailList>
+      <EmailID>shiratg@qmasters.co</EmailID>
+    </EmailList>
+    <Group>Guest Group</Group>
+    <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
+    <AccessTimePolicy>Allowed all the time</AccessTimePolicy>
+    <DataTransferPolicy>100 MB Total Data Transfer policy</DataTransferPolicy>
+    <QoSPolicy>Moderate Limited User</QoSPolicy>
+    <SSLVPNPolicy>No Policy Applied</SSLVPNPolicy>
+    <ClientlessPolicy>No Policy Applied</ClientlessPolicy>
+    <Status>Active</Status>
+    <L2TP>Disable</L2TP>
+    <PPTP>Disable</PPTP>
+    <CISCO>Disable</CISCO>
+    <QuarantineDigest>Disable</QuarantineDigest>
+    <MACBinding>Disable</MACBinding>
+    <LoginRestriction>UserGroupNode</LoginRestriction>
+    <ScheduleForApplianceAccess>All The Time</ScheduleForApplianceAccess>
+    <LoginRestrictionForAppliance/>
+    <IsEncryptCert>Disable</IsEncryptCert>
+    <SimultaneousLoginsGlobal>Enable</SimultaneousLoginsGlobal>
+  </User>
+</Response>

@@ -1,0 +1,41 @@
+<Response APIVersion="1702.1" IPS_CAT_VER="1">
+  <Login>
+    <status>Authentication Successful</status>
+  </Login>
+  <WebFilterURLGroup transactionid="">
+    <Name>1</Name>
+    <Description>1desc</Description>
+    <URLlist>
+      <URL>www.x.com</URL>
+      <URL>www.y.com</URL>
+    </URLlist>
+  </WebFilterURLGroup>
+  <WebFilterURLGroup transactionid="">
+    <Name>Blocked URLs for Default Policy</Name>
+    <Description/>
+    <URLlist>
+      <URL>www.t.com</URL>
+    </URLlist>
+  </WebFilterURLGroup>
+  <WebFilterURLGroup transactionid="">
+    <Name>2</Name>
+    <Description/>
+    <URLlist>
+      <URL>www.z.com</URL>
+    </URLlist>
+  </WebFilterURLGroup>
+  <WebFilterURLGroup transactionid="">
+    <Name>google</Name>
+    <Description/>
+    <URLlist>
+      <URL>www.google.com</URL>
+    </URLlist>
+  </WebFilterURLGroup>
+  <WebFilterURLGroup transactionid="">
+    <Name>urlgroup1</Name>
+    <Description/>
+    <URLlist>
+      <URL>www.blockthisurl.com</URL>
+    </URLlist>
+  </WebFilterURLGroup>
+</Response>
