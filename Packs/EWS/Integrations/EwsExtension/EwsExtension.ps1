@@ -77,8 +77,8 @@ function CreateNewSession {
         .DESCRIPTION
         Creates new PSSession using Oauth2.0 method.
 
-        .PARAMETER uri
-        Exchange Online uri.
+        .PARAMETER url
+        Exchange Online url.
 
         .PARAMETER upn
         User Principal Name (UPN) is the name of a system user in an email address format.
