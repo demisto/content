@@ -491,9 +491,9 @@ class ExchangeOnlineClient {
         $this.url = $url
         <#
             .DESCRIPTION
-            ExchangeOnlineClient connect to Exchange Online using powershell session (OAuth2.0) and allow interact with it.
+            ExchangeOnlineClient connect to Exchange Online using power-shell session (OAuth2.0) and allow interact with it.
 
-            .PARAMETER uri
+            .PARAMETER url
             Exchange online url.
 
             .PARAMETER upn
@@ -506,10 +506,10 @@ class ExchangeOnlineClient {
             Valid bearer token value.
 
             .PARAMETER insecure
-            Wheter to trust any TLS/SSL Certificate) or not.
+            Whether to trust any TLS/SSL Certificate) or not.
 
             .EXAMPLE proxy
-            Wheter to user system proxy configuration or not.
+            Whether to user system proxy configuration or not.
 
             .EXAMPLE
             $exo_client = [ExchangeOnlineClient]::new("outlook.com", "user@microsoft.com", "dfhsdkjhkjhvkdvbihsgiu")
@@ -616,16 +616,16 @@ class ExchangeOnlineClient {
             Mailbox ID.
 
             .PARAMETER add_blocked_senders_and_domains
-            Blocked senders and domains (Comma seprated).
+            Blocked senders and domains (Comma separated).
 
             .PARAMETER remove_blocked_senders_and_domains
-            Blocked senders and domains (Comma seprated) to remove.
+            Blocked senders and domains (Comma separated) to remove.
 
             .PARAMETER add_trusted_senders_and_domains
-            Trusted senders and domains (Comma seprated).
+            Trusted senders and domains (Comma separated).
 
             .PARAMETER remove_trusted_senders_and_domains
-            Trusted senders and domains (Comma seprated) to remove.
+            Trusted senders and domains (Comma separated) to remove.
 
             .PARAMETER trusted_lists_only
             Whether to trust only list of defined in trusted lists.
@@ -676,16 +676,16 @@ class ExchangeOnlineClient {
             Set junk rules in all managed accounts.
 
             .PARAMETER add_blocked_senders_and_domains
-            Blocked senders and domains (Comma seprated).
+            Blocked senders and domains (Comma separated).
 
             .PARAMETER remove_blocked_senders_and_domains
-            Blocked senders and domains (Comma seprated) to remove.
+            Blocked senders and domains (Comma separated) to remove.
 
             .PARAMETER add_trusted_senders_and_domains
-            Trusted senders and domains (Comma seprated).
+            Trusted senders and domains (Comma separated).
 
             .PARAMETER remove_trusted_senders_and_domains
-            Trusted senders and domains (Comma seprated) to remove.
+            Trusted senders and domains (Comma separated) to remove.
 
             .PARAMETER trusted_lists_only
             Whether to trust only list of defined in trusted lists.
