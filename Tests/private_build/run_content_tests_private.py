@@ -11,7 +11,7 @@ import urllib3
 import demisto_client.demisto_api
 
 from Tests.scripts.utils.log_util import install_logging
-from Tests.test_integration import Docker, check_integration
+from Tests.test_integration import check_integration
 from demisto_sdk.commands.common.constants import PB_Status
 from demisto_sdk.commands.common.tools import str2bool
 
@@ -23,6 +23,8 @@ from Tests.test_content import SettingsTester, DataKeeperTester, \
     SERVER_URL
 
 # Disable insecure warnings
+from demisto_sdk.commands.test_content.Docker import Docker
+
 urllib3.disable_warnings()
 
 
