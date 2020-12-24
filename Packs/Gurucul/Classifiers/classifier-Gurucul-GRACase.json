@@ -1,7 +1,6 @@
 {
 	"defaultIncidentType": "GraCase",
 	"feed": false,
-	"fromServerVersion": "",
 	"id": "Gurucul-GRACases",
 	"incidentSamples": null,
 	"indicatorSamples": null,
