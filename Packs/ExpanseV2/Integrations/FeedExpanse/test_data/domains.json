@@ -1,0 +1,116 @@
+{
+    "data": [
+        {
+            "id": "17f94d88-55bf-32f7-ad61-acb447851ef2",
+            "dateAdded": "2020-11-22T04:00:22.500Z",
+            "domain": "example.example.com",
+            "tenant": {
+                "id": "aac0820c-508d-485f-bec1-c72c5d80c97b",
+                "name": "Example.com Ltd",
+                "tenantId": "aac0820c-508d-485f-bec1-c72c5d80c97b"
+            },
+            "businessUnits": [
+                {
+                    "id": "aac0820c-508d-485f-bec1-c72c5d80c97b",
+                    "name": "BU1",
+                    "tenantId": "aac0820c-508d-485f-bec1-c72c5d80c97b"
+                }
+            ],
+            "providers": [
+                {
+                    "id": "OnPrem",
+                    "name": "On Prem"
+                }
+            ],
+            "firstObserved": "2020-11-20T06:00:53.530Z",
+            "lastObserved": "2020-11-22T05:56:49.031Z",
+            "hasLinkedCloudResources": false,
+            "sourceDomain": "example.com",
+            "whois": [
+                {
+                    "domain": "example.com",
+                    "registryDomainId": null,
+                    "updatedDate": "2017-08-30T20:42:10Z",
+                    "creationDate": "2005-02-21T02:42:10Z",
+                    "registryExpiryDate": "2024-02-21T02:42:10Z",
+                    "reseller": null,
+                    "registrar": {
+                        "name": "MarkMonitor Inc.",
+                        "formattedName": "MarkMonitor",
+                        "whoisServer": "whois.markmonitor.com",
+                        "url": null,
+                        "ianaId": null,
+                        "registrationExpirationDate": null,
+                        "abuseContactEmail": null,
+                        "abuseContactPhone": null
+                    },
+                    "domainStatuses": [
+                        "clientDeleteProhibited clientTransferProhibited clientUpdateProhibited"
+                    ],
+                    "nameServers": [
+                        "NS1.EXAMPLE.COM",
+                        "NS2.EXAMPLE.COM"
+                    ],
+                    "registrant": {
+                        "name": "",
+                        "organization": "Example.com Ltd",
+                        "street": "",
+                        "city": "",
+                        "province": "PR",
+                        "postalCode": "",
+                        "country": "ITALY",
+                        "phoneNumber": "",
+                        "phoneExtension": "",
+                        "faxNumber": "",
+                        "faxExtension": "",
+                        "emailAddress": "",
+                        "registryId": null
+                    },
+                    "admin": {
+                        "name": "",
+                        "organization": "Example.com Ltd",
+                        "street": "",
+                        "city": "",
+                        "province": "PR",
+                        "postalCode": "",
+                        "country": "ITALY",
+                        "phoneNumber": "",
+                        "phoneExtension": "",
+                        "faxNumber": "",
+                        "faxExtension": "",
+                        "emailAddress": "",
+                        "registryId": null
+                    },
+                    "tech": null,
+                    "dnssec": null
+                }
+            ],
+            "isCollapsed": false,
+            "lastSampledIp": "192.0.2.1",
+            "details": null,
+            "lastSubdomainMetadata": null,
+            "dnsResolutionStatus": [
+                "HAS_DNS_RESOLUTION"
+            ],
+            "serviceStatus": [
+                "NO_ACTIVE_SERVICE",
+                "NO_ACTIVE_ON_PREM_SERVICE",
+                "NO_ACTIVE_CLOUD_SERVICE"
+            ],
+            "isPaidLevelDomain": false,
+            "annotations": {
+                "contacts": [],
+                "tags": [],
+                "note": ""
+            }
+        }
+    ],
+    "pagination": {
+        "next": null,
+        "prev": null
+    },
+    "meta": {
+        "nextPageToken": null,
+        "prevPageToken": null
+    }
+}

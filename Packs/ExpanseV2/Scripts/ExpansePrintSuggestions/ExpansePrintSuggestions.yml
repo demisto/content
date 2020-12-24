@@ -1,0 +1,56 @@
+args:
+- description: Formatted list of users connecting to the service.
+  isArray: true
+  name: expanse_users
+- description: Formatted list of firewall devices with evidence of connections.
+  isArray: true
+  name: expanse_devices
+- description: Formatted list of public IPs connecting to the service.
+  isArray: true
+  name: expanse_ips
+- isArray: true
+  name: prisma_cloud_assets
+  description: Formatted list of assets found in Prisma Cloud related to this service.
+- description: List of Shadow IT checks and results.
+  isArray: true
+  name: shadow_it
+- description: IP Address of the service.
+  name: ip
+  required: true
+- description: Port of the service.
+  name: port
+  required: true
+- description: FQDN or Domain of the service.
+  name: fqdn
+- description: Public Cloud region.
+  name: region
+- description: Public cloud service (i.e. EC2).
+  name: service
+- description: Provider of the service.
+  name: provider
+- description: List of Expanse tags associated to the issue.
+  isArray: true
+  name: expanse_issue_tags
+- description: List of Expanse tags associated to the asset.
+  isArray: true
+  name: expanse_asset_tags
+- description: List of Expanse Business Units.
+  isArray: true
+  name: expanse_business_units
+comment: Generates and prints a report in markdown format containing useful suggestions for the Analyst to attribute an Expanse Issue to an owner.
+commonfields:
+  id: ExpansePrintSuggestions
+  version: -1
+dockerimage: demisto/python3:3.8.6.14516
+enabled: true
+name: ExpansePrintSuggestions
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
