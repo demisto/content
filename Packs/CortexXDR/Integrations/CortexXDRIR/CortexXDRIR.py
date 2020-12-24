@@ -1208,19 +1208,107 @@ def get_incidents_command(client, args):
     )
 
 
-def get_endpoint_and_file_context(incident):
-    endpoint_context = {
-        'IPAddress': incident.get('host_ip')
+def get_process_context(alert, process_type):
+    process_context = {
+        'Name': alert.get(f'{process_type}_process_image_name'),
+        'MD5': alert.get(f'{process_type}_process_image_md5'),
+        'SHA256': alert.get(f'{process_type}_process_image_sha256'),
+        'PID': alert.get(f'{process_type}_process_os_pid'),
+        'CommandLine': alert.get(f'{process_type}_process_command_line'),
+        'Path': alert.get(f'{process_type}_process_image_path'),
+        'Start Time': alert.get(f'{process_type}_process_execution_time'),
+        'Hostname': alert.get('host_name')
     }
 
-    file_context = {
-        'Name': incident.get('file_name'),
-        'SHA1': incident.get('file_sha256'),
-        'Path': incident.get('action_file_path'),
-        'MD5': incident.get('action_file_md5')
-    }
+    remove_nulls_from_dictionary(process_context)
+    if len(process_context.keys()) == 1 and 'Hostname' in process_context.keys():
+        return {}
+    return process_context
 
-    return endpoint_context, file_context
+
+def add_to_ip_context(alert, ip_context):
+
+    action_local_ip = alert.get('action_local_ip')
+    action_remote_ip = alert.get('action_remote_ip')
+    if action_local_ip:
+        ip_context.append(
+            {
+                'Address': alert.get('action_local_ip')
+            }
+        )
+
+    if action_remote_ip:
+        ip_context.append(
+            {
+                'Address': alert.get('action_remote_ip')
+            }
+        )
+
+
+def create_context_from_network_artifacts(network_artifacts, ip_context):
+    domain_context = []
+
+    if network_artifacts:
+        for artifact in network_artifacts:
+            if artifact.get('network_domain'):
+                domain_context.append({
+                        'Name': artifact.get('network_domain')
+                    }
+                )
+
+            network_ip_details = {
+                'Address': artifact.get('network_remote_ip'),
+                'GEO.Country': artifact.get('network_country')
+            }
+
+            remove_nulls_from_dictionary(network_ip_details)
+
+            if network_ip_details:
+                ip_context.append(network_ip_details)
+
+    return domain_context
+
+
+def get_indicators_context(incident):
+    file_context = []
+    process_context = []
+    domain_context = {}
+    ip_context = []
+    for alert in incident.get('alerts'):
+        # file context
+        file_details = {
+            'Name': alert.get('action_file_name'),
+            'Path': alert.get('action_file_path'),
+            'SHA265': alert.get('action_file_sha256'),
+            'MD5': alert.get('action_file_md5')
+        }
+        remove_nulls_from_dictionary(file_details)
+
+        if file_details:
+            file_context.append(file_details)
+
+        # process context
+        process_types = ['actor', 'os_actor', 'causality_actor', 'action']
+        for process_type in process_types:
+            single_process_context = get_process_context(alert, process_type)
+            if single_process_context:
+                process_context.append(single_process_context)
+
+        # ip context
+        add_to_ip_context(alert, ip_context)
+
+    network_artifacts = incident.get('network_artifacts', [])
+
+    domain_context = create_context_from_network_artifacts(network_artifacts, ip_context)
+
+    file_artifacts = incident.get('file_artifacts', [])
+    for file in file_artifacts:
+        file_context.append({
+            'Name': file.get('file_name'),
+            'SHA256': file.get('file_sha256')
+        })
+
+    return file_context, process_context, domain_context, ip_context
 
 
 def check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time_timestamp, last_modified_incidents_dict):
@@ -1313,11 +1401,21 @@ def get_incident_extra_data_command(client, args):
     })
 
     context_output = {f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': incident}
-    endpoint_context, file_context = get_endpoint_and_file_context(incident)
     if account_context_output:
         context_output['Account(val.Username==obj.Username)'] = account_context_output
     if endpoint_context_output:
         context_output['Endpoint(val.Hostname==obj.Hostname)'] = endpoint_context_output
+
+    file_context, process_context, domain_context, ip_context = get_indicators_context(incident)
+
+    if file_context:
+        context_output[Common.File.CONTEXT_PATH] = file_context
+    if domain_context:
+        context_output[Common.Domain.CONTEXT_PATH] = domain_context
+    if ip_context:
+        context_output[Common.IP.CONTEXT_PATH] = ip_context
+    if process_context:
+        context_output['Process(val.Name && val.Name == obj.Name)'] = process_context
 
     return (
         '\n'.join(readable_output),
@@ -1714,11 +1812,14 @@ def get_audit_management_logs_command(client, args):
 def create_endpoint_context(audit_logs):
     endpoints = []
     for log in audit_logs:
-        endpoints.append({
+        endpoint_details = {
             'ID': log.get('ENDPOINTID'),
             'Hostname': log.get('ENDPOINTNAME'),
             'Domain': log.get('DOMAIN')
-        })
+        }
+        remove_nulls_from_dictionary(endpoint_details)
+        if endpoint_details:
+            endpoints.append(endpoint_details)
 
     return endpoints
 
@@ -2782,7 +2883,7 @@ def main():
             raise
 
         demisto.error(traceback.format_exc())
-        return_error(str(err))
+        return_error(f'Error: {str(err)}\nTrace\n:{traceback.format_exc()}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
