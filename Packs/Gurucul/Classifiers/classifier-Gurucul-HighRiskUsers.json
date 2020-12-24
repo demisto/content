@@ -1,7 +1,6 @@
 {
 	"defaultIncidentType": "GraHighRiskUser",
 	"feed": false,
-	"fromServerVersion": "",
 	"id": "9474188a-4cc2-4ea2-8ad5-14cef42bdb03_custom",
 	"incidentSamples": null,
 	"indicatorSamples": null,
