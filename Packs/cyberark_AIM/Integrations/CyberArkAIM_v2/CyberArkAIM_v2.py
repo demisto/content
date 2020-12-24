@@ -16,7 +16,7 @@ class Client(BaseClient):
         self._app_id = app_id
         self._folder = folder
         self._safe = safe
-        self._credentials_list = credentials_object.split(',')
+        self._credentials_list = argToList(credentials_object)
         self._username = username
         self._password = password
         self._cert_text = cert_text
@@ -66,7 +66,7 @@ class Client(BaseClient):
         return self._http_request("GET", url_suffix, params=params, auth=self.auth, cert=self.crt)
 
     def list_credentials(self):
-        credential_result = [self.get_credentials(credentials.strip()) for credentials in self._credentials_list]
+        credential_result = [self.get_credentials(credentials) for credentials in self._credentials_list]
         return credential_result
 
 
@@ -103,7 +103,7 @@ def fetch_credentials(client):
             "password": cred.get("Content"),
             "name": cred.get("Name"),
         })
-    demisto.credentials([credentials])
+    demisto.credentials(credentials)
 
 
 def test_module(client: Client) -> str:
