@@ -2,7 +2,7 @@ id: Get File Sample By Hash - Cylance Protect v2
 version: -1
 fromversion: 5.0.0
 name: Get File Sample By Hash - Cylance Protect v2
-description: This playbook returns a file sample to the war-room given the file's SHA256 hash, using Cylance Protect v2 integration.
+description: This playbook returns a file sample to the War Room given the file's SHA256 hash, using Cylance Protect v2 integration.
 starttaskid: "0"
 tasks:
   "0":
@@ -221,7 +221,7 @@ outputs:
 - contextPath: File.Size
   description: File size.
 - contextPath: File.Safelisted
-  description: Whether the file is on the Safe List.
+  description: Whether the file is on the safe list.
 - contextPath: File.Timestamp
   description: Timestamp.
 - contextPath: File.MD5
