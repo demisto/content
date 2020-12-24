@@ -1,22 +1,22 @@
 id: BitcoinAbuse-test
-version: -1
+version: 2
 vcShouldKeepItemLegacyProdMachine: false
 name: BitcoinAbuse-test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: de08589e-6d0f-4b33-8f72-2d019f50bff2
+    taskid: 87cde748-1aad-4153-8dd5-9f9e35e5ea75
     type: start
     task:
-      id: de08589e-6d0f-4b33-8f72-2d019f50bff2
+      id: 87cde748-1aad-4153-8dd5-9f9e35e5ea75
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-        - "1"
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -26,16 +26,16 @@ tasks:
         }
       }
     note: false
-    timertriggers: [ ]
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
   "1":
     id: "1"
-    taskid: 6739a4e6-dc65-4b25-8e4d-1bebc79725ab
+    taskid: a5bbfb9c-cee7-4a07-88f2-55d03237daed
     type: regular
     task:
-      id: 6739a4e6-dc65-4b25-8e4d-1bebc79725ab
+      id: a5bbfb9c-cee7-4a07-88f2-55d03237daed
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -45,14 +45,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "2"
+      - "2"
     scriptarguments:
       all:
         simple: "yes"
-      index: { }
-      key: { }
-      keysToKeep: { }
-      subplaybook: { }
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -62,31 +62,31 @@ tasks:
         }
       }
     note: false
-    timertriggers: [ ]
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
   "2":
     id: "2"
-    taskid: 0de2b8ac-56be-49c8-84b0-08501399e120
+    taskid: 52fcc4c9-2466-4b63-8b55-3094347e8a28
     type: regular
     task:
-      id: 0de2b8ac-56be-49c8-84b0-08501399e120
+      id: 52fcc4c9-2466-4b63-8b55-3094347e8a28
       version: -1
       name: Bitcoin Report Address
-      description: Reports an abuser to Bitcoin Abuse service. 'abuse_type_other' field is
-        required when 'abuse_type' is other
+      description: Reports an abuser to Bitcoin Abuse service. 'abuse_type_other'
+        field is required when 'abuse_type' is other
       script: '|||bitcoin-report-address'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-        - "3"
+      - "4"
     scriptarguments:
       abuse_type:
         simple: bitcoin tumbler
-      abuse_type_other: { }
+      abuse_type_other: {}
       abuser:
         simple: abuser@abuse.net
       address:
@@ -102,45 +102,16 @@ tasks:
         }
       }
     note: false
-    timertriggers: [ ]
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: e46db6bf-349c-456e-82f8-822bafe0833d
-    type: regular
-    task:
-      id: e46db6bf-349c-456e-82f8-822bafe0833d
-      version: -1
-      name: Bitcoin Fetch Indicators
-      description: fetches indicators from BitcoinAbuse API
-      script: BitcoinAbuse|||fetch-indicators
-      type: regular
-      iscommand: true
-      brand: BitcoinAbuse
-    nexttasks:
-      '#none#':
-        - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: [ ]
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
   "4":
     id: "4"
-    taskid: e0f26460-51d7-42ed-861d-e63cb81479dd
+    taskid: 912b954f-9f47-42dc-819e-66369cda7af5
     type: title
     task:
-      id: e0f26460-51d7-42ed-861d-e63cb81479dd
+      id: 912b954f-9f47-42dc-819e-66369cda7af5
       version: -1
       name: Playbook Done
       type: title
@@ -151,11 +122,11 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 520
         }
       }
     note: false
-    timertriggers: [ ]
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -164,13 +135,12 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 535,
         "width": 380,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs: [ ]
-outputs: [ ]
-fromversion: 5.5.0
+inputs: []
+outputs: []
