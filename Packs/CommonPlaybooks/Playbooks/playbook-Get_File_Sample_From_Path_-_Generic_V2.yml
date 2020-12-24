@@ -2,7 +2,7 @@ id: Get File Sample From Path - Generic V2
 version: -1
 name: Get File Sample From Path - Generic V2
 description: |
-  This playbook returns a file sample correlating to a path into the war-room using the following sub-playbooks:
+  This playbook returns a file sample correlating to a path into the War Room using the following sub-playbooks:
   inputs:
   1) Get File Sample From Path - D2.
   2) Get File Sample From Path - VMware Carbon Black EDR (Live Response API).
@@ -43,7 +43,7 @@ tasks:
       id: 8adb1ff3-5400-4f88-8a2b-4511ae8303f5
       version: -1
       name: Use D2 agent?
-      description: Yes if we want to use D2 agent to get the file
+      description: Yes, if we want to use the D2 agent to get the file.
       type: condition
       iscommand: false
       brand: ""
@@ -115,7 +115,7 @@ tasks:
       version: -1
       name: Get File Sample From Path - D2
       description: |-
-        Returns a file sample to the war-room from a path on an endpoint using Demisto Dissolvable Agent (D2)
+        Returns a file sample to the War Room from a path on an endpoint using Demisto Dissolvable Agent (D2).
 
         Input:
         * Credentials - credentials to use when trying to deploy Demisto Dissolvable Agent (D2)  (default: Admin)
@@ -190,8 +190,8 @@ tasks:
       version: -1
       name: Get File Sample From Path - VMware Carbon Black EDR - Live Response API
       description: |-
-        This playbook retrieve file from endpoints by path using VMware Carbon Black EDR (Live Response API).
-        Make sure to provide Carbon Black sensor ID of the endpoint from which you want to retrieve the file.
+        This playbook retrieves a file from endpoints by path using VMware Carbon Black EDR (Live Response API).
+        Make sure to provide the Carbon Black sensor ID of the endpoint from which you want to retrieve the file.
       playbookName: Get File Sample From Path - VMware Carbon Black EDR - Live Response
         API
       type: playbook
@@ -273,7 +273,7 @@ outputs:
   description: The type of the file.
   type: string
 - contextPath: File.Info
-  description: 'General information of the file. '
+  description: General information of the file.
   type: string
 - contextPath: File.MD5
   description: The MD5 hash of the file.
