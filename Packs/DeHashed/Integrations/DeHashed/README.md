@@ -1,5 +1,5 @@
 This integration allows you to check if your personal information such as your email, username, or password is being compromised.
-This integration was integrated and tested with version xx of DeHashed
+
 ## Configure DeHashed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

@@ -1,5 +1,5 @@
 The RSA Archer GRC Platform provides a common foundation for managing policies, controls, risks, assessments and deficiencies across lines of business.
-This integration was integrated and tested with version xx of RSA Archer v2
+
 ## Configure RSA Archer v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

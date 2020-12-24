@@ -3,12 +3,27 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Tripwire",
+            "playbookID": "TestplaybookTripwire",
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "Generic Polling Test",
             "timeout": 250
         },
         {
+            "integrations": "Cisco Umbrella Enforcement",
+            "playbookID": "Cisco Umbrella Enforcement-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "GSuiteAdmin",
             "playbookID": "GSuiteAdmin-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "AzureWAF",
+            "playbookID": "Azure WAF - Test",
             "fromversion": "5.0.0"
         },
         {
@@ -253,6 +268,7 @@
             "playbookID": "AzureFeed - Test",
             "fromversion": "5.5.0"
         },
+
         {
             "playbookID": "CreateIndicatorFromSTIXTest",
             "fromversion": "5.0.0"
@@ -356,6 +372,10 @@
         {
             "integrations": "Maltiverse",
             "playbookID": "Maltiverse Test"
+        },
+        {
+            "integrations": "Box v2",
+            "playbookID": "BoxV2_TestPlaybook"
         },
         {
             "integrations": "MicrosoftGraphMail",
@@ -1397,11 +1417,6 @@
             "playbookID": "OpenPhish Test Playbook"
         },
         {
-            "integrations": "RSA Archer",
-            "playbookID": "Archer-Test-Playbook",
-            "nightly": true
-        },
-        {
             "integrations": "jira-v2",
             "playbookID": "Jira-v2-Test",
             "timeout": 500
@@ -2050,7 +2065,8 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
-            "memory_threshold": 115
+            "memory_threshold": 115,
+            "pid_threshold": 5
         },
         {
             "playbookID": "Phishing - Core - Test - Incident Starter",
@@ -2062,7 +2078,8 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
-            "memory_threshold": 100
+            "memory_threshold": 100,
+            "pid_threshold": 5
         },
         {
             "integrations": "duo",
@@ -2237,6 +2254,7 @@
         {
             "integrations": "iDefense Feed",
             "playbookID": "Feed iDefense Test",
+            "memory_threshold": 100,
             "fromversion": "5.5.0"
         },
         {
@@ -3152,6 +3170,21 @@
         {
             "integrations": "Cryptocurrency",
             "playbookID": "Cryptocurrency-Test"
+        },
+        {
+            "integrations": "Public DNS Feed",
+            "playbookID": "Public_DNS_Feed_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "ExpanseV2",
+            "playbookID": "ExpanseV2 Test",
+            "fromversion": "6.0.0"
+        },
+        {
+            "integrations": "FeedExpanse",
+            "playbookID": "Feed Expanse Test",
+            "fromversion": "6.0.0"
         }
     ],
     "skipped_tests": {
@@ -3202,8 +3235,6 @@
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
         "Google Chronicle Backstory Asset - Test": "Issue 26460",
         "HybridAnalysis-Test": "Issue 26599",
-        "Tenable.io test": "Issue 26727",
-        "Tenable.io Scan Test": "Issue 26727",
         "ThreatConnect v2 - Test": "Issue 26782",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
@@ -3244,7 +3275,11 @@
         "Test-Detonate URL - Crowdstrike": "Issue 30879",
         "nexpose_test": "Issue 31019",
         "CuckooTest": "Issue 25601",
-        "Cisco Umbrella Test": "Issue 24338"
+        "Cisco Umbrella Test": "Issue 24338",
+        "PhishlabsIOC_DRP-Test": "Issue 29589",
+        "Akamai_WAF-Test": "Issue 31900",
+        "Carbon Black Enterprise Protection V2 Test": "Issue 27846",
+        "Archer-Test-Playbook": "Issue 26851"
     },
     "skipped_integrations": {
 
@@ -3258,6 +3293,7 @@
         "Fidelis Elevate Network": "Issue 26453",
         "CrowdStrike Falcon X": "Issue 26209",
         "ArcSight Logger": "Issue 24303",
+        "Sophos Central": "No instance",
         "MxToolBox": "No instance",
         "Prisma Access": "Instance will be provided soon by Lior and Prasen - Issue 27112",
         "AlphaSOC Network Behavior Analytics": "No instance",
@@ -3330,6 +3366,7 @@
         "AWS - Athena - Beta": "Issue 19834",
         "SNDBOX": "Issue 28826",
         "Workday": "License expired Issue: 29595",
+        "FireEyeFeed": "License expired Issue: 31838",
 
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
@@ -3367,6 +3404,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "QRadar_v2": "Test playbook 'test playbook - QRadarCorrelations' has multiple branches",
         "CloudConvert": "has a command that uploads a file (!cloudconvert-upload)",
         "EWS v2": "Fetches bytes data (!ews-get-items-from-folder)",
         "jira-v2": "has a command that uploads a file ( !jira-issue-upload-file)",
