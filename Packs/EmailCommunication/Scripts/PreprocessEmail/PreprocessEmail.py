@@ -2,10 +2,32 @@ import demistomock as demisto
 from CommonServerPython import *
 import json
 import re
+import random
 
-ERROR_TEMPLATE = 'ERROR: PreprocessEmail - {0}: {1}'
+ERROR_TEMPLATE = 'ERROR: PreprocessEmail - {function_name}: {reason}'
 QUOTE_MARKERS = ['<div class="gmail_quote">',
                  '<hr tabindex="-1" style="display:inline-block; width:98%"><div id="divRplyFwdMsg"']
+
+
+def get_query_window():
+    """
+    Check if the user defined the list `XSOAR - Email Communication Days To Query` to give a custom value for the time
+    to query back for related incidents. If yes, use this value, else use the default value of 60 days.
+    """
+    user_defined_time = demisto.executeCommand('getList', {'listName': 'XSOAR - Email Communication Days To Query'})
+    if is_error(user_defined_time):
+        demisto.debug('Error occurred while trying to load the `XSOAR - Email Communication Days To Query` list. Using'
+                      ' the default query time - 60 days')
+        return '60 days'
+
+    try:
+        query_time = user_defined_time[0].get('Contents')
+        return f'{int(query_time)} days'
+    except ValueError:
+        demisto.error('Invalid input for number of days to query in the `XSOAR - Email Communication Days To Query` '
+                      'list. Input should be a number only, representing the number of days to query back.\nUsing the '
+                      'default query time - 60 days')
+        return '60 days'
 
 
 def create_email_html(email_html='', entry_id_list=None):
@@ -96,20 +118,27 @@ def set_email_reply(email_from, email_to, email_cc, html_body, attachments):
 
 def get_incident_by_query(query):
     """
-    Get incident id and return it's details.
+    Get a query and return all incidents details matching the given query.
     Args:
-        query: Query for the incident id.
+        query: Query for the incidents that should be returned.
     Returns:
-        dict. Incident details.
+        dict. The details of all incidents matching the query.
     """
-    res = demisto.executeCommand("GetIncidentsByQuery", {"query": query, "populateFields": "id,status"})[0]
+    # In order to avoid performance issues, limit the number of days to query back for modified incidents. By default
+    # the limit is 60 days and can be modified by the user by adding a list called
+    # `XSOAR - Email Communication Days To Query` (see README for more information).
+    query_time = get_query_window()
 
+    query_from_date = str(parse_date_range(query_time)[0])
+
+    res = demisto.executeCommand("GetIncidentsByQuery", {"query": query, "fromDate": query_from_date,
+                                                         "timeField": "modified", "Contents": "id,status"})[0]
     if is_error(res):
         demisto.results(ERROR_TEMPLATE.format('GetIncidentsByQuery', res['Contents']))
         raise DemistoException(ERROR_TEMPLATE.format('GetIncidentsByQuery', res['Contents']))
 
-    incident_details = json.loads(res['Contents'])[0]
-    return incident_details
+    incidents_details = json.loads(res['Contents'])
+    return incidents_details
 
 
 def check_incident_status(incident_details, email_related_incident):
@@ -190,15 +219,36 @@ def update_latest_message_field(incident_id, item_id):
                       f'"emaillatestmessage" field was not updated with {item_id} value for incident: {incident_id}')
 
 
+def get_email_related_incident_id(email_related_incident_code, email_original_subject):
+    """
+    Get the email generated code and the original text subject of an email and return the incident matching to the
+    email code and original subject.
+    """
+
+    query = f'emailgeneratedcode: {email_related_incident_code}'
+    incidents_details = get_incident_by_query(query)
+    for incident in incidents_details:
+        if email_original_subject in incident.get('emailsubject'):
+            return incident.get('id')
+
+
+def get_unique_code():
+    """
+    Create a 8-digit unique random code that should be used to identify new created incidents.
+    """
+    code_is_unique = False
+    while not code_is_unique:
+        code = f'{random.randrange(1, 10 ** 8):08}'
+        query = f'emailgeneratedcode: {code}'
+        incidents_details = get_incident_by_query(query)
+        if len(incidents_details) == 0:
+            code_is_unique = True
+    return code
+
+
 def main():
     incident = demisto.incident()
     custom_fields = incident.get('CustomFields')
-
-    for label in incident.get('labels', []):
-        if label.get('type') == 'Email/Header/References':
-            email_references = label.get('value').split(",")
-            break
-
     email_from = custom_fields.get('emailfrom')
     email_cc = custom_fields.get('emailcc')
     email_to = custom_fields.get('emailto')
@@ -208,38 +258,35 @@ def main():
     email_latest_message = custom_fields.get('emaillatestmessage')
 
     try:
-        id_from_subject = email_subject.split('#')[1].split()[0]
-        query = f"id:{id_from_subject}"
-        incident_details = get_incident_by_query(query)
-        if not incident_details:
-            raise DemistoException("Cannot find incident with query {query}, trying based on email references header")
-    except (DemistoException, IndexError):  # cannot find incident based on `#` in subject
-        if not email_references:
-            raise DemistoException("No incident ID or references found")
-        refs = " ".join([f'"{r}"' for r in email_references])
-        query = f'emailmessageid:({refs})'
-    try:
-        incident_details = get_incident_by_query(query)
-        incidens_id = incident_details['id']
-        update_latest_message_field(incidens_id, email_latest_message)
-        check_incident_status(incident_details, incidens_id)
-        get_attachments_using_instance(incidens_id, incident.get('labels'))
+        email_related_incident_code = email_subject.split('<')[1].split('>')[0]
+        email_original_subject = email_subject.split('<')[-1].split('>')[1]
+        email_related_incident = get_email_related_incident_id(email_related_incident_code, email_original_subject)
+        update_latest_message_field(email_related_incident, email_latest_message)
+        query = f"id:{email_related_incident}"
+        incident_details = get_incident_by_query(query)[0]
+        check_incident_status(incident_details, email_related_incident)
+        get_attachments_using_instance(email_related_incident, incident.get('labels'))
 
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.
         time.sleep(5)
-        files = get_incident_related_files(incidens_id)
+        files = get_incident_related_files(email_related_incident)
         entry_id_list = get_entry_id_list(attachments, files)
         html_body = create_email_html(email_html, entry_id_list)
 
         email_reply = set_email_reply(email_from, email_to, email_cc, html_body, attachments)
-        add_entries(email_reply, incidens_id)
+        add_entries(email_reply, email_related_incident)
         # False - to not create new incident
         demisto.results(False)
 
-    except (KeyError, IndexError, ValueError) as e:
-        demisto.error(f"The PreprocessEmail script has encountered an error:\n {e} \nA new incident will be created.")
-    except DemistoException:
-        demisto.info("The PreprocessEmail could not correlate this email as an existing incident, creating a new one.")
+    except (IndexError, ValueError, DemistoException) as e:
+        demisto.executeCommand('setIncident', {'id': incident.get('id'),
+                                               'customFields': {'emailgeneratedcode': get_unique_code()}})
+        # True - For creating new incident
+        demisto.results(True)
+        if type(e).__name__ == 'IndexError':
+            demisto.debug('No related incident was found. A new incident was created.')
+        else:
+            demisto.debug(f"A new incident was created. Reason: \n {e}")
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
