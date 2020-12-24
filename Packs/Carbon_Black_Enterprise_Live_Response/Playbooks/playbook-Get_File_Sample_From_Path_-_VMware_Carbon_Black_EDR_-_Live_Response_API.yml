@@ -2,8 +2,8 @@ id: Get File Sample From Path - VMware Carbon Black EDR - Live Response API
 version: -1
 name: Get File Sample From Path - VMware Carbon Black EDR - Live Response API
 description: |-
-  This playbook retrieve file from endpoints by path using VMware Carbon Black EDR (Live Response API).
-  Make sure to provide Carbon Black sensor ID of the endpoint from which you want to retrieve the file.
+  This playbook retrieves a file from a path on an endpoint using VMware Carbon Black EDR (Live Response API).
+  Make sure to provide the Carbon Black sensor ID of the endpoint from which you want to retrieve the file.
 starttaskid: "0"
 tasks:
   "0":
@@ -160,7 +160,7 @@ tasks:
       id: 1f47fc8a-b3d5-4749-8334-fe625088e487
       version: -1
       name: Get File
-      description: Retrieve a file from a path on the endpoint.
+      description: Retrieve a file from a path on an endpoint. 
       script: '|||cb-get-file-from-endpoint'
       type: regular
       iscommand: true
@@ -198,7 +198,7 @@ tasks:
       id: 48e1ce0b-aba6-4b86-8675-6f6fe880ed7c
       version: -1
       name: List the CarbonBlack sessions
-      description: List the CarbonBlack sessions
+      description: List the CarbonBlack sessions.
       script: '|||cb-list-sessions'
       type: regular
       iscommand: true
@@ -232,7 +232,7 @@ tasks:
     task:
       id: 2ab45ea6-9de6-4899-8c00-c067d336de5a
       version: -1
-      name: Is there a open CB Session?
+      name: Is there an open CarbonBlack session?
       description: ''
       type: condition
       iscommand: false
@@ -276,7 +276,7 @@ tasks:
       id: 3989d436-6a7b-4c96-8aea-2e408b35e20c
       version: -1
       name: Create new CB Session
-      description: Create a new CarbonBlack session for a given sensor
+      description: Create a new CarbonBlack session for a given sensor.
       script: carbonblackliveresponse|||cb-session-create
       type: regular
       iscommand: true
@@ -311,7 +311,7 @@ tasks:
       id: 424c062a-88ab-484d-80e3-c375de820cef
       version: -1
       name: CB Get File
-      description: Retrieve a file from a path on the endpoint.
+      description: Retrieve a file from a path on an endpoint.
       script: '|||cb-get-file-from-endpoint'
       type: regular
       iscommand: true
@@ -406,7 +406,7 @@ tasks:
       id: b8b8df75-8ec9-4b16-8040-49d8ff890129
       version: -1
       name: Close CB session
-      description: Close the given session
+      description: Close the given session.
       script: '|||cb-session-close'
       type: regular
       iscommand: true
@@ -451,7 +451,7 @@ inputs:
 - key: Sensor_ID
   value: {}
   required: false
-  description: The sensor ID. Provided the sensor ID to run the command with a new
+  description: The sensor ID. Provide the sensor ID to run the command with a new
     session. The session will be created and closed automatically.
   playbookInputQuery:
 - key: Path
