@@ -331,6 +331,8 @@ references:
         # echo "Successfully merge private and public ID sets"
         # fi
 
+
+
         cp "./Tests/id_set.json" "$CIRCLE_ARTIFACTS/id_set.json"
         rm $GCS_PATH
   build_content_descriptor: &build_content_descriptor
