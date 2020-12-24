@@ -427,7 +427,7 @@ def get_job_summary(client, args):
                 dbot_score=dbot_score
             )
             command_results.append(CommandResults(
-                readable_output=tableToMarkdown("New file indicator was added", file.to_context()),
+                readable_output=tableToMarkdown("New File indicator was added", file.to_context()),
                 indicator=file
             ))
         # Adding the SHA256 to the Result
