@@ -173,7 +173,7 @@ class Client(BaseClient):
         :type action: ``IAMActions``
         :param action: An enum represents the current action (GET, UPDATE, CREATE, DISABLE or ENABLE)
         """
-        if e.__class__ is DemistoException and hasattr(e, 'res') and e.res is not None:
+        if isinstance(e, DemistoException) and e.res is not None:
             error_code = e.res.status_code
 
             if action == IAMActions.DISABLE_USER and error_code in ERROR_CODES_TO_SKIP:

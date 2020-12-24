@@ -6176,23 +6176,24 @@ class IAMVendorActionResult:
 
 
 class IAMUserProfile:
-    """
-        A User Profile object class for IAM integrations.
+    """ A User Profile object class for IAM integrations.
 
-        Attributes:
-            _user_profile (str): The user profile information.
-            _user_profile_delta (str): The user profile delta.
-            _vendor_action_results (list): A List of data returned from the vendor.
+    :type _user_profile: ``str``
+    :param _user_profile: The user profile information.
+
+    :type _user_profile_delta: ``str``
+    :param _user_profile_delta: The user profile delta.
+
+    :type _vendor_action_results: ``list``
+    :param _vendor_action_results: A List of data returned from the vendor.
+
+    :return: None
+    :rtype: ``None``
     """
 
     INDICATOR_TYPE = 'User Profile'
 
     def __init__(self, user_profile, user_profile_delta=None):
-        """ IAMUserProfile c'tor.
-
-        :param user_profile: (dict) the user-profile argument.
-        :param user_profile_delta: (dict) the user-profile argument.
-        """
         self._user_profile = safe_load_json(user_profile)
         self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
         self._vendor_action_results = []
@@ -6204,7 +6205,8 @@ class IAMUserProfile:
         """ Generates a XSOAR IAM entry from the data in _vendor_action_results.
         Note: Currently we are using only the first element of the list, in the future we will support multiple results.
 
-        :return: (dict) A XSOAR entry.
+        :return: A XSOAR entry.
+        :rtype: ``dict``
         """
 
         outputs = self._vendor_action_results[0].create_outputs()
@@ -6270,9 +6272,14 @@ class IAMUserProfile:
     def map_object(self, mapper_name, mapping_type=None):
         """ Returns the user data, in an application data format.
 
-        :param mapper_name: (str) The outgoing mapper from XSOAR to the application.
-        :param mapping_type: (str) The mapping type of the mapper (optional).
-        :return: (dict) the user data, in the app data format.
+        :type mapper_name: ``str``
+        :param mapper_name: The outgoing mapper from XSOAR to the application.
+
+        :type mapping_type: ``str``
+        :param mapping_type: The mapping type of the mapper (optional).
+
+        :return: the user data, in the app data format.
+        :rtype: ``dict``
         """
         if not mapping_type:
             mapping_type = IAMUserProfile.INDICATOR_TYPE
@@ -6284,9 +6291,14 @@ class IAMUserProfile:
     def update_with_app_data(self, app_data, mapper_name, mapping_type=None):
         """ updates the user_profile attribute according to the given app_data
 
-        :param app_data: (dict) The user data in app
-        :param mapper_name: (str) incoming mapper name
-        :param mapping_type: (str) Optional - mapping type
+        :type app_data: ``dict``
+        :param app_data: The user data in app
+
+        :type mapper_name: ``str``
+        :param mapper_name: Incoming mapper name
+
+        :type mapping_type: ``str``
+        :param mapping_type: Optional - mapping type
         """
         if not mapping_type:
             mapping_type = IAMUserProfile.INDICATOR_TYPE
@@ -6296,16 +6308,24 @@ class IAMUserProfile:
 
 
 class IAMUserAppData:
-    """ Holds user attributes retrieved from an application. """
+    """ Holds user attributes retrieved from an application.
 
+    :type id: ``str``
+    :param id: The ID of the user.
+
+    :type username: ``str``
+    :param username: The username of the user.
+
+    :type is_active: ``bool``
+    :param is_active: Whether or not the user is active in the application.
+
+    :type full_data: ``dict``
+    :param full_data: The full data of the user in the application.
+
+    :return: None
+    :rtype: ``None``
+    """
     def __init__(self, user_id, username, is_active, app_data):
-        """ The IAMUserAppData c'tor
-
-            :param user_id: (str) The ID of the user.
-            :param username: (str) The username of the user.
-            :param is_active: (bool) Whether or not the user is active in the application.
-            :param app_data: (dict) The full data of the user in the application.
-        """
         self.id = user_id
         self.username = username
         self.is_active = is_active
@@ -6313,6 +6333,23 @@ class IAMUserAppData:
 
 
 class IAMCommand:
+    """ A class that implements the IAM CRUD commands - should bbe used.
+
+    :type id: ``str``
+    :param id: The ID of the user.
+
+    :type username: ``str``
+    :param username: The username of the user.
+
+    :type is_active: ``bool``
+    :param is_active: Whether or not the user is active in the application.
+
+    :type full_data: ``dict``
+    :param full_data: The full data of the user in the application.
+
+    :return: None
+    :rtype: ``None``
+    """
     def __init__(self, is_create_enabled=True, is_disable_enabled=True, is_update_enabled=True,
                  create_if_not_exists=True, mapper_in=None, mapper_out=None):
         """ The IAMCommand c'tor
