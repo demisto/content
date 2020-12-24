@@ -1,18 +1,18 @@
-This playbook retrieve file from endpoints by path using VMware Carbon Black EDR (Live Response API).
-Make sure to provide Carbon Black sensor ID of the endpoint from which you want to retrieve the file.
+This playbook retrieves a file from endpoints by path using VMware Carbon Black EDR (Live Response API).
+Make sure to provide the Carbon Black sensor ID of the endpoint from which you want to retrieve the file.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* GenericPolling
+GenericPolling
 
 ### Integrations
 * carbonblackliveresponse
 * integration-Carbon_Black_Enterprise_Live_Response
 
 ### Scripts
-* Exists
+Exists
 
 ### Commands
 * cb-get-file-from-endpoint
@@ -25,7 +25,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Sensor_ID | The sensor ID. Provided the sensor ID to run the command with a new session. The session will be created and closed automatically. |  | Optional |
+| Sensor_ID | The sensor ID. Provide the sensor ID to run the command with a new session. The session will be created and closed automatically. |  | Optional |
 | Path | The path of the file to retrieve.<br/>For example:<br/>C:\\users\\folder\\file.txt |  | Optional |
 
 ## Playbook Outputs
