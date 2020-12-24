@@ -1,0 +1,49 @@
+args:
+- default: false
+  isArray: false
+  name: instance_name
+  required: true
+  secret: false
+  description: The instane name to get its parameters
+comment: Gets an integration's parameters
+commonfields:
+  id: GetIntegrationParameters
+  version: -1
+enabled: false
+name: GetIntegrationParameters
+outputs:
+- contextPath: InstanceParameters.instance_name
+  type: String
+  description: The instance name
+- contextPath: InstanceParameters.system
+  description: Is system integration (not custom)
+  type: Boolean
+- contextPath: InstanceParameters.deprecated
+  description: Is deprecated integration
+  type: Boolean
+- contextPath: type
+  description: Integration code type (python or javascript)
+  type: String
+- contextPath: isFetch
+  description: Is fetch configured
+  type: Boolean
+- contextPath: InstanceParameters.proxy
+  description: is "use proxy" ticked. If any param isn't called proxy, it will be
+    wrong.
+  type: Boolean
+- contextPath: InstanceParameters.insecure
+  description: is "use unsecure connection" ticked. If any param isn't called insecure,
+    it will be wrong.
+  type: Boolean
+- contextPath: InstanceParameters.engine
+  description: The engine used by the integration, if any.
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- ''
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.6.14516
+fromversion: 5.0.0

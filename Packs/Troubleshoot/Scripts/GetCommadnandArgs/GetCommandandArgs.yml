@@ -1,0 +1,31 @@
+args:
+- default: false
+  description: Instance to check command on
+  isArray: false
+  name: instance_name
+  required: false
+  secret: false
+- default: false
+  description: command line to process
+  isArray: false
+  name: command_line
+  required: false
+  secret: false
+comment: Get Command and Args
+commonfields:
+  id: GetCommandandArgs
+  version: -1
+enabled: false
+name: GetCommandandArgs
+outputs:
+- contextPath: HelloWorld.hello
+  description: Should be Hello **something** here.
+  type: String
+script: '-'
+system: false
+tags:
+- helloworld
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.8.3.8715
