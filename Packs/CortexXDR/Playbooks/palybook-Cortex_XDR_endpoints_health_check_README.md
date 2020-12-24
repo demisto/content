@@ -1,6 +1,6 @@
-This playbook will query disconnected/lost Cortex XDR endpoints with a provided last seen time range playbook input.
-The playbook will also generate a CSV report, including a detailed list of the unhealthy endpoints, and send the report to the provided email addresses.
-This playbook also includes an incident type with a dedicated layout to visualize the collected data.
+This playbook queries disconnected/lost Cortex XDR endpoints with a provided last seen time range playbook input.
+The playbook generates a CSV report, including a detailed list of the unhealthy endpoints, and sends the report to the provided email addresses.
+The playbook includes an incident type with a dedicated layout to visualize the collected data.
 Supported Cortex XSOAR versions: 5.5.0 and later.
 
 
@@ -11,7 +11,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* CortexXDRIR
+CortexXDRIR
 
 ### Scripts
 This playbook does not use any scripts.
@@ -26,10 +26,10 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| LastSeenStartDate | Last seen start date range filter in  yyyy-mm-dd format |  | Optional |
-| LastSeenEndDate | Last seen end date range filter in  yyyy-mm-dd format |  | Optional |
+| LastSeenStartDate | Last seen start date range filter in  yyyy-mm-dd format. |  | Optional |
+| LastSeenEndDate | Last seen end date range filter in  yyyy-mm-dd format. |  | Optional |
 | Email | Email addresses to send the disconnected endpoints report. |  | Optional |
-| MessageBody | Body for the report email message.  | This message contains an automatically generated report by Cortex XSOAR, including a list of unhealthy and disconnected Cortex XDR endpoints.<br/>Please investigate and remediate according to the organisation's policy. | Optional |
+| MessageBody | Body for the report email message.  | This message contains an automatically generated report by Cortex XSOAR, including a list of unhealthy and disconnected Cortex XDR endpoints.<br/>Please investigate and remediate according to the organization's policy. | Optional |
 
 ## Playbook Outputs
 ---
