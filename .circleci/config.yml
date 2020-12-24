@@ -325,10 +325,10 @@ references:
         # Check if the ID sets merge successfully
         if [ "$ID_SET_FILE_SIZE" -eq "$UNIFIED_ID_SET_FILE_SIZE" ]
         then
-          echo "Successfully merge private and public ID sets"
-        else
           echo "There is duplicates between private and bublic ID sets"
           exit 1
+        else
+          echo "Successfully merge private and public ID sets"
         fi
 
         cp "./Tests/id_set.json" "$CIRCLE_ARTIFACTS/id_set.json"
