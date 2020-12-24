@@ -230,7 +230,7 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             result = test_module_command(client)
-            demisto.results(result)
+            return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
