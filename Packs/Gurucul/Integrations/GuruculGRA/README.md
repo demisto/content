@@ -625,14 +625,14 @@ Retrieve List of All Orphan / Rogue Accounts.
 
 
 
-### fetch-gra-users-details
+### gra-fetch-users-details
 ***
 get details of the user.
 
 
 #### Base Command
 
-`fetch-gra-users-details`
+`gra-fetch-users-details`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -689,7 +689,7 @@ get details of the user.
 
 
 
-### fetch-gra-users-details
+### gra-fetch-users-details
 ***
 get details of the user.
 

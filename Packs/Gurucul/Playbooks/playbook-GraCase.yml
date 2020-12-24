@@ -137,3 +137,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- TestGraPlayBook

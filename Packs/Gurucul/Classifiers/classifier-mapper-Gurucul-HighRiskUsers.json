@@ -1,43 +1,30 @@
 {
-	"defaultIncidentType": "GraHighRiskUser",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "Gurucul-HighRiskUsers-mapper",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {
-		"HighRiskUser": "GraHighRiskUser"
-	},
-	"locked": false,
-	"logicalVersion": 0,
-	"mapping": {
-		"GraHighRiskUser": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"name": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "employeeId",
-						"transformers": []
-					},
-					"simple": ""
-				}
-			}
-		}
-	},
-	"name": "Gurucul-HighRiskUsers Incoming Mapper",
-	"nameRaw": "Gurucul-HighRiskUsers Incoming Mapper",
-	"packID": "",
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1,
-	"fromVersion": "6.0.0"
+    "defaultIncidentType": "GraHighRiskUser",
+    "description": "",
+    "feed": false,
+    "id": "Gurucul-HighRiskUsers-mapper",
+    "mapping": {
+        "GraHighRiskUser": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "employeeId",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "Gurucul-HighRiskUsers Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

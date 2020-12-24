@@ -1,40 +1,26 @@
 {
-	"defaultIncidentType": "GraCase",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "Gurucul-GRACases",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {
-		"GRACase": "GraCase"
-	},
-	"locked": false,
-	"logicalVersion": 0,
-	"name": "Gurucul-GRACases - Classifier",
-	"nameRaw": "Gurucul-GRACases - Classifier",
-	"packID": "",
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": {
-			"accessor": "",
-			"filters": [],
-			"root": "incidentType",
-			"transformers": []
-		},
-		"simple": ""
-	},
-	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1,
-	"fromVersion": "6.0.0",
-	"description": "Classifies Gurucul GRA Case Incident.",
-	"brands": null,
-	"packPropagationLabels": [
-		"all"
-	]
+    "defaultIncidentType": "GraCase",
+    "feed": false,
+    "id": "Gurucul-GRACases",
+    "keyTypeMap": {
+        "GRACase": "GraCase"
+    },
+    "name": "Gurucul-GRACases - Classifier",
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [
+
+            ],
+            "root": "incidentType",
+            "transformers": [
+
+            ]
+        },
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "Classifies Gurucul GRA Case Incident."
 }

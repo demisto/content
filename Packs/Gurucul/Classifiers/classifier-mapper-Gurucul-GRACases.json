@@ -1,124 +1,147 @@
 {
-	"defaultIncidentType": "GraCase",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "Gurucul-GRACases-mapper",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {
-		"GRACase": "GraCase"
-	},
-	"locked": false,
-	"logicalVersion": 0,
-	"mapping": {
-		"GraCase": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Gra Case Id": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "caseId",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Gra Entity": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "entity",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Gra Entity Id": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "entityId",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Gra Entity Type Id": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "entityTypeId",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Gra Open Date": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "openDate",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Gra Owner Id": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "ownerId",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Gra Owner Name": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "ownerName",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Gra Owner Type": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "ownerType",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Gra Risk Date": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "riskDate",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"name": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "entity",
-						"transformers": []
-					},
-					"simple": ""
-				}
-			}
-		}
-	},
-	"name": "Gurucul-GRACases Incoming Mapper",
-	"nameRaw": "Gurucul-GRACases Incoming Mapper",
-	"packID": "",
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1,
-	"fromVersion": "6.0.0"
+    "defaultIncidentType": "GraCase",
+    "description": "",
+    "feed": false,
+    "id": "Gurucul-GRACases-mapper",
+    "mapping": {
+        "GraCase": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Gra Case Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "caseId",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Gra Entity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "entity",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Gra Entity Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "entityId",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Gra Entity Type Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "entityTypeId",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Gra Open Date": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "openDate",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Gra Owner Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "ownerId",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Gra Owner Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "ownerName",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Gra Owner Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "ownerType",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Gra Risk Date": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "riskDate",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "entity",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "Gurucul-GRACases Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

@@ -1,4 +1,4 @@
-id: 3428794d-0afe-4810-8b3b-038a499ef8bd
+id: GraHighRiskUser
 version: -1
 fromversion: 5.0.0
 name: GraHighRiskUser
@@ -9,9 +9,9 @@ tasks:
     id: "0"
     taskid: d7f86e61-f72e-41dd-8539-5f02963f98a0
     type: start
-    description: start playbook
     task:
       id: d7f86e61-f72e-41dd-8539-5f02963f98a0
+      description: start playbook
       version: -1
       name: ""
       iscommand: false
@@ -137,3 +137,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- TestGraPlayBook

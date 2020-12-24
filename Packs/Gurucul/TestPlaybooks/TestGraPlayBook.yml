@@ -1140,9 +1140,9 @@ tasks:
     task:
       id: '22'
       version: -1
-      name: fetch-gra-users-details
+      name: gra-fetch-users-details
       description: ''
-      script: '|||fetch-gra-users-details'
+      script: '|||gra-fetch-users-details'
       type: regular
       iscommand: true
       brand: ''

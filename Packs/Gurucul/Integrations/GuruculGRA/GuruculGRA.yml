@@ -578,7 +578,7 @@ script:
       description: Risk Score
       type: number
     description: Retrieve User Activity for a Given User
-  - name: fetch-gra-users-details
+  - name: gra-fetch-users-details
     arguments:
     - name: employee_id
       required: true
@@ -626,7 +626,7 @@ script:
     - contextPath: Gra.User.exitDate
       description: Exit Date
       type: date
-    description: get details of the user
+    description: Get details of the user
   - name: gra-highRisk-users
     arguments:
     - name: page

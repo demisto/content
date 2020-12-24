@@ -203,22 +203,21 @@ def test_module_command(client: Client) -> str:
 
 
 def main() -> None:
-
-    api_key = demisto.params().get('apikey')
-    base_url = urljoin(demisto.params()['url'], '/api/')
-    verify_certificate = not demisto.params().get('insecure', False)
-    first_fetch_time = arg_to_timestamp(
-        arg=demisto.params().get('first_fetch', '1 days'),
-        arg_name='First fetch time',
-        required=True
-    )
-    assert isinstance(first_fetch_time, int)
-    proxy = demisto.params().get('proxy', False)
-    page = demisto.args().get('page', "1")
-    page_count_no = demisto.args().get('max', "25")
-    demisto.debug(f'Command being called is {demisto.command()}')
-    params = {'page': page, 'max': page_count_no}
     try:
+        api_key = demisto.params().get('apikey')
+        base_url = urljoin(demisto.params()['url'], '/api/')
+        verify_certificate = not demisto.params().get('insecure', False)
+        first_fetch_time = arg_to_timestamp(
+            arg=demisto.params().get('first_fetch', '1 days'),
+            arg_name='First fetch time',
+            required=True
+        )
+        assert isinstance(first_fetch_time, int)
+        proxy = demisto.params().get('proxy', False)
+        page = demisto.args().get('page', "1")
+        page_count_no = demisto.args().get('max', "25")
+        demisto.debug(f'Command being called is {demisto.command()}')
+        params = {'page': page, 'max': page_count_no}
         headers = {
             'Authorization': f'Bearer {api_key}'
         }
@@ -230,7 +229,7 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             result = test_module_command(client)
-            demisto.results(result)
+            return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
@@ -291,7 +290,7 @@ def main() -> None:
             user_activities_url = '/user/' + demisto.args().get('employee_id') + '/activity'
             fetch_records(client, user_activities_url, 'Gra.User.Activity', 'employee_id', params)
 
-        elif demisto.command() == 'fetch-gra-users-details':
+        elif demisto.command() == 'gra-fetch-users-details':
             fetch_records(client, '/users/' + demisto.args().get('employee_id'), 'Gra.User', 'employeeId', params)
 
         elif demisto.command() == 'gra-highRisk-users':

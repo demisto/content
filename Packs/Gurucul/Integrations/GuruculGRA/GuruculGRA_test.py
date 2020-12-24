@@ -352,7 +352,7 @@ def test_fetch_gra_users_details(requests_mock):
         Validate key field
     """
     from GuruculGRA import Client, fetch_record_command
-    mock_response = util_load_json('test_data/fetch-gra-users-details.json')
+    mock_response = util_load_json('test_data/gra-fetch-users-details.json')
     requests_mock.get('https://test.com/api/users/AB1234',
                       json=mock_response)
     api_url = '/users/AB1234'
