@@ -1,4 +1,4 @@
-This playbook returns a file sample to the war-room given the file's SHA256 hash, using Cylance Protect v2 integration.
+This playbook returns a file sample to the War Room given the file's SHA256 hash, using Cylance Protect v2 integration.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
