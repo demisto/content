@@ -901,7 +901,7 @@ jobs:
 
   Server Master:
     <<: *container_config
-    resource_class: medium
+    resource_class: medium+
     <<: *environment
     steps:
       - *attach_workspace

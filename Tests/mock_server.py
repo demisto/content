@@ -252,7 +252,7 @@ class MITMProxy:
         }
         response = demisto_client.generic_request_func(self=client, path='/system/config',
                                                        method='POST', body=data)
-        self.logging_module.debug(f'Server configurations response:\n{pformat(response)}')
+        self.logging_module.debug(f'Server configurations response:\n{pformat(ast.literal_eval(response[0]))}')
 
         return response
 
