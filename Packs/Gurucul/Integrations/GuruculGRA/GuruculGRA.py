@@ -117,10 +117,10 @@ def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[
 
     if last_fetch is None:
         last_fetch = first_fetch_time
-        case_url = '/cases/OPEN/riskdate/' + (datetime.fromtimestamp(cast(int, last_fetch)).strftime('%Y-%m-%d'))
+        case_url = '/cases/OPEN/opendate/' + (datetime.fromtimestamp(cast(int, last_fetch)).strftime('%Y-%m-%d'))
     else:
         last_fetch = int(last_fetch)
-        case_url = '/cases/OPEN/riskdate/lastminute'
+        case_url = '/cases/OPEN/opendate/lastminute'
     latest_created_time = cast(int, last_fetch)
     incidents: List[Dict[str, Any]] = []
     page = 1
