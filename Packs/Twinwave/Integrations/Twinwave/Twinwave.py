@@ -1,4 +1,3 @@
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -472,7 +471,7 @@ def get_job_summary(client, args):
         readable_output += tableToMarkdown('Twinwave Job Summary', result,
                                            headers=['ID', 'URL', 'State', 'DisplayScore',
                                                     'ResourceCount', 'CreatedAt'])
-    command_results.append(CommandResults(
+    command_results.insert(0, CommandResults(
         readable_output=readable_output,
         outputs_prefix="Twinwave.JobSummary",
         outputs_key_field='ID',
