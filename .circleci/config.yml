@@ -322,7 +322,7 @@ references:
 
         cp "./Tests/id_set.json" "$CIRCLE_ARTIFACTS/id_set.json"
         rm $GCS_PATH
-  build_content_descriptor: kz&build_content_descriptor
+  build_content_descriptor: &build_content_descriptor
     run:
       name: Build Content Descriptor
       when: always
