@@ -311,7 +311,6 @@ references:
         echo "$GCS_MARKET_KEY" > "$GCS_PATH"
         gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
 
-
         # Create ID set
         demisto-sdk create-id-set -o ./Tests/id_set.json
 
