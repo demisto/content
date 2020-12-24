@@ -148,6 +148,12 @@ def test_connection(client, params):
     if params.get('self_deployed', False) and not params.get('auth_code'):
         return_error('You must enter an authorization code in a self-deployed configuration.')
     client.ms_client.get_access_token(AZURE_MANAGEMENT_RESOURCE)  # If fails, MicrosoftApiModule returns an error
+    try:
+        execute_query_command(client, {'query': 'Usage | take 1'})
+    except Exception as e:
+        return_error('Could not authorize to `api.loganalytics.io` resource. This could be due to one of the following:'
+                     '\n1. Workspace ID is wrong.'
+                     '\n2. Missing necessary grant IAM privileges in your workspace to the AAD Application.', e)
     return_outputs('```✅ Success!```')
 
 

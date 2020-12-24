@@ -1,0 +1,1652 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Sophos Central
+  version: -1
+configuration:
+- additionalinfo: The Sophos account secret should be in the password field.
+  display: Sophos account ID
+  name: credentials
+  required: true
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- additionalinfo: Choose the severity(s) (not minimum) to fetch. If none is chosen,
+    all severity levels will be returned.
+  display: Fetch Severity
+  name: fetch_severity
+  options:
+  - low
+  - medium
+  - high
+  required: false
+  type: 16
+- additionalinfo: Choose one or more categories to fetch. If none is chosen,
+    all categories will be returned.
+  display: Fetch Category
+  name: fetch_category
+  options:
+  - azure
+  - adSync
+  - applicationControl
+  - appReputation
+  - blockListed
+  - connectivity
+  - cwg
+  - denc
+  - downloadReputation
+  - endpointFirewall
+  - fenc
+  - forensicSnapshot
+  - general
+  - iaas
+  - iaasAzure
+  - isolation
+  - malware
+  - mtr
+  - mobiles
+  - policy
+  - protection
+  - pua
+  - runtimeDetections
+  - security
+  - smc
+  - systemHealth
+  - uav
+  - uncategorized
+  - updating
+  - utm
+  - virt
+  - wireless
+  - xgEmail
+  required: false
+  type: 16
+- additionalinfo: Maximum number of alerts per fetch. Default is 50. Maximum is 100.
+  defaultvalue: '50'
+  display: Fetch Limit
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: The unified console for managing Sophos products.
+display: Sophos Central
+name: Sophos Central
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of items to return. Default is "50". Maximum is "100".
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: List alerts.
+    execution: false
+    name: sophos-central-alert-list
+    outputs:
+    - contextPath: SophosCentral.Alert.allowedActions
+      description: Actions that you can perform on these alerts.
+      type: String
+    - contextPath: SophosCentral.Alert.category
+      description: Alert category.
+      type: String
+    - contextPath: SophosCentral.Alert.description
+      description: Alert description.
+      type: String
+    - contextPath: SophosCentral.Alert.groupKey
+      description: Alert group key.
+      type: String
+    - contextPath: SophosCentral.Alert.id
+      description: The alert ID.
+      type: String
+    - contextPath: SophosCentral.Alert.managedAgentId
+      description: The alert source ID.
+      type: String
+    - contextPath: SophosCentral.Alert.managedAgentType
+      description: The source that triggered the alert.
+      type: String
+    - contextPath: SophosCentral.Alert.person
+      description: The ID of the referenced person object.
+      type: String
+    - contextPath: SophosCentral.Alert.product
+      description: Product type.
+      type: String
+    - contextPath: SophosCentral.Alert.raisedAt
+      description: When the alert was triggered.
+      type: Date
+    - contextPath: SophosCentral.Alert.severity
+      description: Severity level for the alert.
+      type: String
+    - contextPath: SophosCentral.Alert.tenantId
+      description: Tenant ID for the alert.
+      type: String
+    - contextPath: SophosCentral.Alert.tenantName
+      description: Tenant name.
+      type: String
+    - contextPath: SophosCentral.Alert.type
+      description: Alert type.
+      type: String
+  - arguments:
+    - default: false
+      description: The alert ID.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a single alert by ID.
+    execution: false
+    name: sophos-central-alert-get
+    outputs:
+    - contextPath: SophosCentral.Alert.allowedActions
+      description: Actions that you can perform on these alerts.
+      type: String
+    - contextPath: SophosCentral.Alert.category
+      description: Alert category.
+      type: String
+    - contextPath: SophosCentral.Alert.description
+      description: Alert description.
+      type: String
+    - contextPath: SophosCentral.Alert.groupKey
+      description: Alert group key.
+      type: String
+    - contextPath: SophosCentral.Alert.id
+      description: The alert ID.
+      type: String
+    - contextPath: SophosCentral.Alert.managedAgentId
+      description: The alert source ID.
+      type: String
+    - contextPath: SophosCentral.Alert.managedAgentType
+      description: The source that triggered the alert.
+      type: String
+    - contextPath: SophosCentral.Alert.person
+      description: The ID of the referenced person object.
+      type: String
+    - contextPath: SophosCentral.Alert.product
+      description: Product type.
+      type: String
+    - contextPath: SophosCentral.Alert.raisedAt
+      description: When the alert was triggered.
+      type: Date
+    - contextPath: SophosCentral.Alert.severity
+      description: Severity level for the alert.
+      type: String
+    - contextPath: SophosCentral.Alert.tenantId
+      description: Tenant ID for the alert.
+      type: String
+    - contextPath: SophosCentral.Alert.tenantName
+      description: Tenant name.
+      type: String
+    - contextPath: SophosCentral.Alert.type
+      description: Alert type.
+      type: String
+  - arguments:
+    - default: false
+      description: Comma-separated list of alert IDs.
+      isArray: true
+      name: alert_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Actions to perform on the alerts. Possible values are: "acknowledge", "cleanPua", "cleanVirus", "authPua", "clearThreat", "clearHmpa", "sendMsgPua", and "sendMsgThreat".'
+      isArray: false
+      name: action
+      predefined:
+      - acknowledge
+      - cleanPua
+      - cleanVirus
+      - authPua
+      - clearThreat
+      - clearHmpa
+      - sendMsgPua
+      - sendMsgThreat
+      required: true
+      secret: false
+    - default: false
+      description: Message to send for the action.
+      isArray: false
+      name: message
+      required: false
+      secret: false
+    deprecated: false
+    description: Perform an action on the alerts.
+    execution: false
+    name: sophos-central-alert-action
+    outputs:
+    - contextPath: SophosCentral.AlertAction.action
+      description: Actions that you can perform on the alert.
+      type: String
+    - contextPath: SophosCentral.AlertAction.alertId
+      description: Alert ID.
+      type: String
+    - contextPath: SophosCentral.AlertAction.completedAt
+      description: Time when the action was completed.
+      type: Date
+    - contextPath: SophosCentral.AlertAction.id
+      description: Alert action ID.
+      type: String
+    - contextPath: SophosCentral.AlertAction.requestedAt
+      description: Time when the action was requested.
+      type: Date
+    - contextPath: SophosCentral.AlertAction.result
+      description: The result of the action.
+      type: String
+    - contextPath: SophosCentral.AlertAction.startedAt
+      description: Time when the action was started.
+      type: Date
+    - contextPath: SophosCentral.AlertAction.status
+      description: Status of an alert action.
+      type: String
+  - arguments:
+    - default: false
+      description: Alert group key.
+      isArray: false
+      name: group_key
+      required: false
+      secret: false
+    - default: false
+      description: Time on which or after the alerts were raised. Use ISO time format (YYYY-MM-DDTHH:MM:SSZ).
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: false
+      description: Time before which alerts were raised. Use ISO time format (YYYY-MM-DDTHH:MM:SSZ).
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    - default: false
+      description: The date range in which to search from the current time instead of a start/end time in the format (<number> <time unit>, e.g., 12 hours, 7 days). date_range will overwrite the start and end arguments if defined.
+      isArray: false
+      name: date_range
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Alerts for a product(s). Possible values are: "other", "endpoint", "server", "mobile", "encryption", "emailGateway", "webGateway", "phishThreat", "wireless", "iaas", and "firewall".'
+      isArray: true
+      name: product
+      predefined:
+      - other
+      - endpoint
+      - server
+      - mobile
+      - encryption
+      - emailGateway
+      - webGateway
+      - phishThreat
+      - wireless
+      - iaas
+      - firewall
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Alert category(s).
+      isArray: true
+      name: category
+      predefined:
+      - azure
+      - adSync
+      - applicationControl
+      - appReputation
+      - blockListed
+      - connectivity
+      - cwg
+      - denc
+      - downloadReputation
+      - endpointFirewall
+      - fenc
+      - forensicSnapshot
+      - general
+      - iaas
+      - iaasAzure
+      - isolation
+      - malware
+      - mtr
+      - mobiles
+      - policy
+      - protection
+      - pua
+      - runtimeDetections
+      - security
+      - smc
+      - systemHealth
+      - uav
+      - uncategorized
+      - updating
+      - utm
+      - virt
+      - wireless
+      - xgEmail
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Alerts for a specific severity level(s). Possible values are: "high", "medium", and "low".'
+      isArray: true
+      name: severity
+      predefined:
+      - high
+      - medium
+      - low
+      required: false
+      secret: false
+    - default: false
+      description: List of IDs.
+      isArray: true
+      name: ids
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of items to return. Default is "50". Maximum is "100".
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get alerts matching request.
+    execution: false
+    name: sophos-central-alert-search
+    outputs:
+    - contextPath: SophosCentral.Alert.allowedActions
+      description: Actions that you can perform on these alerts.
+      type: String
+    - contextPath: SophosCentral.Alert.category
+      description: Alert category.
+      type: String
+    - contextPath: SophosCentral.Alert.description
+      description: Alert description.
+      type: String
+    - contextPath: SophosCentral.Alert.groupKey
+      description: Alert group key.
+      type: String
+    - contextPath: SophosCentral.Alert.id
+      description: The alert ID.
+      type: String
+    - contextPath: SophosCentral.Alert.managedAgentId
+      description: The alert source ID.
+      type: String
+    - contextPath: SophosCentral.Alert.managedAgentType
+      description: The source that triggered the alert.
+      type: String
+    - contextPath: SophosCentral.Alert.person
+      description: The ID of the referenced person object.
+      type: String
+    - contextPath: SophosCentral.Alert.product
+      description: Product type.
+      type: String
+    - contextPath: SophosCentral.Alert.raisedAt
+      description: When the alert was triggered.
+      type: Date
+    - contextPath: SophosCentral.Alert.severity
+      description: Severity level for the alert.
+      type: String
+    - contextPath: SophosCentral.Alert.tenantId
+      description: Tenant ID for the Alert.
+      type: String
+    - contextPath: SophosCentral.Alert.tenantName
+      description: Tenant name.
+      type: String
+    - contextPath: SophosCentral.Alert.type
+      description: Alert type.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'Match endpoints that have any of the specified health statuses. Possible values are: "bad", "good", "suspicious", and "unknown".'
+      isArray: true
+      name: health_status
+      predefined:
+      - bad
+      - good
+      - suspicious
+      - unknown
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Match endpoints that have any of the specified endpoint types. Possible values are: "computer", "server", and "securityVm".'
+      isArray: true
+      name: endpoint_type
+      predefined:
+      - computer
+      - server
+      - securityVm
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether tamper protection is enabled. Possible values are: "true" and "false".'
+      isArray: false
+      name: tamper_protection_enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Match endpoints that have any of the specified lockdown statuses. Possible values are: "creatingWhitelist", "installing", "locked", "notInstalled", "registering", "starting", "stopping", "unavailable", "uninstalled", and "unlocked".'
+      isArray: true
+      name: lockdown_status
+      predefined:
+      - creatingWhitelist
+      - installing
+      - locked
+      - notInstalled
+      - registering
+      - starting
+      - stopping
+      - unavailable
+      - uninstalled
+      - unlocked
+      required: false
+      secret: false
+    - default: false
+      description: The datetime before which the endpoints were last seen (UTC).
+      isArray: false
+      name: last_seen_before
+      required: false
+      secret: false
+    - default: false
+      description: The datetime on or after which the endpoints were last seen (UTC).
+      isArray: false
+      name: last_seen_after
+      required: false
+      secret: false
+    - default: false
+      description: List of IDs.
+      isArray: true
+      name: ids
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Type of view to be returned in the response. Possible values are: "basic", "summary", and "full".'
+      isArray: false
+      name: view
+      predefined:
+      - basic
+      - summary
+      - full
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of items to return. Default is "50". Maximum is "100".
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: List all endpoints for a tenant.
+    execution: false
+    name: sophos-central-endpoint-list
+    outputs:
+    - contextPath: SophosCentral.Endpoint.assignedProductCodes
+      description: Code of a product assigned to the endpoint.
+      type: String
+    - contextPath: SophosCentral.Endpoint.associatedPersonId
+      description: The unique ID for the person associated with the endpoint.
+      type: String
+    - contextPath: SophosCentral.Endpoint.associatedPersonName
+      description: Name of the person associated with the endpoint.
+      type: String
+    - contextPath: SophosCentral.Endpoint.associatedPersonViaLogin
+      description: The login of the person associated with the endpoint.
+      type: String
+    - contextPath: SophosCentral.Endpoint.groupId
+      description: The unique ID for the endpoint group.
+      type: String
+    - contextPath: SophosCentral.Endpoint.groupName
+      description: Endpoint group name.
+      type: String
+    - contextPath: SophosCentral.Endpoint.hostname
+      description: The hostname of the endpoint.
+      type: String
+    - contextPath: SophosCentral.Endpoint.id
+      description: The unique ID for the endpoint.
+      type: String
+    - contextPath: SophosCentral.Endpoint.health
+      description: Health status of the endpoint.
+      type: String
+    - contextPath: SophosCentral.Endpoint.ipv4Addresses
+      description: IPv4 address of the endpoint.
+      type: String
+    - contextPath: SophosCentral.Endpoint.ipv6Addresses
+      description: IPv6 address of the endpoint.
+      type: String
+    - contextPath: SophosCentral.Endpoint.macAddresses
+      description: MAC address of the endpoint.
+      type: String
+    - contextPath: SophosCentral.Endpoint.osBuild
+      description: Operating system build.
+      type: String
+    - contextPath: SophosCentral.Endpoint.osIsServer
+      description: Whether the operating system is a server operating system.
+      type: Boolean
+    - contextPath: SophosCentral.Endpoint.osName
+      description: Operating system name as reported by the endpoint.
+      type: String
+    - contextPath: SophosCentral.Endpoint.osPlatform
+      description: Operating system platform type.
+      type: String
+    - contextPath: SophosCentral.Endpoint.tamperProtectionEnabled
+      description: Whether tamper protection is enabled.
+      type: Boolean
+    - contextPath: SophosCentral.Endpoint.type
+      description: The endpoint type.
+      type: String
+    - contextPath: SophosCentral.Endpoint.online
+      description: Whether the endpoint is online.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The endpoint ID(s).
+      isArray: true
+      name: endpoint_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Scan endpoints of a tenant.
+    execution: false
+    name: sophos-central-endpoint-scan
+    outputs:
+    - contextPath: SophosCentral.EndpointScan.id
+      description: Identifies a request to perform or configure the endpoint scan.
+      type: String
+    - contextPath: SophosCentral.EndpointScan.requestedAt
+      description: Time when the scan was requested.
+      type: Date
+    - contextPath: SophosCentral.EndpointScan.status
+      description: The status of an endpoint scan.
+      type: String
+  - arguments:
+    - default: false
+      description: The endpoint ID(s).
+      isArray: true
+      name: endpoint_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: false
+      description: 'Whether to return the tamper protection password. Possible values are: "true" and "false".'
+      isArray: false
+      name: get_password
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Get tamper protection information for one or more endpoints. Potentially harmful because of the password.
+    execution: true
+    name: sophos-central-endpoint-tamper-get
+    outputs:
+    - contextPath: SophosCentral.EndpointTamper.endpointId
+      description: ID of the endpoint in regards to the tamper settings.
+      type: String
+    - contextPath: SophosCentral.EndpointTamper.enabled
+      description: Whether tamper protection should be turned on for the endpoint.
+      type: String
+    - contextPath: SophosCentral.EndpointTamper.password
+      description: Current tamper protection password.
+      type: String
+  - arguments:
+    - default: false
+      description: The endpoint ID(s).
+      isArray: true
+      name: endpoint_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether tamper protection should be turned on for the endpoint. Possible values are: "true" and "false".'
+      isArray: false
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: false
+      description: 'Whether to return the tamper protection password. Possible values are: "true" and "false".'
+      isArray: false
+      name: get_password
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Update tamper protection information for one or more endpoints. Potentially harmful because of the password.
+    execution: true
+    name: sophos-central-endpoint-tamper-update
+    outputs:
+    - contextPath: SophosCentral.EndpointTamper.endpointId
+      description: ID of the endpoint in regards to the tamper settings.
+      type: String
+    - contextPath: SophosCentral.EndpointTamper.enabled
+      description: Whether tamper protection should be turned on for the endpoint.
+      type: String
+    - contextPath: SophosCentral.EndpointTamper.password
+      description: Current tamper protection password.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum size of the page requested. Default is "50". Maximum is "100".
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Page number to return. Default is "1".
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: List all allowed items.
+    execution: false
+    name: sophos-central-allowed-item-list
+    outputs:
+    - contextPath: SophosCentral.AllowedItem.comment
+      description: A comment indicating why the item was allowed.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.createdAt
+      description: Date and time (UTC) when the allowed application was created.
+      type: Date
+    - contextPath: SophosCentral.AllowedItem.createdById
+      description: The unique ID for the user who created the item.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.createdByName
+      description: The name for the user who created the item.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.id
+      description: The unique ID for the allowed application.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.certificateSigner
+      description: The value saved for the certificateSigner.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.fileName
+      description: The file name.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.path
+      description: The path for the application.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.sha256
+      description: The SHA256 value for the application.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.type
+      description: The property by which an item is allowed.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.updatedAt
+      description: Date and time (UTC) when the allowed application was updated.
+      type: Date
+    - contextPath: SophosCentral.AllowedItem.originEndpointId
+      description: ID of the originating endpoint.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.originPersonId
+      description: ID of the originating person.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.originPersonName
+      description: Name of the originating person.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the allowed item.
+      isArray: false
+      name: allowed_item_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a single allowed item by ID.
+    execution: false
+    name: sophos-central-allowed-item-get
+    outputs:
+    - contextPath: SophosCentral.AllowedItem.comment
+      description: A comment indicating why the item was allowed.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.createdAt
+      description: Date and time (UTC) when the allowed application was created.
+      type: Date
+    - contextPath: SophosCentral.AllowedItem.createdById
+      description: The unique ID for the user who created the item.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.createdByName
+      description: The name for the user who created the item.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.id
+      description: The unique ID for the allowed application.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.certificateSigner
+      description: The value saved for the certificateSigner.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.fileName
+      description: The file name.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.path
+      description: The path for the application.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.sha256
+      description: The SHA256 value for the application.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.type
+      description: The property by which an item is allowed.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.updatedAt
+      description: Date and time (UTC) when the allowed application was updated.
+      type: Date
+    - contextPath: SophosCentral.AllowedItem.originEndpointId
+      description: ID of the originating endpoint.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.originPersonId
+      description: ID of the originating person.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.originPersonName
+      description: Name of the originating person.
+      type: String
+  - arguments:
+    - default: false
+      description: Comment indicating why the item should be allowed.
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    - default: false
+      description: The value saved for the certificateSigner.
+      isArray: false
+      name: certificate_signer
+      required: false
+      secret: false
+    - default: false
+      description: The file name.
+      isArray: false
+      name: file_name
+      required: false
+      secret: false
+    - default: false
+      description: The path for the application.
+      isArray: false
+      name: path
+      required: false
+      secret: false
+    - default: false
+      description: The SHA256 value for the application.
+      isArray: false
+      name: sha256
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The property by which an item is allowed. Note that the specified item type requires the matching argument filled. For example, the item type "path" requires the path argument. Possible values are: "path", "sha256", and "certificateSigner".'
+      isArray: false
+      name: item_type
+      predefined:
+      - path
+      - sha256
+      - certificateSigner
+      required: true
+      secret: false
+    - default: false
+      description: The endpoint where the item to be allowed was last seen.
+      isArray: false
+      name: origin_endpoint_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a new allowed item.
+    execution: false
+    name: sophos-central-allowed-item-add
+    outputs:
+    - contextPath: SophosCentral.AllowedItem.comment
+      description: A comment indicating why the item was allowed.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.createdAt
+      description: Date and time (UTC) when the allowed application was created.
+      type: Date
+    - contextPath: SophosCentral.AllowedItem.createdById
+      description: The unique ID for the user who created the item.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.createdByName
+      description: The name for the user who created the item.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.id
+      description: The unique ID for the allowed application.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.certificateSigner
+      description: The value saved for the certificateSigner.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.fileName
+      description: The file name.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.path
+      description: The path for the application.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.sha256
+      description: The SHA256 value for the application.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.type
+      description: The property by which an item is allowed.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.updatedAt
+      description: Date and time (UTC) when the allowed application was updated.
+      type: Date
+    - contextPath: SophosCentral.AllowedItem.originEndpointId
+      description: ID of the originating endpoint.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.originPersonId
+      description: ID of the originating person.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.originPersonName
+      description: Name of the originating person.
+      type: String
+  - arguments:
+    - default: false
+      description: The allowed item ID.
+      isArray: false
+      name: allowed_item_id
+      required: true
+      secret: false
+    - default: false
+      description: Comment indicating why the item should be allowed.
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    deprecated: false
+    description: Update an existing allowed item.
+    execution: false
+    name: sophos-central-allowed-item-update
+    outputs:
+    - contextPath: SophosCentral.AllowedItem.comment
+      description: A comment indicating why the item was allowed.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.createdAt
+      description: Date and time (UTC) when the allowed application was created.
+      type: Date
+    - contextPath: SophosCentral.AllowedItem.createdById
+      description: The unique ID for the user who created the item.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.createdByName
+      description: The name for the user who created the item.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.id
+      description: The unique ID for the allowed application.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.certificateSigner
+      description: The value saved for the certificateSigner.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.fileName
+      description: The file name.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.path
+      description: The path for the application.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.sha256
+      description: The SHA256 value for the application.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.type
+      description: The property by which an item is allowed.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.updatedAt
+      description: Date and time (UTC) when the allowed application was updated.
+      type: Date
+    - contextPath: SophosCentral.AllowedItem.originEndpointId
+      description: ID of the originating endpoint.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.originPersonId
+      description: ID of the originating person.
+      type: String
+    - contextPath: SophosCentral.AllowedItem.originPersonName
+      description: Name of the originating person.
+      type: String
+  - arguments:
+    - default: false
+      description: The allowed item ID.
+      isArray: false
+      name: allowed_item_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an existing allowed item.
+    execution: false
+    name: sophos-central-allowed-item-delete
+    outputs:
+    - contextPath: SophosCentral.DeletedAllowedItem.deletedItemId
+      description: The ID of the deleted item.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum size of the page requested. Default is "50". Maximum is "100".
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Page number to return. Default is "1".
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Get all blocked items.
+    execution: false
+    name: sophos-central-blocked-item-list
+    outputs:
+    - contextPath: SophosCentral.BlockedItem.comment
+      description: A comment indicating why the item was allowed.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.createdAt
+      description: Date and time (UTC) when the allowed application was created.
+      type: Date
+    - contextPath: SophosCentral.BlockedItem.createdById
+      description: The unique ID for the user who created the item.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.createdByName
+      description: The name for the user who created the item.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.id
+      description: The unique ID for the allowed application.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.certificateSigner
+      description: The value saved for the certificateSigner.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.fileName
+      description: The file name.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.path
+      description: The path for the application.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.sha256
+      description: The SHA256 value for the application.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.type
+      description: The property by which an item is allowed.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.updatedAt
+      description: Date and time (UTC) when the allowed application was updated.
+      type: Date
+    - contextPath: SophosCentral.BlockedItem.originEndpointId
+      description: ID of the originating endpoint.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.originPersonId
+      description: ID of the originating person.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.originPersonName
+      description: Name of the originating person.
+      type: String
+  - arguments:
+    - default: false
+      description: The blocked item ID.
+      isArray: false
+      name: blocked_item_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a single blocked item by ID.
+    execution: false
+    name: sophos-central-blocked-item-get
+    outputs:
+    - contextPath: SophosCentral.BlockedItem.comment
+      description: A comment indicating why the item was allowed.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.createdAt
+      description: Date and time (UTC) when the allowed application was created.
+      type: Date
+    - contextPath: SophosCentral.BlockedItem.createdById
+      description: The unique ID for the user who created the item.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.createdByName
+      description: The name for the user who created the item.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.id
+      description: The unique ID for the allowed application.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.certificateSigner
+      description: The value saved for the certificateSigner.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.fileName
+      description: The file name.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.path
+      description: The path for the application.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.sha256
+      description: The SHA256 value for the application.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.type
+      description: The property by which an item is allowed.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.updatedAt
+      description: Date and time (UTC) when the allowed application was updated.
+      type: Date
+    - contextPath: SophosCentral.BlockedItem.originEndpointId
+      description: ID of the originating endpoint.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.originPersonId
+      description: ID of the originating person.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.originPersonName
+      description: Name of the originating person.
+      type: String
+  - arguments:
+    - default: false
+      description: Comment indicating why the item should be blocked.
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    - default: false
+      description: The value saved for the certificateSigner.
+      isArray: false
+      name: certificate_signer
+      required: false
+      secret: false
+    - default: false
+      description: The file name.
+      isArray: false
+      name: file_name
+      required: false
+      secret: false
+    - default: false
+      description: The path for the application.
+      isArray: false
+      name: path
+      required: false
+      secret: false
+    - default: false
+      description: The SHA256 value for the application.
+      isArray: false
+      name: sha256
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The property by which an item is blocked. Possible value is sha256.
+      isArray: false
+      name: item_type
+      predefined:
+      - sha256
+      required: true
+      secret: false
+    deprecated: false
+    description: Add a new blocked item.
+    execution: false
+    name: sophos-central-blocked-item-add
+    outputs:
+    - contextPath: SophosCentral.BlockedItem.comment
+      description: A comment indicating why the item was allowed.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.createdAt
+      description: Date and time (UTC) when the allowed application was created.
+      type: Date
+    - contextPath: SophosCentral.BlockedItem.createdById
+      description: The unique ID for the user who created the item.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.createdByName
+      description: The name for the user who created the item.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.id
+      description: The unique ID for the allowed application.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.certificateSigner
+      description: The value saved for the certificateSigner.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.fileName
+      description: The file name.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.path
+      description: The path for the application.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.sha256
+      description: The SHA256 value for the application.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.type
+      description: The property by which an item is allowed.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.updatedAt
+      description: Date and time (UTC) when the allowed application was updated.
+      type: Date
+    - contextPath: SophosCentral.BlockedItem.originEndpointId
+      description: ID of the originating endpoint.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.originPersonId
+      description: ID of the originating person.
+      type: String
+    - contextPath: SophosCentral.BlockedItem.originPersonName
+      description: Name of the originating person.
+      type: String
+  - arguments:
+    - default: false
+      description: The blocked item ID.
+      isArray: false
+      name: blocked_item_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an existing blocked item.
+    execution: false
+    name: sophos-central-blocked-item-delete
+    outputs:
+    - contextPath: SophosCentral.DeletedBlockedItem.deletedItemId
+      description: The ID of the deleted item.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'Scan exclusion type. Possible values are: "path", "posixPath", "virtualPath", "process", "web", "pua", "exploitMitigation", "amsi", "behavioral".'
+      isArray: false
+      name: exclusion_type
+      predefined:
+      - path
+      - posixPath
+      - virtualPath
+      - process
+      - web
+      - pua
+      - exploitMitigation
+      - amsi
+      - behavioral
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum size of the page requested. Default is "50". Maximum is "100".
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page number to fetch. Default is "1".
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: List all scan exclusions.
+    execution: false
+    name: sophos-central-scan-exclusion-list
+    outputs:
+    - contextPath: SophosCentral.ScanExclusion.comment
+      description: A comment indicating why the exclusion was updated.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.description
+      description: The exclusion description added by the system.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.id
+      description: The unique ID for the scanning exclusion setting.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.scanMode
+      description: The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.type
+      description: The scanning exclusion type.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.value
+      description: The exclusion value.
+      type: String
+  - arguments:
+    - default: false
+      description: The exclusion ID.
+      isArray: false
+      name: exclusion_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a single scan exclusion by ID.
+    execution: false
+    name: sophos-central-scan-exclusion-get
+    outputs:
+    - contextPath: SophosCentral.ScanExclusion.comment
+      description: A comment indicating why the exclusion was updated.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.description
+      description: The exclusion description added by the system.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.id
+      description: The unique ID for the scanning exclusion setting.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.scanMode
+      description: The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.type
+      description: The scanning exclusion type.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.value
+      description: The exclusion value.
+      type: String
+  - arguments:
+    - default: false
+      description: A comment indicating why the exclusion was created.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The scan mode. Possible values are: "onDemand", "onAccess", and "onDemandAndOnAccess". Default is "onDemandAndOnAccess" for exclusions of type path, posixPath and virtualPath, "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode.'
+      isArray: false
+      name: scan_mode
+      predefined:
+      - onDemand
+      - onAccess
+      - onDemandAndOnAccess
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The scanning exclusion type. Possible values are: "path", "posixPath", "virtualPath", "process", "web", "pua", "exploitMitigation", "amsi", "behavioral".'
+      isArray: false
+      name: exclusion_type
+      predefined:
+      - path
+      - posixPath
+      - virtualPath
+      - process
+      - web
+      - pua
+      - detectedExploit
+      - amsi
+      - behavioral
+      required: true
+      secret: false
+    - default: false
+      description: The exclusion value.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: Add a new scan exclusion.
+    execution: false
+    name: sophos-central-scan-exclusion-add
+    outputs:
+    - contextPath: SophosCentral.ScanExclusion.comment
+      description: A comment indicating why the exclusion was updated.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.description
+      description: The exclusion description added by the system.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.id
+      description: The unique ID for the scanning exclusion setting.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.scanMode
+      description: The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.type
+      description: The scanning exclusion type.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.value
+      description: The exclusion value.
+      type: String
+  - arguments:
+    - default: false
+      description: A comment indicating why the exclusion was created.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The scan mode. Possible values are: "onDemand", "onAccess", and "onDemandAndOnAccess". Default is "onDemandAndOnAccess" for exclusions of type path, posixPath and virtualPath, "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode.'
+      isArray: false
+      name: scan_mode
+      predefined:
+      - onDemand
+      - onAccess
+      - onDemandAndOnAccess
+      required: false
+      secret: false
+    - default: false
+      description: The exclusion ID.
+      isArray: false
+      name: exclusion_id
+      required: true
+      secret: false
+    - default: false
+      description: The exclusion value.
+      isArray: false
+      name: value
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an existing scan exclusion.
+    execution: false
+    name: sophos-central-scan-exclusion-update
+    outputs:
+    - contextPath: SophosCentral.ScanExclusion.comment
+      description: A comment indicating why the exclusion was updated.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.description
+      description: The exclusion description added by the system.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.id
+      description: The unique ID for the scanning exclusion setting.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.scanMode
+      description: The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.type
+      description: The scanning exclusion type.
+      type: String
+    - contextPath: SophosCentral.ScanExclusion.value
+      description: The exclusion value.
+      type: String
+  - arguments:
+    - default: false
+      description: The exclusion ID.
+      isArray: true
+      name: exclusion_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an existing scan exclusion.
+    execution: false
+    name: sophos-central-scan-exclusion-delete
+    outputs:
+    - contextPath: SophosCentral.DeletedScanExclusion.deletedExclusionId
+      description: The ID of the deleted exclusion.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'Exploit mitigation type. Possible values are: "detected" and "custom".'
+      isArray: false
+      name: mitigation_type
+      predefined:
+      - detected
+      - custom
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum size of the page requested. Default is "50". Maximum is "100".
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page number to fetch. Default is "1".
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether the Exploit Mitigation application has been customized. Possible values are: "true" and "false".'
+      isArray: false
+      name: modified
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: List exploit mitigation settings for all protected applications.
+    execution: false
+    name: sophos-central-exploit-mitigation-list
+    outputs:
+    - contextPath: SophosCentral.ExploitMitigation.category
+      description: The exploit mitigation category ID.
+      type: String
+    - contextPath: SophosCentral.ExploitMitigation.name
+      description: The name given to this Exploit Mitigation application.
+      type: String
+    - contextPath: SophosCentral.ExploitMitigation.id
+      description: The ID of this Exploit Mitigation application.
+      type: String
+    - contextPath: SophosCentral.ExploitMitigation.paths
+      description: Paths included in this Exploit Mitigation application.
+      type: String
+    - contextPath: SophosCentral.ExploitMitigation.type
+      description: Whether the application was detected by the system or created by the user.
+      type: String
+  - arguments:
+    - default: false
+      description: The Exploit Mitigation application ID.
+      isArray: false
+      name: mitigation_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get Exploit Mitigation settings for a single application.
+    execution: false
+    name: sophos-central-exploit-mitigation-get
+    outputs:
+    - contextPath: SophosCentral.ExploitMitigation.category
+      description: The Exploit Mitigation category ID.
+      type: String
+    - contextPath: SophosCentral.ExploitMitigation.name
+      description: The name given to this Exploit Mitigation application.
+      type: String
+    - contextPath: SophosCentral.ExploitMitigation.id
+      description: The ID of this Exploit Mitigation application.
+      type: String
+    - contextPath: SophosCentral.ExploitMitigation.paths
+      description: Paths included in this Exploit Mitigation application.
+      type: String
+    - contextPath: SophosCentral.ExploitMitigation.type
+      description: Whether the application was detected by the system or created by
+        the user.
+      type: String
+  - arguments:
+    - default: false
+      description: An absolute path to an application file to exclude. You may use HitmanPro.Alert expansion variables (e.g., $desktop, $programfiles).
+      isArray: false
+      name: path
+      required: true
+      secret: false
+    deprecated: false
+    description: Exclude a set of file paths from exploit mitigation.
+    execution: false
+    name: sophos-central-exploit-mitigation-add
+    outputs:
+    - contextPath: SophosCentral.ExploitMitigation.category
+      description: The Exploit Mitigation category ID.
+      type: String
+    - contextPath: SophosCentral.ExploitMitigation.name
+      description: The name given to this Exploit Mitigation application.
+      type: String
+    - contextPath: SophosCentral.ExploitMitigation.id
+      description: The ID of this Exploit Mitigation application.
+      type: String
+    - contextPath: SophosCentral.ExploitMitigation.paths
+      description: Paths included in this Exploit Mitigation application.
+      type: String
+    - contextPath: SophosCentral.ExploitMitigation.type
+      description: Whether the application was detected by the system or created by
+        the user.
+      type: String
+  - arguments:
+    - default: false
+      description: The Exploit Mitigation application ID.
+      isArray: false
+      name: mitigation_id
+      required: true
+      secret: false
+    - default: false
+      description: An absolute path to an application file to exclude. You may use HitmanPro.Alert expansion variables (e.g., $desktop, $programfiles).
+      isArray: false
+      name: path
+      required: true
+      secret: false
+    deprecated: false
+    description: Update Exploit Mitigation settings for an application.
+    execution: false
+    name: sophos-central-exploit-mitigation-update
+    outputs:
+    - contextPath: SophosCentral.ExploitMitigation.category
+      description: The Exploit Mitigation category ID.
+      type: String
+    - contextPath: SophosCentral.ExploitMitigation.name
+      description: The name given to this Exploit Mitigation application.
+      type: String
+    - contextPath: SophosCentral.ExploitMitigation.id
+      description: The ID of this Exploit Mitigation application.
+      type: String
+    - contextPath: SophosCentral.ExploitMitigation.paths
+      description: Paths included in this Exploit Mitigation application.
+      type: String
+    - contextPath: SophosCentral.ExploitMitigation.type
+      description: Whether the application was detected by the system or created by
+        the user.
+      type: String
+  - arguments:
+    - default: false
+      description: The Exploit Mitigation application ID.
+      isArray: false
+      name: mitigation_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a custom (user-defined) Exploit Mitigation application by
+      ID.
+    execution: false
+    name: sophos-central-exploit-mitigation-delete
+    outputs:
+    - contextPath: SophosCentral.DeletedExploitMitigation.deletedMitigationId
+      description: The ID of the deleted mitigation.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum size of the page requested. Default is "50". Maximum is "100".
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page number to fetch. Default is "1".
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Filter out detected exploits with these thumbprints.
+      isArray: false
+      name: thumbprint_not_in
+      required: false
+      secret: false
+    deprecated: false
+    description: List all detected exploits.
+    execution: false
+    name: sophos-central-detected-exploit-list
+    outputs:
+    - contextPath: SophosCentral.DetectedExploit.count
+      description: The number of times the same exploit has been detected, potentially across multiple endpoints.
+      type: Number
+    - contextPath: SophosCentral.DetectedExploit.description
+      description: The English description of the exploit detected event.
+      type: String
+    - contextPath: SophosCentral.DetectedExploit.id
+      description: The ID of this Exploit Mitigation application.
+      type: String
+    - contextPath: SophosCentral.DetectedExploit.firstSeenAt
+      description: When the exploit was first seen.
+      type: Date
+    - contextPath: SophosCentral.DetectedExploit.lastSeenAt
+      description: When the exploit was last seen.
+      type: Date
+    - contextPath: SophosCentral.DetectedExploit.lastEndpointHostname
+      description: The endpoint hostname.
+      type: String
+    - contextPath: SophosCentral.DetectedExploit.lastEndpointId
+      description: The unique endpoint ID.
+      type: String
+    - contextPath: SophosCentral.DetectedExploit.lastUserName
+      description: Person's name.
+      type: String
+    - contextPath: SophosCentral.DetectedExploit.lastUserId
+      description: The unique ID for the user.
+      type: String
+    - contextPath: SophosCentral.DetectedExploit.thumbprint
+      description: Matches [0-9a-zA-Z]{64}.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of a previously detected exploit.
+      isArray: false
+      name: detected_exploit_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a single detected exploit.
+    execution: false
+    name: sophos-central-detected-exploit-get
+    outputs:
+    - contextPath: SophosCentral.DetectedExploit.count
+      description: The number of times the same exploit has been detected, potentially across multiple endpoints.
+      type: Number
+    - contextPath: SophosCentral.DetectedExploit.description
+      description: The English description of the exploit detected event.
+      type: String
+    - contextPath: SophosCentral.DetectedExploit.id
+      description: The ID of this Exploit Mitigation application.
+      type: String
+    - contextPath: SophosCentral.DetectedExploit.firstSeenAt
+      description: When the exploit was first seen.
+      type: Date
+    - contextPath: SophosCentral.DetectedExploit.lastSeenAt
+      description: When the exploit was last seen.
+      type: Date
+    - contextPath: SophosCentral.DetectedExploit.lastEndpointHostname
+      description: The endpoint hostname.
+      type: String
+    - contextPath: SophosCentral.DetectedExploit.lastEndpointId
+      description: The unique endpoint ID.
+      type: String
+    - contextPath: SophosCentral.DetectedExploit.lastUserName
+      description: Person's name.
+      type: String
+    - contextPath: SophosCentral.DetectedExploit.lastUserId
+      description: The unique ID for the user.
+      type: String
+    - contextPath: SophosCentral.DetectedExploit.thumbprint
+      description: Matches [0-9a-zA-Z]{64}.
+      type: String
+  dockerimage: demisto/python3:3.8.6.13358
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

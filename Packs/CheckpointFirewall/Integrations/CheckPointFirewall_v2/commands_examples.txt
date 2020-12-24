@@ -1,4 +1,4 @@
-!checkpoint-login-and-get-session-id
+!checkpoint-login-and-get-session-id domain='Corp'
 
 !checkpoint-host-list limit=5
 !checkpoint-host-get identifier=host_test
