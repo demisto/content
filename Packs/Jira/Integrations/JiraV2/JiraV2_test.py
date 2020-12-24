@@ -57,6 +57,8 @@ def test_create_issue_command_after_fix_mandatory_args_issue(mocker, args):
 def test_create_issue_command_before_fix_mandatory_args_summary_missing(mocker, args):
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     from JiraV2 import create_issue_command
     with pytest.raises(SystemExit) as e:
         # when there are missing arguments, an Exception is raised to the user
@@ -115,6 +117,8 @@ def test_fetch_incidents_no_incidents(mocker):
     - Verify no incidents are returned
     """
     from JiraV2 import fetch_incidents
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     mocker.patch('JiraV2.run_query', return_value={})
     incidents = fetch_incidents('status=Open AND labels=lies', id_offset=1)
     assert incidents == []
@@ -151,6 +155,8 @@ def test_get_modified_remote_data(mocker):
     """
     from JiraV2 import main
     mocker.patch.object(demisto, 'command', return_value='get-modified-remote-data')
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     with pytest.raises(NotImplementedError):
         main()
 
@@ -177,7 +183,7 @@ def test_get_remote_data_when_needs_update(mocker):
     )
     mocker.patch(
         'JiraV2.get_comments_command',
-        return_value=''
+        return_value=('No comments were found in the ticket', None, None)
     )
     mocker.patch(
         'JiraV2.get_attachments',
@@ -210,7 +216,7 @@ def test_get_remote_data_when_dont_need_update(mocker):
     )
     mocker.patch(
         'JiraV2.get_comments_command',
-        return_value=''
+        return_value=('No comments were found in the ticket', None, None)
     )
     mocker.patch(
         'JiraV2.get_attachments',
