@@ -1,4 +1,4 @@
-This playbook retrieve binary file by MD5 hash from Carbon Black telemetry data.   
+This playbook retrieves the binary file by its MD5 hash from the Carbon Black telemetry data.   
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,20 +7,20 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* integration-Carbon_Black_Enterprise_Response
+integration-Carbon_Black_Enterprise_Response
 
 ### Scripts
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
-* cb-binary-download
+cb-binary-download
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| MD5 | MD5 of the binary file to be retrieved  | File.MD5 | Optional |
+| MD5 | MD5 hash of the binary file to be retrieved,  | File.MD5 | Optional |
 
 ## Playbook Outputs
 ---
