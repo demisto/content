@@ -1,0 +1,17 @@
+{
+    "name": "EngineList_of_ip_and_url",
+    "description": "This script is used in Parse_CSV_URL playbook . Its job is to take input as ip address and with the help of Virustotal take out all lists of engines on the basis of their category as output . ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Shubham Agarwal",
+    "url": "",
+    "email": "",
+    "created": "2020-12-25T08:08:30Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "shubgwal-gif"
+    ]
+}

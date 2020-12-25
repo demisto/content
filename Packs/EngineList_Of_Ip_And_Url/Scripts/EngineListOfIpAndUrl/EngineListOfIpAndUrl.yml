@@ -1,0 +1,27 @@
+args:
+- description: IP to check
+  name: IP
+  required: true
+commonfields:
+  id: EngineList_of_ip_and_url
+  version: -1
+dockerimage: demisto/python3:3.8.6.14516
+enabled: true
+name: EngineList_of_ip_and_url
+outputs:
+- contextPath: l1
+  description: lists of Unrated engines
+- contextPath: l2
+  description: lists of clean engines
+- contextPath: l3
+  description: lists of malware engines
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
