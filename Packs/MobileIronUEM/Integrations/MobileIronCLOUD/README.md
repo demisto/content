@@ -37,7 +37,7 @@ incoming incident
 
 Here is an example image of the rule
 
-![Pre-Processing Rules Example](Packs/MobileIronUEM/doc_files/preprocess_rules.png) 
+![Pre-Processing Rules Example](../../doc_files/preprocess_rules.png) 
 
 ## Configure MobileIronCLOUD on Cortex XSOAR
 
