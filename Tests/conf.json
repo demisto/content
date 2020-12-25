@@ -3424,8 +3424,7 @@
         "Lastline v2",
         "TruSTAR",
         "SlackV2",
-        "VulnDB",
-        "urlscan.io"
+        "VulnDB"
     ],
     "unmockable_integrations": {
         "HashiCorp Vault": "Has a command that sends parameters in the path",

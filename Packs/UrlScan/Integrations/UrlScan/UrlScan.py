@@ -34,7 +34,8 @@ BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
 
 def http_request(method, url_suffix, json=None, wait=0, retries=0):
     if method == 'GET':
-        headers = {}  # type: ignore
+        headers = {'API-Key': APIKEY,
+                   'Accept': 'application/json'}  # type: ignore
     elif method == 'POST':
         headers = {
             'API-Key': APIKEY,
@@ -206,8 +207,8 @@ def format_results(uuid):
         url_cont['Data'] = demisto.args().get('url')
         cont['URL'] = demisto.args().get('url')
     # effective url of the submitted url
-    human_readable['Effective URL'] = response['page']['url']
-    cont['EffectiveURL'] = response['page']['url']
+    human_readable['Effective URL'] = scan_page.get('url')
+    cont['EffectiveURL'] = scan_page.get('url')
     if 'uuid' in scan_tasks:
         ec['URLScan']['UUID'] = scan_tasks['uuid']
     if 'ips' in scan_lists:
@@ -246,8 +247,8 @@ def format_results(uuid):
         countries = scan_lists['countries']
         human_readable['Associated Countries'] = countries
         cont['Country'] = countries
-    if None not in scan_lists['hashes']:
-        hashes = scan_lists['hashes']
+    if None not in scan_lists.get('hashes', []):
+        hashes = scan_lists.get('hashes', [])
         cont['RelatedHash'] = hashes
         human_readable['Related Hashes'] = hashes
     if 'domains' in scan_lists:
