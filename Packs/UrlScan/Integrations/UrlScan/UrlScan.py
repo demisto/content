@@ -33,15 +33,10 @@ BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
 
 
 def http_request(method, url_suffix, json=None, wait=0, retries=0):
-    if method == 'GET':
-        headers = {'API-Key': APIKEY,
-                   'Accept': 'application/json'}  # type: ignore
-    elif method == 'POST':
-        headers = {
-            'API-Key': APIKEY,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
+    headers = {'API-Key': APIKEY,
+               'Accept': 'application/json'}
+    if method == 'POST':
+        headers.update({'Content-Type': 'application/json'})
     demisto.debug(
         'requesting https request with method: {}, url: {}, data: {}'.format(method, BASE_URL + url_suffix, json))
     r = requests.request(
@@ -173,8 +168,21 @@ def urlscan_submit_url():
 
 
 def format_results(uuid):
+    # Scan Lists sometimes returns empty
+    num_of_attempts = 0
     response = urlscan_submit_request(uuid)
-    demisto.debug('urlscan_submit_request response: {}'.format(response))
+    scan_lists = response.get('lists')
+    while scan_lists is None:
+        try:
+            num_of_attempts += 1
+            demisto.debug('Attempting to get scan lists {} times'.format(num_of_attempts))
+            response = urlscan_submit_request(uuid)
+            scan_lists = response.get('lists')
+        except Exception:
+            if num_of_attempts == 5:
+                break
+            demisto.debug('Could not get scan lists, sleeping for 5 minutes before trying again')
+            time.sleep(5)
     scan_data = response.get('data', {})
     scan_lists = response.get('lists', {})
     scan_tasks = response.get('task', {})
@@ -183,7 +191,6 @@ def format_results(uuid):
     scan_meta = response.get('meta', {})
     url_query = scan_tasks.get('url', {})
     scan_verdicts = response.get('verdicts', {})
-
     ec = makehash()
     dbot_score = makehash()
     human_readable = makehash()
