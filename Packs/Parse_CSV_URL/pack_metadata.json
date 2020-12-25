@@ -1,0 +1,17 @@
+{
+    "name": "Parse_CSV_URL",
+    "description": "This playbook will take the CSV File which contain the list of URL and parse through it and take out the reputation of all the URLs using Virustotal integration and ip address using ping integration . Than we have created one automation script used to take out list of engines given by virustotal for a specific URL . After that one more automation script created named as Arrays_to_Dictionary for combining lists and converting them into one dictionary . Both the automation scripts created here are also contributed in the marketplace . ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Shubham Agarwal",
+    "url": "",
+    "email": "",
+    "created": "2020-12-25T08:18:55Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "shubgwal-gif"
+    ]
+}

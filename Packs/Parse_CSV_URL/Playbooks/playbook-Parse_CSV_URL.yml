@@ -1,0 +1,407 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: dbfe8d70-81ed-4c9d-8fd8-80ce4270b510
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: c4ee80a6-cb89-4cb0-8761-1aa9b68e9c49
+inputs: []
+name: Parse_CSV_URL
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 62bb7391-7da1-4625-899b-83c5c983e294
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 62bb7391-7da1-4625-899b-83c5c983e294
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      codec: {}
+      domains: {}
+      entryID:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.EntryID
+              operator: isEqualString
+              right:
+                value:
+                  simple: 3@5
+          root: File.EntryID
+      file: {}
+      hashes: {}
+      ips: {}
+      parseAll: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This script will parse a CSV file and place the unique IPs, Domains
+        and Hashes into the context.
+      id: cde9905d-3579-4a92-8f0d-c4d8d87b63b3
+      iscommand: false
+      name: Parse CSV to get list of URL
+      script: ParseCSV
+      type: regular
+      version: -1
+    taskid: cde9905d-3579-4a92-8f0d-c4d8d87b63b3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      address:
+        simple: ${ParseCSV.ParsedCSV.URL}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Pings an IP or url address, to verify it's up
+      id: cad3b327-7f42-4405-810c-e850b385d12b
+      iscommand: false
+      name: IP address of domain
+      script: 85bbff38-753a-4144-8810-94e8ce0965a0
+      type: regular
+      version: -1
+    taskid: cad3b327-7f42-4405-810c-e850b385d12b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain:
+        simple: ${ParseCSV.ParsedCSV.URL}
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VirusTotal
+      description: Checks the reputation of a domain.
+      id: f0848b78-a137-4d45-8fb1-6696d2b6e658
+      iscommand: true
+      name: Reputation of URL
+      script: VirusTotal|||domain
+      type: regular
+      version: -1
+    taskid: f0848b78-a137-4d45-8fb1-6696d2b6e658
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 470
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e196d297-de8e-4858-8b68-6d9a8f7db833
+      iscommand: false
+      name: Export to CSV
+      type: title
+      version: -1
+    taskid: e196d297-de8e-4858-8b68-6d9a8f7db833
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1040
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Arraylist1:
+        simple: ${DBotScore.[0:2].Score}
+      Arraylist2:
+        simple: ${Ping.[0:2].destination_ip}
+      Arraylist3:
+        simple: ${result.[0].clean_engines.[0:50]}
+      Arraylist4:
+        complex:
+          accessor: malware_engines}
+          root: ${result.[0]
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '[]'
+            operator: SetIfEmpty
+      Arraylist5:
+        simple: ${result.[0].unrate_engines.[0:8]}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Conversion of List to Dictionary
+      id: 7a09cee0-8fef-43e2-81a9-168d20de8ab0
+      iscommand: false
+      name: 'Conversion of Arrays to Dictionary '
+      script: 3b9d2ac0-faf0-4125-87e4-a864dec580ff
+      type: regular
+      version: -1
+    taskid: 7a09cee0-8fef-43e2-81a9-168d20de8ab0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 57258575-d83d-47cb-8de7-7ca80209e4ce
+      iscommand: false
+      name: 'Creation of Dictionary from list '
+      type: title
+      version: -1
+    taskid: 57258575-d83d-47cb-8de7-7ca80209e4ce
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 710
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        complex:
+          accessor: id
+          root: incident
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 0f0f3c6c-2828-40fe-860d-dcb0c971c78e
+      iscommand: true
+      name: Close the current investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 0f0f3c6c-2828-40fe-860d-dcb0c971c78e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1360
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fe06f6b2-1110-4f30-8636-d8a7abe6f1cb
+      iscommand: false
+      name: 'Investigation successfully closed '
+      type: title
+      version: -1
+    taskid: fe06f6b2-1110-4f30-8636-d8a7abe6f1cb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1535
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      csvArray:
+        simple: ${csvResult.[10:]}
+      fileName:
+        simple: sample_url_to-CSV.csv
+      headers: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Export given array to csv file
+      id: 1b1dc552-7e65-43e2-8955-958bf17435fb
+      iscommand: false
+      name: Export to CSV URL, IP, Reputation and Engines lists
+      script: ExportToCSV
+      type: regular
+      version: -1
+    taskid: 1b1dc552-7e65-43e2-8955-958bf17435fb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1185
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      IP:
+        simple: ${Ping.[0].destination_ip}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ef4d2b0d-661a-414a-8205-6da863db16b9
+      iscommand: false
+      name: Engine lists  of IP
+      script: def0ed66-4979-4489-8986-bb209dc1c9db
+      type: regular
+      version: -1
+    taskid: ef4d2b0d-661a-414a-8205-6da863db16b9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 530
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1550,
+        "width": 960,
+        "x": 10,
+        "y": 50
+      }
+    }
+  }

@@ -1,0 +1,42 @@
+args:
+- default: true
+  description: Address to ping
+  name: address
+  required: true
+comment: Pings an IP or url address, to verify it's up
+commonfields:
+  id: Ping
+  version: -1
+dockerimage: demisto/iputils:1.0.0.12410
+enabled: true
+name: Ping
+outputs:
+- contextPath: Ping.ret_code
+  description: Ping return code
+  type: number
+- contextPath: Ping.destination
+  description: Ping destination address
+  type: string
+- contextPath: Ping.max_rtt
+  description: Ping max round trip time
+  type: number
+- contextPath: Ping.avg_rtt
+  description: Ping average round trip time
+  type: number
+- contextPath: Ping.min_rtt
+  description: Ping minimum round trip time
+  type: number
+- contextPath: Ping.destination_ip
+  description: Ping destination IP
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
