@@ -1,5 +1,46 @@
-MobileIron CORE Integration
-This integration was integrated and tested with version 11.0.0 of MobileIronCORE
+# MobileIron CORE Integration
+
+This integration was created and tested with version *11.0.0* of MobileIronCORE
+
+## MobileIron Core - Getting Started
+
+1. Log in to the MobileIron Core Admin console
+2. Open the `Users` top section
+3. Click on the `create local user` button. It is recommended to create a new user for the demisto integration specifically and not reuse
+an existing one.
+4. Make sure you enter all the details and keep note of the User ID (ex. demisto-api-user) and the password specifically.
+5. Click on the `Admins` top section
+6. Add the user you just created as an admin to the instance.
+6. When setting up the Demisto integration use User ID as the username and the password you defined as the MobileIron tenant credentials
+7. Click the `Test` button and ensure the connection can be established
+
+Refer to the API documentation at the MobileIron community for more details on setting up the API user.
+
+### MobileIron Core - Spaces
+
+In case you are dividing the devices into different spaces, it is important to make sure the integration
+points to the correct `Device Admin Space ID`.
+ 
+This is in most cases set to the value *1* for the global space id
+
+### Setting up pre-processing rules
+
+In case you are using the fetch incidents option its advisable to set-up a pre-processing rule in order
+to filter out any duplicates that might show up as part of the command. 
+
+- Inside the Demisto XSOAR admin go to Settings -> Integrations -> Pre-Processing Rules
+- In *Step 1* add a rule for *Type* equals *MobileIron Core Device Incident*
+- In *Step 2* select *Drop and Update*
+- In *Step 3* select *Link to oldest incident* created within the last *15 days* and check the checkbox next to 
+*Search closed incidents* 
+- Add an *AND* statement and enter *MobileIron Device ID* of existing incident is identical to the one of the 
+incoming incident 
+- Save
+
+Here is an example image of the rule
+
+![Pre-Processing Rules Example](Packs/MobileIronUEM/doc_files/preprocess_rules.png) 
+
 ## Configure MobileIronCORE on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

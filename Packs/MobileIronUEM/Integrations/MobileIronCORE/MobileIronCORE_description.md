@@ -12,11 +12,9 @@ an existing one.
 
 Refer to the API documentation at the MobileIron community for more details on setting up the API user.
 
-### MobileIron Cloud - Spaces
+### MobileIron Core - Spaces
 
 In case you are dividing the devices into different spaces, it is important to make sure the integration
-points to the correct `Partition ID (Device Space ID)`.
+points to the correct `Device Admin Space ID`.
  
- You 
-should leave this value blank if you are not using spaces or you want the integration to automatically resolve the 
-default space id.  
+This is in most cases set to the value *1* for the global space id

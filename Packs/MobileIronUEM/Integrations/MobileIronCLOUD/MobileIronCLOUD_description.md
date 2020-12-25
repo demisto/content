@@ -16,6 +16,5 @@ Refer to the API documentation at the MobileIron community for more details on s
 In case you are dividing the devices into different spaces, it is important to make sure the integration
 points to the correct `Partition ID (Device Space ID)`.
  
- You 
-should leave this value blank if you are not using spaces or you want the integration to automatically resolve the 
+You should leave this value blank if you are not using spaces or you want the integration to automatically resolve the 
 default space id.  
