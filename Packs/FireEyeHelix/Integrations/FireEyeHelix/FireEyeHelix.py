@@ -16,9 +16,6 @@ Attributes:
     INTEGRATION_NAME:
         Name of the integration as shown in the integration UI.
 
-    fireeye-helix:
-        Command names prefix used for all commands.
-
     INTEGRATION_CONTEXT_NAME:
         Context output name used in most outputs.
 
