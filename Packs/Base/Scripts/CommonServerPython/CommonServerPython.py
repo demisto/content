@@ -1133,7 +1133,6 @@ class IntegrationLogger(object):
                         request_parts = repr(data).split('\\\\r\\\\n')  # splitting lines on repr since data is a bytes-string
                         for line, part in enumerate(request_parts):
                             if line == 0:
-                                demisto.info('======= ' + part)
                                 method, url, _ = part[1:].split()  # ignoring " at first char
                             elif line != len(request_parts) - 1:  # ignoring the last line which is empty
                                 if part.startswith('Host:'):
