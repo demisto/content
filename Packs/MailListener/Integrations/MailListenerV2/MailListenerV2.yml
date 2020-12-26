@@ -37,7 +37,7 @@ configuration:
   name: permittedFromDomain
   required: false
   type: 0
-- defaultvalue: 3 days
+- defaultvalue: 1 hour
   display: First fetch time
   name: first_fetch
   required: false
@@ -59,10 +59,10 @@ configuration:
   name: save_file
   required: false
   type: 8
-- display: Use TLS for connection (defaults to True)
+- defaultvalue: 'true'
+  display: Use TLS for connection (defaults to True)
   name: TLS_connection
   required: false
-  defaultvalue: "true"
   type: 8
 - display: Trust any certificate (not secure)
   name: insecure
@@ -143,10 +143,11 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Fetches an email by message ID and returns the information in an eml file format.
+    description: Fetches an email by message ID and returns the information in an
+      eml file format.
     execution: false
     name: mail-listener-get-email-as-eml
-  dockerimage: demisto/imap:1.0.0.10664
+  dockerimage: demisto/imap:1.0.0.14044
   feed: false
   isfetch: true
   longRunning: false
