@@ -10,7 +10,6 @@ import urllib3
 urllib3.disable_warnings()
 
 INTEGRATION_NAME = 'Infoblox Integration'
-INTEGRATION_COMMAND_NAME = 'infoblox'
 INTEGRATION_CONTEXT_NAME = 'Infoblox'
 REQUEST_PARAM_EXTRA_ATTRIBUTES = {'_return_fields+': 'extattrs'}
 REQUEST_PARAM_ZONE = {'_return_fields+': 'fqdn,rpz_policy,rpz_severity,rpz_type,substitute_name,comment,disable'}
@@ -915,27 +914,27 @@ def main():  # pragma: no cover
     # Switch case
     commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
         'test-module': test_module_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-ip': get_ip_command,
-        f'{INTEGRATION_COMMAND_NAME}-search-related-objects-by-ip': search_related_objects_by_ip_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-response-policy-zones': list_response_policy_zones_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-response-policy-zone-rules': list_response_policy_zone_rules_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-response-policy-zone': create_response_policy_zone_command,
-        f'{INTEGRATION_COMMAND_NAME}-delete-response-policy-zone': delete_response_policy_zone_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-rpz-rule': create_rpz_rule_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-a-substitute-record-rule': create_a_substitute_record_rule_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-aaaa-substitute-record-rule': create_aaaa_substitute_record_rule_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-mx-substitute-record-rule': create_mx_substitute_record_rule_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-naptr-substitute-record-rule': create_naptr_substitute_record_rule_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-ptr-substitute-record-rule': create_ptr_substitute_record_rule_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-srv-substitute-record-rule': create_srv_substitute_record_rule_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-txt-substitute-record-rule': create_txt_substitute_record_rule_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-ipv4-substitute-record-rule': create_ipv4_substitute_record_rule_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-ipv6-substitute-record-rule': create_ipv6_substitute_record_rule_command,
-        f'{INTEGRATION_COMMAND_NAME}-enable-rule': enable_rule_command,
-        f'{INTEGRATION_COMMAND_NAME}-disable-rule': disable_rule_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-object-fields': get_object_fields_command,
-        f'{INTEGRATION_COMMAND_NAME}-search-rule': search_rule_command,
-        f'{INTEGRATION_COMMAND_NAME}-delete-rpz-rule': delete_rpz_rule_command,
+        'infoblox-get-ip': get_ip_command,
+        'infoblox-search-related-objects-by-ip': search_related_objects_by_ip_command,
+        'infoblox-list-response-policy-zones': list_response_policy_zones_command,
+        'infoblox-list-response-policy-zone-rules': list_response_policy_zone_rules_command,
+        'infoblox-create-response-policy-zone': create_response_policy_zone_command,
+        'infoblox-delete-response-policy-zone': delete_response_policy_zone_command,
+        'infoblox-create-rpz-rule': create_rpz_rule_command,
+        'infoblox-create-a-substitute-record-rule': create_a_substitute_record_rule_command,
+        'infoblox-create-aaaa-substitute-record-rule': create_aaaa_substitute_record_rule_command,
+        'infoblox-create-mx-substitute-record-rule': create_mx_substitute_record_rule_command,
+        'infoblox-create-naptr-substitute-record-rule': create_naptr_substitute_record_rule_command,
+        'infoblox-create-ptr-substitute-record-rule': create_ptr_substitute_record_rule_command,
+        'infoblox-create-srv-substitute-record-rule': create_srv_substitute_record_rule_command,
+        'infoblox-create-txt-substitute-record-rule': create_txt_substitute_record_rule_command,
+        'infoblox-create-ipv4-substitute-record-rule': create_ipv4_substitute_record_rule_command,
+        'infoblox-create-ipv6-substitute-record-rule': create_ipv6_substitute_record_rule_command,
+        'infoblox-enable-rule': enable_rule_command,
+        'infoblox-disable-rule': disable_rule_command,
+        'infoblox-get-object-fields': get_object_fields_command,
+        'infoblox-search-rule': search_rule_command,
+        'infoblox-delete-rpz-rule': delete_rpz_rule_command,
     }
     try:
         if command in commands:
