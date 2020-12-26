@@ -14,15 +14,10 @@ Attributes:
     INTEGRATION_NAME:
         Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
 
-    INTEGRATION_COMMAND_NAME:
-        Command names should be written in all lower-case letters,
-        and each word separated with a hyphen, for example: msgraph-user.
-
     INTEGRATION_CONTEXT_NAME:
         Context output names should be written in camel case, for example: MSGraphUser.
 """
 INTEGRATION_NAME = 'PhishLabs IOC - EIR'
-INTEGRATION_COMMAND_NAME = 'phishlabs-ioc-eir'
 INTEGRATION_CONTEXT_NAME = 'PhishLabsIOC'
 
 
@@ -453,8 +448,8 @@ def main():
     demisto.debug(f'Command being called is {command}')
     commands = {
         'test-module': test_module_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-incidents': get_incidents_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-incident-by-id': get_incident_by_id_command
+        'phishlabs-ioc-eir-get-incidents': get_incidents_command,
+        'phishlabs-ioc-eir-get-incident-by-id': get_incident_by_id_command
     }
     try:
         if command == 'fetch-incidents':
