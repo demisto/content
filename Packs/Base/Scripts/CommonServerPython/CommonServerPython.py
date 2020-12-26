@@ -1035,7 +1035,7 @@ class IntegrationLogger(object):
       :rtype: ``None``
     """
 
-    def __init__(self, debug_logging = False):
+    def __init__(self, debug_logging=False):
         self.messages = []  # type: list
         self.write_buf = []  # type: list
         self.replace_strs = []  # type: list
