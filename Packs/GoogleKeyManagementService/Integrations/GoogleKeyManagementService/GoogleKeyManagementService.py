@@ -24,7 +24,6 @@ For further information about the API used in the integration see:
 
 INTEGRATION_NAME = 'Google Key Management System'
 # lowercase with `-` dividers
-INTEGRATION_COMMAND_NAME = 'google-kms'
 # No dividers
 INTEGRATION_CONTEXT_NAME = 'GoogleKMS'
 
@@ -1148,35 +1147,35 @@ def test_function(client: Client) -> None:
 
 def main():
     COMMANDS = {
-        f'{INTEGRATION_COMMAND_NAME}-create-key': create_crypto_key_command,
+        'google-kms-create-key': create_crypto_key_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-symmetric-decrypt': symmetric_decrypt_key_command,
+        'google-kms-symmetric-decrypt': symmetric_decrypt_key_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-symmetric-encrypt': symmetric_encrypt_key_command,
+        'google-kms-symmetric-encrypt': symmetric_encrypt_key_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-get-key': get_key_command,
+        'google-kms-get-key': get_key_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-update-key': update_key_command,
+        'google-kms-update-key': update_key_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-destroy-key': destroy_key_command,
+        'google-kms-destroy-key': destroy_key_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-restore-key': restore_key_command,
+        'google-kms-restore-key': restore_key_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-disable-key': disable_key_command,
+        'google-kms-disable-key': disable_key_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-enable-key': enable_key_command,
+        'google-kms-enable-key': enable_key_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-list-keys': list_keys_command,
+        'google-kms-list-keys': list_keys_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-asymmetric-encrypt': asymmetric_encrypt_command,
+        'google-kms-asymmetric-encrypt': asymmetric_encrypt_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-asymmetric-decrypt': asymmetric_decrypt_command,
+        'google-kms-asymmetric-decrypt': asymmetric_decrypt_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-list-key-rings': list_key_rings_command,
+        'google-kms-list-key-rings': list_key_rings_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-list-all-keys': list_all_keys_command,
+        'google-kms-list-all-keys': list_all_keys_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-get-public-key': get_public_key_command
+        'google-kms-get-public-key': get_public_key_command
     }
 
     command = demisto.command()
