@@ -6,7 +6,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-INTEGRATION_COMMAND_NAME = "lastline"
 INTEGRATION_NAME = "Lastline v2"
 
 SUFFIX_TRANSFORMER = {'/analysis/submit/file': {'url': 'papi/analysis/submit_file', 'method': 'POST'},
@@ -332,11 +331,11 @@ def main():
     commands = {
         'test-module': Client.test_module_command,
         'file': Client.file,
-        f'{INTEGRATION_COMMAND_NAME}-check-status': Client.check_status,
-        f'{INTEGRATION_COMMAND_NAME}-get-report': Client.get_report,
-        f'{INTEGRATION_COMMAND_NAME}-get-task-list': Client.get_task_list,
-        f'{INTEGRATION_COMMAND_NAME}-upload-file': Client.upload_file,
-        f'{INTEGRATION_COMMAND_NAME}-upload-url': Client.upload_url
+        'lastline-check-status': Client.check_status,
+        'lastline-get-report': Client.get_report,
+        'lastline-get-task-list': Client.get_task_list,
+        'lastline-upload-file': Client.upload_file,
+        'lastline-upload-url': Client.upload_url
     }
     try:
         if command in commands:
