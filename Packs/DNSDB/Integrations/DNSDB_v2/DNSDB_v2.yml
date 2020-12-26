@@ -421,6 +421,6 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.14516
   isfetch: false
 fromversion: 5.0.0

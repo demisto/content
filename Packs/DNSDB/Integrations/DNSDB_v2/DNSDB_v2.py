@@ -30,7 +30,6 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 INTEGRATION_NAME = 'Farsight DNSDB'
-INTEGRATION_COMMAND_NAME = 'dnsdb'
 INTEGRATION_CONTEXT_NAME = 'DNSDB'
 RECORD_SUBCONTEXT_NAME = 'Record'
 SUMMARY_SUBCONTEXT_NAME = 'Summary'
@@ -745,22 +744,22 @@ def main():
         if command == 'test-module':
             return_results(test_module(client, demisto.args()))
 
-        elif command == f'{INTEGRATION_COMMAND_NAME}-flex':
+        elif command == 'dnsdb-flex':
             return_results(dnsdb_flex(client, demisto.args()))
 
-        elif command == f'{INTEGRATION_COMMAND_NAME}-rdata':
+        elif command == 'dnsdb-rdata':
             return_results(dnsdb_rdata(client, demisto.args()))
 
-        elif command == f'{INTEGRATION_COMMAND_NAME}-summarize-rdata':
+        elif command == 'dnsdb-summarize-rdata':
             return_results(dnsdb_summarize_rdata(client, demisto.args()))
 
-        elif command == f'{INTEGRATION_COMMAND_NAME}-rrset':
+        elif command == 'dnsdb-rrset':
             return_results(dnsdb_rrset(client, demisto.args()))
 
-        elif command == f'{INTEGRATION_COMMAND_NAME}-summarize-rrset':
+        elif command == 'dnsdb-summarize-rrset':
             return_results(dnsdb_summarize_rrset(client, demisto.args()))
 
-        elif command == f'{INTEGRATION_COMMAND_NAME}-rate-limit':
+        elif command == 'dnsdb-rate-limit':
             return_results(dnsdb_rate_limit(client, demisto.args()))
 
     # Log exceptions
