@@ -32,7 +32,6 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 # GLOBAL CONSTUNTS #
 ####################
 INTEGRATION_NAME = 'Google Kubernetes Engine'
-INTEGRATION_COMMAND_NAME = 'gcloud'
 INTEGRATION_CONTEXT_NAME = 'GKE'
 CLUSTER_CONTEXT = f'{INTEGRATION_CONTEXT_NAME}.Cluster(val.Name && val.Name == obj.Name)'
 NODE_POOL_CONTEXT = f'{INTEGRATION_CONTEXT_NAME}.NodePool(val.Name && val.Name == obj.Name)'
@@ -878,24 +877,24 @@ def main():
     commands: Dict[str, Callable] = {
         # Clusters
         "test-module": test_module_command,
-        f"{INTEGRATION_COMMAND_NAME}-clusters-list": gcloud_clusters_list_command,
-        f"{INTEGRATION_COMMAND_NAME}-clusters-describe": gcloud_clusters_describe_command,
-        f"{INTEGRATION_COMMAND_NAME}-clusters-set-muster-auth": gcloud_clusters_set_master_auth,
-        f"{INTEGRATION_COMMAND_NAME}-clusters-set-addons": gcloud_clusters_set_addons_command,
-        f"{INTEGRATION_COMMAND_NAME}-clusters-set-legacy-auth": gcloud_clusters_set_legacy_auth_command,
-        f"{INTEGRATION_COMMAND_NAME}-clusters-set-master-authorized-network":
+        "gcloud-clusters-list": gcloud_clusters_list_command,
+        "gcloud-clusters-describe": gcloud_clusters_describe_command,
+        "gcloud-clusters-set-muster-auth": gcloud_clusters_set_master_auth,
+        "gcloud-clusters-set-addons": gcloud_clusters_set_addons_command,
+        "gcloud-clusters-set-legacy-auth": gcloud_clusters_set_legacy_auth_command,
+        "gcloud-clusters-set-master-authorized-network":
             gcloud_clusters_set_master_authorized_network_command,
-        f"{INTEGRATION_COMMAND_NAME}-clusters-set-k8s-stackdriver": gcloud_clusters_set_k8s_stackdriver_command,
-        f"{INTEGRATION_COMMAND_NAME}-clusters-set-binary-auth": gcloud_clusters_set_binary_auth,
-        f"{INTEGRATION_COMMAND_NAME}-clusters-set-intra-node-visibility": gcloud_clusters_set_intra_node_visibility,
+        "gcloud-clusters-set-k8s-stackdriver": gcloud_clusters_set_k8s_stackdriver_command,
+        "gcloud-clusters-set-binary-auth": gcloud_clusters_set_binary_auth,
+        "gcloud-clusters-set-intra-node-visibility": gcloud_clusters_set_intra_node_visibility,
         # Node pools
-        f"{INTEGRATION_COMMAND_NAME}-node-pool-list": gcloud_node_pool_list_command,
-        f"{INTEGRATION_COMMAND_NAME}-node-pool-describe": gcloud_node_pool_describe_command,
-        f"{INTEGRATION_COMMAND_NAME}-node-pool-set-management": gcloud_set_node_pool_management,
+        "gcloud-node-pool-list": gcloud_node_pool_list_command,
+        "gcloud-node-pool-describe": gcloud_node_pool_describe_command,
+        "gcloud-node-pool-set-management": gcloud_set_node_pool_management,
         # Operation handling
-        f"{INTEGRATION_COMMAND_NAME}-operations-list": gcloud_operations_list_command,
-        f"{INTEGRATION_COMMAND_NAME}-operations-describe": gcloud_operations_describe_command,
-        f"{INTEGRATION_COMMAND_NAME}-operations-cancel": gcloud_operations_cancel_command,
+        "gcloud-operations-list": gcloud_operations_list_command,
+        "gcloud-operations-describe": gcloud_operations_describe_command,
+        "gcloud-operations-cancel": gcloud_operations_cancel_command,
     }
     try:
         client: ClusterManagerClient = google_client_setup(json_configuration=demisto.getParam('credentials_json'))
