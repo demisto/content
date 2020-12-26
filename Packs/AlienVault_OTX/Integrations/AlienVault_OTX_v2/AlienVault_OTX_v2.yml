@@ -514,7 +514,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.6.14516
   isfetch: false
   longRunning: false
   longRunningPort: false

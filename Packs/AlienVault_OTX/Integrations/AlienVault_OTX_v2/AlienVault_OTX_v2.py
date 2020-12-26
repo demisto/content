@@ -23,7 +23,6 @@ Attributes:
         Context output names should be written in camel case, for example: MSGraphUser.
 """
 INTEGRATION_NAME = 'AlienVault OTX v2'
-INTEGRATION_COMMAND_NAME = 'alienvault'
 INTEGRATION_CONTEXT_NAME = 'AlienVaultOTX'
 DEFAULT_THRESHOLD = int(demisto.params().get('default_threshold', 2))
 TOKEN = demisto.params().get('api_token')
@@ -636,17 +635,17 @@ def main():
         'domain': domain_command,
         'file': file_command,
         'url': url_command,
-        f'{INTEGRATION_COMMAND_NAME}-search-hostname': alienvault_search_hostname_command,
-        f'{INTEGRATION_COMMAND_NAME}-search-ipv6': ip_command,
-        f'{INTEGRATION_COMMAND_NAME}-search-cve': alienvault_search_cve_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-related-urls-by-indicator': alienvault_get_related_urls_by_indicator_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-related-hashes-by-indicator': alienvault_get_related_hashes_by_indicator_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-passive-dns-data-by-indicator': alienvault_get_passive_dns_data_by_indicator_command,
-        f'{INTEGRATION_COMMAND_NAME}-search-pulses': alienvault_search_pulses_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-pulse-details': alienvault_get_pulse_details_command
+        'alienvault-search-hostname': alienvault_search_hostname_command,
+        'alienvault-search-ipv6': ip_command,
+        'alienvault-search-cve': alienvault_search_cve_command,
+        'alienvault-get-related-urls-by-indicator': alienvault_get_related_urls_by_indicator_command,
+        'alienvault-get-related-hashes-by-indicator': alienvault_get_related_hashes_by_indicator_command,
+        'alienvault-get-passive-dns-data-by-indicator': alienvault_get_passive_dns_data_by_indicator_command,
+        'alienvault-search-pulses': alienvault_search_pulses_command,
+        'alienvault-get-pulse-details': alienvault_get_pulse_details_command
     }
     try:
-        if command == f'{INTEGRATION_COMMAND_NAME}-search-ipv6':
+        if command == 'alienvault-search-ipv6':
             readable_output, outputs, raw_response = commands[command](client=client,
                                                                        ip_address=demisto.args().get('ip'),
                                                                        ip_version='IPv6')
