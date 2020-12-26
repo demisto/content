@@ -49,7 +49,7 @@ configuration:
   name: mapper_out
   required: true
   type: 0
-description: An Identity and Accress Management integration template.
+description: An Identity and Access Management integration template.
 display: Hello IAM World
 name: Hello IAM World
 script:
