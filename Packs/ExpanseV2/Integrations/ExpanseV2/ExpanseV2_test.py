@@ -192,7 +192,7 @@ def test_fetch_incidents(requests_mock):
     MOCK_LIMIT = "2"
     MOCK_NEXT_PAGE_TOKEN = "token1"
 
-    MOCK_URL = f'https://example.com/api/v1/issues/issues?limit={int(MOCK_LIMIT)+1}&businessUnitName={MOCK_BU}&sort=created'
+    MOCK_URL = f'https://example.com/api/v1/issues/issues?limit={int(MOCK_LIMIT) + 1}&businessUnitName={MOCK_BU}&sort=created'
     mock_issues = util_load_json("test_data/expanse_get_issues.json")
     mock_issues_page1 = {
         "data": mock_issues["data"][:int(MOCK_LIMIT) + 1],
@@ -503,7 +503,8 @@ def test_expanse_get_issue_comments_command(requests_mock):
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
-    requests_mock.get(f"https://example.com/api/v1/issues/issues/{MOCK_ISSUE_ID}/updates?limit={MOCK_LIMIT}", json=mock_comments)
+    requests_mock.get(f"https://example.com/api/v1/issues/issues/{MOCK_ISSUE_ID}/updates?limit={MOCK_LIMIT}",
+                      json=mock_comments)
     result = get_issue_comments_command(client, {"issue_id": MOCK_ISSUE_ID, "limit": MOCK_LIMIT})
 
     assert result.outputs_prefix == "Expanse.IssueComment"
@@ -531,7 +532,8 @@ def test_expanse_get_issue_updates_command(requests_mock):
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
-    requests_mock.get(f"https://example.com/api/v1/issues/issues/{MOCK_ISSUE_ID}/updates?limit={MOCK_LIMIT}", json=mock_updates)
+    requests_mock.get(f"https://example.com/api/v1/issues/issues/{MOCK_ISSUE_ID}/updates?limit={MOCK_LIMIT}",
+                      json=mock_updates)
     result = get_issue_updates_command(client, {"issue_id": MOCK_ISSUE_ID, "limit": MOCK_LIMIT})
 
     assert result.outputs_prefix == "Expanse.IssueUpdate"
@@ -640,25 +642,26 @@ def test_expanse_get_iprange(requests_mock):
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
     requests_mock.get(
-        f"https://example.com/api/v2/ip-range?include=&limit={MOCK_LIMIT}&business-unit-names={MOCK_BU}", json=mock_ipranges_input
+        f"https://example.com/api/v2/ip-range?include=&limit={MOCK_LIMIT}&business-unit-names={MOCK_BU}",
+        json=mock_ipranges_input
     )
 
     result = get_iprange_command(client, {"business_unit_names": MOCK_BU, "limit": MOCK_LIMIT})
 
-    assert result.outputs_prefix == "Expanse.IPRange"
-    assert result.outputs_key_field == "id"
+    assert result[-1].outputs_prefix == "Expanse.IPRange"
+    assert result[-1].outputs_key_field == "id"
     # output has CIDR, doesn't have startAddress and endAddress
     mock_ipranges_output = copy.deepcopy(mock_ipranges)
     for d in mock_ipranges_output["data"]:
         del d["startAddress"]
         del d["endAddress"]
-    assert result.outputs == mock_ipranges_output["data"][: int(MOCK_LIMIT)]
-    assert isinstance(result.indicators[0], Common.Indicator)
-    assert isinstance(result.indicators[0].dbot_score, Common.DBotScore)
-    assert result.indicators[0].dbot_score.indicator == mock_ipranges_output["data"][0]["cidr"]
-    assert result.indicators[0].dbot_score.integration_name == "ExpanseV2"
-    assert result.indicators[0].dbot_score.score == Common.DBotScore.NONE
-    assert result.indicators[0].dbot_score.indicator_type == DBotScoreType.CIDR
+    assert result[-1].outputs == mock_ipranges_output["data"][: int(MOCK_LIMIT)]
+    assert isinstance(result[0].indicator, Common.Indicator)
+    assert isinstance(result[0].indicator.dbot_score, Common.DBotScore)
+    assert result[0].indicator.dbot_score.indicator == mock_ipranges_output["data"][0]["cidr"]
+    assert result[0].indicator.dbot_score.integration_name == "ExpanseV2"
+    assert result[0].indicator.dbot_score.score == Common.DBotScore.NONE
+    assert result[0].indicator.dbot_score.indicator_type == DBotScoreType.CIDR
 
 
 def test_expanse_create_tag(requests_mock):
@@ -723,7 +726,8 @@ def test_expanse_assign_single_tag_to_iprange(mocker, requests_mock):
     mock_func = mocker.patch.object(client, "manage_asset_tags")
 
     result = manage_asset_tags_command(
-        client, {"operation_type": OP_TYPE, "asset_type": ASSET_TYPE, "asset_id": MOCK_ASSET_ID, "tag_names": TAGS_BY_NAME}
+        client,
+        {"operation_type": OP_TYPE, "asset_type": ASSET_TYPE, "asset_id": MOCK_ASSET_ID, "tag_names": TAGS_BY_NAME}
     )
 
     assert len(mock_func.call_args_list) == 1
@@ -771,7 +775,8 @@ def test_expanse_unassign_single_tag_from_iprange(requests_mock, mocker):
     mock_func = mocker.patch.object(client, "manage_asset_tags")
 
     result = manage_asset_tags_command(
-        client, {"operation_type": OP_TYPE, "asset_type": ASSET_TYPE, "asset_id": MOCK_ASSET_ID, "tag_names": TAGS_BY_NAME}
+        client,
+        {"operation_type": OP_TYPE, "asset_type": ASSET_TYPE, "asset_id": MOCK_ASSET_ID, "tag_names": TAGS_BY_NAME}
     )
 
     assert len(mock_func.call_args_list) == 1
@@ -933,7 +938,8 @@ def test_expanse_assign_single_tag_to_domain(mocker, requests_mock):
     mock_func = mocker.patch.object(client, "manage_asset_tags")
 
     result = manage_asset_tags_command(
-        client, {"operation_type": OP_TYPE, "asset_type": ASSET_TYPE, "asset_id": MOCK_ASSET_ID, "tag_names": TAGS_BY_NAME}
+        client,
+        {"operation_type": OP_TYPE, "asset_type": ASSET_TYPE, "asset_id": MOCK_ASSET_ID, "tag_names": TAGS_BY_NAME}
     )
 
     assert len(mock_func.call_args_list) == 1
@@ -981,7 +987,8 @@ def test_expanse_unassign_single_tag_from_domain(requests_mock, mocker):
     mock_func = mocker.patch.object(client, "manage_asset_tags")
 
     result = manage_asset_tags_command(
-        client, {"operation_type": OP_TYPE, "asset_type": ASSET_TYPE, "asset_id": MOCK_ASSET_ID, "tag_names": TAGS_BY_NAME}
+        client,
+        {"operation_type": OP_TYPE, "asset_type": ASSET_TYPE, "asset_id": MOCK_ASSET_ID, "tag_names": TAGS_BY_NAME}
     )
 
     assert len(mock_func.call_args_list) == 1
@@ -1143,7 +1150,8 @@ def test_expanse_assign_single_tag_to_certificate(mocker, requests_mock):
     mock_func = mocker.patch.object(client, "manage_asset_tags")
 
     result = manage_asset_tags_command(
-        client, {"operation_type": OP_TYPE, "asset_type": ASSET_TYPE, "asset_id": MOCK_ASSET_ID, "tag_names": TAGS_BY_NAME}
+        client,
+        {"operation_type": OP_TYPE, "asset_type": ASSET_TYPE, "asset_id": MOCK_ASSET_ID, "tag_names": TAGS_BY_NAME}
     )
 
     assert len(mock_func.call_args_list) == 1
@@ -1191,7 +1199,8 @@ def test_expanse_unassign_single_tag_from_certificate(requests_mock, mocker):
     mock_func = mocker.patch.object(client, "manage_asset_tags")
 
     result = manage_asset_tags_command(
-        client, {"operation_type": OP_TYPE, "asset_type": ASSET_TYPE, "asset_id": MOCK_ASSET_ID, "tag_names": TAGS_BY_NAME}
+        client,
+        {"operation_type": OP_TYPE, "asset_type": ASSET_TYPE, "asset_id": MOCK_ASSET_ID, "tag_names": TAGS_BY_NAME}
     )
 
     assert len(mock_func.call_args_list) == 1
@@ -1345,8 +1354,10 @@ def test_expanse_get_certificate_by_hash(requests_mock):
     )
 
     result = get_certificate_command(client, {"md5_hash": mock_certificate_data['certificate']['md5Hash']})
-    result_context = result.to_context()
-    assert result_context['EntryContext'] == mock_result_data
+    first = result[0].to_context()
+    second = result[1].to_context()
+    result_context = {**first['EntryContext'], **second['EntryContext']}
+    assert result_context == mock_result_data
 
 
 def test_expanse_get_certificate_by_query(requests_mock):
@@ -1378,16 +1389,16 @@ def test_expanse_get_certificate_by_query(requests_mock):
 
     result = get_certificate_command(client, {"business_unit_names": MOCK_BU, "limit": MOCK_LIMIT})
 
-    assert result.outputs_prefix == "Expanse.Certificate"
-    assert result.outputs_key_field == "id"
-    assert result.outputs == mock_certs["data"][: int(MOCK_LIMIT)]
+    assert result[-1].outputs_prefix == "Expanse.Certificate"
+    assert result[-1].outputs_key_field == "id"
+    assert result[-1].outputs == mock_certs["data"][: int(MOCK_LIMIT)]
 
     certs_sha256 = set([base64.urlsafe_b64decode(c['certificate']['pemSha256']).hex() for c in mock_certs['data']])
-    for indicator in result.indicators:
-        assert isinstance(indicator, Common.Certificate)
-        assert indicator.sha256 == indicator.dbot_score.indicator
-        assert indicator.dbot_score.indicator_type == 'certificate'
-        certs_sha256.remove(indicator.sha256)
+    for indicator in result[:-1]:
+        assert isinstance(indicator.indicator, Common.Certificate)
+        assert indicator.indicator.sha256 == indicator.indicator.dbot_score.indicator
+        assert indicator.indicator.dbot_score.indicator_type == 'certificate'
+        certs_sha256.remove(indicator.indicator.sha256)
     assert len(certs_sha256) == 0
 
 
@@ -1408,7 +1419,6 @@ def test_certificate_command(requests_mock, mocker):
     MOCK_CERT_HASH = 'mRi21v8MwFzvzjB1abEnKw=='
 
     mock_certificate_data = util_load_json("test_data/expanse_certificate.json")
-    mock_indicators_data = util_load_json("test_data/expanse_certcommand_indicators.json")
     mock_ioc_data = util_load_json("test_data/expanse_certcommand_ioc.json")
     mock_result_data = util_load_json("test_data/expanse_certificate_stdctx.json")
 
@@ -1420,13 +1430,12 @@ def test_certificate_command(requests_mock, mocker):
     )
 
     mocker.patch('ExpanseV2.demisto.searchIndicators', return_value={'iocs': mock_ioc_data})
-    ci_mock = mocker.patch('ExpanseV2.demisto.createIndicators')
 
     result = certificate_command(client, {'certificate': mock_ioc_data[0]['CustomFields']['sha256']})
-    result_context = result.to_context()
-
-    assert result_context['EntryContext'] == mock_result_data
-    ci_mock.assert_called_once_with(mock_indicators_data)
+    first = result[0].to_context()
+    second = result[1].to_context()
+    result_context = {**first['EntryContext'], **second['EntryContext']}
+    assert result_context == mock_result_data
 
 
 def test_expanse_get_domain(requests_mock):
@@ -1451,32 +1460,33 @@ def test_expanse_get_domain(requests_mock):
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
     requests_mock.get(
-        f"https://example.com/api/v2/assets/domains?limit={MOCK_LIMIT}&businessUnitName={MOCK_BU}", json=mock_domain_data
+        f"https://example.com/api/v2/assets/domains?limit={MOCK_LIMIT}&businessUnitName={MOCK_BU}",
+        json=mock_domain_data
     )
 
     result = get_domain_command(client, {"business_unit_names": MOCK_BU, "limit": MOCK_LIMIT})
-    assert result.outputs_prefix == "Expanse.Domain"
-    assert result.outputs_key_field == "domain"
-    assert result.outputs == mock_domain_data["data"][: int(MOCK_LIMIT)]
+    assert result[-1].outputs_prefix == "Expanse.Domain"
+    assert result[-1].outputs_key_field == "domain"
+    assert result[-1].outputs == mock_domain_data["data"][: int(MOCK_LIMIT)]
     # first entry is a domain
-    assert isinstance(result.indicators[0], Common.Domain)
-    assert result.indicators[0].domain == mock_domain_data["data"][0]["domain"]
-    assert isinstance(result.indicators[0].dbot_score, Common.DBotScore)
-    assert result.indicators[0].dbot_score.indicator == mock_domain_data["data"][0]["domain"]
-    assert result.indicators[0].dbot_score.integration_name == "ExpanseV2"
-    assert result.indicators[0].dbot_score.score == Common.DBotScore.NONE
-    assert result.indicators[0].dbot_score.indicator_type == DBotScoreType.DOMAIN
-    assert result.indicators[0].registrant_country == mock_domain_data["data"][0]["whois"][0]["registrant"]["country"]
+    assert isinstance(result[0].indicator, Common.Domain)
+    assert result[0].indicator.domain == mock_domain_data["data"][0]["domain"]
+    assert isinstance(result[0].indicator.dbot_score, Common.DBotScore)
+    assert result[0].indicator.dbot_score.indicator == mock_domain_data["data"][0]["domain"]
+    assert result[0].indicator.dbot_score.integration_name == "ExpanseV2"
+    assert result[0].indicator.dbot_score.score == Common.DBotScore.NONE
+    assert result[0].indicator.dbot_score.indicator_type == DBotScoreType.DOMAIN
+    assert result[0].indicator.registrant_country == mock_domain_data["data"][0]["whois"][0]["registrant"]["country"]
     # second entry is a domainglob
-    assert isinstance(result.indicators[1], Common.Domain)
-    assert result.indicators[1].domain == mock_domain_data["data"][1]["domain"]
-    assert isinstance(result.indicators[1].dbot_score, Common.DBotScore)
-    assert result.indicators[1].domain == mock_domain_data["data"][1]["domain"]
-    assert result.indicators[1].dbot_score.indicator == mock_domain_data["data"][1]["domain"]
-    assert result.indicators[1].dbot_score.integration_name == "ExpanseV2"
-    assert result.indicators[1].dbot_score.score == Common.DBotScore.NONE
-    assert result.indicators[1].dbot_score.indicator_type == DBotScoreType.DOMAINGLOB
-    assert result.indicators[1].registrant_country == mock_domain_data["data"][1]["whois"][0]["registrant"]["country"]
+    assert isinstance(result[1].indicator, Common.Domain)
+    assert result[1].indicator.domain == mock_domain_data["data"][1]["domain"]
+    assert isinstance(result[1].indicator.dbot_score, Common.DBotScore)
+    assert result[1].indicator.domain == mock_domain_data["data"][1]["domain"]
+    assert result[1].indicator.dbot_score.indicator == mock_domain_data["data"][1]["domain"]
+    assert result[1].indicator.dbot_score.integration_name == "ExpanseV2"
+    assert result[1].indicator.dbot_score.score == Common.DBotScore.NONE
+    assert result[1].indicator.dbot_score.indicator_type == DBotScoreType.DOMAINGLOB
+    assert result[1].indicator.registrant_country == mock_domain_data["data"][1]["whois"][0]["registrant"]["country"]
 
 
 def test_get_associated_domains(requests_mock):
@@ -1532,20 +1542,20 @@ def test_get_associated_domains(requests_mock):
 
     result = get_associated_domains_command(
         client, {"common_name": CN_SEARCH, "limit": MOCK_LIMIT, "domains_limit": MOCK_LIMIT})
-    assert result.outputs_prefix == "Expanse.AssociatedDomain"
-    assert result.outputs_key_field == 'name'
-    assert result.outputs == [{
+    assert result[-1].outputs_prefix == "Expanse.AssociatedDomain"
+    assert result[-1].outputs_key_field == 'name'
+    assert result[-1].outputs == [{
         'name': mock_ips_data['data'][0]['domain'],
         'IP': [mock_ips_data['data'][0]['ip']],
         'certificate': [mock_certificate_data['data'][0]['certificate']['md5Hash']]
     }]
-    assert isinstance(result.indicators[0], Common.Domain)
-    assert result.indicators[0].domain == mock_ips_data['data'][0]['domain']
-    assert isinstance(result.indicators[0].dbot_score, Common.DBotScore)
-    assert result.indicators[0].dbot_score.indicator == mock_ips_data['data'][0]['domain']
-    assert result.indicators[0].dbot_score.integration_name == "ExpanseV2"
-    assert result.indicators[0].dbot_score.score == Common.DBotScore.NONE
-    assert result.indicators[0].dbot_score.indicator_type == DBotScoreType.DOMAIN
+    assert isinstance(result[0].indicator, Common.Domain)
+    assert result[0].indicator.domain == mock_ips_data['data'][0]['domain']
+    assert isinstance(result[0].indicator.dbot_score, Common.DBotScore)
+    assert result[0].indicator.dbot_score.indicator == mock_ips_data['data'][0]['domain']
+    assert result[0].indicator.dbot_score.integration_name == "ExpanseV2"
+    assert result[0].indicator.dbot_score.score == Common.DBotScore.NONE
+    assert result[0].indicator.dbot_score.indicator_type == DBotScoreType.DOMAIN
 
 
 def test_domain(requests_mock):
@@ -1571,17 +1581,17 @@ def test_domain(requests_mock):
     requests_mock.get(f"https://example.com/api/v2/assets/domains/{MOCK_DOMAIN}", json=mock_domain_data)
 
     result = domain_command(client, {"domain": MOCK_DOMAIN})
-    assert result.outputs_prefix == "Expanse.Domain"
-    assert result.outputs_key_field == "domain"
-    assert result.outputs[0] == mock_domain_data
-    assert isinstance(result.indicators[0], Common.Domain)
-    assert result.indicators[0].domain == MOCK_DOMAIN
-    assert isinstance(result.indicators[0].dbot_score, Common.DBotScore)
-    assert result.indicators[0].dbot_score.indicator == MOCK_DOMAIN
-    assert result.indicators[0].dbot_score.integration_name == "ExpanseV2"
-    assert result.indicators[0].dbot_score.score == Common.DBotScore.NONE
-    assert result.indicators[0].dbot_score.indicator_type == DBotScoreType.DOMAIN
-    assert result.indicators[0].registrant_country == mock_domain_data["whois"][0]["registrant"]["country"]
+    assert result[-1].outputs_prefix == "Expanse.Domain"
+    assert result[-1].outputs_key_field == "domain"
+    assert result[-1].outputs[0] == mock_domain_data
+    assert isinstance(result[0].indicator, Common.Domain)
+    assert result[0].indicator.domain == MOCK_DOMAIN
+    assert isinstance(result[0].indicator.dbot_score, Common.DBotScore)
+    assert result[0].indicator.dbot_score.indicator == MOCK_DOMAIN
+    assert result[0].indicator.dbot_score.integration_name == "ExpanseV2"
+    assert result[0].indicator.dbot_score.score == Common.DBotScore.NONE
+    assert result[0].indicator.dbot_score.indicator_type == DBotScoreType.DOMAIN
+    assert result[0].indicator.registrant_country == mock_domain_data["whois"][0]["registrant"]["country"]
 
 
 def test_ip(requests_mock):
@@ -1607,16 +1617,16 @@ def test_ip(requests_mock):
     requests_mock.get("https://example.com/api/v2/assets/ips", json=mock_ip_data)
 
     result = ip_command(client, {"ip": MOCK_IP})
-    assert result.outputs_prefix == "Expanse.IP"
-    assert result.outputs_key_field == ['ip', 'type', 'assetKey', 'assetType']
-    assert result.outputs == mock_ip_data["data"]
-    assert isinstance(result.indicators[0], Common.IP)
-    assert result.indicators[0].ip == MOCK_IP
-    assert isinstance(result.indicators[0].dbot_score, Common.DBotScore)
-    assert result.indicators[0].dbot_score.indicator == MOCK_IP
-    assert result.indicators[0].dbot_score.integration_name == "ExpanseV2"
-    assert result.indicators[0].dbot_score.score == Common.DBotScore.NONE
-    assert result.indicators[0].dbot_score.indicator_type == DBotScoreType.IP
+    assert result[-1].outputs_prefix == "Expanse.IP"
+    assert result[-1].outputs_key_field == ['ip', 'type', 'assetKey', 'assetType']
+    assert result[-1].outputs == mock_ip_data["data"]
+    assert isinstance(result[0].indicator, Common.IP)
+    assert result[0].indicator.ip == MOCK_IP
+    assert isinstance(result[0].indicator.dbot_score, Common.DBotScore)
+    assert result[0].indicator.dbot_score.indicator == MOCK_IP
+    assert result[0].indicator.dbot_score.integration_name == "ExpanseV2"
+    assert result[0].indicator.dbot_score.score == Common.DBotScore.NONE
+    assert result[0].indicator.dbot_score.indicator_type == DBotScoreType.IP
 
 
 def test_cidr(requests_mock):
@@ -1650,20 +1660,20 @@ def test_cidr(requests_mock):
 
     result = cidr_command(client, {"cidr": MOCK_INET, "include": MOCK_INCLUDE})
 
-    assert result.outputs_prefix == "Expanse.IPRange"
-    assert result.outputs_key_field == "id"
+    assert result[-1].outputs_prefix == "Expanse.IPRange"
+    assert result[-1].outputs_key_field == "id"
     # output has CIDR, doesn't have startAddress and endAddress
     mock_cidr_output = copy.deepcopy(mock_cidr)
     for d in mock_cidr_output["data"]:
         del d["startAddress"]
         del d["endAddress"]
-    assert result.outputs == mock_cidr_output["data"]
-    assert isinstance(result.indicators[0], Common.Indicator)
-    assert isinstance(result.indicators[0].dbot_score, Common.DBotScore)
-    assert result.indicators[0].dbot_score.indicator == MOCK_INET
-    assert result.indicators[0].dbot_score.integration_name == "ExpanseV2"
-    assert result.indicators[0].dbot_score.score == Common.DBotScore.NONE
-    assert result.indicators[0].dbot_score.indicator_type == DBotScoreType.CIDR
+    assert result[-1].outputs == mock_cidr_output["data"]
+    assert isinstance(result[0].indicator, Common.Indicator)
+    assert isinstance(result[0].indicator.dbot_score, Common.DBotScore)
+    assert result[0].indicator.dbot_score.indicator == MOCK_INET
+    assert result[0].indicator.dbot_score.integration_name == "ExpanseV2"
+    assert result[0].indicator.dbot_score.score == Common.DBotScore.NONE
+    assert result[0].indicator.dbot_score.indicator_type == DBotScoreType.CIDR
 
 
 def test_expanse_get_risky_flows(requests_mock):
