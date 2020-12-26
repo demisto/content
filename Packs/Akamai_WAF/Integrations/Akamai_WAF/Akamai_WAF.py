@@ -16,7 +16,7 @@ from akamai.edgegrid import EdgeGridAuth
 Attributes:
     INTEGRATION_NAME:
         Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
-        
+
     INTEGRATION_CONTEXT_NAME:
         Context output names should be written in camel case, for example: MSGraphUser.
 """
