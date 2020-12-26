@@ -25,7 +25,6 @@ Attributes:
         Context output names should be written in camel case, for example: MSGraphUser.
 """
 INTEGRATION_NAME = 'PhishLabs IOC - DRP'
-INTEGRATION_COMMAND_NAME = 'phishlabs-ioc-drp'
 INTEGRATION_CONTEXT_NAME = 'PhishLabsIOC'
 
 # Disable insecure warnings
@@ -539,10 +538,10 @@ def main():
     demisto.debug(f'Command being called is {command}')
     commands = {
         'test-module': test_module_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-cases': get_cases_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-case-by-id': get_case_by_id_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-open-cases': get_open_cases_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-closed-cases': get_closed_cases_command
+        'phishlabs-ioc-drp-get-cases': get_cases_command,
+        'phishlabs-ioc-drp-get-case-by-id': get_case_by_id_command,
+        'phishlabs-ioc-drp-get-open-cases': get_open_cases_command,
+        'phishlabs-ioc-drp-get-closed-cases': get_closed_cases_command
     }
     try:
         if command == 'fetch-incidents':

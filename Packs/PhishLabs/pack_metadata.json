@@ -1,16 +1,16 @@
 {
-  "name": "PhishLabs",
-  "description": "IOC information from PhishLabs.",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-26T09:26:05Z",
-  "categories": [
-    "Data Enrichment & Threat Intelligence"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "PhishLabs",
+    "description": "IOC information from PhishLabs.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-26T09:26:05Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
 }
