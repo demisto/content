@@ -20,15 +20,10 @@ Attributes:
     INTEGRATION_NAME:
         Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
 
-    INTEGRATION_COMMAND_NAME:
-        Command names should be written in all lower-case letters,
-        and each word separated with a hyphen, for example: msgraph-user.
-
     INTEGRATION_CONTEXT_NAME:
         Context output names should be written in camel case, for example: MSGraphUser.
 """
 INTEGRATION_NAME = 'Akamai SIEM'
-INTEGRATION_COMMAND_NAME = 'akamai-siem'
 INTEGRATION_CONTEXT_NAME = 'Akamai'
 
 # Disable insecure warnings
@@ -366,7 +361,7 @@ def main():
     )
     commands = {
         "test-module": test_module_command,
-        f"{INTEGRATION_COMMAND_NAME}-get-events": get_events_command
+        "akamai-siem-get-events": get_events_command
     }
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')

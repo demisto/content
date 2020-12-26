@@ -171,7 +171,7 @@ script:
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
       type: String
-  dockerimage: demisto/akamai:1.0.0.8883
+  dockerimage: demisto/akamai:1.0.0.13142
   isfetch: true
   longRunning: false
   longRunningPort: false
