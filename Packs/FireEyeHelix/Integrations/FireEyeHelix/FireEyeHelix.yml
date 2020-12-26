@@ -2024,7 +2024,7 @@ script:
     - contextPath: FireEyeHelixSearch.State
       description: State of the search.
       type: String
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.8.6.14516
   isfetch: true
   longRunning: false
   longRunningPort: false

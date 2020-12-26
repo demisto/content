@@ -16,7 +16,7 @@ Attributes:
     INTEGRATION_NAME:
         Name of the integration as shown in the integration UI.
 
-    INTEGRATION_COMMAND_NAME:
+    fireeye-helix:
         Command names prefix used for all commands.
 
     INTEGRATION_CONTEXT_NAME:
@@ -50,7 +50,6 @@ Attributes:
         Transformation map for rules to be used with create_context_result
 """
 INTEGRATION_NAME = 'FireEye Helix'
-INTEGRATION_COMMAND_NAME = 'fireeye-helix'
 INTEGRATION_CONTEXT_NAME = 'FireEyeHelix'
 DEFAULT_PAGE_SIZE = 30
 ALERTS_TRANS = {
@@ -1717,30 +1716,30 @@ def main():  # pragma: no cover
 
     # Switch case
     commands = {
-        f'{INTEGRATION_COMMAND_NAME}-list-alerts': list_alerts_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-alert-by-id': get_alert_by_id_command,
-        f'{INTEGRATION_COMMAND_NAME}-alert-get-notes': get_alert_notes_command,
-        f'{INTEGRATION_COMMAND_NAME}-alert-create-note': create_alert_note_command,
-        f'{INTEGRATION_COMMAND_NAME}-alert-delete-note': delete_alert_note_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-events-by-alert': get_events_by_alert_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-endpoints-by-alert': get_endpoints_by_alert_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-cases-by-alert': get_cases_by_alert_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-lists': get_lists_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-list-by-id': get_list_by_id_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-list': create_list_command,
-        f'{INTEGRATION_COMMAND_NAME}-update-list': update_list_command,
-        f'{INTEGRATION_COMMAND_NAME}-delete-list': delete_list_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-list-items': get_list_items_command,
-        f'{INTEGRATION_COMMAND_NAME}-add-list-item': add_list_item_command,
-        f'{INTEGRATION_COMMAND_NAME}-update-list-item': update_list_item_command,
-        f'{INTEGRATION_COMMAND_NAME}-remove-list-item': remove_list_item_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-sensors': list_sensors_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-rules': list_rules_command,
-        f'{INTEGRATION_COMMAND_NAME}-edit-rule': edit_rule_command,
-        f'{INTEGRATION_COMMAND_NAME}-search': search_command,
-        f'{INTEGRATION_COMMAND_NAME}-archive-search': archive_search_command,
-        f'{INTEGRATION_COMMAND_NAME}-archive-search-get-status': archive_search_status_command,
-        f'{INTEGRATION_COMMAND_NAME}-archive-search-get-results': archive_search_results_command,
+        'fireeye-helix-list-alerts': list_alerts_command,
+        'fireeye-helix-get-alert-by-id': get_alert_by_id_command,
+        'fireeye-helix-alert-get-notes': get_alert_notes_command,
+        'fireeye-helix-alert-create-note': create_alert_note_command,
+        'fireeye-helix-alert-delete-note': delete_alert_note_command,
+        'fireeye-helix-get-events-by-alert': get_events_by_alert_command,
+        'fireeye-helix-get-endpoints-by-alert': get_endpoints_by_alert_command,
+        'fireeye-helix-get-cases-by-alert': get_cases_by_alert_command,
+        'fireeye-helix-get-lists': get_lists_command,
+        'fireeye-helix-get-list-by-id': get_list_by_id_command,
+        'fireeye-helix-create-list': create_list_command,
+        'fireeye-helix-update-list': update_list_command,
+        'fireeye-helix-delete-list': delete_list_command,
+        'fireeye-helix-get-list-items': get_list_items_command,
+        'fireeye-helix-add-list-item': add_list_item_command,
+        'fireeye-helix-update-list-item': update_list_item_command,
+        'fireeye-helix-remove-list-item': remove_list_item_command,
+        'fireeye-helix-list-sensors': list_sensors_command,
+        'fireeye-helix-list-rules': list_rules_command,
+        'fireeye-helix-edit-rule': edit_rule_command,
+        'fireeye-helix-search': search_command,
+        'fireeye-helix-archive-search': archive_search_command,
+        'fireeye-helix-archive-search-get-status': archive_search_status_command,
+        'fireeye-helix-archive-search-get-results': archive_search_results_command,
     }
     try:
         if command == 'test-module':
