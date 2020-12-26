@@ -16,16 +16,11 @@ from akamai.edgegrid import EdgeGridAuth
 Attributes:
     INTEGRATION_NAME:
         Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
-
-    INTEGRATION_COMMAND_NAME:
-        Command names should be written in all lower-case letters,
-        and each word separated with a hyphen, for example: msgraph-user.
-
+        
     INTEGRATION_CONTEXT_NAME:
         Context output names should be written in camel case, for example: MSGraphUser.
 """
 INTEGRATION_NAME = 'Akamai WAF'
-INTEGRATION_COMMAND_NAME = 'akamai'
 INTEGRATION_CONTEXT_NAME = 'Akamai'
 
 # Disable insecure warnings
@@ -570,14 +565,14 @@ def main():
     demisto.debug(f'Command being called is {command}')
     commands = {
         'test-module': test_module_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-network-lists': get_network_lists_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-network-list-by-id': get_network_list_by_id_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-network-list': create_network_list_command,
-        f'{INTEGRATION_COMMAND_NAME}-delete-network-list': delete_network_list_command,
-        f'{INTEGRATION_COMMAND_NAME}-activate-network-list': activate_network_list_command,
-        f'{INTEGRATION_COMMAND_NAME}-add-elements-to-network-list': add_elements_to_network_list_command,
-        f'{INTEGRATION_COMMAND_NAME}-remove-element-from-network-list': remove_element_from_network_list_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-network-list-activation-status': get_activation_status_command
+        'akamai-get-network-lists': get_network_lists_command,
+        'akamai-get-network-list-by-id': get_network_list_by_id_command,
+        'akamai-create-network-list': create_network_list_command,
+        'akamai-delete-network-list': delete_network_list_command,
+        'akamai-activate-network-list': activate_network_list_command,
+        'akamai-add-elements-to-network-list': add_elements_to_network_list_command,
+        'akamai-remove-element-from-network-list': remove_element_from_network_list_command,
+        'akamai-get-network-list-activation-status': get_activation_status_command
     }
     try:
         readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
