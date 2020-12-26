@@ -12,7 +12,6 @@ urllib3.disable_warnings()
 
 ''' GLOBAL VARIABLES'''
 
-INTEGRATION_COMMAND = "cisco-asa"
 OBJECT_TYPES_DICT = {
     'IPv4': 'IPv4Address',
     'IP-Network': 'IPv4Network'
@@ -572,15 +571,15 @@ def main():
         if (demisto.params()['server'] and demisto.params()['server'].endswith('/')) else demisto.params()['server']
 
     commands = {
-        f'{INTEGRATION_COMMAND}-list-rules': list_rules_command,
-        f'{INTEGRATION_COMMAND}-backup': backup_command,
-        f'{INTEGRATION_COMMAND}-get-rule-by-id': rule_by_id_command,
-        f'{INTEGRATION_COMMAND}-create-rule': create_rule_command,
-        f'{INTEGRATION_COMMAND}-delete-rule': delete_rule_command,
-        f'{INTEGRATION_COMMAND}-edit-rule': edit_rule_command,
-        f'{INTEGRATION_COMMAND}-list-network-objects': list_objects_command,
-        f'{INTEGRATION_COMMAND}-create-network-object': create_object_command,
-        f'{INTEGRATION_COMMAND}-list-interfaces': list_interfaces_command
+        'cisco-asa-list-rules': list_rules_command,
+        'cisco-asa-backup': backup_command,
+        'cisco-asa-get-rule-by-id': rule_by_id_command,
+        'cisco-asa-create-rule': create_rule_command,
+        'cisco-asa-delete-rule': delete_rule_command,
+        'cisco-asa-edit-rule': edit_rule_command,
+        'cisco-asa-list-network-objects': list_objects_command,
+        'cisco-asa-create-network-object': create_object_command,
+        'cisco-asa-list-interfaces': list_interfaces_command
     }
 
     LOG(f'Command being called is {demisto.command()}')
