@@ -27,7 +27,6 @@ Development info:
 # GLOBAL CONSTUNTS #
 ####################
 INTEGRATION_NAME = 'ThreatConnect Feed'
-INTEGRATION_COMMAND_NAME = 'tc'
 INTEGRATION_CONTEXT_NAME = 'ThreatConnect'
 COMMAND_OUTPUT = Tuple[str, Union[Dict[str, Any], List[Any]], Union[Dict[str, Any], List[Any]]]
 INDICATOR_MAPPING_NAMES = {
@@ -244,8 +243,8 @@ def main():
     demisto.info(f'Command being called is {command}')
     commands = {
         'test-module': module_test_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-indicators': get_indicators_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-owners': get_owners_command
+        'tc-get-indicators': get_indicators_command,
+        'tc-get-owners': get_owners_command
     }
     try:
         if demisto.command() == 'fetch-indicators':
